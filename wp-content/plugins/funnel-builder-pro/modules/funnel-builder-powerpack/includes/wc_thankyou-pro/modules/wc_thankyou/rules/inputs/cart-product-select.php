@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfty_Input_Cart_Product_Select' ) ) {
+	#[\AllowDynamicProperties]
 	class wfty_Input_Cart_Product_Select {
 		public function __construct() {
 			// vars
@@ -10,30 +11,32 @@ if ( ! class_exists( 'wfty_Input_Cart_Product_Select' ) ) {
 				'allow_null'    => 0,
 				'choices'       => array(),
 				'default_value' => '',
-				'class'         => 'ajax_chosen_select_products'
+				'class'         => 'ajax_chosen_select_products',
 			);
 		}
 
 		public function render( $field, $value = null ) {
 			$field = array_merge( $this->defaults, $field );
-			if ( ! isset( $field['id'] ) ) {
+			if ( isset( $field['id'] ) ) {
 				$field['id'] = sanitize_title( $field['id'] );
+			} else {
+				$field['id'] = '';
 			}
 
 			?>
 
-            <table style="width:100%;">
-                <tr>
-                    <td style="width:32px;"><?php _e( 'Quantity', 'funnel-builder-powerpack' ); ?></td>
-                    <td><?php _e( 'Products', 'funnel-builder-powerpack' ); ?></td>
-                </tr>
-                <tr>
-                    <td style="width:32px; vertical-align:top;">
-                        <input type="text" id="<?php echo $field['id']; ?>_qty" name="<?php echo $field['name']; ?>[qty]" value="<?php echo isset( $value['qty'] ) ? $value['qty'] : 1; ?>"/>
+			<table style="width:100%;">
+				<tr>
+					<td style="width:32px;"><?php esc_html_e( 'Quantity', 'funnel-builder-powerpack' ); ?></td>
+					<td><?php esc_html_e( 'Products', 'funnel-builder-powerpack' ); ?></td>
+				</tr>
+				<tr>
+					<td style="width:32px; vertical-align:top;">
+						<input type="text" id="<?php echo esc_attr( $field['id'] ); ?>_qty" name="<?php echo esc_attr( $field['name'] ); ?>[qty]" value="<?php echo esc_attr( isset( $value['qty'] ) ? $value['qty'] : 1 ); ?>"/>
 
-                    </td>
-                    <td>
-                        <select id="<?php echo $field['id']; ?>" name="<?php echo $field['name']; ?>[products]" class="ajax_chosen_select_products" data-placeholder="<?php _e( 'Look for a product&hellip;', 'woocommerce' ); ?>">
+					</td>
+					<td>
+						<select id="<?php echo esc_attr( $field['id'] ); ?>" name="<?php echo esc_attr( $field['name'] ); ?>[products]" class="ajax_chosen_select_products" data-placeholder="<?php esc_attr_e( 'Look for a product&hellip;', 'woocommerce' ); ?>">
 							<?php
 							$defaults = array(
 								'numberposts'      => 5,
@@ -57,20 +60,18 @@ if ( ! class_exists( 'wfty_Input_Cart_Product_Select' ) ) {
 								foreach ( $product_ids as $product_id ) {
 									$product      = wc_get_product( $product_id );
 									$product_name = BWF_WC_Compatibility::woocommerce_get_formatted_product_name( $product );
-									echo "<option value='" . esc_attr( $product_id ) . "' " . selected( $current[0], $product_id, false ) . ">" . ( $product_name ) . "</option>";
+									echo "<option value='" . esc_attr( $product_id ) . "' " . selected( $current[0], $product_id, false ) . '>' . esc_html( $product_name ) . '</option>';
 								}
 							}
 							?>
-                        </select>
-                    </td>
-                </tr>
-            </table>
+						</select>
+					</td>
+				</tr>
+			</table>
 
 
 			<?php
-
 		}
-
 	}
 }
 ?>

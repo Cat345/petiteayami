@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WFOCU_Compatibility_With_Yith_Currency_Switcher' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Yith_Currency_Switcher {
 
 		public function __construct() {

@@ -3,6 +3,7 @@
 /**
  * WC Dependency Checker
  */
+#[\AllowDynamicProperties]
 class BWFAN_Plugin_Dependency {
 
 	private static $active_plugins;

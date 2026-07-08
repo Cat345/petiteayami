@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * V2 Automation
  */
+#[\AllowDynamicProperties]
 final class BWFAN_Automation_V2_Contact {
 	private static $ins = null;
 

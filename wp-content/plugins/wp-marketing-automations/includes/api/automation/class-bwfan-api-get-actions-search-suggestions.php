@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Actions_Search_Suggestion extends BWFAN_API_Base {
 	public static $ins;
 

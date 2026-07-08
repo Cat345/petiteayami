@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Importer_Listing extends BWFAN_API_Base {
 	public static $ins;
 	private $total_count = 0;

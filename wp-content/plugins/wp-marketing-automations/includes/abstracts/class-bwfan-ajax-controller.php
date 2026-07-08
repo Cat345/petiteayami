@@ -4,6 +4,7 @@
  * Class BWFAN_AJAX_Controller
  * Handles All the request came from front end or the backend
  */
+#[\AllowDynamicProperties]
 abstract class BWFAN_AJAX_Controller {
 
 	public static function init() {
@@ -25,13 +26,6 @@ abstract class BWFAN_AJAX_Controller {
 	public static function bwfan_select2ajax() {
 		BWFAN_Common::check_nonce();
 
-		if ( ! current_user_can( BWFAN_admin::menu_cap() ) ) {
-			wp_send_json( array(
-				'status' => false,
-				'msg'    => __( 'You are not authorized to perform this action', 'wp-marketing-automations' ),
-			) );
-		}
-
 		$callback = apply_filters( 'bwfan_select2_ajax_callable', '', $_POST ); //phpcs:ignore WordPress.Security.NonceVerification
 		if ( ! is_callable( $callback ) ) {
 			wp_send_json( [] );
@@ -47,13 +41,6 @@ abstract class BWFAN_AJAX_Controller {
 	 */
 	public static function handle_automation_post_submit() {
 		BWFAN_Common::check_nonce();
-
-		if ( ! current_user_can( BWFAN_admin::menu_cap() ) ) {
-			wp_send_json( array(
-				'status' => false,
-				'msg'    => __( 'You are not authorized to perform this action', 'wp-marketing-automations' ),
-			) );
-		}
 
 		//phpcs:disable WordPress.Security.NonceVerification
 		if ( ! isset( $_POST['automation_id'] ) || empty( $_POST['automation_id'] ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput
@@ -195,13 +182,6 @@ abstract class BWFAN_AJAX_Controller {
 	public static function update_automation() {
 		BWFAN_Common::check_nonce();
 
-		if ( ! current_user_can( BWFAN_admin::menu_cap() ) ) {
-			wp_send_json( array(
-				'status' => false,
-				'msg'    => __( 'You are not authorized to perform this action', 'wp-marketing-automations' ),
-			) );
-		}
-
 		$resp = array(
 			'msg'    => 'automation not found',
 			'status' => false,
@@ -242,13 +222,6 @@ abstract class BWFAN_AJAX_Controller {
 	 */
 	public static function toggle_automation_state() {
 		BWFAN_Common::check_nonce();
-
-		if ( ! current_user_can( BWFAN_admin::menu_cap() ) ) {
-			wp_send_json( array(
-				'status' => false,
-				'msg'    => __( 'You are not authorized to perform this action', 'wp-marketing-automations' ),
-			) );
-		}
 
 		$resp = array(
 			'msg'    => '',
@@ -291,13 +264,6 @@ abstract class BWFAN_AJAX_Controller {
 	public static function bwfan_save_temporary_preview_data() {
 		BWFAN_Common::check_nonce();
 
-		if ( ! current_user_can( BWFAN_admin::menu_cap() ) ) {
-			wp_send_json( array(
-				'status' => false,
-				'msg'    => __( 'You are not authorized to perform this action', 'wp-marketing-automations' ),
-			) );
-		}
-
 		//phpcs:disable WordPress.Security.NonceVerification
 		$automation_id = sanitize_text_field( $_POST['automation_id'] );
 
@@ -338,14 +304,6 @@ abstract class BWFAN_AJAX_Controller {
 	public static function test_email() {
 		BWFAN_Common::check_nonce();
 		// phpcs:disable WordPress.Security.NonceVerification
-
-		/** Check if user has manage_options permission */
-		if ( ! current_user_can( BWFAN_admin::menu_cap() ) ) {
-			wp_send_json( array(
-				'status' => false,
-				'msg'    => __( 'You are not authorized to perform this action', 'wp-marketing-automations' ),
-			) );
-		}
 
 		$result = array(
 			'status' => false,
@@ -435,13 +393,6 @@ abstract class BWFAN_AJAX_Controller {
 
 	public static function test_sms() {
 		BWFAN_Common::check_nonce();
-
-		if ( ! current_user_can( BWFAN_admin::menu_cap() ) ) {
-			wp_send_json( array(
-				'status' => false,
-				'msg'    => __( 'You are not authorized to perform this action', 'wp-marketing-automations' ),
-			) );
-		}
 
 		/** If FKA pro is not active */
 		if ( ! bwfan_is_autonami_pro_active() ) {

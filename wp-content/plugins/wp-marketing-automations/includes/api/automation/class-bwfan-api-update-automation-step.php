@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Update_Automation_Step extends BWFAN_API_Base {
 	public static $ins;
 	public $total_count = 0;

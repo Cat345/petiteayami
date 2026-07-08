@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 final class BWFAN_WC_Order_Status_Change extends BWFAN_Event {
 	private static $instance = null;
 	public $order_id = null;
@@ -145,9 +146,9 @@ final class BWFAN_WC_Order_Status_Change extends BWFAN_Event {
 
 		if ( $is_register_task ) {
 			$all_statuses        = wc_get_order_statuses();
-			$value1['from']      = $all_statuses[ 'wc-' . $from_status ];
+			$value1['from']      = $all_statuses[ 'wc-' . $from_status ] ?? $from_status;
 			$value1['from_slug'] = 'wc-' . $from_status;
-			$value1['to']        = $all_statuses[ 'wc-' . $to_status ];
+			$value1['to']        = $all_statuses[ 'wc-' . $to_status ] ?? $to_status;
 			$value1['to_slug']   = 'wc-' . $to_status;
 
 			return parent::handle_single_automation_run( $value1, $automation_id );
@@ -189,9 +190,9 @@ final class BWFAN_WC_Order_Status_Change extends BWFAN_Event {
 		$data['phone']       = $this->order->get_billing_phone();
 
 		$all_statuses      = wc_get_order_statuses();
-		$data['from']      = $all_statuses[ 'wc-' . $this->from_status ];
+		$data['from']      = $all_statuses[ 'wc-' . $this->from_status ] ?? $this->from_status;
 		$data['from_slug'] = 'wc-' . $this->from_status;
-		$data['to']        = $all_statuses[ 'wc-' . $this->to_status ];
+		$data['to']        = $all_statuses[ 'wc-' . $this->to_status ] ?? $this->to_status;
 		$data['to_slug']   = 'wc-' . $this->to_status;
 
 		/** Run v2 automation */
@@ -424,7 +425,7 @@ final class BWFAN_WC_Order_Status_Change extends BWFAN_Event {
 					continue;
 				}
 
-				$product_categories = $product->get_category_ids();
+				$product_categories = BWFAN_Common::get_wc_product_category_ids_for_order_line( $product );
 				if ( is_array( $product_categories ) && ! empty( $product_categories ) ) {
 					$order_product_categories = array_merge( $order_product_categories, $product_categories );
 				}
@@ -432,7 +433,11 @@ final class BWFAN_WC_Order_Status_Change extends BWFAN_Event {
 
 			// Remove duplicates and check for intersection
 			$order_product_categories = array_unique( $order_product_categories );
-			return ! empty( array_intersect( $category_ids, $order_product_categories ) );
+
+			/** No selected categories found in order */
+			if ( empty( array_intersect( $category_ids, $order_product_categories ) ) ) {
+				return false;
+			}
 		}
 
 		/** Specific product case */

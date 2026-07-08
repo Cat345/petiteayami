@@ -2,6 +2,7 @@
 
 if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 
+	#[\AllowDynamicProperties]
 	class BWFAN_Model_Templates extends BWFAN_Model {
 		static $primary_key = 'ID';
 
@@ -39,7 +40,7 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 				$query .= $wpdb->prepare( " AND mode = %d", $mode );
 			}
 			if ( ! empty( $search ) ) {
-				$query .= $wpdb->prepare( " AND title LIKE %s", "%" . esc_sql( $search ) . "%" );
+				$query .= $wpdb->prepare( " AND title LIKE %s", "%" . $wpdb->esc_like( $search ) . "%" );
 			}
 
 			if ( ! empty( $category ) && class_exists('BWFCRM_Category' ) ) {
@@ -100,7 +101,7 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 				}
 			}
 			if ( ! empty( $search ) ) {
-				$query .= $wpdb->prepare( " AND title LIKE %s", "%" . esc_sql( $search ) . "%" );
+				$query .= $wpdb->prepare( " AND title LIKE %s", "%" . $wpdb->esc_like( $search ) . "%" );
 			}
 			$query .= ' ORDER BY updated_at DESC';
 			if ( intval( $limit ) > 0 ) {
@@ -141,7 +142,7 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 				$query .= $wpdb->prepare( " AND mode = %d", $mode );
 			}
 			if ( ! empty( $search ) ) {
-				$query .= $wpdb->prepare( " AND title LIKE %s", "%" . esc_sql( $search ) . "%" );
+				$query .= $wpdb->prepare( " AND title LIKE %s", "%" . $wpdb->esc_like( $search ) . "%" );
 			}
 			if ( ! empty( $category ) ) {
 				$category_ids = array_map( 'absint', explode( ',', $category ) );
@@ -184,7 +185,7 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 				}
 			}
 			if ( ! empty( $search ) ) {
-				$query .= $wpdb->prepare( " AND title LIKE %s", "%" . esc_sql( $search ) . "%" );
+				$query .= $wpdb->prepare( " AND title LIKE %s", "%" . $wpdb->esc_like( $search ) . "%" );
 			}
 
 			$result = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -204,11 +205,13 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 			global $wpdb;
 
 			$query            = 'SELECT COUNT(ID) FROM ' . self::_table();
-			$string_with_dash = "$data - %";
-			$query            .= $wpdb->prepare( " WHERE ( {$field} = %s OR {$field} LIKE %s ) AND canned = %d LIMIT 0,1", $data, esc_sql( $string_with_dash ), 1 );
-			$result           = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$string_with_dash = $wpdb->esc_like( $data ) . ' - %';
+			$allowed_fields   = array( 'ID', 'title', 'subject', 'template_hash', 'type', 'mode', 'category', 'canned' );
+			$field            = in_array( $field, $allowed_fields, true ) ? $field : 'title';
+			$field            = '`' . str_replace( '`', '``', $field ) . '`';
+			$query            .= $wpdb->prepare( " WHERE ( {$field} = %s OR {$field} LIKE %s ) AND canned = %d LIMIT 0,1", $data, $string_with_dash, 1 );
 
-			return $result;
+			return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
 
 		/**
@@ -223,11 +226,13 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 			global $wpdb;
 
 			$query            = 'SELECT COUNT(ID) FROM ' . self::_table();
-			$string_with_dash = "$data - %";
-			$query            .= $wpdb->prepare( " WHERE ( {$field} = %s OR {$field} LIKE %s ) AND canned = %d LIMIT 0,1", $data, esc_sql( $string_with_dash ), 0 );
-			$result           = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$string_with_dash = $wpdb->esc_like( $data ) . ' - %';
+			$allowed_fields   = array( 'ID', 'title', 'subject', 'template_hash', 'type', 'mode', 'category', 'canned' );
+			$field            = in_array( $field, $allowed_fields, true ) ? $field : 'title';
+			$field            = '`' . str_replace( '`', '``', $field ) . '`';
+			$query            .= $wpdb->prepare( " WHERE ( {$field} = %s OR {$field} LIKE %s ) AND canned = %d LIMIT 0,1", $data, $string_with_dash, 0 );
 
-			return $result;
+			return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
 
 		/**

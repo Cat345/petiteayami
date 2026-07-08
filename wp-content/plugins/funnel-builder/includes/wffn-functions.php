@@ -547,13 +547,18 @@ WHERE s2.min_id IS NULL"
 		$upsell_created_orders = array();
 		$conversion_tracking   = BWF_Ecomm_Tracking_Common::get_instance();
 
-		$order_ids_string = implode( ',', wp_list_pluck( $number_of_order, 'order_id' ) );
-
 		/**
 		 * delete all order from conversion if order not exists in wc_order_stats table
 		 */
 
-		$bumps_data   = $wpdb->get_results( $wpdb->prepare( "select * from {$wpdb->prefix}wfob_stats where oid IN (%1s)", $order_ids_string ), ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
+		$order_ids    = array_map( 'absint', wp_list_pluck( $number_of_order, 'order_id' ) );
+		$bumps_data   = $wpdb->get_results(
+			$wpdb->prepare(
+				"select * from {$wpdb->prefix}wfob_stats where oid IN ( " . implode( ', ', array_fill( 0, count( $order_ids ), '%d' ) ) . ' )',
+				$order_ids
+			),
+			ARRAY_A
+		);
 		$upsells_data = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT sess.order_id,
@@ -561,8 +566,8 @@ WHERE s2.min_id IS NULL"
     event_t.action_type_id AS action_type,
     event_t.value AS total_revenue
  FROM `{$wpdb->prefix}wfocu_session` AS sess JOIN `{$wpdb->prefix}wfocu_event` AS event_t ON sess.id = event_t.sess_id
-WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);",  //phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
-				$order_ids_string
+WHERE sess.order_id IN ( " . implode( ', ', array_fill( 0, count( $order_ids ), '%d' ) ) . ' ) AND event_t.action_type_id IN (4,6);',
+				$order_ids
 			),
 			ARRAY_A
 		);

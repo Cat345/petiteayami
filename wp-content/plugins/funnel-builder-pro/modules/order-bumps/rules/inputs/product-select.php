@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Input_Product_Select' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Input_Product_Select {
 
 		public function __construct() {
@@ -25,7 +26,7 @@ if ( ! class_exists( 'wfob_Input_Product_Select' ) ) {
 
 			?>
 
-            <select id="<?php echo $field['id']; ?>" name="<?php echo $field['name']; ?>[]" class="ajax_chosen_select_products" multiple="multiple" data-placeholder="<?php _e( 'Search for a product&hellip;', 'woocommerce' ); ?>">
+			<select id="<?php echo $field['id']; ?>" name="<?php echo $field['name']; ?>[]" class="ajax_chosen_select_products" multiple="multiple" data-placeholder="<?php _e( 'Search for a product&hellip;', 'woocommerce' ); ?>">
 				<?php
 				$current     = $value ? $value : array();
 				$product_ids = ! empty( $current ) ? array_map( 'absint', $current ) : null;
@@ -43,10 +44,9 @@ if ( ! class_exists( 'wfob_Input_Product_Select' ) ) {
 					}
 				}
 				?>
-            </select>
+			</select>
 
 			<?php
 		}
-
 	}
 }

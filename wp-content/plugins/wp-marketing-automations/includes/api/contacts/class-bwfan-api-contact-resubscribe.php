@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Contact_Resubscribe extends BWFAN_API_Base {
 	public static $ins;
 

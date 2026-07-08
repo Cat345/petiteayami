@@ -2452,7 +2452,7 @@
     "Transform": "Transform",
     "Transform Origin": "Ursprung der Transformation",
     "Transform Text": "Text transformieren",
-    "Transform the element into another element while keeping its content and settings. Unused content and settings are removed. Transforming into a preset only keeps the content but adopts all preset settings.": "Transform the element into another element while keeping its content and settings. Unused content and settings are removed. Transforming into a preset only keeps the content but adopts all preset settings.",
+    "Transform the element into another element while keeping its content and settings. Unused content and settings are removed. Transforming into a preset only keeps the content but adopts all preset settings.": "Das Element wird unter Beibehaltung seines Inhalts und seiner Einstellungen in ein anderes Element umgewandelt. Nicht verwendete Inhalte und Einstellungen werden entfernt. Bei der Umwandlung in eine Voreinstellung bleibt nur der Inhalt erhalten, die voreingestellten Einstellungen werden jedoch übernommen.",
     "Transition": "Übergang",
     "Translate X": "Translate X",
     "Translate Y": "Translate Y",

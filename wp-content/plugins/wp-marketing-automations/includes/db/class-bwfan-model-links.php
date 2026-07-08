@@ -3,6 +3,7 @@
 
 if ( ! class_exists( 'BWFAN_Model_Links' ) ) {
 
+	#[\AllowDynamicProperties]
 	class BWFAN_Model_Links extends BWFAN_Model {
 
 		/**
@@ -71,7 +72,7 @@ if ( ! class_exists( 'BWFAN_Model_Links' ) ) {
 			$where = " 1=1 ";
 
 			if ( ! empty( $data['clean_url'] ) ) {
-				$where .= $wpdb->prepare( " AND `clean_url` = %s", esc_sql( $data['clean_url'] ) );
+				$where .= $wpdb->prepare( " AND `clean_url` = %s", $data['clean_url'] );
 			}
 
 			if ( ! empty( $data['template_id'] ) ) {

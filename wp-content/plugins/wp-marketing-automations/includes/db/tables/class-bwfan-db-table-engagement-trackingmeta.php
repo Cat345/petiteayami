@@ -6,6 +6,7 @@
 
 if ( ! class_exists( 'BWFAN_DB_Table_Engagement_Trackingmeta' ) && BWFAN_Common::is_pro_3_0() ) {
 
+	#[\AllowDynamicProperties]
 	class BWFAN_DB_Table_Engagement_Trackingmeta extends BWFAN_DB_Tables_Base {
 		public $table_name = 'bwfan_engagement_trackingmeta';
 

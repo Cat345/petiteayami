@@ -53,8 +53,7 @@ class TrackerFactory
             $thickbox = new Thickbox($plugin_data, $reasons_factory);
         }
         if (empty($ajax)) {
-            $sender = apply_filters('wpdesk/tracker/sender/' . $plugin_data->getPluginSlug(), new \FSVendor\WPDesk_Tracker_Sender_Wordpress_To_WPDesk());
-            $sender = new \FSVendor\WPDesk_Tracker_Sender_Logged($sender instanceof \WPDesk_Tracker_Sender ? $sender : new \FSVendor\WPDesk_Tracker_Sender_Wordpress_To_WPDesk());
+            $sender = new \FSVendor\WPDesk_Tracker_Sender_Resolver($plugin_data->getPluginSlug());
             $sender = new \FSVendor\WPDesk_Tracker_Sender_Logged($sender);
             $ajax = new AjaxDeactivationDataHandler($plugin_data, $sender);
         }

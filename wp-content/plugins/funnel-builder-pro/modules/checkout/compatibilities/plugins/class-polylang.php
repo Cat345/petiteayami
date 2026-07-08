@@ -8,9 +8,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Polylang' ) ) {
 
 		public function __construct() {
 
-			add_action( 'wp_ajax_wfacp_add_pll_language', [ $this, 'add_pll_language' ] );
-			add_filter( 'wfacp_wpml_checkout_page_id', [ $this, 'map_language_checkout' ] );
-
+			add_action( 'wp_ajax_wfacp_add_pll_language', array( $this, 'add_pll_language' ) );
+			add_filter( 'wfacp_wpml_checkout_page_id', array( $this, 'map_language_checkout' ) );
 		}
 
 		public function add_pll_language() {
@@ -22,7 +21,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Polylang' ) ) {
 				WFACP_AJAX_Controller::send_resp( $resp );
 			}
 
-			$from_post_id = $_POST['from_post_id'];
+			$from_post_id = absint( $_POST['from_post_id'] );
 
 			$sync = new PLL_Admin_Sync( $polylang );
 
@@ -30,11 +29,11 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Polylang' ) ) {
 				WFACP_AJAX_Controller::send_resp( $resp );
 			}
 			$from_post = get_post( $from_post_id );
-			$arr       = [
-				'post_title' => $from_post->post_title . '_' . $_POST['new_lang'],
+			$arr       = array(
+				'post_title' => $from_post->post_title . '_' . sanitize_text_field( wp_unslash( $_POST['new_lang'] ) ),
 				'post_type'  => 'wfacp_checkout',
 				'post_name'  => $from_post->post_name,
-			];
+			);
 			$post_id   = wp_insert_post( $arr );
 
 			$lang = $polylang->model->get_language( sanitize_key( $_POST['new_lang'] ) );
@@ -72,8 +71,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Polylang' ) ) {
 
 			return $global_checkout_page_id;
 		}
-
-
 	}
 
 

@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -108,7 +112,7 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 				}
 				$shippingTitle = isset( $field['label'] ) ? $field['label'] : $shippingTitle;
 				?>
-                <div class="wfacp_border">
+				<div class="wfacp_border">
 					<label class="wfacp_main_form label label_shiping"><?php echo esc_html( $shippingTitle ); ?></label>
 					<table class="wfacp_shipping_table ">
 						<?php
@@ -173,8 +177,8 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 
 				$recurring_label = __( 'Recurring Shipping Method', 'woofunnels-aero-checkout' );
 				?>
-                <div class="wfacp_border">
-                    <label class="wfacp_main_form label label_shiping wfacp_recurring_shipping_label">
+				<div class="wfacp_border">
+					<label class="wfacp_main_form label label_shiping wfacp_recurring_shipping_label">
 						<?php echo esc_html( apply_filters( 'wfacp_recurring_shipping_label', $recurring_label ) ); ?></label>
 					<table class="wfacp_shipping_table wfacp_shipping_recurring <?php echo esc_attr( $multiple_class ); ?>">
 						<?php

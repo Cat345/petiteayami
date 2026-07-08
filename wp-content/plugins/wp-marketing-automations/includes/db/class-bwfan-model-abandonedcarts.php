@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Model_Abandonedcarts extends BWFAN_Model {
 	public static $primary_key = 'ID';
 
@@ -18,7 +19,9 @@ class BWFAN_Model_Abandonedcarts extends BWFAN_Model {
 		}
 
 		if ( ! empty( $order_by ) ) {
-			$order_by = " ORDER BY {$order_by} DESC";
+			$allowed_order = array( 'ID', 'last_modified', 'created_time', 'status', 'total', 'email' );
+			$order_by      = in_array( $order_by, $allowed_order, true ) ? $order_by : 'last_modified';
+			$order_by      = ' ORDER BY `' . str_replace( '`', '``', $order_by ) . '` DESC';
 		}
 
 		return $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}bwfan_abandonedcarts {$where} {$order_by} {$limit_string}", $output ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching

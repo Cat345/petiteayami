@@ -4,7 +4,6 @@ namespace YOOtheme\Theme\Wordpress\WooCommerce;
 
 use YOOtheme\Config;
 use YOOtheme\Theme\Styler\StylerConfig;
-use YOOtheme\View;
 
 $config = [
     'events' => [
@@ -34,6 +33,8 @@ return array_merge_recursive($config, [
 
     'events' => [
         'theme.breadcrumbs' => [Listener\LoadBreadcrumbs::class => 'handle'],
+
+        'html.image' => [ImageTransform::class => ['handle', 35]],
     ],
 
     'actions' => [
@@ -91,11 +92,5 @@ return array_merge_recursive($config, [
     'services' => [
         Listener\FilterPriceHtml::class => '',
         Listener\ShowCartQuantity::class => '',
-    ],
-
-    'extend' => [
-        View::class => function (View $view) {
-            $view['html']->addTransform('image', [ImageTransform::class, 'handle']);
-        },
     ],
 ]);

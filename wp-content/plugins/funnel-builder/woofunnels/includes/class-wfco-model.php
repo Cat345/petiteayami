@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFCO_Model' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFCO_Model {
@@ -98,15 +101,17 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 				return array();
 			}
 
-			$query   = $wpdb->prepare( "SELECT * FROM {$table_name} WHERE `{$where_key}` = %s", $where_value ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE `{$where_key}` = %s", $where_value ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table_name from self::_table() (trusted); $where_key whitelisted above; $where_value bound via %s.
 
 			return $results;
 		}
 
-		static function get_results( $query ) {
+		static function get_results( $query, $params = [] ) {
 			global $wpdb;
-			$query   = str_replace( '{table_name}', self::_table(), $query );
+			$query = str_replace( '{table_name}', self::_table(), $query );
+			if ( ! empty( $params ) ) {
+				$query = $wpdb->prepare( $query, ...$params ); //phpcs:ignore WordPress.DB.PreparedSQL
+			}
 			$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
 			return $results;

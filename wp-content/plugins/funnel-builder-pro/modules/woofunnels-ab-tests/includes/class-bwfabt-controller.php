@@ -624,11 +624,11 @@ if ( ! class_exists( 'BWFABT_Controller' ) ) {
 			$start_date = $experiment->get_report_start_date();
 			$end_date   = $experiment->get_report_end_date();
 
-			$query = "DELETE FROM {table_name} WHERE `object_id` IN (" . esc_sql( implode( ',', $query_variant_ids ) ) . ") AND `date` >= '" . gmdate( 'Y-m-d', $start_date ) . "' AND `date` <= '" . gmdate( 'Y-m-d', $end_date ) . "'";
+			$query = "DELETE FROM {table_name} WHERE `object_id` IN (" . implode( ',', array_map( 'absint', $query_variant_ids ) ) . ") AND `date` >= '" . gmdate( 'Y-m-d', $start_date ) . "' AND `date` <= '" . gmdate( 'Y-m-d', $end_date ) . "'";
 			if ( is_array( $types ) && count( $types ) > 0 ) {
-				$query .= " AND `type` IN (" . esc_sql( implode( ',', $types ) ) . ") ";
+				$query .= " AND `type` IN (" . implode( ',', array_map( 'absint', $types ) ) . ") ";
 			} else {
-				$query .= " AND `type` = " . esc_sql( $types );
+				$query .= " AND `type` = " . absint( $types );
 			}
 
 			WFCO_Model_Report_views::delete_multiple( $query );

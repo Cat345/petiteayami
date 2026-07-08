@@ -9,6 +9,7 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Link_Widget' ) ) {
 	/**
 	 * Class Elementor_WFOCU_Reject_Link_Widget
 	 */
+	#[\AllowDynamicProperties]
 	class Elementor_WFOCU_Reject_Link_Widget extends \Elementor\Widget_Base {
 
 		/**
@@ -39,12 +40,13 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Link_Widget' ) ) {
 		 * Get widget categories.
 		 *
 		 * Retrieve the list of categories the widget belongs to.
+		 *
 		 * @access public
 		 *
 		 * @return array Widget categories.
 		 */
 		public function get_categories() {
-			return [ 'upstroke' ];
+			return array( 'upstroke' );
 		}
 
 		/**
@@ -56,119 +58,153 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Link_Widget' ) ) {
 		 */
 		protected function register_controls() {
 
+			$this->start_controls_section(
+				'reject_section',
+				array(
+					'label' => __( 'Reject Offer', 'woofunnels-upstroke-one-click-upsell' ),
+					'tab'   => Controls_Manager::TAB_CONTENT,
+				)
+			);
 
-			$this->start_controls_section( 'reject_section', [
-				'label' => __( 'Reject Offer', 'woofunnels-upstroke-one-click-upsell' ),
-				'tab'   => Controls_Manager::TAB_CONTENT,
-			] );
+			$this->add_control(
+				'text',
+				array(
+					'label'       => __( 'Reject Offer', 'woofunnels-upstroke-one-click-upsell' ),
+					'type'        => Controls_Manager::TEXT,
+					'input_type'  => 'text',
+					'default'     => __( 'No thanks, I don’t want to take advantage of this one-time offer > ', 'woofunnels-upstroke-one-click-upsell' ),
+					'placeholder' => __( 'No thanks, I don’t want to take advantage of this one-time offer > ', 'woofunnels-upstroke-one-click-upsell' ),
 
-			$this->add_control( 'text', [
-				'label'       => __( 'Reject Offer', 'woofunnels-upstroke-one-click-upsell' ),
-				'type'        => Controls_Manager::TEXT,
-				'input_type'  => 'text',
-				'default'     => __( 'No thanks, I don’t want to take advantage of this one-time offer > ', 'woofunnels-upstroke-one-click-upsell' ),
-				'placeholder' => __( 'No thanks, I don’t want to take advantage of this one-time offer > ', 'woofunnels-upstroke-one-click-upsell' ),
+				)
+			);
 
-			] );
-
-			$this->add_responsive_control( 'align', [
-				'label'        => __( 'Alignment', 'woofunnels-upstroke-one-click-upsell' ),
-				'type'         => Controls_Manager::CHOOSE,
-				'options'      => [
-					'left'   => [
-						'title' => __( 'Left', 'woofunnels-upstroke-one-click-upsell' ),
-						'icon'  => 'eicon-text-align-left',
-					],
-					'center' => [
-						'title' => __( 'Center', 'woofunnels-upstroke-one-click-upsell' ),
-						'icon'  => 'eicon-text-align-center',
-					],
-					'right'  => [
-						'title' => __( 'Right', 'woofunnels-upstroke-one-click-upsell' ),
-						'icon'  => 'eicon-text-align-right',
-					],
-				],
-				'prefix_class' => 'elementor%s-align-',
-				'default'      => 'center',
-				'selectors'    => [
-					'{{WRAPPER}} a.elementor-wfocu-reject, {{WRAPPER}} .elementor-wfocu-reject' => 'font-size: 16px; display: block; font-wight: 400; margin-botton: 15px; text-decoration: underline;',
-				],
-			] );
+			$this->add_responsive_control(
+				'align',
+				array(
+					'label'        => __( 'Alignment', 'woofunnels-upstroke-one-click-upsell' ),
+					'type'         => Controls_Manager::CHOOSE,
+					'options'      => array(
+						'left'   => array(
+							'title' => __( 'Left', 'woofunnels-upstroke-one-click-upsell' ),
+							'icon'  => 'eicon-text-align-left',
+						),
+						'center' => array(
+							'title' => __( 'Center', 'woofunnels-upstroke-one-click-upsell' ),
+							'icon'  => 'eicon-text-align-center',
+						),
+						'right'  => array(
+							'title' => __( 'Right', 'woofunnels-upstroke-one-click-upsell' ),
+							'icon'  => 'eicon-text-align-right',
+						),
+					),
+					'prefix_class' => 'elementor%s-align-',
+					'default'      => 'center',
+					'selectors'    => array(
+						'{{WRAPPER}} a.elementor-wfocu-reject, {{WRAPPER}} .elementor-wfocu-reject' => 'font-size: 16px; display: block; font-wight: 400; margin-botton: 15px; text-decoration: underline;',
+					),
+				)
+			);
 
 			$this->end_controls_tab();
 			$this->end_controls_section();
 
-			$this->start_controls_section( 'section_style', [
-				'label' => __( 'Reject Offer', 'woofunnels-upstroke-one-click-upsell' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			] );
+			$this->start_controls_section(
+				'section_style',
+				array(
+					'label' => __( 'Reject Offer', 'woofunnels-upstroke-one-click-upsell' ),
+					'tab'   => Controls_Manager::TAB_STYLE,
+				)
+			);
 
-			$this->add_group_control( \Elementor\Group_Control_Typography::get_type(), [
-				'name'     => 'typography',
-				'selector' => '{{WRAPPER}} a.elementor-wfocu-reject',
-			] );
+			$this->add_group_control(
+				\Elementor\Group_Control_Typography::get_type(),
+				array(
+					'name'     => 'typography',
+					'selector' => '{{WRAPPER}} a.elementor-wfocu-reject',
+				)
+			);
 
 			$this->start_controls_tabs( 'tabs_wfocu_reject_style' );
 
-			$this->start_controls_tab( 'tab_wfocu_reject_normal', [
-				'label' => __( 'Normal', 'elementor' ),
-			] );
+			$this->start_controls_tab(
+				'tab_wfocu_reject_normal',
+				array(
+					'label' => __( 'Normal', 'elementor' ),
+				)
+			);
 
-			$this->add_control( 'wfocu_reject_text_color', [
-				'label'     => __( 'Text Color', 'elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'default'   => '#777777',
-				'selectors' => [
-					'{{WRAPPER}} a.elementor-wfocu-reject, {{WRAPPER}} .elementor-wfocu-reject' => 'color: {{VALUE}};',
-				],
-			] );
+			$this->add_control(
+				'wfocu_reject_text_color',
+				array(
+					'label'     => __( 'Text Color', 'elementor' ),
+					'type'      => Controls_Manager::COLOR,
+					'default'   => '#777777',
+					'selectors' => array(
+						'{{WRAPPER}} a.elementor-wfocu-reject, {{WRAPPER}} .elementor-wfocu-reject' => 'color: {{VALUE}};',
+					),
+				)
+			);
 
-			$this->add_control( 'wfocu_reject_background_hover_color', [
-				'label'     => __( 'Background Color', 'elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'default'   => 'transparent',
-				'selectors' => [
-					'{{WRAPPER}} a.elementor-wfocu-reject span, {{WRAPPER}} .elementor-wfocu-reject span' => 'background-color: {{VALUE}};',
-				],
-			] );
-
-			$this->end_controls_tab();
-
-			$this->start_controls_tab( 'tab_wfocu_reject_hover', [
-				'label' => __( 'Hover', 'elementor' ),
-			] );
-
-			$this->add_control( 'hover_color', [
-				'label'     => __( 'Text Color', 'elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'default'   => '#777777',
-				'selectors' => [
-					'{{WRAPPER}} a.elementor-wfocu-reject:hover, {{WRAPPER}} .elementor-wfocu-reject:hover' => 'color: {{VALUE}};',
-				],
-			] );
-
-			$this->_add_color( 'background_hover_color', [
-				'label'     => __( 'Background Color', 'elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'default'   => 'transparent',
-				'selectors' => [
-					'{{WRAPPER}} a.elementor-wfocu-reject:hover span, {{WRAPPER}} .elementor-wfocu-accpet:hover span' => 'background: {{VALUE}};',
-				],
-			] );
-
-			$this->add_control( 'wfocu_reject_hover_border_color', [
-				'label'     => __( 'Border Color', 'elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'condition' => [
-					'border_border!' => '',
-				],
-				'selectors' => [
-					'{{WRAPPER}} a.elementor-wfocu-reject:hover, {{WRAPPER}} .elementor-wfocu-reject:hover' => 'border-color: {{VALUE}};',
-				],
-			] );
+			$this->add_control(
+				'wfocu_reject_background_hover_color',
+				array(
+					'label'     => __( 'Background Color', 'elementor' ),
+					'type'      => Controls_Manager::COLOR,
+					'default'   => 'transparent',
+					'selectors' => array(
+						'{{WRAPPER}} a.elementor-wfocu-reject span, {{WRAPPER}} .elementor-wfocu-reject span' => 'background-color: {{VALUE}};',
+					),
+				)
+			);
 
 			$this->end_controls_tab();
 
+			$this->start_controls_tab(
+				'tab_wfocu_reject_hover',
+				array(
+					'label' => __( 'Hover', 'elementor' ),
+				)
+			);
+
+			$this->add_control(
+				'hover_color',
+				array(
+					'label'     => __( 'Text Color', 'elementor' ),
+					'type'      => Controls_Manager::COLOR,
+					'default'   => '#777777',
+					'selectors' => array(
+						'{{WRAPPER}} a.elementor-wfocu-reject:hover, {{WRAPPER}} .elementor-wfocu-reject:hover' => 'color: {{VALUE}};',
+					),
+				)
+			);
+
+			$this->_add_color(
+				'background_hover_color',
+				array(
+					'label'     => __( 'Background Color', 'elementor' ),
+					'type'      => Controls_Manager::COLOR,
+					'default'   => 'transparent',
+					'selectors' => array(
+						'{{WRAPPER}} a.elementor-wfocu-reject:hover span, {{WRAPPER}} .elementor-wfocu-accpet:hover span' => 'background: {{VALUE}};',
+					),
+				)
+			);
+
+			$this->add_control(
+				'wfocu_reject_hover_border_color',
+				array(
+					'label'     => __( 'Border Color', 'elementor' ),
+					'type'      => Controls_Manager::COLOR,
+					'condition' => array(
+						'border_border!' => '',
+					),
+					'selectors' => array(
+						'{{WRAPPER}} a.elementor-wfocu-reject:hover, {{WRAPPER}} .elementor-wfocu-reject:hover' => 'border-color: {{VALUE}};',
+					),
+				)
+			);
+
+			$this->end_controls_tab();
 		}
 
 		public function _add_color( $id, $args ) {
@@ -178,10 +214,10 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Link_Widget' ) ) {
 		public function _add_typography( $group, $args, $typography_type = 'TYPOGRAPHY_1' ) {
 
 			if ( version_compare( ELEMENTOR_VERSION, '3.15.0', '>=' ) ) {
-				$args['global'] = [
+				$args['global'] = array(
 					'default' => Elementor\Core\Kits\Documents\Tabs\Global_Typography::TYPOGRAPHY_ACCENT,
-				];
-			} else if ( defined( 'ELEMENTOR_VERSION' ) && version_compare( ELEMENTOR_VERSION, '2.8.0', '>=' ) ) {
+				);
+			} elseif ( defined( 'ELEMENTOR_VERSION' ) && version_compare( ELEMENTOR_VERSION, '2.8.0', '>=' ) ) {
 				$args['scheme'] = \Elementor\Core\Schemes\Typography::TYPOGRAPHY_4;
 			} else {
 				$args['scheme'] = \Elementor\Typography::TYPOGRAPHY_4;
@@ -206,12 +242,12 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Link_Widget' ) ) {
 				$this->add_render_attribute( 'upstroke-reject', 'data-key', $settings['selected_product'] );
 			} ?>
 
-            <div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
+			<div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
 
 
-                <a <?php echo $this->get_render_attribute_string( 'upstroke-reject' ); ?>>
+				<a <?php echo $this->get_render_attribute_string( 'upstroke-reject' ); ?>>
 					<?php $this->render_link_text(); ?>
-                </a></div>
+				</a></div>
 			<?php
 		}
 
@@ -227,12 +263,11 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Link_Widget' ) ) {
 
 			$this->add_inline_editing_attributes( 'text', 'none' );
 			?>
-            <span <?php echo $this->get_render_attribute_string( 'content-wrapper' ); ?>>
+			<span <?php echo $this->get_render_attribute_string( 'content-wrapper' ); ?>>
 
 			<span <?php echo $this->get_render_attribute_string( 'text' ); ?>><?php echo $settings['text']; ?></span>
 		</span>
 			<?php
 		}
-
 	}
 }

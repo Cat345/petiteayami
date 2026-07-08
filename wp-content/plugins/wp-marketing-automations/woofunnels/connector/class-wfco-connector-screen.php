@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFCO_Connector_Screen' ) ) {
 	#[AllowDynamicProperties]
 	class WFCO_Connector_Screen {
@@ -19,8 +22,12 @@ if ( ! class_exists( 'WFCO_Connector_Screen' ) ) {
 		public function __construct( $slug, $data ) {
 			$this->slug = $slug;
 
+			$allowed_props = [ 'image', 'name', 'desc', 'is_active', 'activation_url', 'file', 'connector_class', 'source', 'support', 'type', 'show_setting_btn' ];
 			if ( is_array( $data ) && count( $data ) > 0 ) {
 				foreach ( $data as $property => $val ) {
+					if ( ! in_array( $property, $allowed_props, true ) ) {
+						continue;
+					}
 					if ( is_array( $val ) ) {
 						$this->{$property} = $val;
 						continue;
@@ -82,7 +89,7 @@ if ( ! class_exists( 'WFCO_Connector_Screen' ) ) {
 		}
 
 		public function is_activated() {
-			if ( class_exists( $this->connector_class ) ) {
+			if ( class_exists( $this->connector_class, false ) ) {
 				return true;
 			}
 

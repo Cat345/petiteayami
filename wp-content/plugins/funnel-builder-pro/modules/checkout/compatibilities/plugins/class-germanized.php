@@ -289,8 +289,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Germanized' ) ) {
 				echo 'body .wfacp_main_form .wc-gzd-checkbox-placeholder.wc-gzd-checkbox-placeholder-legal{padding: 0;}';
 			}
 			echo '#wfacp-e-form .wc-gzd-checkbox-placeholder.wc-gzd-checkbox-placeholder-legal {margin-top: 15px;}';
-			echo $bodyClass . ' .woocommerce form .wc-gzd-checkbox-placeholder {float: none;}';
-			echo $bodyClass . '.wc-gzd-order-submit {margin-bottom: 25px;}';
+			echo esc_attr( $bodyClass ) . ' .woocommerce form .wc-gzd-checkbox-placeholder {float: none;}';
+			echo esc_attr( $bodyClass ) . '.wc-gzd-order-submit {margin-bottom: 25px;}';
 			echo '</style>';
 
 			if ( WFACP_Common::is_customizer() ) {

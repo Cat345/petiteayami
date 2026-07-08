@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Radio control
  */
 if ( ! class_exists( 'WFACPKirki_Control_Radio' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Radio extends WFACPKirki_Control_Base {
 
 		/**

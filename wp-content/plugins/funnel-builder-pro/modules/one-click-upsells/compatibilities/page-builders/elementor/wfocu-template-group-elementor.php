@@ -3,10 +3,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 if ( ! class_exists( 'WFOCU_Template_Group_Elementor' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Template_Group_Elementor extends WFOCU_Template_Group {
 		public $allow_empty_template = true;
-		public $prefix = 'el';
-		public $listing_index = 1;
+		public $prefix               = 'el';
+		public $listing_index        = 1;
 
 		public function get_nice_name() {
 			return __( 'Elementor', 'woofunnels-upstroke-one-click-upsell' );
@@ -22,33 +23,41 @@ if ( ! class_exists( 'WFOCU_Template_Group_Elementor' ) ) {
 
 			foreach ( $template as $temp_key => $temp_val ) {
 
-				$temp_val = wp_parse_args( $temp_val, array(
-					'path' => plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'compatibilities/page-builders/elementor/class-wfocu-template-elementor.php',
-				) );
+				$temp_val = wp_parse_args(
+					$temp_val,
+					array(
+						'path' => plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'compatibilities/page-builders/elementor/class-wfocu-template-elementor.php',
+					)
+				);
 
 				WFOCU_Core()->template_loader->register_template( $temp_key, $temp_val );
 			}
 			$this->maybe_register_empty( plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'compatibilities/page-builders/elementor/class-wfocu-template-elementor.php' );
-
 		}
 
 		public function local_templates() {
-			$template = [];
+			$template = array();
 
 			return $template;
 		}
 
 		public function get_edit_link() {
-			return add_query_arg( [
-				'post'   => '{{offer_id}}',
-				'action' => 'elementor',
-			], admin_url( 'post.php' ) );
+			return add_query_arg(
+				array(
+					'post'   => '{{offer_id}}',
+					'action' => 'elementor',
+				),
+				admin_url( 'post.php' )
+			);
 		}
 
 		public function get_preview_link() {
-			return add_query_arg( [
-				'p' => '{{offer_id}}',
-			], site_url() );
+			return add_query_arg(
+				array(
+					'p' => '{{offer_id}}',
+				),
+				site_url()
+			);
 		}
 
 
@@ -57,10 +66,12 @@ if ( ! class_exists( 'WFOCU_Template_Group_Elementor' ) ) {
 			delete_post_meta( $offer, '_elementor_version' );
 			delete_post_meta( $offer, '_et_pb_use_builder' );
 
-			wp_update_post( [
-				'ID'           => $offer,
-				'post_content' => '',
-			] );
+			wp_update_post(
+				array(
+					'ID'           => $offer,
+					'post_content' => '',
+				)
+			);
 
 			if ( defined( 'ELEMENTOR_VERSION' ) ) {
 				if ( version_compare( ELEMENTOR_VERSION, '3.1.0', '<=' ) ) {
@@ -104,11 +115,8 @@ if ( ! class_exists( 'WFOCU_Template_Group_Elementor' ) ) {
 
 		public function get_template_path() {
 			return plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'compatibilities/page-builders/elementor/class-wfocu-template-elementor.php';
-
 		}
-
-
 	}
 
-	WFOCU_Core()->template_loader->register_group( new WFOCU_Template_Group_Elementor, 'elementor' );
+	WFOCU_Core()->template_loader->register_group( new WFOCU_Template_Group_Elementor(), 'elementor' );
 }

@@ -13,6 +13,7 @@
  */
 if ( ! class_exists( 'WFACP_Divi5_Importer' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFACP_Divi5_Importer extends WFACP_Divi_Importer {
 
 		protected $builder = 'divi5';

@@ -1,8 +1,10 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 /**
  * Author PhpStorm.
  */
 if ( ! class_exists( 'UpStroke_Subscriptions_PPEC' ) ) {
+	#[\AllowDynamicProperties]
 	class UpStroke_Subscriptions_PPEC extends WFOCU_Gateway_Integration_Paypal_Express_Checkout {
 
 		public function __construct() {
@@ -11,7 +13,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PPEC' ) ) {
 			add_filter( 'wfocu_order_copy_meta_keys', array( $this, 'set_stripe_keys_to_copy' ), 10, 1 );
 			add_filter( 'wfocu_gateway_ppec_param_setexpresscheckout', array( $this, 'maybe_filter_paypal_setexpress_checkout_arguments' ), 10, 2 );
 			add_filter( 'wfocu_gateway_in_offer_transaction_ppec_after_express_checkout_response', array( $this, 'perform_createrecurring_profile' ), 10, 4 );
-
 		}
 
 		/**
@@ -19,7 +20,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PPEC' ) ) {
 		 *
 		 * @param WC_Subscription $subscription
 		 * @param $key
-		 * @param WC_Order $order
+		 * @param WC_Order        $order
 		 */
 		public function save_stripe_source_to_subscription( $subscription, $key, $order ) {
 
@@ -34,7 +35,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PPEC' ) ) {
 
 				$subscription->save();
 			}
-
 		}
 
 		public function set_stripe_keys_to_copy( $meta_keys ) {
@@ -64,13 +64,12 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PPEC' ) ) {
 					if ( is_a( $product_object, 'WC_Product' ) && WC_Subscriptions_Product::is_subscription( $product_object->get_id() ) ) {
 						$arguments[ 'L_BILLINGAGREEMENTDESCRIPTION' . $incr ] = wp_specialchars_decode( get_the_title( $product_object->get_id() ), ENT_QUOTES );
 						$arguments[ 'L_BILLINGTYPE' . $incr ]                 = 'RecurringPayments';
-						$incr ++;
+						++$incr;
 					}
 				}
 			}
 
 			return $arguments;
-
 		}
 
 		/**
@@ -115,7 +114,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PPEC' ) ) {
 			WFOCU_Core()->data->save( 'paypal' );
 
 			return $api_response_result;
-
 		}
 
 		public function get_recurring_billing_profile_args( $product, $product_args ) {
@@ -143,7 +141,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PPEC' ) ) {
 
 			// An initial period is being used to charge a sign-up fee
 			if ( 0 !== $total_billing_cycles && 0 === $free_trial_length ) {
-				$total_billing_cycles --;
+				--$total_billing_cycles;
 			}
 
 			return array(
@@ -155,7 +153,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PPEC' ) ) {
 				'billing_frequency'    => $frequency,
 
 			);
-
 		}
 
 		public function create_recurring_payments_profile( $profile_args, $token, $payerID, $get_express_checkout_details ) {
@@ -204,7 +201,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PPEC' ) ) {
 			}
 
 			return false;
-
 		}
 	}
 

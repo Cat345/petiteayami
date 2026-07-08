@@ -17,6 +17,7 @@ if ( ! class_exists( 'WFOCU_WC_Email_Updated_Order', false ) ) :
 	 * @author      FunnelKit
 	 * @extends     WC_Email
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_WC_Email_Updated_Order extends WC_Email {
 
 		/**
@@ -82,7 +83,7 @@ if ( ! class_exists( 'WFOCU_WC_Email_Updated_Order', false ) ) :
 		/**
 		 * Trigger the sending of this email.
 		 *
-		 * @param int $order_id The order ID.
+		 * @param int      $order_id The order ID.
 		 * @param WC_Order $order Order object.
 		 */
 		public function trigger( $order_id, $order = false ) {
@@ -115,16 +116,20 @@ if ( ! class_exists( 'WFOCU_WC_Email_Updated_Order', false ) ) :
 		public function get_content_html() {
 
 			ob_start();
-			wc_get_template( $this->template_html, array(
-				'order'         => $this->object,
-				'email_heading' => $this->get_heading(),
-				'sent_to_admin' => false,
-				'plain_text'    => false,
-				'email'         => $this,
-			), '', $this->template_base );
+			wc_get_template(
+				$this->template_html,
+				array(
+					'order'         => $this->object,
+					'email_heading' => $this->get_heading(),
+					'sent_to_admin' => false,
+					'plain_text'    => false,
+					'email'         => $this,
+				),
+				'',
+				$this->template_base
+			);
 
 			return ob_get_clean();
-
 		}
 
 		/**
@@ -135,13 +140,18 @@ if ( ! class_exists( 'WFOCU_WC_Email_Updated_Order', false ) ) :
 		 */
 		public function get_content_plain() {
 			ob_start();
-			wc_get_template( $this->template_html, array(
-				'order'         => $this->object,
-				'email_heading' => $this->get_heading(),
-				'sent_to_admin' => false,
-				'plain_text'    => true,
-				'email'         => $this,
-			), '', $this->template_base );
+			wc_get_template(
+				$this->template_html,
+				array(
+					'order'         => $this->object,
+					'email_heading' => $this->get_heading(),
+					'sent_to_admin' => false,
+					'plain_text'    => true,
+					'email'         => $this,
+				),
+				'',
+				$this->template_base
+			);
 
 			return ob_get_clean();
 		}
@@ -150,4 +160,3 @@ if ( ! class_exists( 'WFOCU_WC_Email_Updated_Order', false ) ) :
 endif;
 
 return new WFOCU_WC_Email_Updated_Order();
-

@@ -1,11 +1,12 @@
 <?php
 if ( ! class_exists( 'WFOCU_Oxy_Quantity_Selector' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Oxy_Quantity_Selector extends WFOCU_Oxy_HTML_BLOCK {
-		public $slug = 'wfocu_qty_selector';
+		public $slug  = 'wfocu_qty_selector';
 		protected $id = 'wfocu_qty_selector';
 
 		public function __construct() {
-			$this->name = __( "WF Quantity Selector" );
+			$this->name = __( 'WF Quantity Selector' );
 			parent::__construct();
 		}
 
@@ -23,17 +24,23 @@ if ( ! class_exists( 'WFOCU_Oxy_Quantity_Selector' ) ) {
 				$funnel_id = get_post_meta( $upsell_id, '_bwf_in_funnel', true );
 
 				if ( ! empty( $funnel_id ) && absint( $funnel_id ) > 0 ) {
-					$products_url = add_query_arg( array(
-						'page'      => 'bwf',
-						'path'      => '/funnel-offer/' . $offer_id . '/product',
-						'funnel_id' => $funnel_id,
-					), admin_url( 'admin.php' ) );
+					$products_url = add_query_arg(
+						array(
+							'page'      => 'bwf',
+							'path'      => '/funnel-offer/' . $offer_id . '/product',
+							'funnel_id' => $funnel_id,
+						),
+						admin_url( 'admin.php' )
+					);
 				} else {
-					$products_url = add_query_arg( array(
-						'page'    => 'upstroke',
-						'section' => 'offers',
-						'edit'    => $upsell_id,
-					), admin_url( 'admin.php' ) );
+					$products_url = add_query_arg(
+						array(
+							'page'    => 'upstroke',
+							'section' => 'offers',
+							'edit'    => $upsell_id,
+						),
+						admin_url( 'admin.php' )
+					);
 				}
 
 				$message = sprintf(
@@ -52,7 +59,6 @@ if ( ! class_exists( 'WFOCU_Oxy_Quantity_Selector' ) ) {
 			$this->style_field();
 			$this->spacing_setting();
 			$this->border_setting();
-
 		}
 
 
@@ -67,16 +73,15 @@ if ( ! class_exists( 'WFOCU_Oxy_Quantity_Selector' ) ) {
 			$this->add_text( $tab_id, 'text', __( 'Text', 'woofunnels-upstroke-one-click-upsell' ), __( 'Quantity', 'woofunnels-upstroke-one-click-upsell' ) );
 			$this->add_switcher( $tab_id, 'slider_enabled', __( 'Stacked', 'woofunnels-upstroke-one-click-upsell' ), 'on' );
 
-
 			$this->add_heading( $tab_id, __( 'Color' ) );
 			$this->add_color( $tab_id, $this->slug . '_label_text_color', '.wfocu-prod-qty-wrapper label', __( 'Text Color', 'woofunnels-upstroke-one-click-upsell' ), '#333' );
 			$this->add_background_color( $tab_id, $this->slug . '_label_bg_color', '.wfocu-prod-qty-wrapper label', '', __( 'Background Color', 'woofunnels-upstroke-one-click-upsell' ) );
 
 			$this->add_heading( $tab_id, __( 'Typography' ) );
 
-			$default = [
+			$default = array(
 				'font_size' => '16',
-			];
+			);
 			$this->add_text_alignments( $tab_id, $this->slug . '_alignment', '.wfocu-prod-qty-wrapper label' );
 			$this->custom_typography( $tab_id, $this->slug . '_label_typography', '.wfocu-prod-qty-wrapper label', '', $default );
 
@@ -101,8 +106,6 @@ if ( ! class_exists( 'WFOCU_Oxy_Quantity_Selector' ) ) {
 
 			$this->add_heading( $qty_tab_id, __( 'Border' ) );
 			$this->add_border( $qty_tab_id, $this->slug . '_qty_dropdown_border', '.wfocu-prod-qty-wrapper .wfocu-select-qty-input' );
-
-
 		}
 
 		private function spacing_setting() {
@@ -139,25 +142,25 @@ if ( ! class_exists( 'WFOCU_Oxy_Quantity_Selector' ) ) {
 				return '';
 			}
 
-			$class_name = "wfocu_proqty_inline";
+			$class_name = 'wfocu_proqty_inline';
 			$selector   = isset( $settings['selector'] ) ? '#' . $settings['selector'] : '';
 			if ( 'on' === $slider_enabled ) {
-				$class_name = "wfocu_proqty_block";
-				echo "<style> " . $selector . " .wfocu-prod-qty-wrapper, " . $selector . " .wfocu-prod-qty-wrapper{display:flex !important;}</style>"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$class_name = 'wfocu_proqty_block';
+				echo '<style> ' . $selector . ' .wfocu-prod-qty-wrapper, ' . $selector . ' .wfocu-prod-qty-wrapper{display:flex !important;}</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 			}
 
 			if ( ! empty( $product_key ) ) {
 				echo "<div class='wfocu_qty_selector_wrapper " . esc_attr( $class_name ) . "'>";
 				echo do_shortcode( '[wfocu_qty_selector key="' . $product_key . '" label="' . $qty_text . '"]' );
-				echo "</div>";
+				echo '</div>';
 
 			}
 		}
 
 		public function defaultCSS() {
 
-			$defaultCSS = "
+			$defaultCSS = '
 		    .wfocu-prod-qty-wrapper {
                 margin-bottom: 1.2em;
                 display: inline-block;
@@ -212,13 +215,11 @@ if ( ! class_exists( 'WFOCU_Oxy_Quantity_Selector' ) ) {
             .wfocu_qty_selector_wrapper{
                 display:inline-block;
             }
-		";
+		';
 
 			return $defaultCSS;
 		}
-
-
 	}
 
-	return new WFOCU_Oxy_Quantity_Selector;
+	return new WFOCU_Oxy_Quantity_Selector();
 }

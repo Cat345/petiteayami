@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Color' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Color extends WFOCUKirki_Field {
 
 		/**
@@ -38,7 +39,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Color' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-color';
-
 		}
 
 		/**
@@ -85,7 +85,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Color' ) ) {
 				return;
 			}
 			$this->sanitize_callback = array( 'WFOCUKirki_Sanitize_Values', 'color' );
-
 		}
 	}
 }

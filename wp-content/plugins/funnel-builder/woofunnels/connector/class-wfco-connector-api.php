@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFCO_Connector_api' ) ) {
 	#[AllowDynamicProperties]
 	class WFCO_Connector_api {
@@ -44,7 +47,7 @@ if ( ! class_exists( 'WFCO_Connector_api' ) ) {
 		 * @param array $data Associative array
 		 * @param bool $reset
 		 */
-		public function set_data( $data = [], $reset = false ) {
+		public function set_data( $data = [], $reset = false ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 			if ( is_array( $data ) && count( $data ) > 0 ) {
 
 				foreach ( $data as $key => $d ) {
@@ -89,7 +92,7 @@ if ( ! class_exists( 'WFCO_Connector_api' ) ) {
 			$this->api_params['data']['platform'] = home_url();
 			$request                              = wp_remote_post( $this->api_url, [
 				'timeout'   => 15,
-				'sslverify' => false,
+				'sslverify' => true,
 				'body'      => $this->api_params,
 			] );
 

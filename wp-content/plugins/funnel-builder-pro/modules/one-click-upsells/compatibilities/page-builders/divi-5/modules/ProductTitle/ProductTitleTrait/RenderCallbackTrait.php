@@ -202,7 +202,7 @@ trait RenderCallbackTrait {
 						'class' => 'wfocu-product-title',
 					),
 					'childrenSanitizer' => 'et_core_esc_previously',
-					'children'          => do_shortcode( html_entity_decode( $product_title ) ),
+					'children'          => do_shortcode( html_entity_decode( $product_title, ENT_QUOTES | ENT_HTML401 ) ),
 				)
 			);
 

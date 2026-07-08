@@ -12,7 +12,12 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Slider' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Field_Slider extends WFACPKirki_Field_Number {
 
 		/**
@@ -23,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Slider' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-slider';
-
 		}
 	}
 }

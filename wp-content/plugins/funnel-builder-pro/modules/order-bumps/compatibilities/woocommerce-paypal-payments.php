@@ -22,6 +22,7 @@ if ( ! class_exists( 'WFOB_Compatibility_With_PayPal_Payments' ) ) {
 	 *
 	 * Class WFOB_Compatibility_With_PayPal_Payments
 	 */
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_PayPal_Payments {
 
 		/**

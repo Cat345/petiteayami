@@ -163,7 +163,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 		 * @return bool
 		 */
 		protected function action_is_recurring( $data ) {
-			if ( ! is_object( $data ) ) {
+			if ( ! is_object( $data ) || ! isset( $data->recurring_interval ) ) {
 				return false;
 			}
 			if ( (int) $data->recurring_interval < 1 ) {
@@ -182,7 +182,18 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 		 */
 		protected function make_action_from_db_record( $data ) {
 			$hook = $data->hook;
-			$args = ( is_array( $data->args ) && count( $data->args ) > 0 ) ? $data->args : [];
+			/**
+			 * Re-index args to a positional (numeric-keyed) list before execution.
+			 *
+			 * On PHP 8+, when an action's args are an associative array, passing them through
+			 * call_user_func_array() (inside do_action_ref_array()) treats the string keys as
+			 * named arguments, fataling with "Unknown named parameter $x" when the hook callback
+			 * has no matching parameter name. Recent Action Scheduler guards this with array_values()
+			 * at execute time, but an older AS copy (e.g. one bundled by another active plugin that
+			 * wins the version race) does not. Flattening here makes execution AS-version agnostic and
+			 * mirrors what modern AS does, so registered callbacks keep receiving positional args.
+			 */
+			$args = ( is_array( $data->args ) && count( $data->args ) > 0 ) ? array_values( $data->args ) : [];
 
 			/** creating fresh schedule */
 			$schedule = new ActionScheduler_NullSchedule();
@@ -481,9 +492,13 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 		protected function claim_actions( $claim_id, $limit, ?DateTime $before_date = null, $hooks = array(), $group = '' ) {
 			global $wpdb;
 
-			/** can't use $wpdb->update() because of the <= condition */
-			$update = "SELECT {$this->p_key} FROM {$this->action_table}";
-			$params = [];
+			/**
+			 * Atomic claim: stamp the claim id in a single guarded UPDATE so two concurrent runners can't
+			 * SELECT and stamp the same rows. The `claim_id = 0` guard in the WHERE clause is essential.
+			 * The claimed rows are read back afterwards via find_actions_by_claim_id().
+			 */
+			$update = "UPDATE {$this->action_table} SET `claim_id` = %d";
+			$params = array( $claim_id );
 
 			$where    = 'WHERE `claim_id` = 0 AND `e_time` <= %s AND `status` = 0';
 			$params[] = time();
@@ -497,22 +512,6 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 			$params[] = $limit;
 
 			$sql = $wpdb->prepare( "{$update} {$where} {$order}", $params ); //phpcs:ignore WordPress.DB.PreparedSQL
-
-			$action_ids = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
-
-			if ( ! is_array( $action_ids ) || count( $action_ids ) == 0 ) {
-				return 0;
-			}
-
-			$action_ids = array_column( $action_ids, $this->p_key );
-
-			/** Update call */
-			$type   = array_fill( 0, count( $action_ids ), '%d' );
-			$format = implode( ', ', $type );
-			$query  = "UPDATE {$this->action_table} SET `claim_id` = %d WHERE {$this->p_key} IN ({$format})";
-			$params = array( $claim_id );
-			$params = array_merge( $params, $action_ids );
-			$sql    = $wpdb->prepare( $query, $params ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
 			$rows_affected = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 			if ( $rows_affected === false ) {
@@ -575,9 +574,19 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 		public function get_claim_id( $action_id ) {
 			$this->log( __FUNCTION__ . ' ' . $action_id );
 
-			$claim_id = BWF_AS_Actions_Crud::get_single_action( $action_id, 'claim_id' );
+			$action = BWF_AS_Actions_Crud::get_single_action( $action_id, 'claim_id' );
 
-			return (int) $claim_id;
+			/**
+			 * get_single_action() returns a stdClass, so the claim_id property must be
+			 * read explicitly. Casting the object directly (the previous behaviour)
+			 * always evaluated to 1. That was harmless until Action Scheduler 4.0,
+			 * whose QueueRunner::do_batch() re-verifies each action with
+			 * `$claim_id !== $store->get_claim_id( $action_id )`. The bogus 1 made that
+			 * check fail on the first action of every batch, so the runner dropped the
+			 * claim and processed nothing from the custom store. (AS 3.x used
+			 * find_actions_by_claim_id() instead, which is why this stayed dormant.)
+			 */
+			return ( is_object( $action ) && isset( $action->claim_id ) ) ? (int) $action->claim_id : 0;
 		}
 
 		/**

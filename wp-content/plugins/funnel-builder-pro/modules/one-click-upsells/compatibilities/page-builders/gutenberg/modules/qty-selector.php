@@ -1,11 +1,12 @@
 <?php
 if ( ! class_exists( 'WFOCU_Guten_Quantity_Selector' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Guten_Quantity_Selector extends WFOCU_Guten_Field {
-		public $slug = 'wfocu_qty_selector';
+		public $slug  = 'wfocu_qty_selector';
 		protected $id = 'wfocu_qty_selector';
 
 		public function __construct() {
-			$this->name = __( "WF Quantity Selector" );
+			$this->name = __( 'WF Quantity Selector' );
 			$this->ajax = true;
 			parent::__construct();
 		}
@@ -39,19 +40,16 @@ if ( ! class_exists( 'WFOCU_Guten_Quantity_Selector' ) ) {
 				return '';
 			}
 
-			$class_name = "wfocu_proqty_inline";
+			$class_name = 'wfocu_proqty_inline';
 
 			if ( ! empty( $product_key ) ) {
 				echo "<div class=$class_name>";
 				echo do_shortcode( '[wfocu_qty_selector key="' . $product_key . '" label="' . $qty_text . '"]' );
-				echo "</div>";
+				echo '</div>';
 
 			}
-
 		}
-
-
 	}
 
-	return new WFOCU_Guten_Quantity_Selector;
+	return new WFOCU_Guten_Quantity_Selector();
 }

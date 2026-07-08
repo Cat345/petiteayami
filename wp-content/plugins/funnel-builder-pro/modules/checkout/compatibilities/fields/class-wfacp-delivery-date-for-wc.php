@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * WooCommerce - Delivery Date for WooCommerce by Pixlogix
@@ -7,37 +11,36 @@
 if ( ! class_exists( 'WFACP_Compatibility_Delivery_Date_For_WC' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_Delivery_Date_For_WC {
-		private $object = null;
-		private $ddfw_version = '1.0.0';
+		private $object           = null;
+		private $ddfw_version     = '1.0.0';
 		private $ddfw_plugin_name = 'delivery_date_for_woocommerce';
 
 
 		public function __construct() {
 
 			/* Register Add field */
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
-			add_filter( 'wfacp_after_checkout_page_found', [ $this, 'action' ] );
-			add_action( 'process_wfacp_html', [ $this, 'call_fields_hook' ], 50, 3 );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
+			add_filter( 'wfacp_after_checkout_page_found', array( $this, 'action' ) );
+			add_action( 'process_wfacp_html', array( $this, 'call_fields_hook' ), 50, 3 );
 			add_filter( 'wfacp_html_fields_wfacp_ddfw_enable_delivery', '__return_false' );
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 10, 2 );
-			add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
+			add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 10, 2 );
+			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
 
 			/* prevent third party fields and wrapper*/
 
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
-			add_filter( 'wfacp_print_advanced_custom_fields', [ $this, 'print_third_party' ], 99, 2 );
-
+			add_filter( 'wfacp_print_advanced_custom_fields', array( $this, 'print_third_party' ), 99, 2 );
 		}
 
 		public function add_field( $fields ) {
 			if ( $this->is_enabled() ) {
-				$fields['wfacp_ddfw_enable_delivery'] = [
+				$fields['wfacp_ddfw_enable_delivery'] = array(
 					'type'       => 'wfacp_html',
-					'class'      => [ 'wfacp_ddfw_enable_delivery' ],
+					'class'      => array( 'wfacp_ddfw_enable_delivery' ),
 					'id'         => 'wfacp_ddfw_enable_delivery',
 					'field_type' => 'advanced',
 					'label'      => __( 'Delivery Date', 'woofunnels-aero-checkout' ),
-				];
+				);
 			}
 
 			return $fields;
@@ -69,9 +72,9 @@ if ( ! class_exists( 'WFACP_Compatibility_Delivery_Date_For_WC' ) ) {
 
 			if ( $key == 'ddfw_delivery_date' ) {
 
-				$args['input_class'] = array_merge( $args['input_class'], [ 'wfacp-form-control' ] );
-				$args['label_class'] = array_merge( $args['label_class'], [ 'wfacp-form-control-label' ] );
-				$args['class']       = array_merge( $args['class'], [ 'wfacp-col-left-half', 'wfacp-form-control-wrapper', 'wfacp-delivery-date-for-wc' ] );
+				$args['input_class'] = array_merge( $args['input_class'], array( 'wfacp-form-control' ) );
+				$args['label_class'] = array_merge( $args['label_class'], array( 'wfacp-form-control-label' ) );
+				$args['class']       = array_merge( $args['class'], array( 'wfacp-col-left-half', 'wfacp-form-control-wrapper', 'wfacp-delivery-date-for-wc' ) );
 			}
 
 			return $args;
@@ -82,38 +85,32 @@ if ( ! class_exists( 'WFACP_Compatibility_Delivery_Date_For_WC' ) ) {
 				return;
 			}
 
-
 			$instance = wfacp_template();
 			if ( ! $instance instanceof WFACP_Template_Common ) {
 				return;
 			}
-			$bodyClass = "body";
+			$bodyClass = 'body';
 			if ( 'pre_built' !== $instance->get_template_type() ) {
-				$px        = "7";
-				$bodyClass = "body #wfacp-e-form";
+				$px        = '7';
+				$bodyClass = 'body #wfacp-e-form';
 			}
 
-			echo "<style>";
+			echo '<style>';
 			echo $bodyClass . ' .wfacp_main_form.woocommerce .wfacp-delivery-date-for-wc input#datepicker{padding-left: 32px !important;}';
 			echo $bodyClass . ' .wfacp_main_form.woocommerce .wfacp-delivery-date-for-wc .ddfwCalander:before{width: 20px;height: 20px;background-size: 20px;top: 50%;margin-top: -10px;}';
 			echo $bodyClass . ' .wfacp_main_form.woocommerce .wfacp-delivery-date-for-wc label.wfacp-form-control-label{left: 40px;}';
 			echo $bodyClass . ' .wfacp_main_form.woocommerce p.wfacp-form-control-wrapper.wfacp-delivery-date-for-wc.wfacp-anim-wrap label.wfacp-form-control-label{left: 40px;}';
 			echo $bodyClass . ' .wfacp_main_form.woocommerce span.woocommerce-input-wrapper.ddfwCalander{position: relative;display: block;}';
-			echo "</style>";
-
-
+			echo '</style>';
 		}
 
 		public function print_third_party( $field, $key ) {
 			if ( strpos( $key, 'ddfw' ) !== false ) {
-				return [];
+				return array();
 			}
-
 
 			return $field;
 		}
-
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_Delivery_Date_For_WC(), 'wfacp-delivery-date-for-wc' );

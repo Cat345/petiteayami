@@ -5,6 +5,7 @@
  *
  * @package wp-marketing-automations
  */
+#[\AllowDynamicProperties]
 class BWFAN_Api_Block_Migrator extends BWFAN_API_Base {
 
 	public static $ins;

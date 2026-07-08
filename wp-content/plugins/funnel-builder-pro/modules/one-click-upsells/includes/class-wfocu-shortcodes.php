@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Shortcodes' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Shortcodes {
 		private static $ins = null;
 
@@ -58,7 +59,7 @@ if ( ! class_exists( 'WFOCU_Shortcodes' ) ) {
 			WFOCU_Core()->template_loader->add_attributes_to_buy_button();
 			$attributes = ob_get_clean();
 
-			return sprintf( '<a href="javascript:void(0);" class="%s" data-key="%s" %s>%s</a>', 'wfocu_upsell ' . esc_attr( $atts['class'] ), $atts['key'], $attributes, do_shortcode( $html ) );
+			return sprintf( '<a href="javascript:void(0);" class="%s" data-key="%s" %s>%s</a>', 'wfocu_upsell ' . esc_attr( $atts['class'] ), esc_attr( $atts['key'] ), $attributes, do_shortcode( $html ) );
 		}
 
 		public function generate_demo_yes_link( $atts, $html, $attributes = '' ) {
@@ -87,7 +88,7 @@ if ( ! class_exists( 'WFOCU_Shortcodes' ) ) {
 				$atts['key'] = WFOCU_Core()->offers->get_product_key_by_index( $atts['key'], $data->products );
 			}
 
-			return sprintf( '<a href="javascript:void(0);" class="%s" data-key="%s">%s</a>', 'wfocu_skip_offer ' . esc_attr( $atts['class'] ), $atts['key'], do_shortcode( $html ) );
+			return sprintf( '<a href="javascript:void(0);" class="%s" data-key="%s">%s</a>', 'wfocu_skip_offer ' . esc_attr( $atts['class'] ), esc_attr( $atts['key'] ), do_shortcode( $html ) );
 		}
 
 		public function wfocu_variation_selector_form_output( $atts ) {

@@ -5,6 +5,7 @@
  */
 
 if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Tracking_SiteWide extends WFFN_Ecomm_Tracking_Common {
 		public $api_events      = array();
 		public $gtag_rendered   = false;
@@ -623,7 +624,7 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 
 			// decode special chars
 			foreach ( $terms as $term ) {
-				$results[] = html_entity_decode( $term->name );
+				$results[] = html_entity_decode( $term->name, ENT_QUOTES | ENT_HTML401 );
 			}
 
 			return $results;

@@ -87,7 +87,7 @@ if ( ! class_exists( 'WooFunnels_Updater_Licenses_Table' ) ) {
 		 * @since  1.0.0
 		 */
 		public function column_plugin( $item ) {
-			return wpautop( '<strong>' . $item['plugin'] . '</strong>' );
+			return wpautop( '<strong>' . esc_html( $item['plugin'] ) . '</strong>' );
 		}
 
 		// End get_sortable_columns()
@@ -103,9 +103,9 @@ if ( ! class_exists( 'WooFunnels_Updater_Licenses_Table' ) ) {
 		public function column_product_version( $item ) {
 
 			if ( isset( $item['latest_version'], $item['product_version'] ) && version_compare( $item['product_version'], $item['latest_version'], '<' ) ) {
-				$version_text = '<strong>' . $item['product_version'] . '<span class="update-available"> - ' . sprintf( __( 'version %1$s available', 'woofunnels' ), esc_html( $item['latest_version'] ) ) . '</span></strong>' . "\n";  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
+				$version_text = '<strong>' . esc_html( $item['product_version'] ) . '<span class="update-available"> - ' . sprintf( __( 'version %1$s available', 'woofunnels' ), esc_html( $item['latest_version'] ) ) . '</span></strong>' . "\n";  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
 			} else {
-				$version_text = '<strong class="latest-version">' . $item['product_version'] . '</strong>' . "\n";
+				$version_text = '<strong class="latest-version">' . esc_html( $item['product_version'] ) . '</strong>' . "\n";
 			}
 
 			return wpautop( $version_text );
@@ -122,7 +122,7 @@ if ( ! class_exists( 'WooFunnels_Updater_Licenses_Table' ) ) {
 		 */
 		public function column_product_status( $item ) {
 			$response   = '';
-			$input_text = '<input name="license_keys[' . esc_attr( $item['product_file_path'] ) . '][key]" id="license_keys-' . esc_attr( $item['product_file_path'] ) . '" type="text" size="37" aria-required="true" value="' . $item['existing_key']['key'] . '" placeholder="' . esc_attr__( '
+			$input_text = '<input name="license_keys[' . esc_attr( $item['product_file_path'] ) . '][key]" id="license_keys-' . esc_attr( $item['product_file_path'] ) . '" type="text" size="37" aria-required="true" value="' . esc_attr( $item['existing_key']['key'] ) . '" placeholder="' . esc_attr__( '
 Place your license key here', 'woofunnels' ) . '" />' . "\n";  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 			if ( $this->is_license_expire( $item ) ) {

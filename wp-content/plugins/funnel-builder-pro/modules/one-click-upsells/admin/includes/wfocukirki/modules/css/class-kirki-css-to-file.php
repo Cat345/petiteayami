@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_CSS_To_File' ) ) {
 	/**
 	 * Handles writing CSS to a file.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_CSS_To_File {
 
 		/**
@@ -67,7 +68,6 @@ if ( ! class_exists( 'WFOCUKirki_CSS_To_File' ) ) {
 			}
 
 			return $paths;
-
 		}
 
 		/**
@@ -82,7 +82,6 @@ if ( ! class_exists( 'WFOCUKirki_CSS_To_File' ) ) {
 			$upload_dir = wp_upload_dir();
 
 			return esc_url_raw( $upload_dir['baseurl'] . '/kirki-css/styles.css' );
-
 		}
 
 		/**
@@ -143,7 +142,6 @@ if ( ! class_exists( 'WFOCUKirki_CSS_To_File' ) ) {
 			}
 
 			return $write_file;
-
 		}
 
 		/**

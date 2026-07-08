@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_DB_Table_Message_Unsubscribe extends BWFAN_DB_Tables_Base {
 	public $table_name = 'bwfan_message_unsubscribe';
 

@@ -10,6 +10,10 @@
  * @since       3.0.0
  */
 
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! function_exists( 'wfacpkirki_show_upgrade_notification' ) ) :
 	/**
 	 * Fires at the end of the update message container in each

@@ -5,6 +5,7 @@ namespace BWFAN\Importers\Kit\Calls;
 /**
  * Get all tags from Kit
  */
+#[\AllowDynamicProperties]
 class Get_Tags extends Call {
 	protected $required_fields = array( 'api_key' );
 

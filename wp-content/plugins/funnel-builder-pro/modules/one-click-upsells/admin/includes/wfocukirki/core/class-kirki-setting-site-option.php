@@ -13,6 +13,7 @@ if ( ! class_exists( 'WFOCUKirki_Setting_Site_Option' ) ) {
 	 * @since 3.0.0
 	 * @see WP_Customize_Setting
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Setting_Site_Option extends WP_Customize_Setting {
 
 		/**

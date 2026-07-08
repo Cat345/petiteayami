@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 if ( ! class_exists( 'WFACP_CartFlows_Compatibility' ) ) {
 
@@ -7,11 +11,10 @@ if ( ! class_exists( 'WFACP_CartFlows_Compatibility' ) ) {
 	class WFACP_CartFlows_Compatibility {
 		public function __construct() {
 			$this->remove_template_redirect();
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'remove_render_cart_flows_inline_js' ] );
-			add_filter( 'wfacp_skip_checkout_page_detection', [ $this, 'disable_aero_checkout_on_cart_flows_template' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'remove_render_cart_flows_inline_js' ) );
+			add_filter( 'wfacp_skip_checkout_page_detection', array( $this, 'disable_aero_checkout_on_cart_flows_template' ) );
 
-			add_action( 'wp', [ $this, 'check_global_setting' ], - 1 );
-
+			add_action( 'wp', array( $this, 'check_global_setting' ), - 1 );
 		}
 
 		public function check_global_setting() {
@@ -34,7 +37,7 @@ if ( ! class_exists( 'WFACP_CartFlows_Compatibility' ) ) {
 				if ( ! is_array( $setting ) || ! isset( $setting['override_global_checkout'] ) || 'enable' !== $setting['override_global_checkout'] ) {
 					return;
 				}
-				remove_action( 'wp', [ Cartflows_Global_Checkout::get_instance(), 'override_global_checkout' ], 0 );
+				remove_action( 'wp', array( Cartflows_Global_Checkout::get_instance(), 'override_global_checkout' ), 0 );
 			} catch ( Error $e ) {
 
 			}
@@ -47,11 +50,10 @@ if ( ! class_exists( 'WFACP_CartFlows_Compatibility' ) ) {
 		public function remove_render_cart_flows_inline_js() {
 			try {
 
-
 				if ( ! class_exists( 'Cartflows_Tracking' ) ) {
 					return;
 				}
-				remove_action( 'wp_head', [ Cartflows_Tracking::get_instance(), 'add_tracking_code' ] );
+				remove_action( 'wp_head', array( Cartflows_Tracking::get_instance(), 'add_tracking_code' ) );
 			} catch ( Error $e ) {
 
 			}

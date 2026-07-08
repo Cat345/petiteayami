@@ -41,6 +41,12 @@ class ImageQuery extends ImageResizable
         return "image:/{$this->file}?{$query}&cachekey={$cacheKey}";
     }
 
+    protected function hasSameSize(ImageResizable $image): bool
+    {
+        return $this->getWidth() === $image->getWidth() &&
+            $this->getHeight() === $image->getHeight();
+    }
+
     /**
      * @return array<string, string>
      */
@@ -75,6 +81,9 @@ class ImageQuery extends ImageResizable
     public function crop($width = null, $height = null, $x = 'center', $y = 'center'): self
     {
         $image = parent::crop($width, $height, $x, $y);
+        if ($image->hasSameSize($this)) {
+            return $image;
+        }
 
         $image->query['crop'] = [$image->getWidth(), $image->getHeight(), $x, $y];
 
@@ -87,6 +96,9 @@ class ImageQuery extends ImageResizable
     public function resize($width = null, $height = null, string $background = 'crop'): self
     {
         $image = parent::resize($width, $height, $background);
+        if ($image->hasSameSize($this)) {
+            return $image;
+        }
 
         $image->query['resize'] = [$image->getWidth(), $image->getHeight(), $background];
 
@@ -133,11 +145,13 @@ class ImageQuery extends ImageResizable
         $image = parent::thumbnail($width, $height, $flip, $x, $y);
         $image->query = $query;
 
-        $image->query['thumbnail'] = [
-            $image->getWidth(),
-            $image->getHeight(),
-            ...array_slice($args, 2),
-        ];
+        if (!$image->hasSameSize($this)) {
+            $image->query['thumbnail'] = [
+                $image->getWidth(),
+                $image->getHeight(),
+                ...array_slice($args, 2),
+            ];
+        }
 
         return $image;
     }

@@ -232,12 +232,12 @@ trait RenderCallbackTrait {
 		// FA icons: just decode the HTML entity directly.
 		// et_pb_process_font_icon() maps FA unicode to wrong ETmodules codepoints.
 		if ( 'fa' === $icon_type ) {
-			return html_entity_decode( $icon_code );
+			return html_entity_decode( $icon_code, ENT_QUOTES | ENT_HTML401 );
 		}
 
 		// ETmodules (divi) icons: use Divi's processing function.
 		if ( function_exists( 'et_pb_process_font_icon' ) ) {
-			return html_entity_decode( et_pb_process_font_icon( $icon_code ) );
+			return html_entity_decode( et_pb_process_font_icon( $icon_code ), ENT_QUOTES | ENT_HTML401 );
 		}
 
 		return '';
@@ -316,7 +316,7 @@ trait RenderCallbackTrait {
 			}
 
 			// Add title text
-			$content_wrapper_children .= '<span class="wfocu-button-text">' . do_shortcode( html_entity_decode( $text_content ) ) . '</span>';
+			$content_wrapper_children .= '<span class="wfocu-button-text">' . do_shortcode( html_entity_decode( $text_content, ENT_QUOTES | ENT_HTML401 ) ) . '</span>';
 
 			// Add icon after text if icon_align is 'right'
 			if ( 'right' === $icon_align && ! empty( $icon_html ) ) {
@@ -347,7 +347,7 @@ trait RenderCallbackTrait {
 							'style' => 'display:block',
 						),
 						'childrenSanitizer' => 'et_core_esc_previously',
-						'children'          => do_shortcode( html_entity_decode( $subtitle_content ) ),
+						'children'          => do_shortcode( html_entity_decode( $subtitle_content, ENT_QUOTES | ENT_HTML401 ) ),
 					)
 				);
 			}

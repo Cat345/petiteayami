@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Adds styles to the customizer.
  */
 if ( ! class_exists( 'WFACPKirki_Modules_PostMessage' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Modules_PostMessage {
 		/**
 		 * The object instance.
@@ -82,7 +83,6 @@ if ( ! class_exists( 'WFACPKirki_Modules_PostMessage' ) ) {
 			}
 			$this->script = apply_filters( 'wfacpkirki_postmessage_script', $this->script );
 			wp_add_inline_script( 'wfacpkirki_auto_postmessage', $this->script, 'after' );
-
 		}
 
 		/**
@@ -110,7 +110,7 @@ if ( ! class_exists( 'WFACPKirki_Modules_PostMessage' ) ) {
 				// append unique style tag if not exist
 				// The style ID.
 				$style_id = 'wfacpkirki-postmessage-' . str_replace( array( '[', ']' ), '', $args['settings'] );
-				$script   .= 'if(null===document.getElementById(\'' . $style_id . '\')||\'undefined\'===typeof document.getElementById(\'' . $style_id . '\')){jQuery(\'head\').append(\'<style id="' . $style_id . '"></style>\');}';
+				$script  .= 'if(null===document.getElementById(\'' . $style_id . '\')||\'undefined\'===typeof document.getElementById(\'' . $style_id . '\')){jQuery(\'head\').append(\'<style id="' . $style_id . '"></style>\');}';
 			}
 
 			// Add anything we need before the main script.
@@ -125,7 +125,7 @@ if ( ! class_exists( 'WFACPKirki_Modules_PostMessage' ) ) {
 				// Skip styles if "exclude" is defined and value is excluded.
 				if ( isset( $js_var['exclude'] ) ) {
 					$js_var['exclude'] = (array) $js_var['exclude'];
-					$script            .= 'exclude=false;';
+					$script           .= 'exclude=false;';
 					foreach ( $js_var['exclude'] as $exclussion ) {
 						$script .= "if(newval=='{$exclussion}'||(''==='{$exclussion}'&&_.isObject(newval)&&_.isEmpty(newval))){exclude=true;}";
 					}
@@ -211,7 +211,7 @@ if ( ! class_exists( 'WFACPKirki_Modules_PostMessage' ) ) {
 			$script          = '';
 			$property_script = '';
 
-			$value_key       = 'newval' . $args['index_key'];
+			$value_key        = 'newval' . $args['index_key'];
 			$property_script .= $value_key . '=newval;';
 
 			$args = $this->get_args( $args );
@@ -264,7 +264,7 @@ if ( ! class_exists( 'WFACPKirki_Modules_PostMessage' ) ) {
 			// Define choice.
 			$choice = ( isset( $args['choice'] ) && '' !== $args['choice'] ) ? $args['choice'] : '';
 
-			$value_key       = 'newval' . $args['index_key'];
+			$value_key        = 'newval' . $args['index_key'];
 			$property_script .= $value_key . '=newval;';
 
 			$args = $this->get_args( $args );
@@ -292,7 +292,7 @@ if ( ! class_exists( 'WFACPKirki_Modules_PostMessage' ) ) {
 			}
 
 			// Mostly used for padding, margin & position properties.
-			$direction_script = 'if(_.contains([\'top\',\'bottom\',\'left\',\'right\'],subKey)){';
+			$direction_script  = 'if(_.contains([\'top\',\'bottom\',\'left\',\'right\'],subKey)){';
 			$direction_script .= 'css+=\'' . $args['element'] . '{' . $args['property'] . '-\'+subKey+\':\'+subValue+\'' . $args['units'] . $args['suffix'] . ';}\';}';
 			// Allows us to apply this just for a specific choice in the array of the values.
 			if ( '' !== $choice ) {
@@ -356,7 +356,7 @@ if ( ! class_exists( 'WFACPKirki_Modules_PostMessage' ) ) {
 				'font-style'      => 'fontStyle',
 			);
 			$choice_condition = ( isset( $args['choice'] ) && '' !== $args['choice'] && isset( $css_build_array[ $args['choice'] ] ) );
-			$script           .= ( ! $choice_condition ) ? $webfont_loader : '';
+			$script          .= ( ! $choice_condition ) ? $webfont_loader : '';
 			foreach ( $css_build_array as $property => $var ) {
 				if ( $choice_condition && $property !== $args['choice'] ) {
 					continue;
@@ -369,9 +369,9 @@ if ( ! class_exists( 'WFACPKirki_Modules_PostMessage' ) ) {
 
 				if ( 'font-family' === $property || ( isset( $args['choice'] ) && 'font-family' === $args['choice'] ) ) {
 					$css .= 'fontFamilyCSS=fontFamily;if(0<fontFamily.indexOf(\' \')&&-1===fontFamily.indexOf(\'"\')){fontFamilyCSS=\'"\'+fontFamily+\'"\';}';
-					$var = 'fontFamilyCSS';
+					$var  = 'fontFamilyCSS';
 				}
-				$var = ( ( empty( $args['prefix'] ) ) ? '' : '\'' . $args['prefix'] . '\'+' ) . $var . ( ( empty( $args['units'] ) ) ? '' : '+\'' . $args['units'] . '\'' ) . ( ( empty( $args['suffix'] ) ) ? '' : '+\'' . $args['suffix'] . '\'' );
+				$var  = ( ( empty( $args['prefix'] ) ) ? '' : '\'' . $args['prefix'] . '\'+' ) . $var . ( ( empty( $args['units'] ) ) ? '' : '+\'' . $args['units'] . '\'' ) . ( ( empty( $args['suffix'] ) ) ? '' : '+\'' . $args['suffix'] . '\'' );
 				$css .= 'css+=(\'\'!==' . $var . ')?\'' . $args['element'] . '\'+\'{' . $property . ':\'+' . $var . '+\';}\':\'\';';
 			}
 
@@ -442,7 +442,9 @@ if ( ! class_exists( 'WFACPKirki_Modules_PostMessage' ) ) {
 		private function get_args( $args ) {
 
 			// Make sure everything is defined to avoid "undefined index" errors.
-			$args = wp_parse_args( $args, array(
+			$args = wp_parse_args(
+				$args,
+				array(
 					'element'       => '',
 					'property'      => '',
 					'prefix'        => '',
@@ -450,7 +452,8 @@ if ( ! class_exists( 'WFACPKirki_Modules_PostMessage' ) ) {
 					'units'         => '',
 					'js_callback'   => array( '', '' ),
 					'value_pattern' => '',
-				) );
+				)
+			);
 
 			// Element should be a string.
 			if ( is_array( $args['element'] ) ) {
@@ -467,7 +470,6 @@ if ( ! class_exists( 'WFACPKirki_Modules_PostMessage' ) ) {
 			}
 
 			return $args;
-
 		}
 
 		/**
@@ -476,7 +478,7 @@ if ( ! class_exists( 'WFACPKirki_Modules_PostMessage' ) ) {
 		 * @access private
 		 *
 		 * @param string $value The value placeholder.
-		 * @param array $js_vars The js_vars argument.
+		 * @param array  $js_vars The js_vars argument.
 		 *
 		 * @return string         The script.
 		 * @since 3.0.0

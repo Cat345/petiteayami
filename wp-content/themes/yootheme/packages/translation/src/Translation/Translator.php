@@ -34,11 +34,9 @@ class Translator implements TranslatorInterface
      *
      * @return array<string, string>
      */
-    public function getResource(?string $locale = null)
+    public function getResource(?string $locale = null): array
     {
-        if ($locale === null) {
-            $locale = $this->getLocale();
-        }
+        $locale ??= $this->getLocale();
 
         return $this->resources[$locale] ?? [];
     }
@@ -46,7 +44,7 @@ class Translator implements TranslatorInterface
     /**
      * @inheritdoc
      */
-    public function getResources()
+    public function getResources(): array
     {
         return $this->resources;
     }
@@ -56,9 +54,7 @@ class Translator implements TranslatorInterface
      */
     public function addResource($resource, ?string $locale = null): self
     {
-        if ($locale === null) {
-            $locale = $this->getLocale();
-        }
+        $locale ??= $this->getLocale();
 
         $resource =
             is_string($resource) && is_file($resource)
@@ -77,9 +73,7 @@ class Translator implements TranslatorInterface
      */
     public function trans(string $id, array $parameters = [], ?string $locale = null): string
     {
-        if ($locale === null) {
-            $locale = $this->getLocale();
-        }
+        $locale ??= $this->getLocale();
 
         if (isset($this->resources[$locale][$id])) {
             return strtr($this->resources[$locale][$id], $parameters);
@@ -123,7 +117,7 @@ class Translator implements TranslatorInterface
                 )
             ) {
                 $explicitRules[$matches['interval']] = $matches['message'];
-            } elseif (preg_match('/^\w+\:\s*(.*?)$/', $part, $matches)) {
+            } elseif (preg_match('/^\w+:\s*(.*?)$/', $part, $matches)) {
                 $standardRules[] = $matches[1];
             } else {
                 $standardRules[] = $part;

@@ -12,7 +12,12 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Switch' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Field_Switch extends WFACPKirki_Field_Checkbox {
 
 		/**
@@ -23,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Switch' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-switch';
-
 		}
 
 		/**
@@ -37,11 +41,14 @@ if ( ! class_exists( 'WFACPKirki_Field_Switch' ) ) {
 				$this->choices = array();
 			}
 
-			$this->choices = wp_parse_args( $this->choices, array(
+			$this->choices = wp_parse_args(
+				$this->choices,
+				array(
 					'on'    => esc_attr__( 'On', 'wfacpkirki' ),
 					'off'   => esc_attr__( 'Off', 'wfacpkirki' ),
 					'round' => false,
-				) );
+				)
+			);
 		}
 	}
 }

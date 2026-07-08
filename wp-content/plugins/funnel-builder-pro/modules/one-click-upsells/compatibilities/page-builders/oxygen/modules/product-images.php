@@ -1,13 +1,14 @@
 <?php
 if ( ! class_exists( 'WFOCU_Oxy_Product_Image' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFOCU_Oxy_Product_Image extends WFOCU_Oxy_HTML_BLOCK {
-		public $slug = 'wfocu_product_Image';
+		public $slug  = 'wfocu_product_Image';
 		protected $id = 'wfocu_product_Image';
 
 		public function __construct() {
 			$this->ajax = true;
-			$this->name = __( "WF Product Image" );
+			$this->name = __( 'WF Product Image' );
 			parent::__construct();
 		}
 
@@ -26,16 +27,14 @@ if ( ! class_exists( 'WFOCU_Oxy_Product_Image' ) ) {
 
 			$this->add_border( $tab_id, 'image_border', '.wfocu-product-gallery img' );
 			$this->add_margin( $tab_id, 'image_border_margin', ' .wfocu-product-gallery' );
-			$width_default = [ 'default' => "100" ];
+			$width_default = array( 'default' => '100' );
 
 			$this->add_width( $tab_id, 'width', ' .wfocu-product-gallery .wfocu-carousel-cell > a > img', '', $width_default );
 			// Need Max Width
 
-
 			$tab_id = $this->add_tab( __( 'Thumbnails', 'woofunnels-upstroke-one-click-upsell' ) );
 			$this->add_border( $tab_id, 'thumbs_border', ' .wfocu-product-thumbnails .wfocu-thumb-col a' );
 			$this->add_margin( $tab_id, 'spacing_thumbs_margin', '.wfocu-product-thumbnails ' );
-
 		}
 
 
@@ -45,10 +44,11 @@ if ( ! class_exists( 'WFOCU_Oxy_Product_Image' ) ) {
 			$main_img = '';
 			/** Gallery */
 
-			$sel_product = isset( $settings['selected_product'] ) ? $settings['selected_product'] : '';
-			$product     = WFOCU_Common::default_selected_product( $sel_product );
-			$product_key = WFOCU_Common::default_selected_product_key( $sel_product );
-			$product_key = ( $product_key !== false ) ? $product_key : '';
+			$sel_product    = isset( $settings['selected_product'] ) ? $settings['selected_product'] : '';
+			$slider_enabled = ( isset( $settings['slider_enabled'] ) && 'on' === $settings['slider_enabled'] );
+			$product        = WFOCU_Common::default_selected_product( $sel_product );
+			$product_key    = WFOCU_Common::default_selected_product_key( $sel_product );
+			$product_key    = ( $product_key !== false ) ? $product_key : '';
 
 			if ( '' !== $product_key ) {
 
@@ -67,7 +67,7 @@ if ( ! class_exists( 'WFOCU_Oxy_Product_Image' ) ) {
 						$images_taken[]       = (int) $main_img;
 					}
 
-					if ( is_array( $gallery_img ) && count( $gallery_img ) > 0 && 'on' === $settings['slider_enabled'] ) {
+					if ( is_array( $gallery_img ) && count( $gallery_img ) > 0 && $slider_enabled ) {
 						foreach ( $gallery_img as $gallerys ) {
 							$gallery[]['gallery'] = (int) $gallerys;
 							$images_taken[]       = (int) $gallerys;
@@ -77,7 +77,7 @@ if ( ! class_exists( 'WFOCU_Oxy_Product_Image' ) ) {
 					/**
 					 * Variation images to be bunch with the other gallery images
 					 */
-					if ( isset( $product->variations_data ) && isset( $product->variations_data['images'] ) && 'on' === $settings['slider_enabled'] ) {
+					if ( isset( $product->variations_data ) && isset( $product->variations_data['images'] ) && $slider_enabled ) {
 						foreach ( $product->variations_data['images'] as $id ) {
 							if ( false === in_array( $id, $images_taken, true ) ) {
 								$gallery[]['gallery'] = (int) $id;
@@ -86,145 +86,147 @@ if ( ! class_exists( 'WFOCU_Oxy_Product_Image' ) ) {
 					}
 					if ( ! empty( $main_img ) ) {
 
-						WFOCU_Core()->template_loader->get_template_part( 'product/slider', array(
-							'key'     => $product_key,
-							'gallery' => $gallery,
-							'product' => $product_obj,
-							'title'   => '',
-							'style'   => 2,
-						) );
+						WFOCU_Core()->template_loader->get_template_part(
+							'product/slider',
+							array(
+								'key'     => $product_key,
+								'gallery' => $gallery,
+								'product' => $product_obj,
+								'title'   => '',
+								'style'   => 2,
+							)
+						);
 					}
 				}
 				?>
-                <style>
-                    .oxy-product-image {
-                        position: relative;;
-                    }
+				<style>
+					.oxy-product-image {
+						position: relative;;
+					}
 
-                    .oxy-product-image .wfocu-product-carousel-container img {
-                        height: auto;
-                        display: inline-block;
-                        vertical-align: middle;
-                    }
+					.oxy-product-image .wfocu-product-carousel-container img {
+						height: auto;
+						display: inline-block;
+						vertical-align: middle;
+					}
 
-                    /* editior css  */
-                    .ct-component .wfocu-product-thumbnails img {
-                        margin: 0;
-                        border: none;
-                    }
+					/* editior css  */
+					.ct-component .wfocu-product-thumbnails img {
+						margin: 0;
+						border: none;
+					}
 
-                    .ct-component .wfocu-product-thumbnails .wfocu-thumb-col {
-                        margin: auto;
-                        width: 100px;
-                        display: inline-block;
-                    }
+					.ct-component .wfocu-product-thumbnails .wfocu-thumb-col {
+						margin: auto;
+						width: 100px;
+						display: inline-block;
+					}
 
-                    .ct-component .wfocu-product-thumbnails {
-                        clear: both;
-                        width: 100%;
-                    }
+					.ct-component .wfocu-product-thumbnails {
+						clear: both;
+						width: 100%;
+					}
 
 
-                    .ct-component .wfocu-product-thumbnails:after,
-                    .ct-component .wfocu-product-thumbnails:before {
-                        content: '';
-                        display: block;
-                    }
+					.ct-component .wfocu-product-thumbnails:after,
+					.ct-component .wfocu-product-thumbnails:before {
+						content: '';
+						display: block;
+					}
 
-                    .ct-component .wfocu-product-thumbnails:after {
-                        clear: both;
-                    }
+					.ct-component .wfocu-product-thumbnails:after {
+						clear: both;
+					}
 
-                    .ct-component .wfocu-product-thumbnails {
-                        text-align: center;
-                        margin-top: 20px;
-                    }
+					.ct-component .wfocu-product-thumbnails {
+						text-align: center;
+						margin-top: 20px;
+					}
 
-                    .ct-component .wfocu-product-thumbnails .wfocu-carousel-cell {
-                        text-align: center;
-                        margin-top: 20px;
-                    }
+					.ct-component .wfocu-product-thumbnails .wfocu-carousel-cell {
+						text-align: center;
+						margin-top: 20px;
+					}
 
-                    .ct-component .wfocu-product-thumbnails .wfocu-thumb-col a {
-                        display: inline-block;
-                    }
+					.ct-component .wfocu-product-thumbnails .wfocu-thumb-col a {
+						display: inline-block;
+					}
 
-                    /* Big Image */
+					/* Big Image */
 
-                    .ct-component .wfocu-product-thumbnails .wfocu-carousel-cell {
-                        display: none;
-                    }
+					.ct-component .wfocu-product-thumbnails .wfocu-carousel-cell {
+						display: none;
+					}
 
-                    .ct-component .wfocu-carousel-cell {
-                        display: none;
-                    }
+					.ct-component .wfocu-carousel-cell {
+						display: none;
+					}
 
-                    .ct-component .wfocu-carousel-cell:first-child {
-                        display: block;
-                        width: auto;
-                        text-align: center;
-                    }
+					.ct-component .wfocu-carousel-cell:first-child {
+						display: block;
+						width: auto;
+						text-align: center;
+					}
 
-                    .wfocu-carousel-cell:first-child a {
-                        display: inline-block;
-                    }
+					.wfocu-carousel-cell:first-child a {
+						display: inline-block;
+					}
 
-                    .oxy-wfocu-product-image {
-                        width: 100%;
-                    }
-                </style>
+					.oxy-wfocu-product-image {
+						width: 100%;
+					}
+				</style>
 				<?php
 
 			}
 
-			if ( empty( $main_img ) ) { ?>
-                <div class="wfocu-widget-container">
-                    <div class="wfocu-product-gallery ">
-                        <div class="wfocu-product-carousel wfocu-product-image-single ">
-                            <div class="wfocu-carousel-cell">
-                                <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                            </div>
-                        </div>
-                    </div>
-					<?php if ( isset( $settings['slider_enabled'] ) && 'on' === $settings['slider_enabled'] ) { ?>
-                        <div class="wfocu-product-carousel-nav wfocu-product-thumbnails" data-flickity='{"asNavFor":".wfocu-product-carousel-nav","contain":true,"pageDots":false,"imagesLoaded":true}'>
-                            <div class="wfocu-thumb-col is-nav-selected">
-                                <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                            </div>
-                            <div class="wfocu-thumb-col">
-                                <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                            </div>
-                            <div class="wfocu-thumb-col">
-                                <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                            </div>
-                            <div class="wfocu-thumb-col">
-                                <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                            </div>
-                            <div class="wfocu-thumb-col">
-                                <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                            </div>
-                            <div class="wfocu-thumb-col">
-                                <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                            </div>
-                        </div>
+			if ( empty( $main_img ) ) {
+				?>
+				<div class="wfocu-widget-container">
+					<div class="wfocu-product-gallery ">
+						<div class="wfocu-product-carousel wfocu-product-image-single ">
+							<div class="wfocu-carousel-cell">
+								<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+							</div>
+						</div>
+					</div>
+					<?php if ( $slider_enabled ) { ?>
+						<div class="wfocu-product-carousel-nav wfocu-product-thumbnails" data-flickity='{"asNavFor":".wfocu-product-carousel-nav","contain":true,"pageDots":false,"imagesLoaded":true}'>
+							<div class="wfocu-thumb-col is-nav-selected">
+								<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+							</div>
+							<div class="wfocu-thumb-col">
+								<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+							</div>
+							<div class="wfocu-thumb-col">
+								<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+							</div>
+							<div class="wfocu-thumb-col">
+								<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+							</div>
+							<div class="wfocu-thumb-col">
+								<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+							</div>
+							<div class="wfocu-thumb-col">
+								<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+							</div>
+						</div>
 						<?php
 
 					}
 					?>
-                </div>
+				</div>
 				<?php
 			}
 
 			?>
 
 			<?php
-
-
 		}
 
 		public function defaultCSS() {
 
-			$defaultCSS = "
+			$defaultCSS = '
 			  .wfocu-product-gallery .wfocu-carousel-cell > a > img {
                 width: 100%;
                 display: block;
@@ -246,15 +248,11 @@ if ( ! class_exists( 'WFOCU_Oxy_Product_Image' ) ) {
                 margin: 0 auto;
             }
 
-		";
+		';
 
 			return $defaultCSS;
-
-
 		}
-
-
 	}
 
-	return new WFOCU_Oxy_Product_Image;
+	return new WFOCU_Oxy_Product_Image();
 }

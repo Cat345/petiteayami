@@ -11,6 +11,7 @@ use WP_Meta_Query;
  *
  * This class represents a WP importer for the CRM system.
  */
+#[\AllowDynamicProperties]
 class WP_Importer extends Importer {
 	const LIMIT = 25;
 

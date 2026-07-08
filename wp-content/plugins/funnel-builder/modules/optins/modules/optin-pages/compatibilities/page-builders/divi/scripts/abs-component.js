@@ -47,6 +47,7 @@ class WFOP_Component extends React.Component {
         settings.action = this.c_slug;
         settings.post_id = et_pb_custom.page_id;
         settings.et_load_builder_modules = '1';
+        settings._ajax_nonce = window.wfop_divi_data ? window.wfop_divi_data.nonce : '';
         let request = {
             url: et_pb_custom.ajaxurl,
             method: 'POST',

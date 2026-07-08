@@ -12,6 +12,10 @@
 /**
  * This is simply an alias for the WFACPKirki_Field_WFACPKirki_Generic class.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Generic' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Generic extends WFACPKirki_Field_WFACPKirki_Generic {

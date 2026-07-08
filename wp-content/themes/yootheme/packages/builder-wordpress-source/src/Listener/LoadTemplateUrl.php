@@ -17,16 +17,9 @@ class LoadTemplateUrl
      */
     public static function handle(array $template): array
     {
-        static $registered = false;
+        static $registered;
 
-        if (!$registered) {
-            $registered = add_filter(
-                'get_archives_link',
-                [static::class, 'getArchivesLink'],
-                10,
-                4,
-            );
-        }
+        $registered ??= add_filter('get_archives_link', [static::class, 'getArchivesLink'], 10, 4);
 
         $type = $template['type'] ?? '';
 
@@ -105,14 +98,14 @@ class LoadTemplateUrl
         if ($templateTerms && $includeChildren === 'only') {
             $terms = [];
             foreach ($templateTerms as $termId) {
-                $args += ['child_of' => $termId];
+                $args['child_of'] = $termId;
                 $terms = get_terms($args);
                 if (!empty($terms)) {
                     break;
                 }
             }
         } else {
-            $args += ['include' => $templateTerms];
+            $args['include'] = $templateTerms;
             $terms = get_terms($args);
         }
 

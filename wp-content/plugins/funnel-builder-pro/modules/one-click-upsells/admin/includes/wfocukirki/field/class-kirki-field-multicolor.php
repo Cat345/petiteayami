@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Multicolor' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Multicolor extends WFOCUKirki_Field {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Multicolor' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-multicolor';
-
 		}
 
 		/**
@@ -36,7 +36,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Multicolor' ) ) {
 			if ( ! is_array( $this->choices ) ) {
 				$this->choices = array();
 			}
-
 		}
 
 		/**
@@ -52,7 +51,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Multicolor' ) ) {
 				return;
 			}
 			$this->sanitize_callback = array( $this, 'sanitize' );
-
 		}
 
 		/**
@@ -65,7 +63,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Multicolor' ) ) {
 		public function sanitize( $value ) {
 
 			return $value;
-
 		}
 	}
 }

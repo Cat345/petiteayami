@@ -5,6 +5,7 @@
  */
 
 if ( ! class_exists( 'BWFAN_DB_Table_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
+	#[\AllowDynamicProperties]
 	class BWFAN_DB_Table_Templates extends BWFAN_DB_Tables_Base {
 		public $table_name = 'bwfan_templates';
 

@@ -5,6 +5,7 @@ namespace BWFAN\Importers\Mailchimp\Calls;
 /**
  * Get all members from a list
  */
+#[\AllowDynamicProperties]
 class Get_Members extends Call {
 	protected $required_fields = array( 'api_key', 'list_id' );
 

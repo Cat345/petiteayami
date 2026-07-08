@@ -6,10 +6,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFFN_Compatibility_With_Avada_Theme
  */
 if ( ! class_exists( 'WFFN_Compatibility_With_Avada_Theme' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_Avada_Theme {
 
 		public function __construct() {
-			add_filter( 'elementor/frontend/builder_content_data', [ $this, 'remove_avada_parse_elementor_content' ], 9, 2 );
+			add_filter( 'elementor/frontend/builder_content_data', array( $this, 'remove_avada_parse_elementor_content' ), 9, 2 );
 		}
 
 		public function is_enable() {
@@ -33,7 +34,9 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Avada_Theme' ) ) {
 			}
 			$post = get_post( $post_id );
 
-			if ( ! is_null( $post ) && in_array( $post->post_type, array(
+			if ( ! is_null( $post ) && in_array(
+				$post->post_type,
+				array(
 					'wfacp_checkout',
 					'wfocu_offer',
 					'wffn_landing',
@@ -41,13 +44,14 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Avada_Theme' ) ) {
 					'wffn_optin',
 					'wffn_oty',
 
-				), true ) ) {
+				),
+				true
+			) ) {
 
 				WFFN_Common::remove_actions( 'elementor/frontend/builder_content_data', 'FusionBuilder', 'parse_elementor_content' );
 			}
 
 			return $data;
-
 		}
 	}
 

@@ -9,6 +9,7 @@ use WP_Error;
  *
  * This class represents a CSV importer for the CRM system.
  */
+#[\AllowDynamicProperties]
 class CSV_Importer extends Importer {
 	const DEFAULT_DELIMITER = ',';
 	const LIMIT = 10;
@@ -173,7 +174,7 @@ class CSV_Importer extends Importer {
 
 		if ( 0 === $this->get_offset() ) {
 			// Read the first row (headers) and set the file position to the end of the first row.
-			$this->raw_keys = array_map( 'trim', fgetcsv( $handle, 0, $delimiter ) );
+			$this->raw_keys = array_map( 'trim', fgetcsv( $handle, 0, $delimiter, '"', '\\' ) );
 
 			// Remove BOM signature from the first item.
 			if ( isset( $this->raw_keys[0] ) ) {
@@ -184,7 +185,7 @@ class CSV_Importer extends Importer {
 			fseek( $handle, $this->get_offset() );
 		}
 
-		$row = fgetcsv( $handle, 0, $delimiter );
+		$row = fgetcsv( $handle, 0, $delimiter, '"', '\\' );
 
 		if ( false === $row ) {
 			return;
@@ -351,7 +352,7 @@ class CSV_Importer extends Importer {
 		$handle = fopen( $real_path, 'r' );
 
 		/** Fetching CSV header */
-		$headers = false !== $handle ? fgetcsv( $handle, 0, $delimiter ) : false;
+		$headers = false !== $handle ? fgetcsv( $handle, 0, $delimiter, '"', '\\' ) : false;
 		if ( ! is_array( $headers ) ) {
 			return __( 'Unable to read file', 'wp-marketing-automations' );
 		}
@@ -418,10 +419,10 @@ class CSV_Importer extends Importer {
 			return 0;
 		}
 
-		fgetcsv( $handle, 0, $delimiter );
+		fgetcsv( $handle, 0, $delimiter, '"', '\\' );
 		$row_count = 0;
 
-		while ( fgetcsv( $handle ) !== false ) {
+		while ( fgetcsv( $handle, 0, $delimiter, '"', '\\' ) !== false ) {
 			$row_count ++;
 		}
 

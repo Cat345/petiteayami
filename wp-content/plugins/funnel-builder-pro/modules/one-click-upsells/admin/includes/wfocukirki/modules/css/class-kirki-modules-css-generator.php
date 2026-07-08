@@ -19,6 +19,7 @@ if ( ! class_exists( 'WFOCUKirki_Modules_CSS_Generator' ) ) {
 	/**
 	 * Handles CSS output.
 	 */
+	#[\AllowDynamicProperties]
 	final class WFOCUKirki_Modules_CSS_Generator {
 
 		/**
@@ -167,20 +168,22 @@ if ( ! class_exists( 'WFOCUKirki_Modules_CSS_Generator' ) ) {
 
 			// Find the class that will handle the outpout for this field.
 			$classname            = 'WFOCUKirki_Output';
-			$field_output_classes = apply_filters( "wfocukirki_{$field['wfocukirki_config']}_output_control_classnames", array(
-				'wfocukirki-background' => 'WFOCUKirki_Output_Field_Background',
-				'wfocukirki-dimensions' => 'WFOCUKirki_Output_Field_Dimensions',
-				'wfocukirki-image'      => 'WFOCUKirki_Output_Field_Image',
-				'wfocukirki-typography' => 'WFOCUKirki_Output_Field_Typography',
-				'wfocukirki-multicolor' => 'WFOCUKirki_Output_Field_Multicolor',
-			) );
+			$field_output_classes = apply_filters(
+				"wfocukirki_{$field['wfocukirki_config']}_output_control_classnames",
+				array(
+					'wfocukirki-background' => 'WFOCUKirki_Output_Field_Background',
+					'wfocukirki-dimensions' => 'WFOCUKirki_Output_Field_Dimensions',
+					'wfocukirki-image'      => 'WFOCUKirki_Output_Field_Image',
+					'wfocukirki-typography' => 'WFOCUKirki_Output_Field_Typography',
+					'wfocukirki-multicolor' => 'WFOCUKirki_Output_Field_Multicolor',
+				)
+			);
 			if ( array_key_exists( self::$field_type, $field_output_classes ) ) {
 				$classname = $field_output_classes[ self::$field_type ];
 			}
 			$obj = new $classname( $field['wfocukirki_config'], self::$output, self::$value, $field );
 
 			return $obj->get_styles();
-
 		}
 
 		/**
@@ -245,7 +248,9 @@ if ( ! class_exists( 'WFOCUKirki_Modules_CSS_Generator' ) ) {
 						foreach ( $style_array as $property => $value ) {
 
 							// Add -webkit-* and -moz-*.
-							if ( is_string( $property ) && in_array( $property, array(
+							if ( is_string( $property ) && in_array(
+								$property,
+								array(
 									'border-radius',
 									'box-shadow',
 									'box-sizing',
@@ -254,7 +259,9 @@ if ( ! class_exists( 'WFOCUKirki_Modules_CSS_Generator' ) ) {
 									'background-size',
 									'transition',
 									'transition-property',
-								), true ) ) {
+								),
+								true
+							) ) {
 								unset( $css[ $media_query ][ $element ][ $property ] );
 								$css[ $media_query ][ $element ][ '-webkit-' . $property ] = $value;
 								$css[ $media_query ][ $element ][ '-moz-' . $property ]    = $value;
@@ -262,12 +269,16 @@ if ( ! class_exists( 'WFOCUKirki_Modules_CSS_Generator' ) ) {
 							}
 
 							// Add -ms-* and -o-*.
-							if ( is_string( $property ) && in_array( $property, array(
+							if ( is_string( $property ) && in_array(
+								$property,
+								array(
 									'transform',
 									'background-size',
 									'transition',
 									'transition-property',
-								), true ) ) {
+								),
+								true
+							) ) {
 								unset( $css[ $media_query ][ $element ][ $property ] );
 								$css[ $media_query ][ $element ][ '-ms-' . $property ] = $value;
 								$css[ $media_query ][ $element ][ '-o-' . $property ]  = $value;
@@ -279,7 +290,6 @@ if ( ! class_exists( 'WFOCUKirki_Modules_CSS_Generator' ) ) {
 			} // End if().
 
 			return $css;
-
 		}
 	}
 }

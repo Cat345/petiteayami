@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+#[\AllowDynamicProperties]
 class BWFAN_WC_Review_Content extends BWFAN_Merge_Tag {
 
 	private static $instance = null;

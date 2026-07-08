@@ -16,12 +16,9 @@ class NewsletterController
     /**
      * @var Providers
      */
-    protected $providers;
+    protected array $providers;
 
-    /**
-     * @var string
-     */
-    protected $secret;
+    protected string $secret;
 
     /**
      * @param Providers $providers

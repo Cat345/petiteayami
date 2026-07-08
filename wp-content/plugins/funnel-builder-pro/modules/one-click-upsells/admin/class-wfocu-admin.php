@@ -18,22 +18,121 @@ if ( ! class_exists( 'WFOCU_Admin' ) ) {
 
 			$this->section_page = ( $this->is_upstroke_page() ) ? filter_input( INPUT_GET, 'section', FILTER_UNSAFE_RAW ) : '';
 
+			add_action( 'save_post', array( $this, 'maybe_reset_transients' ), 10, 2 );
+			add_action( 'delete_post', array( $this, 'clear_transients_on_delete' ), 10 );
+			if ( class_exists( 'BWF_WC_Compatibility' ) && BWF_WC_Compatibility::is_hpos_enabled() ) {
+				add_action( 'woocommerce_delete_order', array( $this, 'clear_session_record_on_shop_order_delete' ), 10 );
+
+			} else {
+				add_action( 'delete_post', array( $this, 'clear_session_record_on_shop_order_delete' ), 10 );
+			}
+
+			$get_db_version = get_option( '_wfocu_db_version', '0.0.0' );
+
+			if ( version_compare( WFOCU_DB_VERSION, $get_db_version, '>' ) ) {
+				add_action( 'admin_init', array( $this, 'check_db_version' ), 990 );
+			}
+
+			/**
+			 * Initiate Background Database updaters
+			 */
+			add_action( 'init', array( $this, 'init_background_updater' ) );
+
+			$get_db_version = get_option( '_wfocu_plugin_version', '' );
+
+			if ( version_compare( $get_db_version, WFOCU_VERSION, '<' ) ) {
+				add_action( 'admin_init', array( $this, 'maybe_update_upstroke_version_in_option' ) );
+			}
+
+			add_filter(
+				'bwf_general_settings_default_config',
+				function ( $fields ) {
+					$fields['wfocu_page_base'] = 'offer';
+
+					return $fields;
+				}
+			);
+
+			/**
+			 * Tell core to show these settings
+			 */
+			add_filter( 'bwf_enable_ecommerce_integration_pinterest', '__return_true' );
+			add_filter( 'bwf_enable_ecommerce_integration_fb_purchase', '__return_true' );
+			add_filter( 'bwf_enable_ecommerce_integration_ga_purchase', '__return_true' );
+			add_filter( 'bwf_enable_ecommerce_integration_gad_purchase', '__return_true' );
+			add_filter( 'bwf_enable_ecommerce_integration_pint_purchase', '__return_true' );
+			add_filter( 'bwf_enable_ecommerce_integration_tiktok_purchase', '__return_true' );
+			add_filter( 'bwf_enable_ecommerce_integration_snapchat_purchase', '__return_true' );
+			add_filter( 'bwf_enable_ecommerce_integration_gad', '__return_true' );
+			add_filter( 'bwf_enable_ecommerce_integration_tiktok', '__return_true' );
+			add_filter( 'bwf_enable_ecommerce_integration_snapchat', '__return_true' );
+			add_filter( 'bwf_enable_ecommerce_integration_pixel', '__return_true' );
+			add_filter( 'bwf_enable_ecommerce_integration_ga', '__return_true' );
+			add_filter( 'bwf_enable_ga4', '__return_true' );
+
+			add_action( 'woocommerce_admin_order_data_after_order_details', array( $this, 'show_advanced_field_order' ), 9 );
+
+			add_action( 'wfocu_build_offer_product_before', array( $this, 'maybe_check_offer_data_for_qty_change' ), 10, 2 );
+
+			add_action( 'customize_controls_print_footer_scripts', array( $this, 'maybe_print_mergetag_helpbox' ) );
+
+			add_action( 'wfocu_loaded', array( $this, 'maybe_add_timeline_files' ), 999 );
+			add_filter( 'wfocu_add_control_meta_query', array( $this, 'exclude_from_query' ) );
+			add_filter( 'woofunnels_global_settings_fields', array( $this, 'add_global_settings_fields' ) );
+			add_action( 'admin_footer', array( $this, 'add_script_for_fire_normalize_order' ) );
+			add_filter(
+				'woofunnels_global_settings',
+				function ( $menu ) {
+					array_push(
+						$menu,
+						array(
+							'title'    => __( 'One Click Upsells', 'woofunnels-upstroke-one-click-upsell' ),
+							'slug'     => 'upstroke',
+							'link'     => admin_url( 'admin.php?page=upstroke&tab=settings' ),
+							'priority' => 50,
+							'pro_tab'  => true,
+						)
+					);
+
+					return $menu;
+				}
+			);
+
+			add_filter(
+				'bwf_general_settings_fields',
+				function ( $fields ) {
+					$fields['wfocu_page_base'] = array(
+						'type'      => 'input',
+						'inputType' => 'text',
+						'label'     => __( 'Upsell Page', 'woofunnels-upstroke-one-click-upsell' ),
+						'hint'      => '',
+					);
+
+					return $fields;
+				},
+				90
+			);
+			/**
+			 * Admin customizer enqueue scripts
+			 */
+			add_action( 'customize_controls_print_styles', array( $this, 'admin_customizer_enqueue_assets' ), 10 );
+			$is_admin_enabled = ! class_exists( 'WFFN_Pro_Upsells_Support' )
+				|| ! method_exists( 'WFFN_Pro_Upsells_Support', 'is_admin_enabled' )
+				|| WFFN_Pro_Upsells_Support::is_admin_enabled();
+			if ( ! $is_admin_enabled ) {
+				return;
+			}
+
 			/**
 			 * Admin enqueue scripts
 			 */
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_assets' ), 99 );
 
 			/**
-			 * Admin customizer enqueue scripts
-			 */
-			add_action( 'customize_controls_print_styles', array( $this, 'admin_customizer_enqueue_assets' ), 10 );
-
-			/**
 			 * Admin footer text
 			 */
 			add_filter( 'admin_footer_text', array( $this, 'admin_footer_text' ), 9999, 1 );
 
-			add_action( 'save_post', array( $this, 'maybe_reset_transients' ), 10, 2 );
 			if ( WFOCU_Common::is_load_admin_assets( 'all' ) ) {
 				add_action( 'admin_enqueue_scripts', array( $this, 'js_variables' ), 0 );
 			}
@@ -43,13 +142,6 @@ if ( ! class_exists( 'WFOCU_Admin' ) ) {
 			if ( $this->is_upstroke_page() && isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page detection
 
 				add_action( 'admin_init', array( $this, 'maybe_set_funnel_id' ) );
-			}
-			add_action( 'delete_post', array( $this, 'clear_transients_on_delete' ), 10 );
-			if ( class_exists( 'BWF_WC_Compatibility' ) && BWF_WC_Compatibility::is_hpos_enabled() ) {
-				add_action( 'woocommerce_delete_order', array( $this, 'clear_session_record_on_shop_order_delete' ), 10 );
-
-			} else {
-				add_action( 'delete_post', array( $this, 'clear_session_record_on_shop_order_delete' ), 10 );
 			}
 
 			/**
@@ -63,34 +155,19 @@ if ( ! class_exists( 'WFOCU_Admin' ) ) {
 
 				add_action( 'admin_init', array( $this, 'maybe_deactivate_post' ) );
 			}
-			add_action( 'customize_controls_print_footer_scripts', array( $this, 'maybe_print_mergetag_helpbox' ) );
 			add_filter( 'plugin_action_links_' . WFOCU_PLUGIN_BASENAME, array( $this, 'plugin_actions' ) );
 			if ( $this->is_upstroke_page() && ! empty( $_REQUEST['_wp_http_referer'] ) && ! empty( $_REQUEST['REQUEST_URI'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for admin page detection, REQUEST_URI is validated
 				add_action( 'admin_init', array( $this, 'maybe_handle_http_referer' ) );
 			}
 			add_action( 'woocommerce_admin_field_payment_gateways', array( $this, 'hide_test_gateway_from_admin_list' ) );
 
-			$get_db_version = get_option( '_wfocu_db_version', '0.0.0' );
-
-			if ( version_compare( WFOCU_DB_VERSION, $get_db_version, '>' ) ) {
-				add_action( 'admin_init', array( $this, 'check_db_version' ), 990 );
-			}
 			add_action( 'admin_bar_menu', array( $this, 'toolbar_link_to_xlplugins' ), 999 );
 
 			add_filter( 'woocommerce_payment_gateways_setting_columns', array( $this, 'set_wc_payment_gateway_column' ) );
 
 			add_action( 'woocommerce_payment_gateways_setting_column_wfocu', array( $this, 'wc_payment_gateway_column_content' ) );
 
-			/**
-			 * Initiate Background Database updaters
-			 */
-			add_action( 'init', array( $this, 'init_background_updater' ) );
 			add_action( 'admin_head', array( $this, 'maybe_update_database_update' ) );
-			$get_db_version = get_option( '_wfocu_plugin_version', '' );
-
-			if ( version_compare( $get_db_version, WFOCU_VERSION, '<' ) ) {
-				add_action( 'admin_init', array( $this, 'maybe_update_upstroke_version_in_option' ) );
-			}
 
 			/**
 			 * Handling to prevent scripts and styles in our pages.
@@ -147,23 +224,7 @@ if ( ! class_exists( 'WFOCU_Admin' ) ) {
 					999
 				);
 			}
-			add_filter(
-				'woofunnels_global_settings',
-				function ( $menu ) {
-					array_push(
-						$menu,
-						array(
-							'title'    => __( 'One Click Upsells', 'woofunnels-upstroke-one-click-upsell' ),
-							'slug'     => 'upstroke',
-							'link'     => admin_url( 'admin.php?page=upstroke&tab=settings' ),
-							'priority' => 50,
-							'pro_tab'  => true,
-						)
-					);
 
-					return $menu;
-				}
-			);
 			add_action( 'edit_form_after_title', array( $this, 'add_back_button' ) );
 
 			/*** bwf general setting */
@@ -199,61 +260,11 @@ if ( ! class_exists( 'WFOCU_Admin' ) ) {
 				90
 			);
 
-			add_filter(
-				'bwf_general_settings_fields',
-				function ( $fields ) {
-					$fields['wfocu_page_base'] = array(
-						'type'      => 'input',
-						'inputType' => 'text',
-						'label'     => __( 'Upsell Page', 'woofunnels-upstroke-one-click-upsell' ),
-						'hint'      => '',
-					);
-
-					return $fields;
-				},
-				90
-			);
-			add_filter(
-				'bwf_general_settings_default_config',
-				function ( $fields ) {
-					$fields['wfocu_page_base'] = 'offer';
-
-					return $fields;
-				}
-			);
-
-			/**
-			 * Tell core to show these settings
-			 */
-			add_filter( 'bwf_enable_ecommerce_integration_pinterest', '__return_true' );
-			add_filter( 'bwf_enable_ecommerce_integration_fb_purchase', '__return_true' );
-			add_filter( 'bwf_enable_ecommerce_integration_ga_purchase', '__return_true' );
-			add_filter( 'bwf_enable_ecommerce_integration_gad_purchase', '__return_true' );
-			add_filter( 'bwf_enable_ecommerce_integration_pint_purchase', '__return_true' );
-			add_filter( 'bwf_enable_ecommerce_integration_tiktok_purchase', '__return_true' );
-			add_filter( 'bwf_enable_ecommerce_integration_snapchat_purchase', '__return_true' );
-			add_filter( 'bwf_enable_ecommerce_integration_gad', '__return_true' );
-			add_filter( 'bwf_enable_ecommerce_integration_tiktok', '__return_true' );
-			add_filter( 'bwf_enable_ecommerce_integration_snapchat', '__return_true' );
-			add_filter( 'bwf_enable_ecommerce_integration_pixel', '__return_true' );
-			add_filter( 'bwf_enable_ecommerce_integration_ga', '__return_true' );
-			add_filter( 'bwf_enable_ga4', '__return_true' );
-
-			add_action( 'wfocu_loaded', array( $this, 'maybe_add_timeline_files' ), 999 );
 			add_action( 'admin_menu', array( $this, 'register_admin_menu' ), 90 );
 
-			add_filter( 'wfocu_add_control_meta_query', array( $this, 'exclude_from_query' ) );
-			add_filter( 'woofunnels_global_settings_fields', array( $this, 'add_global_settings_fields' ) );
 			if ( isset( $_GET['page'] ) && 'upstroke' === $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				add_action( 'admin_init', array( $this, 'maybe_show_wizard' ) );
 			}
-			add_action( 'woocommerce_admin_order_data_after_order_details', array( $this, 'show_advanced_field_order' ), 9 );
-
-			add_action( 'wfocu_build_offer_product_before', array( $this, 'maybe_check_offer_data_for_qty_change' ), 10, 2 );
-
-			add_action( 'wfocu_fkwcs_delete_duplicate_comments', array( $this, 'delete_duplicate_comments_function' ) );
-			add_action( 'wfocu_fkwcs_clear_delete_duplicate_comments_schedule', array( $this, 'clear_delete_duplicate_comments_schedule_function' ) );
-			add_action( 'admin_footer', array( $this, 'add_script_for_fire_normalize_order' ) );
 		}
 
 
@@ -466,6 +477,7 @@ if ( ! class_exists( 'WFOCU_Admin' ) ) {
 					'ajax_nonce_activate_plugins'          => wp_create_nonce( 'wfocu_activate_plugins' ),
 					'ajax_nonce_clear_template'            => wp_create_nonce( 'wfocu_clear_template' ),
 					'ajax_nonce_get_custom_page'           => wp_create_nonce( 'wfocu_get_custom_page' ),
+					'ajax_nonce_page_search'               => wp_create_nonce( 'wfocu_page_search' ),
 					'ajax_nonce_make_wpml_duplicate'       => wp_create_nonce( 'wfocu_make_wpml_duplicate' ),
 					'ajax_nonce_get_wpml_edit_url'         => wp_create_nonce( 'wfocu_get_wpml_edit_url' ),
 					'plugin_url'                           => WFOCU_PLUGIN_URL,
@@ -1314,7 +1326,7 @@ In such scenarios a separate order is created for your record and is created and
 
 				if ( false === is_null( $funnel_post ) ) {
 					$data['id']          = WFOCU_Core()->funnels->get_funnel_id();
-					$data['funnel_name'] = html_entity_decode( trim( get_the_title( $funnel_post ) ) );
+					$data['funnel_name'] = html_entity_decode( trim( get_the_title( $funnel_post ) ), ENT_QUOTES | ENT_HTML401 );
 					$data['funnel_desc'] = $funnel_post->post_content;
 					$data['offers_link'] = admin_url( 'admin.php?page=upstroke&section=offers&edit=' . $data['id'] );
 				}
@@ -1509,6 +1521,9 @@ In such scenarios a separate order is created for your record and is created and
 
 				$postID = filter_input( INPUT_GET, 'postid', FILTER_UNSAFE_RAW );
 				if ( $postID ) {
+					if ( ! current_user_can( 'edit_post', absint( $postID ) ) ) {
+						wp_die( esc_html__( 'You do not have permission to activate this offer.', 'woofunnels-upstroke-one-click-upsell' ) );
+					}
 					wp_update_post(
 						array(
 							'ID'          => $postID,
@@ -1529,6 +1544,9 @@ In such scenarios a separate order is created for your record and is created and
 
 				$postID = filter_input( INPUT_GET, 'postid', FILTER_UNSAFE_RAW );
 				if ( $postID ) {
+					if ( ! current_user_can( 'edit_post', absint( $postID ) ) ) {
+						wp_die( esc_html__( 'You do not have permission to deactivate this offer.', 'woofunnels-upstroke-one-click-upsell' ) );
+					}
 					wp_update_post(
 						array(
 							'ID'          => $postID,
@@ -1555,16 +1573,16 @@ In such scenarios a separate order is created for your record and is created and
 
 			<div class='' id="wfocu_shortcode_help_box" style="display: none;">
 
-				<h3><?php esc_attr_e( 'Merge Tags', 'woofunnels-upstroke-one-click-upsell' ); ?></h3>
-				<div style="font-size: 1.1em; margin: 5px;"><?php esc_attr_e( 'Here are are set of Merge Tags that can be used on this page.', 'woofunnels-upstroke-one-click-upsell' ); ?> </i> </div>
+				<h3><?php esc_html_e( 'Merge Tags', 'woofunnels-upstroke-one-click-upsell' ); ?></h3>
+				<div style="font-size: 1.1em; margin: 5px;"><?php esc_html_e( 'Here are are set of Merge Tags that can be used on this page.', 'woofunnels-upstroke-one-click-upsell' ); ?> </i> </div>
 				<?php foreach ( $offer_data->products as $hash => $product_id ) { ?>
 					<h4><?php echo esc_html( sprintf( 'Product: %1$s', wc_get_product( $product_id )->get_title() ) ); ?></h4>
 
 					<table class="table widefat">
 						<thead>
 						<tr>
-							<td><?php esc_attr_e( 'Title', 'woofunnels-upstroke-one-click-upsell' ); ?></td>
-							<td style="width: 70%;"><?php esc_attr_e( 'Merge Tags', 'woofunnels-upstroke-one-click-upsell' ); ?></td>
+							<td><?php esc_html_e( 'Title', 'woofunnels-upstroke-one-click-upsell' ); ?></td>
+							<td style="width: 70%;"><?php esc_html_e( 'Merge Tags', 'woofunnels-upstroke-one-click-upsell' ); ?></td>
 
 						</tr>
 						</thead>
@@ -1743,7 +1761,7 @@ In such scenarios a separate order is created for your record and is created and
 
 		public function tooltip( $text ) {
 			?>
-			<span class="wfocu-help"><i class="icon"></i><div class="helpText"><?php echo( $text ); ?></div></span> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<span class="wfocu-help"><i class="icon"></i><div class="helpText"><?php echo wp_kses_post( $text ); ?></div></span>
 			<?php
 		}
 
@@ -1894,7 +1912,6 @@ In such scenarios a separate order is created for your record and is created and
 				'3.0' => array( 'wfocu_update_fullwidth_page_template' ),
 				'3.3' => array( 'wfocu_update_general_setting_fields' ),
 				'3.5' => array( 'wfocu_update_general_setting_fields_3_5' ),
-				'3.7' => array( 'wfocu_update_delete_duplicate_comments_3_6' ),
 				'3.8' => array( 'wfocu_update_sepa_trans_key_3_8' ),
 				'3.9' => array( 'wfocu_set_default_value_in_autoload_option' ),
 			);
@@ -2691,83 +2708,9 @@ In such scenarios a separate order is created for your record and is created and
 			return $offer_data;
 		}
 
-		function clear_delete_duplicate_comments_schedule_function() {
-			// Clear the scheduled action
-			wp_clear_scheduled_hook( 'wfocu_fkwcs_delete_duplicate_comments' );
 
-			WFOCU_Core()->log->log( 'Recurring action "delete_duplicate_comments" cleared due to an error or no more duplicate comments.' );
-		}
 
-		function delete_duplicate_comments_function() {
-			global $wpdb;
 
-			try {
-				// Corrected delete query with a subquery to support LIMIT
-				$delete_query = "
-            DELETE FROM {$wpdb->comments}
-            WHERE comment_ID IN (
-                SELECT comment_ID
-                FROM (
-                    SELECT wc.comment_ID
-                    FROM {$wpdb->comments} wc
-                    JOIN (
-                        SELECT comment_post_ID, MIN(comment_ID) AS retained_comment_ID
-                        FROM {$wpdb->comments}
-                        WHERE comment_content LIKE '%Order charge successful in Stripe%'
-                        GROUP BY comment_post_ID
-                        HAVING COUNT(*) > 1
-                    ) AS subquery
-                    ON wc.comment_post_ID = subquery.comment_post_ID
-                    WHERE wc.comment_ID != subquery.retained_comment_ID
-                    AND wc.comment_content LIKE '%Order charge successful in Stripe%'
-                    LIMIT 100
-                ) AS temp_table
-            )
-        ";
-
-				// Execute the delete query
-				$deleted_rows = $wpdb->query( $delete_query );  //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-
-				// Log the number of deleted rows
-				WFOCU_Core()->log->log( "Deleted $deleted_rows duplicate comments from wp_comments table." );
-
-				// Check if more rows exist to delete
-				$like_pattern = $wpdb->esc_like( 'Order charge successful in Stripe' );
-				$select_query = $wpdb->prepare(
-					"
-            SELECT wc.comment_ID
-            FROM {$wpdb->comments} wc
-            JOIN (
-                SELECT comment_post_ID, MIN(comment_ID) AS retained_comment_ID
-                FROM {$wpdb->comments}
-                WHERE comment_content LIKE %s
-                GROUP BY comment_post_ID
-                HAVING COUNT(*) > 1
-            ) AS subquery
-            ON wc.comment_post_ID = subquery.comment_post_ID
-            WHERE wc.comment_ID != subquery.retained_comment_ID
-            AND wc.comment_content LIKE %s
-            LIMIT 1
-        ",
-					'%' . $like_pattern . '%',
-					'%' . $like_pattern . '%'
-				);
-
-				// Run the select query to check for remaining rows
-				$remaining_rows = $wpdb->get_results( $select_query );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-
-				// If no remaining rows, schedule a single action to remove the recurring action
-				if ( empty( $remaining_rows ) ) {
-					wp_schedule_single_event( time(), 'wfocu_fkwcs_clear_delete_duplicate_comments_schedule' );
-				}
-			} catch ( Exception | Error $e ) {
-				// Log the exception message
-				WFOCU_Core()->log->log( 'Exception occurred in : ' . __FUNCTION__ . $e->getMessage() );
-
-				// Schedule a single action to delete the recurring action
-				wp_schedule_single_event( time(), 'wfocu_fkwcs_clear_delete_duplicate_comments_schedule' );
-			}
-		}
 
 		public function get_svg_image() {
 			if ( ! class_exists( 'WFFN_Core' ) ) {

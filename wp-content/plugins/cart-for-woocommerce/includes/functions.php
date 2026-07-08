@@ -33,7 +33,7 @@ if ( ! function_exists( 'fkcart_get_template_part' ) ) {
 	 */
 	function fkcart_get_template_part( $slug, $name = '', $args = [], $echo = true, $custom_path = '' ) {
 		if ( $args && is_array( $args ) ) {
-			extract( $args ); // phpcs:ignore
+			extract( $args, EXTR_SKIP ); // phpcs:ignore
 		}
 
 		$template = '';

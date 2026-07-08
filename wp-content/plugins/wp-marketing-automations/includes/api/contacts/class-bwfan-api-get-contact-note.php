@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Contact_Note extends BWFAN_API_Base {
 	public static $ins;
 
@@ -30,8 +31,8 @@ class BWFAN_API_Get_Contact_Note extends BWFAN_API_Base {
 	public function process_api_call() {
 		/** checking if search present in params **/
 		$contact_id = $this->get_sanitized_arg( 'contact_id', 'text_field' );
-		$offset     = ! empty( $this->get_sanitized_arg( 'offset', 'key' ) ) ? $this->get_sanitized_arg( 'offset', 'text_field' ) : $this->pagination->offset;
-		$limit      = ! empty( $this->get_sanitized_arg( 'limit', 'key' ) ) ? $this->get_sanitized_arg( 'limit', 'text_field' ) : $this->pagination->limit;
+		$offset     = ! empty( $this->get_sanitized_arg( 'offset', 'absint' ) ) ? $this->get_sanitized_arg( 'offset', 'absint' ) : $this->pagination->offset;
+		$limit      = ! empty( $this->get_sanitized_arg( 'limit', 'absint' ) ) ? $this->get_sanitized_arg( 'limit', 'absint' ) : $this->pagination->limit;
 
 		if ( empty( $contact_id ) ) {
 			return $this->error_response( __( 'Contact ID is mandatory', 'wp-marketing-automations' ) );

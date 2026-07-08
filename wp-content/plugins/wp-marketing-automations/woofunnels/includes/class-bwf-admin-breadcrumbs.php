@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * Class to control breadcrumb and its behaviour accross the buildwoofunnels
  * @author buildwoofunnels
@@ -69,7 +72,7 @@ if ( ! class_exists( 'BWF_Admin_Breadcrumbs' ) ) {
 				return false;
 			}
 
-			if ( ! is_array( self::$nodes ) || count( self::$nodes ) == 0 ) {
+			if ( ! is_array( self::$nodes ) || count( self::$nodes ) === 0 ) {
 				return false;
 			}
 
@@ -79,7 +82,7 @@ if ( ! class_exists( 'BWF_Admin_Breadcrumbs' ) ) {
 				}
 			} );
 
-			if ( ! is_array( self::$nodes ) || count( self::$nodes ) == 0 ) {
+			if ( ! is_array( self::$nodes ) || count( self::$nodes ) === 0 ) {
 				return false;
 			}
 
@@ -97,9 +100,9 @@ if ( ! class_exists( 'BWF_Admin_Breadcrumbs' ) ) {
 
 				echo '<span>';
 				if ( $count !== $h && isset( $menu['link'] ) && ! empty( $menu['link'] ) ) {
-					echo '<a href="' . esc_url($menu['link']) . '">' . $menu['text'] . '</a>';  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '<a href="' . esc_url($menu['link']) . '">' . esc_html( $menu['text'] ) . '</a>';
 				} else {
-					echo $menu['text']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo esc_html( $menu['text'] );
 				}
 				echo '</span>';
 			}

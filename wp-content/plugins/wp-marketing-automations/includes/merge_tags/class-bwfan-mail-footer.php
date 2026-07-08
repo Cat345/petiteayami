@@ -1,10 +1,15 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Bwfan Mail Footer
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class BWFAN_Mail_Footer extends BWFAN_Merge_Tag {
 
 	private static $instance = null;

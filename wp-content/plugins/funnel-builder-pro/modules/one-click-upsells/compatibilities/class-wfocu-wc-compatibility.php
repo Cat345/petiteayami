@@ -43,6 +43,7 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 	 *
 	 * @version 1.0
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_WC_Compatibility {
 
 		/**
@@ -52,7 +53,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 		 *
 		 * @return string the label to display
 		 * @since 1.0
-		 *
 		 */
 		public static function wc_attribute_label( $label ) {
 
@@ -229,7 +229,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 				return get_post_meta( $order->id, '_shipping_country', true );
 
 			}
-
 		}
 
 
@@ -241,7 +240,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 				return get_post_meta( $order->id, '_billing_country', true );
 
 			}
-
 		}
 
 		public static function get_order_id( $order ) {
@@ -255,7 +253,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 				return $order->id;
 
 			}
-
 		}
 
 		/**
@@ -271,7 +268,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 				return $order->billing_address_1;
 
 			}
-
 		}
 
 
@@ -300,7 +296,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 			}
 
 			return __return_empty_string();
-
 		}
 
 
@@ -317,7 +312,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 				return $order->billing_first_name;
 
 			}
-
 		}
 
 		/**
@@ -333,7 +327,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 				return $order->billing_last_name;
 
 			}
-
 		}
 
 		/**
@@ -350,7 +343,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 			} else {
 				return $status;
 			}
-
 		}
 
 		/**
@@ -366,7 +358,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 				return $order->billing_address_2;
 
 			}
-
 		}
 
 		/**
@@ -382,7 +373,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 				return $order->shipping_address_1;
 
 			}
-
 		}
 
 
@@ -399,7 +389,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 				return $order->get_total_shipping();
 
 			}
-
 		}
 
 		/**
@@ -415,7 +404,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 				return $order->shipping_address_2;
 
 			}
-
 		}
 
 		/**
@@ -497,7 +485,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 		 * @param string $notice_type The singular name of the notice type - either error, success or notice. [optional]
 		 *
 		 * @since 1.0
-		 *
 		 */
 		public static function wc_add_notice( $message, $notice_type = 'success' ) {
 
@@ -535,7 +522,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 		 * @param string $code javascript
 		 *
 		 * @since 1.0
-		 *
 		 */
 		public static function wc_enqueue_js( $code ) {
 
@@ -585,12 +571,11 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 		 * Sanitize, remove locale formatting, and optionally round + trim off zeros
 		 *
 		 * @param float|string $number Expects either a float or a string with a decimal separator only (no thousands)
-		 * @param mixed $dp number of decimal points to use, blank to use woocommerce_price_num_decimals, or false to avoid all rounding.
-		 * @param boolean $trim_zeros from end of string
+		 * @param mixed        $dp number of decimal points to use, blank to use woocommerce_price_num_decimals, or false to avoid all rounding.
+		 * @param boolean      $trim_zeros from end of string
 		 *
 		 * @return string
 		 * @since 1.0
-		 *
 		 */
 		public static function wc_format_decimal( $number, $dp = false, $trim_zeros = false ) {
 
@@ -609,7 +594,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 		 *
 		 * @return int the notice count
 		 * @since 1.0
-		 *
 		 */
 		public static function wc_notice_count( $notice_type = '' ) {
 
@@ -761,12 +745,10 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 
 					if ( 2 === count( $method_exp ) ) {
 						return $method_exp[1];
-					} else {
-						if ( is_callable( array( $method, 'get_instance_id' ) ) ) {
+					} elseif ( is_callable( array( $method, 'get_instance_id' ) ) ) {
 							return $method->get_instance_id();
-						} else {
-							return '';
-						}
+					} else {
+						return '';
 					}
 				}
 			}
@@ -782,7 +764,6 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 		 *
 		 * @return boolean true if the installed version of WooCommerce is > $version
 		 * @since 1.0
-		 *
 		 */
 		public static function is_wc_version_gt( $version ) {
 
@@ -793,9 +774,7 @@ if ( ! class_exists( 'WFOCU_WC_Compatibility' ) ) :
 			if ( version_compare( self::get_wc_version(), '3.3.0', 'ge' ) ) {
 				return 'incl' === get_option( 'woocommerce_tax_display_cart' );
 			}
-
 		}
-
 	}
 
 endif; // Class exists check

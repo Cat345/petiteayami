@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class BWFAN_Conversation
  */
+#[\AllowDynamicProperties]
 class BWFAN_Conversation {
 	private static $ins = null;
 
@@ -30,6 +31,8 @@ class BWFAN_Conversation {
 	public $template = null;
 	public $template_id = 0;
 	public $engagement_type = null;
+
+	public $disable_tracking = false;
 
 	/**
 	 * @param $content
@@ -192,11 +195,12 @@ class BWFAN_Conversation {
 	public function append_to_email_body( $body, $pre_header, $pixel_id ) {
 		$pre_header = ! empty( $pre_header ) ? str_replace( "$", "\\$", $pre_header ) : '';
 		$pre_header = ! empty( $pre_header ) ? '<span style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">' . $pre_header . '</span>' : '';
-		$pixel      = ! empty( $pixel_id ) ? $this->get_email_pixel_html( $pixel_id ) : '';
+		$pixel      = false === $this->disable_tracking && ! empty( $pixel_id ) ? $this->get_email_pixel_html( $pixel_id ) : '';
 
 		/** it will add the space after the pre-header to not show the email body content */
 		if ( ! empty( $pre_header ) ) {
-			$pre_header .= '<div style="display: none; max-height: 0; overflow: hidden;">' . str_repeat( '&#847;&zwnj;&nbsp;', apply_filters( 'bwfan_email_pre_header_space', 100 ) ) . '</div>'; // Adding 70 instances to create enough hidden space
+			$pre_header_space = min( absint( apply_filters( 'bwfan_email_pre_header_space', 100 ) ), 500 );
+			$pre_header      .= '<div style="display: none; max-height: 0; overflow: hidden;">' . str_repeat( html_entity_decode( '&#847;&zwnj;&nbsp;', ENT_HTML5, 'UTF-8' ), $pre_header_space ) . '</div>';
 		}
 
 		$appended_body = $pre_header . $pixel . $body;
@@ -232,7 +236,8 @@ class BWFAN_Conversation {
 	 * @since 1.0.0
 	 */
 	public function append_to_email_body_links( $body, $utm_data, $track_id, $uid, $mode = 'email' ) {
-		$url_args = self::transform_utm_data( $utm_data );
+		$url_args               = self::transform_utm_data( $utm_data );
+		$this->disable_tracking = false;
 
 		/** SMS & WhatsApp */
 		if ( 'email' !== $mode ) {
@@ -254,6 +259,9 @@ class BWFAN_Conversation {
 			}, $body );
 
 		}
+
+		/** Allow skipping FKA open/click tracking (open pixel + tracked links) while keeping UTM, pre-header and unsubscribe links intact. Assigned every call to reset the flag on the shared instance. */
+		$this->disable_tracking = (bool) apply_filters( 'bwfan_skip_fka_email_tracking', false, $this );
 
 		/** Email */
 		$href_regex = BWFAN_Common::get_regex_pattern();
@@ -316,7 +324,7 @@ class BWFAN_Conversation {
 		 */
 		if ( ! empty( $track_id ) ) {
 			/** Exclude click tracking for unsubscribe link */
-			if ( false === strpos( $string, 'bwfan-action=unsubscribe' ) && false === strpos( $string, 'bwfan-action=view_in_browser' ) ) {
+			if ( false === $this->disable_tracking && false === strpos( $string, 'bwfan-action=unsubscribe' ) && false === strpos( $string, 'bwfan-action=view_in_browser' ) ) {
 				$l_hash = $this->get_link_hash( $string );
 				$string = $this->convert_link_to_track_link( $string, $track_id, $uid, $l_hash );
 			}
@@ -385,6 +393,11 @@ class BWFAN_Conversation {
 	 * @since 1.0.0
 	 */
 	public function convert_link_to_track_link( $url, $track_id, $uid, $l_hash = '' ) {
+		/** Skip tracking for URLs whose clean form exceeds the DB column size */
+		if ( strlen( $this->get_cleaned_url( $url ) ) > 190 ) {
+			return $url;
+		}
+
 		$args = [
 			'bwfan-uid'      => $uid,
 			'bwfan-track-id' => $track_id,
@@ -395,7 +408,7 @@ class BWFAN_Conversation {
 			if ( ! empty( $l_hash ) ) {
 				$args['l_hash'] = $l_hash;
 			}
-			$args['bwfan-link'] = rawurlencode( html_entity_decode( $url ) );
+			$args['bwfan-link'] = rawurlencode( html_entity_decode( $url, ENT_QUOTES | ENT_HTML401 ) );
 			$url                = home_url();
 		} else if ( bwfan_is_autonami_pro_active() && ! is_null( $this->contact ) ) {
 			/** Add the Auth Hash */
@@ -442,7 +455,7 @@ class BWFAN_Conversation {
 		}
 
 		$to          = BWFAN_Email_Conversations::$MODE_SMS === intval( $conversation_mode ) ? $contact->contact->get_contact_no() : $contact->contact->get_email();
-		$hash_code   = md5( microtime( true ) . $to );
+		$hash_code   = wp_generate_password( 32, false );
 		$type        = ( true === $is_single ? ( BWFAN_Email_Conversations::$MODE_SMS === absint( $conversation_mode ) ? BWFAN_Email_Conversations::$TYPE_SMS : BWFAN_Email_Conversations::$TYPE_EMAIL ) : BWFAN_Email_Conversations::$TYPE_CAMPAIGN );
 		$type        = ( true === $is_single && ! empty( $single_type ) ? $single_type : $type );
 		$create_time = current_time( 'mysql', 1 );
@@ -569,7 +582,7 @@ class BWFAN_Conversation {
 				'contact_id'   => $contact_id,
 				'contact_mode' => 1
 			) );
-			$template = BWFAN_Common::decode_merge_tags( html_entity_decode( $template ) );
+			$template = BWFAN_Common::decode_merge_tags( html_entity_decode( $template, ENT_QUOTES | ENT_HTML401 ) );
 
 			$contact = new BWFCRM_Contact( $contact_id );
 			if ( $contact->is_contact_exists() ) {
@@ -580,6 +593,11 @@ class BWFAN_Conversation {
 		$this->broadcast_id = $broadcast_id;
 		$template           = BWFAN_Common::bwfan_correct_protocol_url( $template );
 		$pre_header         = BWFAN_Common::decode_merge_tags( $pre_header );
+
+		if ( empty( $this->engagement_type ) && ! empty( $broadcast_id ) ) {
+			$this->engagement_type = BWFAN_Email_Conversations::$TYPE_CAMPAIGN;
+		}
+
 		$template           = $this->apply_template_by_type( $template, $template_type, $pre_header );
 		$template           = $this->append_to_email_body_links( $template, $utm_data, $hash_code, $uid );
 
@@ -881,7 +899,7 @@ class BWFAN_Conversation {
 			$header[] = 'From: ' . $from_name . ' <' . $from_email . '>';
 		}
 		if ( ! empty( $reply_to_email ) ) {
-			$header[] = 'Reply-To:  ' . $reply_to_email;
+			$header[] = BWFAN_Common::build_reply_to_header( $reply_to_email, '', $from_name );
 		}
 
 		/** Set unsubscribe link in header */
@@ -1236,7 +1254,7 @@ class BWFAN_Conversation {
 	 * @return string
 	 */
 	public function maybe_insert_link( $link, $data ) {
-		if ( false === wp_http_validate_url( $link ) ) {
+		if ( false === BWFAN_Common::bwfan_is_valid_link( $link ) ) {
 			return '';
 		}
 		$type = $data['type'] ?? 0;
@@ -1259,7 +1277,11 @@ class BWFAN_Conversation {
 		if ( ! empty( $l_hash ) ) {
 			return $l_hash;
 		}
-		$link_hash = md5( $cleaned_url . $oid . $tid . $type . $sid );
+		// HMAC-signed so the link hash cannot be pre-computed from public inputs (URL + numeric IDs).
+		// Delimited payload prevents boundary collisions (e.g. oid=1,tid=23 vs oid=12,tid=3).
+		// HMAC-SHA1 produces exactly 40 hex chars — fits the existing varchar(40) column natively.
+		// HMAC's security does not depend on the underlying hash's collision resistance, so SHA-1's collision deprecation is not relevant here.
+		$link_hash = hash_hmac( 'sha1', $cleaned_url . '|' . $oid . '|' . $tid . '|' . $type . '|' . $sid, wp_salt( 'nonce' ) );
 
 		$data = [
 			'url'        => $link,

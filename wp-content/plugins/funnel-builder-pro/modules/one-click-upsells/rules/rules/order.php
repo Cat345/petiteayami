@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Rule_Order_Total' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Total extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -67,13 +68,13 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Total' ) ) {
 		}
 
 		public function get_nice_string( $rule ) {
-			return sprintf( __( 'Order Total %s  <strong>%s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), wc_price( $rule['condition'] ) );
+			return sprintf( __( 'Order Total %1$s  <strong>%2$s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), wc_price( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Item_Count' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Item_Count extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -141,12 +142,12 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Item_Count' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order Items count %s  <strong>%s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $rule['condition'] );
+			return sprintf( __( 'Order Items count %1$s  <strong>%2$s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $rule['condition'] );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Item' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Item extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -157,11 +158,11 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Item' ) ) {
 		public function get_possible_rule_operators() {
 
 			$operators = array(
-				'>' => __( 'contains at least', 'woofunnels-upstroke-one-click-upsell' ),
-				'<' => __( 'contains less than', 'woofunnels-upstroke-one-click-upsell' ),
+				'>'  => __( 'contains at least', 'woofunnels-upstroke-one-click-upsell' ),
+				'<'  => __( 'contains less than', 'woofunnels-upstroke-one-click-upsell' ),
 
 				'==' => __( 'contains exactly', 'woofunnels-upstroke-one-click-upsell' ),
-				'!=' => __( "does not contains at least", 'woofunnels-upstroke-one-click-upsell' ),
+				'!=' => __( 'does not contains at least', 'woofunnels-upstroke-one-click-upsell' ),
 			);
 
 			return $operators;
@@ -242,7 +243,7 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Item' ) ) {
 				case '==':
 					$result = absint( $quantity ) === absint( $found_quantity );
 					break;
-				case '!=' :
+				case '!=':
 					$result = ! ( $quantity <= $found_quantity );
 					break;
 				default:
@@ -255,7 +256,7 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Item' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order items %s <strong>%s qty</strong> of <strong>%s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $rule['condition']['qty'], wc_get_product( $rule['condition']['products'] )->get_title() );
+			return sprintf( __( 'Order items %1$s <strong>%2$s qty</strong> of <strong>%3$s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $rule['condition']['qty'], wc_get_product( $rule['condition']['products'] )->get_title() );
 		}
 
 		public function get_operators_string( $operator ) {
@@ -275,10 +276,10 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Item' ) ) {
 
 			}
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Category' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Category extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -381,13 +382,13 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Category' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order items %s Products with catergory(s) <strong>%s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_category_title( $rule['condition'] ) );
+			return sprintf( __( 'Order items %1$s Products with catergory(s) <strong>%2$s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_category_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Term' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Term extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -492,12 +493,12 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Term' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order items %s Products with term(s) <strong>%s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_terms_title( $rule['condition'] ) );
+			return sprintf( __( 'Order items %1$s Products with term(s) <strong>%2$s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_terms_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Item_Type' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Item_Type extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -517,7 +518,7 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Item_Type' ) ) {
 		}
 
 		public function get_possible_rule_values() {
-			$result = [];
+			$result = array();
 			$terms  = get_terms( 'product_type', array( 'hide_empty' => false ) );
 			if ( $terms && ! is_wp_error( $terms ) ) {
 				foreach ( $terms as $term ) {
@@ -611,12 +612,12 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Item_Type' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order items %s Products with type(s) <strong>%s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_product_type( $rule['condition'] ) );
+			return sprintf( __( 'Order items %1$s Products with type(s) <strong>%2$s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_product_type( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Coupons' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Coupons extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -637,11 +638,13 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Coupons' ) ) {
 
 		public function get_possible_rule_values() {
 			$result  = array();
-			$coupons = get_posts( array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
+			$coupons = get_posts(
+				array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
 				'post_type'      => 'shop_coupon',
 				'posts_per_page' => 5,
 
-			) );
+				)
+			);
 
 			foreach ( $coupons as $coupon ) {
 				$result[ sanitize_title( $coupon->post_title ) ] = $coupon->post_title;
@@ -710,12 +713,12 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Coupons' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order %s coupons(s) <strong>%s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_coupons_title( $rule['condition'] ) );
+			return sprintf( __( 'Order %1$s coupons(s) <strong>%2$s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_coupons_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Coupon_Exist' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Coupon_Exist extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -778,10 +781,10 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Coupon_Exist' ) ) {
 
 			return sprintf( __( 'Order %s any coupon. ', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Coupon_Text_Match' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Coupon_Text_Match extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -831,7 +834,7 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Coupon_Text_Match' ) ) {
 			$result = false;
 			if ( empty( $used_coupons ) || empty( $rule_data['condition'] ) ) {
 
-				if ( $type === "doesnt_contain" ) {
+				if ( $type === 'doesnt_contain' ) {
 					$result = true;
 				}
 
@@ -875,12 +878,12 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Coupon_Text_Match' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order %s coupon that matches with %s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $rule['condition'] );
+			return sprintf( __( 'Order %1$s coupon that matches with %2$s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $rule['condition'] );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Custom_Meta' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Custom_Meta extends WFOCU_Rule_Base {
 		public $supports = array( 'order' );
 
@@ -936,12 +939,12 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Custom_Meta' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order %s meta %s with value %s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $rule['condition']['meta_key'], $rule['condition']['meta_value'] );
+			return sprintf( __( 'Order %1$s meta %2$s with value %3$s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $rule['condition']['meta_key'], $rule['condition']['meta_value'] );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Payment_Gateway' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Payment_Gateway extends WFOCU_Rule_Base {
 		public $supports = array( 'order' );
 
@@ -1008,13 +1011,13 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Payment_Gateway' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order payment method %s of %s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_gateways_title( $rule['condition'] ) );
+			return sprintf( __( 'Order payment method %1$s of %2$s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_gateways_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Shipping_Country' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Shipping_Country extends WFOCU_Rule_Base {
 
 		public $supports = array( 'cart', 'order' );
@@ -1090,13 +1093,13 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Shipping_Country' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order shipping country %s %s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_countries_title( $rule['condition'] ) );
+			return sprintf( __( 'Order shipping country %1$s %2$s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_countries_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Shipping_Method' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Shipping_Method extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -1134,7 +1137,7 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Shipping_Method' ) ) {
 			$result = false;
 			$type   = $rule_data['operator'];
 
-			$methods = [];
+			$methods = array();
 			if ( $env === 'cart' ) {
 				$chosen = WC()->session->get( 'chosen_shipping_methods' );
 				foreach ( $chosen as $method ) {
@@ -1145,7 +1148,6 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Shipping_Method' ) ) {
 						$methods[] = $method;
 					}
 				}
-
 			} else {
 
 				$order_id = WFOCU_Core()->rules->get_environment_var( 'order' );
@@ -1188,13 +1190,13 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Shipping_Method' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order shipping method %s of %s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_shipping_method_title( $rule['condition'] ) );
+			return sprintf( __( 'Order shipping method %1$s of %2$s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_shipping_method_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Billing_Country' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Billing_Country extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -1268,12 +1270,12 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Billing_Country' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order Billing country %s %s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_countries_title( $rule['condition'] ) );
+			return sprintf( __( 'Order Billing country %1$s %2$s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_countries_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Item_Text_Match' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Item_Text_Match extends WFOCU_Rule_Base {
 		public $supports = array( 'order' );
 
@@ -1341,10 +1343,8 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Item_Text_Match' ) ) {
 										$found_text[] = $attribute;
 									}
 								}
-
 							}
 						}
-
 					}
 				}
 			} else {
@@ -1378,17 +1378,15 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Item_Text_Match' ) ) {
 										$found_text[] = $attribute;
 									}
 								}
-
 							}
 						}
 					}
 				}
-
 			}
 			$result = false;
 			if ( 0 === count( $found_text ) ) {
 
-				if ( $type === "doesnt_contain" ) {
+				if ( $type === 'doesnt_contain' ) {
 					$result = true;
 				}
 
@@ -1427,14 +1425,14 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Item_Text_Match' ) ) {
 		}
 
 		public function get_nice_string( $rule ) {
-			return sprintf( __( 'Order %s item that matches with %s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $rule['condition'] );
+			return sprintf( __( 'Order %1$s item that matches with %2$s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $rule['condition'] );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Order_Billing_State' ) ) {
 
 	/** WOOCOMMERCE SUBSCRIPTION PLUGIN RULE ENDS */
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Billing_State extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -1504,10 +1502,8 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Billing_State' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order Billing state %s of %s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_countries_title( $rule['condition'] ) );
+			return sprintf( __( 'Order Billing state %1$s of %2$s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_countries_title( $rule['condition'] ) );
 		}
-
-
 	}
 
 }

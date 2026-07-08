@@ -199,10 +199,12 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 
 		public function persistent_cart_merging() {
 			$global_settings = get_option( '_wfacp_global_settings', array() );
-			if ( isset( $global_settings['override_checkout_page_id'] ) && 0 !== absint( $global_settings['override_checkout_page_id'] ) ) {
+
+			if ( ( isset( $global_settings['override_checkout_page_id'] ) && 0 !== absint( $global_settings['override_checkout_page_id'] ) ) || ( class_exists( 'WFFN_Common' ) && WFFN_Common::get_store_checkout_id() > 0 ) ) {
 				add_filter( 'wfacp_remove_persistent_cart_after_merging', '__return_false' );
 			}
 		}
+
 
 		/**
 		 * Check valid header of the page (Text/Html)
@@ -252,7 +254,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 			if ( wc_string_to_bool( $this->settings['close_after_x_purchase'] ) && '' !== $this->settings['total_purchased_allowed'] && $this->settings['total_purchased_allowed'] > 0 ) {
 
 				global $wpdb;
-				$result = $wpdb->get_results( "select ID from {$wpdb->prefix}wfacp_stats where wfacp_id={$page_id}", ARRAY_A );
+				$result = $wpdb->get_results( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}wfacp_stats WHERE wfacp_id = %d", absint( $page_id ) ), ARRAY_A );
 				if ( ! empty( $result ) ) {
 					$total_purchased = count( $result );
 					if ( $total_purchased > 0 && $total_purchased >= $this->settings['total_purchased_allowed'] ) {
@@ -458,7 +460,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 
 			$coupon_parameter = $this->aero_coupons_value_parameter();
 			if ( isset( $_GET[ $coupon_parameter ] ) ) {
-				$coupon_parameter_ids = explode( ',', trim( $_GET[ $coupon_parameter ] ) );
+				$coupon_parameter_ids = explode( ',', sanitize_text_field( wp_unslash( $_GET[ $coupon_parameter ] ) ) );
 
 				if ( ! empty( $coupon_parameter_ids ) ) {
 					$coupon_ids = array_merge( $coupon_ids, $coupon_parameter_ids );
@@ -484,7 +486,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 			}
 			$default_value_parameter = $this->aero_default_value_parameter();
 			if ( isset( $_GET[ $default_value_parameter ] ) && '' != $_GET[ $default_value_parameter ] ) {
-				$best_value = $_GET[ $default_value_parameter ];
+				$best_value = sanitize_text_field( wp_unslash( $_GET[ $default_value_parameter ] ) );
 				WC()->session->set( 'wfacp_product_default_value_parameter_' . WFACP_Common::get_id(), $best_value );
 			} else {
 				WC()->session->set( 'wfacp_product_default_value_parameter_' . WFACP_Common::get_id(), '' );
@@ -916,13 +918,13 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 					'wfacp_is_checkout_override' => ( $this->is_checkout_override ) ? 'yes' : 'no',
 				);
 				if ( isset( $_REQUEST['currency'] ) ) {
-					$query['currency'] = $_REQUEST['currency'];
+					$query['currency'] = sanitize_text_field( wp_unslash( $_REQUEST['currency'] ) );
 				}
 				if ( isset( $_REQUEST['lang'] ) ) {
-					$query['lang'] = $_REQUEST['lang'];
+					$query['lang'] = sanitize_text_field( wp_unslash( $_REQUEST['lang'] ) );
 				}
 				if ( isset( $_REQUEST['wmc-currency'] ) ) {
-					$query['lang'] = $_REQUEST['wmc-currency'];
+					$query['lang'] = sanitize_text_field( wp_unslash( $_REQUEST['wmc-currency'] ) );
 				}
 				$query            = apply_filters( 'wfacp_ajax_endpoint_parameters', $query, $this );
 				$query['wc-ajax'] = $request;
@@ -1058,7 +1060,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 
 			WC()->session->set( 'wfacp_checkout_processed_' . WFACP_Common::get_id(), true );
 			if ( ! empty( $_POST ) && isset( $_POST['_wfacp_post_id'] ) ) {
-				WC()->session->set( 'wfacp_posted_data', $_POST );
+				WC()->session->set( 'wfacp_posted_data', map_deep( wp_unslash( $_POST ), 'sanitize_text_field' ) );
 			}
 		}
 
@@ -1184,7 +1186,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 			if ( isset( $_GET[ $add_checkout_parameter ] ) && '' != $_GET[ $add_checkout_parameter ] ) {
 
 				$this->add_to_cart_via_url = true;
-				WC()->session->set( 'aero_add_to_checkout_parameter_' . WFACP_Common::get_id(), $_GET[ $add_checkout_parameter ] );
+				WC()->session->set( 'aero_add_to_checkout_parameter_' . WFACP_Common::get_id(), sanitize_text_field( wp_unslash( $_GET[ $add_checkout_parameter ] ) ) );
 				$products     = explode( ',', $_GET[ $add_checkout_parameter ] );
 				$products_qty = array();
 
@@ -2198,9 +2200,9 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 				return $posted_data;
 			}
 
-			$day   = isset( $_POST['bwfan_birthday_date_dd'] ) ? trim( $_POST['bwfan_birthday_date_dd'] ) : '';
-			$month = isset( $_POST['bwfan_birthday_date_mm'] ) ? trim( $_POST['bwfan_birthday_date_mm'] ) : '';
-			$year  = isset( $_POST['bwfan_birthday_date_yy'] ) ? trim( $_POST['bwfan_birthday_date_yy'] ) : '';
+			$day   = isset( $_POST['bwfan_birthday_date_dd'] ) ? absint( $_POST['bwfan_birthday_date_dd'] ) : '';
+			$month = isset( $_POST['bwfan_birthday_date_mm'] ) ? absint( $_POST['bwfan_birthday_date_mm'] ) : '';
+			$year  = isset( $_POST['bwfan_birthday_date_yy'] ) ? absint( $_POST['bwfan_birthday_date_yy'] ) : '';
 
 			if ( $day && $month && $year && checkdate( (int) $month, (int) $day, (int) $year ) ) {
 				$dob                                = sprintf( '%04d-%02d-%02d', $year, $month, $day );

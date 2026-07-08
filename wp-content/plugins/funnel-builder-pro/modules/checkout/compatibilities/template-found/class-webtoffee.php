@@ -1,16 +1,20 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Compatibility added for webtoffee
- * #[AllowDynamicProperties] 
- class WFACP_Compatibility_HF_Woocommerce_Subscription
+ * #[AllowDynamicProperties]
+class WFACP_Compatibility_HF_Woocommerce_Subscription
  */
 if ( ! class_exists( 'WFACP_Compatibility_HF_Woocommerce_Subscription' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_HF_Woocommerce_Subscription {
 		public function __construct() {
-			add_action( 'wfacp_woocommerce_cart_item_subtotal_except_subscription', [ $this, 'do_not_display_price' ], 10, 2 );
-			add_action( 'wfacp_woocommerce_cart_item_subtotal_except_subscription_placeholder', [ $this, 'display_subscription_price' ], 10, 3 );
+			add_action( 'wfacp_woocommerce_cart_item_subtotal_except_subscription', array( $this, 'do_not_display_price' ), 10, 2 );
+			add_action( 'wfacp_woocommerce_cart_item_subtotal_except_subscription_placeholder', array( $this, 'display_subscription_price' ), 10, 3 );
 		}
 
 		/**
@@ -23,7 +27,7 @@ if ( ! class_exists( 'WFACP_Compatibility_HF_Woocommerce_Subscription' ) ) {
 			if ( ! $_product instanceof WC_Product ) {
 				return $status;
 			}
-			if ( in_array( $_product->get_type(), [ 'variable-subscription', 'subscription', 'subscription_variation' ] ) && class_exists( 'HF_Woocommerce_Subscription' ) ) {
+			if ( in_array( $_product->get_type(), array( 'variable-subscription', 'subscription', 'subscription_variation' ) ) && class_exists( 'HF_Woocommerce_Subscription' ) ) {
 				$status = false;
 			}
 
@@ -39,7 +43,7 @@ if ( ! class_exists( 'WFACP_Compatibility_HF_Woocommerce_Subscription' ) ) {
 			if ( ! $_product instanceof WC_Product ) {
 				return '';
 			}
-			if ( in_array( $_product->get_type(), [ 'variable-subscription', 'subscription', 'subscription_variation' ] ) && class_exists( 'HF_Woocommerce_Subscription' ) ) {
+			if ( in_array( $_product->get_type(), array( 'variable-subscription', 'subscription', 'subscription_variation' ) ) && class_exists( 'HF_Woocommerce_Subscription' ) ) {
 				echo WFACP_Common::display_subscription_price( $_product, $cart_item, $cart_item_key );
 			}
 		}

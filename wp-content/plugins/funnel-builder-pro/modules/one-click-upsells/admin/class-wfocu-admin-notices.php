@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Admin_Notices' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Admin_Notices {
 
 		private static $ins = null;

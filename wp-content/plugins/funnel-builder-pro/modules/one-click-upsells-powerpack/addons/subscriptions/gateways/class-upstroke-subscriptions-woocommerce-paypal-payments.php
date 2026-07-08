@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 /**
  * Author PhpStorm.
  */
@@ -6,6 +7,7 @@
 use WooCommerce\PayPalCommerce\ApiClient\Repository\CustomerRepository;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\PaymentToken;
 if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_PayPal_Payments' ) ) {
+	#[\AllowDynamicProperties]
 	class UpStroke_Subscriptions_WooCommerce_PayPal_Payments extends WFOCU_Gateway_Integration_PayPal_Payments {
 
 		public function __construct() {
@@ -15,7 +17,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_PayPal_Payments' ) ) {
 			add_filter( 'wfocu_ppcp_gateway_process_client_order_api_args', array( $this, 'maybe_vault_payment' ), 10, 4 );
 			add_filter( 'woocommerce_paypal_payments_subscriptions_get_token_for_customer', array( $this, 'maybe_save_renewal_payment_token' ), 1000, 3 );
 			add_filter( 'woocommerce_payment_successful_result', array( $this, 'maybe_payment_by_action_schedule' ), 10, 2 );
-
 		}
 
 		/**
@@ -23,7 +24,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_PayPal_Payments' ) ) {
 		 *
 		 * @param WC_Subscription $subscription
 		 * @param $key
-		 * @param WC_Order $order
+		 * @param WC_Order        $order
 		 */
 		public function save_to_subscription( $subscription, $key, $order ) {
 
@@ -37,7 +38,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_PayPal_Payments' ) ) {
 			$subscription->update_meta_data( '_ppcp_paypal_order_id', $order->get_meta( '_ppcp_paypal_order_id' ) );
 			$subscription->update_meta_data( 'payment_token_id', $order->get_meta( 'payment_token_id' ) );
 			$subscription->save_meta_data();
-
 		}
 
 		public function set_keys_to_copy( $meta_keys ) {
@@ -58,16 +58,19 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_PayPal_Payments' ) ) {
 			$is_subscription = false;
 			foreach ( $offer_package['products'] as $product ) {
 				$get_product = $product['data'];
-				if ( $get_product instanceof WC_Product && ( in_array( $get_product->get_type(), array(
-							'subscription',
-							'variable-subscription',
-							'subscription_variation'
-						), true ) || apply_filters( 'wfocu_force_subscription_product', false, $product ) ) ) {
+				if ( $get_product instanceof WC_Product && ( in_array(
+					$get_product->get_type(),
+					array(
+						'subscription',
+						'variable-subscription',
+						'subscription_variation',
+					),
+					true
+				) || apply_filters( 'wfocu_force_subscription_product', false, $product ) ) ) {
 					$is_subscription = true;
 					break;
 				}
 			}
-
 
 			if ( true === $is_subscription && ( 0 === get_current_user_id() || empty( get_user_meta( get_current_user_id(), 'ppcp-vault-token', true ) ) ) ) {
 				/*
@@ -89,11 +92,11 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_PayPal_Payments' ) ) {
 								),
 								'vault'    => array(
 									'confirm_payment_token' => 'ON_ORDER_COMPLETION',
-									'usage_type'            => 'MERCHANT',
-									'customer_type'         => 'CONSUMER'
-								)
-							)
-						)
+									'usage_type'    => 'MERCHANT',
+									'customer_type' => 'CONSUMER',
+								),
+							),
+						),
 					);
 					$args['headers']['PayPal-Request-Id'] = uniqid( 'BWF_PPCP-', true );
 				}
@@ -113,7 +116,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_PayPal_Payments' ) ) {
 		 */
 		public function maybe_save_renewal_payment_token( $token, $customer, $order ) {
 
-
 			try {
 				$vault_token = get_user_meta( $customer->get_id(), 'ppcp-vault-token', true );
 				if ( is_array( $vault_token ) && count( $vault_token ) > 0 ) {
@@ -129,7 +131,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_PayPal_Payments' ) ) {
 					if ( empty( $token_id ) ) {
 						$order = wc_get_order( $subscription->get_parent_id() );
 
-						if ( !$order instanceof WC_Order ) {
+						if ( ! $order instanceof WC_Order ) {
 							return $token;
 						}
 						$primary_id = $order->get_meta( '_wfocu_primary_order', true );
@@ -145,8 +147,8 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_PayPal_Payments' ) ) {
 				}
 
 				return $token;
-			} catch ( Exception|Error $e ) {
-				WFOCU_Core()->log->log("Error while processing subscription renewal token: " . $e->getMessage() );
+			} catch ( Exception | Error $e ) {
+				WFOCU_Core()->log->log( 'Error while processing subscription renewal token: ' . $e->getMessage() );
 				return $token;
 			}
 			return $token;
@@ -213,7 +215,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_PayPal_Payments' ) ) {
 		public function has_subscription( $order_id ) {
 			return ( function_exists( 'wcs_order_contains_subscription' ) && ( wcs_order_contains_subscription( $order_id ) || wcs_is_subscription( $order_id ) || wcs_order_contains_renewal( $order_id ) ) );
 		}
-
 	}
 
 	if ( class_exists( 'WC_Subscriptions' ) ) {

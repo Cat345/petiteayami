@@ -80,7 +80,11 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 										window.location = data.redirect_url;
 									} else {
 										Bucket.swal.show({'text': wfocu_vars.messages.offer_msg_pop_failure, 'type': 'warning'});
-										window.location = wfocu_vars.redirect_url + '&ec=ppec_token_not_found';
+										if (typeof data.redirect_url !== 'undefined') {
+											window.location = data.redirect_url;
+										} else if (typeof wfocu_vars.order_received_url !== 'undefined') {
+											window.location = wfocu_vars.order_received_url + '&ec=ppec_token_not_found';
+										}
 									}
 
 								});
@@ -117,6 +121,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 		 * Process the client order from the JS and try to create order using PayPal REST API
 		 */
 		public function process_client_order() {
+			check_ajax_referer( 'wfocu_front_charge', 'nonce' );
 
 			$get_current_offer      = WFOCU_Core()->data->get( 'current_offer' );
 			$get_current_offer_meta = WFOCU_Core()->offers->get_offer_meta( $get_current_offer );
@@ -309,17 +314,18 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 		public function get_paypal_option_by_key( $key ) {
 			$value = null;
 
-			if ( method_exists( $this, 'get_paypal_settings' ) ) {
-				$settings = $this->get_paypal_settings();
-				if ( is_array( $settings ) && array_key_exists( $key, $settings ) && ! empty( $settings[ $key ] ) ) {
-					$value = $settings[ $key ];
-				}
-			}
-
-			if ( null === $value && method_exists( $this, 'get_paypal_options' ) ) {
+			// Check new/authoritative store first (woocommerce-ppcp-data-common) to match get_bearer() resolution order
+			if ( method_exists( $this, 'get_paypal_options' ) ) {
 				$options = $this->get_paypal_options();
 				if ( is_array( $options ) && array_key_exists( $key, $options ) && ! empty( $options[ $key ] ) ) {
 					$value = $options[ $key ];
+				}
+			}
+
+			if ( null === $value && method_exists( $this, 'get_paypal_settings' ) ) {
+				$settings = $this->get_paypal_settings();
+				if ( is_array( $settings ) && array_key_exists( $key, $settings ) && ! empty( $settings[ $key ] ) ) {
+					$value = $settings[ $key ];
 				}
 			}
 

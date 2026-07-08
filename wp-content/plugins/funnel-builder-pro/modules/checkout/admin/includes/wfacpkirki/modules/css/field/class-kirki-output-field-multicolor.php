@@ -12,7 +12,12 @@
 /**
  * Output overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Output_Field_Multicolor' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Output_Field_Multicolor extends WFACPKirki_Output {
 
 		/**

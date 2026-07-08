@@ -1,10 +1,14 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'WFACP_Theme_Understrap' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Theme_Understrap {
 		public function __construct() {
 
-			add_action( 'wfacp_internal_css', [ $this, 'remove_actions' ] );
+			add_action( 'wfacp_internal_css', array( $this, 'remove_actions' ) );
 		}
 
 		public function remove_actions() {

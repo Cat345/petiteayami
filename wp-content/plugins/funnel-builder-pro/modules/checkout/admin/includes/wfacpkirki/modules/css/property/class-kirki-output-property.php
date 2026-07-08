@@ -13,7 +13,12 @@
 /**
  * Output for CSS properties.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Output_Property' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Output_Property {
 
 		/**
@@ -38,7 +43,7 @@ if ( ! class_exists( 'WFACPKirki_Output_Property' ) ) {
 		 * @access public
 		 *
 		 * @param string $property The CSS property we're modifying.
-		 * @param mixed $value The value.
+		 * @param mixed  $value The value.
 		 */
 		public function __construct( $property, $value ) {
 			$this->property = $property;
@@ -52,7 +57,6 @@ if ( ! class_exists( 'WFACPKirki_Output_Property' ) ) {
 		 * @access protected
 		 */
 		protected function process_value() {
-
 		}
 
 		/**

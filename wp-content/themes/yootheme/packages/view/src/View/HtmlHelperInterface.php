@@ -9,10 +9,8 @@ interface HtmlHelperInterface
      *
      * @param array<string, mixed> $attrs
      * @param string|string[]|false $contents
-     *
-     * @return HtmlElement
      */
-    public function el(string $name, array $attrs = [], $contents = false);
+    public function el(string $name, array $attrs = [], $contents = false): HtmlElement;
 
     /**
      * Renders a link tag.

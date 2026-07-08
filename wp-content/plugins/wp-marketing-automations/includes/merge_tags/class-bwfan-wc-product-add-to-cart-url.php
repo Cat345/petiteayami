@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+#[\AllowDynamicProperties]
 class BWFAN_WC_Product_Add_To_Cart_Url extends BWFAN_Merge_Tag {
 
 	private static $instance = null;
@@ -54,9 +59,11 @@ class BWFAN_WC_Product_Add_To_Cart_Url extends BWFAN_Merge_Tag {
 			'post_status' => 'published', // Only published products
 		) );
 
-		$product = $products[0];
+		if ( empty( $products ) || ! ( $products[0] instanceof WC_Product ) ) {
+			return '';
+		}
 
-		return $product->get_permalink();
+		return $products[0]->get_permalink();
 	}
 
 

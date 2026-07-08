@@ -22,6 +22,7 @@ class BWFAN_Admin {
 	public $select2ajax_js_data = array();
 	public $dashboard_page;
 	public $wizard_url = '';
+	private $is_order_contact_column_hidden = null;
 
 	/**
 	 *   Construct
@@ -105,7 +106,7 @@ class BWFAN_Admin {
 		add_action( 'wp_ajax_bwf_migrate_automation', array( $this, 'bwfan_migrate_automation' ) );
 
 		/** Add a plugin action link and notice for pro plugin*/
-		add_action( 'after_plugin_row', [ $this, 'maybe_add_notice' ] );
+		add_action( 'after_plugin_row_meta', [ $this, 'maybe_add_notice' ] );
 		add_action( 'plugin_action_links', [ $this, 'plugin_action_link' ], 10, 2 );
 
 		/** Force redirect to wizard page*/
@@ -118,13 +119,6 @@ class BWFAN_Admin {
 	 */
 	function bwfan_migrate_automation() {
 		BWFAN_Common::check_nonce();
-
-		if ( ! current_user_can( BWFAN_admin::menu_cap() ) ) {
-			wp_send_json( array(
-				'status' => false,
-				'msg'    => __( 'You are not authorized to perform this action', 'wp-marketing-automations' ),
-			) );
-		}
 
 		// phpcs:disable WordPress.Security.NonceVerification
 		if ( empty( $_POST['automation_id'] ) ) {
@@ -718,7 +712,7 @@ class BWFAN_Admin {
 		// all event js data and then set localized unique key
 		$all_event_js_data = BWFAN_Core()->admin->get_events_js_data();
 		foreach ( $all_event_js_data as $key => $data ) {
-			$all_event_js_data[ $key ]['localized_automation_key'] = md5( uniqid( time(), true ) );
+			$all_event_js_data[ $key ]['localized_automation_key'] = wp_generate_password( 32, false );
 		}
 		$all_event_js_data = apply_filters( 'bwfan_all_event_js_data', $all_event_js_data, $automation_meta, $automation_id );
 
@@ -1396,7 +1390,7 @@ class BWFAN_Admin {
 			}
 
 			?>
-            <a href="<?php echo $href; //phpcs:ignore WordPress.Security.EscapeOutput ?>"
+            <a href="<?php echo esc_url( $href ); ?>"
                class="<?php echo esc_attr( implode( ' ', $class ) ); ?>"<?php echo esc_attr( implode( ' ', $attr ) ); ?>><?php echo esc_html( $val['name'] ); ?></a>
 			<?php
 		}
@@ -1618,6 +1612,10 @@ class BWFAN_Admin {
 			return;
 		}
 
+		if ( $this->bwfan_is_order_contact_column_hidden() ) {
+			return;
+		}
+
 		$order = wc_get_order( $order_id );
 
 		$cid = $order->get_meta( '_woofunnel_cid' );
@@ -1659,6 +1657,31 @@ class BWFAN_Admin {
 			</span>
         </div>
 		<?php
+	}
+
+	/**
+	 * Check if the order contact column is hidden
+	 *
+	 * @return bool
+	 */
+	private function bwfan_is_order_contact_column_hidden(): bool {
+		if ( null !== $this->is_order_contact_column_hidden ) {
+			return $this->is_order_contact_column_hidden;
+		}
+
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen ) {
+			$this->is_order_contact_column_hidden = false;
+
+			return false;
+		}
+		if ( ! function_exists( 'get_hidden_columns' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/screen.php';
+		}
+		$hidden                                = get_hidden_columns( $screen );
+		$this->is_order_contact_column_hidden = in_array( 'bwfan_order_contact', $hidden, true );
+
+		return $this->is_order_contact_column_hidden;
 	}
 
 	/**
@@ -2007,6 +2030,38 @@ class BWFAN_Admin {
 	 * @throws Exception
 	 */
 	public function maybe_add_notice( $plugin_file ) {
+		/* Match the live (possibly renamed) Pro row by its real basename — the canonical literal would never match a renamed folder. */
+		if ( defined( 'BWFAN_PRO_PLUGIN_BASENAME' ) && $plugin_file === BWFAN_PRO_PLUGIN_BASENAME && true === BWFAN_Common::is_pro_folder_renamed() ) {
+			$notice = wp_get_admin_notice(
+				wp_kses_post( __( 'We have detected that plugin directory has been renamed. Please restore the directory to its original name or download the latest files from', 'wp-marketing-automations' ) ) . ' <a href="' . esc_url( BWFAN_Common::get_fk_site_links( 'account' ) ) . '">' . esc_html__( 'your account', 'wp-marketing-automations' ) . '</a> ' . wp_kses_post( __( 'or', 'wp-marketing-automations' ) ) . ' <a href="' . esc_url( BWFAN_Common::get_fk_site_links( 'support' ) ) . '">' . esc_html__( 'contact support', 'wp-marketing-automations' ) . '</a> ' . wp_kses_post( __( 'for assistance.', 'wp-marketing-automations' ) ),
+				array(
+					'type'               => 'error',
+					'additional_classes' => array( 'inline', 'notice-alt' ),
+				)
+			);
+			printf(
+				'<div class="requires">%s</div>',
+				$notice
+			);
+			return;
+		}
+
+		/* Mirror the rename notice on the Connectors row when its folder slug has been changed. */
+		if ( defined( 'WFCO_AUTONAMI_CONNECTORS_PLUGIN_BASENAME' ) && $plugin_file === WFCO_AUTONAMI_CONNECTORS_PLUGIN_BASENAME && true === BWFAN_Common::is_connector_folder_renamed() ) {
+			$notice = wp_get_admin_notice(
+				wp_kses_post( __( 'We have detected that plugin directory has been renamed. Please restore the directory to its original name or download the latest files from', 'wp-marketing-automations' ) ) . ' <a href="' . esc_url( BWFAN_Common::get_fk_site_links( 'account' ) ) . '">' . esc_html__( 'your account', 'wp-marketing-automations' ) . '</a> ' . wp_kses_post( __( 'or', 'wp-marketing-automations' ) ) . ' <a href="' . esc_url( BWFAN_Common::get_fk_site_links( 'support' ) ) . '">' . esc_html__( 'contact support', 'wp-marketing-automations' ) . '</a> ' . wp_kses_post( __( 'for assistance.', 'wp-marketing-automations' ) ),
+				array(
+					'type'               => 'error',
+					'additional_classes' => array( 'inline', 'notice-alt' ),
+				)
+			);
+			printf(
+				'<div class="requires">%s</div>',
+				$notice
+			);
+			return;
+		}
+
 		if ( $plugin_file !== 'wp-marketing-automations-pro/wp-marketing-automations-pro.php' || false === bwfan_is_autonami_pro_active() ) {
 			return;
 		}
@@ -2021,52 +2076,18 @@ class BWFAN_Admin {
 		if ( $e->getTimestamp() > $c->getTimestamp() ) {
 			return;
 		}
-		?>
-        <tr class="plugin-update-tr fb_license_notice active">
-            <td colspan="4" class="plugin-update colspanchange">
-                <div class="update-message notice inline notice-error notice-alt">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47716 6.47715 2 12 2C17.5228 2 22 6.47716 22 12ZM16.119 9.45234C16.5529 9.01843 16.5529 8.31491 16.119 7.88099C15.6851 7.44708 14.9816 7.44708 14.5477 7.88099L12 10.4287L9.45234 7.88099C9.01843 7.44708 8.31491 7.44708 7.88099 7.88099C7.44708 8.31491 7.44708 9.01843 7.88099 9.45234L10.4287 12L7.88099 14.5477C7.44708 14.9816 7.44708 15.6851 7.88099 16.119C8.31491 16.5529 9.01842 16.5529 9.45234 16.119L12 13.5714L14.5477 16.119C14.9816 16.5529 15.6851 16.5529 16.119 16.119C16.5529 15.6851 16.5529 14.9816 16.119 14.5477L13.5713 12L16.119 9.45234Z" fill="#d63638"/>
-                    </svg>
-                    <p>
-						<?php
-						/* translators: 1: Dynamic Data, 2: Dynamic URL */
-						echo sprintf( wp_kses_post( __( '<strong>Your FunnelKit Automation Pro license has expired!</strong> Please renew your license to continue using premium features without interruption. <a href="%1$s">Renew Now</a> or <a href="%2$s">I have My License Key</a>', 'wp-marketing-automations' ) ), 'https://funnelkit.com/my-account/?utm_source=WordPress&utm_campaign=FKA+Lite+Plugin&utm_medium=Plugin+Inline+Notice+Renew+Now', esc_url( admin_url( 'admin.php?page=autonami&path=/settings' ) ) );
-						?>
-                    </p>
-                </div>
-            </td>
-        </tr>
-        <style>
-            tr[data-slug="funnelkit-automations-pro"] th, tr[data-slug="funnelkit-automations-pro"] td {
-                box-shadow: none !important;
-            }
-
-            .fb_license_notice .update-message {
-                position: relative;
-            }
-
-            .fb_license_notice .update-message svg {
-                position: absolute;
-                left: 12px;
-                top: 5px;
-                width: 20px;
-            }
-
-            .fb_license_notice .update-message p {
-                padding-left: 14px !important;
-            }
-
-            .fb_license_notice.fbk_renew .update-message svg {
-                top: 4px;
-                width: 16px;
-            }
-
-            .fb_license_notice .update-message.notice-error p::before {
-                content: "";
-            }
-        </style>
-		<?php
+		$notice = wp_get_admin_notice(
+			/* translators: 1: Dynamic Data, 2: Dynamic URL */
+			sprintf( wp_kses_post( __( '<strong>Your FunnelKit Automation Pro license has expired!</strong> Please renew your license to continue using premium features without interruption. <a href="%1$s">Renew Now</a> or <a href="%2$s">I have My License Key</a>', 'wp-marketing-automations' ) ), 'https://funnelkit.com/my-account/?utm_source=WordPress&utm_campaign=FKA+Lite+Plugin&utm_medium=Plugin+Inline+Notice+Renew+Now', esc_url( admin_url( 'admin.php?page=autonami&path=/settings' ) ) ),
+			array(
+				'type'               => 'error',
+				'additional_classes' => array( 'inline', 'notice-alt' ),
+			)
+		);
+		printf(
+			'<div class="requires">%s</div>',
+			$notice
+		);
 	}
 
 	/**
@@ -2079,6 +2100,22 @@ class BWFAN_Admin {
 	 * @throws Exception
 	 */
 	public function plugin_action_link( $actions, $plugin_file ) {
+		/* Surface the rename problem on the live (possibly renamed) Pro row, matched by its real basename. */
+		if ( defined( 'BWFAN_PRO_PLUGIN_BASENAME' ) && $plugin_file === BWFAN_PRO_PLUGIN_BASENAME && true === BWFAN_Common::is_pro_folder_renamed() ) {
+			$new_actions                    = [];
+			$new_actions['folder_renamed']  = '<span class="bwfan_folder_renamed" style="color: #d63638;">' . esc_html__( 'License inactive', 'wp-marketing-automations' ) . '</span>';
+
+			return array_merge( $new_actions, $actions );
+		}
+
+		/* Same treatment for the Connectors row when its folder slug has been changed. */
+		if ( defined( 'WFCO_AUTONAMI_CONNECTORS_PLUGIN_BASENAME' ) && $plugin_file === WFCO_AUTONAMI_CONNECTORS_PLUGIN_BASENAME && true === BWFAN_Common::is_connector_folder_renamed() ) {
+			$new_actions                   = [];
+			$new_actions['folder_renamed'] = '<span class="bwfan_folder_renamed" style="color: #d63638;">' . esc_html__( 'License inactive', 'wp-marketing-automations' ) . '</span>';
+
+			return array_merge( $new_actions, $actions );
+		}
+
 		if ( $plugin_file !== 'wp-marketing-automations-pro/wp-marketing-automations-pro.php' || false === bwfan_is_autonami_pro_active() ) {
 			return $actions;
 		}

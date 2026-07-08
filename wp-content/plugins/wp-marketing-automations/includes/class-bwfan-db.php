@@ -184,6 +184,8 @@ class BWFAN_DB {
 		/** Auto global settings */
 		if ( BWFAN_Plugin_Dependency::woocommerce_active_check() ) {
 			$global_option['bwfan_ab_enable'] = true;
+			$global_option['bwfan_ab_capture_ip_address'] = true;
+			$global_option['bwfan_ab_capture_device'] = true;
 			update_option( 'bwfan_global_settings', $global_option, true );
 		}
 
@@ -211,6 +213,7 @@ class BWFAN_DB {
 		/** Create manage profile page for new user */
 		if ( method_exists( 'BWFAN_Manage_Profile', 'create_profile_sample_page' ) ) {
 			BWFAN_Manage_Profile::get_instance()->create_profile_sample_page();
+			$global_option = get_option( 'bwfan_global_settings', array() );
 		}
 
 		/** Set the 'Unsubscribe Page Type: No Distraction Mode (Prebuilt)' as the default for new users.*/

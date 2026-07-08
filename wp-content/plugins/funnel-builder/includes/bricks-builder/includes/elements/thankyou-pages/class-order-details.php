@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) ) {
+	#[\AllowDynamicProperties]
 	class Order_Details extends \Bricks\Element {
 		public $category = 'funnelkit';
 		public $name     = 'wfty-order-detail';

@@ -2,8 +2,12 @@
 
 namespace FKCart\Pro;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use FKCart\Includes\Data;
-use FKCart\Includes\Front as Front;
+use FKCart\Includes\Front;
 
 if ( ! class_exists( '\FKCart\Pro\Upsells' ) ) {
 	#[\AllowDynamicProperties]
@@ -15,11 +19,11 @@ if ( ! class_exists( '\FKCart\Pro\Upsells' ) ) {
 			if ( ! isset( $data['enable_cart'] ) || 0 === intval( $data['enable_cart'] ) ) {
 				return false;
 			}
-			add_action( 'woocommerce_checkout_create_order_line_item', [ $this, 'woocommerce_create_order_line_item' ], 999999, 3 );
+			add_action( 'woocommerce_checkout_create_order_line_item', array( $this, 'woocommerce_create_order_line_item' ), 999999, 3 );
 			add_action( 'woocommerce_order_fully_refunded', array( $this, 'fully_refunded_process' ) );
 			add_action( 'woocommerce_order_partially_refunded', array( $this, 'partially_refunded_process' ), 10, 2 );
-			add_action( 'woocommerce_checkout_create_order', [ $this, 'update_reward_data_in_order' ] );
-			add_action( 'woocommerce_delete_order', [ $this, 'fully_refunded_process' ] );
+			add_action( 'woocommerce_checkout_create_order', array( $this, 'update_reward_data_in_order' ) );
+			add_action( 'woocommerce_delete_order', array( $this, 'fully_refunded_process' ) );
 		}
 
 		/**
@@ -31,7 +35,6 @@ if ( ! class_exists( '\FKCart\Pro\Upsells' ) ) {
 			}
 
 			return self::$instance;
-
 		}
 
 		/**
@@ -54,17 +57,20 @@ if ( ! class_exists( '\FKCart\Pro\Upsells' ) ) {
 			}
 
 			$reward = Rewards::getInstance();
-			$data   = [
+			$data   = array(
 				'_fkcart_upsell_views'          => $this->get_upsell_views(),
 				'_fkcart_free_gift_views'       => $reward->get_free_gift_views(),
 				'_fkcart_free_shipping_methods' => $reward->get_applied_free_shipping(),
 				'_fkcart_discount_code_views'   => $reward->get_discount_views(),
-			];
+			);
 
 			// Filter out empty values
-			$data = array_filter( $data, function ( $value ) {
-				return ! empty( $value ) || $value === '0';
-			} );
+			$data = array_filter(
+				$data,
+				function ( $value ) {
+					return ! empty( $value ) || $value === '0';
+				}
+			);
 
 			if ( empty( $data ) ) {
 				return;
@@ -137,23 +143,27 @@ if ( ! class_exists( '\FKCart\Pro\Upsells' ) ) {
 							$this->update_refund_price( $product_id, $order_id, $refund_amount, 3 );
 						}
 					}
-
 				}
-			} catch ( \Exception|\Error $e ) {
+			} catch ( \Exception | \Error $e ) {
 
 			}
-
-
 		}
 
 		public function update_refund_price( $product_id, $order_id, $refund_amount, $type ) {
 			global $wpdb;
-			$upsell_data = $wpdb->get_row( $wpdb->prepare( "SELECT id, price FROM " . $wpdb->prefix . "fk_cart_products WHERE type = %d AND product_id = %d AND oid = %d ", $type, $product_id, $order_id ), ARRAY_A );
+			$upsell_data = $wpdb->get_row( $wpdb->prepare( 'SELECT id, price FROM ' . $wpdb->prefix . 'fk_cart_products WHERE type = %d AND product_id = %d AND oid = %d ', $type, $product_id, $order_id ), ARRAY_A );
 			if ( is_array( $upsell_data ) && count( $upsell_data ) > 0 ) {
 				$upsell_args = array(
-					'price' => ( $upsell_data['price'] <= $refund_amount ) ? 0 : $upsell_data['price'] - $refund_amount
+					'price' => ( $upsell_data['price'] <= $refund_amount ) ? 0 : $upsell_data['price'] - $refund_amount,
 				);
-				$wpdb->update( $wpdb->prefix . "fk_cart_products", $upsell_args, [ 'type' => 1, 'id' => $upsell_data['id'] ] );
+				$wpdb->update(
+					$wpdb->prefix . 'fk_cart_products',
+					$upsell_args,
+					array(
+						'type' => $type,
+						'id'   => $upsell_data['id'],
+					)
+				);
 			}
 		}
 
@@ -172,10 +182,9 @@ if ( ! class_exists( '\FKCart\Pro\Upsells' ) ) {
 				$wpdb->delete( $wpdb->prefix . 'fk_cart_products', array( 'oid' => $order_id ) );
 				$wpdb->delete( $wpdb->prefix . 'fk_cart', array( 'oid' => $order_id ) );
 				$wpdb->query( 'COMMIT' );
-			} catch ( \Exception|\Error $e ) {
+			} catch ( \Exception | \Error $e ) {
 
 			}
-
 		}
 
 		/**
@@ -186,7 +195,7 @@ if ( ! class_exists( '\FKCart\Pro\Upsells' ) ) {
 		public function get_upsell_products() {
 			/** Validate */
 			if ( Plugin::valid_l() === false ) {
-				return [];
+				return array();
 			}
 
 			$upsell_ids = $this->get_upsell_ids();
@@ -196,7 +205,7 @@ if ( ! class_exists( '\FKCart\Pro\Upsells' ) ) {
 
 			$max_upsell = Data::get_value( 'upsell_max_count' );
 			$max_upsell = absint( $max_upsell );
-			$upsells    = [];
+			$upsells    = array();
 			foreach ( $upsell_ids as $product_id ) {
 				if ( empty( $product_id ) ) {
 					continue;
@@ -224,14 +233,14 @@ if ( ! class_exists( '\FKCart\Pro\Upsells' ) ) {
 		public function get_upsell_ids() {
 			$items = Front::get_instance()->get_items();
 			if ( empty( $items ) ) {
-				return [];
+				return array();
 			}
 
 			/** @var \WC_Product $_product */
 			$r_type          = $this->get_recommendation_type();
-			$out_puts        = [];
-			$already_used    = [];
-			$default_upsells = [];
+			$out_puts        = array();
+			$already_used    = array();
+			$default_upsells = array();
 
 			$show_default_upsells = Data::get_value( 'show_default_upsell' );
 			$show_default_upsells = ( 1 === intval( $show_default_upsells ) || true === $show_default_upsells || 'true' === strval( $show_default_upsells ) );
@@ -265,12 +274,17 @@ if ( ! class_exists( '\FKCart\Pro\Upsells' ) ) {
 
 			$out_puts = array_merge( $default_upsells, $out_puts );
 			if ( empty( $out_puts ) ) {
-				return [];
+				return array();
 			}
 
-			return array_filter( array_unique( $out_puts ), function ( $single ) use ( $already_used ) {
-				return ! in_array( $single, $already_used );
-			} );
+			$result = array_filter(
+				array_unique( $out_puts ),
+				function ( $single ) use ( $already_used ) {
+					return ! in_array( $single, $already_used );
+				}
+			);
+
+			return apply_filters( 'fkcart_upsell_ids', $result );
 		}
 
 		/**
@@ -290,7 +304,7 @@ if ( ! class_exists( '\FKCart\Pro\Upsells' ) ) {
 		public function get_default_upsells() {
 			$default_upsell = Data::get_value( 'default_upsell' );
 			if ( empty( $default_upsell ) ) {
-				return [];
+				return array();
 			}
 
 			return apply_filters( 'fkcart_default_upsells', array_map( 'intval', array_column( $default_upsell, 'key' ) ) );
@@ -308,24 +322,23 @@ if ( ! class_exists( '\FKCart\Pro\Upsells' ) ) {
 			if ( is_null( WC()->cart ) || is_null( WC()->session ) ) {
 				return;
 			}
-			$already_upsell_views = WC()->session->get( '_fkcart_upsell_views', [] );
+			$already_upsell_views = WC()->session->get( '_fkcart_upsell_views', array() );
 			$upsells              = array_merge( $already_upsell_views, array_keys( $upsells ) );
 			WC()->session->set( '_fkcart_upsell_views', array_unique( $upsells ) );
 		}
 
 		/**
 		 * return no of upsell view during checkout process.
+		 *
 		 * @return array
 		 */
 		public function get_upsell_views() {
 			if ( is_null( WC()->cart ) || is_null( WC()->session ) ) {
-				return [];
+				return array();
 			}
 
 			return WC()->session->get( '_fkcart_upsell_views' );
 		}
-
-
 	}
 
 }

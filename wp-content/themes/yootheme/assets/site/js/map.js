@@ -1,3 +1,3 @@
-/*! YOOtheme Pro v5.0.29 | https://yootheme.com */
+/*! YOOtheme Pro v5.0.36 | https://yootheme.com */
 
 const{on:a,$:r,css:d,$$:c,isTag:l,parent:p}=window.UIkit.util,s="[data-map]",i=".js-consent-overlay",u="data-map-consent",m=`[${u}]`;a(document,"DOMContentLoaded",()=>{r(`${s}[type="text/plain"]`)&&d(c(i),"visibility","")}),a(document,"click",m,e=>{if(!l(e.target,"button"))return;const{consent:t}=window.yootheme;if(t){const o=e.current.dataset.mapConsent;t.setConsent(o,"allow"),t.loadScriptTags(),t.saveState()}else f(c(s))}),a(document,"uikit:connected",({detail:{$el:e}})=>{e.hidden=!1;for(const t of c(i,p(e)))t.hidden=!0});function f(e){for(const t of e){const o=document.createRange().createContextualFragment(t.outerHTML).firstElementChild;o.removeAttribute("type");for(const n of["src","type"])t.dataset[n]&&(o[n]=t.dataset[n],delete o.dataset[n]);t.replaceWith(o)}}

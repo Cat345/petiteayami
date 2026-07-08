@@ -6,17 +6,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Class WFFN_Logger
+ *
  * @package Autobot
  * @author XlPlugins
  */
 if ( ! class_exists( 'WFFN_Logger' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Logger {
 
 		private static $ins = null;
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -38,7 +40,7 @@ if ( ! class_exists( 'WFFN_Logger' ) ) {
 
 			$file_name       = sanitize_title( $file_name );
 			$logger_obj      = BWF_Logger::get_instance();
-			$get_user_ip     = WFFN_Logger::get_ip_address();
+			$get_user_ip     = self::get_ip_address();
 			$message_with_ip = $get_user_ip . ' ' . $message;
 			$logger_obj->log( $message_with_ip, $file_name, 'funnel-builder', $force );
 		}
@@ -55,7 +57,6 @@ if ( ! class_exists( 'WFFN_Logger' ) ) {
 			}
 			return '';
 		}
-
 	}
 
 	if ( class_exists( 'WFFN_Core' ) ) {

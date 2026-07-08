@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Adds scripts for icons in sections & panels.
  */
 if ( ! class_exists( 'WFACPKirki_Modules_Icons' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Modules_Icons {
 
 		/**
@@ -80,7 +81,6 @@ if ( ! class_exists( 'WFACPKirki_Modules_Icons' ) ) {
 		public function add_icon( $id, $icon, $context = 'section' ) {
 
 			self::$icons[ $context ][ $id ] = trim( $icon );
-
 		}
 
 		/**
@@ -105,13 +105,18 @@ if ( ! class_exists( 'WFACPKirki_Modules_Icons' ) ) {
 				}
 			}
 
-			wp_enqueue_script( 'wfacpkirki_panel_and_section_icons', trailingslashit( WFACPKirki::$url ) . 'modules/icons/icons.js', array(
-				'jquery',
-				'customize-base',
-				'customize-controls'
-			), WFACP_VERSION, true );
+			wp_enqueue_script(
+				'wfacpkirki_panel_and_section_icons',
+				trailingslashit( WFACPKirki::$url ) . 'modules/icons/icons.js',
+				array(
+					'jquery',
+					'customize-base',
+					'customize-controls',
+				),
+				WFACP_VERSION,
+				true
+			);
 			wp_localize_script( 'wfacpkirki_panel_and_section_icons', 'wfacpkirkiIcons', self::$icons );
-
 		}
 	}
 }

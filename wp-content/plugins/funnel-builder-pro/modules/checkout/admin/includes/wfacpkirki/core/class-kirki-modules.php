@@ -9,6 +9,10 @@
  * @license     http://opensource.org/licenses/https://opensource.org/licenses/MIT
  * @since       3.0.0
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Modules' ) ) {
 	/**
 	 * The WFACPKirki_Modules class.
@@ -46,7 +50,6 @@ if ( ! class_exists( 'WFACPKirki_Modules' ) ) {
 
 			$this->default_modules();
 			$this->init();
-
 		}
 
 		/**
@@ -57,7 +60,9 @@ if ( ! class_exists( 'WFACPKirki_Modules' ) ) {
 		 */
 		private function default_modules() {
 
-			self::$modules = apply_filters( 'wfacpkirki_modules', array(
+			self::$modules = apply_filters(
+				'wfacpkirki_modules',
+				array(
 					'css'                => 'WFACPKirki_Modules_CSS',
 					'css-vars'           => 'WFACPKirki_Modules_CSS_Vars',
 					'customizer-styling' => 'WFACPKirki_Modules_Customizer_Styling',
@@ -72,8 +77,8 @@ if ( ! class_exists( 'WFACPKirki_Modules' ) ) {
 					'webfonts'           => 'WFACPKirki_Modules_Webfonts',
 					'webfont-loader'     => 'WFACPKirki_Modules_Webfont_Loader',
 					'preset'             => 'WFACPKirki_Modules_Preset',
-				) );
-
+				)
+			);
 		}
 
 		/**
@@ -108,7 +113,6 @@ if ( ! class_exists( 'WFACPKirki_Modules' ) ) {
 			if ( ! in_array( $module, self::$modules, true ) ) {
 				self::$modules[] = $module;
 			}
-
 		}
 
 		/**
@@ -140,7 +144,6 @@ if ( ! class_exists( 'WFACPKirki_Modules' ) ) {
 		public static function get_modules() {
 
 			return self::$modules;
-
 		}
 
 		/**
@@ -154,7 +157,6 @@ if ( ! class_exists( 'WFACPKirki_Modules' ) ) {
 		public static function get_active_modules() {
 
 			return self::$active_modules;
-
 		}
 	}
 }

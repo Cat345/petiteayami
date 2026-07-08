@@ -1,16 +1,21 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * WooCommerce Braintree Gateway
+ *
  * @author    WooCommerce
  * http://docs.woocommerce.com/document/braintree/
- * #[AllowDynamicProperties] 
- class WFACP_WC_Braintree_Compatibility
+ * #[AllowDynamicProperties]
+class WFACP_WC_Braintree_Compatibility
  */
 if ( ! class_exists( 'WFACP_WC_Braintree_Compatibility' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_WC_Braintree_Compatibility {
-		private $instance = null;
+		private $instance      = null;
 		private $page_settings = null;
 
 		public function __construct() {
@@ -18,9 +23,9 @@ if ( ! class_exists( 'WFACP_WC_Braintree_Compatibility' ) ) {
 			if ( 'yes' !== $apple_pay_enabled ) {
 				return;
 			}
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'register_action' ] );
-			add_filter( 'wfacp_smart_buttons', [ $this, 'add_buttons' ], 16 );
-			add_action( 'wfacp_smart_button_container_wc_braintree', [ $this, 'print_smart_buttons' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'register_action' ) );
+			add_filter( 'wfacp_smart_buttons', array( $this, 'add_buttons' ), 16 );
+			add_action( 'wfacp_smart_button_container_wc_braintree', array( $this, 'print_smart_buttons' ) );
 		}
 
 		public function register_action() {
@@ -36,7 +41,6 @@ if ( ! class_exists( 'WFACP_WC_Braintree_Compatibility' ) ) {
 			if ( is_null( $this->instance ) ) {
 				$this->instance = WFACP_Common::remove_actions( 'sv_wc_external_checkout_with_divider', 'WC_Braintree\Apple_Pay\Frontend', 'render_external_checkout_with_divider' );
 			}
-
 		}
 
 		public function add_buttons( $buttons ) {
@@ -44,13 +48,12 @@ if ( ! class_exists( 'WFACP_WC_Braintree_Compatibility' ) ) {
 			if ( ! wc_string_to_bool( $this->page_settings['enable_smart_buttons'] ) ) {
 				return $buttons;
 			}
-			$buttons['wc_braintree'] = [
+			$buttons['wc_braintree'] = array(
 				'iframe' => true,
 				'name'   => __( 'Braintree' ),
-			];
+			);
 
 			return $buttons;
-
 		}
 
 		public function print_smart_buttons() {
@@ -58,8 +61,6 @@ if ( ! class_exists( 'WFACP_WC_Braintree_Compatibility' ) ) {
 				$this->instance->render_external_checkout();
 			}
 		}
-
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_WC_Braintree_Compatibility(), 'wc-braintree' );

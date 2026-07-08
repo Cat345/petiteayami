@@ -13,6 +13,7 @@ if ( ! class_exists( 'WFOCUKirki_Section' ) ) {
 	/**
 	 * Each section is a separate instrance of the WFOCUKirki_Section object.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Section {
 
 		/**
@@ -34,7 +35,6 @@ if ( ! class_exists( 'WFOCUKirki_Section' ) ) {
 
 			$this->section_types = apply_filters( 'wfocukirki_section_types', $this->section_types );
 			$this->add_section( $args );
-
 		}
 
 		/**
@@ -61,7 +61,6 @@ if ( ! class_exists( 'WFOCUKirki_Section' ) ) {
 
 			// Add the section.
 			$wp_customize->add_section( new $section_classname( $wp_customize, sanitize_key( $args['id'] ), $args ) );
-
 		}
 	}
 }

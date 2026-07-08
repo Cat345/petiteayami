@@ -781,14 +781,22 @@ final class BWFAN_Header {
                                             <div class="components-flex css-1ahbsz-Flex eboqfv50">
                                                 <div class="components-flex__item css-1s295sp-Item eboqfv51">
 													<?php
-													$icon = ( isset( $item['icon'] ) && ! empty( $item['icon'] ) ) ? wp_remote_retrieve_body( wp_remote_get( esc_url( plugin_dir_url( BWFAN_PLUGIN_FILE ) . 'admin/assets/img/menu/' . $item['icon'] . '.svg' ) ) ) : ''; //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
-													echo $icon; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+													// Read SVG icon from the plugin's own assets dir directly (no HTTP loopback);
+													// sanitize_file_name prevents path traversal via $item['icon'].
+													$icon = '';
+													if ( isset( $item['icon'] ) && ! empty( $item['icon'] ) ) {
+														$icon_file = BWFAN_PLUGIN_DIR . '/admin/assets/img/menu/' . sanitize_file_name( $item['icon'] ) . '.svg';
+														if ( file_exists( $icon_file ) ) {
+															$icon = file_get_contents( $icon_file ); //phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
+														}
+													}
+													echo $icon; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted SVG read from controlled plugin path
 													?>
                                                 </div>
                                                 <div class="components-flex__block css-yr442k-Item-Block eboqfv52">
                                                     <div class="bwf_display_block">
-                                                        <div class="menu-item-title"><?php echo $item['name']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
-                                                        <div class="menu-item-desc"><?php echo $item['desc']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+                                                        <div class="menu-item-title"><?php echo esc_html( $item['name'] ); ?></div>
+                                                        <div class="menu-item-desc"><?php echo esc_html( $item['desc'] ); ?></div>
                                                     </div>
                                                 </div>
                                             </div>

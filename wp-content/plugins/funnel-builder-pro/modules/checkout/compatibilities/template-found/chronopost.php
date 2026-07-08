@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * === Chronopost and Chronofood by WooChrono ===
@@ -8,8 +12,8 @@ if ( ! class_exists( 'WFACP_Chronopost_Food' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Chronopost_Food {
 		public function __construct() {
-			add_action( 'wfacp_mini_cart_before_order_total', [ $this, 'remove_actions' ] );
-			add_action( 'wfacp_mini_cart_after_order_total', [ $this, 'add_actions' ] );
+			add_action( 'wfacp_mini_cart_before_order_total', array( $this, 'remove_actions' ) );
+			add_action( 'wfacp_mini_cart_after_order_total', array( $this, 'add_actions' ) );
 		}
 
 		public function remove_actions() {

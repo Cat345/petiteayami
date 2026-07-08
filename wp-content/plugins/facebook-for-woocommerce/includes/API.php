@@ -105,11 +105,11 @@ class API extends Base {
 	/**
 	 * Validates a response after it has been parsed and instantiated.
 	 *
-	 * Throws an exception if a rate limit or general API error is included in the response.
+	 * Throws an exception if a rate limit error is included in the response.
+	 * Sets the wc_facebook_connection_invalid transient for auth errors.
 	 *
 	 * @since 2.0.0
 	 *
-	 * @throws ApiException In case of an invalid token error.
 	 * @throws API\Exceptions\Request_Limit_Reached In case of a rate limit error.
 	 */
 	protected function do_post_parse_response_validation() {
@@ -117,7 +117,8 @@ class API extends Base {
 		$response = $this->get_response();
 		$request  = $this->get_request();
 		if ( $response && $response->has_api_error() ) {
-			$code = $response->get_api_error_code();
+			$code    = $response->get_api_error_code();
+			$subcode = $response->get_api_error_subcode();
 			// phpcs:ignore Universal.Operators.DisallowShortTernary.Found
 			$message = sprintf( '%s: %s', $response->get_api_error_type(), $response->get_user_error_message() ?: $response->get_api_error_message() );
 			/**
@@ -149,23 +150,60 @@ class API extends Base {
 			}
 
 			/**
-			 * Handle invalid token errors
+			 * Handle invalid token errors.
+			 *
+			 * Error code 190 = OAuthException (invalid/expired access token).
+			 * Error codes 102, 10, 200-299 = other permission/auth errors.
+			 *
+			 * When code 190 is present, the subcode tells us why the token is invalid:
+			 *   452 - Session does not match current stored session
+			 *   458 - App not installed / user has not authorized the application
+			 *   460 - Password has been changed
+			 *   464 - User is not a confirmed user (unconfirmed system user)
+			 *   465 - Sessions for the user are not allowed (wrong business / deleted BISU)
 			 *
 			 * @link https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling#errorcodes
 			 */
-			if ( ( $code >= 200 && $code < 300 ) || in_array( $code, array( 10, 102, 190 ), false ) ) {
-				set_transient( 'wc_facebook_connection_invalid', time(), DAY_IN_SECONDS );
+			if ( ( $code >= 200 && $code < 300 ) || in_array( $code, array( 10, 102, 190 ), true ) ) {
+
+				// Log a specific message for known auth subcodes so merchants/support understand what happened.
+				$auth_subcodes = array(
+					452 => 'Session does not match current stored session. The user may have logged in elsewhere.',
+					458 => 'The app is not installed or the user has not authorized the application.',
+					460 => 'The user\'s password has been changed. A new access token is required.',
+					464 => 'The system user is not confirmed. Please confirm the system user in Business Manager.',
+					465 => 'The system user session is not allowed. The user may belong to a different business or was deleted.',
+				);
+
+				if ( 190 === $code && $subcode && isset( $auth_subcodes[ $subcode ] ) ) {
+					$message = sprintf(
+						'Facebook connection invalid (error %d, subcode %d): %s',
+						$code,
+						$subcode,
+						$auth_subcodes[ $subcode ]
+					);
+					facebook_for_woocommerce()->log( $message );
+				}
+
+				// Subcode 452 (session mismatch) may be transient and self-resolving,
+				// so we don't flag the connection as invalid for that case.
+				if ( ! ( 190 === $code && 452 === $subcode ) ) {
+					set_transient( 'wc_facebook_connection_invalid', time(), DAY_IN_SECONDS );
+				}
 			} else {
 				// this was an unrelated error, so the OAuth connection may still be valid
 				delete_transient( 'wc_facebook_connection_invalid' );
 			}
 			// if the code indicates a retry and we've not hit the retry limit, perform the request again
-			if ( in_array( $code, $request->get_retry_codes(), false ) && $request->get_retry_count() < $request->get_retry_limit() ) {
+			if ( in_array( $code, $request->get_retry_codes(), true ) && $request->get_retry_count() < $request->get_retry_limit() ) {
 				$request->mark_retry();
 				$this->response = $this->perform_request( $request );
 				return;
 			}
-			throw new ApiException( $message, $code );
+
+			// Return without clearing the transient — the error response is still
+			// available via $this->get_response() for callers to inspect.
+			return;
 		}
 		// if we get this far we're connected, so delete any invalid connection flag
 		delete_transient( 'wc_facebook_connection_invalid' );
@@ -300,21 +338,25 @@ class API extends Base {
 	 *
 	 * @param string      $external_business_id
 	 * @param string|null $catalog_id Optional catalog ID
+	 * @param string|null $pixel_id   Optional pixel ID (used by server-side rollout gating)
 	 * @return API\FBE\RolloutSwitches\Response
 	 * @throws ApiException In case of a general API error or rate limit error.
 	 */
-	public function get_rollout_switches( string $external_business_id, ?string $catalog_id = null ) {
+	public function get_rollout_switches( string $external_business_id, ?string $catalog_id = null, ?string $pixel_id = null ) {
 		if ( ! $this->get_access_token() ) {
 			return null;
 		}
 
-		$request = new API\FBE\RolloutSwitches\Request( $external_business_id, $catalog_id );
+		$request = new API\FBE\RolloutSwitches\Request( $external_business_id, $catalog_id, $pixel_id );
 		$params  = array(
 			'access_token'             => $this->get_access_token(),
 			'fbe_external_business_id' => $external_business_id,
 		);
 		if ( ! empty( $catalog_id ) ) {
 			$params['catalog_id'] = $catalog_id;
+		}
+		if ( ! empty( $pixel_id ) ) {
+			$params['pixel_id'] = $pixel_id;
 		}
 		$request->set_params( $params );
 		$this->set_response_handler( API\FBE\RolloutSwitches\Response::class );
@@ -694,21 +736,58 @@ class API extends Base {
 	/**
 	 * Sends Pixel events.
 	 *
+	 * By default, the request is blocking (preserving existing behaviour).
+	 * Use the {@see 'wc_facebook_pixel_events_non_blocking'} filter to send
+	 * the request asynchronously, which avoids adding 2-3+ seconds of latency
+	 * to page generation at the cost of losing response introspection.
+	 *
 	 * @since 2.0.0
 	 *
 	 * @param string  $pixel_id pixel ID
 	 * @param Event[] $events events to send
-	 * @return Response
-	 * @throws ApiException In case of a general API error or rate limit error.
+	 * @return Response|null Response object when blocking, null when non-blocking.
+	 * @throws ApiException In case of a general API error or rate limit error (blocking mode only).
 	 */
 	public function send_pixel_events( $pixel_id, array $events ) {
 		$request = new API\Pixel\Events\Request( $pixel_id, $events );
+
+		/**
+		 * Filters whether the Pixel event API request should be non-blocking.
+		 *
+		 * When true, the HTTP request is sent asynchronously and does not delay
+		 * page generation. The trade-off is that API response data (rate-limit
+		 * headers, validation errors, event-match-quality feedback) is not
+		 * available.
+		 *
+		 * @since 3.6.1
+		 *
+		 * @param bool $non_blocking Whether the request should be non-blocking. Default false.
+		 */
+		$non_blocking = (bool) apply_filters( 'wc_facebook_pixel_events_non_blocking', false );
+
+		if ( $non_blocking ) {
+			// Non-blocking: fire-and-forget via wp_safe_remote_post().
+			wp_safe_remote_post(
+				$this->request_uri . "/{$pixel_id}/events",
+				array(
+					'blocking'  => false,
+					'sslverify' => true,
+					'headers'   => array(
+						'Authorization' => "Bearer {$this->access_token}",
+						'Content-Type'  => 'application/json',
+					),
+					'body'      => $request->to_string(),
+				)
+			);
+
+			return null;
+		}
 
 		$this->set_response_handler( Response::class );
 
 		$response = $this->perform_request( $request );
 
-		// Log to E2E test framework
+		// Log to E2E test framework (requires a parsed response).
 		$this->log_events_for_tests( $response, $request );
 
 		return $response;
@@ -740,7 +819,7 @@ class API extends Base {
 		$next_response = null;
 		// get the next page if we haven't reached the limit of pages to retrieve and the endpoint for the next page is available
 		if ( ( 0 === $additional_pages || $response->get_pages_retrieved() <= $additional_pages ) && $response->get_next_page_endpoint() ) {
-			$components = parse_url( str_replace( $this->request_uri, '', $response->get_next_page_endpoint() ) );
+			$components = wp_parse_url( str_replace( $this->request_uri, '', $response->get_next_page_endpoint() ) );
 			$request    = $this->get_new_request(
 				[
 					'path'   => $components['path'] ?? '',

@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+#[\AllowDynamicProperties]
 class BWFAN_WC_Order_Related_Products extends Merge_Tag_Abstract_Product_Display {
 
 	private static $instance = null;

@@ -1,14 +1,16 @@
 <?php
 
 namespace WfocuFunnelKit;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 if ( ! class_exists( '\WfocuFunnelKit\Accept_Link' ) ) {
+	#[\AllowDynamicProperties]
 	class Accept_Link extends \Bricks\Element {
 		public $category = 'funnelkit';
-		public $name = 'wfocu-accept-offer-link';
-		public $icon = 'wfocu-icon-link_yes';
+		public $name     = 'wfocu-accept-offer-link';
+		public $icon     = 'wfocu-icon-link_yes';
 
 		/**
 		 * Retrieves the label for the Accept Link element.
@@ -132,7 +134,6 @@ if ( ! class_exists( '\WfocuFunnelKit\Accept_Link' ) ) {
 		 */
 		public function render() {
 
-
 			$product_key = isset( $this->settings['selectedProduct'] ) ? $this->settings['selectedProduct'] : '';
 			$product_key = WFOCU_Core()->template_loader->default_product_key( $product_key );
 			if ( ! empty( $product_key ) ) {
@@ -143,11 +144,11 @@ if ( ! class_exists( '\WfocuFunnelKit\Accept_Link' ) ) {
 			$this->set_attribute( 'upstroke-accept', 'class', 'bricks-wfocu-accept bricks-wfocu-accept-link wfocu_upsell wfocu-upsell-offer-link' );
 
 			?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
-                <a <?php echo $this->render_attributes( 'upstroke-accept' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> <?php WFOCU_Core()->template_loader->add_attributes_to_buy_button(); ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<a <?php echo $this->render_attributes( 'upstroke-accept' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> <?php WFOCU_Core()->template_loader->add_attributes_to_buy_button(); ?>>
 					<?php $this->render_link_text(); ?>
-                </a>
-            </div>
+				</a>
+			</div>
 			<?php
 		}
 
@@ -165,7 +166,7 @@ if ( ! class_exists( '\WfocuFunnelKit\Accept_Link' ) ) {
 				return;
 			}
 
-			echo $text; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wp_kses_post( $text );
 		}
 	}
 }

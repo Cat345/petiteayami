@@ -3,11 +3,16 @@
  * Plugin Name: Cart For WooCommerce Pro
  * Plugin URI: https://funnelkit.com/
  * Description: A WooCommerce Cart plugin from FunnelKit.
- * Version: 0.9.0
+ * Version: 0.9.1
  * Author: FunnelKit
  */
 
 namespace FKCart\Pro;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( '\FKCart\Pro\Plugin' ) ) {
 	#[\AllowDynamicProperties]
 	class Plugin {
@@ -30,9 +35,16 @@ if ( ! class_exists( '\FKCart\Pro\Plugin' ) ) {
 			include __DIR__ . '/include/rewards.php';
 			include_once __DIR__ . '/include/fkcart-db-migrator.php';
 			include __DIR__ . '/include/special-add-on.php';
-			Upsells::getInstance();
-			Rewards::getInstance();
-			Special_Add_On::getInstance();
+
+			if ( class_exists( '\FKCart\Pro\Upsells' ) ) {
+				Upsells::getInstance();
+			}
+			if ( class_exists( '\FKCart\Pro\Rewards' ) ) {
+				Rewards::getInstance();
+			}
+			if ( class_exists( '\FKCart\Pro\Special_Add_On' ) ) {
+				Special_Add_On::getInstance();
+			}
 			add_action( 'rest_api_init', [ $this, 'init_rest_api' ], 9 );
 		}
 

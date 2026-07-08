@@ -589,7 +589,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 		}
 	}
 
-	if ( class_exists( 'WFFN_Core' ) && ! empty( WFFN_Core()->thank_you_pages ) ) {
+	if ( class_exists( 'WFFN_Core' ) && ! empty( WFFN_Core()->thank_you_pages ) && is_object( WFFN_Core()->steps ) && method_exists( WFFN_Core()->steps, 'register' ) ) {
 		WFFN_Core()->steps->register( WFFN_Step_WC_Thankyou::get_instance() );
 	}
 }

@@ -4,12 +4,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WFOB_Compatibility_With_Active_InfuseWooPro' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_Active_InfuseWooPro {
 		public function __construct() {
 
 			/* checkout page */
-			add_action( 'wfob_product_switcher_price_data', [ $this, 'price_data' ], 1, 2 );
-
+			add_action( 'wfob_product_switcher_price_data', array( $this, 'price_data' ), 1, 2 );
 		}
 
 		/**
@@ -39,7 +39,6 @@ if ( ! class_exists( 'WFOB_Compatibility_With_Active_InfuseWooPro' ) ) {
 
 			return $price;
 		}
-
 	}
 
 	new WFOB_Compatibility_With_Active_InfuseWooPro();

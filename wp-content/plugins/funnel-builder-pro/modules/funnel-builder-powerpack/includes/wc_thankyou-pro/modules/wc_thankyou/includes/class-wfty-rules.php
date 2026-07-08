@@ -4,15 +4,16 @@
  * @author XLPlugins
  */
 if ( ! class_exists( 'WFTY_Rules' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rules {
-		private static $ins = null;
-		public $is_executing_rule = false;
-		public $environments = array();
-		public $excluded_rules = array();
+		private static $ins               = null;
+		public $is_executing_rule         = false;
+		public $environments              = array();
+		public $excluded_rules            = array();
 		public $excluded_rules_categories = array();
-		public $processed = array();
-		public $record = array();
-		public $skipped = array();
+		public $processed                 = array();
+		public $record                    = array();
+		public $skipped                   = array();
 
 		public function __construct() {
 
@@ -51,7 +52,7 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 			$this->is_executing_rule = true;
 			$this->set_environment_var( 'thankyou_id', $content_id );
 
-			//allowing rules to get manipulated using external logic
+			// allowing rules to get manipulated using external logic
 			$external_rules = apply_filters( 'wfty_before_rules', true, $content_id, $environment );
 			if ( ! $external_rules ) {
 
@@ -84,7 +85,6 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 				$this->processed[ $content_id ] = $display;
 			}
 
-
 			$this->is_executing_rule = false;
 
 			return $display;
@@ -96,7 +96,6 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 				return;
 			}
 			$this->environments[ $key ] = $value;
-
 		}
 
 		protected function _validate_rule_block( $groups_category, $type, $environment ) {
@@ -109,7 +108,7 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 					$group_skipped = array();
 					foreach ( $group as $rule ) {
 
-						//just skipping the rule if excluded, so that it wont play any role in final judgement
+						// just skipping the rule if excluded, so that it wont play any role in final judgement
 						if ( in_array( $rule['rule_type'], $this->excluded_rules, true ) ) {
 
 							continue;
@@ -122,8 +121,8 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 
 								$match = $rule_object->is_match( $rule, $environment );
 
-								//assigning values to the array.
-								//on false, as this is single group (bind by AND), one false would be enough to declare whole result as false so breaking on that point
+								// assigning values to the array.
+								// on false, as this is single group (bind by AND), one false would be enough to declare whole result as false so breaking on that point
 								if ( false === $match ) {
 									$iteration_results[ $group_id ] = 0;
 									break;
@@ -137,7 +136,7 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 						}
 					}
 
-					//checking if current group iteration combine returns true, if its true, no need to iterate other groups
+					// checking if current group iteration combine returns true, if its true, no need to iterate other groups
 					if ( isset( $iteration_results[ $group_id ] ) && $iteration_results[ $group_id ] === 1 ) {
 
 						/**
@@ -150,10 +149,10 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 					}
 				}
 
-				//checking count of all the groups iteration
+				// checking count of all the groups iteration
 				if ( count( $iteration_results ) > 0 ) {
 
-					//checking for the any true in the groups
+					// checking for the any true in the groups
 					if ( array_sum( $iteration_results ) > 0 ) {
 						$display = true;
 					} else {
@@ -161,11 +160,11 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 					}
 				} else {
 
-					//handling the case where all the rules got skipped
+					// handling the case where all the rules got skipped
 					$display = true;
 				}
 			} else {
-				$display = true; //Always display the content if no rules have been configured.
+				$display = true; // Always display the content if no rules have been configured.
 			}
 
 			return $display;
@@ -178,7 +177,6 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 		 *
 		 * @return wfty_Rule_Base or superclass of wfty_Rule_Base
 		 * @global array $woocommerce_wfty_rule_rules
-		 *
 		 */
 		public function woocommerce_wfty_rule_get_rule_object( $rule_type ) {
 			global $woocommerce_wfty_rule_rules;
@@ -188,7 +186,7 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 			$class = 'wfty_rule_' . $rule_type;
 
 			if ( class_exists( $class ) ) {
-				$woocommerce_wfty_rule_rules[ $rule_type ] = new $class;
+				$woocommerce_wfty_rule_rules[ $rule_type ] = new $class();
 
 				return $woocommerce_wfty_rule_rules[ $rule_type ];
 			} else {
@@ -234,7 +232,7 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 				}
 			}
 
-			return [];
+			return array();
 		}
 
 		public function get_processed_rules() {
@@ -244,8 +242,7 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 
 		public function load_rules_classes() {
 
-
-			//Include our default rule classes
+			// Include our default rule classes
 			include_once $this->path() . '/rules/base.php';
 			include_once $this->path() . '/rules/general.php';
 			include_once $this->path() . '/rules/date-time.php';
@@ -253,7 +250,7 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 			include_once $this->path() . '/rules/customer.php';
 			include_once $this->path() . '/rules/bwf-customer.php';
 			if ( is_admin() || defined( 'DOING_AJAX' ) ) {
-				//Include the admin interface builder
+				// Include the admin interface builder
 				include_once $this->path() . '/class-wfocu-input-builder.php';
 				include_once $this->path() . '/inputs/html-funnel-products.php';
 				include_once $this->path() . '/inputs/html-funnel-onetime.php';
@@ -278,20 +275,19 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 				include_once $this->path() . '/inputs/html-custome-rule-unavailable.php';
 				include_once $this->path() . '/inputs/custom-meta.php';
 			}
-
 		}
 
 
 		public function default_rule_types( $types ) {
 			$types = array(
-				__( 'Default', 'funnel-builder-powerpack' )   => array(
+				__( 'Default', 'funnel-builder-powerpack' ) => array(
 					'general_always' => __( 'No Rules', 'funnel-builder-powerpack' ),
 				),
-				__( 'Order', 'funnel-builder-powerpack' )     => array(
-					'order_item'     => __( 'Products', 'funnel-builder-powerpack' ),
-					'order_category' => __( 'Product Category', 'funnel-builder-powerpack' ),
-					'order_term'     => __( 'Product Tag', 'funnel-builder-powerpack' ),
-					'order_total'    => __( 'Total', 'funnel-builder-powerpack' ),
+				__( 'Order', 'funnel-builder-powerpack' ) => array(
+					'order_item'              => __( 'Products', 'funnel-builder-powerpack' ),
+					'order_category'          => __( 'Product Category', 'funnel-builder-powerpack' ),
+					'order_term'              => __( 'Product Tag', 'funnel-builder-powerpack' ),
+					'order_total'             => __( 'Total', 'funnel-builder-powerpack' ),
 
 					'order_item_count'        => __( 'Item Count', 'funnel-builder-powerpack' ),
 					'order_item_type'         => __( 'Item Type', 'funnel-builder-powerpack' ),
@@ -302,9 +298,9 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 					'order_shipping_method'   => __( 'Shipping Method', 'funnel-builder-powerpack' ),
 					'order_custom_meta'       => __( 'Order Custom Field', 'funnel-builder-powerpack' ),
 				),
-				__( 'Customer', 'funnel-builder-powerpack' )  => array(
-					'is_first_order' => __( 'Customer - Is First Order', 'funnel-builder-powerpack' ),
-					'is_guest'       => __( 'Customer - Is Guest', 'funnel-builder-powerpack' ),
+				__( 'Customer', 'funnel-builder-powerpack' ) => array(
+					'is_first_order'              => __( 'Customer - Is First Order', 'funnel-builder-powerpack' ),
+					'is_guest'                    => __( 'Customer - Is Guest', 'funnel-builder-powerpack' ),
 
 					'customer_user'               => __( 'Customer - User Name', 'funnel-builder-powerpack' ),
 					'customer_role'               => __( 'Customer - User Role', 'funnel-builder-powerpack' ),
@@ -323,7 +319,6 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 				),
 			);
 
-
 			return $types;
 		}
 
@@ -340,11 +335,10 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 				$wfty_is_rules_saved = get_post_meta( $thankyou_id, '_wfty_is_rules_saved', true ); //phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UnusedVariable
 
 			}
-			include_once( $this->path_views() . '/rules-head.php' );  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-			include_once( $this->path_views() . '/rules-basic.php' );  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-			include_once( $this->path_views() . '/rules-footer.php' );  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-			include_once( $this->path_views() . '/rules-create.php' );  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-
+			include_once $this->path_views() . '/rules-head.php';  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+			include_once $this->path_views() . '/rules-basic.php';  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+			include_once $this->path_views() . '/rules-footer.php';  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+			include_once $this->path_views() . '/rules-create.php';  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 		}
 
 		public function path_views() {
@@ -373,17 +367,23 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 		public function update_rules() {
 
 			check_admin_referer( 'wffn_tp_save_rules', '_nonce' );
+			if ( ! current_user_can( 'edit_posts' ) ) {
+				wp_send_json_error( array( 'message' => 'Insufficient permissions.' ) );
+			}
 			$resp = array(
 				'msg'    => '',
 				'status' => false,
 			);
 			$data = array();
 			if ( isset( $_POST['data'] ) ) {
-				wp_parse_str( $_POST['data'], $data );  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				wp_parse_str( wp_unslash( $_POST['data'] ), $data );  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				if ( isset( $data['ty_id'] ) && $data['ty_id'] > 0 && isset( $data['wfty_rule'] ) && ! empty( $data['wfty_rule'] ) > 0 ) {
 					$funnel_id = $data['ty_id'];
-					$rules     = $data['wfty_rule'];
-					$post      = get_post( $funnel_id );
+					if ( ! current_user_can( 'edit_post', absint( $funnel_id ) ) ) {
+						wp_send_json_error( array( 'message' => 'Insufficient permissions.' ) );
+					}
+					$rules = $data['wfty_rule'];
+					$post  = get_post( $funnel_id );
 					if ( ! is_wp_error( $post ) ) {
 						$this->update_rules_data( $funnel_id, $rules );
 						$this->update_rule_time( $funnel_id );
@@ -398,7 +398,7 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 			wp_send_json( $resp );
 		}
 
-		public function ajax_render_rule_choice( $options = [] ) {
+		public function ajax_render_rule_choice( $options = array() ) {
 
 			$this->load_rules_classes();
 
@@ -415,7 +415,18 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 				$is_ajax = true;
 			}
 			if ( $is_ajax ) {
-				$options = array_merge( $defaults, $_POST );
+				check_ajax_referer( 'wffn_tp_save_rules', '_nonce' );
+				$options = array_merge(
+					$defaults,
+					array(
+						'group_id'      => isset( $_POST['group_id'] ) ? absint( $_POST['group_id'] ) : 0,
+						'rule_id'       => isset( $_POST['rule_id'] ) ? absint( $_POST['rule_id'] ) : 0,
+						'rule_type'     => isset( $_POST['rule_type'] ) ? sanitize_text_field( wp_unslash( $_POST['rule_type'] ) ) : null,
+						'condition'     => isset( $_POST['condition'] ) ? sanitize_text_field( wp_unslash( $_POST['condition'] ) ) : null,
+						'operator'      => isset( $_POST['operator'] ) ? sanitize_text_field( wp_unslash( $_POST['operator'] ) ) : null,
+						'rule_category' => isset( $_POST['rule_category'] ) ? sanitize_text_field( wp_unslash( $_POST['rule_category'] ) ) : null,
+					)
+				);
 			} else {
 				$options = array_merge( $defaults, $options );
 			}
@@ -436,7 +447,7 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 				if ( ! empty( $operators ) ) {
 					wfty_Input_Builder::create_input_field( $operator_args, $options['operator'] );
 				} else { ?>
-                    <input type="hidden" name="<?php echo esc_attr( $operator_args['name'] ); ?>" value="=="/>
+					<input type="hidden" name="<?php echo esc_attr( $operator_args['name'] ); ?>" value="=="/>
 					<?php
 				}
 				echo '</td>';
@@ -463,7 +474,7 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 			}
 			$class = 'wfty_Input_' . str_replace( ' ', '_', ucwords( str_replace( '-', ' ', $input_type ) ) );
 			if ( class_exists( $class ) ) {
-				$woocommerce_wfty_rule_inputs[ $input_type ] = new $class;
+				$woocommerce_wfty_rule_inputs[ $input_type ] = new $class();
 			} else {
 				$woocommerce_wfty_rule_inputs[ $input_type ] = apply_filters( 'woocommerce_wfty_rule_get_input_object', $input_type );
 			}
@@ -537,12 +548,12 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 			try {
 				$this->load_rules_classes();
 
-				$rules = WFTY_Rules::get_instance();
+				$rules = self::get_instance();
 
 				$rules->set_environment_var( 'order', $order->get_id() );
 
 				if ( ! is_array( $contents ) || count( $contents ) === 0 ) {
-					return [];
+					return array();
 				}
 				foreach ( $contents as $content ) {
 					$rules->match_groups( $content );
@@ -552,10 +563,9 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 				 * Get the decided funnel
 				 */
 				return $rules->find_match();
-			} catch ( Exception|Error $e ) {
-				return [];
+			} catch ( Exception | Error $e ) {
+				return array();
 			}
-
 		}
 
 		public function get_thankyou_id() {
@@ -568,8 +578,6 @@ if ( ! class_exists( 'WFTY_Rules' ) ) {
 
 			return 0;
 		}
-
-
 	}
 
 	WFTY_Rules::get_instance();

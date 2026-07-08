@@ -131,7 +131,7 @@ if ( class_exists( 'WFFN_Abstract_Exporter' ) && ! class_exists( 'FKCART_Export_
 			$file  = fopen( WFFN_PRO_EXPORT_DIR . '/' . $this->export_meta['file'], "a" );
 			$count = 0;
 			foreach ( $data as $subdata ) {
-				fputcsv( $file, $subdata );
+				fputcsv( $file, $subdata, ',', '"', '\\' );
 				$count ++;
 			}
 			fclose( $file );

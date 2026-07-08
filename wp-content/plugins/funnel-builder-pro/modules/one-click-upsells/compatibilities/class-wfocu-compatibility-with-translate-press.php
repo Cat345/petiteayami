@@ -7,6 +7,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Translate_Press' ) ) {
 	 *
 	 * Class WFOCU_Compatibility_With_Translate_Press
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Translate_Press {
 
 		public function __construct() {
@@ -29,7 +30,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Translate_Press' ) ) {
 
 			return $data;
 		}
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_Translate_Press(), 'translatePress' );

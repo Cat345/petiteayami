@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_GutenBerg {
 		private static $ins           = null;
 		private static $front_locals  = array();
@@ -347,10 +348,8 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 
 				$template->localize_locals();
 
-				// Our free kit https://fontawesome.com/kits/f4306c3ab0/settings
-				wp_register_script( 'bwf-font-awesome-kit', 'https://kit.fontawesome.com/f4306c3ab0.js', null, null, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- External FontAwesome kit doesn't have version parameter
+				WFFN_Common::enqueue_block_editor_remote_assets( 'bwf-font-awesome-kit', 'bwf-web-font' );
 				wp_enqueue_script( 'wfacp-block-editor', $frontend_dir . $js_path, $script_deps, $version, true );
-				wp_enqueue_script( 'web-font', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js', array(), true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter -- Web font script needs to load in header for proper font loading
 
 				$section_data    = self::register_section_fields();
 				$section_classes = self::class_section();

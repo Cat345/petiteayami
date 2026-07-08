@@ -221,7 +221,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			$db_options    = get_option( 'wffn_tp_settings', array() );
 			$db_options    = ( ! empty( $db_options ) && is_array( $db_options ) ) ? array_map(
 				function ( $val ) {
-					return is_scalar( $val ) ? html_entity_decode( $val ) : $val;
+					return is_scalar( $val ) ? html_entity_decode( $val, ENT_QUOTES | ENT_HTML401 ) : $val;
 				},
 				$db_options
 			) : array();
@@ -471,7 +471,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 
 						global $wpdb;
 
-						$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$ty_page_id" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,
+						$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d", $ty_page_id ) );
 
 						if ( ! empty( $post_meta_all ) ) {
 							$sql_query_selects = array();
@@ -844,8 +844,8 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 				return $resp;
 			}
 
-			$options['css']    = isset( $options['css'] ) ? htmlentities( $options['css'] ) : '';
-			$options['script'] = isset( $options['script'] ) ? htmlentities( $options['script'] ) : '';
+			$options['css']    = isset( $options['css'] ) ? WFFN_Common::sanitize_global_css( $options['css'] ) : '';
+			$options['script'] = isset( $options['script'] ) ? WFFN_Common::sanitize_global_script( $options['script'] ) : '';
 			$this->update_options( $options );
 			$resp['status'] = true;
 
@@ -1067,6 +1067,16 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			// Retrieve the order using the order ID and redirect if it's a valid order
 			$order = wc_get_order( $order_id );
 			if ( $order instanceof WC_Order ) {
+
+				/**
+				 * Only proceed when the request carries the correct order key.
+				 * get_checkout_order_received_url() embeds the secret order key, so redirecting
+				 * without verifying the key would leak it for any enumerated order id.
+				 */
+				$request_key = isset( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public order-received page, key acts as the authorization token.
+				if ( empty( $request_key ) || ! hash_equals( (string) $order->get_order_key(), $request_key ) ) {
+					return;
+				}
 
 				$url = $order->get_checkout_order_received_url();
 				if ( empty( $url ) ) {
@@ -1333,11 +1343,11 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 
 			if ( ! empty( $values ) ) {
 				if ( ! empty( $values['custom_css'] ) ) {
-					$tabs['custom_css']['values']['custom_css'] = html_entity_decode( $values['custom_css'] );
+					$tabs['custom_css']['values']['custom_css'] = html_entity_decode( $values['custom_css'], ENT_QUOTES | ENT_HTML401 );
 				}
 
 				if ( ! empty( $values['custom_js'] ) ) {
-					$tabs['custom_js']['values']['custom_js'] = html_entity_decode( $values['custom_js'] );
+					$tabs['custom_js']['values']['custom_js'] = html_entity_decode( $values['custom_js'], ENT_QUOTES | ENT_HTML401 );
 				}
 
 				if ( isset( $values['custom_redirect'] ) ) {

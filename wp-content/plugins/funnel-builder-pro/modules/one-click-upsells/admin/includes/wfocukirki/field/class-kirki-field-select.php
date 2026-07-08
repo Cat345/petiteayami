@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Select' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Select extends WFOCUKirki_Field {
 
 		/**
@@ -42,7 +43,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Select' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-select';
-
 		}
 
 		/**
@@ -77,7 +77,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Select' ) ) {
 				return;
 			}
 			$this->sanitize_callback = array( $this, 'sanitize' );
-
 		}
 
 		/**
@@ -103,7 +102,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Select' ) ) {
 			}
 
 			return esc_attr( $value );
-
 		}
 
 		/**

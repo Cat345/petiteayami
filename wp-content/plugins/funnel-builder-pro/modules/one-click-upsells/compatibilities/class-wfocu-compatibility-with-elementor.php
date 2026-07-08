@@ -7,6 +7,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Elementor' ) ) {
 	/**
 	 * Class WFOCU_Compatibility_With_Elementor
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Elementor {
 
 		public function __construct() {

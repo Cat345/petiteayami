@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFCO_Call' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFCO_Call {
@@ -137,7 +140,7 @@ if ( ! class_exists( 'WFCO_Call' ) ) {
 				if ( $this->is_json( $body ) ) {
 					$body = json_decode( $body, true );
 				}
-				$body = maybe_unserialize( $body );
+				$body = bwf_safe_unserialize( $body ); // allowed_classes=false: avoid object injection from remote bodies (FK-021)
 				if ( in_array( $response['response']['code'], $this->allowed_responses, true ) ) {
 					$response_code = 200;
 				} else {

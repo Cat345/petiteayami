@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 if ( ! class_exists( 'WFOCU_Admin_Refund' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Admin_Refund {
 
 		/**

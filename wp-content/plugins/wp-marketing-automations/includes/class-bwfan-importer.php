@@ -264,7 +264,7 @@ class BWFAN_Importer {
 	public static function create_importer_log_file( $file, $file_header ) {
 		$file_source = fopen( $file, 'a' );
 		if ( ! empty( $file_source ) ) {
-			fputcsv( $file_source, $file_header );
+			fputcsv( $file_source, $file_header, ',', '"', '\\' );
 			fclose( $file_source );
 		}
 
@@ -281,7 +281,7 @@ class BWFAN_Importer {
 		$file = fopen( $file_name, 'a' );
 
 		if ( ! empty( $file ) ) {
-			fputcsv( $file, $data );
+			fputcsv( $file, $data, ',', '"', '\\' );
 			fclose( $file );
 		}
 	}

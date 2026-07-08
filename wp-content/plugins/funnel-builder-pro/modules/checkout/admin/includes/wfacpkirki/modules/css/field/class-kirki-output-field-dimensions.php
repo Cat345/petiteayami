@@ -12,7 +12,12 @@
 /**
  * Output overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Output_Field_Dimensions' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Output_Field_Dimensions extends WFACPKirki_Output {
 
 		/**
@@ -25,13 +30,16 @@ if ( ! class_exists( 'WFACPKirki_Output_Field_Dimensions' ) ) {
 		 */
 		protected function process_output( $output, $value ) {
 
-			$output = wp_parse_args( $output, array(
+			$output = wp_parse_args(
+				$output,
+				array(
 					'element'     => '',
 					'property'    => '',
 					'media_query' => 'global',
 					'prefix'      => '',
 					'suffix'      => '',
-				) );
+				)
+			);
 
 			if ( ! is_array( $value ) ) {
 				return;

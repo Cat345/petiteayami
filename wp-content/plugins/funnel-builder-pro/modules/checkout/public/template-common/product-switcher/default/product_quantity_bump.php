@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -254,15 +258,15 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 											printf( '<div class="product-image"><div class="wfacp-pro-thumb">%s</div>%s</div>', $thumbnail, $qtyHtml );
 										}
 										?>
-                                    </div>
-                                    <div class="wfacp_product_switcher_col wfacp_product_switcher_col_2">
-                                        <div class='wfacp_product_switcher_description'>
-	                                        <?php
-	                                        do_action( 'wfacp_before_product_quantity_bump_item_title_section', $cart_item, $cart_item_key );
-	                                        ?>
-                                            <div class="product-name product_name">
+									</div>
+									<div class="wfacp_product_switcher_col wfacp_product_switcher_col_2">
+										<div class='wfacp_product_switcher_description'>
+											<?php
+											do_action( 'wfacp_before_product_quantity_bump_item_title_section', $cart_item, $cart_item_key );
+											?>
+											<div class="product-name product_name">
 
-												<?php echo "<span class='wfacp_product_switcher_item'>" . apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key ) . "</span>"; ?>
+												<?php echo "<span class='wfacp_product_switcher_item'>" . apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key ) . '</span>'; ?>
 												<?php
 												do_action( 'wfacp_after_product_quantity_bump_item_title', $cart_item, $cart_item_key );
 												if ( apply_filters( 'wfacp_allow_woocommerce_after_cart_item_name_product_switcher_global', false, $cart_item, $cart_item_key ) ) {
@@ -275,11 +279,11 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 
 
 
-												$variation    = [];
+												$variation = array();
 
 												if ( in_array( $pro->get_type(), WFACP_Common::get_variation_product_type() ) || true === apply_filters( 'wfacp_show_select_options_for_cart_item', false, $cart_item, $cart_item_key ) ) {
 
-													$variation    = WFACP_Common::get_single_variation_html( $pro, $cart_item, true );
+													$variation = WFACP_Common::get_single_variation_html( $pro, $cart_item, true );
 												}
 
 
@@ -290,16 +294,16 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 												if ( is_array( $variation ) && count( $variation ) > 0 ) {
 
 													if ( isset( $variation['variation'] ) && ! empty( $variation['variation'] ) ) {
-														//echo $variation['variation'];
+														// echo $variation['variation'];
 													}
 
 													if ( isset( $variation['select_option'] ) && ! empty( $variation['select_option'] ) ) {
 														echo $variation['select_option'];
 													}
 												}
-                                                do_action('wfacp_after_product_quantity_bump_item_formatted_item_data',$cart_item, $cart_item_key)
+												do_action( 'wfacp_after_product_quantity_bump_item_formatted_item_data', $cart_item, $cart_item_key )
 												?>
-                                            </div>
+											</div>
 
 											<?php
 											do_action( 'wfacp_after_product_quantity_bump_item_title_section', $cart_item, $cart_item_key );
@@ -317,9 +321,9 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 											}
 											do_action( 'wfacp_after_product_switcher_you_save_string', $product_data, $pro, $cart_item_key );
 											?>
-                                        </div>
-                                    </div>
-                                </div>
+										</div>
+									</div>
+								</div>
 
 								<div class="wfacp_product_sec_start">
 									<?php
@@ -428,9 +432,9 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 
 								</div>
 
-                            </div>
+							</div>
 							<?php do_action( 'wfacp_after_product_switcher_row', $product_data, $pro, $cart_item_key ); ?>
-                        </div>
+						</div>
 						<?php
 					}
 				}

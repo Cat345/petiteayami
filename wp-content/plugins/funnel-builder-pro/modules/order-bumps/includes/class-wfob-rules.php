@@ -3,6 +3,7 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 	/**
 	 * @author XLPlugins
 	 */
+	#[\AllowDynamicProperties]
 	class WFOB_Rules {
 		private static $ins               = null;
 		public $is_executing_rule         = false;
@@ -195,11 +196,24 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 		}
 
 		public function maybe_save_rules() {
-
-			if ( null !== filter_input( INPUT_POST, 'wfob_rule' ) ) {
-				$bump_id = filter_input( INPUT_POST, 'wfob_id' );
-				update_post_meta( $bump_id, '_wfob_rules', $_POST['wfob_rule'] );
+			if ( null === filter_input( INPUT_POST, 'wfob_rule' ) ) {
+				return;
 			}
+			if ( ! is_admin() || ! current_user_can( 'manage_woocommerce' ) ) {
+				return;
+			}
+			$bump_id = absint( filter_input( INPUT_POST, 'wfob_id' ) );
+			if ( $bump_id <= 0 ) {
+				return;
+			}
+			if ( get_post_type( $bump_id ) !== WFOB_Common::get_bump_post_type_slug() ) {
+				return;
+			}
+			if ( ! isset( $_POST['_wfob_rules_nonce'] ) ||
+				! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wfob_rules_nonce'] ) ), 'wfob_save_rules_' . $bump_id ) ) {
+				return;
+			}
+			update_post_meta( $bump_id, '_wfob_rules', map_deep( wp_unslash( $_POST['wfob_rule'] ), 'sanitize_text_field' ) );
 		}
 
 		public function set_environment_var( $key = 'order', $value = '' ) {

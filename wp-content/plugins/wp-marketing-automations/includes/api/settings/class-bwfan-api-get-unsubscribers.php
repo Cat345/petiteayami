@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Unsubscribers extends BWFAN_API_Base {
 	public static $ins;
 
@@ -47,8 +48,8 @@ class BWFAN_API_Get_Unsubscribers extends BWFAN_API_Base {
 
 	public function process_api_call() {
 		$search = $this->get_sanitized_arg( 'search', 'text_field' );
-		$offset = ! empty( $this->get_sanitized_arg( 'offset', 'text_field' ) ) ? $this->get_sanitized_arg( 'offset', 'text_field' ) : 0;
-		$limit  = ! empty( $this->get_sanitized_arg( 'limit', 'text_field' ) ) ? $this->get_sanitized_arg( 'limit', 'text_field' ) : 25;
+		$offset = ! empty( $this->get_sanitized_arg( 'offset', 'absint' ) ) ? $this->get_sanitized_arg( 'offset', 'absint' ) : 0;
+		$limit  = ! empty( $this->get_sanitized_arg( 'limit', 'absint' ) ) ? $this->get_sanitized_arg( 'limit', 'absint' ) : 25;
 
 		$get_unsubscribers = BWFAN_Common::get_unsubscribers( $search, $offset, $limit );
 		if ( isset( $get_unsubscribers['found_posts'] ) ) {

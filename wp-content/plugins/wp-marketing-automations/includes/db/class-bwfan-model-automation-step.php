@@ -3,6 +3,7 @@
 /**
  * Automation step modal class
  */
+#[\AllowDynamicProperties]
 class BWFAN_Model_Automation_Step extends BWFAN_Model {
 	static $primary_key = 'ID';
 
@@ -40,7 +41,8 @@ class BWFAN_Model_Automation_Step extends BWFAN_Model {
 		/**
 		 * If automation id is provided
 		 */
-		if ( 0 !== intval( $aid ) ) {
+		$aid = intval( $aid );
+		if ( 0 !== $aid ) {
 			$where_sql .= " AND `aid` = {$aid}";
 		}
 
@@ -48,7 +50,7 @@ class BWFAN_Model_Automation_Step extends BWFAN_Model {
 		 * If search needed
 		 */
 		if ( ! empty( $search ) ) {
-			$where_sql .= " AND `title` LIKE '%$search%'";
+			$where_sql .= $wpdb->prepare( " AND `title` LIKE %s", '%' . $wpdb->esc_like( $search ) . '%' ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		/** Get by Status */
@@ -57,7 +59,7 @@ class BWFAN_Model_Automation_Step extends BWFAN_Model {
 		}
 
 		if ( ! empty( $ids ) ) {
-			$where_sql .= " AND `ID` IN(" . implode( ',', $ids ) . ")";
+			$where_sql .= " AND `ID` IN(" . implode( ',', array_map( 'absint', $ids ) ) . ")";
 		}
 
 		/** Set Pagination */
@@ -69,10 +71,12 @@ class BWFAN_Model_Automation_Step extends BWFAN_Model {
 		}
 
 		/** Order By */
-		$order = " ORDER BY {$order_by} {$order}";
+		$order     = ( 'ASC' === strtoupper( (string) $order ) ) ? 'ASC' : 'DESC';
+		$order_by  = '`' . str_replace( '`', '``', (string) $order_by ) . '`';
+		$order_sql = " ORDER BY {$order_by} {$order}";
 
 		/** Form sql query */
-		$sql = $sql . $where_sql . $order . $pagination_sql;
+		$sql = $sql . $where_sql . $order_sql . $pagination_sql;
 
 		$response['steps'] = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
@@ -173,16 +177,18 @@ class BWFAN_Model_Automation_Step extends BWFAN_Model {
 		global $wpdb;
 		$table_name = self::_table();
 
-		$where = "aid = %d";
 		if ( is_array( $aid ) ) {
-			$where = "aid IN ('" . implode( "','", array_map( 'esc_sql', $aid ) ) . "')";
-			$aid   = [];
+			$aid = array_filter( array_map( 'intval', $aid ) );
+			if ( empty( $aid ) ) {
+				return 0;
+			}
+			$placeholders = implode( ',', array_fill( 0, count( $aid ), '%d' ) );
+			$query        = $wpdb->prepare( "DELETE FROM $table_name WHERE `aid` IN ( $placeholders )", $aid );
+		} else {
+			$query = $wpdb->prepare( "DELETE FROM $table_name WHERE `aid` = %d", intval( $aid ) );
 		}
 
-		$query = " DELETE FROM $table_name WHERE $where";
-		$query = $wpdb->prepare( $query, $aid );
-
-		return $wpdb->query( $wpdb->prepare( $query, $aid ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	public static function get_step_by_trail( $trail ) {

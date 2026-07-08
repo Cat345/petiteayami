@@ -15,6 +15,7 @@ if ( ! class_exists( 'WFFN_Usage_Collector' ) && class_exists( 'WooFunnels_Usage
 	/**
 	 * Class WFFN_Usage_Collector
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_Usage_Collector extends WooFunnels_Usage_Collector_Abstract {
 
 		/**

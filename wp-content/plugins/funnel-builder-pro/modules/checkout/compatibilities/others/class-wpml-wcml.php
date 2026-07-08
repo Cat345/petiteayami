@@ -1,17 +1,21 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'WFACP_Compatibility_WPML_WCML' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_WPML_WCML {
 		public function __construct() {
-			add_action( 'woocommerce_before_calculate_totals', [ $this, 'woocommerce_calculate_totals' ], 200 );
-			add_filter( 'wfacp_product_raw_data', [ $this, 'change_raw_data' ], 10, 2 );
+			add_action( 'woocommerce_before_calculate_totals', array( $this, 'woocommerce_calculate_totals' ), 200 );
+			add_filter( 'wfacp_product_raw_data', array( $this, 'change_raw_data' ), 10, 2 );
 		}
 
 		public function woocommerce_calculate_totals( $cart ) {
 			if ( ! class_exists( 'SitePress' ) || ! class_exists( 'woocommerce_wpml' ) || ! class_exists( 'WCML_Cart' ) ) {
 				return $cart;
 			}
-			$new_cart = [];
+			$new_cart = array();
 			foreach ( $cart->cart_contents as $key => $cart_item ) {
 				if ( isset( $cart_item['key'] ) && isset( $cart_item['_wfacp_options'] ) ) {
 					$key = $cart_item['key'];
@@ -36,7 +40,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WPML_WCML' ) ) {
 
 			$product_id = $product->get_id();
 			global $wpdb;
-			$result = $wpdb->get_results( "select element_id  from {$wpdb->prefix}icl_translations where trid=(select trid from {$wpdb->prefix}icl_translations where element_id='{$product_id}' and element_type='post_product' and source_language_code IS NOT NULL) and source_language_code IS NULL", ARRAY_A );
+			$result = $wpdb->get_results( $wpdb->prepare( "SELECT element_id FROM {$wpdb->prefix}icl_translations WHERE trid = ( SELECT trid FROM {$wpdb->prefix}icl_translations WHERE element_id = %d AND element_type = 'post_product' AND source_language_code IS NOT NULL ) AND source_language_code IS NULL", absint( $product_id ) ), ARRAY_A );
 			if ( empty( $result ) ) {
 				return $raw_data;
 			}
@@ -65,7 +69,6 @@ if ( ! class_exists( 'WFACP_Compatibility_WPML_WCML' ) ) {
 
 			return $raw_data;
 		}
-
 	}
 
 

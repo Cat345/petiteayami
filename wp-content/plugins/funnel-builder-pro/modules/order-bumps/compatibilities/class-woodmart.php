@@ -1,10 +1,11 @@
 <?php
 if ( ! class_exists( 'WFOB_Compatibilities_WoodMart_Builder' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibilities_WoodMart_Builder {
 		public function __construct() {
-			add_filter( 'wfob_product_switcher_price_data', [ $this, 'remove_action' ] );
-			add_filter( 'wfob_qv_images', [ $this, 'remove_action' ], - 1 );
-			add_action( 'wp_footer', [ $this, 'js' ] );
+			add_filter( 'wfob_product_switcher_price_data', array( $this, 'remove_action' ) );
+			add_filter( 'wfob_qv_images', array( $this, 'remove_action' ), - 1 );
+			add_action( 'wp_footer', array( $this, 'js' ) );
 		}
 
 		public function remove_action( $status ) {
@@ -18,26 +19,24 @@ if ( ! class_exists( 'WFOB_Compatibilities_WoodMart_Builder' ) ) {
 		public function js() {
 
 			?>
-            <script>
-                window.addEventListener('load', function () {
-                    (function ($) {
-                        // Ensure the woodmartThemeModule is defined before triggering
+			<script>
+				window.addEventListener('load', function () {
+					(function ($) {
+						// Ensure the woodmartThemeModule is defined before triggering
 
-                        if (typeof woodmartThemeModule !== 'undefined' && woodmartThemeModule.$document) {
+						if (typeof woodmartThemeModule !== 'undefined' && woodmartThemeModule.$document) {
 
-                            $(document.body).on('wfob_quick_view_open', function () {
-                                woodmartThemeModule.$document.trigger('wood-images-loaded');
-                            });
+							$(document.body).on('wfob_quick_view_open', function () {
+								woodmartThemeModule.$document.trigger('wood-images-loaded');
+							});
 
-                        }
+						}
 
-                    })(jQuery);
-                });
-            </script>
+					})(jQuery);
+				});
+			</script>
 			<?php
 		}
-
-
 	}
 
 	new WFOB_Compatibilities_WoodMart_Builder();

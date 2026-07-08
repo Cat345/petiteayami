@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 if ( ! class_exists( '\WfocuFunnelKit\Accept_Button' ) ) {
+	#[\AllowDynamicProperties]
 	class Accept_Button extends \Bricks\Element {
 		public $category = 'funnelkit';
 		public $name     = 'wfocu-accept-offer-button';
@@ -369,14 +370,14 @@ if ( ! class_exists( '\WfocuFunnelKit\Accept_Button' ) ) {
 					<?php echo $icon; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</span>
 			<?php endif; ?>
-			<span <?php echo $this->render_attributes( 'text' ); ?>><?php echo $settings['text']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+			<span <?php echo $this->render_attributes( 'text' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_attributes is Bricks internal ?>><?php echo wp_kses_post( $settings['text'] ); ?></span>
 			<?php if ( $icon && $icon_position === 'right' ) : ?>
 				<span <?php echo $this->render_attributes( 'icon-align' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 					<?php echo $icon; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</span>
 			<?php endif; ?>
 				<?php if ( ! empty( $settings['subtitle'] ) ) : ?>
-					<span style="display:block;" <?php echo $this->render_attributes( 'subtitle' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php echo $settings['subtitle']; ?></span>
+					<span style="display:block;" <?php echo $this->render_attributes( 'subtitle' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_attributes is Bricks internal ?>><?php echo wp_kses_post( $settings['subtitle'] ); ?></span>
 				<?php endif; ?>
 		</span>
 			<?php

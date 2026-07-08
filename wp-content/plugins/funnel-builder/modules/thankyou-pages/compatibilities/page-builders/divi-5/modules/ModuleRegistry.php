@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access forbidden.' );
 }
 
+#[\AllowDynamicProperties]
 class ModuleRegistry {
 
 	/** @var array */

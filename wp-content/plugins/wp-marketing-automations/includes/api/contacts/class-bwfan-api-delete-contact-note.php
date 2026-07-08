@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Delete_Contact_Note extends BWFAN_API_Base {
 	public static $ins;
 

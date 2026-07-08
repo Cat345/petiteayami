@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'WFACP_Aweber_Compatibilities' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Aweber_Compatibilities {
@@ -8,11 +12,11 @@ if ( ! class_exists( 'WFACP_Aweber_Compatibilities' ) ) {
 		private $instance = null;
 
 		public function __construct() {
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_fields' ] );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_fields' ) );
 			add_filter( 'wfacp_html_fields_wfacp_aweber_field', '__return_false' );
-			add_action( 'wfacp_after_template_found', [ $this, 'actions' ] );
-			add_action( 'process_wfacp_html', [ $this, 'process_wfacp_html' ], 10, 2 );
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 10, 2 );
+			add_action( 'wfacp_after_template_found', array( $this, 'actions' ) );
+			add_action( 'process_wfacp_html', array( $this, 'process_wfacp_html' ), 10, 2 );
+			add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 10, 2 );
 
 			/* prevent third party fields and wrapper*/
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
@@ -28,15 +32,15 @@ if ( ! class_exists( 'WFACP_Aweber_Compatibilities' ) ) {
 
 		public function add_fields( $field ) {
 			if ( $this->is_enable() ) {
-				$field['wfacp_aweber_field'] = [
+				$field['wfacp_aweber_field'] = array(
 					'type'          => 'wfacp_html',
 					'default'       => false,
 					'label'         => 'Aweber',
-					'validate'      => [],
+					'validate'      => array(),
 					'id'            => 'wfacp_aweber_field',
 					'required'      => false,
-					'wrapper_class' => [],
-				];
+					'wrapper_class' => array(),
+				);
 
 			}
 
@@ -53,15 +57,14 @@ if ( ! class_exists( 'WFACP_Aweber_Compatibilities' ) ) {
 					$this->instance->checkout_content();
 				}
 			}
-
 		}
 
 		public function add_default_wfacp_styling( $args, $key ) {
 			if ( 'subscribe_to_aweber' !== $key ) {
 				return $args;
 			}
-			$all_cls             = array_merge( [ 'wfacp-form-control-wrapper wfacp-col-full wfacp_checkbox_field' ], $args['class'] );
-			$input_class         = array_merge( [ 'wfacp-form-control' ], $args['input_class'] );
+			$all_cls             = array_merge( array( 'wfacp-form-control-wrapper wfacp-col-full wfacp_checkbox_field' ), $args['class'] );
+			$input_class         = array_merge( array( 'wfacp-form-control' ), $args['input_class'] );
 			$args['class']       = $all_cls;
 			$args['input_class'] = $input_class;
 
@@ -71,4 +74,3 @@ if ( ! class_exists( 'WFACP_Aweber_Compatibilities' ) ) {
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Aweber_Compatibilities(), 'aweber' );
 }
-

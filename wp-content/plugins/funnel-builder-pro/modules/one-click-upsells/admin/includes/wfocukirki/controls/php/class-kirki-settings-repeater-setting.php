@@ -17,6 +17,7 @@ if ( ! class_exists( 'WFOCUKirki_Settings_Repeater_Setting' ) ) {
 	/**
 	 * Repeater Settings.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Settings_Repeater_Setting extends WP_Customize_Setting {
 
 		/**
@@ -27,8 +28,8 @@ if ( ! class_exists( 'WFOCUKirki_Settings_Repeater_Setting' ) ) {
 		 * @access public
 		 *
 		 * @param WP_Customize_Manager $manager The WordPress WP_Customize_Manager object.
-		 * @param string $id A specific ID of the setting. Can be a theme mod or option name.
-		 * @param array $args Setting arguments.
+		 * @param string               $id A specific ID of the setting. Can be a theme mod or option name.
+		 * @param array                $args Setting arguments.
 		 */
 		public function __construct( $manager, $id, $args = array() ) {
 			parent::__construct( $manager, $id, $args );
@@ -82,7 +83,6 @@ if ( ! class_exists( 'WFOCUKirki_Settings_Repeater_Setting' ) ) {
 			}
 
 			return $sanitized;
-
 		}
 	}
 }

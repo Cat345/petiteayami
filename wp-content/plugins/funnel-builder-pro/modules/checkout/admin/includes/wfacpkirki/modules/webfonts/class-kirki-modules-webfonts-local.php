@@ -14,6 +14,10 @@
 /**
  * Manages the way Google Fonts are enqueued.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Modules_Webfonts_Local' ) ) {
 	#[AllowDynamicProperties]
 	final class WFACPKirki_Modules_Webfonts_Local {

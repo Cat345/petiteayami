@@ -10,6 +10,7 @@ if ( ! class_exists( 'ariColor' ) ) {
 	/**
 	 * The color calculations class.
 	 */
+	#[\AllowDynamicProperties]
 	class ariColor {
 
 		/**

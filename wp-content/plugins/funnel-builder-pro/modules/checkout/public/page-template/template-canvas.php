@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Template Name: No Header Footer
  *
@@ -16,15 +20,15 @@ $wfacp_template = wfacp_template();
 $template_type  = $wfacp_template->get_template_type();
 add_filter( 'wfacp_skip_form_printing', '__return_true' );
 ?>
-    <!DOCTYPE html>
-    <html <?php language_attributes(); ?> class="no-js wfacp_html_canvas">
-    <head>
-        <meta charset="<?php bloginfo( 'charset' ); ?>">
-        <link rel="profile" href="http://gmpg.org/xfn/11">
+	<!DOCTYPE html>
+	<html <?php language_attributes(); ?> class="no-js wfacp_html_canvas">
+	<head>
+		<meta charset="<?php bloginfo( 'charset' ); ?>">
+		<link rel="profile" href="http://gmpg.org/xfn/11">
 		<?php wp_head(); ?>
-    </head>
+	</head>
 
-    <body <?php body_class(); ?>>
+	<body <?php body_class(); ?>>
 
 	<?php
 	if ( function_exists( 'wp_body_open' ) ) {
@@ -38,7 +42,7 @@ add_filter( 'wfacp_skip_form_printing', '__return_true' );
 	$atts_string = WFACP_Common::get_template_container_atts();
 
 	?>
-    <div class="wfacp-template-container" <?php echo trim( $atts_string ); ?>>
+	<div class="wfacp-template-container" <?php echo trim( $atts_string ); ?>>
 		<?php
 		do_action( 'wfacp_template_container_top' );
 		if ( WFACP_Core()->public->is_checkout_override() && 'embed_forms' !== $template_type ) {
@@ -52,9 +56,9 @@ add_filter( 'wfacp_skip_form_printing', '__return_true' );
 		}
 		do_action( 'wfacp_template_container_bottom' );
 		?>
-    </div>
+	</div>
 	<?php do_action( 'wfacp_template_wp_footer' ); ?>
 	<?php wp_footer(); ?>
-    </body>
-    </html>
+	</body>
+	</html>
 <?php

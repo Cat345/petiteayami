@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_General_Always extends BWFAN_Rule_Base {
 	public $supports = array( 'cart', 'order' );
 

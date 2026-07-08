@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Compatibility_With_WooMultiCurrency' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_WooMultiCurrency {
 
 		public function __construct() {
@@ -9,19 +10,22 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WooMultiCurrency' ) ) {
 				/**
 				 * reset currency change price hook for upsell offer
 				 */
-				add_action( 'init', function () {
-					if ( ! class_exists( 'WOOMULTI_CURRENCY_Frontend_Price' ) ) {
-						return;
-					}
-					if ( WFOCU_Core()->template_loader->is_valid_state_for_data_setup() ) {
-						$obj = new WOOMULTI_CURRENCY_Frontend_Price();
-						add_action( 'init', array( $obj, 'add_change_price_hooks' ), 14 );
-						remove_action( 'init', array( $obj, 'add_change_price_hooks' ), 100 );
-					}
-				}, 10 );
+				add_action(
+					'init',
+					function () {
+						if ( ! class_exists( 'WOOMULTI_CURRENCY_Frontend_Price' ) ) {
+							return;
+						}
+						if ( WFOCU_Core()->template_loader->is_valid_state_for_data_setup() ) {
+							$obj = new WOOMULTI_CURRENCY_Frontend_Price();
+							add_action( 'init', array( $obj, 'add_change_price_hooks' ), 14 );
+							remove_action( 'init', array( $obj, 'add_change_price_hooks' ), 100 );
+						}
+					},
+					10
+				);
 
 			}
-
 		}
 
 		public function is_enable() {
@@ -73,8 +77,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WooMultiCurrency' ) ) {
 
 			return $price;
 		}
-
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_WooMultiCurrency(), 'woomulticurrency' );

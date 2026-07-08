@@ -10,14 +10,14 @@
  * Description: Grow your business on Meta platforms! Use this official plugin to help sell more of your products using Facebook and Instagram. After completing the setup, you'll be ready to create ads that promote your products and you can also create a shop section on your Page where customers can browse your products.
  * Author: Meta
  * Author URI: https://www.meta.com/
- * Version: 3.6.3
+ * Version: 3.7.4
  * Requires at least: 5.6
  * Requires PHP: 7.4
  * Text Domain: facebook-for-woocommerce
  * Requires Plugins: woocommerce
- * Tested up to: 6.9.4
+ * Tested up to: 7.0
  * WC requires at least: 6.4
- * WC tested up to: 10.6.2
+ * WC tested up to: 10.8.1
  *
  * @package MetaCommerce
  */
@@ -50,7 +50,7 @@ class WC_Facebook_Loader {
 	/**
 	 * @var string the plugin version. This must be in the main plugin file to be automatically bumped by Woorelease.
 	 */
-	const PLUGIN_VERSION = '3.6.3'; // WRCS: DEFINED_VERSION.
+	const PLUGIN_VERSION = '3.7.4'; // WRCS: DEFINED_VERSION.
 
 	// Minimum PHP version required by this plugin.
 	const MINIMUM_PHP_VERSION = '7.4.0';
@@ -282,6 +282,7 @@ class WC_Facebook_Loader {
 
 		deactivate_plugins( plugin_basename( __FILE__ ) );
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['activate'] ) ) {
 			unset( $_GET['activate'] );
 		}
@@ -297,6 +298,7 @@ class WC_Facebook_Loader {
 	 * @param string $class   The css class for the notice.
 	 * @param string $message The notice message.
 	 */
+	// phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.classFound
 	private function add_admin_notice( $slug, $class, $message ) {
 
 		$this->notices[ $slug ] = array(
@@ -407,8 +409,8 @@ class WC_Facebook_Loader {
 	private static function set_wc_facebook_svr_flags() {
 
 		if ( ! function_exists( 'update_option' ) ||
-			 ! function_exists( 'get_transient' ) ||
-			 ! function_exists( 'set_transient' ) ) {
+			! function_exists( 'get_transient' ) ||
+			! function_exists( 'set_transient' ) ) {
 			return;
 		}
 
@@ -565,7 +567,7 @@ class WC_Facebook_Loader {
 		$existing_version = $existing->new_version ?? '0.0.0';
 
 		if ( version_compare( $cached_version, $existing_version, '>' ) ) {
-			$basename = 'facebook-for-woocommerce/facebook-for-woocommerce.php';
+			$basename                         = 'facebook-for-woocommerce/facebook-for-woocommerce.php';
 			$transient->response[ $basename ] = self::$compat_cached_entry;
 			unset( $transient->no_update[ $basename ] );
 		}

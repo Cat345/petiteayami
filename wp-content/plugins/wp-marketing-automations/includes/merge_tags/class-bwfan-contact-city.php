@@ -1,5 +1,10 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 if ( ! bwfan_is_autonami_pro_active() || version_compare( BWFAN_PRO_VERSION, '2.0.2', '>' ) ) {
+	#[\AllowDynamicProperties]
 	class BWFAN_Contact_City extends BWFAN_Merge_Tag {
 
 		private static $instance = null;

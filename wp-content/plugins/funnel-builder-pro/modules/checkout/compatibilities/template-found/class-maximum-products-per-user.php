@@ -1,9 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * By Algoritmika
- * #[AllowDynamicProperties] 
- class WFACP_Maximum_Products_Per_User
+ * #[AllowDynamicProperties]
+class WFACP_Maximum_Products_Per_User
  */
 if ( ! class_exists( 'WFACP_Maximum_Products_Per_User' ) ) {
 	#[AllowDynamicProperties]

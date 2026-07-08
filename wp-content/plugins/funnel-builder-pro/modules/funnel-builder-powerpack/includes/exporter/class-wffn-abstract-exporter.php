@@ -8,30 +8,31 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFFN_Abstract_Exporter
  */
 if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Abstract_Exporter {
 		/** Export type */
 		public static $EXPORT = 2;
 		/** Export Status */
 		public static $EXPORT_IN_PROGRESS = 1;
-		public static $EXPORT_FAILED = 2;
-		public static $EXPORT_SUCCESS = 3;
-		protected static $slug = '';
-		private static $ins = null;
+		public static $EXPORT_FAILED      = 2;
+		public static $EXPORT_SUCCESS     = 3;
+		protected static $slug            = '';
+		private static $ins               = null;
 		/**
 		 * Export action
 		 *
 		 * @var string
 		 */
 		protected static $ACTION_HOOK = 'bwf_funnel_export';
-		protected $start_time = 0;
-		protected $current_pos = 0;
+		protected $start_time         = 0;
+		protected $current_pos        = 0;
 
 		protected $db_export_row = array();
-		protected $export_meta = array();
+		protected $export_meta   = array();
 		protected $export_fields = array();
-		protected $export_id = 0;
+		protected $export_id     = 0;
 
-		protected $args = [];
+		protected $args = array();
 
 		public function __construct() {
 		}
@@ -60,7 +61,7 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 		}
 
 		public function get_columns() {
-			return [];
+			return array();
 		}
 
 		public function total_rows( $args ) {
@@ -77,7 +78,6 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 		 * @return array
 		 */
 		public function wffn_register_export( $args ) {
-
 
 			$response = array(
 				'status'  => false,
@@ -105,31 +105,36 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 
 			$this->delete_all_export( $funnel_id );
 			$file_name = 'funnelkit-' . $this->get_slug() . '-' . gmdate( 'm-d-Y' ) . '.csv';
-			$file      = fopen( WFFN_PRO_EXPORT_DIR . '/' . $file_name, "wb" );
-			fputcsv( $file, $header );
+			$file      = fopen( WFFN_PRO_EXPORT_DIR . '/' . $file_name, 'wb' );
+			fputcsv( $file, $header, ',', '"', '\\' );
 			fclose( $file );
-			$input_data = apply_filters( 'wffn_exporter_insert_post', array(
-				'post_type'    => WFFN_Pro_Core()->exporter->get_post_type_slug(),
-				'post_title'   => $export_title,
-				'post_name'    => sanitize_title( $export_title ),
-				'post_status'  => 'publish',
-				'post_content' => '',
-				'meta_input'   => array(
-					'offset'      => 0,
-					'type'        => self::$EXPORT,
-					'status'      => self::$EXPORT_IN_PROGRESS,
-					'export_type' => $this->get_slug(),
-					'count'       => $count,
-					'fid'         => $funnel_id,
-					'meta'        => array(
-						'fields'      => $header,
-						'file'        => $file_name,
-						'filters'     => $filters,
+			$input_data = apply_filters(
+				'wffn_exporter_insert_post',
+				array(
+					'post_type'    => WFFN_Pro_Core()->exporter->get_post_type_slug(),
+					'post_title'   => $export_title,
+					'post_name'    => sanitize_title( $export_title ),
+					'post_status'  => 'publish',
+					'post_content' => '',
+					'meta_input'   => array(
+						'offset'      => 0,
+						'type'        => self::$EXPORT,
+						'status'      => self::$EXPORT_IN_PROGRESS,
 						'export_type' => $this->get_slug(),
+						'count'       => $count,
+						'fid'         => $funnel_id,
+						'meta'        => array(
+							'fields'      => $header,
+							'file'        => $file_name,
+							'filters'     => $filters,
+							'export_type' => $this->get_slug(),
+						),
 					),
-				)
-			), $this->get_slug(), $args, $header );
-
+				),
+				$this->get_slug(),
+				$args,
+				$header
+			);
 
 			$input_data['meta_input']['meta'] = wp_json_encode( $input_data['meta_input']['meta'] );
 			$export_id                        = wp_insert_post( $input_data );
@@ -138,7 +143,7 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 			} else {
 				wp_delete_file( WFFN_PRO_EXPORT_DIR . '/' . $file_name );
 			}
-			WFFN_Core()->logger->log( "successfully registered the export to run " . $export_id, 'wffn', true );
+			WFFN_Core()->logger->log( 'successfully registered the export to run ' . $export_id, 'wffn', true );
 
 			return array(
 				'status'    => $response,
@@ -147,26 +152,26 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 		}
 
 		public function delete_all_export( $funnel_id ) {
-			$args = [
+			$args = array(
 				'post_type'   => 'fk_export',
 				'post_status' => 'any',
 				'fields'      => 'ids',
-			];
+			);
 
-			$args['meta_query'] = [
-				[
+			$args['meta_query'] = array(
+				array(
 					'key'     => 'export_type',
 					'value'   => $this->get_slug(),
-					'compare' => '='
-				],
-			];
+					'compare' => '=',
+				),
+			);
 			if ( $funnel_id > 0 ) {
 				$args['meta_query']['relation'] = 'AND';
-				$args['meta_query'][]           = [
+				$args['meta_query'][]           = array(
 					'key'     => 'fid',
 					'value'   => $funnel_id,
-					'compare' => '='
-				];
+					'compare' => '=',
+				);
 			}
 
 			$query = new WP_Query( $args );
@@ -210,7 +215,7 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 
 			$this->lock_process( $export_id );
 
-			WFFN_Core()->logger->log( "entering " . $export_id . " " . __FUNCTION__, 'wffn', true );
+			WFFN_Core()->logger->log( 'entering ' . $export_id . ' ' . __FUNCTION__, 'wffn', true );
 			if ( ! $this->maybe_get_export( $export_id ) ) {
 				$this->end_export( self::$EXPORT_FAILED, 'Unable to get Export ID: ' . $export_id );
 
@@ -218,11 +223,11 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 			}
 
 			if ( $this->is_recently_exported() ) {
-				$this->end_export( self::$EXPORT_FAILED, $this->get_slug() . " Recent Export attempt: " . $this->db_export_row['last_modified'] );
+				$this->end_export( self::$EXPORT_FAILED, $this->get_slug() . ' Recent Export attempt: ' . $this->db_export_row['last_modified'] );
 
 				return;
 			}
-			$this->export_fields = isset( $this->export_meta['fields'] ) ? $this->export_meta['fields'] : [];
+			$this->export_fields = isset( $this->export_meta['fields'] ) ? $this->export_meta['fields'] : array();
 
 			if ( ! is_array( $this->export_fields ) || empty( $this->export_fields ) ) {
 				$this->end_export( self::$EXPORT_FAILED, 'Export Fields Empty' );
@@ -252,7 +257,6 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 			}
 
 			$this->unlock_process( $export_id );
-
 		}
 
 		/**
@@ -284,7 +288,7 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 		/**
 		 * Finish exporting to file
 		 *
-		 * @param int $status
+		 * @param int    $status
 		 * @param string $status_message
 		 */
 		public function end_export( $status = 3, $status_message = '' ) {
@@ -292,11 +296,11 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 				return;
 			}
 
-			WFFN_Core()->logger->log( "wffn end export " . $this->get_slug() . " export_id # {$this->export_id}", 'wffn', true );
+			WFFN_Core()->logger->log( 'wffn end export ' . $this->get_slug() . " export_id # {$this->export_id}", 'wffn', true );
 			if ( ! empty( $status_message ) ) {
-				WFFN_Core()->logger->log( $this->get_slug() . "  not export " . $status_message, 'wffn', true );
-			} else if ( 3 === $status ) {
-				$status_message = $this->get_slug() . " exported. Export ID: " . $this->export_id;
+				WFFN_Core()->logger->log( $this->get_slug() . '  not export ' . $status_message, 'wffn', true );
+			} elseif ( 3 === $status ) {
+				$status_message = $this->get_slug() . ' exported. Export ID: ' . $this->export_id;
 			}
 
 			$this->db_export_row['status']   = $status;
@@ -340,7 +344,6 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 		 * Export data to CSV function
 		 */
 		public function export_data() {
-
 		}
 
 		/**
@@ -427,10 +430,9 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 				return;
 			}
 
-
-			$file = fopen( WFFN_PRO_EXPORT_DIR . '/' . $this->export_meta['file'], "a" );
+			$file = fopen( WFFN_PRO_EXPORT_DIR . '/' . $this->export_meta['file'], 'a' );
 			foreach ( $data as $prepared_step ) {
-				$csvData = [];
+				$csvData = array();
 
 				foreach ( $default_data as $f_key => $filters ) {
 					foreach ( $filters as $key => $filter ) {
@@ -449,15 +451,14 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 					}
 				}
 				$csvData = apply_filters( 'wffn_export_csv_row_before_insert', $csvData, $this->export_fields );
-				fputcsv( $file, $csvData );
-				$count ++;
+				fputcsv( $file, $csvData, ',', '"', '\\' );
+				++$count;
 			}
 			fclose( $file );
 			$this->current_pos = $this->current_pos + $count;
-
 		}
 
-		public function contact_csv_header( $funnel_id = 0, $field_data = [], $default_row = false ) {
+		public function contact_csv_header( $funnel_id = 0, $field_data = array(), $default_row = false ) {
 			$result = array(
 				'status' => false,
 			);
@@ -498,7 +499,6 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 			}
 
 			return false;
-
 		}
 
 		/**
@@ -516,7 +516,7 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 		}
 
 		protected function map_columns( $data ) {
-			$return_data = [];
+			$return_data = array();
 			foreach ( $this->get_columns() as $key => $column_name ) {
 				$return_data[ $key ] = $data[ $key ] ?? '';
 			}

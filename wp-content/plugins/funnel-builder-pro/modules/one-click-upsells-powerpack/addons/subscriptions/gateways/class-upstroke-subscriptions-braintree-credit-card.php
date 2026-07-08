@@ -1,8 +1,10 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 /**
  * Author PhpStorm.
  */
 if ( ! class_exists( 'UpStroke_Subscriptions_Braintree_Credit_Card' ) ) {
+	#[\AllowDynamicProperties]
 	class UpStroke_Subscriptions_Braintree_Credit_Card extends WFOCU_Gateway_Integration_Braintree_CC {
 
 		public function __construct() {
@@ -16,7 +18,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions_Braintree_Credit_Card' ) ) {
 		 *
 		 * @param WC_Subscription $subscription
 		 * @param $key
-		 * @param WC_Order $order
+		 * @param WC_Order        $order
 		 */
 		public function save_braintree_token_to_subscription( $subscription, $key, $order ) {
 
@@ -31,7 +33,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_Braintree_Credit_Card' ) ) {
 				$subscription->save();
 			}
 
-
 			if ( $order instanceof WC_Order && $this->get_key() === $order->get_payment_method() ) {
 				add_filter( 'wc_payment_gateway_' . $this->get_key() . '_get_order', array( $this, 'get_order' ), 999 );
 
@@ -42,7 +43,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_Braintree_Credit_Card' ) ) {
 				$order = $this->get_wc_gateway()->add_transaction_data( $this->get_wc_gateway()->get_order( $order ) );
 
 			}
-
 		}
 
 		public function set_braintree_credit_card_keys_to_copy( $meta_keys ) {
@@ -51,7 +51,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_Braintree_Credit_Card' ) ) {
 
 			return $meta_keys;
 		}
-
 	}
 
 	if ( class_exists( 'WC_Subscriptions' ) ) {

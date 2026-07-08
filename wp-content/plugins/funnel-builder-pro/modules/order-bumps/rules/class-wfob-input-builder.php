@@ -4,6 +4,7 @@ if ( ! class_exists( 'wfob_Input_Builder' ) ) {
 	/**
 	 * Helper class to render input field types.
 	 */
+	#[\AllowDynamicProperties]
 	class wfob_Input_Builder {
 
 		/**
@@ -49,6 +50,5 @@ if ( ! class_exists( 'wfob_Input_Builder' ) ) {
 
 			return $field_args;
 		}
-
 	}
 }

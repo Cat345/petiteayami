@@ -15,7 +15,7 @@ class SiteQueryType
     /**
      * @return ObjectConfig
      */
-    public static function config()
+    public static function config(): array
     {
         return [
             'fields' => [

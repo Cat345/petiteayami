@@ -9,6 +9,7 @@ if ( ! class_exists( 'WFOCU_Elementor_Tag_Countdown' ) ) {
 	/**
 	 * Class WFOCU_Elementor_Tag_Countdown
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Elementor_Tag_Countdown extends \Elementor\Core\DynamicTags\Tag {
 
 		public function get_name() {
@@ -24,7 +25,7 @@ if ( ! class_exists( 'WFOCU_Elementor_Tag_Countdown' ) ) {
 		}
 
 		public function get_categories() {
-			return [ Module::URL_CATEGORY ];
+			return array( Module::URL_CATEGORY );
 		}
 
 		public function render() {

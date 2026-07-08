@@ -11,8 +11,8 @@ if ( isset( $data['advance_setting']['rbox_border_type'] ) && $data['advance_set
 if ( isset( $data['testimonial_data']['testimonials'] ) && is_array( $data['testimonial_data']['testimonials'] ) && count( $data['testimonial_data']['testimonials'] ) > 0 ) {
 	?>
 
-    <div class="<?php echo $section_key . ' ' . $rbox_border_type; ?> div_wrap_sec">
-        <div class="wfacp-testing-group clearfix">
+	<div class="<?php echo $section_key . ' ' . $rbox_border_type; ?> div_wrap_sec">
+		<div class="wfacp-testing-group clearfix">
 
 
 			<?php
@@ -25,9 +25,9 @@ if ( isset( $data['testimonial_data']['testimonials'] ) && is_array( $data['test
 				?>
 
 
-                <h2 class="wfacp-list-title wfacp_section_title <?php echo $align_text . ' ' . $font_weight; ?>">
-					<?php echo $data['heading_section']['heading']; ?>
-                </h2>
+				<h2 class="wfacp-list-title wfacp_section_title <?php echo $align_text . ' ' . $font_weight; ?>">
+					<?php echo esc_html( $data['heading_section']['heading'] ); ?>
+				</h2>
 
 				<?php
 			}
@@ -75,21 +75,21 @@ if ( isset( $data['testimonial_data']['testimonials'] ) && is_array( $data['test
 					?>
 
 
-                    <div class="wfacp-testing-list clearfix">
+					<div class="wfacp-testing-list clearfix">
 						<?php
 						if ( isset( $timage ) && $timage != '' && $data['testimonial_data']['hide_image'] != 1 ) {
 							?>
 
-                            <div class="wfacp-testing-img <?php echo $image_type . ' ' . $testi_image_cls; ?>">
-                                <img src="<?php echo $timage; ?>">
+							<div class="wfacp-testing-img <?php echo $image_type . ' ' . $testi_image_cls; ?>">
+								<img src="<?php echo $timage; ?>">
 
-                            </div>
+							</div>
 							<?php
 						}
 						?>
-                        <div class="wfacp-testing-title">
+						<div class="wfacp-testing-title">
 							<?php
-							echo sprintf( '<h3 class="wfacp-testing-sub-hd loop_head_sec">%s</h3>', ( isset( $testi_heading ) && $display_name != 1 ) ? "$testi_heading" : '' );
+							printf( '<h3 class="wfacp-testing-sub-hd loop_head_sec">%s</h3>', ( isset( $testi_heading ) && $display_name != 1 ) ? "$testi_heading" : '' );
 							if ( is_numeric( $timage ) ) {
 								$timage_here = wp_get_attachment_image_src( $timage, 'thumbnail' );
 								$timage      = $timage_here[0];
@@ -105,31 +105,31 @@ if ( isset( $data['testimonial_data']['testimonials'] ) && is_array( $data['test
 							if ( ( isset( $review_width ) && $review_width != '' ) && ( isset( $hide_author_meta ) && $hide_author_meta != 1 ) ) {
 								?>
 
-                                <div class="wfacp-rating-wrapper">
+								<div class="wfacp-rating-wrapper">
 
-                                    <div class="wfacp-star-rating"><span style="width: <?php echo $review_width; ?>%"></span></div>
-                                </div>
+									<div class="wfacp-star-rating"><span style="width: <?php echo $review_width; ?>%"></span></div>
+								</div>
 
 
 								<?php
 							}
 							if ( isset( $tmessage ) ) {
 								?>
-                                <div class="wfacp-testing-text">
+								<div class="wfacp-testing-text">
 									<?php echo apply_filters( 'wfacp_the_content', $tmessage ); ?>
-                                </div>
+								</div>
 								<?php
 							}
 
 							if ( ( isset( $hide_author_meta ) && $hide_author_meta != 1 ) ) {
 								?>
-                                <span class="wfacp-testimani-user-name wfacp-testi-content-color">
+								<span class="wfacp-testimani-user-name wfacp-testi-content-color">
 									<?php
 									if ( isset( $tname ) && $tname != '' ) {
 										echo $tname;
 									}
 									if ( ( isset( $tdate ) && $tdate != '' ) ) {
-										echo sprintf( '<span class="wfacp-testimani-user-date wfacp-testi-content-color">&nbsp;-&nbsp;%s</span>', $tdate );
+										printf( '<span class="wfacp-testimani-user-date wfacp-testi-content-color">&nbsp;-&nbsp;%s</span>', $tdate );
 									}
 									?>
 								</span>
@@ -142,26 +142,26 @@ if ( isset( $data['testimonial_data']['testimonials'] ) && is_array( $data['test
 							<?php
 							if ( isset( $tdesignation ) && $display_designation != 1 ) {
 								?>
-                                <div class="wfacp-designation-panel wfacp-testi-content-color"><?php echo $tdesignation; ?></div>
+								<div class="wfacp-designation-panel wfacp-testi-content-color"><?php echo $tdesignation; ?></div>
 								<?php
 							}
 							?>
 
 
-                        </div>
-                    </div>
+						</div>
+					</div>
 					<?php
-					$tcount ++;
+					++$tcount;
 					unset( $tdate );
 				}
 			}
 			?>
 
 
-            <!--testing user 1 -->
+			<!--testing user 1 -->
 
-        </div>
-    </div>
+		</div>
+	</div>
 	<?php
 }
 ?>

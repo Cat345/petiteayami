@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Input_Select' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Input_Select {
 
 		public function __construct() {
@@ -47,11 +48,11 @@ if ( ! class_exists( 'wfob_Input_Select' ) ) {
 
 			$multiple = '';
 			if ( $field['multiple'] ) {
-				$multiple      = ' multiple="multiple" size="5" ';
+				$multiple       = ' multiple="multiple" size="5" ';
 				$field['name'] .= '[]';
 			}
 
-			echo '<select id="' . $field['id'] . '" class="' . $field['class'] . '" name="' . $field['name'] . '" ' . $multiple . ' >';
+			echo '<select id="' . esc_attr( $field['id'] ) . '" class="' . esc_attr( $field['class'] ) . '" name="' . esc_attr( $field['name'] ) . '" ' . $multiple . ' >';
 
 			// null
 			if ( $field['allow_null'] ) {
@@ -64,14 +65,14 @@ if ( ! class_exists( 'wfob_Input_Select' ) ) {
 					if ( $optgroup ) {
 						// this select is grouped with optgroup
 						if ( $key != '' ) {
-							echo '<optgroup label="' . $key . '">';
+							echo '<optgroup label="' . esc_attr( $key ) . '">';
 						}
 
 						if ( is_array( $value ) ) {
 							foreach ( $value as $id => $label ) {
 								$selected = in_array( $id, $field['value'] ) ? 'selected="selected"' : '';
 
-								echo '<option value="' . $id . '" ' . $selected . '>' . $label . '</option>';
+								echo '<option value="' . esc_attr( $id ) . '" ' . $selected . '>' . esc_html( $label ) . '</option>';
 							}
 						}
 
@@ -80,13 +81,12 @@ if ( ! class_exists( 'wfob_Input_Select' ) ) {
 						}
 					} else {
 						$selected = in_array( $key, $field['value'] ) ? 'selected="selected"' : '';
-						echo '<option value="' . $key . '" ' . $selected . '>' . $value . '</option>';
+						echo '<option value="' . esc_attr( $key ) . '" ' . $selected . '>' . esc_html( $value ) . '</option>';
 					}
 				}
 			}
 
 			echo '</select>';
 		}
-
 	}
 }

@@ -4,6 +4,7 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 	 * Create,show,delete,edit and manages the process related to offers in the plugin.
 	 * Class WFOCU_Offers
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Orders {
 
 		private static $ins                             = null;
@@ -71,6 +72,12 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 			add_action( 'wfocu_db_event_row_created_' . WFOCU_DB_Track::OFFER_ACCEPTED_ACTION_ID, array( $this, 'maybe_add_shipping_item_id_as_meta' ) );
 			add_filter( 'woocommerce_order_query_args', array( $this, 'handle_hpos_meta_query' ), 10 );
+
+			/**
+			 * Whitelist 'upstroke' as an allowed created_via value so WooCommerce 10.8.0+
+			 * does not block payment_complete() for upsell orders.
+			 */
+			add_filter( 'woocommerce_payment_complete_allowed_created_via_values', array( $this, 'allow_upstroke_created_via' ) );
 		}
 
 		public static function get_instance() {
@@ -79,6 +86,12 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 			}
 
 			return self::$ins;
+		}
+
+		public function allow_upstroke_created_via( $allowed_values ) {
+			$allowed_values[] = 'upstroke';
+
+			return $allowed_values;
 		}
 
 		public function handle_hpos_meta_query( $query_vars ) {
@@ -152,18 +165,15 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralSingle -- $get_title is already translated, constructing label_count array
 			$label_count_singular = $get_title . ' <span class="count">(%s)</span>';
 			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralSingle -- $get_title is already translated, constructing label_count array
-			$label_count_plural = $get_title . ' <span class="count">(%s)</span>';
-			// Construct label_count array manually since _n_noop requires string literals, but $get_title is already translated
+			$label_count_plural           = $get_title . ' <span class="count">(%s)</span>';
 			$status['wc-wfocu-pri-order'] = array(
 				'label'                     => $get_title,
 				'public'                    => false,
 				'exclude_from_search'       => true,
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
-				'label_count'               => array(
-					'singular' => $label_count_singular,
-					'plural'   => $label_count_plural,
-				),
+				// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralSingle,WordPress.WP.I18n.NonSingularStringLiteralSingular,WordPress.WP.I18n.NonSingularStringLiteralPlural -- $get_title is already translated; _n_noop builds a complete nooped-plural array (with context/domain) that translate_nooped_plural() requires.
+				'label_count'               => _n_noop( $label_count_singular, $label_count_plural ),
 			);
 
 			return $status;
@@ -379,39 +389,44 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 			add_filter( 'woocommerce_order_is_paid_statuses', array( $this, 'wfocu_execute_thankyou_order_status' ) );
 			global $wpdb;
-			$statuses_to_query = wc_get_is_paid_statuses();
-			$stasuses_in       = implode(
-				',',
-				array_map(
-					function ( $a ) {
-						return "'wc-{$a}'";
-					},
-					$statuses_to_query
-				)
+			$statuses_to_query   = array_map(
+				function ( $a ) {
+					return 'wc-' . $a;
+				},
+				wc_get_is_paid_statuses()
 			);
+			$status_placeholders = implode( ',', array_fill( 0, count( $statuses_to_query ), '%s' ) );
 			remove_filter( 'woocommerce_order_is_paid_statuses', array( $this, 'wfocu_execute_thankyou_order_status' ) );
-			// @codingStandardsIgnoreStart
 
+			// $status_placeholders holds only %s tokens (array_fill); every status value is bound; tables are $wpdb->prefix + literal.
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $status_placeholders is a dynamic %s IN-list bound via the ...$statuses_to_query spread; PHPCS cannot count either statically.
 			if ( WFOCU_Common::is_hpos_enabled() ) {
-				$order_table      = $wpdb->prefix . 'wc_orders';
-				$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
-				$query            = $wpdb->prepare( "SELECT ord.id as ID FROM {$order_table} ord
-                                INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_wfocu_upsell_abandoned')
+				$query_results = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT ord.id as ID FROM {$wpdb->prefix}wc_orders ord
+                                INNER JOIN {$wpdb->prefix}wc_orders_meta om ON (ord.id = om.order_id AND om.meta_key = '_wfocu_upsell_abandoned')
                                 WHERE ord.type = %s
-                                AND ord.status IN ({$stasuses_in})
-                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 100", 'shop_order' );
+                                AND ord.status IN ($status_placeholders)
+                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 100",
+						'shop_order',
+						...$statuses_to_query
+					)
+				);
 
 			} else {
-				$query = $wpdb->prepare( "SELECT p.ID FROM {$wpdb->posts} p
+				$query_results = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT p.ID FROM {$wpdb->posts} p
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_wfocu_upsell_abandoned')
                                 WHERE p.post_type = %s
-                                AND p.post_status IN ({$stasuses_in})
-                                ORDER BY p.post_date DESC LIMIT 0, 100", 'shop_order' );
+                                AND p.post_status IN ($status_placeholders)
+                                ORDER BY p.post_date DESC LIMIT 0, 100",
+						'shop_order',
+						...$statuses_to_query
+					)
+				);
 			}
-
-			$query_results = $wpdb->get_results( $query );
-
-			// @codingStandardsIgnoreEnd
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 			if ( ! empty( $query_results ) && is_array( $query_results ) ) {
 				$get_orders = array_map(
@@ -463,26 +478,29 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 			if ( class_exists( 'FKWCS_Gateway_Stripe' ) ) {
 				WFOCU_Common::$start_time = time();
 
-				// @codingStandardsIgnoreStart
-
 				if ( WFOCU_Common::is_hpos_enabled() ) {
-					$order_table      = $wpdb->prefix . 'wc_orders';
-					$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
-					$query            = $wpdb->prepare( "SELECT ord.id as ID FROM {$order_table} ord
-                                INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_fkwcs_webhook_paid')
+					$query_results = $wpdb->get_results(
+						$wpdb->prepare(
+							"SELECT ord.id as ID FROM {$wpdb->prefix}wc_orders ord
+                                INNER JOIN {$wpdb->prefix}wc_orders_meta om ON (ord.id = om.order_id AND om.meta_key = '_fkwcs_webhook_paid')
                                 WHERE ord.type = %s
-                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 100", 'shop_order' );
+                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 100",
+							'shop_order'
+						)
+					);
 
 				} else {
-					$query = $wpdb->prepare( "SELECT p.ID FROM {$wpdb->posts} p
+					$query_results = $wpdb->get_results(
+						$wpdb->prepare(
+							"SELECT p.ID FROM {$wpdb->posts} p
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_fkwcs_webhook_paid')
                                 WHERE p.post_type = %s
-                                ORDER BY p.post_date DESC LIMIT 0, 100", 'shop_order' );
+                                ORDER BY p.post_date DESC LIMIT 0, 100",
+							'shop_order'
+						)
+					);
 				}
 
-				$query_results = $wpdb->get_results( $query );
-
-				// @codingStandardsIgnoreEnd
 				if ( ! empty( $query_results ) && is_array( $query_results ) ) {
 
 					$get_orders = array_map(
@@ -1452,9 +1470,9 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 					echo '<div class="woocommerce">';
 
-					echo '<link rel="stylesheet" href="' . esc_url(
+					echo '<link rel="stylesheet" href="' . esc_url(  //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
 						str_replace(
-							array( //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
+							array(
 								'http:',
 								'https:',
 							),

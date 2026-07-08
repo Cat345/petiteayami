@@ -1,5 +1,9 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFCO_Model_Connectors' ) ) {
+	#[\AllowDynamicProperties]
 	class WFCO_Model_Connectors extends WFCO_Model {
 		static $primary_key = 'ID';
 

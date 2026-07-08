@@ -498,7 +498,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 			}
 
 			// Generate dismiss URL with secondary key
-			$current_admin_url = isset( $_SERVER['REQUEST_URI'] ) ? basename( wffn_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+			$current_admin_url = isset( $_SERVER['REQUEST_URI'] ) ? basename( wffn_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$dismiss_url       = admin_url( 'admin-ajax.php?action=wffn_dismiss_notice&nkey=' . $secondary_key . '&nonce=' . wp_create_nonce( 'wp_wffn_dismiss_notice' ) . '&redirect=' . $current_admin_url );
 
 			// Generate CTA URL with UTM parameters
@@ -599,7 +599,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 			}
 
 			// Generate dismiss URL
-			$current_admin_url = isset( $_SERVER['REQUEST_URI'] ) ? basename( wffn_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+			$current_admin_url = isset( $_SERVER['REQUEST_URI'] ) ? basename( wffn_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$dismiss_url       = admin_url( 'admin-ajax.php?action=wffn_dismiss_notice&nkey=' . $banner_data['key'] . '&nonce=' . wp_create_nonce( 'wp_wffn_dismiss_notice' ) . '&redirect=' . $current_admin_url );
 
 			// Generate CTA URL with UTM parameters
@@ -679,6 +679,16 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 				'remaining_seconds' => $banner_data['remaining_seconds'],
 				'key'               => $banner_data['key'],
 			);
+		}
+
+		private function maybe_add_security_audit_notification() {
+			if ( ! class_exists( 'WFFN_Security_Audit' ) ) {
+				return;
+			}
+			$entry = WFFN_Security_Audit::get_notification_entry();
+			if ( null !== $entry ) {
+				$this->notifs[] = $entry;
+			}
 		}
 
 		public function prepare_notifications() {
@@ -840,6 +850,8 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 					'index'         => 30,
 				);
 			}
+
+			$this->maybe_add_security_audit_notification();
 		}
 
 		public function stripe_1_14_notice() {
@@ -1069,7 +1081,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 				return;
 			}
 			$plugin_update_url = admin_url( 'plugins.php?s=funnelkit-stripe-woo-payment-gateway' );
-			$current_admin_url = basename( wffn_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+			$current_admin_url = basename( wffn_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$dismiss_url       = admin_url( 'admin-ajax.php?action=wffn_dismiss_notice&nkey=stripe_update_1_14_0&nonce=' . wp_create_nonce( 'wp_wffn_dismiss_notice' ) . '&redirect=' . $current_admin_url );
 
 			if ( true ) { ?>
@@ -1085,7 +1097,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 	text-decoration: none;
 	display: inline-flex;
 	top: 12px;
-	" href="<?php echo esc_url( $dismiss_url ); ?>"><?php esc_html_e( 'Dismiss' ); ?></a>
+	" href="<?php echo esc_url( $dismiss_url ); ?>"><?php esc_html_e( 'Dismiss', 'funnel-builder' ); ?></a>
 
 <div style="display: flex; align-items: center; margin-bottom: 12px; margin-top:9px;">
 	<div class="bwf-notification-icon" style="background: rgba(171,173,191,.3); height: 48px; width: 48px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; margin-right: 12px; flex-shrink: 0;" bis_skin_checked="1">
@@ -1127,7 +1139,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 			if ( ! in_array( $screen_id, $allowed_screens, true ) ) {
 				return;
 			}
-			$current_admin_url = basename( wffn_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+			$current_admin_url = basename( wffn_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$dismiss_url       = admin_url( 'admin-ajax.php?action=wffn_dismiss_notice&nkey=onboarding_wizard&nonce=' . wp_create_nonce( 'wp_wffn_dismiss_notice' ) . '&redirect=' . $current_admin_url );
 
 			if ( WFFN_Core()->admin->is_wizard_available() ) {
@@ -1144,7 +1156,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 					text-decoration: none;
 					display: inline-flex;
 					top: 12px;
-					" href="<?php echo esc_url( $dismiss_url ); ?>"><?php esc_html_e( 'Dismiss' ); ?></a>
+					" href="<?php echo esc_url( $dismiss_url ); ?>"><?php esc_html_e( 'Dismiss', 'funnel-builder' ); ?></a>
 					<h3 class="bwf-notifications-title"> <?php echo __( 'Funnel Builder Quick Setup', 'funnel-builder' ); ?></h3> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 					<p><?php esc_html_e( 'Thank you for activating Funnel Builder by FunnelKit. Go through a quick setup to ensure most optimal experience.', 'funnel-builder' ); ?></p>

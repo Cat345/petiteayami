@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Upload' ) ) {
 	/**
 	 * Adds the image control.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Upload extends WP_Customize_Upload_Control {
 
 		/**

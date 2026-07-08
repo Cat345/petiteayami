@@ -10,6 +10,7 @@ class AjaxDeactivationDataHandler implements Hookable
 {
     const AJAX_ACTION = 'wpdesk_tracker_deactivation_handler_';
     const REQUEST_ADDITIONAL_INFO = 'additional_info';
+    const ACTIVATION_OPTION_PREFIX = 'activation_plugin_';
     /**
      * @var PluginData
      */
@@ -46,6 +47,10 @@ class AjaxDeactivationDataHandler implements Hookable
     private function preparePayload(array $request)
     {
         $payload = array('click_action' => 'plugin_deactivation', 'plugin' => $this->plugin_data->getPluginFile(), 'plugin_name' => $this->plugin_data->getPluginTitle(), 'reason' => $request['reason']);
+        $activation_duration = $this->getActivationDurationSeconds();
+        if (null !== $activation_duration) {
+            $payload['activation_duration_seconds'] = $activation_duration;
+        }
         if (!empty($request[self::REQUEST_ADDITIONAL_INFO])) {
             $payload['additional_info'] = $request[self::REQUEST_ADDITIONAL_INFO];
         }
@@ -59,6 +64,20 @@ class AjaxDeactivationDataHandler implements Hookable
     private function sendPayloadToWpdesk(array $payload)
     {
         $this->sender->send_payload($payload);
+    }
+    /**
+     * Get plugin activation duration in seconds.
+     *
+     * @return int|null
+     */
+    private function getActivationDurationSeconds()
+    {
+        $activation_date = get_option(self::ACTIVATION_OPTION_PREFIX . $this->plugin_data->getPluginFile(), '');
+        $activation_time = strtotime($activation_date);
+        if (\false === $activation_time) {
+            return null;
+        }
+        return max(0, current_time('timestamp') - $activation_time);
     }
     /**
      * Handle AJAX request.

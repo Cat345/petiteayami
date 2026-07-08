@@ -10,6 +10,7 @@ use Mollie\Api\MollieApiClient;
  * Class WFOCU_Mollie_Helper
  */
 if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Mollie_Helper {
 
 		/**

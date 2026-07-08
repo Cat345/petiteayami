@@ -95,7 +95,7 @@ class PluginActivate {
 		$wpdb->query(
 			$wpdb->prepare(
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange
-				'CREATE TABLE %i ( %i BIGINT AUTO_INCREMENT PRIMARY KEY, %i BIGINT NOT NULL, %i CHAR(32) NOT NULL, %i CHAR(32) NOT NULL, %i CHAR(32) NOT NULL, %i CHAR(32) NOT NULL, %i LONGTEXT NOT NULL, %i LONGTEXT NOT NULL, CONSTRAINT %i UNIQUE ( %i, %i, %i ) )',
+				'CREATE TABLE %i ( %i BIGINT AUTO_INCREMENT PRIMARY KEY, %i BIGINT NOT NULL, %i CHAR(32) NOT NULL, %i CHAR(32) NOT NULL, %i CHAR(32) NOT NULL, %i CHAR(32) NOT NULL, %i LONGTEXT NOT NULL, %i LONGTEXT NOT NULL, CONSTRAINT %i UNIQUE ( %i, %i, %i ), INDEX %i ( %i ) )',
 				array(
 					$table_name,
 					'id',
@@ -110,6 +110,8 @@ class PluginActivate {
 					'calculate_tax_md5',
 					'tax_registrations_md5',
 					'tax_settings_md5',
+					'idx_time',
+					'time',
 				)
 			)
 		);
@@ -204,6 +206,50 @@ class PluginActivate {
 				)
 			)
 		);
+	}
+
+	/**
+	 * Add time index to calculate_tax table for existing installations.
+	 *
+	 * @return void
+	 */
+	public static function maybe_add_time_index_to_calculate_tax_table() {
+		global $wpdb;
+
+		if ( ! $wpdb ) {
+			return;
+		}
+
+		$table_name = STRIPE_TAX_FOR_WOOCOMMERCE_DB_PREFIX . 'calculate_tax';
+
+		if ( ! static::table_exists( $table_name ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$index_exists = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = %s AND INDEX_NAME = 'idx_time'",
+				array( $table_name )
+			)
+		);
+
+		if ( intval( $index_exists ) > 0 ) {
+			return;
+		}
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$res = $wpdb->query(
+			$wpdb->prepare(
+				'ALTER TABLE %i ADD INDEX `idx_time` (`time`)',
+				array( $table_name )
+			)
+		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange
+
+		if ( false === $res ) {
+			StripeTaxLogger::log_error( $wpdb->last_error );
+		}
 	}
 
 	/**

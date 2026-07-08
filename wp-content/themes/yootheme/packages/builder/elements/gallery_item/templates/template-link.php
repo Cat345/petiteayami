@@ -12,7 +12,10 @@ $link = $props['link'] ? $this->el('a', [
 // Lightbox
 if ($link && $element['lightbox']) {
 
-    if (Image::create($props['link'])) {
+    // Check if link is an iframe video first, as some video providers (e.g. Vimeo) also return an image URL that would otherwise be detected as image.
+    if ($this->iframeVideo($props['link'])) {
+        $link->attr('data-type', true);
+    } elseif (Image::create($props['link'])) {
         $image = Event::emit(
             'html.image|middleware',
             fn($element) => $element,
@@ -41,10 +44,8 @@ if ($link && $element['lightbox']) {
 
     } elseif ($this->isVideo($props['link'])) {
         $link->attr('data-type', 'video');
-    } elseif (!$this->iframeVideo($props['link'])) {
-        $link->attr('data-type', 'iframe');
     } else {
-        $link->attr('data-type', true);
+        $link->attr('data-type', 'iframe');
     }
 
     // Caption

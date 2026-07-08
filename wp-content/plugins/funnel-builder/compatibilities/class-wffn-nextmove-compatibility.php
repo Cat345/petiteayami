@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'WFFN_NextMove_Compatibility' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_NextMove_Compatibility {
 		public function __construct() {
 			add_action( 'wp', array( $this, 'maybe_unhook' ), 2 );
@@ -21,7 +22,6 @@ if ( ! class_exists( 'WFFN_NextMove_Compatibility' ) ) {
 			}
 
 			WFFN_Common::remove_actions( 'wp', 'XLWCTY_Data', 'load_order_wp' );
-
 		}
 	}
 
@@ -29,4 +29,3 @@ if ( ! class_exists( 'WFFN_NextMove_Compatibility' ) ) {
 		WFFN_Plugin_Compatibilities::register( new WFFN_NextMove_Compatibility(), 'xlwcty' );
 	}
 }
-

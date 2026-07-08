@@ -2,6 +2,7 @@
 
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Product_Switcher_Merge_Tags {
 
 		public static $threshold_to_date = 30;
@@ -11,12 +12,12 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 		protected static $pro;
 		protected static $price_data;
 		protected static $_data_shortcode = array();
-		protected static $cart_item = [];
-		protected static $product_data = [];
-		protected static $cart_item_key = '';
-		protected static $content = '';
-		protected static $design_data = '';
-		protected static $product_key = '';
+		protected static $cart_item       = array();
+		protected static $product_data    = array();
+		protected static $cart_item_key   = '';
+		protected static $content         = '';
+		protected static $design_data     = '';
+		protected static $product_key     = '';
 
 		/**
 		 * Maybe try and parse content to found the wfacp merge tags
@@ -27,7 +28,7 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 		 *
 		 * @return mixed|string
 		 */
-		public static function maybe_parse_merge_tags( $content, $price_data, $pro = false, $product_data = [], $cart_item = [], $cart_item_key = '', $product_key = '', $design_data = [] ) {
+		public static function maybe_parse_merge_tags( $content, $price_data, $pro = false, $product_data = array(), $cart_item = array(), $cart_item_key = '', $product_key = '', $design_data = array() ) {
 
 			if ( $pro instanceof WC_Product ) {
 				self::$pro = $pro;
@@ -41,12 +42,10 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 			self::$design_data   = $design_data;
 			self::$product_key   = $product_key;
 
-
 			$get_all      = self::get_all_tags();
 			$get_all_tags = wp_list_pluck( $get_all, 'tag' );
 
-
-			//iterating over all the merge tags
+			// iterating over all the merge tags
 			if ( $get_all_tags && is_array( $get_all_tags ) && count( $get_all_tags ) > 0 ) {
 				foreach ( $get_all_tags as $tag ) {
 
@@ -54,22 +53,19 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 					$re      = sprintf( '/\{{%s(.*?)\}}/', $tag );
 					$str     = $content;
 
-
-					//trying to find match w.r.t current tag
+					// trying to find match w.r.t current tag
 					preg_match_all( $re, $str, $matches );
 
-					//if match found
+					// if match found
 					if ( $matches && is_array( $matches ) && count( $matches ) > 0 ) {
-
 
 						foreach ( $matches[0] as $exact_match ) {
 
-							//preserve old match
+							// preserve old match
 							$old_match = $exact_match;
 
 							$single = str_replace( '{{', '', $old_match );
 							$single = str_replace( '}}', '', $single );
-
 
 							if ( method_exists( __CLASS__, $single ) ) {
 
@@ -81,15 +77,13 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 				}
 			}
 
-
 			return $content;
-
 		}
 
 		private static function more() {
 			$read_more = __( 'more', 'woofunnels-aero-checkout' );
-			if ( isset( self::$design_data[ "product_" . self::$product_key . "_read_more" ] ) ) {
-				$read_more = self::$design_data[ "product_" . self::$product_key . "_read_more" ];
+			if ( isset( self::$design_data[ 'product_' . self::$product_key . '_read_more' ] ) ) {
+				$read_more = self::$design_data[ 'product_' . self::$product_key . '_read_more' ];
 			}
 
 			return "<a href='#' class='wfob_read_more_link'>" . $read_more . '</a>';
@@ -157,30 +151,56 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 
 		public static function get_tags_list() {
 
-			return [
-				[
-					"tag"         => "{{product_name}}",
-					"description" => __( 'Use {{product_name}} to show product name dynamically. Useful in case if Order Bump is a variable product', 'woofunnels-order-bump' )
-				],
-				[ "tag" => "{{product_short_description}}", "description" => __( 'Use merge tag {{product_short_description}} to show product short description', 'woofunnels-order-bump' ) ],
-				[ "tag" => "{{quantity_incrementer}}", "description" => __( 'Use merge tag {{quantity_incrementer}} to allow increase quantity of orderBump products', 'woofunnels-order-bump' ) ],
-				[ "tag" => "{{price}}", "description" => __( 'Use merge tag {{price}} to show product Final price', 'woofunnels-order-bump' ) ],
-				[ "tag" => "{{price_range}}", "description" => __( 'Use merge tag {{price_range}} to show product price range', 'woofunnels-order-bump' ) ],
-				[ "tag" => "{{product_unit_price}}", "description" => __( 'Use merge tag {{product_unit_price}} to show product unit price', 'woofunnels-order-bump' ) ],
-				[ "tag" => "{{product_regular_price}}", "description" => __( 'Use merge tag {{product_regular_price}} to show product regular price', 'woofunnels-order-bump' ) ],
-				[ "tag" => "{{saving_value}}", "description" => __( 'Use merge tag {{saving_value}} to show saving in value', 'woofunnels-order-bump' ) ],
-				[ "tag" => "{{subscription_summary}}", "description" => __( 'Use merge tag {{subscription_summary}} to show pricing details of subscription products', 'woofunnels-order-bump' ) ],
-				[ "tag"         => "{{variation_attribute_html}}",
-				  "description" => __( 'Use merge tag {{variation_attribute_html}} to show selected variants of variable products', 'woofunnels-order-bump' )
-				],
-				[ "tag" => "{{saving_percentage}}", "description" => __( 'Use merge tag {{saving_percentage}} to show saving in percentage', 'woofunnels-order-bump' ) ],
-			];
-
+			return array(
+				array(
+					'tag'         => '{{product_name}}',
+					'description' => __( 'Use {{product_name}} to show product name dynamically. Useful in case if Order Bump is a variable product', 'woofunnels-order-bump' ),
+				),
+				array(
+					'tag'         => '{{product_short_description}}',
+					'description' => __( 'Use merge tag {{product_short_description}} to show product short description', 'woofunnels-order-bump' ),
+				),
+				array(
+					'tag'         => '{{quantity_incrementer}}',
+					'description' => __( 'Use merge tag {{quantity_incrementer}} to allow increase quantity of orderBump products', 'woofunnels-order-bump' ),
+				),
+				array(
+					'tag'         => '{{price}}',
+					'description' => __( 'Use merge tag {{price}} to show product Final price', 'woofunnels-order-bump' ),
+				),
+				array(
+					'tag'         => '{{price_range}}',
+					'description' => __( 'Use merge tag {{price_range}} to show product price range', 'woofunnels-order-bump' ),
+				),
+				array(
+					'tag'         => '{{product_unit_price}}',
+					'description' => __( 'Use merge tag {{product_unit_price}} to show product unit price', 'woofunnels-order-bump' ),
+				),
+				array(
+					'tag'         => '{{product_regular_price}}',
+					'description' => __( 'Use merge tag {{product_regular_price}} to show product regular price', 'woofunnels-order-bump' ),
+				),
+				array(
+					'tag'         => '{{saving_value}}',
+					'description' => __( 'Use merge tag {{saving_value}} to show saving in value', 'woofunnels-order-bump' ),
+				),
+				array(
+					'tag'         => '{{subscription_summary}}',
+					'description' => __( 'Use merge tag {{subscription_summary}} to show pricing details of subscription products', 'woofunnels-order-bump' ),
+				),
+				array(
+					'tag'         => '{{variation_attribute_html}}',
+					'description' => __( 'Use merge tag {{variation_attribute_html}} to show selected variants of variable products', 'woofunnels-order-bump' ),
+				),
+				array(
+					'tag'         => '{{saving_percentage}}',
+					'description' => __( 'Use merge tag {{saving_percentage}} to show saving in percentage', 'woofunnels-order-bump' ),
+				),
+			);
 		}
 
 		public static function saving_value() {
 			$difference = floatval( self::$price_data['regular_org'] ) - floatval( self::$price_data['price'] );
-
 
 			if ( 0 < $difference ) {
 				return wc_price( $difference );
@@ -205,18 +225,18 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 			if ( $price > $regular_org ) {
 				return '';
 			}
-		$temp_percentage = ( ( ( $price / $regular_org ) * 100 ) );
-		if ( $temp_percentage > 0 ) {
-			$percentage = 100 - ( ( $price / $regular_org ) * 100 );
-		} else {
-			return '';
-		}
-		$t = absint( $percentage );
-		if ( $t > 0 && ( $percentage / $t ) > 0 ) {
-			$percentage = number_format( $percentage, 2 );
-			$percentage = str_replace( '.00', '', $percentage );
-		}
-		unset( $t );
+			$temp_percentage = ( ( ( $price / $regular_org ) * 100 ) );
+			if ( $temp_percentage > 0 ) {
+				$percentage = 100 - ( ( $price / $regular_org ) * 100 );
+			} else {
+				return '';
+			}
+			$t = absint( $percentage );
+			if ( $t > 0 && ( $percentage / $t ) > 0 ) {
+				$percentage = number_format( $percentage, 2 );
+				$percentage = str_replace( '.00', '', $percentage );
+			}
+			unset( $t );
 
 			return $percentage . '%';
 		}
@@ -269,20 +289,19 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 
 				ob_start();
 				?>
-                <div class="wfob_quantity q_h">
-                    <div class="wfob_qty_wrap">
-                        <div class="value-button wfob_decrease_item" onclick="numdecreaseItmQty(this,'')" value="Decrease Value"></div>
-                        <input type="number" class="wfob_quantity_increment" min="0" value="<?php echo $actual_quantity; ?>">
-                        <div class="value-button wfob_increase_item" onclick="numincreaseItmQty(this,'')" value="Increase Value"></div>
-                    </div>
-                </div>
+				<div class="wfob_quantity q_h">
+					<div class="wfob_qty_wrap">
+						<div class="value-button wfob_decrease_item"></div>
+						<input type="number" class="wfob_quantity_increment" min="0" value="<?php echo absint( $actual_quantity ); ?>">
+						<div class="value-button wfob_increase_item"></div>
+					</div>
+				</div>
 				<?php
 
 				$qty_html = ob_get_clean();
-
 				return $qty_html;
 
-				//return sprintf( '<span class="wfob_bump_qty_wrap"><input type="number" class="wfob_quantity_increment" min="0" value="%d"></span>', $actual_quantity );
+				// return sprintf( '<span class="wfob_bump_qty_wrap"><input type="number" class="wfob_quantity_increment" min="0" value="%d"></span>', $actual_quantity );
 
 			}
 
@@ -299,13 +318,12 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 		 *
 		 * @return mixed|void
 		 */
-		public final static function variation_attribute_html() {
+		final public static function variation_attribute_html() {
 
 			if ( ! self::$pro instanceof WC_Product ) {
 
 				return '';
 			}
-
 
 			$product_data = self::$product_data;
 
@@ -323,9 +341,8 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 				return '';
 			}
 
-
 			$item_in_cart            = false;
-			$cart_product_attributes = [];
+			$cart_product_attributes = array();
 			if ( ! empty( $cart_item ) && isset( $cart_item['data'] ) ) {
 				/**
 				 * @var $cart_product_object
@@ -335,7 +352,7 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 			}
 
 			$attribute_string  = '';
-			$only_attribute    = [];
+			$only_attribute    = array();
 			$cart_variation_id = 0;
 			if ( ! is_null( $cart_item ) ) {
 				if ( isset( $cart_item['variation_id'] ) ) {
@@ -355,7 +372,7 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 					continue;
 				}
 
-				$temp_terms = [];
+				$temp_terms = array();
 				$terms      = $attribute->get_terms();
 				if ( ! is_null( $terms ) ) {
 					foreach ( $terms as $term ) {
@@ -370,21 +387,17 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 					if ( isset( $temp_terms[ $attr_value ] ) ) {
 						$attr_value = $temp_terms[ $attr_value ];
 					}
-				} else {
-					if ( $is_product_is_variable ) {
+				} elseif ( $is_product_is_variable ) {
 						$value_not_available = 'wfob_attr_value_not_available';
-					}
 				}
 				if ( '' !== $attr_value ) {
 					$attribute_string .= sprintf( '<div class="wfob_pro_attr_single"><span class="wfob_attribute_id">%s</span><span class="wfob_attributes_sep">: </span><span class="wfob_attribute_value %s">%s</span><span></span></div>', wc_attribute_label( $attribute->get_name() ), $value_not_available, $attr_value );
 				}
 			}
 
-
 			if ( '' != $attribute_string && true == $item_in_cart ) {
 				return sprintf( '<div class="wfob_selected_attributes">%s</div>', $attribute_string );
 			}
-
 
 			if ( true == $is_product_is_variable && ! empty( $only_attribute ) && WFOB_Common::display_not_selected_attribute( $product_data, $pro ) ) {
 				$not_selected = __( 'Select', 'woofunnels-aero-checkout' );
@@ -406,7 +419,6 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 
 				return ob_get_clean();
 			}
-
 		}
 
 		public static function price() {
@@ -419,12 +431,10 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 			$price_data = self::$price_data;
 			if ( in_array( $wc_product->get_type(), WFOB_Common::get_subscription_product_type() ) ) {
 				$printed_price = wc_price( WFOB_Common::get_subscription_price( $wc_product, $price_data, self::$cart_item_key ) );
-			} else {
-				if ( $price_data['price'] >= 0 && ( round( $price_data['price'], 2 ) !== round( $price_data['regular_org'], 2 ) ) ) {
+			} elseif ( $price_data['price'] >= 0 && ( round( $price_data['price'], 2 ) !== round( $price_data['regular_org'], 2 ) ) ) {
 					$printed_price = wc_format_sale_price( $price_data['regular_org'], $price_data['price'] );
-				} else {
-					$printed_price = wc_price( $price_data['price'] );
-				}
+			} else {
+				$printed_price = wc_price( $price_data['price'] );
 			}
 
 			return $printed_price;
@@ -439,7 +449,6 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 			$wc_product = self::$pro;
 			$price_data = self::$price_data;
 
-
 			if ( in_array( $wc_product->get_type(), WFOB_Common::get_variation_product_type() ) ) {
 				$parent_product_id = $wc_product->get_parent_id();
 				$wc_product        = wc_get_product( $parent_product_id );
@@ -449,7 +458,6 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 				$printed_price = wc_format_price_range( $min_price, $max_price );
 
 			}
-
 
 			return $printed_price;
 		}
@@ -483,16 +491,13 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 		}
 
 		public static function product_regular_price() {
-			$price_data         = self::$price_data;
-			$regular_org='';
-            if(isset($price_data['regular_org'])){
-	            $regular_org              = wc_price(floatval( $price_data['regular_org'] ));
-            }
+			$price_data  = self::$price_data;
+			$regular_org = '';
+			if ( isset( $price_data['regular_org'] ) ) {
+				$regular_org = wc_price( floatval( $price_data['regular_org'] ) );
+			}
 
 			return $regular_org;
 		}
-
-
-
 	}
 }

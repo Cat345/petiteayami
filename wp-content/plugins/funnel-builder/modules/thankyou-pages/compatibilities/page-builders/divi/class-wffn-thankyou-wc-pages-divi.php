@@ -23,6 +23,7 @@ if ( ! class_exists( 'WFFN_ThankYou_WC_Pages_Divi' ) ) {
 			$this->url = plugin_dir_url( __FILE__ );
 			add_action( 'after_setup_theme', array( $this, 'initialize_deep_integration' ), 2 );
 			add_action( 'divi_extensions_init', array( $this, 'init_extension' ) );
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_divi_css' ), 20 );
 		}
 
 		/**
@@ -178,6 +179,9 @@ if ( ! class_exists( 'WFFN_ThankYou_WC_Pages_Divi' ) ) {
 		 * Divi 5: divi-5/css/wfty-divi5.css (all Divi 5 changes live here).
 		 */
 		public function enqueue_divi_css() {
+			if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
+				return;
+			}
 			if ( ! function_exists( 'WFFN_Core' ) || ! is_callable( array( WFFN_Core()->thank_you_pages, 'is_wfty_page' ) ) ) {
 				return;
 			}
@@ -463,7 +467,6 @@ if ( ! class_exists( 'WFFN_ThankYou_WC_Pages_Divi' ) ) {
 		}
 
 		public function init_extension() {
-			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_divi_css' ), 20 );
 
 			if ( wp_doing_ajax() ) {
 				$post_type = WFFN_Core()->thank_you_pages->get_post_type_slug();

@@ -1170,7 +1170,12 @@ abstract class BWFAN_Event {
 	 */
 	public function get_rule_group() {
 		$rule_groups = $this->event_rule_groups;
-		$rule_groups = array_merge( $rule_groups, [ 'bwf_automation', 'languages', 'bwf_date_time', 'bwf_pushengage' ] );
+		$default_groups = [ 'bwf_automation', 'languages', 'bwf_date_time', 'bwf_pushengage' ];
+		$default_rule_groups = apply_filters( 'bwfan_default_rule_groups', $default_groups );
+		$default_rule_groups = is_array( $default_rule_groups ) && ! empty( $default_rule_groups ) ? $default_rule_groups : $default_groups;
+
+		$rule_groups = array_merge( $rule_groups, $default_rule_groups );
+		$rule_groups = array_values( array_unique( $rule_groups ) );
 
 		return apply_filters( 'bwfan_event_' . $this->get_slug() . '_rules_group', $rule_groups, $this );
 	}
@@ -1355,8 +1360,15 @@ abstract class BWFAN_Event {
 			$data['e_time'] = $data['e_time'] + 5;
 		}
 
-		BWFAN_Model_Automation_Contact::insert( $data );
-		$p_key = BWFAN_Model_Automation_Contact::insert_id();
+		$inserted = BWFAN_Model_Automation_Contact::insert( $data );
+		$p_key    = BWFAN_Model_Automation_Contact::insert_id();
+
+		/** Insert failed (e.g. deadlock-retry exhausted under concurrent checkout load) - fail cleanly instead of acting on a non-existent row */
+		if ( false === $inserted || empty( $p_key ) ) {
+			BWFAN_Common::log_test_data( 'BWFAN: Failed to queue automation contact for automation ID ' . $automation_id . ' contact ' . $contact_id . '. Event - ' . $data['event'], 'fka-db-deadlock', true );
+
+			return false;
+		}
 
 		BWFAN_Common::event_advanced_logs( 'Automation started on contact ID: ' . $contact_id );
 

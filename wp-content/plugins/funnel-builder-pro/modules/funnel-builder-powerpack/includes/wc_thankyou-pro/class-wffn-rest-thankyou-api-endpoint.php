@@ -1,8 +1,9 @@
 <?php
 if ( ! class_exists( 'WFFN_REST_THANKYOU_API_EndPoint' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_REST_THANKYOU_API_EndPoint extends WFFN_REST_Controller {
 
-		private static $ins = null;
+		private static $ins  = null;
 		protected $namespace = 'funnelkit-app';
 		protected $rest_base = 'funnel-thankyou';
 
@@ -10,7 +11,7 @@ if ( ! class_exists( 'WFFN_REST_THANKYOU_API_EndPoint' ) ) {
 		 * WFFN_REST_API_EndPoint constructor.
 		 */
 		public function __construct() {
-			add_action( 'rest_api_init', [ $this, 'register_endpoint' ], 12 );
+			add_action( 'rest_api_init', array( $this, 'register_endpoint' ), 12 );
 		}
 
 		/**
@@ -18,7 +19,7 @@ if ( ! class_exists( 'WFFN_REST_THANKYOU_API_EndPoint' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -26,25 +27,29 @@ if ( ! class_exists( 'WFFN_REST_THANKYOU_API_EndPoint' ) ) {
 
 		public function register_endpoint() {
 			// Get Rules for Thank You page.
-			register_rest_route( $this->namespace, '/' . 'funnel-thankyou' . '/(?P<step_id>[\d]+)' . '/rules', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder-powerpack' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnel-thankyou' . '/(?P<step_id>[\d]+)' . '/rules',
+				array(
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder-powerpack' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_wcty_rules' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_wcty_rules' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'update_wcty_rules' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_wcty_rules' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 		}
 
 		public function get_read_api_permission_check() {
@@ -89,12 +94,12 @@ if ( ! class_exists( 'WFFN_REST_THANKYOU_API_EndPoint' ) ) {
 				$wfty_rules = WFTY_Rules::get_instance()->get_funnel_rules( $step_id );
 				$list_rules = $this->get_ty_rules( $wfty_rules );
 
-				$formatted_rules = $this->strip_group_rule_keys( $wfty_rules );
-				$remove_rule_keys = [];
+				$formatted_rules  = $this->strip_group_rule_keys( $wfty_rules );
+				$remove_rule_keys = array();
 				/**
 				 * remove all rule in selected list which is need to index order and check for 'custom-html' type
 				 */
-				if( ! empty( $list_rules ) ) {
+				if ( ! empty( $list_rules ) ) {
 					foreach ( $list_rules as $item ) {
 						if ( ! empty( $item['fields'] ) && is_array( $item['fields'] ) ) {
 							foreach ( $item['fields'] as $field ) {
@@ -108,16 +113,19 @@ if ( ! class_exists( 'WFFN_REST_THANKYOU_API_EndPoint' ) ) {
 					// If there are keys to be removed, filter the formatted rules
 					if ( is_array( $remove_rule_keys ) && count( $remove_rule_keys ) > 0 ) {
 						foreach ( $formatted_rules as $groupKey => &$group ) { //phpcs:ignore
-							$group = array_filter( $group, function ( $rule ) use ( $remove_rule_keys ) {
-								return ! in_array( $rule['rule_type'], $remove_rule_keys, true );
-							} );
+							$group = array_filter(
+								$group,
+								function ( $rule ) use ( $remove_rule_keys ) {
+									return ! in_array( $rule['rule_type'], $remove_rule_keys, true );
+								}
+							);
 							$group = array_values( $group );
 						}
 					}
 				}
 
 				$resp['success']            = true;
-				$resp['data']['rules_list'] = ! empty( $list_rules ) ? $list_rules : [];
+				$resp['data']['rules_list'] = ! empty( $list_rules ) ? $list_rules : array();
 				$resp['msg']                = __( 'Rules list loaded', 'funnel-builder-powerpack' );
 
 				if ( ! empty( $formatted_rules ) ) {
@@ -148,22 +156,22 @@ if ( ! class_exists( 'WFFN_REST_THANKYOU_API_EndPoint' ) ) {
 				$resp['success'] = true;
 				$resp['msg']     = __( 'Rules Updated', 'funnel-builder-powerpack' );
 
-                $all_data = wffn_rest_api_helpers()->get_step_post( $step_id, true );
-                $resp['step_data'] = is_array( $all_data ) && isset( $all_data['step_data'] ) ? $all_data['step_data'] : false;
-                $resp['step_list'] = is_array( $all_data ) && isset( $all_data['step_list'] ) ? $all_data['step_list'] : false;
+				$all_data          = wffn_rest_api_helpers()->get_step_post( $step_id, true );
+				$resp['step_data'] = is_array( $all_data ) && isset( $all_data['step_data'] ) ? $all_data['step_data'] : false;
+				$resp['step_list'] = is_array( $all_data ) && isset( $all_data['step_list'] ) ? $all_data['step_list'] : false;
 
-            }
+			}
 
 			return rest_ensure_response( $resp );
 		}
 
 		public function get_ty_rules( $saved_rules ) {
 
-			$rule_list = [];
+			$rule_list = array();
 			if ( class_exists( 'WFTY_Rules' ) ) {
 				$rule_obj = WFTY_Rules::get_instance();
 				$rule_obj->load_rules_classes();
-				$wfty_rules =$rule_obj->default_rule_types( 'all' );
+				$wfty_rules = $rule_obj->default_rule_types( 'all' );
 
 				$rule_set = $this->format_rules_select( $wfty_rules, 1 );
 
@@ -183,7 +191,7 @@ if ( ! class_exists( 'WFFN_REST_THANKYOU_API_EndPoint' ) ) {
 					);
 
 					foreach ( $rule_set as $rule ) {
-						$data_args            = [];
+						$data_args            = array();
 						$options              = array();
 						$rule_object          = WFTY_Rules::get_instance()->woocommerce_wfty_rule_get_rule_object( $rule['key'] );
 						$rule_type            = $rule_object->get_condition_input_type();
@@ -191,16 +199,16 @@ if ( ! class_exists( 'WFFN_REST_THANKYOU_API_EndPoint' ) ) {
 						$options['rule_type'] = $rule_type;
 						$options              = array_merge( $defaults, $options );
 						$operators            = $rule_object->get_possible_rule_operators();
-						$operators            = ! empty( $operators ) && is_array( $operators ) ? wffn_rest_api_helpers()->array_to_nvp( array_flip( $operators ), "label", "value", "value", "key" ) : array();
+						$operators            = ! empty( $operators ) && is_array( $operators ) ? wffn_rest_api_helpers()->array_to_nvp( array_flip( $operators ), 'label', 'value', 'value', 'key' ) : array();
 						$rule['operators']    = $operators;
 						$condition_input_type = $rule_object->get_condition_input_type();
 
-						if ( in_array( $rule_type, [ 'Cart_Product_Select', 'Product_Select' ], true ) ) {
-							$products = ( ! empty( $saved_rules ) && is_array( $saved_rules ) ) ? $this->get_product_from_conditions( $saved_rules ) : [];
+						if ( in_array( $rule_type, array( 'Cart_Product_Select', 'Product_Select' ), true ) ) {
+							$products = ( ! empty( $saved_rules ) && is_array( $saved_rules ) ) ? $this->get_product_from_conditions( $saved_rules ) : array();
 							$values   = $products;
 						}
-						if ( in_array( $rule_type, [ 'Coupon_Select' ], true ) ) {
-							$coupons = ( ! empty( $saved_rules ) && is_array( $saved_rules ) ) ? $this->get_coupons_from_conditions( $saved_rules ) : [];
+						if ( in_array( $rule_type, array( 'Coupon_Select' ), true ) ) {
+							$coupons = ( ! empty( $saved_rules ) && is_array( $saved_rules ) ) ? $this->get_coupons_from_conditions( $saved_rules ) : array();
 
 							if ( ! empty( $coupons ) ) {
 
@@ -210,8 +218,8 @@ if ( ! class_exists( 'WFFN_REST_THANKYOU_API_EndPoint' ) ) {
 							}
 						}
 
-						if ( method_exists( 'WFFN_REST_Controller', 'get_user_from_conditions' ) && in_array( $rule_type, [ 'User_Select' ], true ) ) {
-							$users = ( ! empty( $saved_rules ) && is_array( $saved_rules ) ) ? $this->get_user_from_conditions( $saved_rules ) : [];
+						if ( method_exists( 'WFFN_REST_Controller', 'get_user_from_conditions' ) && in_array( $rule_type, array( 'User_Select' ), true ) ) {
+							$users = ( ! empty( $saved_rules ) && is_array( $saved_rules ) ) ? $this->get_user_from_conditions( $saved_rules ) : array();
 
 							if ( ! empty( $users ) ) {
 								foreach ( $users as $user_id ) {
@@ -224,21 +232,18 @@ if ( ! class_exists( 'WFFN_REST_THANKYOU_API_EndPoint' ) ) {
 						$data_args['value_args']           = array(
 							'input'   => $condition_input_type,
 							'name'    => 'wfty_rule[' . $options['category'] . '][' . $options['group_id'] . '][' . $options['rule_id'] . '][condition]',
-							'choices' => $values
+							'choices' => $values,
 						);
 
 						$rule['fields'] = $this->render_input_fields( $data_args );
 						$rule_list[]    = $rule;
 
 					}
-
 				}
 			}
 
 			return $rule_list;
-
 		}
-
 	}
 
 	WFFN_REST_THANKYOU_API_EndPoint::get_instance();

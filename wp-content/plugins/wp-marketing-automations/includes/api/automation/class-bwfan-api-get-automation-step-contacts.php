@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Automation_Step_Contacts extends BWFAN_API_Base {
 
 	public static $ins;
@@ -33,8 +34,8 @@ class BWFAN_API_Get_Automation_Step_Contacts extends BWFAN_API_Base {
 		$step_id       = $this->get_sanitized_arg( 'step_id' );
 		$type          = $this->get_sanitized_arg( 'type' );
 		$path          = $this->get_sanitized_arg( 'path' );
-		$offset        = ! empty( $this->get_sanitized_arg( 'offset', 'text_field' ) ) ? absint( $this->get_sanitized_arg( 'offset', 'text_field' ) ) : 0;
-		$limit         = ! empty( $this->get_sanitized_arg( 'limit', 'text_field' ) ) ? $this->get_sanitized_arg( 'limit', 'text_field' ) : 25;
+		$offset        = ! empty( $this->get_sanitized_arg( 'offset', 'absint' ) ) ? absint( $this->get_sanitized_arg( 'offset', 'absint' ) ) : 0;
+		$limit         = ! empty( $this->get_sanitized_arg( 'limit', 'absint' ) ) ? $this->get_sanitized_arg( 'limit', 'absint' ) : 25;
 
 		/** If step id is 0 , event data to be returned */
 

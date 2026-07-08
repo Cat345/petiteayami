@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Background' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Background extends WFOCUKirki_Field {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Background' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-background';
-
 		}
 
 		/**
@@ -38,7 +38,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Background' ) ) {
 				return;
 			}
 			$this->sanitize_callback = array( $this, 'sanitize' );
-
 		}
 
 		/**

@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Sort_Group_Fields extends BWFAN_API_Base {
 
 	public static $ins;

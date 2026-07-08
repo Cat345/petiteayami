@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfty_Input_Geo_Postal_Code_Entry' ) ) {
+	#[\AllowDynamicProperties]
 	class wfty_Input_Geo_Postal_Code_Entry {
 
 		public function __construct() {
@@ -12,33 +13,34 @@ if ( ! class_exists( 'wfty_Input_Geo_Postal_Code_Entry' ) ) {
 				'choices'       => array(),
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 		}
 
 		public function render( $field, $value = null ) {
 			$field = array_merge( $this->defaults, $field );
-			if ( ! isset( $field['id'] ) ) {
+			if ( isset( $field['id'] ) ) {
 				$field['id'] = sanitize_title( $field['id'] );
+			} else {
+				$field['id'] = '';
 			}
 			?>
-            <table style="width:100%;">
-                <tr>
-                    <td style="width:162px;"><?php _e( 'Distance ( km )', 'funnel-builder-powerpack' ); ?></td>
-                    <td><?php _e( 'Zip/Postal code ( One per line )', 'funnel-builder-powerpack' ); ?></td>
-                </tr>
-                <tr>
-                    <td style="width:162px; vertical-align:top;">
-                        <input type="text" id="<?php echo $field['id']; ?>_qty" name="<?php echo $field['name']; ?>[qty]" value="<?php echo isset( $value['qty'] ) ? $value['qty'] : 1; ?>"/>
-                    </td>
-                    <td>
-						<?php echo '<textarea style="width:100%" rows="20" name="' . $field['name'] . '[codes]" type="text" id="' . esc_attr( $field['id'] ) . '" class="' . esc_attr( $field['class'] ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '">' . esc_textarea( $value['codes'] ) . '</textarea>'; ?>
-                    </td>
-                    </td>
-                </tr>
-            </table>
+			<table style="width:100%;">
+				<tr>
+					<td style="width:162px;"><?php esc_html_e( 'Distance ( km )', 'funnel-builder-powerpack' ); ?></td>
+					<td><?php esc_html_e( 'Zip/Postal code ( One per line )', 'funnel-builder-powerpack' ); ?></td>
+				</tr>
+				<tr>
+					<td style="width:162px; vertical-align:top;">
+						<input type="text" id="<?php echo esc_attr( $field['id'] ); ?>_qty" name="<?php echo esc_attr( $field['name'] ); ?>[qty]" value="<?php echo esc_attr( isset( $value['qty'] ) ? $value['qty'] : 1 ); ?>"/>
+					</td>
+					<td>
+						<?php echo '<textarea style="width:100%" rows="20" name="' . esc_attr( $field['name'] ) . '[codes]" type="text" id="' . esc_attr( $field['id'] ) . '" class="' . esc_attr( $field['class'] ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '">' . esc_textarea( $value['codes'] ) . '</textarea>'; ?>
+					</td>
+					</td>
+				</tr>
+			</table>
 			<?php
 		}
-
 	}
 }

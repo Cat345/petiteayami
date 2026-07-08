@@ -24,7 +24,7 @@ if ( ! function_exists( 'bwf_create_update_contact_customer' ) ) {
 		$get_threshold_order = get_option( '_bwf_order_threshold', BWF_THRESHOLD_ORDERS );
 
 		$paid_statuses = implode( ',', array_map( function ( $status ) {
-			return "'wc-$status'";
+			return "'" . esc_sql( 'wc-' . sanitize_key( $status ) ) . "'";
 		}, wc_get_is_paid_statuses() ) );
 		if ( 0 === $get_threshold_order ) {
 

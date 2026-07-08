@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -30,7 +34,7 @@ $show_subscription_string_old_version = apply_filters( 'wfacp_show_subscription_
 $className                            = 'wfacp_mini_cart_items_' . WFACP_Common::sanitize_mini_cart_widget_id_for_selector( $widget_id );
 ?>
 
-<div class="wfacp_elementor_mini_cart_widget <?php echo $className; ?>" id="<?php echo $className; ?>">
+<div class="wfacp_elementor_mini_cart_widget <?php echo esc_attr( $className ); ?>" id="<?php echo esc_attr( $className ); ?>">
 	<?php
 	do_action( 'wfacp_before_mini_cart_html' );
 	do_action( 'woocommerce_review_order_before_cart_contents' );
@@ -82,7 +86,7 @@ $className                            = 'wfacp_mini_cart_items_' . WFACP_Common:
 						$enabled_delete_class = 'wfacp_delete_active';
 					}
 					?>
-					<tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ) . ' ' . $enabled_delete_class; ?>" cart_key="<?php echo $cart_item_key; ?>" data-item-key="<?php echo $aero_item_key; ?>">
+					<tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ) . ' ' . $enabled_delete_class; ?>" cart_key="<?php echo esc_attr( $cart_item_key ); ?>" data-item-key="<?php echo esc_attr( $aero_item_key ); ?>">
 						<td class="product-name-area">
 							<?php
 							$hideImageCls = '';
@@ -166,11 +170,11 @@ $className                            = 'wfacp_mini_cart_items_' . WFACP_Common:
 								 */
 								if ( is_array( $variation ) && count( $variation ) > 0 ) {
 									if ( $show_new_mini_cart_design && isset( $variation['variation'] ) && ! empty( $variation['variation'] ) ) {
-										echo $variation['variation'];
+										echo wp_kses_post( $variation['variation'] );
 									}
 
 									if ( $show_new_mini_cart_design && isset( $variation['select_option'] ) && ! empty( $variation['select_option'] ) ) {
-										echo $variation['select_option'];
+										echo wp_kses_post( $variation['select_option'] );
 									}
 								}
 
@@ -210,9 +214,9 @@ $className                            = 'wfacp_mini_cart_items_' . WFACP_Common:
 											?>
 											<div class="product-quantity">
 												<div class="wfacp_quantity_selector" style="<?php echo ( true == $hide_quantity_switcher ) ? 'display:none;pointer-events:none;' : ''; ?>">
-													<div class="value-button wfacp_decrease_item" onclick="decreaseItmQty(this,'<?php echo $aero_item_key; ?>')" value="Decrease Value">-</div>
+													<div class="value-button wfacp_decrease_item" onclick="decreaseItmQty(this,'<?php echo esc_attr( $aero_item_key ); ?>')" value="Decrease Value">-</div>
 													<input type="number" step="<?php echo esc_attr( $minMax['step'] ); ?>" min="<?php echo esc_attr( $minMax['min'] ); ?>" max="<?php echo esc_attr( $minMax['max'] ); ?>" value="<?php echo esc_attr( $item_quantity ); ?>" data-value="<?php echo esc_attr( $item_quantity ); ?>" class="wfacp_mini_cart_update_qty wfacp_product_quantity_number_field" cart_key="<?php echo esc_attr( $cart_item_key ); ?>">
-													<div class="value-button wfacp_increase_item" onclick="increaseItmQty(this,'<?php echo $aero_item_key; ?>')" value="Increase Value">+</div>
+													<div class="value-button wfacp_increase_item" onclick="increaseItmQty(this,'<?php echo esc_attr( $aero_item_key ); ?>')" value="Increase Value">+</div>
 												</div>
 											</div>
 											<?php

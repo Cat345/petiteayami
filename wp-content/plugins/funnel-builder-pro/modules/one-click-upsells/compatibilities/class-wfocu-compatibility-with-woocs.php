@@ -1,9 +1,9 @@
 <?php
 if ( ! class_exists( 'WFOCU_Compatibility_With_WOOCS' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_WOOCS {
 
 		public function __construct() {
-
 		}
 
 		public function is_enable() {
@@ -45,8 +45,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WOOCS' ) ) {
 
 			return $price;
 		}
-
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_WOOCS(), 'woocs' );

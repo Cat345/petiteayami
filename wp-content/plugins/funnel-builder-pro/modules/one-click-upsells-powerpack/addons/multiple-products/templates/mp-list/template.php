@@ -1,20 +1,21 @@
 <?php
 if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Template_MP_List extends WFOCU_Customizer_Common {
 
-		private static $ins = null;
-		public $template_slug = 'mp-list';
-		protected $section_fields = array();
-		protected $offer_data = null;
+		private static $ins            = null;
+		public $template_slug          = 'mp-list';
+		protected $section_fields      = array();
+		protected $offer_data          = null;
 		protected $offer_products_meta = null;
-		protected $change_set = array();
-		protected $sections = array( 'wfocu_section' );
-		protected $template_dir = __DIR__;
-		protected $offer_id = 0;
-		public $web_google_fonts = [
+		protected $change_set          = array();
+		protected $sections            = array( 'wfocu_section' );
+		protected $template_dir        = __DIR__;
+		protected $offer_id            = 0;
+		public $web_google_fonts       = array(
 			'default'   => 'Default',
 			'Open Sans' => 'Open Sans',
-		];
+		);
 
 		public function __construct() {
 			parent::__construct();
@@ -111,7 +112,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 		public function get_customizer_data() {
 			$offer_data = $this->data;
 
-			$this->web_google_fonts = function_exists( 'bwf_get_fonts_list' ) ? bwf_get_fonts_list( 'name_key' ) : [];
+			$this->web_google_fonts = function_exists( 'bwf_get_fonts_list' ) ? bwf_get_fonts_list( 'name_key' ) : array();
 
 			if ( is_null( $offer_data ) ) {
 				return;
@@ -204,15 +205,15 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 										'footer',
 									),
 									'choices'     => array(
-										'header'              => esc_attr__( 'Header', 'woofunnels-upstroke-power-pack' ),
+										'header'      => esc_attr__( 'Header', 'woofunnels-upstroke-power-pack' ),
 										'header_progress_bar' => esc_attr__( 'Progress Bar', 'woofunnels-upstroke-power-pack' ),
-										'heading'             => esc_attr__( 'Pattern Interrupt', 'woofunnels-upstroke-power-pack' ),
-										'products'            => esc_attr__( 'Product', 'woofunnels-upstroke-power-pack' ),
-										'reviews'             => esc_attr__( 'Reviews', 'woofunnels-upstroke-power-pack' ),
-										'features'            => esc_attr__( 'Features', 'woofunnels-upstroke-power-pack' ),
-										'guarantee'           => esc_attr__( 'Guarantee', 'woofunnels-upstroke-power-pack' ),
-										'urgency_bar'         => esc_attr__( 'Urgency Bar', 'woofunnels-upstroke-power-pack' ),
-										'footer'              => esc_attr__( 'Footer', 'woofunnels-upstroke-power-pack' ),
+										'heading'     => esc_attr__( 'Pattern Interrupt', 'woofunnels-upstroke-power-pack' ),
+										'products'    => esc_attr__( 'Product', 'woofunnels-upstroke-power-pack' ),
+										'reviews'     => esc_attr__( 'Reviews', 'woofunnels-upstroke-power-pack' ),
+										'features'    => esc_attr__( 'Features', 'woofunnels-upstroke-power-pack' ),
+										'guarantee'   => esc_attr__( 'Guarantee', 'woofunnels-upstroke-power-pack' ),
+										'urgency_bar' => esc_attr__( 'Urgency Bar', 'woofunnels-upstroke-power-pack' ),
+										'footer'      => esc_attr__( 'Footer', 'woofunnels-upstroke-power-pack' ),
 									),
 									'priority'    => 50,
 								),
@@ -248,7 +249,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'priority'      => 20,
 									'transport'     => 'postMessage',
 									'wfocu_partial' => array(
-										'elem'                => '.wfocu-page-header-section .wfocu-page-logo',
+										'elem' => '.wfocu-page-header-section .wfocu-page-logo',
 										'container_inclusive' => false,
 									),
 								),
@@ -276,7 +277,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'label'           => __( 'Align', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 'wfocu-text-center',
 									'choices'         => array(
-										'wfocu-text-left'   => 'Left',
+										'wfocu-text-left' => 'Left',
 										'wfocu-text-center' => 'Center',
 									),
 									'priority'        => 40,
@@ -841,12 +842,12 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 								'priority' => 50,
 							),
 							'fields' => array(
-								'ct_layout'           => array(
+								'ct_layout'                => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Layout', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 10,
 								),
-								'style'               => array(
+								'style'                    => array(
 									'type'     => 'radio-image-full',
 									'label'    => esc_attr__( 'Style', 'woofunnels-upstroke-power-pack' ),
 									'default'  => 'style1',
@@ -858,12 +859,12 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority' => 20,
 								),
-								'ct_buy_block'        => array(
+								'ct_buy_block'             => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Buy Block', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 30,
 								),
-								'accept_btn_text1'    => array(
+								'accept_btn_text1'         => array(
 									'type'            => 'textarea',
 									'description'     => $merge_tags_description,
 									'label'           => esc_attr__( 'Accept Button Text', 'woofunnels-upstroke-power-pack' ),
@@ -881,7 +882,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 40,
 								),
-								'accept_btn_text1_fs' => array(
+								'accept_btn_text1_fs'      => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Accept Button Text Font Size', 'woofunnels-upstroke-power-pack' ),
 									'default'         => array(
@@ -918,7 +919,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 50,
 								),
-								'accept_btn_text2'    => array(
+								'accept_btn_text2'         => array(
 									'type'            => 'textarea',
 									'description'     => $merge_tags_description,
 									'label'           => esc_attr__( 'Accept Button Sub Text', 'woofunnels-upstroke-power-pack' ),
@@ -939,7 +940,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 60,
 								),
-								'accept_btn_text2_fs' => array(
+								'accept_btn_text2_fs'      => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Accept Button Sub Text Font Size', 'woofunnels-upstroke-power-pack' ),
 									'default'         => array(
@@ -978,7 +979,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 
 								/** Style-2 Fields */
 
-								'click_trigger_text'    => array(
+								'click_trigger_text'       => array(
 									'type'            => 'textarea',
 									'description'     => $merge_tags_description,
 									'label'           => esc_attr__( 'Text Below Button', 'woofunnels-upstroke-power-pack' ),
@@ -992,7 +993,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 										),
 									),
 								),
-								'click_trigger_text_fs' => array(
+								'click_trigger_text_fs'    => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Text Below Button Font Size', 'woofunnels-upstroke-power-pack' ),
 									'default'         => array(
@@ -1021,7 +1022,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 110,
 								),
-								'skip_offer_text'       => array(
+								'skip_offer_text'          => array(
 									'type'            => 'textarea',
 									'description'     => $merge_tags_description,
 									'label'           => esc_attr__( 'Decline Offer Link Text', 'woofunnels-upstroke-power-pack' ),
@@ -1042,7 +1043,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 120,
 								),
-								'skip_offer_text_fs'    => array(
+								'skip_offer_text_fs'       => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Decline Offer Link Text Font Size', 'woofunnels-upstroke-power-pack' ),
 									'default'         => array(
@@ -1078,7 +1079,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 130,
 								),
-								'skip_offer_btn_style'  => array(
+								'skip_offer_btn_style'     => array(
 									'type'            => 'checkbox',
 									'label'           => esc_attr__( 'Dispay Decline Offer Link  As A Button', 'woofunnels-upstroke-power-pack' ),
 									'default'         => false,
@@ -1098,29 +1099,29 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 										),
 									),
 								),
-								'ct_payment_icons'      => array(
+								'ct_payment_icons'         => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Payment Icons', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 150,
 								),
-								'display_payment_icon'  => array(
+								'display_payment_icon'     => array(
 									'type'        => 'checkbox',
 									'label'       => esc_attr__( 'Display Payment Icons', 'woofunnels-upstroke-power-pack' ),
 									'description' => esc_attr__( 'Manage settings from Other->Payment Icons Section.', 'woofunnels-upstroke-power-pack' ),
 									'default'     => true,
 									'priority'    => 160,
 								),
-								'ct_advanced'           => array(
+								'ct_advanced'              => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Advanced', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 170,
 								),
-								'btn_type'              => array(
+								'btn_type'                 => array(
 									'type'            => 'radio-buttonset',
 									'label'           => esc_attr__( 'Button Style', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 'wfocu-btn-full',
 									'choices'         => array(
-										'wfocu-btn-full'     => __( 'Full', 'woofunnels-upstroke-power-pack' ),
+										'wfocu-btn-full' => __( 'Full', 'woofunnels-upstroke-power-pack' ),
 										'wfocu-btn-flexible' => __( 'Flexible', 'woofunnels-upstroke-power-pack' ),
 									),
 									'transport'       => 'postMessage',
@@ -1133,7 +1134,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 180,
 								),
-								'btn_width'             => array(
+								'btn_width'                => array(
 									'type'            => 'slider',
 									'label'           => esc_attr__( 'Button Width (%)', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 100,
@@ -1161,7 +1162,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 190,
 								),
-								'btn_vertical_gap'      => array(
+								'btn_vertical_gap'         => array(
 									'type'            => 'number',
 									'label'           => esc_attr__( 'Button Top/Bottom Padding', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 15,
@@ -1185,7 +1186,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 200,
 								),
-								'btn_horizontal_gap'    => array(
+								'btn_horizontal_gap'       => array(
 									'type'            => 'number',
 									'label'           => esc_attr__( 'Button Left/Right Padding', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 25,
@@ -1209,7 +1210,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 210,
 								),
-								'btn_radius'            => array(
+								'btn_radius'               => array(
 									'type'            => 'number',
 									'label'           => esc_attr__( 'Button Radius', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 3,
@@ -1228,49 +1229,55 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 220,
 								),
-								'show_accept_btn_icon'  => array(
+								'show_accept_btn_icon'     => array(
 									'type'        => 'checkbox',
 									'label'       => esc_attr__( 'Enable Accept Button Icon', 'woofunnels-upstroke-power-pack' ),
 									'description' => '',
 									'default'     => false,
 									'priority'    => 230,
 								),
-								'accept_btn_icon'       => array(
+								'accept_btn_icon'          => array(
 									'type'            => 'radio-icon',
 									'label'           => esc_attr__( 'Accept Button Icon', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 'dashicons-cart',
 									'transport'       => 'refresh',
 									'choices'         => array(
-										'dashicons-cart'             => __( '<span class="dashicons dashicons-cart"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-yes'              => __( '<span class="dashicons dashicons-yes"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-up'         => __( '<span class="dashicons dashicons-arrow-up"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-down'       => __( '<span class="dashicons dashicons-arrow-down"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-right'      => __( '<span class="dashicons dashicons-arrow-right"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-left'       => __( '<span class="dashicons dashicons-arrow-left"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-up-alt'     => __( '<span class="dashicons 
-									dashicons-arrow-up-alt"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-down-alt'   => __( '<span class="dashicons dashicons-arrow-down-alt"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-right-alt'  => __( '<span class="dashicons dashicons-arrow-right-alt"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-left-alt'   => __( '<span class="dashicons dashicons-arrow-left-alt"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-up-alt2'    => __( '<span class="dashicons 
-									dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-down-alt2'  => __( '<span class="dashicons dashicons-arrow-down-alt2"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-cart'   => __( '<span class="dashicons dashicons-cart"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-yes'    => __( '<span class="dashicons dashicons-yes"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-up' => __( '<span class="dashicons dashicons-arrow-up"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-down' => __( '<span class="dashicons dashicons-arrow-down"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-right' => __( '<span class="dashicons dashicons-arrow-right"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-left' => __( '<span class="dashicons dashicons-arrow-left"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-up-alt' => __(
+											'<span class="dashicons 
+									dashicons-arrow-up-alt"></span>',
+											'woofunnels-upstroke-power-pack'
+										),
+										'dashicons-arrow-down-alt' => __( '<span class="dashicons dashicons-arrow-down-alt"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-right-alt' => __( '<span class="dashicons dashicons-arrow-right-alt"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-left-alt' => __( '<span class="dashicons dashicons-arrow-left-alt"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-up-alt2' => __(
+											'<span class="dashicons 
+									dashicons-arrow-up-alt2"></span>',
+											'woofunnels-upstroke-power-pack'
+										),
+										'dashicons-arrow-down-alt2' => __( '<span class="dashicons dashicons-arrow-down-alt2"></span>', 'woofunnels-upstroke-power-pack' ),
 										'dashicons-arrow-right-alt2' => __( '<span class="dashicons dashicons-arrow-right-alt2"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-left-alt2'  => __( '<span class="dashicons dashicons-arrow-left-alt2"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-heart'            => __( '<span class="dashicons dashicons-heart"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-star-filled'      => __( '<span class="dashicons dashicons-star-filled"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-plus-alt'         => __( '<span class="dashicons dashicons-plus-alt"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-awards'           => __( '<span class="dashicons dashicons-awards"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-shield'           => __( '<span class="dashicons dashicons-shield"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-shield-alt'       => __( '<span class="dashicons dashicons-shield-alt"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-thumbs-up'        => __( '<span class="dashicons dashicons-thumbs-up"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-thumbs-down'      => __( '<span class="dashicons dashicons-thumbs-down"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-smiley'           => __( '<span class="dashicons dashicons-smiley"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-tickets-alt'      => __( '<span class="dashicons dashicons-tickets-alt"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-tag'              => __( '<span class="dashicons dashicons-tag"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-cloud'            => __( '<span class="dashicons dashicons-cloud"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-left-alt2' => __( '<span class="dashicons dashicons-arrow-left-alt2"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-heart'  => __( '<span class="dashicons dashicons-heart"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-star-filled' => __( '<span class="dashicons dashicons-star-filled"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-plus-alt' => __( '<span class="dashicons dashicons-plus-alt"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-awards' => __( '<span class="dashicons dashicons-awards"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-shield' => __( '<span class="dashicons dashicons-shield"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-shield-alt' => __( '<span class="dashicons dashicons-shield-alt"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-thumbs-up' => __( '<span class="dashicons dashicons-thumbs-up"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-thumbs-down' => __( '<span class="dashicons dashicons-thumbs-down"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-smiley' => __( '<span class="dashicons dashicons-smiley"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-tickets-alt' => __( '<span class="dashicons dashicons-tickets-alt"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-tag'    => __( '<span class="dashicons dashicons-tag"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-cloud'  => __( '<span class="dashicons dashicons-cloud"></span>', 'woofunnels-upstroke-power-pack' ),
 										'dashicons-controls-forward' => __( '<span class="dashicons dashicons-controls-forward"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-controls-back'    => __( '<span class="dashicons dashicons-controls-back"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-controls-back' => __( '<span class="dashicons dashicons-controls-back"></span>', 'woofunnels-upstroke-power-pack' ),
 
 									),
 									'active_callback' => array(
@@ -1283,14 +1290,14 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'priority'        => 240,
 								),
 
-								'btn_effect' => array(
+								'btn_effect'               => array(
 									'type'            => 'select',
 									'label'           => esc_attr__( 'Button Hover Effect', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 'no-effect',
 									'choices'         => array(
-										'none'                        => __( 'No effect', 'woofunnels-upstroke-power-pack' ),
-										'wfocu-btn-pulse-grow'        => __( 'Pulse Grow', 'woofunnels-upstroke-power-pack' ),
-										'wfocu-btn-bounce-in'         => __( 'Bounce In', 'woofunnels-upstroke-power-pack' ),
+										'none' => __( 'No effect', 'woofunnels-upstroke-power-pack' ),
+										'wfocu-btn-pulse-grow' => __( 'Pulse Grow', 'woofunnels-upstroke-power-pack' ),
+										'wfocu-btn-bounce-in' => __( 'Bounce In', 'woofunnels-upstroke-power-pack' ),
 										'wfocu-btn-wobble-horizontal' => __( 'Wobble', 'woofunnels-upstroke-power-pack' ),
 									),
 									'transport'       => 'postMessage',
@@ -1305,13 +1312,13 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'priority'        => 270,
 								),
 
-								'ct_accept_btn' => array(
+								'ct_accept_btn'            => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Accept Button Colors', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 280,
 								),
 
-								'ct_accept_btn_state'            => array(
+								'ct_accept_btn_state'      => array(
 									'type'      => 'radio-buttonset',
 									'label'     => '',
 									'default'   => 'normal',
@@ -1322,7 +1329,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'transport' => 'postMessage',
 									'priority'  => 290,
 								),
-								'accept_btn_bg_color'            => array(
+								'accept_btn_bg_color'      => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Background Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#70dc1d',
@@ -1344,7 +1351,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 300,
 								),
-								'accept_btn_text_color'          => array(
+								'accept_btn_text_color'    => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Text Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#ffffff',
@@ -1390,7 +1397,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 320,
 								),
-								'accept_btn_bg_color_hover'      => array(
+								'accept_btn_bg_color_hover' => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Background Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#89e047',
@@ -1413,7 +1420,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 330,
 								),
-								'accept_btn_text_color_hover'    => array(
+								'accept_btn_text_color_hover' => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Text Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#ffffff',
@@ -1436,7 +1443,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 340,
 								),
-								'click_trigger_text_color'       => array(
+								'click_trigger_text_color' => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Text Below Button Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#414349',
@@ -1451,7 +1458,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 								),
 
-								'ct_skip_offer'                 => array(
+								'ct_skip_offer'            => array(
 									'type'            => 'custom',
 									'default'         => '<div class="options-title-divider">' . esc_html__( 'Decline Offer Colors', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority'        => 430,
@@ -1463,7 +1470,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 										),
 									),
 								),
-								'ct_skip_offer_state'           => array(
+								'ct_skip_offer_state'      => array(
 									'type'            => 'radio-buttonset',
 									'label'           => '',
 									'default'         => 'normal',
@@ -1481,7 +1488,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 440,
 								),
-								'skip_offer_btn_bg_color'       => array(
+								'skip_offer_btn_bg_color'  => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Button Background Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#dddddd',
@@ -1513,7 +1520,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 450,
 								),
-								'skip_offer_text_color'         => array(
+								'skip_offer_text_color'    => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Text Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#777777',
@@ -1572,7 +1579,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 470,
 								),
-								'skip_offer_text_color_hover'   => array(
+								'skip_offer_text_color_hover' => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Text Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#9e9e9e',
@@ -1714,9 +1721,9 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'label'           => __( 'Align', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 'wfocu-text-center',
 									'choices'         => array(
-										'wfocu-text-left'   => 'Left',
+										'wfocu-text-left'  => 'Left',
 										'wfocu-text-center' => 'Center',
-										'wfocu-text-right'  => 'Right',
+										'wfocu-text-right' => 'Right',
 									),
 									'transport'       => 'postMessage',
 									'wfocu_transport' => array(
@@ -1917,12 +1924,12 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 								'priority' => 70,
 							),
 							'fields' => array(
-								'ct_headings'       => array(
+								'ct_headings'        => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Heading', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 10,
 								),
-								'heading'           => array(
+								'heading'            => array(
 									'type'          => 'textarea',
 									'label'         => __( 'Heading', 'woofunnels-upstroke-power-pack' ),
 									'description'   => $merge_tags_description,
@@ -1933,7 +1940,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'      => 20,
 								),
-								'sub_heading'       => array(
+								'sub_heading'        => array(
 									'type'            => 'textarea',
 									'label'           => __( 'Sub Heading', 'woofunnels-upstroke-power-pack' ),
 									'description'     => $merge_tags_description,
@@ -1947,12 +1954,12 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 30,
 								),
-								'ct_review'         => array(
+								'ct_review'          => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Review Box', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 40,
 								),
-								'rtype'             => array(
+								'rtype'              => array(
 									'type'     => 'radio-buttonset',
 									'label'    => __( 'Product Reviews', 'woofunnels-upstroke-power-pack' ),
 									'default'  => 'manual',
@@ -1963,7 +1970,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority' => 50,
 								),
-								'rthreshold'        => array(
+								'rthreshold'         => array(
 									'type'            => 'slider',
 									'label'           => __( 'Show Reviews With Ratings', 'woofunnels-upstroke-power-pack' ),
 									'description'     => __( 'Greater than or equal to', 'woofunnels-upstroke-power-pack' ),
@@ -1982,7 +1989,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 										),
 									),
 								),
-								'limit'             => array(
+								'limit'              => array(
 									'type'            => 'number',
 									'label'           => __( 'No. Of Reviews To Show ', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 4,
@@ -2000,7 +2007,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 										),
 									),
 								),
-								'testimonial'       => array(
+								'testimonial'        => array(
 									'type'            => 'repeater',
 									'label'           => esc_attr__( 'Reviews', 'woofunnels-upstroke-power-pack' ),
 									'priority'        => 80,
@@ -2085,7 +2092,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 										),
 									),
 								),
-								'rbox_heading_fs'   => array(
+								'rbox_heading_fs'    => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Review Title Font Size', 'woofunnels-upstroke-power-pack' ),
 									'default'         => array(
@@ -2121,7 +2128,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 90,
 								),
-								'rbox_meta_fs'      => array(
+								'rbox_meta_fs'       => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Review Meta Font Size', 'woofunnels-upstroke-power-pack' ),
 									'default'         => array(
@@ -2150,33 +2157,33 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 100,
 								),
-								'display_rating'    => array(
+								'display_rating'     => array(
 									'type'        => 'checkbox',
 									'label'       => __( 'Display Star Ratings', 'woofunnels-upstroke-power-pack' ),
 									'description' => __( 'Display Ratings inside Review Box', 'woofunnels-upstroke-power-pack' ),
 									'default'     => true,
 									'priority'    => 110,
 								),
-								'display_image'     => array(
+								'display_image'      => array(
 									'type'        => 'checkbox',
 									'label'       => __( 'Display Image', 'woofunnels-upstroke-power-pack' ),
 									'description' => __( 'Display image inside Review Box', 'woofunnels-upstroke-power-pack' ),
 									'default'     => true,
 									'priority'    => 120,
 								),
-								'display_auth_date' => array(
+								'display_auth_date'  => array(
 									'type'        => 'checkbox',
 									'label'       => __( 'Display Author With Date', 'woofunnels-upstroke-power-pack' ),
 									'description' => __( 'Display author with date inside Review Box', 'woofunnels-upstroke-power-pack' ),
 									'default'     => true,
 									'priority'    => 130,
 								),
-								'ct_desc'           => array(
+								'ct_desc'            => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Additional Description', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 140,
 								),
-								'additional_text'   => array(
+								'additional_text'    => array(
 									'type'            => 'textarea',
 									'label'           => __( 'Additional Text', 'woofunnels-upstroke-power-pack' ),
 									'description'     => $merge_tags_description,
@@ -2191,14 +2198,14 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 150,
 								),
-								'additional_talign' => array(
+								'additional_talign'  => array(
 									'type'            => 'radio-buttonset',
 									'label'           => __( 'Align', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 'wfocu-text-center',
 									'choices'         => array(
-										'wfocu-text-left'   => 'Left',
+										'wfocu-text-left'  => 'Left',
 										'wfocu-text-center' => 'Center',
-										'wfocu-text-right'  => 'Right',
+										'wfocu-text-right' => 'Right',
 									),
 									'transport'       => 'postMessage',
 									'wfocu_transport' => array(
@@ -2210,12 +2217,12 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 160,
 								),
-								'ct_buy_block'      => array(
+								'ct_buy_block'       => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Buy Block', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 170,
 								),
-								'display_buy_block' => array(
+								'display_buy_block'  => array(
 									'type'        => 'checkbox',
 									'label'       => esc_attr__( 'Display Buy Block', 'woofunnels-upstroke-power-pack' ),
 									'description' => esc_attr__( 'Enable if you want to display buy block.', 'woofunnels-upstroke-power-pack' ),
@@ -2678,9 +2685,9 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'label'           => __( 'Align', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 'wfocu-text-center',
 									'choices'         => array(
-										'wfocu-text-left'   => 'Left',
+										'wfocu-text-left'  => 'Left',
 										'wfocu-text-center' => 'Center',
-										'wfocu-text-right'  => 'Right',
+										'wfocu-text-right' => 'Right',
 									),
 									'transport'       => 'postMessage',
 									'wfocu_transport' => array(
@@ -2890,12 +2897,12 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 								'priority' => 90,
 							),
 							'fields' => array(
-								'ct_layout' => array(
+								'ct_layout'       => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Layout', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 10,
 								),
-								'position'  => array(
+								'position'        => array(
 									'type'     => 'radio-image-text',
 									'label'    => esc_attr__( 'Position', 'woofunnels-upstroke-power-pack' ),
 									'default'  => 'sticky_header',
@@ -3120,16 +3127,16 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 								'priority' => 10,
 							),
 							'fields' => array(
-								'ct_layout'   => array(
+								'ct_layout'        => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Layout', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 10,
 								),
-								'skin'        => array(
-									'type'    => 'radio-image-text',
-									'label'   => esc_attr__( 'Skin', 'woofunnels-upstroke-power-pack' ),
-									'default' => 'style1',
-									'choices' => array(
+								'skin'             => array(
+									'type'     => 'radio-image-text',
+									'label'    => esc_attr__( 'Skin', 'woofunnels-upstroke-power-pack' ),
+									'default'  => 'style1',
+									'choices'  => array(
 										'style1' => array(
 											'label' => __( 'Style 1', 'woofunnels-upstroke-power-pack' ),
 											'path'  => $this->img_path . 'countdown_1.svg',
@@ -3142,12 +3149,12 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 
 									'priority' => 20,
 								),
-								'ct_timer'    => array(
+								'ct_timer'         => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Countdown Timer', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 30,
 								),
-								'timer_hours' => array(
+								'timer_hours'      => array(
 									'type'     => 'number',
 									'label'    => __( 'Hours', 'woofunnels-upstroke-power-pack' ),
 									'default'  => 0,
@@ -3158,7 +3165,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority' => 40,
 								),
-								'timer_mins'  => array(
+								'timer_mins'       => array(
 									'type'     => 'number',
 									'label'    => __( 'Minutes', 'woofunnels-upstroke-power-pack' ),
 									'default'  => 30,
@@ -3484,7 +3491,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 										),
 									),
 
-									'priority' => 50,
+									'priority'        => 50,
 								),
 							),
 						),
@@ -3494,13 +3501,13 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 								'priority' => 30,
 							),
 							'fields' => array(
-								'ct_badge' => array(
+								'ct_badge'              => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Badge', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 10,
 								),
 
-								'badge_text'    => array(
+								'badge_text'            => array(
 									'type'            => 'text',
 									'label'           => __( 'Badge Text', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 'BEST<br> VALUE',
@@ -3513,12 +3520,12 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 20,
 								),
-								'ct_advanced'   => array(
+								'ct_advanced'           => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Advanced', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 30,
 								),
-								'border_type'   => array(
+								'border_type'           => array(
 									'type'            => 'select',
 									'label'           => esc_attr__( 'Border Type', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 'solid',
@@ -3539,7 +3546,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 										),
 									),
 								),
-								'border_width'  => array(
+								'border_width'          => array(
 									'type'            => 'slider',
 									'label'           => esc_attr__( 'Border Width', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 5,
@@ -3565,13 +3572,13 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 										),
 									),
 								),
-								'ct_accept_btn' => array(
+								'ct_accept_btn'         => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Button Colors', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 60,
 								),
 
-								'ct_accept_btn_state'            => array(
+								'ct_accept_btn_state'   => array(
 									'type'      => 'radio-buttonset',
 									'label'     => '',
 									'default'   => 'normal',
@@ -3582,7 +3589,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'transport' => 'postMessage',
 									'priority'  => 70,
 								),
-								'accept_btn_bg_color'            => array(
+								'accept_btn_bg_color'   => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Background Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#70dc1d',
@@ -3604,7 +3611,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 80,
 								),
-								'accept_btn_text_color'          => array(
+								'accept_btn_text_color' => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Text Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#ffffff',
@@ -3650,7 +3657,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 100,
 								),
-								'accept_btn_bg_color_hover'      => array(
+								'accept_btn_bg_color_hover' => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Background Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#89e047',
@@ -3673,7 +3680,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 110,
 								),
-								'accept_btn_text_color_hover'    => array(
+								'accept_btn_text_color_hover' => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Text Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#ffffff',
@@ -3697,12 +3704,12 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'priority'        => 120,
 								),
 
-								'ct_colors'      => array(
+								'ct_colors'             => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Colors', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 130,
 								),
-								'badge_tcolor'   => array(
+								'badge_tcolor'          => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Badge Text Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#ffffff',
@@ -3719,7 +3726,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 140,
 								),
-								'badge_bg_color' => array(
+								'badge_bg_color'        => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Badge Background Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#6fdc1e',
@@ -3738,7 +3745,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'priority'        => 150,
 
 								),
-								'border_color'   => array(
+								'border_color'          => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Border Color', 'woofunnels-upstroke-power-pack' ),
 									'default'         => '#ff9919',
@@ -4272,10 +4279,10 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'priority' => 10,
 								),
 								'heading'           => array(
-									'type'        => 'textarea',
-									'label'       => __( 'Heading', 'woofunnels-upstroke-power-pack' ),
-									'description' => $merge_tags_description,
-									'default'     => __( 'Pick one of these offers and pocket instant savings of up to <span class="wfocu-highlight">XX% off</span>', 'woofunnels-upstroke-power-pack' ),
+									'type'          => 'textarea',
+									'label'         => __( 'Heading', 'woofunnels-upstroke-power-pack' ),
+									'description'   => $merge_tags_description,
+									'default'       => __( 'Pick one of these offers and pocket instant savings of up to <span class="wfocu-highlight">XX% off</span>', 'woofunnels-upstroke-power-pack' ),
 
 									'transport'     => 'postMessage',
 									'wfocu_partial' => array(
@@ -4318,9 +4325,9 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'label'           => __( 'Align', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 'wfocu-text-center',
 									'choices'         => array(
-										'wfocu-text-left'   => 'Left',
+										'wfocu-text-left'  => 'Left',
 										'wfocu-text-center' => 'Center',
-										'wfocu-text-right'  => 'Right',
+										'wfocu-text-right' => 'Right',
 									),
 									'transport'       => 'postMessage',
 									'wfocu_transport' => array(
@@ -4588,12 +4595,12 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 								'priority' => $priority * 10,
 							),
 							'fields' => array(
-								'ct_gallery'          => array(
+								'ct_gallery'             => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Gallery', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 10,
 								),
-								'image'               => array(
+								'image'                  => array(
 									'type'          => 'image',
 									'label'         => esc_attr__( 'Product Image', 'woofunnels-upstroke-power-pack' ),
 									'description'   => esc_attr__( 'This will override default product image.', 'woofunnels-upstroke-power-pack' ),
@@ -4605,16 +4612,16 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'transport'     => 'postMessage',
 									'priority'      => 20,
 									'wfocu_partial' => array(
-										'elem'                => '.wfocu-pkey-' . $hash_key . ' .wfocu-pblock-img',
+										'elem' => '.wfocu-pkey-' . $hash_key . ' .wfocu-pblock-img',
 										'container_inclusive' => false,
 									),
 								),
-								'ct_summary'          => array(
+								'ct_summary'             => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Product', 'woofunnels-upstroke-power-pack' ) . '</div>',
 									'priority' => 30,
 								),
-								'heading'             => array(
+								'heading'                => array(
 									'type'            => 'text',
 									'label'           => __( 'Heading', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 'BUY 2 BOTTLES + 1 FREE',
@@ -4628,7 +4635,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'priority'        => 40,
 
 								),
-								'heading_fs'          => array(
+								'heading_fs'             => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Heading Font Size', 'woofunnels-upstroke-power-pack' ),
 									'default'         => array(
@@ -4657,7 +4664,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 50,
 								),
-								'sub_heading'         => array(
+								'sub_heading'            => array(
 									'type'            => 'text',
 									'label'           => __( 'Sub Heading', 'woofunnels-upstroke-power-pack' ),
 									'default'         => 'Subheading Here for this product',
@@ -4670,7 +4677,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 60,
 								),
-								'sub_heading_fs'      => array(
+								'sub_heading_fs'         => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Sub Heading Font Size', 'woofunnels-upstroke-power-pack' ),
 									'default'         => array(
@@ -4699,7 +4706,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 70,
 								),
-								'title'               => array(
+								'title'                  => array(
 									'type'            => 'text',
 									'label'           => __( 'Product Title', 'woofunnels-upstroke-power-pack' ),
 									'default'         => $title,
@@ -4713,7 +4720,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'priority'        => 80,
 
 								),
-								'title_fs'            => array(
+								'title_fs'               => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Product Title Font Size', 'woofunnels-upstroke-power-pack' ),
 									'default'         => array(
@@ -4742,7 +4749,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 90,
 								),
-								'reg_price_fs'        => array(
+								'reg_price_fs'           => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Regular Price Font Size', 'woofunnels-upstroke-power-pack' ),
 									'default'         => array(
@@ -4771,7 +4778,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 100,
 								),
-								'sale_price_fs'       => array(
+								'sale_price_fs'          => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Sale Price Font Size', 'woofunnels-upstroke-power-pack' ),
 									'default'         => array(
@@ -4800,7 +4807,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 110,
 								),
-								'text_below_price'    => array(
+								'text_below_price'       => array(
 									'type'            => 'textarea',
 									'label'           => __( 'Text Below Price', 'woofunnels-upstroke-power-pack' ),
 									'description'     => $merge_tags_description,
@@ -4817,7 +4824,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'priority'        => 120,
 
 								),
-								'text_below_price_fs' => array(
+								'text_below_price_fs'    => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Text Below Price Font Size', 'woofunnels-upstroke-power-pack' ),
 									'default'         => array(
@@ -4853,7 +4860,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'priority'        => 130,
 								),
-								'desc_type'           => array(
+								'desc_type'              => array(
 									'type'      => 'radio-buttonset',
 									'label'     => esc_attr__( 'Product Description Style', 'woofunnels-upstroke-power-pack' ),
 									'default'   => 'wfocu-desc-text',
@@ -4863,9 +4870,9 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									),
 									'transport' => 'refresh',
 
-									'priority' => 140,
+									'priority'  => 140,
 								),
-								'desc'                => array(
+								'desc'                   => array(
 									'type'            => 'textarea',
 									'label'           => __( 'Product Description', 'woofunnels-upstroke-power-pack' ),
 									'default'         => $short_desc,
@@ -4933,36 +4940,42 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'default'         => 'dashicons-yes',
 									'transport'       => 'refresh',
 									'choices'         => array(
-										'dashicons-cart'             => __( '<span class="dashicons dashicons-cart"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-yes'              => __( '<span class="dashicons dashicons-yes"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-up'         => __( '<span class="dashicons dashicons-arrow-up"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-down'       => __( '<span class="dashicons dashicons-arrow-down"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-right'      => __( '<span class="dashicons dashicons-arrow-right"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-left'       => __( '<span class="dashicons dashicons-arrow-left"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-up-alt'     => __( '<span class="dashicons 
-									dashicons-arrow-up-alt"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-down-alt'   => __( '<span class="dashicons dashicons-arrow-down-alt"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-right-alt'  => __( '<span class="dashicons dashicons-arrow-right-alt"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-left-alt'   => __( '<span class="dashicons dashicons-arrow-left-alt"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-up-alt2'    => __( '<span class="dashicons 
-									dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-down-alt2'  => __( '<span class="dashicons dashicons-arrow-down-alt2"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-cart'   => __( '<span class="dashicons dashicons-cart"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-yes'    => __( '<span class="dashicons dashicons-yes"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-up' => __( '<span class="dashicons dashicons-arrow-up"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-down' => __( '<span class="dashicons dashicons-arrow-down"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-right' => __( '<span class="dashicons dashicons-arrow-right"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-left' => __( '<span class="dashicons dashicons-arrow-left"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-up-alt' => __(
+											'<span class="dashicons 
+									dashicons-arrow-up-alt"></span>',
+											'woofunnels-upstroke-power-pack'
+										),
+										'dashicons-arrow-down-alt' => __( '<span class="dashicons dashicons-arrow-down-alt"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-right-alt' => __( '<span class="dashicons dashicons-arrow-right-alt"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-left-alt' => __( '<span class="dashicons dashicons-arrow-left-alt"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-up-alt2' => __(
+											'<span class="dashicons 
+									dashicons-arrow-up-alt2"></span>',
+											'woofunnels-upstroke-power-pack'
+										),
+										'dashicons-arrow-down-alt2' => __( '<span class="dashicons dashicons-arrow-down-alt2"></span>', 'woofunnels-upstroke-power-pack' ),
 										'dashicons-arrow-right-alt2' => __( '<span class="dashicons dashicons-arrow-right-alt2"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-arrow-left-alt2'  => __( '<span class="dashicons dashicons-arrow-left-alt2"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-heart'            => __( '<span class="dashicons dashicons-heart"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-star-filled'      => __( '<span class="dashicons dashicons-star-filled"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-plus-alt'         => __( '<span class="dashicons dashicons-plus-alt"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-awards'           => __( '<span class="dashicons dashicons-awards"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-shield'           => __( '<span class="dashicons dashicons-shield"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-shield-alt'       => __( '<span class="dashicons dashicons-shield-alt"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-thumbs-up'        => __( '<span class="dashicons dashicons-thumbs-up"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-thumbs-down'      => __( '<span class="dashicons dashicons-thumbs-down"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-smiley'           => __( '<span class="dashicons dashicons-smiley"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-tickets-alt'      => __( '<span class="dashicons dashicons-tickets-alt"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-tag'              => __( '<span class="dashicons dashicons-tag"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-cloud'            => __( '<span class="dashicons dashicons-cloud"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-arrow-left-alt2' => __( '<span class="dashicons dashicons-arrow-left-alt2"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-heart'  => __( '<span class="dashicons dashicons-heart"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-star-filled' => __( '<span class="dashicons dashicons-star-filled"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-plus-alt' => __( '<span class="dashicons dashicons-plus-alt"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-awards' => __( '<span class="dashicons dashicons-awards"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-shield' => __( '<span class="dashicons dashicons-shield"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-shield-alt' => __( '<span class="dashicons dashicons-shield-alt"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-thumbs-up' => __( '<span class="dashicons dashicons-thumbs-up"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-thumbs-down' => __( '<span class="dashicons dashicons-thumbs-down"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-smiley' => __( '<span class="dashicons dashicons-smiley"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-tickets-alt' => __( '<span class="dashicons dashicons-tickets-alt"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-tag'    => __( '<span class="dashicons dashicons-tag"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-cloud'  => __( '<span class="dashicons dashicons-cloud"></span>', 'woofunnels-upstroke-power-pack' ),
 										'dashicons-controls-forward' => __( '<span class="dashicons dashicons-controls-forward"></span>', 'woofunnels-upstroke-power-pack' ),
-										'dashicons-controls-back'    => __( '<span class="dashicons dashicons-controls-back"></span>', 'woofunnels-upstroke-power-pack' ),
+										'dashicons-controls-back' => __( '<span class="dashicons dashicons-controls-back"></span>', 'woofunnels-upstroke-power-pack' ),
 
 									),
 									'active_callback' => array(
@@ -5090,8 +5103,8 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 									'label'       => esc_attr__( 'Highlight This Product', 'woofunnels-upstroke-power-pack' ),
 									'description' => esc_attr__( 'Enable if you want to highlight this product. Manage settings from Other->Highlight Product Section.', 'woofunnels-upstroke-power-pack' ),
 
-									'default'  => false,
-									'priority' => 210,
+									'default'     => false,
+									'priority'    => 210,
 								),
 								'ct_colors'              => array(
 									'type'     => 'custom',
@@ -5282,7 +5295,7 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 							),
 						);
 
-						$priority ++;
+						++$priority;
 
 					}
 				}
@@ -5344,7 +5357,6 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 				/**
 				 * When Buy Buttons are not in the product sections, do not let the add the products
 				 * Remove the class on which the js runs
-				 *
 				 */
 				$array_search = array_search( 'wfocu_upsell', $classes, true );
 				unset( $classes[ $array_search ] );
@@ -5361,42 +5373,42 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 
 		public function maybe_render_js() {
 			?>
-            <script>
+			<script>
 
-                (
-                    function ($) {
-                        "use strict";
+				(
+					function ($) {
+						"use strict";
 
-                        $('.wfocu_mp_scrollto').on('click', function () {
-                            const variationSelector = $('div.wfocu-product-section').eq(0);
-                            const body = $("html, body");
-                            body.stop().animate({scrollTop: variationSelector.offset().top - 100}, 1000, 'swing', function () {
+						$('.wfocu_mp_scrollto').on('click', function () {
+							const variationSelector = $('div.wfocu-product-section').eq(0);
+							const body = $("html, body");
+							body.stop().animate({scrollTop: variationSelector.offset().top - 100}, 1000, 'swing', function () {
 
-                            });
-                        });
+							});
+						});
 
-                        $(document).on('wfocu_variation_selected', function (event, key, variationID) {
+						$(document).on('wfocu_variation_selected', function (event, key, variationID) {
 
 
-                            if ($(".wfocu-pkey-" + key + " .wfocu-pblock-img").length > 0) {
+							if ($(".wfocu-pkey-" + key + " .wfocu-pblock-img").length > 0) {
 
-                                var getImagesSet = $(".wfocu-pkey-" + key + " .wfocu-pblock-img").attr('data-gallery');
-                                var getImagesIDSet = $('.wfocu_variation_selector_wrap[data-key="' + key + '"]').attr('data-images');
-                                getImagesIDSet = JSON.parse(getImagesIDSet);
-                                getImagesSet = JSON.parse(getImagesSet);
+								var getImagesSet = $(".wfocu-pkey-" + key + " .wfocu-pblock-img").attr('data-gallery');
+								var getImagesIDSet = $('.wfocu_variation_selector_wrap[data-key="' + key + '"]').attr('data-images');
+								getImagesIDSet = JSON.parse(getImagesIDSet);
+								getImagesSet = JSON.parse(getImagesSet);
 
-                                if (getImagesIDSet.hasOwnProperty(variationID)) {
-                                    if (true !== window.wfocuLoaded && true === wfocuCommons.applyFilters('wfocuShowFirstImageOnload', false)) {
-                                        return;
-                                    }
-                                    var mediaID = getImagesIDSet[variationID];
-                                    $(".wfocu-pkey-" + key + " .wfocu-pblock-img img").attr('src', getImagesSet[mediaID]);
-                                }
-                            }
-                        });
-                    }
-                )(jQuery);
-            </script>
+								if (getImagesIDSet.hasOwnProperty(variationID)) {
+									if (true !== window.wfocuLoaded && true === wfocuCommons.applyFilters('wfocuShowFirstImageOnload', false)) {
+										return;
+									}
+									var mediaID = getImagesIDSet[variationID];
+									$(".wfocu-pkey-" + key + " .wfocu-pblock-img img").attr('src', getImagesSet[mediaID]);
+								}
+							}
+						});
+					}
+				)(jQuery);
+			</script>
 			<?php
 		}
 
@@ -5405,7 +5417,6 @@ if ( ! class_exists( 'WFOCU_Template_MP_List' ) ) {
 			add_filter( 'wfocu_buy_btn_classes', array( $this, 'maybe_add_class_to_move_to_select' ) );
 			add_action( 'footer_before_print_scripts', array( $this, 'maybe_render_js' ), 999 );
 			add_action( 'footer_before_print_scripts', array( $this, 'maybe_render_js' ), 999 );
-
 		}
 
 		public function remove_qty_attribute_selectors_from_buy_block( $value ) {

@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class bwfan_Input_Order_State_Select {
 	public function __construct() {
 		// vars

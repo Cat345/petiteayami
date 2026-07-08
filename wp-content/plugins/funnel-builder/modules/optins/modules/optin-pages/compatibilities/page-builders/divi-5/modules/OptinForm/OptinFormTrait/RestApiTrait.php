@@ -15,28 +15,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 trait RestApiTrait {
 
 	/**
-	 * Register REST API endpoints for Optin Form module.
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public static function register_rest_endpoints(): void {
-		// Register endpoint to fetch form fields for the current optin page
-		register_rest_route(
-			'wfop/v1',
-			'/optin-form/fields',
-			array(
-				'methods'             => 'GET',
-				'callback'            => array( __CLASS__, 'get_form_fields' ),
-				'permission_callback' => function () {
-					// Allow if user can edit posts (Visual Builder access)
-					return current_user_can( 'edit_posts' );
-				},
-			)
-		);
-	}
-
-	/**
 	 * REST API callback to get form fields for Optin Form.
 	 *
 	 * @since 1.0.0
@@ -116,7 +94,7 @@ trait RestApiTrait {
 	 * @param \WP_REST_Request $request REST request object.
 	 * @return int Optin page ID or 0 if not found.
 	 */
-	private static function get_optin_page_id( \WP_REST_Request $request = null ): int {
+	private static function get_optin_page_id( ?\WP_REST_Request $request = null ): int {
 		$optin_page_id = 0;
 
 		// Try to get from request parameter (post_id or slug)

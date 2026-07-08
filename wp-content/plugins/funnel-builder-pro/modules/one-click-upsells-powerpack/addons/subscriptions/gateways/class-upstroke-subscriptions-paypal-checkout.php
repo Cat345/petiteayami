@@ -1,17 +1,18 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 /**
  * Author PhpStorm.
  */
 
 if ( class_exists( 'WFOCU_Paypal_For_WC_Gateway_Express_Checkout' ) ) {
 
+	#[\AllowDynamicProperties]
 	class UpStroke_Subscriptions_PayPal_Checkout extends WFOCU_Paypal_For_WC_Gateway_Express_Checkout {
 
 		public function __construct() {
 
 			add_action( 'wfocu_subscription_created_for_upsell', array( $this, 'save_meta_to_subscription' ), 10, 3 );
 			add_filter( 'wfocu_order_copy_meta_keys', array( $this, 'set_keys_to_copy' ), 10, 1 );
-
 		}
 
 		/**
@@ -19,7 +20,7 @@ if ( class_exists( 'WFOCU_Paypal_For_WC_Gateway_Express_Checkout' ) ) {
 		 *
 		 * @param WC_Subscription $subscription
 		 * @param $key
-		 * @param WC_Order $order
+		 * @param WC_Order        $order
 		 */
 		public function save_meta_to_subscription( $subscription, $key, $order ) {
 
@@ -33,7 +34,6 @@ if ( class_exists( 'WFOCU_Paypal_For_WC_Gateway_Express_Checkout' ) ) {
 				$subscription->update_meta_data( '_payment_tokens_id', $get_customer_id );
 				$subscription->save();
 			}
-
 		}
 
 		public function set_keys_to_copy( $meta_keys ) {
@@ -41,7 +41,6 @@ if ( class_exists( 'WFOCU_Paypal_For_WC_Gateway_Express_Checkout' ) ) {
 
 			return $meta_keys;
 		}
-
 	}
 
 	if ( class_exists( 'WC_Subscriptions' ) ) {

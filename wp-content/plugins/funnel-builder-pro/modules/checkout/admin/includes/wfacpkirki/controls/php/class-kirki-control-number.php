@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Create a simple number control
  */
 if ( ! class_exists( 'WFACPKirki_Control_Number' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Number extends WFACPKirki_Control_Base {
 
 		/**

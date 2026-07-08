@@ -22,7 +22,7 @@ if ( isset( $data['advance_setting']['rbox_border_type'] ) && $data['advance_set
 
 <!--   Benefit Section-->
 <div class="<?php echo $section_key . ' ' . $rbox_border_type; ?> div_wrap_sec">
-    <div class="wfacp-list-panel">
+	<div class="wfacp-list-panel">
 		<?php
 		if ( ( isset( $data['heading_section']['heading'] ) && $data['heading_section']['heading'] != '' ) && ( isset( $data['heading_section']['enable_heading'] ) && $data['heading_section']['enable_heading'] == true ) ) {
 			$align_text         = $data['heading_section']['heading_talign'];
@@ -31,9 +31,9 @@ if ( isset( $data['advance_setting']['rbox_border_type'] ) && $data['advance_set
 			$heading_fs_tablet  = $data['heading_section']['heading_fs']['tablet'];
 			$heading_fs_mobile  = $data['heading_section']['heading_fs']['mobile'];
 			?>
-            <h2 class="wfacp-list-title wfacp_section_title <?php echo $align_text . ' ' . $font_weight; ?>">
-				<?php echo $data['heading_section']['heading']; ?>
-            </h2>
+			<h2 class="wfacp-list-title wfacp_section_title <?php echo $align_text . ' ' . $font_weight; ?>">
+				<?php echo esc_html( $data['heading_section']['heading'] ); ?>
+			</h2>
 			<?php
 		}
 		if ( isset( $data['benefit_content'] ) && is_array( $data['benefit_content'] ) && count( $data['benefit_content'] ) > 0 ) {
@@ -44,25 +44,25 @@ if ( isset( $data['advance_setting']['rbox_border_type'] ) && $data['advance_set
 		?>
 
 
-        <ul class="wfacp-sidebar-list clearfix">
+		<ul class="wfacp-sidebar-list clearfix">
 
 			<?php
 
 			foreach ( $data['benefit_content']['icon_text'] as $key_list => $val ) {
 
 				?>
-                <li>
+				<li>
 
 					<?php
 
 					if ( isset( $hide_list_icon ) && $hide_list_icon != 1 ) {
 
-						echo sprintf( '<span class="wfacp-icon-list %s pull-left "></span>', $list_icon );
+						printf( '<span class="wfacp-icon-list %s pull-left "></span>', $list_icon );
 					}
 					?>
 
 
-                    <div class="wfacp-sidebar-list-txt">
+					<div class="wfacp-sidebar-list-txt">
 						<?php
 						$list_heading = $val['heading'];
 						$list_message = $val['message'];
@@ -83,15 +83,15 @@ if ( isset( $data['advance_setting']['rbox_border_type'] ) && $data['advance_set
 
 
 						?>
-                    </div>
+					</div>
 
-                </li>
+				</li>
 				<?php
 			}
 			?>
 
-        </ul>
-    </div>
+		</ul>
+	</div>
 
 </div>
 <!--   Benefit Section Closed-->

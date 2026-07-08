@@ -21,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * The "custom" control allows you to add any raw HTML.
  */
 if ( ! class_exists( 'WFACPKirki_Control_Custom' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Custom extends WFACPKirki_Control_Base {
 
 		/**
@@ -43,9 +44,9 @@ if ( ! class_exists( 'WFACPKirki_Control_Custom' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <label>
-                <# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
-                <# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
+			<label>
+				<# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
+				<# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
 				<?php
 				/**
 				 * The value is defined by the developer in the field configuration as 'default'.
@@ -53,11 +54,11 @@ if ( ! class_exists( 'WFACPKirki_Control_Custom' ) ) {
 				 * Do not be alarmed, this is not a security issue.
 				 * In order for someone to be able to change this they would have to have access to your filesystem.
 				 * If that happens, they can change whatever they want anyways. This field is not a concern.
-				 */ ?>
-                {{{ data.value }}}
-            </label>
+				 */
+				?>
+				{{{ data.value }}}
+			</label>
 			<?php
-
 		}
 	}
 }

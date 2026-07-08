@@ -4,6 +4,7 @@
  * Show Additional order details in Funnel Builder thankyou page Order page.
  */
 if ( ! class_exists( 'WFOCU_Compatibility_With_WFTY' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_WFTY {
 
 		public function __construct() {
@@ -27,7 +28,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WFTY' ) ) {
 		/**
 		 * @param WC_Order $order_object Current order opening in thank you page.
 		 */
-		function wfocu_maybe_show_additional_order( $order_object, $args = [] ) {
+		function wfocu_maybe_show_additional_order( $order_object, $args = array() ) {
 
 			if ( ! class_exists( 'WFFN_Core' ) ) {
 				return;
@@ -78,32 +79,34 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WFTY' ) ) {
 			/**
 			 * Try to get if any upstroke order is created for this order as parent
 			 */
-			$results = WFOCU_Core()->track->query_results( array(
-				'data'         => array(),
-				'where'        => array(
-					array(
-						'key'      => 'session.order_id',
-						'value'    => WFOCU_WC_Compatibility::get_order_id( $order_object ),
-						'operator' => '=',
+			$results = WFOCU_Core()->track->query_results(
+				array(
+					'data'         => array(),
+					'where'        => array(
+						array(
+							'key'      => 'session.order_id',
+							'value'    => WFOCU_WC_Compatibility::get_order_id( $order_object ),
+							'operator' => '=',
+						),
+						array(
+							'key'      => 'events.action_type_id',
+							'value'    => 4,
+							'operator' => '=',
+						),
 					),
-					array(
-						'key'      => 'events.action_type_id',
-						'value'    => 4,
-						'operator' => '=',
+					'where_meta'   => array(
+						array(
+							'type'       => 'meta',
+							'meta_key'   => '_new_order',
+							'meta_value' => '',
+							'operator'   => '!=',
+						),
 					),
-				),
-				'where_meta'   => array(
-					array(
-						'type'       => 'meta',
-						'meta_key'   => '_new_order',
-						'meta_value' => '',
-						'operator'   => '!=',
-					),
-				),
-				'session_join' => true,
-				'order_by'     => 'events.id DESC',
-				'query_type'   => 'get_results',
-			) );
+					'session_join' => true,
+					'order_by'     => 'events.id DESC',
+					'query_type'   => 'get_results',
+				)
+			);
 
 			if ( is_wp_error( $results ) || ( is_array( $results ) && empty( $results ) ) ) {
 
@@ -112,7 +115,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WFTY' ) ) {
 				 */
 				$get_meta = $order_object->get_meta( '_wfocu_sibling_order', false );
 				if ( ( is_array( $get_meta ) && ! empty( $get_meta ) ) ) {
-					$results = [];
+					$results = array();
 					foreach ( $get_meta as $meta ) {
 						$single = new stdClass();
 						if ( $meta->get_data()['value'] instanceof WC_Order ) {
@@ -139,9 +142,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WFTY' ) ) {
 					if ( $order instanceof WC_Order ) {
 						echo WFTY_Woo_Order_Data::get_order_details( $order, $args );
 					}
-
 				}
-
 			}
 
 			$sustain_order = wc_get_order( $sustain_id );
@@ -149,7 +150,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WFTY' ) ) {
 				$order_details_component = new WFTY_Order_Details_Component( $args );
 				$order_details_component->load_order( $sustain_order );
 			}
-
 		}
 
 
@@ -187,14 +187,8 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WFTY' ) ) {
 			}
 
 			return false;
-
 		}
-
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_WFTY(), 'fbwfty' );
 }
-
-
-

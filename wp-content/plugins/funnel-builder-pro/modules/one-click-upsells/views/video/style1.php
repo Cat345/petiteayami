@@ -8,8 +8,7 @@ $sec_heading           = WFOCU_Common::maybe_parse_merge_tags( $sec_heading );
 $sec_sub_heading       = WFOCU_Common::get_option( 'wfocu_video_video_sub_heading' );
 $sec_sub_heading       = WFOCU_Common::maybe_parse_merge_tags( $sec_sub_heading );
 $sec_bg_color          = WFOCU_Common::get_option( 'wfocu_video_video_bg_color' );
-$video_type            = WFOCU_Common::get_option( 'wfocu_video_video_vtype' );
-$video_autoplay        = WFOCU_Common::get_option( 'wfocu_video_video_autoplay' );
+$video_type      = WFOCU_Common::get_option( 'wfocu_video_video_vtype' );
 $additional_text       = WFOCU_Common::get_option( 'wfocu_video_video_additional_text' );
 $additional_text       = WFOCU_Common::maybe_parse_merge_tags( $additional_text, false, false );
 $additional_text_align = WFOCU_Common::get_option( 'wfocu_video_video_additional_talign' );
@@ -41,8 +40,8 @@ if ( true === $video_override_global ) {
                 <div class="wfocu-video-sec-wrap">
 					<?php if ( ! empty( $sec_heading ) || ! empty( $sec_sub_heading ) ) { ?>
                         <div class="wfocu-section-headings">
-							<?php echo $sec_heading ? '<div class="wfocu-heading">' . $sec_heading . '</div>' : ''; ?>
-							<?php echo $sec_sub_heading ? '<div class="wfocu-sub-heading wfocu-max-845">' . $sec_sub_heading . '</div>' : ''; ?>
+							<?php echo $sec_heading ? '<div class="wfocu-heading">' . wp_kses_post( $sec_heading ) . '</div>' : ''; ?>
+							<?php echo $sec_sub_heading ? '<div class="wfocu-sub-heading wfocu-max-845">' . wp_kses_post( $sec_sub_heading ) . '</div>' : ''; ?>
                         </div>
 					<?php } ?>
                     <div class="wfocu-col-md-10 wfocu-col-md-offset-1">
@@ -83,7 +82,7 @@ if ( true === $video_override_global ) {
 									?>
                                     <div class="wfocu-youtube-video">
                                         <div class="wfocu-responsive-iframe">
-                                            <iframe src="<?php echo $youtube_url_new; ?>" width="620" height="400" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                                            <iframe src="<?php echo esc_url( $youtube_url_new ); ?>" width="620" height="400" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
                                         </div>
                                     </div>
 									<?php
@@ -117,7 +116,7 @@ if ( true === $video_override_global ) {
 									?>
                                     <div class="wfocu-vimeo-video">
                                         <div class="wfocu-responsive-iframe">
-                                            <iframe src="<?php echo $vimeo_url_new; ?>" width="620" height="400" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                                            <iframe src="<?php echo esc_url( $vimeo_url_new ); ?>" width="620" height="400" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
                                         </div>
                                     </div>
 									<?php
@@ -148,8 +147,8 @@ if ( true === $video_override_global ) {
 									?>
                                     <div class="wfocu-wistia-video">
                                         <div class="wfocu-responsive-iframe">
-                                            <iframe src="<?php echo $wistia_url_new; ?>" allowtransparency="true" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen width="620" height="400"></iframe>
-                                            <script src="//fast.wistia.net/assets/external/E-v1.js" async></script>
+                                            <iframe src="<?php echo esc_url( $wistia_url_new ); ?>" allowtransparency="true" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen width="620" height="400"></iframe>
+                                            <script src="//fast.wistia.net/assets/external/E-v1.js" async></script><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- Wistia requires this script inline alongside its embed iframe. ?>
                                         </div>
                                     </div>
 									<?php
@@ -169,10 +168,10 @@ if ( true === $video_override_global ) {
 								}
 								?>
                                 <div class="wfocu-html5-video">
-                                    <video width="320" height="400" <?php echo $html5_param; ?> poster="<?php echo $poster_image ? $poster_image : ''; ?>">
-                                        <source src="<?php echo $mp4_url; ?>" type="video/mp4">
-                                        <source src="<?php echo $ogg_url; ?>" type="video/ogg">
-                                        <source src="<?php echo $webm_url; ?>" type="video/webm">
+                                    <video width="320" height="400" <?php echo esc_attr( $html5_param ); ?> poster="<?php echo $poster_image ? esc_url( $poster_image ) : ''; ?>">
+                                        <source src="<?php echo esc_url( $mp4_url ); ?>" type="video/mp4">
+                                        <source src="<?php echo esc_url( $ogg_url ); ?>" type="video/ogg">
+                                        <source src="<?php echo esc_url( $webm_url ); ?>" type="video/webm">
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>

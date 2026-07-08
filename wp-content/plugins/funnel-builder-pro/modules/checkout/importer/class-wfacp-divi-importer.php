@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Elementor template library local source.
@@ -26,7 +27,7 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 		}
 
 		public function import_child( $aero_id, $slug, $is_multi = 'no' ) {
-			set_time_limit( 0 );
+			set_time_limit( 0 ); //phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
 			$this->slug    = $slug;
 			$this->post_id = $aero_id;
 
@@ -139,13 +140,19 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 			}
 
 			$import = json_decode( $content, true );
-			// Upload images and replace current urls.
+
+			if ( ! is_array( $import ) || empty( $import['data'] ) ) {
+				return false;
+			}
 
 			$data = $import['data'];
+			$data = reset( $data );
 
-			// Pass the post content and let js save the post.
+			require_once WFACP_PLUGIN_DIR . '/includes/class-wfacp-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			if ( WFACP_Content_Validator::contains_php_code( $data ) ) {
+				return false;
+			}
 
-			$data    = reset( $data );
 			$success = true;
 			$result  = wp_update_post(
 				array(

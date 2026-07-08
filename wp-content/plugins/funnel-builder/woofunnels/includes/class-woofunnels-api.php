@@ -17,7 +17,7 @@ if ( ! class_exists( 'WooFunnels_API' ) ) :
 	class WooFunnels_API {
 
 		public static $woofunnels_api_url = 'https://track.funnelkit.com';
-		public static $is_ssl = false;
+		public static $is_ssl = true;
 
 		/**
 		 * Get all the plugins that can be pushed from the API
@@ -253,7 +253,7 @@ if ( ! class_exists( 'WooFunnels_API' ) ) :
 		 * @return string
 		 */
 		public static function get_api_url( $link ) {
-			return apply_filters( 'woofunnels_api_call_url', $link );
+			return $link;
 		}
 
 		public static function get_woofunnels_status() {

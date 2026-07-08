@@ -2,8 +2,8 @@
 if ( ! class_exists( 'WFOCU_DB_Session' ) ) {
 	/**
 	 * Track events
-	 *
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_DB_Session extends WFOCU_DB_Base {
 
 		/**
@@ -14,7 +14,7 @@ if ( ! class_exists( 'WFOCU_DB_Session' ) ) {
 		 * @var array
 		 */
 
-		public $_session_key = 0;
+		public $_session_key      = 0;
 		protected $primary_fields = array(
 			'order_id'  => array(
 				'%s',
@@ -82,7 +82,6 @@ if ( ! class_exists( 'WFOCU_DB_Session' ) ) {
 		 *
 		 * @return \WFOCU_DB_Track
 		 * @since 1.3.5
-		 *
 		 */
 		public static function get_instance() {
 			if ( null === self::$instance ) {
@@ -90,27 +89,30 @@ if ( ! class_exists( 'WFOCU_DB_Session' ) ) {
 			}
 
 			return self::$instance;
-
 		}
 
 
 		public function funnel_start( $funnel_id, $order_id, $email, $gateway = '', $contact_id = 0 ) {
 
-			$recorded = $this->create( apply_filters( 'wfocu_session_db_insert_data', array(
-				'order_id'  => $order_id,
-				'email'     => $email,
-				'total'     => '',
-				'gateway'   => $gateway,
-				'cid'       => $contact_id,
-				'timestamp' => current_time( 'mysql' ),
-			), $funnel_id ) );
-
+			$recorded = $this->create(
+				apply_filters(
+					'wfocu_session_db_insert_data',
+					array(
+						'order_id'  => $order_id,
+						'email'     => $email,
+						'total'     => '',
+						'gateway'   => $gateway,
+						'cid'       => $contact_id,
+						'timestamp' => current_time( 'mysql' ),
+					),
+					$funnel_id
+				)
+			);
 
 			/*
 			 * Record session key to record further
 			 */
 			$this->set_session_id( $recorded );
-
 		}
 
 		public function get_session_id() {
@@ -130,11 +132,10 @@ if ( ! class_exists( 'WFOCU_DB_Session' ) ) {
 		 *
 		 * @return bool
 		 * @since 1.3.5
-		 *
 		 */
 		public function delete( $id ) {
 			global $wpdb;
-			$deleted = $wpdb->delete( $this->get_table_name(), array( 'ID' => $id ) );   //db call ok; no-cache ok; WPCS: unprepared SQL ok.
+			$deleted = $wpdb->delete( $this->get_table_name(), array( 'ID' => $id ) );   // db call ok; no-cache ok; WPCS: unprepared SQL ok.
 			if ( false !== $deleted ) {
 				WFOCU_Core()->track->delete( $id );
 
@@ -151,27 +152,28 @@ if ( ! class_exists( 'WFOCU_DB_Session' ) ) {
 		 * @return array
 		 */
 		public function get_session_id_by_order_id( $order_id ) {
-			$session_id = WFOCU_Core()->track->query_results( array(
-				'data'          => array(
-					'id' => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'sess_id',
+			$session_id = WFOCU_Core()->track->query_results(
+				array(
+					'data'          => array(
+						'id' => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'sess_id',
+						),
 					),
-				),
-				'where'         => array(
-					array(
-						'key'      => 'events.order_id',
-						'value'    => $order_id,
-						'operator' => '=',
+					'where'         => array(
+						array(
+							'key'      => 'events.order_id',
+							'value'    => $order_id,
+							'operator' => '=',
+						),
 					),
-				),
-				'query_type'    => 'get_var',
-				'session_table' => true,
-			) );
+					'query_type'    => 'get_var',
+					'session_table' => true,
+				)
+			);
 
 			return $session_id;
-
 		}
 
 		/**
@@ -202,7 +204,6 @@ if ( ! class_exists( 'WFOCU_DB_Session' ) ) {
 
 			return '' !== $key;
 		}
-
 	}
 
 	if ( class_exists( 'WFOCU_Core' ) ) {

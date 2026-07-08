@@ -4,6 +4,7 @@ if ( ! class_exists( 'WFOB_Plugin_Compatibilities' ) ) {
 	 * Class WFOB_Plugin_Compatibilities
 	 * Loads all the compatibilities files we have to provide compatibility with each plugin
 	 */
+	#[\AllowDynamicProperties]
 	class WFOB_Plugin_Compatibilities {
 
 		public static $plugin_compatibilities = array();

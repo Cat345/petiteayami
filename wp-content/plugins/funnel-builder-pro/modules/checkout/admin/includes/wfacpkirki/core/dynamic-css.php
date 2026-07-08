@@ -10,6 +10,10 @@
  */
 
 // Do not allow directly accessing this file.
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki' ) ) {
 	die( 'File can\'t be accessed directly' );
 }

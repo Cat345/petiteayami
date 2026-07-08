@@ -8,9 +8,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFFN_Export_Contact
  */
 if ( ! class_exists( 'WFFN_Export_Contact' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Export_Contact extends WFFN_Abstract_Exporter {
 		protected static $slug = 'contacts';
-		private static $ins = null;
+		private static $ins    = null;
 		/**
 		 * Export action
 		 *
@@ -64,7 +65,6 @@ if ( ! class_exists( 'WFFN_Export_Contact' ) ) {
 			}
 
 			return absint( $count );
-
 		}
 
 
@@ -82,15 +82,15 @@ if ( ! class_exists( 'WFFN_Export_Contact' ) ) {
 
 			$get_contacts = WFFN_Core()->wffn_contacts->get_funnel_export_contacts( $args );
 			if ( isset( $get_contacts['db_error'] ) && true === $get_contacts['db_error'] ) {
-				WFFN_Core()->logger->log( "db error " . $this->get_slug() . " not exported for export id # {$this->export_id} " . print_r( $get_contacts, true ), 'wffn', true );
-			} else if ( isset( $get_contacts['records'] ) && is_array( $get_contacts['records'] ) && count( $get_contacts['records'] ) > 0 ) {
+				WFFN_Core()->logger->log( 'db error ' . $this->get_slug() . " not exported for export id # {$this->export_id} " . print_r( $get_contacts, true ), 'wffn', true );
+			} elseif ( isset( $get_contacts['records'] ) && is_array( $get_contacts['records'] ) && count( $get_contacts['records'] ) > 0 ) {
 
 				$this->data_populated_in_csv( $funnel_id, $get_contacts['records'] );
 			}
-
 		}
 
-		/* prepared and import data in csv
+		/*
+		prepared and import data in csv
 		*
 		* @param $funnel_id
 		* @param $data
@@ -98,12 +98,12 @@ if ( ! class_exists( 'WFFN_Export_Contact' ) ) {
 		* @return void
 		*/
 		public function data_populated_in_csv( $funnel_id, $data ) {
-			$file  = fopen( WFFN_PRO_EXPORT_DIR . '/' . $this->export_meta['file'], "a" );
+			$file  = fopen( WFFN_PRO_EXPORT_DIR . '/' . $this->export_meta['file'], 'a' );
 			$count = 0;
 			foreach ( $data as $subdata ) {
-				$subdata = array_map( "strval", $subdata );
-				fputcsv( $file, $subdata );
-				$count ++;
+				$subdata = array_map( 'strval', $subdata );
+				fputcsv( $file, $subdata, ',', '"', '\\' );
+				++$count;
 			}
 			fclose( $file );
 			$this->current_pos = $this->current_pos + $count;

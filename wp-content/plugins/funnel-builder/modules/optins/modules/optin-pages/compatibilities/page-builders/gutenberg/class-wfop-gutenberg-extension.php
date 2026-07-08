@@ -199,15 +199,7 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 				wp_enqueue_script( 'wfoptin-script', $frontend_dir . $js_path, $script_deps, $version, true );
 
 				$system_font_path = __DIR__ . '/font/standard-fonts.php';
-				wp_enqueue_script( 'wfoptin-font', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js', array(), true );
-
-				wp_enqueue_script(
-					'wfoptin-font-awesome-kit',
-					'https://kit.fontawesome.com/f4306c3ab0.js', // Our free kit https://fontawesome.com/kits/f4306c3ab0/settings
-					null,
-					null,
-					true
-				);
+				WFFN_Common::enqueue_block_editor_remote_assets( 'wfoptin-font-awesome-kit', 'wfoptin-font' );
 
 					$get_fields = WFOPP_Core()->optin_pages->form_builder->get_form_fields( $post->ID );
 				wp_localize_script( 'wfoptin-script', 'bwf_funnels_widgets', $this->widgets_json );
@@ -218,8 +210,8 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 						'post_id'          => $post->ID,
 						'i18n'             => BWF_I18N,
 						'get_fields'       => $get_fields,
-						'first_name'       => esc_html__( 'Your First Name', BWF_I18N ),
-						'email'            => esc_html__( 'Your Email', BWF_I18N ),
+						'first_name'       => esc_html__( 'Your First Name', BWF_I18N ), // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralDomain
+						'email'            => esc_html__( 'Your Email', BWF_I18N ), // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralDomain
 						'bwf_g_fonts'      => bwf_get_fonts_list( 'all' ),
 						'bwf_g_font_names' => bwf_get_fonts_list( 'name_only' ),
 						'system_font_path' => file_exists( $system_font_path ) ? include $system_font_path : array(),
@@ -228,7 +220,7 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 				);
 
 				if ( defined( 'WFOPP_PRO_PLUGIN_FILE' ) ) {
-					wp_enqueue_script( 'phone_flag_intl', plugin_dir_url( WFOPP_PRO_PLUGIN_FILE ) . 'assets/phone/js/intltelinput.min.js', array(), WFFN_VERSION_DEV );
+					wp_enqueue_script( 'phone_flag_intl', plugin_dir_url( WFOPP_PRO_PLUGIN_FILE ) . 'assets/phone/js/intltelinput.min.js', array(), WFFN_VERSION_DEV, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
 				}
 
 				if ( function_exists( 'wp_set_script_translations' ) ) {
@@ -254,7 +246,7 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 				$style_path   = "/$app_name.css";
 
 				wp_enqueue_style( 'wfoptin-default', $frontend_dir . $style_path, array(), time() );
-				wp_enqueue_style( 'wfoptin-fonts', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' );
+				wp_enqueue_style( 'wfoptin-fonts', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css', array(), WFFN_VERSION_DEV ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 
 				if ( defined( 'WFOPP_PRO_PLUGIN_FILE' ) ) {
 					wp_enqueue_style( 'flag_style', plugin_dir_url( WFOPP_PRO_PLUGIN_FILE ) . 'assets/phone/css/phone-flag.css', array(), WFFN_VERSION_DEV );
@@ -275,7 +267,7 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 					}
 					if ( ! $is_system ) {
 						$font_url = 'https://fonts.googleapis.com/css?family=' . rawurlencode( $default_font ) . ':100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic';
-						wp_enqueue_style( 'bwfblock-editor-default-google-font', $font_url, array(), null );
+						wp_enqueue_style( 'bwfblock-editor-default-google-font', $font_url, array(), null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 					}
 					wp_add_inline_style( 'wfoptin-default', '#editor .editor-styles-wrapper { font-family: ' . esc_attr( $default_font ) . '; }' );
 				}
@@ -288,10 +280,12 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 		public function init_extension() {
 
 			$post_id = 0;
-			if ( isset( $_REQUEST['post'] ) && $_REQUEST['post'] > 0 ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$post_id = absint( $_REQUEST['post'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			} elseif ( isset( $_REQUEST['edit'] ) && $_REQUEST['edit'] > 0 ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$post_id = absint( $_REQUEST['edit'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( current_user_can( 'edit_posts' ) ) {
+				if ( isset( $_REQUEST['post'] ) && $_REQUEST['post'] > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					$post_id = absint( $_REQUEST['post'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				} elseif ( isset( $_REQUEST['edit'] ) && $_REQUEST['edit'] > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					$post_id = absint( $_REQUEST['edit'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				}
 			}
 
 			$post = get_post( $post_id );
@@ -414,7 +408,7 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 			$default_font = get_post_meta( $post->ID, 'bwfblock_default_font', true );
 
 			if ( ! empty( $default_font ) ) {
-				echo "<style id='bwfblock-default-font'>#editor .editor-styles-wrapper { font-family:$default_font; }</style>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo "<style id='bwfblock-default-font'>#editor .editor-styles-wrapper { font-family:" . esc_html( $default_font ) . '; }</style>'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		}
 

@@ -6,15 +6,15 @@
  */
 
 if ( ! class_exists( 'WFOB_Compatibility_PayPal_Plus_Gmbh' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_PayPal_Plus_Gmbh {
 		private $process = false;
 
 		public function __construct() {
 
-
-			add_action( 'wp_footer', [ $this, 'js' ] );
-			add_action( 'woocommerce_checkout_update_order_review', [ $this, 'get_data' ], 5 );
-			add_filter( 'woocommerce_update_order_review_fragments', [ $this, 'unset_fragments' ], 900 );
+			add_action( 'wp_footer', array( $this, 'js' ) );
+			add_action( 'woocommerce_checkout_update_order_review', array( $this, 'get_data' ), 5 );
+			add_filter( 'woocommerce_update_order_review_fragments', array( $this, 'unset_fragments' ), 900 );
 		}
 
 		private function is_enabled() {
@@ -64,25 +64,25 @@ if ( ! class_exists( 'WFOB_Compatibility_PayPal_Plus_Gmbh' ) ) {
 				return;
 			}
 			?>
-            <script>
-                window.addEventListener('load', function () {
-                    (function ($) {
-                        wfob_frontend.hooks.addFilter('wfob_before_ajax_data_add_order_bump', set_custom_data);
-                        wfob_frontend.hooks.addFilter('wfob_before_ajax_data_remove_order_bump', set_custom_data);
-                        wfob_frontend.hooks.addAction('wfob_ajax_add_order_bump', trigger_checkout);
-                        wfob_frontend.hooks.addAction('wfob_ajax_remove_order_bump', trigger_checkout);
+			<script>
+				window.addEventListener('load', function () {
+					(function ($) {
+						wfob_frontend.hooks.addFilter('wfob_before_ajax_data_add_order_bump', set_custom_data);
+						wfob_frontend.hooks.addFilter('wfob_before_ajax_data_remove_order_bump', set_custom_data);
+						wfob_frontend.hooks.addAction('wfob_ajax_add_order_bump', trigger_checkout);
+						wfob_frontend.hooks.addAction('wfob_ajax_remove_order_bump', trigger_checkout);
 
-                        function set_custom_data(data) {
-                            data['gmbh_unset_fragments'] = 'yes';
-                            return data;
-                        }
+						function set_custom_data(data) {
+							data['gmbh_unset_fragments'] = 'yes';
+							return data;
+						}
 
-                        function trigger_checkout(rsp) {
-                            $(document.body).trigger('update_checkout');
-                        }
-                    })(jQuery);
-                });
-            </script>
+						function trigger_checkout(rsp) {
+							$(document.body).trigger('update_checkout');
+						}
+					})(jQuery);
+				});
+			</script>
 			<?php
 		}
 	}

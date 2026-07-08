@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Search_Automations extends BWFAN_API_Base {
 	public static $ins;
 	public $total_count = 0;

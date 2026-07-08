@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFOCU_Role_Capability
  */
 if ( ! class_exists( 'WFOCU_Role_Capability' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Role_Capability {
 
 		private static $ins = null;
@@ -17,7 +18,7 @@ if ( ! class_exists( 'WFOCU_Role_Capability' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -90,11 +91,9 @@ if ( ! class_exists( 'WFOCU_Role_Capability' ) ) {
 
 			return false;
 		}
-
 	}
 
 	if ( class_exists( 'WFOCU_Core' ) ) {
 		WFOCU_Core::register( 'role', 'WFOCU_Role_Capability' );
 	}
-
 }

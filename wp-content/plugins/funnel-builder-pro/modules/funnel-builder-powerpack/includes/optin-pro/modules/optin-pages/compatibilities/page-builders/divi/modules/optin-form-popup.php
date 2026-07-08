@@ -399,7 +399,7 @@ if ( ! class_exists( 'WFOP_Optin_Form_Popup' ) ) {
 
 				if ( isset( $_REQUEST['action'] ) && 'heartbeat' === $_REQUEST['action'] && isset( $_REQUEST['data'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					if ( isset( $_REQUEST['data']['et'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-						$post_id = $_REQUEST['data']['et']['post_id']; //phpcs:ignore
+						$post_id = absint( $_REQUEST['data']['et']['post_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					}
 				}
 
@@ -535,8 +535,8 @@ if ( ! class_exists( 'WFOP_Optin_Form_Popup' ) ) {
 
 			// Ensure position is a string
 			if ( is_array( $btn_icon_position ) || is_object( $btn_icon_position ) ) {
-				$pos_array          = (array) $btn_icon_position;
-				$btn_icon_position  = reset( $pos_array );
+				$pos_array         = (array) $btn_icon_position;
+				$btn_icon_position = reset( $pos_array );
 			}
 
 			if ( empty( $btn_icon_position ) ) {
@@ -560,9 +560,9 @@ if ( ! class_exists( 'WFOP_Optin_Form_Popup' ) ) {
 			);
 
 			if ( ! empty( $btn_icon ) ) {
-				$icon_html = html_entity_decode( et_pb_process_font_icon( $btn_icon ) );
+				$icon_html = html_entity_decode( et_pb_process_font_icon( $btn_icon ), ENT_QUOTES | ENT_HTML401 );
 
-				$button_args['icon_html'] = "<span class='wfocu-button-icon et-pb-icon $btn_icon_position'>" . $icon_html . '</span>';
+				$button_args['icon_html'] = "<span class='wfocu-button-icon et-pb-icon " . esc_attr( $btn_icon_position ) . "'>" . $icon_html . '</span>';
 			}
 
 			$wrapper_class = 'elementor-form-fields-wrapper';
@@ -614,7 +614,7 @@ if ( ! class_exists( 'WFOP_Optin_Form_Popup' ) ) {
 						// Convert to string if needed
 						$icon_value = is_string( $btn_icon ) ? $btn_icon : (string) $btn_icon;
 						if ( ! empty( $icon_value ) ) {
-							$icon_html = html_entity_decode( et_pb_process_font_icon( $icon_value ) );
+							$icon_html = html_entity_decode( et_pb_process_font_icon( $icon_value ), ENT_QUOTES | ENT_HTML401 );
 						}
 					}
 					?>
@@ -622,13 +622,13 @@ if ( ! class_exists( 'WFOP_Optin_Form_Popup' ) ) {
 						<a href="#">
 							<span class="bwf-text-wrapper">
 								<?php if ( 'left' === $icon_position_class && ! empty( $icon_html ) ) { ?>
-									<span class="wfocu-button-icon et-pb-icon <?php echo esc_attr( $icon_position_class ); ?>"><?php echo $icon_html; ?></span>
+									<span class="wfocu-button-icon et-pb-icon <?php echo esc_attr( $icon_position_class ); ?>"><?php echo wp_kses( $icon_html, array( 'i' => array( 'class' => array() ), 'span' => array( 'class' => array() ) ) ); ?></span>
 								<?php } ?>
 								<?php if ( ! empty( $btn_text ) ) { ?>
 									<span class="bwf_heading"><?php echo esc_html( $btn_text ); ?></span>
 								<?php } ?>
 								<?php if ( 'right' === $icon_position_class && ! empty( $icon_html ) ) { ?>
-									<span class="wfocu-button-icon et-pb-icon <?php echo esc_attr( $icon_position_class ); ?>"><?php echo $icon_html; ?></span>
+									<span class="wfocu-button-icon et-pb-icon <?php echo esc_attr( $icon_position_class ); ?>"><?php echo wp_kses( $icon_html, array( 'i' => array( 'class' => array() ), 'span' => array( 'class' => array() ) ) ); ?></span>
 								<?php } ?>
 							</span>
 							<?php if ( ! empty( $btn_subheading ) ) { ?>
@@ -685,7 +685,7 @@ if ( ! class_exists( 'WFOP_Optin_Form_Popup' ) ) {
 
 
 				.et-db #et-boc .et-l .et_pb_module .wffn-custom-optin-from .wffn-optin-input {
-                    padding: <?php echo $input_size; //phpcs:ignore ?> 15px;
+                    padding: <?php echo esc_attr( $input_size ); ?> 15px;
 				}
 
 				body.et-db #et-boc .et-l #et_wfop_optin_form_popup .bwf-custom-button .et-pb-icon {

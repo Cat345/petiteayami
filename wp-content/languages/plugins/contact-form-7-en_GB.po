@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Contact Form 7 - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-04-21 13:02:53+0000\n"
+"PO-Revision-Date: 2026-05-05 18:32:38+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -309,9 +309,33 @@ msgstr "Radio buttons form-tag generator"
 msgid "Radio buttons"
 msgstr "Radio buttons"
 
+#: modules/checkbox.php:368
+msgid "Generates a form-tag for a group of <a href=\"https://contactform7.com/checkboxes-radio-buttons-and-menus/\">checkboxes</a>."
+msgstr "Generates a form-tag for a group of <a href=\"https://contactform7.com/checkboxes-radio-buttons-and-menus/\">tickboxes</a>."
+
+#: modules/checkbox.php:367
+msgid "Checkboxes form-tag generator"
+msgstr "Tickboxes form-tag generator"
+
+#: modules/checkbox.php:366
+msgid "Checkboxes"
+msgstr "Tickboxes"
+
 #: modules/acceptance.php:328
 msgid "Put the condition for consent here."
 msgstr "Put the condition for consent here."
+
+#: admin/includes/tag-generator.php:270
+msgid "This checkbox is optional."
+msgstr "This tickbox is optional."
+
+#: modules/acceptance.php:268
+msgid "Generates a form-tag for an <a href=\"https://contactform7.com/acceptance-checkbox/\">acceptance checkbox</a>."
+msgstr "Generates a form-tag for an <a href=\"https://contactform7.com/acceptance-checkbox/\">acceptance tickbox</a>."
+
+#: modules/acceptance.php:267
+msgid "Acceptance checkbox form-tag generator"
+msgstr "Acceptance tickbox form-tag generator"
 
 #. translators: %s: mail-tag corresponding to the form-tag
 #: admin/includes/tag-generator.php:620
@@ -492,6 +516,10 @@ msgstr "This form uses Akismet to reduce spam."
 msgid "Contact form"
 msgstr "Contact form"
 
+#: includes/config-validator/form.php:81
+msgid "Uploadable file size exceeds PHP&#8217;s maximum acceptable size."
+msgstr "Uploadable file size exceeds PHP&#8217;s maximum acceptable size."
+
 #: includes/config-validator/form.php:69
 msgid "Colons are used in form-tag names."
 msgstr "Colons are used in form-tag names."
@@ -639,6 +667,10 @@ msgstr "Stripe is active on this site."
 msgid "Stripe integration"
 msgstr "Stripe integration"
 
+#: modules/stripe/service.php:173
+msgid "Stripe is a simple and powerful way to accept payments online. Stripe has no setup fees, no monthly fees, and no hidden costs. Millions of businesses rely on Stripe&#8217;s software tools to accept payments securely and expand globally."
+msgstr "Stripe is a simple and powerful way to accept payments online. Stripe has no setup fees, no monthly fees, and no hidden costs. Millions of businesses rely on Stripe&#8217;s software tools to accept payments securely and expand globally."
+
 #. translators: 1: first name, 2: last name
 #: modules/sendinblue/sendinblue.php:114
 msgctxt "personal name"
@@ -668,6 +700,11 @@ msgstr "Stripe"
 #: admin/includes/welcome-panel.php:141 modules/stripe/service.php:183
 msgid "https://contactform7.com/stripe-integration/"
 msgstr "https://contactform7.com/stripe-integration/"
+
+#. translators: %s: URL to support page about the Brevo integration
+#: admin/includes/welcome-panel.php:134
+msgid "Your contact forms will become more powerful and versatile by integrating them with external APIs. With CRM and email marketing services, you can build your own contact lists (<a href=\"%s\">Brevo</a>)."
+msgstr "Your contact forms will become more powerful and versatile by integrating them with external APIs. With CRM and email marketing services, you can build your own contact lists (<a href=\"%s\">Brevo</a>)."
 
 #: admin/includes/welcome-panel.php:127
 msgid "You have strong allies to back you up."
@@ -1048,6 +1085,11 @@ msgstr "There was an error saving the contact form."
 msgid "Hook %1$s is <strong>deprecated</strong> since Contact Form 7 version %2$s! Use %3$s instead."
 msgstr "Hook %1$s is <strong>deprecated</strong> since Contact Form 7 version %2$s! Use %3$s instead."
 
+#. translators: %s: URL to support page about the Flamingo plugin
+#: admin/includes/welcome-panel.php:112
+msgid "Install a message storage plugin before this happens to you. <a href=\"%s\">Flamingo</a> saves all messages through contact forms into the database. Flamingo is a free WordPress plugin created by the same author as Contact Form 7."
+msgstr "Install a message storage plugin before this happens to you. <a href=\"%s\">Flamingo</a> saves all messages through contact forms into the database. Flamingo is a free WordPress plugin created by the same author as Contact Form 7."
+
 #: admin/includes/welcome-panel.php:109
 msgid "Contact Form 7 does not store submitted messages anywhere. Therefore, you may lose important messages forever if your mail server has issues or you make a mistake in mail configuration."
 msgstr "Contact Form 7 does not store submitted messages anywhere. Therefore, you may lose important messages forever if your mail server has issues or you make a mistake in mail configuration."
@@ -1206,6 +1248,10 @@ msgstr "text area"
 msgid "Akismet"
 msgstr "Akismet"
 
+#: modules/text.php:228
+msgid "Text field"
+msgstr "Text field"
+
 #: modules/text.php:214
 msgid "tel"
 msgstr "tel"
@@ -1273,6 +1319,10 @@ msgstr "Slider"
 #: modules/number.php:247
 msgid "Spinbox"
 msgstr "Spinbox"
+
+#: modules/number.php:209
+msgid "Number field"
+msgstr "Number field"
 
 #: modules/number.php:200
 msgid "number"
@@ -1355,6 +1405,10 @@ msgstr "Date is earlier than the minimum limit"
 msgid "Date format that the sender entered is invalid"
 msgstr "The date format that the sender entered is invalid"
 
+#: admin/includes/tag-generator.php:562
+msgid "Wrap each item with a label element."
+msgstr "Wrap each item with a label element."
+
 #: admin/includes/tag-generator.php:219
 msgid "Field type"
 msgstr "Field type"
@@ -1391,6 +1445,10 @@ msgstr "Insert Tag"
 #: admin/includes/tag-generator.php:362
 msgid "Class attribute"
 msgstr "Class attribute"
+
+#: admin/includes/tag-generator.php:347
+msgid "ID attribute"
+msgstr "ID attribute"
 
 #: modules/acceptance.php:266
 msgid "Acceptance checkbox"
@@ -1436,6 +1494,10 @@ msgstr "Submission was referred to as spam"
 #: includes/contact-form-template.php:173
 msgid "Validation errors occurred"
 msgstr "Validation errors occurred"
+
+#: includes/contact-form-template.php:163
+msgid "Sender&#8217;s message was sent successfully"
+msgstr "Sender&#8217;s message was sent successfully"
 
 #: includes/contact-form-template.php:72 includes/contact-form-template.php:106
 msgid "Message Body:"

@@ -30,7 +30,7 @@ class Service
      *
      * @return $this
      */
-    public function setClass(string $class)
+    public function setClass(string $class): self
     {
         $this->class = $class;
 
@@ -50,7 +50,7 @@ class Service
      *
      * @return $this
      */
-    public function setShared(bool $shared = true)
+    public function setShared(bool $shared = true): self
     {
         $this->shared = $shared;
 
@@ -71,7 +71,7 @@ class Service
      *
      * @return $this
      */
-    public function setFactory(callable $factory)
+    public function setFactory(callable $factory): self
     {
         $this->factory = $factory;
 
@@ -85,7 +85,7 @@ class Service
      *
      * @return $this
      */
-    public function setArgument(string $name, $value)
+    public function setArgument(string $name, $value): self
     {
         $this->arguments[$name] = $value;
 

@@ -1,11 +1,12 @@
 <?php
 if ( ! class_exists( 'WFOCU_Oxy_Product_Short_Desc' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Oxy_Product_Short_Desc extends WFOCU_Oxy_HTML_BLOCK {
-		public $slug = 'wfocu_product_short_description';
+		public $slug  = 'wfocu_product_short_description';
 		protected $id = 'wfocu_product_short_description';
 
 		public function __construct() {
-			$this->name = __( "WF Product Short Description" );
+			$this->name = __( 'WF Product Short Description' );
 			$this->ajax = true;
 			parent::__construct();
 		}
@@ -35,9 +36,9 @@ if ( ! class_exists( 'WFOCU_Oxy_Product_Short_Desc' ) ) {
 			$tab_id = $this->add_tab( __( 'Typography', 'woofunnels-upstroke-one-click-upsell' ) );
 			$this->add_heading( $tab_id, __( 'Description Typography' ) );
 
-			$default = [
+			$default = array(
 				'font_size' => '16',
-			];
+			);
 
 			$this->add_text_alignments( $tab_id, $this->slug . '_alignment', '.wfocu_short_description' );
 			$this->custom_typography( $tab_id, $this->slug . '_typography', '.wfocu_short_description p', '', $default );
@@ -77,15 +78,15 @@ if ( ! class_exists( 'WFOCU_Oxy_Product_Short_Desc' ) ) {
 				return;
 			}
 			?>
-            <div class="wfocu-widget-containe wfocu_short_description">
+			<div class="wfocu-widget-containe wfocu_short_description">
 				<?php echo wp_kses_post( $short_description ); ?>
-            </div>
+			</div>
 			<?php
 		}
 
 		public function defaultCSS() {
 
-			$defaultCSS = "
+			$defaultCSS = '
 			 .wfocu_short_description {
                 color: #414349;
                 background-color: transparent
@@ -96,12 +97,10 @@ if ( ! class_exists( 'WFOCU_Oxy_Product_Short_Desc' ) ) {
                 font-size: 16px;
                 line-height: 1.5;
             }
-		";
+		';
 
 			return $defaultCSS;
 		}
-
-
 	}
 
 	return new WFOCU_Oxy_Product_Short_Desc();

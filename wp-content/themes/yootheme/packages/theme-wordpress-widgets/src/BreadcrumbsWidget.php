@@ -44,7 +44,7 @@ class BreadcrumbsWidget extends \WP_Widget
      *
      * @param array<string, mixed> $instance
      */
-    public function form($instance)
+    public function form($instance): string
     {
         $instance = wp_parse_args((array) $instance, [
             'title' => '',

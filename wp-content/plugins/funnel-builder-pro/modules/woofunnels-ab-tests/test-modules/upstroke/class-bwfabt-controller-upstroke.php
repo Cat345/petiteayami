@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 	/**
 	 * Class contains all the upstroke related ab testing functionality
@@ -27,7 +27,7 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -60,7 +60,7 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 		 */
 		public function get_controls( $term ) {
 			global $wpdb;
-			$pages = [];
+			$pages = array();
 			if ( '' === $term ) {
 				return $pages;
 			}
@@ -85,7 +85,7 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 				}
 				$pages[] = array(
 					'id'   => $id,
-					'name' => html_entity_decode( get_the_title( $id ) ),
+					'name' => html_entity_decode( get_the_title( $id ), ENT_QUOTES | ENT_HTML401 ),
 				);
 			}
 
@@ -100,6 +100,7 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 		 */
 		public function add_variant( $variant_data ) {
 			$variant_id = isset( $variant_data['variant_id'] ) ? $variant_data['variant_id'] : 0;
+			$control_id = isset( $variant_data['control_id'] ) ? intval( $variant_data['control_id'] ) : 0;
 			if ( $variant_id < 1 ) {
 				$funnels_to_create = array(
 					'title'           => $variant_data['variant_title'],
@@ -110,8 +111,6 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 					),
 				);
 
-				BWFABT_Core()->admin->log( "Going to create an upstroke funnel in add_variant method in upstroke controller for contorl id: $control_id and variant id: $variant_id, Funnel to create: " . print_r( $funnels_to_create, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
 				$variant_id = WFOCU_Core()->funnels->generate_preset_funnel_data( $funnels_to_create );
 
 				$variant_data['variant_id'] = $variant_id;
@@ -120,9 +119,6 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 					update_post_meta( $variant_id, '_bwf_ab_variation_of', $control_id );
 					delete_post_meta( $variant_id, '_bwf_ab_control' );
 				}
-
-				BWFABT_Core()->admin->log( "Updated variant Data after creating variant funnel for control id: $control_id, variant id: $variant_id: " . print_r( $variant_data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
 			}
 
 			return parent::add_variant( $variant_data );
@@ -141,10 +137,13 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 			if ( $variant_id > 0 && $experiment_id > 0 ) {
 				$funnel_id = $variant_id;
 				if ( method_exists( 'WFOCU_AJAX_Controller', 'duplicating_funnel' ) ) {
-					$resp          = WFOCU_AJAX_Controller::duplicating_funnel( $funnel_id, array(
-						'msg'    => '',
-						'status' => true,
-					) );
+					$resp          = WFOCU_AJAX_Controller::duplicating_funnel(
+						$funnel_id,
+						array(
+							'msg'    => '',
+							'status' => true,
+						)
+					);
 					$new_funnel_id = $resp['duplicate_id'];
 				} else {
 					$data_funnels = WFOCU_Core()->funnels->get_funnel_offers_admin( $funnel_id );
@@ -205,10 +204,12 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 			if ( $variant_id > 0 ) {
 				$funnel_post = get_post( $variant_id );
 				if ( ! is_null( $funnel_post ) ) {
-					$draft = wp_update_post( array(
-						'ID'          => $variant_id,
-						'post_status' => 'draft',
-					) );
+					$draft = wp_update_post(
+						array(
+							'ID'          => $variant_id,
+							'post_status' => 'draft',
+						)
+					);
 				}
 			}
 
@@ -229,7 +230,8 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 		public function search_all_posts_that_are_not_variants( $args ) {
 
 			global $wpdb;
-			$pages         = [];
+			$pages         = array();
+			$term          = isset( $args['term'] ) ? sanitize_text_field( $args['term'] ) : '';
 			$like_term     = '%' . $wpdb->esc_like( $term ) . '%';
 			$post_type     = WFOCU_Common::get_funnel_post_type_slug();
 			$post_statuses = array( 'publish', 'draft' );
@@ -246,7 +248,7 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 				}
 				$pages[] = array(
 					'id'   => $id,
-					'name' => html_entity_decode( get_the_title( $id ) ),
+					'name' => html_entity_decode( get_the_title( $id ), ENT_QUOTES | ENT_HTML401 ),
 				);
 			}
 
@@ -353,7 +355,7 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 			$funnel_data = wp_parse_args( $funnel_to_copy, $get_default_schema );
 
 			if ( count( $offers ) > 0 ) {
-				$funnel_data['meta']['_funnel_steps'] = [];
+				$funnel_data['meta']['_funnel_steps'] = array();
 				foreach ( $funnel_data['offers'] as $key => $offer_raw ) {
 					if ( isset( $funnel_to_copy['offers_override'][ $key ] ) ) {
 						$offer_raw = wp_parse_args( $funnel_to_copy['offers_override'][ $key ], $offer_raw );
@@ -366,7 +368,7 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 						'post_type'    => $offer_post_type,
 						'post_name'    => sanitize_title( $offer_raw['name'] ) . '-' . time(),
 						'post_status'  => 'publish',
-						'post_content' => $offer_post_content
+						'post_content' => $offer_post_content,
 					);
 
 					$offer_id_new = wp_insert_post( $offer_post_new );
@@ -386,20 +388,19 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 						}
 
 						if ( isset( $offer_raw['parent_meta'] ) && ! empty( $offer_raw['parent_meta'] ) ) {
-							$parent_meta_all   = $offer_raw['parent_meta'];
-							$sql_query_selects = [];
+							$parent_meta_all = $offer_raw['parent_meta'];
 
 							foreach ( $parent_meta_all as $meta_info ) {
-
-								$meta_key   = esc_sql( $meta_info->meta_key );
-								$meta_value = esc_sql( $meta_info->meta_value );
-
-								$sql_query_selects[] = "( $offer_id_new, '$meta_key', '$meta_value')"; //db call ok; no-cache ok; WPCS: unprepared SQL ok.
+								$wpdb->insert(
+									$wpdb->postmeta,
+									array(
+										'post_id'    => $offer_id_new,
+										'meta_key'   => $meta_info->meta_key,
+										'meta_value' => $meta_info->meta_value,
+									),
+									array( '%d', '%s', '%s' )
+								);
 							}
-
-							$sql_query_meta_val = implode( ',', $sql_query_selects );
-							$wpdb->query( $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta ) );//phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared
-
 						} else {
 							foreach ( $offer_raw['meta'] as $key_meta => $meta_val ) {
 								update_post_meta( $offer_id_new, $key_meta, $meta_val );
@@ -439,17 +440,21 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 		 * @return string|URL
 		 */
 		public function get_variant_heading_url( $variant, $experiment ) {
-			return BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( array(
-				'page'    => 'upstroke',
-				'section' => 'offers',
-				'edit'    => $variant->get_id(),
-			), admin_url( 'admin.php' ) ) );
-
+			return BWF_Admin_Breadcrumbs::maybe_add_refs(
+				add_query_arg(
+					array(
+						'page'    => 'upstroke',
+						'section' => 'offers',
+						'edit'    => $variant->get_id(),
+					),
+					admin_url( 'admin.php' )
+				)
+			);
 		}
 
 
 		/**
-		 * @param BWFABT_Variant $variant
+		 * @param BWFABT_Variant    $variant
 		 * @param BWFABT_Experiment $experiment
 		 *
 		 * @return array|array[]
@@ -459,12 +464,17 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 			$row_actions = array(
 				'edit' => array(
 					'text' => __( 'Edit', 'woofunnels-ab-tests' ),
-					'link' => BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( array(
-						'page'    => 'upstroke',
-						'section' => 'offers',
-						'edit'    => $variant->get_id(),
-					), admin_url( 'admin.php' ) ) ),
-				)
+					'link' => BWF_Admin_Breadcrumbs::maybe_add_refs(
+						add_query_arg(
+							array(
+								'page'    => 'upstroke',
+								'section' => 'offers',
+								'edit'    => $variant->get_id(),
+							),
+							admin_url( 'admin.php' )
+						)
+					),
+				),
 			);
 
 			return array_merge( $row_actions, parent::get_variant_row_actions( $variant, $experiment ) );
@@ -502,10 +512,12 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 			if ( $new_control_id > 0 ) {
 				$funnel_post = get_post( $new_control_id );
 				if ( ! is_null( $funnel_post ) ) {
-					$transfered = wp_update_post( array(
-						'ID'         => $new_control_id,
-						'post_title' => $original_title,
-					) );
+					$transfered = wp_update_post(
+						array(
+							'ID'         => $new_control_id,
+							'post_title' => $original_title,
+						)
+					);
 				}
 			}
 			if ( $new_control_id === $transfered ) {
@@ -567,7 +579,7 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 			$link = parent::get_entity_view_link( $step_id );
 			if ( $step_id > 0 && get_post( $step_id ) instanceof WP_Post ) {
 				$steps = WFOCU_Core()->funnels->get_funnel_steps( $step_id );
-				$link  = ( is_array( $steps ) && count( $steps ) > 0 ) ? get_permalink( $steps[0]['id'] ) : "";
+				$link  = ( is_array( $steps ) && count( $steps ) > 0 ) ? get_permalink( $steps[0]['id'] ) : '';
 			}
 
 			return $link;
@@ -581,9 +593,9 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 		 */
 		public function get_analytics_data( $step_ids, $experiment_id, $is_interval = '', $int_request = '' ) {
 			global $wpdb;
-			$data           = [];
-			$ids            = [];
-			$date_col       = "events.timestamp";
+			$data           = array();
+			$ids            = array();
+			$date_col       = 'events.timestamp';
 			$interval_query = '';
 			$group_by       = ' GROUP BY events.object_id ';
 
@@ -616,13 +628,13 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 				$get_interval   = $this->get_interval_format_query( $int_request, $date_col );
 				$interval_query = $get_interval['interval_query'];
 				$interval_group = $get_interval['interval_group'];
-				$group_by       = "GROUP BY " . $interval_group;
+				$group_by       = 'GROUP BY ' . $interval_group;
 			}
 
 			if ( is_array( $data ) && count( $data ) > 0 ) {
 				foreach ( array_keys( $data ) as $id ) {
 
-					$data[ $id ]['offers'] = [];
+					$data[ $id ]['offers'] = array();
 
 					$steps = get_post_meta( $id, '_funnel_steps', true );
 
@@ -641,17 +653,16 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 					}
 
 					$get_all_dates = BWFABT_Core()->get_dataStore()->get_experiment_time_chunk( $experiment_id );
-					$date_query    = "";
+					$date_query    = '';
 
 					if ( is_array( $get_all_dates ) && count( $get_all_dates ) ) {
 						foreach ( $get_all_dates as $date ) {
 							$date_query .= " ( events.timestamp >= '" . esc_sql( $date['start_date'] ) . "' AND events.timestamp <= '" . esc_sql( $date['end_date'] ) . "' ) OR ";
 						}
-						$date_query = ' AND ( ' . rtrim( $date_query, " OR " ) . ') ';
+						$date_query = ' AND ( ' . rtrim( $date_query, ' OR ' ) . ') ';
 					}
 
-					$get_the_upsell_query = "SELECT COUNT(CASE WHEN action_type_id = 4 THEN 1 END) AS `converted`, COUNT(CASE WHEN action_type_id = 2 THEN 1 END) AS `viewed`, object_id  as 'offer', action_type_id,SUM(value) as revenue " . $interval_query . " FROM " . $wpdb->prefix . 'wfocu_event' . "  as events INNER JOIN " . $wpdb->prefix . 'wfocu_event_meta' . " AS events_meta__funnel_id ON ( events.ID = events_meta__funnel_id.event_id ) AND ( ( events_meta__funnel_id.meta_key   = '_funnel_id' AND events_meta__funnel_id.meta_value = $id )) AND (events.action_type_id = '2' OR events.action_type_id = '4' ) " . $date_query . " " . $group_by . " ORDER BY events.object_id ASC";
-
+					$get_the_upsell_query = "SELECT COUNT(CASE WHEN action_type_id = 4 THEN 1 END) AS `converted`, COUNT(CASE WHEN action_type_id = 2 THEN 1 END) AS `viewed`, object_id  as 'offer', action_type_id,SUM(value) as revenue " . $interval_query . ' FROM ' . $wpdb->prefix . 'wfocu_event' . '  as events INNER JOIN ' . $wpdb->prefix . 'wfocu_event_meta' . " AS events_meta__funnel_id ON ( events.ID = events_meta__funnel_id.event_id ) AND ( ( events_meta__funnel_id.meta_key   = '_funnel_id' AND events_meta__funnel_id.meta_value = " . absint( $id ) . " )) AND (events.action_type_id = '2' OR events.action_type_id = '4' ) " . $date_query . ' ' . $group_by . ' ORDER BY events.object_id ASC';
 
 					$query_res = $wpdb->get_results( $get_the_upsell_query, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
@@ -661,7 +672,6 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 							return $db_error;
 						}
 					}
-
 
 					if ( 'interval' === $is_interval ) {
 						if ( is_array( $query_res ) && count( $query_res ) > 0 ) {
@@ -680,22 +690,21 @@ if ( ! class_exists( 'BWFABT_Controller_Upstroke' ) ) {
 									'views'             => is_null( $offer_data['viewed'] ) ? 0 : intval( $offer_data['viewed'] ),
 									'conversion_rate'   => $this->get_percentage( $offer_data['viewed'], $offer_data['converted'] ),
 								);
-								$data[ $id ]['revenue']                        += $data[ $id ]['offers'][ $offer_data['offer'] ]['revenue'];
-								$data[ $id ]['conversions']                    += $data[ $id ]['offers'][ $offer_data['offer'] ]['conversions'];
-								$data[ $id ]['views']                          += $data[ $id ]['offers'][ $offer_data['offer'] ]['views'];
+								$data[ $id ]['revenue']                       += $data[ $id ]['offers'][ $offer_data['offer'] ]['revenue'];
+								$data[ $id ]['conversions']                   += $data[ $id ]['offers'][ $offer_data['offer'] ]['conversions'];
+								$data[ $id ]['views']                         += $data[ $id ]['offers'][ $offer_data['offer'] ]['views'];
 								$data[ $id ]['revenue_per_visit']              = ( absint( $data[ $id ]['views'] ) !== 0 ) ? round( $data[ $id ]['revenue'] / $data[ $id ]['views'], 2 ) : 0;
 								$data[ $id ]['conversion_rate']                = $this->get_percentage( $data[ $id ]['views'], $data[ $id ]['conversions'] );
 
 							}
 						}
 					}
-
 				}
 			}
 
 			if ( is_array( $data ) && count( $data ) > 0 ) {
 				foreach ( $data as &$item ) {
-					if ( isset ( $item['offers'] ) ) {
+					if ( isset( $item['offers'] ) ) {
 						$item['offers'] = array_values( $item['offers'] );
 					}
 				}

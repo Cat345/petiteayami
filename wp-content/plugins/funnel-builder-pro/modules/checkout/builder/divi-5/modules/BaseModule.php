@@ -28,6 +28,7 @@ use ET\Builder\Packages\ModuleLibrary\ModuleRegistration;
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 abstract class BaseModule implements DependencyInterface {
 
 	/**
@@ -36,7 +37,7 @@ abstract class BaseModule implements DependencyInterface {
 	 * @since 1.0.0
 	 * @var array
 	 */
-	private static $registered_modules = [];
+	private static $registered_modules = array();
 
 	/**
 	 * Module name (e.g., 'CheckoutForm', 'MiniCart').
@@ -69,13 +70,13 @@ abstract class BaseModule implements DependencyInterface {
 	 * @return array Array of trait file names.
 	 */
 	protected function get_trait_files(): array {
-		return [
+		return array(
 			'CustomCssTrait.php',
 			'RenderCallbackTrait.php',
 			'ModuleClassnamesTrait.php',
 			'ModuleStylesTrait.php',
 			'ModuleScriptDataTrait.php',
-		];
+		);
 	}
 
 	/**
@@ -95,7 +96,7 @@ abstract class BaseModule implements DependencyInterface {
 	 * @return array Empty array - modules don't have external dependencies.
 	 */
 	public function getDependencies(): array {
-		return [];
+		return array();
 	}
 
 	/**
@@ -105,7 +106,7 @@ abstract class BaseModule implements DependencyInterface {
 	 * @return void
 	 */
 	protected function load_traits(): void {
-		$modules_dir = dirname( __FILE__ );
+		$modules_dir = __DIR__;
 		$module_dir  = $modules_dir . '/' . $this->get_module_dir();
 		$trait_dir   = $module_dir . '/' . $this->get_module_name() . 'Trait/';
 
@@ -126,8 +127,8 @@ abstract class BaseModule implements DependencyInterface {
 	 * @return void
 	 */
 	public function load(): void {
-		$modules_dir            = dirname( __FILE__ );
-		$module_dir            = $modules_dir . '/' . $this->get_module_dir();
+		$modules_dir             = __DIR__;
+		$module_dir              = $modules_dir . '/' . $this->get_module_dir();
 		$module_json_folder_path = $module_dir . '/module-json';
 
 		// Validate module JSON folder exists
@@ -155,7 +156,7 @@ abstract class BaseModule implements DependencyInterface {
 		}
 
 		// Get render callback class and method
-		$render_callback_class = $this->get_module_namespace() . '\\' . $this->get_module_name();
+		$render_callback_class  = $this->get_module_namespace() . '\\' . $this->get_module_name();
 		$render_callback_method = $this->get_render_callback_method();
 
 		// Verify render callback method exists
@@ -171,9 +172,9 @@ abstract class BaseModule implements DependencyInterface {
 		try {
 			ModuleRegistration::register_module(
 				$module_json_folder_path,
-				[
-					'render_callback' => [ $render_callback_class, $render_callback_method ],
-				]
+				array(
+					'render_callback' => array( $render_callback_class, $render_callback_method ),
+				)
 			);
 			// Mark as successfully registered
 			self::$registered_modules[ $module_identifier ] = true;

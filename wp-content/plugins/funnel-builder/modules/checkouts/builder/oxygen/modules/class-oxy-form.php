@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_OXY_Form extends WFACP_OXY_HTML_BLOCK {
 		public $slug                 = 'wfacp_checkout_form';
 		public $form_sub_headings    = array();
@@ -1175,9 +1176,11 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 			$this->save_ajax_settings();
 			$template->set_form_data( $this->settings );
 			if ( isset( $_COOKIE['wfacp_oxy_open_page'] ) && wp_doing_ajax() ) {
-				$cookie = $_COOKIE['wfacp_oxy_open_page'];//phpcs:ignore
+				$cookie = sanitize_text_field( wp_unslash( $_COOKIE['wfacp_oxy_open_page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading cookie data for builder state, nonce verification not required
 				$parts  = explode( '@', $cookie );
-				$template->set_current_open_step( $parts[1] );
+				if ( isset( $parts[1] ) ) {
+					$template->set_current_open_step( sanitize_html_class( $parts[1] ) );
+				}
 			}
 			include $template->wfacp_get_form();
 		}

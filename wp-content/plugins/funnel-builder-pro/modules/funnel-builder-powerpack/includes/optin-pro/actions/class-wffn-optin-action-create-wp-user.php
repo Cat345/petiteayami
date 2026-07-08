@@ -99,6 +99,11 @@ if ( ! class_exists( 'WFFN_Optin_Action_Create_WP_User' ) ) {
 				'role'       => $role,
 			), $posted_data );
 
+			$allowed_roles = array( 'subscriber', 'customer', 'contributor' );
+			if ( ! isset( $creds['role'] ) || ! in_array( $creds['role'], $allowed_roles, true ) ) {
+				$creds['role'] = 'subscriber';
+			}
+
 			$user_id = wp_insert_user( $creds );
 
 			if ( is_wp_error( $user_id ) ) {

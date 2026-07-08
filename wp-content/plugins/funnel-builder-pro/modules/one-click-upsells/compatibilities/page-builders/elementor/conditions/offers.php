@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 if ( ! class_exists( '\ElementorPro\Modules\ThemeBuilder\Conditions\WooFunnels_Offers' ) ) {
+	#[\AllowDynamicProperties]
 	class WooFunnels_Offers extends Post {
 
 		public function get_label() {
@@ -17,7 +18,5 @@ if ( ! class_exists( '\ElementorPro\Modules\ThemeBuilder\Conditions\WooFunnels_O
 
 		public function register_sub_conditions() {
 		}
-
-
 	}
 }

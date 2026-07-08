@@ -17,6 +17,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Dimension' ) ) {
 	/**
 	 * A text control with validation for CSS units.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Dimension extends WFOCUKirki_Control_Base {
 
 		/**
@@ -35,9 +36,13 @@ if ( ! class_exists( 'WFOCUKirki_Control_Dimension' ) ) {
 		public function enqueue() {
 			parent::enqueue();
 
-			wp_localize_script( 'wfocukirki-script', 'dimensionwfocukirkiL10n', array(
-				'invalid-value' => esc_attr__( 'Invalid Value', 'wfocukirki' ),
-			) );
+			wp_localize_script(
+				'wfocukirki-script',
+				'dimensionwfocukirkiL10n',
+				array(
+					'invalid-value' => esc_attr__( 'Invalid Value', 'wfocukirki' ),
+				)
+			);
 		}
 
 		/**
@@ -52,14 +57,14 @@ if ( ! class_exists( 'WFOCUKirki_Control_Dimension' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <label class="customizer-text">
-                <# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
-                <# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
-                <div class="input-wrapper">
-                    <# var val = ( data.value && _.isString( data.value ) ) ? data.value.replace( '%%', '%' ) : ''; #>
-                    <input {{{ data.inputAttrs }}} type="text" value="{{ val }}"/>
-                </div>
-            </label>
+			<label class="customizer-text">
+				<# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
+				<# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
+				<div class="input-wrapper">
+					<# var val = ( data.value && _.isString( data.value ) ) ? data.value.replace( '%%', '%' ) : ''; #>
+					<input {{{ data.inputAttrs }}} type="text" value="{{ val }}"/>
+				</div>
+			</label>
 			<?php
 		}
 	}

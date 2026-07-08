@@ -13,6 +13,7 @@
  */
 if ( ! class_exists( 'WFACP_Divi5_Importer' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFACP_Divi5_Importer extends WFACP_Divi_Importer {
 
 		protected $builder = 'divi5';
@@ -85,6 +86,12 @@ if ( ! class_exists( 'WFACP_Divi5_Importer' ) ) {
 
 			$data         = $import['data'];
 			$post_content = reset( $data );
+
+			// Remote template content must pass the same dangerous-content checks the other importers use.
+			require_once WFFN_PLUGIN_DIR . '/includes/class-wffn-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			if ( WFFN_Content_Validator::contains_php_code( $post_content ) || WFFN_Content_Validator::contains_dangerous_tags( $post_content ) ) {
+				return false;
+			}
 
 			// D5 block content contains JSON unicode escapes (u003c for <, u003e for >).
 			// WordPress wp_unslash() strips the backslash on DB retrieval, leaving bare u003c.

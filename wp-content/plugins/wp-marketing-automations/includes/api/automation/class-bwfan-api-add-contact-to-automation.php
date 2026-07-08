@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Add_Contact_To_Automation extends BWFAN_API_Base {
 	public static $ins;
 

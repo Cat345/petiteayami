@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @author woofunnels
@@ -84,7 +87,7 @@ if ( ! class_exists( 'WooFunnels_Transient' ) ) {
 				$file_api = new WooFunnels_File_Api( $plugin_short_name . '-transient' );
 				if ( $file_api->is_writable( $transient_key ) && $file_api->is_readable( $transient_key ) ) {
 					$data  = $file_api->get_contents( $transient_key );
-					$data  = maybe_unserialize( $data );
+					$data  = bwf_safe_unserialize( $data );
 					$value = $this->get_value( $transient_key, $data );
 					if ( false === $value ) {
 						$file_api->delete( $transient_key );
@@ -155,8 +158,9 @@ if ( ! class_exists( 'WooFunnels_Transient' ) ) {
 			global $wpdb;
 
 			/** removing db transient */
-			$query = "DELETE FROM `$wpdb->options` WHERE `option_name` LIKE '%_woofunnels_transient_{$plugin_short_name}%'";
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$like  = '%_woofunnels_transient_' . $wpdb->esc_like( $plugin_short_name ) . '%';
+			$query = $wpdb->prepare( "DELETE FROM `$wpdb->options` WHERE `option_name` LIKE %s", $like ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 			/** removing files if file api exist */
 			$file_writing = $this->is_file_saving_enabled();

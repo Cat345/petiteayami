@@ -1,9 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'WFACP_Afterpay_process_fields' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Afterpay_process_fields {
 		public function __construct() {
-			add_filter( 'woocommerce_checkout_posted_data', [ $this, 'wfacp_process_fields' ] );
+			add_filter( 'woocommerce_checkout_posted_data', array( $this, 'wfacp_process_fields' ) );
 		}
 
 		public function wfacp_process_fields( $data ) {
@@ -13,12 +17,12 @@ if ( ! class_exists( 'WFACP_Afterpay_process_fields' ) ) {
 			if ( ! isset( $_REQUEST['_wfacp_post_id'] ) ) {
 				return $data;
 			}
-			$arr = [
+			$arr = array(
 				'billing_first_name'  => 'shipping_first_name',
 				'billing_last_name'   => 'shipping_last_name',
 				'shipping_first_name' => 'billing_first_name',
 				'shipping_last_name'  => 'billing_last_name',
-			];
+			);
 
 			foreach ( $arr as $a_key => $second_key ) {
 				if ( isset( $_REQUEST[ $a_key ] ) && '' !== $_REQUEST[ $a_key ] ) {
@@ -35,10 +39,13 @@ if ( ! class_exists( 'WFACP_Afterpay_process_fields' ) ) {
 		}
 	}
 
-	add_action( 'wfacp_after_template_found', function () {
-		if ( ! class_exists( 'WC_Gateway_Afterpay' ) ) {
-			return;
+	add_action(
+		'wfacp_after_template_found',
+		function () {
+			if ( ! class_exists( 'WC_Gateway_Afterpay' ) ) {
+				return;
+			}
+			WFACP_Plugin_Compatibilities::register( new WFACP_Afterpay_process_fields(), 'afterpay' );
 		}
-		WFACP_Plugin_Compatibilities::register( new WFACP_Afterpay_process_fields(), 'afterpay' );
-	} );
+	);
 }

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFCO_Load_Connectors' ) ) {
 	#[AllowDynamicProperties]
 	class WFCO_Load_Connectors {

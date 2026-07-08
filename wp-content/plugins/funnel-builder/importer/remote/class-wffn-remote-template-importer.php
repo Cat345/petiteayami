@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
  * @author XlPlugins
  */
 if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Remote_Template_Importer {
 
 		private static $instance = null;
@@ -74,16 +75,24 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 			$requestBody = wp_json_encode( $requestBody );
 
 			$endpoint_url = $this->get_template_api_url();
-			$response     = wp_remote_post(
+
+			require_once WFFN_PLUGIN_DIR . '/includes/class-wffn-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			WFFN_Content_Validator::register_http_guard();
+			WFFN_Content_Validator::begin_import();
+			$response = wp_remote_post(
 				$endpoint_url,
 				array(
-					'body'    => $requestBody,
-					'timeout' => 30, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
-				'headers'     => array(
-					'content-type' => 'application/json',
-				),
+					'body'               => $requestBody,
+					'timeout'            => 30, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
+					'sslverify'          => true,
+					'reject_unsafe_urls' => true,
+					'redirection'        => 0,
+					'headers'            => array(
+						'content-type' => 'application/json',
+					),
 				)
 			);
+			WFFN_Content_Validator::end_import();
 
 			BWF_Logger::get_instance()->log( 'Import $requestBody: ' . print_r( $requestBody, true ), 'wffn_template_import' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			if ( $response instanceof WP_Error ) {
@@ -95,9 +104,19 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 
 				return false;
 			}
-			$response = json_decode( $response['body'], true );
+			$body = wp_remote_retrieve_body( $response );
+			if ( strlen( $body ) > 5 * 1024 * 1024 ) {
+				return array( 'error' => __( 'Template response is too large to process.', 'funnel-builder' ) );
+			}
+
+			$response = json_decode( $body, true );
 			if ( ! is_array( $response ) ) {
 				return array( 'error' => __( 'It seems we are unable to import this template from the cloud library. Please contact support.', 'funnel-builder' ) );
+			}
+
+			$alien_count = WFFN_Content_Validator::sanitize_response_urls( $response );
+			if ( $alien_count >= 5 ) {
+				return array( 'error' => __( 'We are unable to import this template. Please contact support.', 'funnel-builder' ) );
 			}
 
 			if ( isset( $response['error'] ) ) {
@@ -152,21 +171,33 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 
 						$funnels['steps'][] = $data;
 
-						$directory = $builder . '/' . $type . '/' . $template;
+						$safe_builder  = sanitize_file_name( $builder );
+						$safe_type     = sanitize_file_name( $type );
+						$safe_template = sanitize_file_name( $template );
+						$directory     = $safe_builder . '/' . $safe_type . '/' . $safe_template;
 
-						if ( ! is_dir( WFFN_TEMPLATE_UPLOAD_DIR ) ) {
-							mkdir( WFFN_TEMPLATE_UPLOAD_DIR );  //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
-						}
+						wp_mkdir_p( WFFN_TEMPLATE_UPLOAD_DIR . '/' . $safe_builder . '/' . $safe_type );
 
-						if ( ! is_dir( WFFN_TEMPLATE_UPLOAD_DIR . '/' . $builder ) ) {
-							mkdir( WFFN_TEMPLATE_UPLOAD_DIR . '/' . $builder ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
-						}
-
-						if ( ! is_dir( WFFN_TEMPLATE_UPLOAD_DIR . '/' . $builder . '/' . $type ) ) {
-							mkdir( WFFN_TEMPLATE_UPLOAD_DIR . '/' . $builder . '/' . $type ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
-						}
 						$template_path = WFFN_TEMPLATE_UPLOAD_DIR . $directory . '.json';
-						file_put_contents( $template_path, $response[ $type ] ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents,WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_file_put_contents
+
+						$real_upload_dir = realpath( WFFN_TEMPLATE_UPLOAD_DIR );
+						$real_parent     = realpath( dirname( $template_path ) );
+						if ( false === $real_upload_dir || false === $real_parent || 0 !== strpos( $real_parent, $real_upload_dir ) ) {
+							continue;
+						}
+
+						$template_content = $response[ $type ];
+						if ( WFFN_Content_Validator::contains_php_code( $template_content ) ) {
+							BWF_Logger::get_instance()->log( 'Blocked template with PHP code: ' . $safe_template, 'wffn_template_import' );
+							continue;
+						}
+
+						global $wp_filesystem;
+						if ( ! $wp_filesystem ) {
+							require_once ABSPATH . 'wp-admin/includes/file.php';
+							WP_Filesystem();
+						}
+						$wp_filesystem->put_contents( $template_path, $template_content, FS_CHMOD_FILE );
 
 					}
 				}

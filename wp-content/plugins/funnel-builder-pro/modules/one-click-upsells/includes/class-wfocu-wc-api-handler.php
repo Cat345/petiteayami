@@ -7,6 +7,7 @@ if ( ! class_exists( 'WFOCU_WC_API_Handler' ) ) {
 	 * Class to Handle API calls using wc-api
 	 * Class WFOCU_Templates_Retriever
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_WC_API_Handler {
 
 		/** @var null */
@@ -27,7 +28,7 @@ if ( ! class_exists( 'WFOCU_WC_API_Handler' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -45,7 +46,7 @@ if ( ! class_exists( 'WFOCU_WC_API_Handler' ) ) {
 			}
 
 			if ( true === is_callable( array( $this, $get_action ) ) ) {
-				WFOCU_Core()->log->log( "API endpoint: " . $get_action );
+				WFOCU_Core()->log->log( 'API endpoint: ' . $get_action );
 				call_user_func( array( $this, $get_action ) );
 			}
 			die();
@@ -127,18 +128,22 @@ if ( ! class_exists( 'WFOCU_WC_API_Handler' ) ) {
 		 * Providing next offer URL when with expired action to redirection in wc-api
 		 *
 		 * @param string $action
-		 * @param array $args
+		 * @param array  $args
 		 *
 		 * @return string
 		 */
 		public function get_api_url( $action = '', $args = array() ) {
 
-			return add_query_arg( array_merge( $args, array(
-				'action' => $action,
-			) ), WC()->api_request_url( $this->api_name ) );
-
+			return add_query_arg(
+				array_merge(
+					$args,
+					array(
+						'action' => $action,
+					)
+				),
+				WC()->api_request_url( $this->api_name )
+			);
 		}
-
 	}
 
 	if ( class_exists( 'WFOCU_Core' ) ) {

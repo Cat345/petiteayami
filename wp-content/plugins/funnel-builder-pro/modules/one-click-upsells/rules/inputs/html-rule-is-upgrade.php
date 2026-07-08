@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfocu_Input_Html_Rule_Is_Upgrade' ) ) {
+	#[\AllowDynamicProperties]
 	class wfocu_Input_Html_Rule_Is_Upgrade {
 		public function __construct() {
 			// vars
@@ -8,7 +9,7 @@ if ( ! class_exists( 'wfocu_Input_Html_Rule_Is_Upgrade' ) ) {
 			$this->defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 		}
 
@@ -16,6 +17,5 @@ if ( ! class_exists( 'wfocu_Input_Html_Rule_Is_Upgrade' ) ) {
 
 			esc_html_e( 'This Page will show on orders that have upgraded subscriptions.', 'woofunnels-upstroke-one-click-upsell' );
 		}
-
 	}
 }

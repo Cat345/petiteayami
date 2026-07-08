@@ -1,19 +1,22 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+
+/**
+ * #[AllowDynamicProperties]
+ * class WFACP_Subscription_gift
+ * WooCommerce Subscriptions Gifting
+ * By WooCommerce
+ */
 if ( ! class_exists( 'WFACP_Subscription_gift' ) ) {
-	/**
-	 * #[AllowDynamicProperties]
-	 *
-	 * class WFACP_Subscription_gift
-	 * WooCommerce Subscriptions Gifting
-	 * By WooCommerce
-	 */
 	#[AllowDynamicProperties]
 	class WFACP_Subscription_gift {
 		public function __construct() {
 			add_action( 'woocommerce_checkout_after_customer_details', array( $this, 'print_fields' ) );
 			add_action( 'wfacp_internal_css', array( $this, 'handle_js' ) );
 			add_action( 'woocommerce_checkout_update_order_review', array( $this, 'store_recipients_in_session' ), 50, 1 );
-			remove_action( 'woocommerce_before_checkout_shipping_form', array( 'WCSG_Checkout', 'maybe_display_recipient_shipping_notice' ), 10 );
 		}
 
 
@@ -23,8 +26,8 @@ if ( ! class_exists( 'WFACP_Subscription_gift' ) ) {
 
 		public function store_recipients_in_session( $checkout_data ) {
 			parse_str( $checkout_data, $checkout_data );
-			$gifting_data = $checkout_data['wfacp_subscription_gifting'];
-			$gifting_data = json_decode( $gifting_data, true );
+			$gifting_data = isset( $checkout_data['wfacp_subscription_gifting'] ) ? $checkout_data['wfacp_subscription_gifting'] : '';
+			$gifting_data = $gifting_data ? json_decode( $gifting_data, true ) : array();
 			if ( is_array( $gifting_data ) && count( $gifting_data ) > 0 ) {
 
 				foreach ( WC()->cart->cart_contents as $key => $item ) {

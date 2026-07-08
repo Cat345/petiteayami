@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Automation_To_Add_Contact_Manually extends BWFAN_API_Base {
 	public static $ins;
 	public $total_count = 0;
@@ -19,8 +20,8 @@ class BWFAN_API_Get_Automation_To_Add_Contact_Manually extends BWFAN_API_Base {
 	}
 
 	public function process_api_call() {
-		$limit   = ! empty( $this->get_sanitized_arg( 'limit', 'text_field' ) ) ? $this->get_sanitized_arg( 'limit', 'text_field' ) : 25;
-		$offset  = ! empty( $this->get_sanitized_arg( 'offset', 'text_field' ) ) ? $this->get_sanitized_arg( 'offset', 'text_field' ) : 0;
+		$limit   = ! empty( $this->get_sanitized_arg( 'limit', 'absint' ) ) ? $this->get_sanitized_arg( 'limit', 'absint' ) : 25;
+		$offset  = ! empty( $this->get_sanitized_arg( 'offset', 'absint' ) ) ? $this->get_sanitized_arg( 'offset', 'absint' ) : 0;
 		$search  = ! empty( $this->get_sanitized_arg( 'search', 'text_field' ) ) ? $this->get_sanitized_arg( 'search', 'text_field' ) : '';
 		$status  = ! empty( $this->get_sanitized_arg( 'status', 'text_field' ) ) ? $this->get_sanitized_arg( 'status', 'text_field' ) : 1;
 		$version = ! empty( $this->get_sanitized_arg( 'version', 'text_field' ) ) ? $this->get_sanitized_arg( 'version', 'text_field' ) : 2;

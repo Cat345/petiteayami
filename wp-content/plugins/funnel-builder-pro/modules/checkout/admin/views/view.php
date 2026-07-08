@@ -10,20 +10,20 @@ $wfacp_post    = get_post( $wfacp_id );
 
 $localize_data = $this->get_localize_data();
 
-$selected_design = $localize_data['design']['selected_type'];
+$selected_design = $localize_data['design']['selected_type']; // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 
 if ( is_null( $wfacp_post ) ) {
 	return;
 }
 $steps           = WFACP_Common::get_admin_menu();
-$products        = WFACP_Common::get_page_product( WFACP_Common::get_id() );
+$products        = WFACP_Common::get_page_product( WFACP_Common::get_id() ); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 $localize_data   = $this->get_localize_data();
 $template_is_set = get_post_meta( $this->wfacp_id, '_wfacp_selected_design' );
 
 $preview_url = get_the_permalink( $wfacp_id );
 
 
-$box_size_class = ( isset( $_GET['funnel_id'] ) ) ? 'wfacp_bread' : '';
+$box_size_class = ( isset( $_GET['funnel_id'] ) ) ? 'wfacp_bread' : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 $header_nav_data = array();
 foreach ( $steps as $step ) {
@@ -47,9 +47,9 @@ if ( class_exists( 'WFFN_Header' ) ) {
 	?>
     <div class="wffn-ellipsis-menu">
         <div class="wffn-menu__toggle">
-            <span class="bwfan-tag-rounded bwfan_ml_12 <?php echo 'publish' == $funnel_status ? 'clr-green' : 'clr-orange'; ?>">
-                <span class="bwfan-funnel-status"><?php echo 'publish' == $funnel_status ? 'Published' : 'Draft'; ?></span>
-                
+            <span class="bwfan-tag-rounded bwfan_ml_12 <?php echo 'publish' === $funnel_status ? 'clr-green' : 'clr-orange'; ?>">
+                <span class="bwfan-funnel-status"><?php echo 'publish' === $funnel_status ? 'Published' : 'Draft'; ?></span>
+
                 <?php echo file_get_contents( plugin_dir_path( WFACP_PLUGIN_FILE ) . 'admin/assets/img/icons/arrow-down.svg' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
             </span>
         </div>
@@ -58,8 +58,8 @@ if ( class_exists( 'WFFN_Header' ) ) {
             <a href="<?php echo $preview_url; ?>" target="_blank" class="wffn-step-preview wffn-step-preview-admin wffn-ellipsis-menu-item"><?php esc_html_e( 'Preview' ) ?></a>
             <div class="wf_funnel_card_switch">
                 <label class="funnel_state_toggle wfacp_toggle_btn wffn-ellipsis-menu-item">
-                    <span class="bwfan-status-toggle"><?php echo 'publish' == $funnel_status ? 'Draft' : 'Publish'; ?></span>
-                    <input name="offer_state" id="state_<?php echo $wfacp_id; ?>" data-id="<?php echo $wfacp_id; ?>" type="checkbox" class="wfacp-tgl wfacp-tgl-ios wfacp_checkout_page_status" <?php echo( $wfacp_post->post_status == 'publish' ? 'checked="checked"' : '' ); ?>>
+                    <span class="bwfan-status-toggle"><?php echo 'publish' === $funnel_status ? 'Draft' : 'Publish'; ?></span>
+                    <input name="offer_state" id="state_<?php echo $wfacp_id; ?>" data-id="<?php echo $wfacp_id; ?>" type="checkbox" class="wfacp-tgl wfacp-tgl-ios wfacp_checkout_page_status" <?php echo( $wfacp_post->post_status === 'publish' ? 'checked="checked"' : '' ); ?>>
                 </label>
             </div>
         </div>
@@ -103,7 +103,7 @@ if ( class_exists( 'WFFN_Header' ) ) {
                         <div class="wfacp_head_m wfacp_tl">
                             <div class="wfacp_head_mr" data-status="live">
                                 <div class="funnel_state_toggle wfacp_toggle_btn">
-                                    <input name="offer_state" id="state_<?php echo $wfacp_id; ?>" data-id="<?php echo $wfacp_id; ?>" type="checkbox" class="wfacp-tgl wfacp-tgl-ios wfacp_checkout_page_status" <?php echo( $wfacp_post->post_status == 'publish' ? 'checked="checked"' : '' ); ?>>
+                                    <input name="offer_state" id="state_<?php echo $wfacp_id; ?>" data-id="<?php echo $wfacp_id; ?>" type="checkbox" class="wfacp-tgl wfacp-tgl-ios wfacp_checkout_page_status" <?php echo( $wfacp_post->post_status === 'publish' ? 'checked="checked"' : '' ); ?>>
                                     <label for="state_<?php echo $wfacp_id; ?>" class="wfacp-tgl-btn wfacp-tgl-btn-small"></label>
                                 </div>
                             </div>
@@ -111,11 +111,11 @@ if ( class_exists( 'WFFN_Header' ) ) {
 								<?php BWF_Admin_Breadcrumbs::render(); ?>
                                 <a href="javascript:void(0)" data-izimodal-open="#modal-checkout-page" data-iziModal-title="New Checkout page" data-izimodal-transitionin="fadeInDown">
                                     <span class="dashicons dashicons-edit"></span>
-                                    <span><?php _e( 'Edit', 'wordpress' ) ?></span>
+                                    <span><?php esc_html_e( 'Edit', 'wordpress' ); ?></span>
                                 </a>
                                 <a href="<?php echo $preview_url; ?>" target="_blank" class="wfacp-preview wfacp-preview-admin">
                                     <i class="dashicons dashicons-visibility wfacp-dash-eye"></i>
-                                    <span class="preview_text"><?php _e( 'View', 'wordpress' ) ?></span>
+                                    <span class="preview_text"><?php esc_html_e( 'View', 'wordpress' ); ?></span>
                                 </a>
                             </div>
                         </div>
@@ -131,7 +131,7 @@ if ( class_exists( 'WFFN_Header' ) ) {
 								'section'  => $step['slug'],
 							], admin_url( 'admin.php' ) ) );
 							?>
-                            <li class="<?php echo( $step['slug'] == $wfacp_section ? 'active' : '' ); ?>">
+                            <li class="<?php echo( $step['slug'] === $wfacp_section ? 'active' : '' ); ?>">
                                 <a data-slug="<?php echo $step['slug']; ?>" href="<?php echo $href; ?>">
 									<?php echo $step['name']; ?>
                                 </a>
@@ -143,7 +143,7 @@ if ( class_exists( 'WFFN_Header' ) ) {
                 </div>
 			<?php endif; ?>
 
-            <div class="wfacp_wrap wfacp_box_size <?php echo $wfacp_section; ?>">
+            <div class="wfacp_wrap wfacp_box_size <?php echo esc_attr( $wfacp_section ); ?>">
                 <div class="wfacp_loader"><span class="spinner"></span></div>
 				<?php include_once $this->current_section; ?>
 				<?php include_once __DIR__ . '/global/model.php'; ?>

@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 final class BWFAN_WC_Product_Refunded extends BWFAN_Event {
 	private static $instance = null;
 

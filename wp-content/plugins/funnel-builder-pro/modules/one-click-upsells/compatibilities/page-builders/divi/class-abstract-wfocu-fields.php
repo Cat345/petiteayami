@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Divi_Field' ) ) {
+	#[\AllowDynamicProperties]
 	abstract class WFOCU_Divi_Field extends ET_Builder_Module {
 		protected $get_local_slug         = '';
 		protected $ajax                   = false;

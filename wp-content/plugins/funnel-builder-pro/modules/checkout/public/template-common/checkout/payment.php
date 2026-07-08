@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -14,4 +18,3 @@ if ( version_compare( $wc_version, '3.4.0', '>=' ) ) {
 }
 
 return;
-

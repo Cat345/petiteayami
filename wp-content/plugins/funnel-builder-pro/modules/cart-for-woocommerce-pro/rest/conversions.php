@@ -2,6 +2,10 @@
 
 namespace FKCart\Pro\Rest;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 use WFFN_Common;
 
@@ -20,7 +24,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) && ! class_exists( 'FKCart\Pro\Rest\
 		private function column_exists( $column_name = 'onumber' ) {
 			global $wpdb;
 			$table_name = $wpdb->prefix . 'fk_cart';
-			$column = $wpdb->get_results( $wpdb->prepare( "SHOW COLUMNS FROM `{$table_name}` LIKE %s", $column_name ) );
+			$column     = $wpdb->get_results( $wpdb->prepare( "SHOW COLUMNS FROM `{$table_name}` LIKE %s", $column_name ) );
 			return ! empty( $column );
 		}
 
@@ -248,7 +252,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) && ! class_exists( 'FKCart\Pro\Rest\
 				if ( ! $product instanceof \WC_Product ) {
 					continue;
 				}
-				
+
 				// If this is a variation, use the parent product ID as key but keep variation name
 				if ( $product instanceof \WC_Product_Variation ) {
 					$parent_id = $product->get_parent_id();
@@ -446,13 +450,13 @@ if ( class_exists( 'WFFN_REST_Controller' ) && ! class_exists( 'FKCart\Pro\Rest\
 				$onumber_group = $this->column_exists( 'onumber' ) ? ", c.onumber" : "";
 				$count_query = $wpdb->prepare( "
 	            SELECT c.id
-	            FROM 
+	            FROM
 	                {$wpdb->prefix}fk_cart c
-	            LEFT JOIN 
+	            LEFT JOIN
 	                {$wpdb->prefix}fk_cart_products cp ON c.oid = cp.oid
 	                " . $post_join . "
 	                $where_clause
-	            GROUP BY 
+	            GROUP BY
 	                c.oid, c.free_shipping, c.discount, c.date_created" . $onumber_group . "
 	            ", $where_args );
 
@@ -482,15 +486,15 @@ if ( class_exists( 'WFFN_REST_Controller' ) && ! class_exists( 'FKCart\Pro\Rest\
 	            COUNT(DISTINCT CASE WHEN cp.type = 2 THEN cp.id END) AS free_gift_orders,
 	            c.discount AS discount,
 	            c.date_created AS date
-        	FROM 
+        	FROM
             	{$wpdb->prefix}fk_cart c
-        	LEFT JOIN 
+        	LEFT JOIN
             	{$wpdb->prefix}fk_cart_products cp ON c.oid = cp.oid
         		" . $post_join . "
                 $where_clause
-            GROUP BY 
-                c.oid, c.free_shipping, c.discount, c.date_created" . $onumber_group . " 
-            ORDER BY 
+            GROUP BY
+                c.oid, c.free_shipping, c.discount, c.date_created" . $onumber_group . "
+            ORDER BY
                 c.date_created DESC, c.oid DESC
             LIMIT %d, %d " . $last_total_query, array_merge( $where_args, [ $offset, $limit ] ) ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
@@ -539,12 +543,12 @@ if ( class_exists( 'WFFN_REST_Controller' ) && ! class_exists( 'FKCart\Pro\Rest\
 			$like_term      = '%' . $wpdb->esc_like( $term ) . '%';
 			$post_statuses  = current_user_can( 'edit_private_products' ) ? array( 'private', 'publish' ) : array( 'publish' );
 
-			$p_ids = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT posts.ID FROM {$wpdb->posts} AS posts 
-        LEFT JOIN {$wpdb->prefix}wc_product_meta_lookup AS product_meta_lookup ON posts.ID = product_meta_lookup.product_id 
-        WHERE (posts.post_title LIKE %s OR product_meta_lookup.sku LIKE %s OR posts.ID LIKE %s) 
-        AND posts.post_status IN ('" . implode( "','", $post_statuses ) . "') 
-        AND posts.post_type = 'product' 
-        ORDER BY posts.post_parent ASC, posts.post_title ASC 
+			$p_ids = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT posts.ID FROM {$wpdb->posts} AS posts
+        LEFT JOIN {$wpdb->prefix}wc_product_meta_lookup AS product_meta_lookup ON posts.ID = product_meta_lookup.product_id
+        WHERE (posts.post_title LIKE %s OR product_meta_lookup.sku LIKE %s OR posts.ID LIKE %s)
+        AND posts.post_status IN ('" . implode( "','", $post_statuses ) . "')
+        AND posts.post_type = 'product'
+        ORDER BY posts.post_parent ASC, posts.post_title ASC
         LIMIT 10", $like_term, $like_term, $like_term ) );
 
 			$allowed_types = apply_filters( 'fkcart_allow_product_types', array(
@@ -600,10 +604,10 @@ if ( class_exists( 'WFFN_REST_Controller' ) && ! class_exists( 'FKCart\Pro\Rest\
 				$prepare_args[] = '%' . $wpdb->esc_like( $search_term ) . '%';
 			}
 			$where_query = implode( ' AND ', $where );
-			$query       = $wpdb->prepare( "SELECT discount 
-        FROM {$wpdb->prefix}fk_cart 
-        WHERE $where_query 
-        ORDER BY id DESC 
+			$query       = $wpdb->prepare( "SELECT discount
+        FROM {$wpdb->prefix}fk_cart
+        WHERE $where_query
+        ORDER BY id DESC
         LIMIT %d", array_merge( $prepare_args, [ $limit * 2 ] ) // Fetch more to ensure we have enough after processing
 			);
 
@@ -702,36 +706,43 @@ if ( class_exists( 'WFFN_REST_Controller' ) && ! class_exists( 'FKCart\Pro\Rest\
 				$where_args[] = $date_before;
 			}
 
+			// Subquery date clause — separate placeholder args so values are never interpolated.
+			$subquery_date_clause = '';
+			$subquery_date_args   = [];
+			if ( $date_after && $date_before ) {
+				$subquery_date_clause = 'AND c2.date_created BETWEEN %s AND %s';
+				$subquery_date_args   = [ $date_after, $date_before ];
+			}
 
 			$query = $wpdb->prepare( "
-        SELECT 
+        SELECT
             cp.product_id as pid,
-            p.post_title as product_name,           
+            p.post_title as product_name,
             SUM(cp.price) as revenue,
             COUNT(DISTINCT cp.oid) as conversions,
-            
+
             -- Only calculate times_offered (remove unused popularity_percentage)
-            (SELECT COUNT(DISTINCT c2.oid) 
-             FROM {$wpdb->prefix}fk_cart c2 
-             WHERE c2.upsells_viewed IS NOT NULL 
-             AND c2.upsells_viewed != '' 
+            (SELECT COUNT(DISTINCT c2.oid)
+             FROM {$wpdb->prefix}fk_cart c2
+             WHERE c2.upsells_viewed IS NOT NULL
+             AND c2.upsells_viewed != ''
              AND c2.upsells_viewed NOT LIKE '[]'
              AND c2.upsells_viewed LIKE CONCAT('%\"', cp.product_id, '\"%')
-             " . ($date_after && $date_before ? "AND c2.date_created BETWEEN '{$date_after}' AND '{$date_before}'" : "") . "
+             {$subquery_date_clause}
             ) as times_offered
-        FROM 
+        FROM
             {$wpdb->prefix}fk_cart_products cp
-        JOIN 
+        JOIN
             {$wpdb->prefix}fk_cart c ON cp.oid = c.oid
         JOIN
             {$wpdb->posts} p ON cp.product_id = p.ID
         {$where_clause}
-        GROUP BY 
+        GROUP BY
             cp.product_id, p.post_title
-        ORDER BY 
+        ORDER BY
             revenue DESC
         LIMIT %d OFFSET %d
-    ", array_merge( $where_args, [$filters['limit'], $filters['offset']] ));
+    ", array_merge( $subquery_date_args, $where_args, [ $filters['limit'], $filters['offset'] ] ) );
 			$results           = $wpdb->get_results( $query );
 			$formatted_results = array_filter( array_map( function ( $row ) use ( $filters ) {
 				$product = wc_get_product( $row->pid );
@@ -759,7 +770,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) && ! class_exists( 'FKCart\Pro\Rest\
 				return $arg !== $filters['limit'] && $arg !== $filters['offset'];
 			});
 			$count_query = $wpdb->prepare( "
-		        SELECT COUNT(DISTINCT cp.product_id) as total 
+		        SELECT COUNT(DISTINCT cp.product_id) as total
 		        FROM {$wpdb->prefix}fk_cart_products cp
 		        JOIN {$wpdb->prefix}fk_cart c ON cp.oid = c.oid
 		        JOIN {$wpdb->posts} p ON cp.product_id = p.ID
@@ -796,7 +807,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) && ! class_exists( 'FKCart\Pro\Rest\
 							$cart_upsell_products = array_map( 'intval', array_column( $filter['data'], 'id' ) );
 							$placeholders         = implode( ',', array_fill( 0, count( $cart_upsell_products ), '%d' ) );
 							$where_clause         .= " AND EXISTS (
-                        SELECT 1 FROM {$wpdb->prefix}fk_cart_products cp_upsell 
+                        SELECT 1 FROM {$wpdb->prefix}fk_cart_products cp_upsell
                         WHERE cp_upsell.oid = c.oid AND cp_upsell.type = 1 AND cp_upsell.product_id IN ($placeholders)
                     )";
 							$where_args           = array_merge( $where_args, $cart_upsell_products );
@@ -819,7 +830,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) && ! class_exists( 'FKCart\Pro\Rest\
 				$group          = $interval_group;
 				$interval_type  = $this->get_two_date_interval( $start_date, $end_date );
 			}
-			$query = $wpdb->prepare( "SELECT 
+			$query = $wpdb->prepare( "SELECT
             COUNT(DISTINCT c.oid) as total_orders,
             SUM(cp.price) as total_revenue,
             COUNT( DISTINCT CASE WHEN c.upsells_viewed IS NOT NULL AND c.upsells_viewed != '' AND c.upsells_viewed NOT LIKE '[]' THEN c.oid END) AS upsell_views,
@@ -831,11 +842,11 @@ if ( class_exists( 'WFFN_REST_Controller' ) && ! class_exists( 'FKCart\Pro\Rest\
             COUNT(CASE WHEN cp.type = 2 THEN cp.id END) as free_gift_orders,
             COUNT( DISTINCT CASE WHEN c.discount IS NOT NULL AND c.discount != '' AND c.discount NOT LIKE '[]' THEN c.oid END) AS discount_count,
             COUNT(DISTINCT CASE WHEN cp.type = 3 THEN c.oid END) as special_addon_orders,
-            SUM(CASE WHEN cp.type = 3 THEN cp.price ELSE 0 END) as special_addon_revenue 
+            SUM(CASE WHEN cp.type = 3 THEN cp.price ELSE 0 END) as special_addon_revenue
 			{$interval_query}
-        	FROM 
+        	FROM
             	{$wpdb->prefix}fk_cart c
-        	LEFT JOIN 
+        	LEFT JOIN
             	{$wpdb->prefix}fk_cart_products cp ON c.oid = cp.oid
         		$where_clause
         	GROUP BY {$group}

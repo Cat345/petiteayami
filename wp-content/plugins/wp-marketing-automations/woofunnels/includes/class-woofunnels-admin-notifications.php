@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WooFunnels_Admin_Notifications' ) ) {
 	/**
 	 * Class that is responsible for pushing , removing and sometimes handling the way notifications comes from the core.

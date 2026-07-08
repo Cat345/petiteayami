@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+#[\AllowDynamicProperties]
 class BWFAN_Contact_Subscribe_Link extends BWFAN_Merge_Tag {
 
 	private static $instance = null;
@@ -78,7 +83,7 @@ class BWFAN_Contact_Subscribe_Link extends BWFAN_Merge_Tag {
 			}
 		}
 
-		if ( ! empty( $redirect_url ) && false !== wp_http_validate_url( $redirect_url ) ) {
+		if ( ! empty( $redirect_url ) && false !== BWFAN_Common::bwfan_is_valid_link( $redirect_url ) ) {
 			/** Insert link into database for validation on click */
 			if ( BWFAN_Core()->conversation && method_exists( BWFAN_Core()->conversation, 'maybe_insert_link' ) ) {
 				BWFAN_Core()->conversation->maybe_insert_link( $redirect_url, [ 'type' => 1, 'oid' => $automation_id ] );

@@ -5,8 +5,6 @@ $display_buy_block_variation = $data['show_variation'];
 
 $template_ins = $this->get_template_ins();
 
-$style = WFOCU_Common::get_option( 'wfocu_buy_block_buy_block_style' );
-
 $accept_btn_text     = WFOCU_Common::get_option( 'wfocu_buy_block_buy_block_accept_btn_text1' );
 $accept_btn_sub_text = WFOCU_Common::get_option( 'wfocu_buy_block_buy_block_accept_btn_text2' );
 
@@ -126,29 +124,29 @@ do_action('wfocu_add_custom_html_above_accept_button', $product->id, $product_ke
         <div class="wfocu-product-bottom-sec wfocu-text-center">
 
             <div class="wfocu-btn-cover">
-                <a href="javascript:void(0);" data-key="<?php echo $product_key; ?>" class="<?php echo implode( ' ', $upsell_btn_classes ); ?>" <?php $this->add_attributes_to_buy_button(); ?>>
+                <a href="javascript:void(0);" data-key="<?php echo esc_attr( $product_key ); ?>" class="<?php echo esc_attr( implode( ' ', $upsell_btn_classes ) ); ?>" <?php $this->add_attributes_to_buy_button(); ?>>
 			<span class="wfocu-btn-text-cover wfocu-clearfix">
 			<?php if ( true === $show_accept_btn_icon ) { ?>
                 <span class="wfocu-btn-icon wfocu-icon-left ">
-				<i class="wfocu-icon dashicons <?php echo $accept_btn_icon; ?>"></i>
+				<i class="wfocu-icon dashicons <?php echo esc_attr( $accept_btn_icon ); ?>"></i>
 			</span>
 			<?php } ?>
-				<span class="wfocu-text"><?php echo apply_filters( 'wfocu_buy_block_btn_accept_text', $accept_btn_text, $data ); ?></span>
+				<span class="wfocu-text"><?php echo wp_kses_post( apply_filters( 'wfocu_buy_block_btn_accept_text', $accept_btn_text, $data ) ); ?></span>
 			</span>
-                    <span class="wfocu-btn-sub"><?php echo apply_filters( 'wfocu_buy_block_btn_sub_accept_text', $accept_btn_sub_text, $data ); ?></span>
+                    <span class="wfocu-btn-sub"><?php echo wp_kses_post( apply_filters( 'wfocu_buy_block_btn_sub_accept_text', $accept_btn_sub_text, $data ) ); ?></span>
                 </a>
             </div>
 
 			<?php
-			echo $click_trigger_text ? '<div class="wfocu-click-trigger-text wfocu-text-center">' . $click_trigger_text . '</div>' : '';
+			echo $click_trigger_text ? '<div class="wfocu-click-trigger-text wfocu-text-center">' . wp_kses_post( $click_trigger_text ) . '</div>' : '';
 
 			if ( true === $display_payment_icons ) {
 				WFOCU_Core()->template_loader->get_template_part( 'payment-cards', array() );
 			}
 			?>
             <div class="wfocu-skip-offer-wrap wfocu-text-center">
-                <a href="javascript:void(0);" data-key="<?php echo $product_key; ?>" class="wfocu_skip_offer wfocu-skip-offer-link <?php echo $skip_btn_class; ?>">
-					<?php echo $skip_offer_text ? $skip_offer_text : __( 'No thanks!', 'woofunnels-upstroke-one-click-upsell' ); ?>
+                <a href="javascript:void(0);" data-key="<?php echo esc_attr( $product_key ); ?>" class="wfocu_skip_offer wfocu-skip-offer-link <?php echo esc_attr( $skip_btn_class ); ?>">
+					<?php echo $skip_offer_text ? esc_html( $skip_offer_text ) : esc_html__( 'No thanks!', 'woofunnels-upstroke-one-click-upsell' ); ?>
                 </a>
             </div>
         </div>

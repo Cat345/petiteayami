@@ -18,11 +18,12 @@ use WPDesk_Flexible_Shipping;
  */
 class CommonMethodSettings implements MethodSettings {
 
-	const METHOD_TITLE       = 'method_title';
-	const METHOD_DESCRIPTION = 'method_description';
-	const METHOD_LOGO_ID     = 'method_logo_id';
-	const METHOD_RULES       = 'method_rules';
-	const CART_CALCULATION   = 'cart_calculation';
+	const METHOD_TITLE         = 'method_title';
+	const METHOD_DESCRIPTION   = 'method_description';
+	const METHOD_LOGO_ID       = 'method_logo_id';
+	const METHOD_RULES         = 'method_rules';
+	const METHOD_FREE_SHIPPING = 'method_free_shipping';
+	const CART_CALCULATION     = 'cart_calculation';
 
 	const SETTING_METHOD_CALCULATION_METHOD = 'method_calculation_method';
 	const METHOD_DEFAULT                    = 'method_default';
@@ -85,7 +86,7 @@ class CommonMethodSettings implements MethodSettings {
 			self::METHOD_TITLE  => $this->get_value_from_settings( $method_settings, self::METHOD_TITLE, 'Flexible Shipping' ),
 		];
 
-		$settings['method_free_shipping'] = [
+		$settings[ self::METHOD_FREE_SHIPPING ] = [
 			'title'       => __( 'Free shipping threshold', 'flexible-shipping' ),
 			'type'        => 'price',
 			'default'     => $method_free_shipping,
@@ -185,6 +186,7 @@ class CommonMethodSettings implements MethodSettings {
 			'default' => '',
 		];
 
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 		return apply_filters( 'flexible-shipping/settings/common-method-settings', $settings );
 	}
 

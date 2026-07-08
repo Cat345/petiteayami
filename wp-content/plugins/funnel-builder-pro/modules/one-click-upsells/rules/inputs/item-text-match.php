@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfocu_Input_Item_Text_Match' ) ) {
+	#[\AllowDynamicProperties]
 	class wfocu_Input_Item_Text_Match {
 
 		public function __construct() {
@@ -12,7 +13,7 @@ if ( ! class_exists( 'wfocu_Input_Item_Text_Match' ) ) {
 				'allow_null'    => 0,
 				'default_value' => '',
 				'class'         => 'item_text_match',
-				'placeholder'   => __( 'Enter the search key...', 'woofunnels-upstroke-one-click-upsell' )
+				'placeholder'   => __( 'Enter the search key...', 'woofunnels-upstroke-one-click-upsell' ),
 			);
 		}
 

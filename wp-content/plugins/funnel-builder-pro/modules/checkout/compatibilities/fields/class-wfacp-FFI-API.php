@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * FFl API By Optimum7
@@ -64,18 +68,19 @@ if ( ! class_exists( 'WFACP_Compatibility_FFI_API' ) ) {
 			}
 
 
-			$aKey = esc_attr( get_option( 'ffl_api_key_option' ) );
-			$gKey = esc_attr( get_option( 'ffl_api_gmaps_option' ) );
-			$wMes = get_option( 'ffl_api_warning_message' ) != '' ? get_option( 'ffl_api_warning_message' ) : 'You have chosen your address as a shipping address for a firearm product. Unfortunately, we are not able to ship the firearms directly to your address. Please select the closest FFL from the map using your zip code.';
-			$hok  = get_option( 'ffl_init_map_location' );
+			$aKey = wp_json_encode( get_option( 'ffl_api_key_option', '' ) );
+			$gKey = wp_json_encode( get_option( 'ffl_api_gmaps_option', '' ) );
+			$default_msg = 'You have chosen your address as a shipping address for a firearm product. Unfortunately, we are not able to ship the firearms directly to your address. Please select the closest FFL from the map using your zip code.';
+			$wMes = wp_json_encode( get_option( 'ffl_api_warning_message' ) !== '' ? get_option( 'ffl_api_warning_message' ) : $default_msg );
+			$hok  = wp_json_encode( get_option( 'ffl_init_map_location', '' ) );
 
 			echo '
 <script type="text/javascript">
-    
-  var aKey = "' . $aKey . '"
-    var gKey = "' . $gKey . '"
-    var wMes = "' . $wMes . '"
-    var hok = "' . $hok . '"
+
+  var aKey = ' . $aKey . '
+    var gKey = ' . $gKey . '
+    var wMes = ' . $wMes . '
+    var hok = ' . $hok . ''
 
 </script>';
 

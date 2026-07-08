@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Download_Export_File extends BWFAN_API_Base {
 	public static $ins;
 
@@ -19,7 +20,13 @@ class BWFAN_API_Download_Export_File extends BWFAN_API_Base {
 
 	public function process_api_call() {
 		$type    = $this->get_sanitized_arg( 'type', 'text_field' );
-		$user_id = $this->get_sanitized_arg( 'user_id', 'text_field' );
+		$user_id = absint( $this->get_sanitized_arg( 'user_id', 'text_field' ) );
+
+		if ( 0 === $user_id || $user_id !== get_current_user_id() ) {
+			$this->response_code = 403;
+
+			return $this->error_response( __( 'You are not authorized to perform this action', 'wp-marketing-automations' ) );
+		}
 
 		$user_data = get_user_meta( $user_id, 'bwfan_single_export_status', true );
 		if ( ! isset( $user_data[ $type ] ) || ! isset( $user_data[ $type ]['url'] ) ) {
@@ -66,20 +73,6 @@ class BWFAN_API_Download_Export_File extends BWFAN_API_Base {
 			exit;
 		}
 		wp_die();
-	}
-
-	/**
-	 * Rest api permission callback
-	 *
-	 * @return bool
-	 */
-	public function rest_permission_callback( WP_REST_Request $request ) {
-		$query_params = $request->get_query_params();
-		if ( isset( $query_params['bwf-nonce'] ) && $query_params['bwf-nonce'] === get_option( 'bwfan_unique_secret', '' ) ) {
-			return true;
-		}
-
-		return false;
 	}
 }
 

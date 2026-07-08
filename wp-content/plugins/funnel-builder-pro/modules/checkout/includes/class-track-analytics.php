@@ -4,14 +4,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 if ( ! class_exists( 'WFACP_Analytics_loader' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFACP_Analytics_loader {
 		private static $self = null;
-		private $pixel = null;
-		private $ga = null;
-		private $gads = null;
-		private $pint = null;
-		private $tiktok = null;
-		private $snapchat = null;
+		private $pixel       = null;
+		private $ga          = null;
+		private $gads        = null;
+		private $pint        = null;
+		private $tiktok      = null;
+		private $snapchat    = null;
 
 		private function __construct() {
 			$this->include_class();
@@ -20,15 +21,14 @@ if ( ! class_exists( 'WFACP_Analytics_loader' ) ) {
 			if ( wp_doing_ajax() && isset( $_REQUEST['wc-ajax'] ) ) {
 				$this->prepare_analytics_data();
 			} else {
-				add_action( 'wfacp_after_checkout_page_found', [ $this, 'prepare_analytics_data' ] );
-				add_action( 'wfacp_after_native_checkout_page_found', [ $this, 'prepare_analytics_data' ] );
+				add_action( 'wfacp_after_checkout_page_found', array( $this, 'prepare_analytics_data' ) );
+				add_action( 'wfacp_after_native_checkout_page_found', array( $this, 'prepare_analytics_data' ) );
 			}
-
 		}
 
 		public static function get_instance() {
 			if ( is_null( self::$self ) ) {
-				self::$self = new self;
+				self::$self = new self();
 			}
 
 			return self::$self;
@@ -46,7 +46,7 @@ if ( ! class_exists( 'WFACP_Analytics_loader' ) ) {
 
 		private function init_classes() {
 			$this->pixel    = WFACP_Analytics_Pixel::get_instance(); // Facebook Pixel
-			$this->ga       = WFACP_Analytics_GA::get_instance(); //Google Analytics
+			$this->ga       = WFACP_Analytics_GA::get_instance(); // Google Analytics
 			$this->gads     = WFACP_Analytics_GADS::get_instance(); // Google Ads
 			$this->pint     = WFACP_Analytics_Pint::get_instance();// Pinterest
 			$this->tiktok   = WFACP_Analytics_TikTok::get_instance();// Tiktok
@@ -61,7 +61,6 @@ if ( ! class_exists( 'WFACP_Analytics_loader' ) ) {
 			$this->tiktok->prepare_data();
 			$this->snapchat->prepare_data();
 		}
-
 	}
 
 	WFACP_Analytics_loader::get_instance();

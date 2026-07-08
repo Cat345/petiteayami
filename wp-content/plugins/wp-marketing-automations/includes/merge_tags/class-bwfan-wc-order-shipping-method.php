@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+#[\AllowDynamicProperties]
 class BWFAN_WC_Order_Shipping_Method extends BWFAN_Merge_Tag {
 
 	private static $instance = null;
@@ -81,6 +86,9 @@ class BWFAN_WC_Order_Shipping_Method extends BWFAN_Merge_Tag {
 				// get id of first method
 				$methods = $order->get_shipping_methods();
 				$item    = current( $methods );
+				if ( ! $item instanceof WC_Order_Item_Shipping ) {
+					return $this->parse_shortcode_output( '', $attr );
+				}
 				$id      = $item->get_method_id();
 				// extract method base id only, discard instance id
 				$split = strpos( $id, ':' );

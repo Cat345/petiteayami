@@ -313,9 +313,12 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 
 		public function typography_custom_css() {
 			$style_custom_css = WFOCU_Common::get_option( 'wfocu_custom_css_css_code' );
-			if ( ! empty( $style_custom_css ) ) {
-				$custom_css = '<style>' . $style_custom_css . '</style>';
-				echo $custom_css;//phpcs:ignore
+			if ( empty( $style_custom_css ) || ! class_exists( 'WFFN_Common' ) ) {
+				return;
+			}
+			$clean_css = WFFN_Common::sanitize_global_css( $style_custom_css );
+			if ( ! empty( $clean_css ) ) {
+				echo '<style>' . $clean_css . '</style>'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		}
 
@@ -729,11 +732,11 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			$attributes     = apply_filters( 'wfocu_front_buy_button_attributes', array(), $buy_button_count );
 			$attributes_str = '';
 			foreach ( $attributes as $attr => $val ) {
-				$attributes_str .= sprintf( ' %1$s=%3$s%2$s%3$s', $attr, $val, '"' );
+				$attributes_str .= sprintf( ' %s="%s"', esc_attr( $attr ), esc_attr( $val ) );
 			}
 
 			if ( true === $print ) {
-				echo $attributes_str; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo $attributes_str; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- values escaped via esc_attr() above
 			}
 
 			return $attributes_str;
@@ -743,10 +746,10 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			$attributes     = apply_filters( 'wfocu_front_confirmation_button_attributes', array() );
 			$attributes_str = '';
 			foreach ( $attributes as $attr => $val ) {
-				$attributes_str .= sprintf( ' %1$s=%3$s%2$s%3$s', $attr, $val, '"' );
+				$attributes_str .= sprintf( ' %s="%s"', esc_attr( $attr ), esc_attr( $val ) );
 			}
 
-			echo $attributes_str; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $attributes_str; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- values escaped via esc_attr() above
 		}
 
 		public function maybe_autoswitch_templates( $offer_data, $offer_id, $funnel_id ) {

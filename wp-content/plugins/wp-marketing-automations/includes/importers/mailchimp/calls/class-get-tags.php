@@ -5,6 +5,7 @@ namespace BWFAN\Importers\Mailchimp\Calls;
 /**
  * Get segments (tags) for a list
  */
+#[\AllowDynamicProperties]
 class Get_Tags extends Call {
 	protected $required_fields = array( 'api_key', 'list_id' );
 

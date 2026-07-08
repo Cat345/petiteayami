@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Route App  by Route v(2.2.3)
@@ -8,9 +12,9 @@ if ( ! class_exists( 'WFACP_Route_App' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Route_App {
 		public function __construct() {
-			add_filter( 'wfacp_advanced_fields', [ $this, 'register_field' ], 20 );
-			add_filter( 'wfacp_after_checkout_page_found', [ $this, 'actions' ], 20 );
-			add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'register_field' ), 20 );
+			add_filter( 'wfacp_after_checkout_page_found', array( $this, 'actions' ), 20 );
+			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
 
 			/* prevent third party fields and wrapper*/
 
@@ -21,16 +25,16 @@ if ( ! class_exists( 'WFACP_Route_App' ) ) {
 			if ( ! $this->is_active() ) {
 				return $field;
 			}
-			$field['route_widget_field'] = [
+			$field['route_widget_field'] = array(
 				'type'          => 'hidden',
 				'default'       => true,
 				'label'         => 'Route Widget',
-				'validate'      => [],
+				'validate'      => array(),
 				'id'            => 'route_widget_field',
 				'required'      => false,
-				'wrapper_class' => [],
-				'class'         => [ 'route-widget-field' ],
-			];
+				'wrapper_class' => array(),
+				'class'         => array( 'route-widget-field' ),
+			);
 
 			return $field;
 		}
@@ -39,7 +43,7 @@ if ( ! class_exists( 'WFACP_Route_App' ) ) {
 			if ( ! $this->is_active() ) {
 				return;
 			}
-			add_filter( 'woocommerce_form_field_args', [ $this, 'register_form_field_args' ], 25, 2 );
+			add_filter( 'woocommerce_form_field_args', array( $this, 'register_form_field_args' ), 25, 2 );
 		}
 
 		public function register_form_field_args( $args, $key ) {
@@ -58,16 +62,15 @@ if ( ! class_exists( 'WFACP_Route_App' ) ) {
 			if ( ! $this->is_active() ) {
 				return;
 			}
-			$cssHtml = "<style>";
-			$cssHtml .= "#wfacp_checkout_form #RouteWidget .pw-route-protection .pw-container {max-width: 100%;}";
-			$cssHtml .= "</style>";
+			$cssHtml  = '<style>';
+			$cssHtml .= '#wfacp_checkout_form #RouteWidget .pw-route-protection .pw-container {max-width: 100%;}';
+			$cssHtml .= '</style>';
 			echo $cssHtml;
 		}
 
 		public function is_active() {
 			return class_exists( 'Routeapp_Plugin_Integrations' );
 		}
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Route_App(), 'wfacp-route-app' );

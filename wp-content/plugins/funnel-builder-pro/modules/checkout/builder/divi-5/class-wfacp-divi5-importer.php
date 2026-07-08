@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Divi 5 Importer
@@ -32,41 +33,62 @@ if ( ! defined( 'ET_BUILDER_PLUGIN_DIR' ) ) {
 	if ( ! empty( $et_builder_dir ) && file_exists( $et_builder_dir . '/core/components/Portability.php' ) ) {
 		include_once $et_builder_dir . '/core/components/Portability.php';
 	}
-} else {
-	if ( ! class_exists( 'ET_Core_Portability' ) ) {
+} elseif ( ! class_exists( 'ET_Core_Portability' ) ) {
 		include_once ET_BUILDER_PLUGIN_DIR . '/core/components/Portability.php';
-	}
 }
 
 if ( ! class_exists( 'WFACP_Divi5_Importer' ) && class_exists( 'ET_Core_Portability' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_Divi5_Importer extends ET_Core_Portability {
 
 		public function __construct() {
 			// Don't need to call Parent Constructor because sometimes other divi addon created fatal error Like Monarch Plugin.
-			add_action( 'wfacp_template_removed', [ $this, 'delete_divi_data' ] );
+			add_action( 'wfacp_template_removed', array( $this, 'delete_divi_data' ) );
 		}
 
 		public function single_template_import( $post_id, $content, $checkout_settings = array() ) {
-			wp_update_post( [ 'ID' => $post_id, 'post_content' => '' ] );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '',
+				)
+			);
 
 			$this->prevent_failure();
 			self::$_doing_import = true;
-			$timestamp           = $this->get_timestamp();
 
 			if ( ! is_array( $content ) && is_string( $content ) ) {
 				try {
 					$content = json_decode( $content, true );
-				} catch ( Exception $error ) {
+				} catch ( \Throwable $error ) {
 					return false;
 				}
 			}
 
-			$data = $content['data'];
-			// Pass the post content and let js save the post.
+			if ( ! is_array( $content ) || empty( $content['data'] ) ) {
+				return false;
+			}
 
-			$data    = reset( $data );
+			require_once WFACP_PLUGIN_DIR . '/includes/class-wfacp-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			$alien_count = WFACP_Content_Validator::sanitize_response_urls( $content );
+			if ( $alien_count >= 5 ) {
+				return false;
+			}
+
+			$data = $content['data'];
+			$data = reset( $data );
+
+			if ( WFACP_Content_Validator::contains_php_code( $data ) || WFACP_Content_Validator::contains_dangerous_tags( $data ) ) {
+				return false;
+			}
+
 			$success = true;
-			$result  = wp_update_post( [ 'ID' => $post_id, 'post_content' => $data ] );
+			$result  = wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => $data,
+				)
+			);
 
 			if ( $result instanceof WP_Error ) {
 				$success = false;
@@ -78,9 +100,9 @@ if ( ! class_exists( 'WFACP_Divi5_Importer' ) && class_exists( 'ET_Core_Portabil
 		/**
 		 * Serialize images in chunks.
 		 *
-		 * @param array $images
-		 * @param string $method Method applied on images.
-		 * @param string $id Unique ID to use for temporary files.
+		 * @param array   $images
+		 * @param string  $method Method applied on images.
+		 * @param string  $id Unique ID to use for temporary files.
 		 * @param integer $chunk
 		 *
 		 * @return array
@@ -130,7 +152,12 @@ if ( ! class_exists( 'WFACP_Divi5_Importer' ) && class_exists( 'ET_Core_Portabil
 		}
 
 		public function delete_divi_data( $post_id ) {
-			wp_update_post( [ 'ID' => $post_id, 'post_content' => '' ] );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '',
+				)
+			);
 			delete_post_meta( $post_id, 'et_enqueued_post_fonts' );
 		}
 	}

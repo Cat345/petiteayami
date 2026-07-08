@@ -55,8 +55,7 @@ trait RestApiTrait {
 				'methods'             => 'POST',
 				'callback'            => array( CheckoutForm::class, 'rest_render_callback' ),
 				'permission_callback' => function () {
-					// Allow in Visual Builder context
-					return current_user_can( 'edit_posts' );
+					return current_user_can( 'manage_woocommerce' );
 				},
 				'args'                => array(
 					'attrs'   => array(
@@ -107,7 +106,7 @@ trait RestApiTrait {
 						'methods'             => 'GET',
 						'callback'            => array( CheckoutForm::class, 'rest_get_field_structure' ),
 						'permission_callback' => function () {
-							return current_user_can( 'edit_posts' );
+							return current_user_can( 'manage_woocommerce' );
 						},
 						'args'                => array(
 							'post_id' => array(

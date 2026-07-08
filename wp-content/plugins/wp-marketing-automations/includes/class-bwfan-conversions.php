@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'BWFAN_Conversions' ) && BWFAN_Common::is_pro_3_0() ) {
+	#[\AllowDynamicProperties]
 	class BWFAN_Conversions {
 		private static $ins = null;
 

@@ -102,14 +102,14 @@ if ( ! class_exists( 'BWFABT_Report_Upstroke' ) ) {
 					$date_query = ' AND ( ' . rtrim( $date_query, " OR " ) . ') ';
 				}
 
-				$sql   = "SELECT count( events.action_type_id) as trigger_count FROM " . $wpdb->prefix . "wfocu_event AS events WHERE 1=1 AND events.object_id IN (" . esc_sql( $query_funnel_id ) . ") AND events.action_type_id = '1' " . $date_query;
-				$query = "SELECT events.action_type_id as action_id, events.object_id as objects, events.timestamp as time, events.value as value FROM  " . $wpdb->prefix . "wfocu_event AS events INNER JOIN  " . $wpdb->prefix . "wfocu_event_meta AS events_meta__funnel_id ON ( events.ID = events_meta__funnel_id.event_id ) AND ( ( events_meta__funnel_id.meta_key = '_funnel_id' AND events_meta__funnel_id.meta_value = '" . $query_funnel_id . "' )) " . $date_query;
+				$safe_funnel_id = intval( $query_funnel_id );
+				$sql            = "SELECT count( events.action_type_id) as trigger_count FROM " . $wpdb->prefix . "wfocu_event AS events WHERE 1=1 AND events.object_id IN (" . $safe_funnel_id . ") AND events.action_type_id = '1' " . $date_query; //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 
 				$sql_result       = $wpdb->get_row( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 				$funnel_triggered = ( is_array( $sql_result ) && isset( $sql_result['trigger_count'] ) ) ? $sql_result['trigger_count'] : 0;
 
-				$funnel_events = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				$funnel_events = $wpdb->get_results( $wpdb->prepare( "SELECT events.action_type_id as action_id, events.object_id as objects, events.timestamp as time, events.value as value FROM  " . $wpdb->prefix . "wfocu_event AS events INNER JOIN  " . $wpdb->prefix . "wfocu_event_meta AS events_meta__funnel_id ON ( events.ID = events_meta__funnel_id.event_id ) AND ( ( events_meta__funnel_id.meta_key = '_funnel_id' AND events_meta__funnel_id.meta_value = %s )) " . $date_query, $safe_funnel_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 
 				foreach ( is_array( $funnel_offers ) ? $funnel_offers : array() as $may_be_offer_title => $offer_id ) {
 					$offer_title   = get_the_title( $offer_id );

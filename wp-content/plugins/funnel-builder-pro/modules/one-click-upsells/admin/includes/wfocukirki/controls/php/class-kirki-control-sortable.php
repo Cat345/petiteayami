@@ -17,6 +17,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Sortable' ) ) {
 	/**
 	 * Sortable control (uses checkboxes).
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Sortable extends WFOCUKirki_Control_Base {
 
 		/**
@@ -39,33 +40,33 @@ if ( ! class_exists( 'WFOCUKirki_Control_Sortable' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <label class='wfocukirki-sortable'>
+			<label class='wfocukirki-sortable'>
 			<span class="customize-control-title">
 				{{{ data.label }}}
 			</span>
-                <# if ( data.description ) { #>
-                <span class="description customize-control-description">{{{ data.description }}}</span>
-                <# } #>
+				<# if ( data.description ) { #>
+				<span class="description customize-control-description">{{{ data.description }}}</span>
+				<# } #>
 
-                <ul class="sortable">
-                    <# _.each( data.value, function( choiceID ) { #>
-                    <li {{{ data.inputAttrs }}} class='wfocukirki-sortable-item' data-value='{{ choiceID }}'>
-                        <i class='dashicons dashicons-menu'></i>
-                        <i class="dashicons dashicons-visibility visibility"></i>
-                        {{{ data.choices[ choiceID ] }}}
-                    </li>
-                    <# }); #>
-                    <# _.each( data.choices, function( choiceLabel, choiceID ) { #>
-                    <# if ( -1 === data.value.indexOf( choiceID ) ) { #>
-                    <li {{{ data.inputAttrs }}} class='wfocukirki-sortable-item invisible' data-value='{{ choiceID }}'>
-                        <i class='dashicons dashicons-menu'></i>
-                        <i class="dashicons dashicons-visibility visibility"></i>
-                        {{{ data.choices[ choiceID ] }}}
-                    </li>
-                    <# } #>
-                    <# }); #>
-                </ul>
-            </label>
+				<ul class="sortable">
+					<# _.each( data.value, function( choiceID ) { #>
+					<li {{{ data.inputAttrs }}} class='wfocukirki-sortable-item' data-value='{{ choiceID }}'>
+						<i class='dashicons dashicons-menu'></i>
+						<i class="dashicons dashicons-visibility visibility"></i>
+						{{{ data.choices[ choiceID ] }}}
+					</li>
+					<# }); #>
+					<# _.each( data.choices, function( choiceLabel, choiceID ) { #>
+					<# if ( -1 === data.value.indexOf( choiceID ) ) { #>
+					<li {{{ data.inputAttrs }}} class='wfocukirki-sortable-item invisible' data-value='{{ choiceID }}'>
+						<i class='dashicons dashicons-menu'></i>
+						<i class="dashicons dashicons-visibility visibility"></i>
+						{{{ data.choices[ choiceID ] }}}
+					</li>
+					<# } #>
+					<# }); #>
+				</ul>
+			</label>
 
 			<?php
 		}

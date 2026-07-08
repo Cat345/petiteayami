@@ -88,7 +88,7 @@ class HookCollection
     /**
      * Builds a function from given hook array.
      *
-     * @param array<callable> $hooks
+     * @param list<array{string, callable}> $hooks
      */
     protected function build(callable $method, array $hooks): callable
     {

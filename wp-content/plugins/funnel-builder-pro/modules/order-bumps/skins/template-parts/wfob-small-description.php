@@ -1,1 +1,1 @@
-<div class="wfob_l3_c_sub_desc  show-read-more"><?php echo $small_description; ?></div>
+<div class="wfob_l3_c_sub_desc  show-read-more"><?php echo wp_kses_post( $small_description ); ?></div>

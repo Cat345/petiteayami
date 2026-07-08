@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Carts_View_Tasks extends BWFAN_API_Base {
 	public static $ins;
 	public $task_localized = [];
@@ -87,10 +88,13 @@ class BWFAN_API_Carts_View_Tasks extends BWFAN_API_Base {
 		$table1 = $wpdb->prefix . 'bwfan_automation_contact';
 		$table2 = $wpdb->prefix . 'bwfan_automation_complete_contact';
 
-		$query1  = "SELECT * FROM $table1 WHERE `event` LIKE 'ab_cart_abandoned' AND `data` LIKE '%cart_abandoned_id\":\"{$abandoned_id}\"%' AND data LIKE '%email\":\"{$cart_email}\"%'";
+		$like_aid   = '%cart_abandoned_id":"' . $wpdb->esc_like( $abandoned_id ) . '"%';
+		$like_email = '%email":"' . $wpdb->esc_like( $cart_email ) . '"%';
+
+		$query1  = $wpdb->prepare( "SELECT * FROM $table1 WHERE `event` LIKE %s AND `data` LIKE %s AND data LIKE %s", 'ab_cart_abandoned', $like_aid, $like_email ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result1 = $wpdb->get_results( $query1, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
-		$query2  = "SELECT * FROM $table2 WHERE `event` LIKE 'ab_cart_abandoned' AND `data` LIKE '%cart_abandoned_id\":\"{$abandoned_id}\"%' AND data LIKE '%email\":\"{$cart_email}\"%'";
+		$query2  = $wpdb->prepare( "SELECT * FROM $table2 WHERE `event` LIKE %s AND `data` LIKE %s AND data LIKE %s", 'ab_cart_abandoned', $like_aid, $like_email ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result2 = $wpdb->get_results( $query2, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if ( ! empty( $result1 ) ) {

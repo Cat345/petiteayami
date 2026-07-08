@@ -366,7 +366,7 @@ class PostType
      * @param WP_Post_Type $type
      * @return array<FieldConfig>
      */
-    public static function configHierarchicalFields($type)
+    public static function configHierarchicalFields($type): array
     {
         if (!$type->hierarchical) {
             return [];
@@ -1032,7 +1032,7 @@ class PostType
      * @param WP_Post $post
      * @return ?string
      */
-    public static function link($post)
+    public static function link($post): ?string
     {
         $link = get_permalink($post);
 

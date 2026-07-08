@@ -151,12 +151,12 @@ trait RenderCallbackTrait {
 		// FA icons: just decode the HTML entity directly.
 		// et_pb_process_font_icon() maps FA unicode to wrong ETmodules codepoints.
 		if ( 'fa' === $icon_type ) {
-			return html_entity_decode( $icon_code );
+			return html_entity_decode( $icon_code, ENT_QUOTES | ENT_HTML401 );
 		}
 
 		// ETmodules (divi) icons: use Divi's processing function.
 		if ( function_exists( 'et_pb_process_font_icon' ) ) {
-			return html_entity_decode( et_pb_process_font_icon( $icon_code ) );
+			return html_entity_decode( et_pb_process_font_icon( $icon_code ), ENT_QUOTES | ENT_HTML401 );
 		}
 
 		return '';
@@ -231,7 +231,7 @@ trait RenderCallbackTrait {
 			}
 
 			// Add title text directly (no wrapper span)
-			$button_link_children .= do_shortcode( html_entity_decode( $text_content ) );
+			$button_link_children .= do_shortcode( html_entity_decode( $text_content, ENT_QUOTES | ENT_HTML401 ) );
 
 			// Add icon after text if icon_align is 'right'
 			if ( 'right' === $icon_align && ! empty( $icon_html ) ) {
@@ -243,8 +243,8 @@ trait RenderCallbackTrait {
 				array(
 					'tag'               => 'a',
 					'attributes'        => array(
-						'id'    => 'wfocu-reject-button-link',
-						'class' => 'wfocu_skip_offer wfocu-wfocu-reject',
+						'id'      => 'wfocu-reject-button-link',
+						'class'   => 'wfocu_skip_offer wfocu-wfocu-reject',
 						'href'    => '#',
 						'onclick' => 'return false;',
 					),

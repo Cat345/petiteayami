@@ -17,6 +17,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_FontAwesome' ) ) {
 	/**
 	 * Select control.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_FontAwesome extends WFOCUKirki_Control_Base {
 
 		/**
@@ -57,11 +58,11 @@ if ( ! class_exists( 'WFOCUKirki_Control_FontAwesome' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <label>
-                <# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
-                <# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
-                <select {{{ data.inputAttrs }}} {{{ data.link }}}></select>
-            </label>
+			<label>
+				<# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
+				<# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
+				<select {{{ data.inputAttrs }}} {{{ data.link }}}></select>
+			</label>
 			<?php
 		}
 	}

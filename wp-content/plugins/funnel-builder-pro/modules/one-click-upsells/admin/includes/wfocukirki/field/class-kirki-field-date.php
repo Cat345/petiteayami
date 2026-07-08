@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Date' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Date extends WFOCUKirki_Field {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Date' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-date';
-
 		}
 
 		/**
@@ -38,7 +38,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Date' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'esc_textarea';
-
 		}
 	}
 }

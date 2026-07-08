@@ -49,7 +49,7 @@ class Repository
      *
      * @return $this
      */
-    public function set(string $index, $value)
+    public function set(string $index, $value): self
     {
         $index = strtr($index, $this->aliases);
 
@@ -63,7 +63,7 @@ class Repository
      *
      * @return $this
      */
-    public function del(string $index)
+    public function del(string $index): self
     {
         $index = strtr($index, $this->aliases);
 
@@ -79,7 +79,7 @@ class Repository
      *
      * @return $this
      */
-    public function add(string $index, array $values = [], bool $replace = true)
+    public function add(string $index, array $values = [], bool $replace = true): self
     {
         $value = $index ? $this->get($index) : $this->values;
 
@@ -102,7 +102,7 @@ class Repository
      *
      * @return $this
      */
-    public function update(string $index, callable $callback)
+    public function update(string $index, callable $callback): self
     {
         $index = strtr($index, $this->aliases);
 
@@ -116,7 +116,7 @@ class Repository
      *
      * @return $this
      */
-    public function addAlias(string $name, string $index)
+    public function addAlias(string $name, string $index): self
     {
         $this->aliases[$name] = $index;
 

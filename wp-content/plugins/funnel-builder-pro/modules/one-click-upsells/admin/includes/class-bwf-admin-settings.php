@@ -1,24 +1,26 @@
 <?php
 /**
  * Class to control Settings and its behaviour accross the buildwoofunnels
+ *
  * @author buildwoofunnels
  */
 if ( ! class_exists( 'BWF_Admin_Settings' ) ) {
 
+	#[\AllowDynamicProperties]
 	class BWF_Admin_Settings {
 
 		private static $ins = null;
 
 		public function __construct() {
 
-			add_action( 'admin_menu', [ $this, 'maybe_register_admin_menu' ], 900 );
+			add_action( 'admin_menu', array( $this, 'maybe_register_admin_menu' ), 900 );
 			add_action( 'admin_init', array( $this, 'maybe_open_correct_settings' ), - 1 );
 		}
 
 		public static function get_instance() {
 
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -38,41 +40,45 @@ if ( ! class_exists( 'BWF_Admin_Settings' ) ) {
 
 			$user = WFOCU_Core()->role->user_access( 'menu', 'read' );
 			if ( empty( $found ) && false !== $user ) {
-				add_submenu_page( 'woofunnels', __( 'Settings', 'woofunnels' ), __( 'Settings', 'woofunnels' ), $user, 'woofunnels_settings', [ $this, '_callback' ] );
+				add_submenu_page( 'woofunnels', __( 'Settings', 'woofunnels' ), __( 'Settings', 'woofunnels' ), $user, 'woofunnels_settings', array( $this, '_callback' ) );
 			}
 		}
 
 		public function _callback() {
-
 		}
 
 		public function maybe_open_correct_settings() {
 			if ( is_admin() && 'woofunnels_settings' === filter_input( INPUT_GET, 'page', FILTER_UNSAFE_RAW ) ) {
-				$get_all_registered_settings = apply_filters( 'woofunnels_global_settings', [] );
-				usort( $get_all_registered_settings, function ( $a, $b ) {
-					if ( $a['priority'] === $b['priority'] ) {
-						return 0;
-					}
+				$get_all_registered_settings = apply_filters( 'woofunnels_global_settings', array() );
+				usort(
+					$get_all_registered_settings,
+					function ( $a, $b ) {
+						if ( $a['priority'] === $b['priority'] ) {
+							return 0;
+						}
 
-					return ( $a['priority'] < $b['priority'] ) ? - 1 : 1;
-				} );
+						return ( $a['priority'] < $b['priority'] ) ? - 1 : 1;
+					}
+				);
 				$first_menu = array_values( $get_all_registered_settings )[0];
 				wp_redirect( $first_menu['link'] );
 			}
-
 		}
 
 		public function render_tab_html( $current ) {
-			$get_all_registered_settings = apply_filters( 'woofunnels_global_settings', [] );
+			$get_all_registered_settings = apply_filters( 'woofunnels_global_settings', array() );
 
 			if ( is_array( $get_all_registered_settings ) && count( $get_all_registered_settings ) > 0 ) {
-				usort( $get_all_registered_settings, function ( $a, $b ) {
-					if ( $a['priority'] === $b['priority'] ) {
-						return 0;
-					}
+				usort(
+					$get_all_registered_settings,
+					function ( $a, $b ) {
+						if ( $a['priority'] === $b['priority'] ) {
+							return 0;
+						}
 
-					return ( $a['priority'] < $b['priority'] ) ? - 1 : 1;
-				} );
+						return ( $a['priority'] < $b['priority'] ) ? - 1 : 1;
+					}
+				);
 
 				?>
 
@@ -86,11 +92,12 @@ if ( ! class_exists( 'BWF_Admin_Settings' ) ) {
 								$class = 'active';
 							}
 							?>
-						<li class="<?php echo $class ?>">
-							<a href="<?php echo esc_url_raw( $menu['link'] ) ?>">
+						<li class="<?php echo $class; ?>">
+							<a href="<?php echo esc_url_raw( $menu['link'] ); ?>">
 								<?php echo esc_attr( $menu['title'] ); ?>
 							</a>
-							</li><?php
+							</li>
+							<?php
 
 						}
 						?>
@@ -99,8 +106,6 @@ if ( ! class_exists( 'BWF_Admin_Settings' ) ) {
 				<?php
 			}
 		}
-
-
 	}
 }
 BWF_Admin_Settings::get_instance();

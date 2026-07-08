@@ -1865,7 +1865,7 @@ class StripeTaxPluginHelper {
 		if ( $error && isset( $error->message ) && is_string( $error->message ) ) {
 			$message = $error->message;
 		}
-
+		// @phpstan-ignore-next-line
 		$code  = $code ?? ( method_exists( $err, 'getStripeCode' ) ? $err->getStripeCode() : null );
 		$param = $param ?? ( $err instanceof InvalidRequestException ? $err->getStripeParam() : null );
 

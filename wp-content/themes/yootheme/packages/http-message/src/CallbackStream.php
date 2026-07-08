@@ -6,10 +6,7 @@ use Psr\Http\Message\StreamInterface;
 
 class CallbackStream implements StreamInterface
 {
-    /**
-     * @var bool
-     */
-    protected $called = false;
+    protected bool $called = false;
 
     /**
      * @var callable

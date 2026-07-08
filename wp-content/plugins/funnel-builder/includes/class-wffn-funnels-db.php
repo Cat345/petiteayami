@@ -1,22 +1,23 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * This class contain data for experiments
  * Class WFFN_Funnels_DB
  */
 if ( ! class_exists( 'WFFN_Funnels_DB' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Funnels_DB {
 
 		static $primary_key = 'id';
-		static $count = 20;
-		static $query = [];
+		static $count       = 20;
+		static $query       = array();
 
 		static function init() {
 		}
 
 		public function clear_cache() {
-			self::$query = [];
+			self::$query = array();
 		}
 
 		public function get( $value ) {
@@ -98,10 +99,16 @@ if ( ! class_exists( 'WFFN_Funnels_DB' ) ) {
 
 		public function get_specific_rows( $where_key, $where_value ) {
 			global $wpdb;
-			$where_key   = esc_sql( $where_key );
-			$where_value = esc_sql( $where_value );
+			// $where_key is a column identifier and cannot be parameterised; strip it to identifier-safe characters
+			// (this method is public and may be invoked with caller-supplied keys). $where_value is bound via prepare().
+			$where_key = preg_replace( '/[^a-zA-Z0-9_]/', '', (string) $where_key );
 
-			return $wpdb->get_results( 'SELECT * FROM ' . self::_table() . " WHERE $where_key = '$where_value'", ARRAY_A );//phpcs:ignore
+			// Bail if the key sanitised to an empty string, otherwise the query becomes `WHERE `` = %s` (invalid SQL).
+			if ( '' === $where_key ) {
+				return array();
+			}
+
+			return $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM ' . self::_table() . " WHERE `$where_key` = %s", $where_value ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from self::_table() (prefix + literal); $where_key sanitised to an identifier; $where_value bound via %s.
 		}
 
 
@@ -154,13 +161,13 @@ if ( ! class_exists( 'WFFN_Funnels_DB' ) ) {
 			$tables = WFFN_DB_Tables::get_instance();
 			$tables->define_tables();
 			update_metadata( 'bwf_funnel', $object_id, $meta_key, $meta_value );
-
 		}
 
 
 
 		/**
 		 * Delete a metadata
+		 *
 		 * @param $object_id
 		 * @param $meta_key
 		 * @param $meta_value
@@ -172,7 +179,6 @@ if ( ! class_exists( 'WFFN_Funnels_DB' ) ) {
 			$tables = WFFN_DB_Tables::get_instance();
 			$tables->define_tables();
 			delete_metadata( 'bwf_funnel', $object_id, $meta_key );
-
 		}
 
 		/**
@@ -190,7 +196,6 @@ if ( ! class_exists( 'WFFN_Funnels_DB' ) ) {
 
 			return get_metadata( 'bwf_funnel', $object_id, $meta_key, true );
 		}
-
 	}
 
 	WFFN_Funnels_DB::init();

@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Automation_stats extends BWFAN_API_Base {
 	public static $ins;
 
@@ -23,7 +24,7 @@ class BWFAN_API_Get_Automation_stats extends BWFAN_API_Base {
 	public function process_api_call() {
 		$automation_ids = isset( $this->args['automation_ids'] ) ? $this->args['automation_ids'] : [];
 		$version        = $this->get_sanitized_arg( 'version', 'text_field' );
-		$ids            = implode( ',', array_filter( $automation_ids ) );
+		$ids            = implode( ',', array_map( 'absint', array_filter( $automation_ids ) ) );
 
 		if ( 2 === absint( $version ) ) {
 			$data       = [];
@@ -103,7 +104,7 @@ class BWFAN_API_Get_Automation_stats extends BWFAN_API_Base {
 		}
 
 		if ( is_array( $automation_ids ) && count( $automation_ids ) > 0 ) {
-			$ids = implode( ',', array_filter( $automation_ids ) );
+			$ids = implode( ',', array_map( 'absint', array_filter( $automation_ids ) ) );
 
 			$tasks_table = "{$wpdb->prefix}bwfan_tasks";
 			$tasks_query = "SELECT `automation_id`, count(`ID`) AS `total_scheduled`, `status` FROM $tasks_table WHERE `automation_id` IN ($ids) GROUP BY `automation_id`, `status`";

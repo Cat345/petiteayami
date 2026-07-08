@@ -17,6 +17,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Radio' ) ) {
 	/**
 	 * Radio control
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Radio extends WFOCUKirki_Control_Base {
 
 		/**

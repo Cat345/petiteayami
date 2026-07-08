@@ -1687,7 +1687,7 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 						$text_class = ( ! empty( $value ) ) ? 'wfacp_step_text_have' : 'wfacp_step_text_nohave';
 						echo "<li class='wfacp_step_$key wfacp_bred $active $step' step='$step'>";
 						?>
-						<a href='javascript:void(0)' class="<?php echo $text_class; ?>" data-text="<?php echo sanitize_title( $value ); ?>"><?php echo $value; ?></a>
+						<a href='javascript:void(0)' class="<?php echo $text_class; ?>" data-text="<?php echo esc_attr( sanitize_title( $value ) ); ?>"><?php echo esc_html( $value ); ?></a>
 						<?php
 
 						echo '</li>';

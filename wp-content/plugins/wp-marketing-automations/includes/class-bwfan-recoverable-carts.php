@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
+	#[\AllowDynamicProperties]
 	class BWFAN_Recoverable_Carts {
 
 		public static function get_abandoned_carts( $search_by = '', $search_term = '', $offset = '', $limit = '', $status = '', $count = false ) {
@@ -8,11 +9,15 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 			if ( empty( $status ) ) {
 				$status = '0,1,3,4,5';
 			}
-			$where = "WHERE status IN ($status)";
+			$status = implode( ',', array_map( 'absint', explode( ',', (string) $status ) ) );
+			$where  = "WHERE status IN ($status)";
 			/** Check for search query */
 			if ( ! empty( $search_by ) && ! empty( $search_term ) ) { //phpcs:ignore WordPress.Security.NonceVerification
 				$search_term = sanitize_text_field( $search_term ); //phpcs:ignore WordPress.Security.NonceVerification
-				$where       .= " AND " . $search_by . " like '%" . $search_term . "%'"; //phpcs:ignore WordPress.Security.NonceVerification
+				$allowed_search_by = array( 'email' );
+				$search_by         = in_array( (string) $search_by, $allowed_search_by, true ) ? (string) $search_by : 'email';
+				$search_col        = '`' . str_replace( '`', '``', $search_by ) . '`';
+				$where       .= $wpdb->prepare( " AND {$search_col} LIKE %s", '%' . $wpdb->esc_like( $search_term ) . '%' );
 			}
 			$result = [];
 			if ( $count === false ) {
@@ -77,16 +82,16 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 			$left_join      = '';
 			$hpos_where     = '';
 			$hpos_left_join = '';
+			$search_like    = '';
 
 			/** Check for search query */
 			if ( isset( $search ) && ! empty( $search ) && $only_count === false ) { //phpcs:ignore WordPress.Security.NonceVerification
-				$left_join = " LEFT JOIN {$wpdb->prefix}postmeta as m1 ON p.ID = m1.post_id ";
-				$where     = ' AND m1.meta_key = "_billing_email" ';
-				$where     .= $wpdb->prepare( " AND m1.meta_value LIKE %s ", "%$search%" ); //phpcs:ignore WordPress.Security.NonceVerification
-				$where     .= " AND m.meta_value > 0 ";
+				$search_like = '%' . $wpdb->esc_like( $search ) . '%';
+				$left_join   = " LEFT JOIN {$wpdb->prefix}postmeta as m1 ON p.ID = m1.post_id ";
+				$where       = ' AND m1.meta_key = "_billing_email" AND m1.meta_value LIKE %s AND m.meta_value > 0 ';
 
 				if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-					$hpos_where = $wpdb->prepare( " AND p.billing_email LIKE %s AND m.meta_value > 0 ", "%$search%" ); //phpcs:ignore WordPress.Security.NonceVerification
+					$hpos_where = ' AND p.billing_email LIKE %s AND m.meta_value > 0 ';
 				}
 			}
 
@@ -103,9 +108,21 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 			if ( $only_count === false ) {
 
 				if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-					$query = $wpdb->prepare( "SELECT p.id as id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s $hpos_where ORDER BY p.date_created_gmt DESC LIMIT $offset,$limit", 'shop_order', '_bwfan_ab_cart_recovered_a_id' );
+					$args = array( 'shop_order', '_bwfan_ab_cart_recovered_a_id' );
+					if ( '' !== $hpos_where ) {
+						$args[] = $search_like;
+					}
+					$args[] = absint( $offset );
+					$args[] = absint( $limit );
+					$query  = $wpdb->prepare( "SELECT p.id as id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s $hpos_where ORDER BY p.date_created_gmt DESC LIMIT %d,%d", $args );
 				} else {
-					$query = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT $offset,$limit", 'shop_order', '_bwfan_ab_cart_recovered_a_id' );
+					$args = array( 'shop_order', '_bwfan_ab_cart_recovered_a_id' );
+					if ( '' !== $where ) {
+						$args[] = $search_like;
+					}
+					$args[] = absint( $offset );
+					$args[] = absint( $limit );
+					$query  = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT %d,%d", $args );
 				}
 				$recovered_carts = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
@@ -128,13 +145,21 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 			}
 
 			if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-				$count_query                = $wpdb->prepare( "SELECT DISTINCT COUNT(p.id) FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s $hpos_where ", 'shop_order', '_bwfan_ab_cart_recovered_a_id' );
+				$count_args = array( 'shop_order', '_bwfan_ab_cart_recovered_a_id' );
+				if ( '' !== $hpos_where ) {
+					$count_args[] = $search_like;
+				}
+				$count_query                = $wpdb->prepare( "SELECT DISTINCT COUNT(p.id) FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s $hpos_where ", $count_args );
 				$found_posts['total_count'] = $wpdb->get_var( $count_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
 				return $found_posts;
 			}
 
-			$count_query                = $wpdb->prepare( "SELECT COUNT(p.ID) FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ", 'shop_order', '_bwfan_ab_cart_recovered_a_id' );
+			$count_args = array( 'shop_order', '_bwfan_ab_cart_recovered_a_id' );
+			if ( '' !== $where ) {
+				$count_args[] = $search_like;
+			}
+			$count_query                = $wpdb->prepare( "SELECT COUNT(p.ID) FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ", $count_args );
 			$found_posts['total_count'] = $wpdb->get_var( $count_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
 			return $found_posts;
@@ -280,10 +305,14 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 			$table  = $wpdb->prefix . 'bwf_contact';
 			$emails = array_column( $result, 'email' );
 			$emails = array_map( 'trim', array_filter( $emails ) );
-			$emails = implode( "','", $emails );
 
-			$sql       = "SELECT id, email, f_name, l_name from $table WHERE email in ('$emails')";
-			$db_result = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			if ( empty( $emails ) ) {
+				return $result;
+			}
+
+			$placeholders = implode( ',', array_fill( 0, count( $emails ), '%s' ) );
+			$sql       = $wpdb->prepare( "SELECT id, email, f_name, l_name from $table WHERE email IN ($placeholders)", ...$emails ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$db_result = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$contacts  = [];
 
 			if ( is_array( $db_result ) && ! empty( $db_result ) ) {
@@ -418,11 +447,11 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 			return [
 				'code'              => $currency,
 				'precision'         => wc_get_price_decimals(),
-				'symbol'            => html_entity_decode( $currency_symbol ),
+				'symbol'            => html_entity_decode( $currency_symbol, ENT_QUOTES | ENT_HTML401 ),
 				'symbolPosition'    => get_option( 'woocommerce_currency_pos' ),
 				'decimalSeparator'  => wc_get_price_decimal_separator(),
 				'thousandSeparator' => wc_get_price_thousand_separator(),
-				'priceFormat'       => html_entity_decode( $price_format ),
+				'priceFormat'       => html_entity_decode( $price_format, ENT_QUOTES | ENT_HTML401 ),
 			];
 		}
 	}

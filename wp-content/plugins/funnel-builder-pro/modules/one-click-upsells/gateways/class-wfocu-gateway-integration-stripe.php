@@ -329,6 +329,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 		}
 
 		public function process_client_payment() {
+			check_ajax_referer( 'wfocu_front_charge', 'nonce' );
 
 			/**
 			 * Prepare and populate client collected data to process further.
@@ -336,7 +337,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 			$get_current_offer      = WFOCU_Core()->data->get( 'current_offer' );
 			$get_current_offer_meta = WFOCU_Core()->offers->get_offer_meta( $get_current_offer );
 			WFOCU_Core()->data->set( '_offer_result', true );
-			$posted_data = WFOCU_Core()->process_offer->parse_posted_data( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- AJAX endpoint for frontend checkout process, capability check handled via nonce validation.
+			$posted_data = WFOCU_Core()->process_offer->parse_posted_data( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 
 			/**
 			 * return if found error in the charge request
@@ -580,15 +581,35 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 				$order_behavior = WFOCU_Core()->funnels->get_funnel_option( 'order_behavior' );
 				$is_batching_on = ( 'batching' === $order_behavior ) ? true : false;
 				if ( true === $is_batching_on ) {
-					$fee = (float) $fee + (float) WC_Stripe_Helper::get_stripe_fee( $order );
-					$net = (float) $net + (float) WC_Stripe_Helper::get_stripe_net( $order );
-					WC_Stripe_Helper::update_stripe_fee( $order, $fee );
-					WC_Stripe_Helper::update_stripe_net( $order, $net );
+					$fee = (float) $fee + (float) $this->stripe_order_helper_call( 'get_stripe_fee', $order );
+					$net = (float) $net + (float) $this->stripe_order_helper_call( 'get_stripe_net', $order );
+					$this->stripe_order_helper_call( 'update_stripe_fee', $order, $fee );
+					$this->stripe_order_helper_call( 'update_stripe_net', $order, $net );
 				}
 				WFOCU_Core()->data->set( 'wfocu_stripe_fee', $fee );
 				WFOCU_Core()->data->set( 'wfocu_stripe_net', $net );
 				WFOCU_Core()->data->set( 'wfocu_stripe_currency', $currency );
 			}
+		}
+
+		/**
+		 * Routes Stripe fee/net/currency helpers across woocommerce-gateway-stripe versions.
+		 * Pre-10.0.0 these were static methods on WC_Stripe_Helper; in 10.0.0+ they were
+		 * relocated to instance methods on WC_Stripe_Order_Helper (singleton).
+		 *
+		 * @param string $method One of: get_stripe_fee, get_stripe_net, update_stripe_fee, update_stripe_net, update_stripe_currency.
+		 * @param mixed  ...$args Forwarded to the resolved method.
+		 *
+		 * @return mixed Result of the resolved call, or null if no implementation is available.
+		 */
+		protected function stripe_order_helper_call( $method, ...$args ) {
+			if ( class_exists( 'WC_Stripe_Order_Helper' ) && method_exists( 'WC_Stripe_Order_Helper', $method ) ) {
+				return WC_Stripe_Order_Helper::get_instance()->{$method}( ...$args );
+			}
+			if ( class_exists( 'WC_Stripe_Helper' ) && method_exists( 'WC_Stripe_Helper', $method ) ) {
+				return WC_Stripe_Helper::{$method}( ...$args );
+			}
+			return null;
 		}
 
 		protected function create_intent( $order, $prepared_source ) {
@@ -799,9 +820,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 			$net = WFOCU_Core()->data->get( 'wfocu_stripe_net' );
 
 			$currency = WFOCU_Core()->data->get( 'wfocu_stripe_currency' );
-			WC_Stripe_Helper::update_stripe_currency( $order, $currency );
-			WC_Stripe_Helper::update_stripe_fee( $order, $fee );
-			WC_Stripe_Helper::update_stripe_net( $order, $net );
+			$this->stripe_order_helper_call( 'update_stripe_currency', $order, $currency );
+			$this->stripe_order_helper_call( 'update_stripe_fee', $order, $fee );
+			$this->stripe_order_helper_call( 'update_stripe_net', $order, $net );
 			$order->save_meta_data();
 		}
 

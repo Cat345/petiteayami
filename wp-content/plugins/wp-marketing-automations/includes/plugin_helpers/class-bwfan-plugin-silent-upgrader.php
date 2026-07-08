@@ -12,6 +12,7 @@ require_once ABSPATH . 'wp-admin/includes/class-plugin-upgrader.php';
  * without breaking support for PHP 5.3-5.5.
  *
  */
+#[\AllowDynamicProperties]
 class BWFAN_Plugin_Silent_Upgrader extends Plugin_Upgrader {
 
 	/**

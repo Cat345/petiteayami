@@ -1,8 +1,12 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFOB_Compatibilities_ClearPay' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibilities_ClearPay {
 		public function __construct() {
-			add_filter( 'wfob_need_payment_gateway_refresh', [ $this, 'need_refresh' ], 10, 2 );
+			add_filter( 'wfob_need_payment_gateway_refresh', array( $this, 'need_refresh' ), 10, 2 );
 		}
 
 		public function need_refresh( $status, $available_after_gateways ) {
@@ -12,8 +16,6 @@ if ( ! class_exists( 'WFOB_Compatibilities_ClearPay' ) ) {
 
 			return $status;
 		}
-
-
 	}
 
 	new WFOB_Compatibilities_ClearPay();

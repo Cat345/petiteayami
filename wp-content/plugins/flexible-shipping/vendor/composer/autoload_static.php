@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitae3f9822c8831036beb147d3aa86c7c0
+class ComposerStaticInitb7f190e9b4ef3d7f577e95970b53187c
 {
     public static $prefixLengthsPsr4 = array (
         'W' =>
@@ -175,14 +175,17 @@ class ComposerStaticInitae3f9822c8831036beb147d3aa86c7c0
         'FSVendor\\Octolize\\Onboarding\\PluginUpgrade\\PluginUpgradeWatcher' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-onboarding/src/Onboarding/PluginUpgrade/PluginUpgradeWatcher.php',
         'FSVendor\\Octolize\\ShippingExtensions\\AdminPage' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/AdminPage.php',
         'FSVendor\\Octolize\\ShippingExtensions\\Assets' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Assets.php',
-        'FSVendor\\Octolize\\ShippingExtensions\\BlackFriday2025Promo' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/BlackFriday2025Promo.php',
+        'FSVendor\\Octolize\\ShippingExtensions\\DateRange' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/DateRange.php',
         'FSVendor\\Octolize\\ShippingExtensions\\Page' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Page.php',
         'FSVendor\\Octolize\\ShippingExtensions\\PageViewTracker' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/PageViewTracker.php',
         'FSVendor\\Octolize\\ShippingExtensions\\PluginLinks' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/PluginLinks.php',
         'FSVendor\\Octolize\\ShippingExtensions\\Plugin\\Plugin' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/Plugin.php',
         'FSVendor\\Octolize\\ShippingExtensions\\Plugin\\PluginFactory' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php',
         'FSVendor\\Octolize\\ShippingExtensions\\Plugin\\PluginSorter' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginSorter.php',
+        'FSVendor\\Octolize\\ShippingExtensions\\Promo\\Summer2026Promo' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Promo/Summer2026Promo.php',
         'FSVendor\\Octolize\\ShippingExtensions\\ShippingExtensions' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/ShippingExtensions.php',
+        'FSVendor\\Octolize\\ShippingExtensions\\TimedUpdate' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/TimedUpdate.php',
+        'FSVendor\\Octolize\\ShippingExtensions\\TimedUpdates' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/TimedUpdates.php',
         'FSVendor\\Octolize\\ShippingExtensions\\Tracker\\DataProvider\\ShippingExtensionsDataProvider' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Tracker/DataProvider/ShippingExtensionsDataProvider.php',
         'FSVendor\\Octolize\\ShippingExtensions\\Tracker\\Tracker' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Tracker/Tracker.php',
         'FSVendor\\Octolize\\ShippingExtensions\\Tracker\\ViewPageTracker' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Tracker/ViewPageTracker.php',
@@ -502,6 +505,7 @@ class ComposerStaticInitae3f9822c8831036beb147d3aa86c7c0
         'FSVendor\\WPDesk_Tracker_Sender' => __DIR__ . '/../..' . '/vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/sender/class-wpdesk-tracker-sender.php',
         'FSVendor\\WPDesk_Tracker_Sender_Exception_WpError' => __DIR__ . '/../..' . '/vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/sender/Exception/class-wpdesk-tracker-sender-exception-wperror.php',
         'FSVendor\\WPDesk_Tracker_Sender_Logged' => __DIR__ . '/../..' . '/vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/sender/class-wpdesk-tracker-sender-logged.php',
+        'FSVendor\\WPDesk_Tracker_Sender_Resolver' => __DIR__ . '/../..' . '/vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/sender/class-wpdesk-tracker-sender-resolver.php',
         'FSVendor\\WPDesk_Tracker_Sender_Wordpress_To_WPDesk' => __DIR__ . '/../..' . '/vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/sender/class-wpdesk-tracker-sender-wordpress-to-wpdesk.php',
         'FSVendor\\WPDesk_Translable' => __DIR__ . '/../..' . '/vendor_prefixed/wpdesk/wp-builder/src/Plugin/WithoutNamespace/Translable.php',
         'FSVendor\\WPDesk_Translatable' => __DIR__ . '/../..' . '/vendor_prefixed/wpdesk/wp-builder/src/Plugin/WithoutNamespace/Translatable.php',
@@ -578,9 +582,11 @@ class ComposerStaticInitae3f9822c8831036beb147d3aa86c7c0
         'WPDesk\\FS\\TableRate\\FreeShipping\\FreeShippingNoticeData' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/FreeShipping/FreeShippingNoticeData.php',
         'WPDesk\\FS\\TableRate\\FreeShipping\\FreeShippingNoticeGenerator' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/FreeShipping/FreeShippingNoticeGenerator.php',
         'WPDesk\\FS\\TableRate\\FreeShipping\\FreeShippingNoticeRenderer' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/FreeShipping/FreeShippingNoticeRenderer.php',
+        'WPDesk\\FS\\TableRate\\FreeShipping\\LffsNoticeTextFormatValidator' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/FreeShipping/LffsNoticeTextFormatValidator.php',
         'WPDesk\\FS\\TableRate\\FreeShipping\\NoticeTextSettings' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/FreeShipping/NoticeTextSettings.php',
         'WPDesk\\FS\\TableRate\\FreeShipping\\ProgressBarSettings' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/FreeShipping/ProgressBarSettings.php',
         'WPDesk\\FS\\TableRate\\FreeShipping\\Tracker' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/FreeShipping/Tracker.php',
+        'WPDesk\\FS\\TableRate\\FreeShipping\\Tracker\\ThresholdAlertTracker' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/FreeShipping/Tracker/ThresholdAlertTracker.php',
         'WPDesk\\FS\\TableRate\\ImporterExporter\\Exporter' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ImporterExporter/Exporter.php',
         'WPDesk\\FS\\TableRate\\ImporterExporter\\ExporterData' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ImporterExporter/ExporterData.php',
         'WPDesk\\FS\\TableRate\\ImporterExporter\\Exporter\\JSON' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ImporterExporter/Exporter/JSON.php',
@@ -665,6 +671,7 @@ class ComposerStaticInitae3f9822c8831036beb147d3aa86c7c0
         'WPDesk\\FS\\TableRate\\ShippingMethod\\Duplicate\\DuplicateTracker' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ShippingMethod/Duplicate/DuplicateTracker.php',
         'WPDesk\\FS\\TableRate\\ShippingMethod\\Duplicate\\DuplicatorChecker' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ShippingMethod/Duplicate/DuplicatorChecker.php',
         'WPDesk\\FS\\TableRate\\ShippingMethod\\FreeShippingCalculator' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ShippingMethod/FreeShippingCalculator.php',
+        'WPDesk\\FS\\TableRate\\ShippingMethod\\FreeShippingThresholdRuleValidator' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ShippingMethod/FreeShippingThresholdRuleValidator.php',
         'WPDesk\\FS\\TableRate\\ShippingMethod\\Management\\ShippingMethodManagement' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ShippingMethod/Management/ShippingMethodManagement.php',
         'WPDesk\\FS\\TableRate\\ShippingMethod\\MethodDescription' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ShippingMethod/MethodDescription.php',
         'WPDesk\\FS\\TableRate\\ShippingMethod\\MethodLogo' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ShippingMethod/MethodLogo.php',
@@ -679,6 +686,7 @@ class ComposerStaticInitae3f9822c8831036beb147d3aa86c7c0
         'WPDesk\\FS\\TableRate\\ShippingMethod\\SingleMethodSettings' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ShippingMethod/SingleMethodSettings.php',
         'WPDesk\\FS\\TableRate\\ShippingMethod\\Timestamps\\MethodTimestamps' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ShippingMethod/Timestamps/MethodTimestamps.php',
         'WPDesk\\FS\\TableRate\\ShippingMethod\\Timestamps\\TrackerData' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ShippingMethod/Timestamps/TrackerData.php',
+        'WPDesk\\FS\\TableRate\\ShippingMethod\\Tracker\\MethodLogoTracker' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ShippingMethod/Tracker/MethodLogoTracker.php',
         'WPDesk\\FS\\TableRate\\ShippingMethodsIntegration\\Integration' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ShippingMethodsIntegration/Integration.php',
         'WPDesk\\FS\\TableRate\\ShippingMethodsIntegration\\OrderMetaData' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ShippingMethodsIntegration/OrderMetaData.php',
         'WPDesk\\FS\\TableRate\\ShippingMethodsIntegration\\SettingsFields' => __DIR__ . '/../..' . '/src/WPDesk/FS/TableRate/ShippingMethodsIntegration/SettingsFields.php',
@@ -709,9 +717,9 @@ class ComposerStaticInitae3f9822c8831036beb147d3aa86c7c0
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitae3f9822c8831036beb147d3aa86c7c0::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitae3f9822c8831036beb147d3aa86c7c0::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitae3f9822c8831036beb147d3aa86c7c0::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitb7f190e9b4ef3d7f577e95970b53187c::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitb7f190e9b4ef3d7f577e95970b53187c::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitb7f190e9b4ef3d7f577e95970b53187c::$classMap;
 
         }, null, ClassLoader::class);
     }

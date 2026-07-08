@@ -21,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Adds a multicheck control.
  */
 if ( ! class_exists( 'WFACPKirki_Control_MultiCheck' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_MultiCheck extends WFACPKirki_Control_Base {
 
 		/**
@@ -43,17 +44,17 @@ if ( ! class_exists( 'WFACPKirki_Control_MultiCheck' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <# if ( ! data.choices ) { return; } #>
+			<# if ( ! data.choices ) { return; } #>
 
-            <# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
-            <# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
+			<# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
+			<# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
 
-            <ul>
-                <# for ( key in data.choices ) { #>
-                <li><label<# if ( _.contains( data.value, key ) ) { #> class="checked"<# } #>><input {{{ data.inputAttrs }}} type="checkbox" value="{{ key }}"<# if ( _.contains( data.value, key ) ) {
-                    #> checked<# } #> />{{ data.choices[ key ] }}</label></li>
-                <# } #>
-            </ul>
+			<ul>
+				<# for ( key in data.choices ) { #>
+				<li><label<# if ( _.contains( data.value, key ) ) { #> class="checked"<# } #>><input {{{ data.inputAttrs }}} type="checkbox" value="{{ key }}"<# if ( _.contains( data.value, key ) ) {
+					#> checked<# } #> />{{ data.choices[ key ] }}</label></li>
+				<# } #>
+			</ul>
 			<?php
 		}
 	}

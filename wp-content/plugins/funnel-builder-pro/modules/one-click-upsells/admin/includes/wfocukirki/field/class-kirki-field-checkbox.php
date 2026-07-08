@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Checkbox' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Checkbox extends WFOCUKirki_Field {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Checkbox' ) ) {
 		protected function set_type() {
 
 			$this->type = 'checkbox';
-
 		}
 
 		/**
@@ -35,7 +35,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Checkbox' ) ) {
 			if ( ! $this->sanitize_callback ) {
 				$this->sanitize_callback = array( $this, 'sanitize' );
 			}
-
 		}
 
 		/**
@@ -54,7 +53,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Checkbox' ) ) {
 			}
 
 			return (bool) $value;
-
 		}
 
 		/**
@@ -65,7 +63,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Checkbox' ) ) {
 		protected function set_default() {
 
 			$this->default = (bool) ( 1 === $this->default || '1' === $this->default || true === $this->default || 'true' === $this->default || 'on' === $this->default );
-
 		}
 	}
 }

@@ -4,6 +4,7 @@ if ( ! class_exists( 'WFOCU_Radio_Image_Full' ) ) {
 	 * Type radio-image-full
 	 * Class WFOCU_Radio_Image_Full
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Radio_Image_Full extends WFOCUKirki_Control_Base {
 
 		/**
@@ -45,7 +46,6 @@ if ( ! class_exists( 'WFOCU_Radio_Image_Full' ) ) {
 					$this->json['labelStyle'] = 'style="' . esc_attr( $value ) . '" ';
 				}
 			}
-
 		}
 
 		/**
@@ -61,7 +61,6 @@ if ( ! class_exists( 'WFOCU_Radio_Image_Full' ) ) {
 		protected function content_template() {
 			include plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'admin/view/kirki/content-template-radio-image-full.php';
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Radio_Icon' ) ) {
@@ -69,6 +68,7 @@ if ( ! class_exists( 'WFOCU_Radio_Icon' ) ) {
 	 * Type radio-icon
 	 * Class WFOCU_Radio_Icon
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Radio_Icon extends WFOCUKirki_Control_Base {
 
 		/**
@@ -94,7 +94,6 @@ if ( ! class_exists( 'WFOCU_Radio_Icon' ) ) {
 				}
 				$this->json['labelStyle'] = 'style="' . esc_attr( $value ) . '" ';
 			}
-
 		}
 
 		/**
@@ -113,6 +112,7 @@ if ( ! class_exists( 'WFOCU_Radio_Icon' ) ) {
 	}
 }
 if ( ! class_exists( 'WFOCU_Radio_Image_Text' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Radio_Image_Text extends WFOCUKirki_Control_Base {
 
 		/**
@@ -155,7 +155,6 @@ if ( ! class_exists( 'WFOCU_Radio_Image_Text' ) ) {
 					$this->json['labelStyle'] = 'style="' . esc_attr( $value ) . '" ';
 				}
 			}
-
 		}
 
 		/**
@@ -174,6 +173,7 @@ if ( ! class_exists( 'WFOCU_Radio_Image_Text' ) ) {
 	}
 }
 if ( ! class_exists( 'WFOCU_Responsive_Font_Text' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Responsive_Font_Text extends WFOCUKirki_Control_Base {
 
 		/**
@@ -204,7 +204,6 @@ if ( ! class_exists( 'WFOCU_Responsive_Font_Text' ) ) {
 
 			wp_enqueue_script( 'wfocu-control-responsive-js', $uri . 'responsive.js', null, WFOCU_VERSION, true );
 			wp_enqueue_style( 'wfocu-control-responsive-css', $uri . 'responsive.css', null, WFOCU_VERSION );
-
 		}
 
 		/**
@@ -245,7 +244,6 @@ if ( ! class_exists( 'WFOCU_Responsive_Font_Text' ) ) {
 			foreach ( $this->input_attrs as $attr => $value ) {
 				$this->json['inputAttrs'] .= $attr . '="' . esc_attr( $value ) . '" ';
 			}
-
 		}
 
 		/**
@@ -261,6 +259,5 @@ if ( ! class_exists( 'WFOCU_Responsive_Font_Text' ) ) {
 		protected function content_template() {
 			include plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'admin/view/kirki/content-template-responsive-font-text.php';
 		}
-
 	}
 }

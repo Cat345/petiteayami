@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Create_Contact extends BWFAN_API_Base {
 	public static $ins;
 

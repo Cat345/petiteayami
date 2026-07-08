@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Upload' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Upload extends WFACPKirki_Field {
@@ -24,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Upload' ) ) {
 		protected function set_type() {
 
 			$this->type = 'upload';
-
 		}
 
 		/**
@@ -40,7 +43,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Upload' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'esc_url_raw';
-
 		}
 	}
 }

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFOb_Compatibility_WCS_Att_Product' ) ) {
 	/**
 	 * Name WooCommerce All Products For Subscriptions
@@ -6,9 +9,10 @@ if ( ! class_exists( 'WFOb_Compatibility_WCS_Att_Product' ) ) {
 	 * Author SomewhereWarm
 	 * Class WFOb_Compatibility_WCS_Att_Product
 	 */
+	#[\AllowDynamicProperties]
 	class WFOb_Compatibility_WCS_Att_Product {
 		public function __construct() {
-			add_action( 'wfob_before_add_to_cart', [ $this, 'remove_discounting' ] );
+			add_action( 'wfob_before_add_to_cart', array( $this, 'remove_discounting' ) );
 		}
 
 		public function is_enabled() {

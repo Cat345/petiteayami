@@ -4,10 +4,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 if ( ! class_exists( 'WFOB_Compatibility_With_Angel_Eye' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_Angel_Eye {
 		public function __construct() {
-			add_filter( 'wfob_skip_order_bump', [ $this, 'check_angel_eye_checkout_enable' ] );
-			add_filter( 'wfob_do_not_execute_bump_fragments', [ $this, 'do_not_print_bumps_html' ] );
+			add_filter( 'wfob_skip_order_bump', array( $this, 'check_angel_eye_checkout_enable' ) );
+			add_filter( 'wfob_do_not_execute_bump_fragments', array( $this, 'do_not_print_bumps_html' ) );
 		}
 
 		/**

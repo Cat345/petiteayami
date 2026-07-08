@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class bwfan_Input_Cart_Category_Select {
 	public function __construct() {
 		// vars

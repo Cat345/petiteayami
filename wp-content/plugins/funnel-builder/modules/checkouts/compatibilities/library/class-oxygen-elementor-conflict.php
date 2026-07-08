@@ -10,19 +10,19 @@ if ( ! class_exists( 'WFACP_Oxygen_Elementor_conflict' ) ) {
 
 		public function is_enabled() {
 
-			if ( isset( $_GET['ct_builder'] ) ) {
+			if ( isset( $_GET['ct_builder'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				return false;
 			}
 			if ( class_exists( 'OXY_VSB_Connection' ) && class_exists( '\Elementor\Plugin' ) ) {
 				global $post;
 
 				$elementor_open = false;
-				if ( isset( $_GET['action'] ) && 'elementor' === sanitize_text_field( wp_unslash( $_GET['action'] ) ) && isset( $_GET['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
-					$post           = get_post( absint( wp_unslash( $_GET['post'] ) ) );
+				if ( isset( $_GET['action'] ) && 'elementor' === sanitize_text_field( wp_unslash( $_GET['action'] ) ) && isset( $_GET['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					$post           = get_post( absint( wp_unslash( $_GET['post'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$elementor_open = true;
 
-				} elseif ( isset( $_GET['elementor-preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
-					$post           = get_post( absint( wp_unslash( $_GET['elementor-preview'] ) ) );
+				} elseif ( isset( $_GET['elementor-preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					$post           = get_post( absint( wp_unslash( $_GET['elementor-preview'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$elementor_open = true;
 				}
 
@@ -60,7 +60,7 @@ if ( ! class_exists( 'WFACP_Oxygen_Elementor_conflict' ) ) {
 		}
 
 		public function delete_elementor_meta( $post_id, $post ) {
-			if ( isset( $_GET['action'] ) && $_GET['action'] == 'ct_save_components_tree' && ! is_null( $post ) && $post->post_type = WFACP_Common::get_post_type_slug() ) {
+			if ( isset( $_GET['action'] ) && $_GET['action'] == 'ct_save_components_tree' && ! is_null( $post ) && $post->post_type === WFACP_Common::get_post_type_slug() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				delete_post_meta( $post_id, '_elementor_version' );
 				delete_post_meta( $post_id, '_elementor_template_type' );
 				delete_post_meta( $post_id, '_elementor_edit_mode' );
@@ -75,7 +75,7 @@ if ( ! class_exists( 'WFACP_Oxygen_Elementor_conflict' ) ) {
 		public function delete_oxygen_data( $instance, $data ) {
 
 			$post = $instance->get_post();
-			if ( ! is_null( $post ) && $post->post_type = WFACP_Common::get_post_type_slug() ) {
+			if ( ! is_null( $post ) && $post->post_type === WFACP_Common::get_post_type_slug() ) {
 				delete_post_meta( $post->ID, 'ct_page_settings' );
 			}
 		}

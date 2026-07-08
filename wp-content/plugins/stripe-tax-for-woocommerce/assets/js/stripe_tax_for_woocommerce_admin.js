@@ -191,6 +191,94 @@ jQuery(document).ready(function ($) {
         };
     });
 
+    var stripe_tax_for_woocommerce_inject_customer = function (event, data) {
+        data = data || {};
+
+        var customer_user = $('#customer_user').val();
+        if (!customer_user) {
+            customer_user = 'guest';
+        }
+
+        data.stripe_tax_for_woocommerce_customer_user = customer_user;
+
+        return data;
+    };
+
+    var stripe_tax_for_woocommerce_order_item_handles = [
+        'add_fee',
+        'add_shipping',
+        'add_items',
+        'add_coupon',
+        'remove_coupon',
+        'delete_item',
+        'delete_tax',
+        'save_line_items',
+        'recalculate'
+    ];
+
+    var $stripe_tax_for_woocommerce_order_items = $('#woocommerce-order-items');
+
+    $.each(stripe_tax_for_woocommerce_order_item_handles, function (index, handle) {
+        $stripe_tax_for_woocommerce_order_items.on(
+            'woocommerce_order_meta_box_' + handle + '_ajax_data',
+            stripe_tax_for_woocommerce_inject_customer
+        );
+    });
+
+    //safety net: make sure the selected customer is attached to the order-item AJAX requests that trigger a tax calculation
+    $(document).ajaxSend(function (event, jqxhr, settings) {
+        if (typeof settings.data !== 'string' || settings.data === '') {
+            return;
+        }
+
+        var relevant_actions = [
+            'action=woocommerce_add_order_fee',
+            'action=woocommerce_add_order_shipping',
+            'action=woocommerce_add_order_item',
+            'action=woocommerce_save_order_items',
+            'action=woocommerce_add_coupon_discount',
+            'action=woocommerce_remove_order_coupon',
+            'action=woocommerce_remove_order_item',
+            'action=woocommerce_remove_order_tax',
+            'action=woocommerce_calc_line_taxes'
+        ];
+
+        var is_relevant = false;
+        for (var i = 0; i < relevant_actions.length; i++) {
+            if (settings.data.indexOf(relevant_actions[i]) !== -1) {
+                is_relevant = true;
+                break;
+            }
+        }
+
+        if (!is_relevant) {
+            return;
+        }
+        var $customer_user = $('#customer_user');
+        if (!$customer_user.length) {
+            return;
+        }
+
+        var customer_user = $customer_user.val();
+        if (!customer_user) {
+            customer_user = 'guest';
+        }
+
+        if (settings.data.indexOf('stripe_tax_for_woocommerce_customer_user=') === -1) {
+            settings.data += '&stripe_tax_for_woocommerce_customer_user=' + encodeURIComponent(customer_user);
+        }
+        var line1 = $('#_shipping_address_1').val() || $('#_billing_address_1').val() || '';
+        var line2 = $('#_shipping_address_2').val() || $('#_billing_address_2').val() || '';
+
+        if (line1 && settings.data.indexOf('line1=') === -1) {
+            settings.data += '&line1=' + encodeURIComponent(line1);
+        }
+
+        if (line2 && settings.data.indexOf('line2=') === -1) {
+            settings.data += '&line2=' + encodeURIComponent(line2);
+        }
+    });
+
     $('#stripe_tax_for_woocommerce_button_id_disconnect_from_stripe').click(function (e) {
         var $this = $(this);
 

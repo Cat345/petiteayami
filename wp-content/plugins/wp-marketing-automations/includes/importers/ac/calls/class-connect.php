@@ -4,6 +4,7 @@ namespace BWFAN\Importers\AC\Calls;
 
 use BWF_CO;
 
+#[\AllowDynamicProperties]
 class Connect extends Call {
 
 	/**

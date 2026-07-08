@@ -5,6 +5,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
  */
 if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WooFunnels_UpStroke_Dynamic_Shipping {
 
 		public static $instance;
@@ -57,17 +58,24 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 			$is_tax_exempt      = $order->get_meta( 'is_vat_exempt' );
 
 			if ( ! empty( $products ) ) {
-				$response = wp_remote_post(
+				$ts        = time();
+				$body_json = wp_json_encode( array(
+					'products'        => $products,
+					'location'        => $location,
+					'chosen_shipping' => $existing_methods,
+					'currency'        => $order->get_currency(),
+				) );
+				$sig       = hash_hmac( 'sha256', 'wfocu_cs:' . $ts . ':' . $body_json, wp_salt( 'auth' ) );
+				$response  = wp_remote_post(
 					WC()->api_request_url( 'wfocu_cs' ),
 					array(
 						'body'      => array(
-							'products'        => $products,
-							'location'        => $location,
-							'chosen_shipping' => $existing_methods,
-							'currency'        => $order->get_currency(),
+							'_body' => $body_json,
+							'_ts'   => $ts,
+							'_sig'  => $sig,
 						),
-						'sslverify' => false,
-						'timeout'   => 20,
+						'sslverify' => ! ( defined( 'WP_DEBUG' ) && WP_DEBUG ),
+						'timeout'   => 20, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout -- Shipping rate calculation requires a longer timeout.
 					)
 				);
 				if ( is_wp_error( $response ) ) {
@@ -170,7 +178,20 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 		 * @throws WC_Data_Exception
 		 */
 		public function maybe_handle_call_cs() {
-			if ( ! isset( $_POST['location'] ) ) {
+			$ts        = isset( $_POST['_ts'] ) ? (int) $_POST['_ts'] : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$sig       = isset( $_POST['_sig'] ) ? sanitize_text_field( wp_unslash( $_POST['_sig'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$body_json = isset( $_POST['_body'] ) ? wp_unslash( $_POST['_body'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- HMAC signature verified below; sanitizing would corrupt JSON.
+			$expected  = hash_hmac( 'sha256', 'wfocu_cs:' . $ts . ':' . $body_json, wp_salt( 'auth' ) );
+			if ( abs( time() - $ts ) > 60 || ! hash_equals( $expected, $sig ) ) {
+				wp_send_json( array( 'packages' => array() ), 403 );
+			}
+
+			$body_data = json_decode( $body_json, true );
+			if ( ! is_array( $body_data ) ) {
+				wp_send_json( array( 'packages' => array() ), 400 );
+			}
+
+			if ( ! isset( $body_data['location'] ) || ! is_array( $body_data['location'] ) || count( $body_data['location'] ) < 4 ) {
 				wp_send_json(
 					array(
 						'packages' => array(),
@@ -179,12 +200,12 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 			}
 
 			ob_start();
-			list( $country, $state, $city, $postcode ) = wc_clean( $_POST['location'] );
+			list( $country, $state, $city, $postcode ) = wc_clean( $body_data['location'] );
 			WC()->customer->set_location( $country, $state, $postcode, $city );
 			WC()->customer->set_shipping_location( $country, $state, $postcode, $city );
 
-			$products = isset( $_POST['products'] ) ? wc_clean( $_POST['products'] ) : array();
-			WC()->session->set( 'chosen_shipping_methods', isset( $_POST['chosen_shipping'] ) ? wc_clean( $_POST['chosen_shipping'] ) : '' );
+			$products = isset( $body_data['products'] ) ? wc_clean( $body_data['products'] ) : array();
+			WC()->session->set( 'chosen_shipping_methods', isset( $body_data['chosen_shipping'] ) ? wc_clean( $body_data['chosen_shipping'] ) : '' );
 			if ( empty( $products ) ) {
 				wp_send_json(
 					array(
@@ -192,13 +213,13 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 					)
 				);
 			}
-			$post_currency = isset( $_POST['currency'] ) ? wc_clean( wp_unslash( $_POST['currency'] ) ) : '';
+			$post_currency = isset( $body_data['currency'] ) ? wc_clean( $body_data['currency'] ) : '';
 			if ( $post_currency ) {
 				$this->maybe_set_wmc_currency( $post_currency );
 			}
 
 			foreach ( $products as $product ) {
-				WC()->session->set( 'chosen_shipping_methods', wc_clean( $_POST['chosen_shipping'] ) );
+				WC()->session->set( 'chosen_shipping_methods', isset( $body_data['chosen_shipping'] ) ? wc_clean( $body_data['chosen_shipping'] ) : '' );
 				try {
 					$offer_product = ( isset( $product['offer_product'] ) && ( wc_clean( $product['offer_product'] ) ) ) ? array(
 						'offer_product' => 1,
@@ -214,7 +235,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 					WFOCU_Core()->log->log( "Product with product id: {$product['product_id']} and qty: {$product['qty']} added to cart with cart item id: $cart_item_id" );
 
 				} catch ( Exception $e ) {
-					WFOCU_Core()->log->log( 'reason no add to cart: ' . print_r( $e, true ) );
+					WFOCU_Core()->log->log( 'reason no add to cart: ' . $e->getMessage() );
 				}
 
 				if ( ! isset( $cart_item_id ) && is_null( $cart_item_id ) ) {
@@ -242,7 +263,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 				WC()->cart->get_cart_contents()[ $cart_item_id ]['data']->set_price( $price );
 			}
 
-			WC()->session->set( 'chosen_shipping_methods', wc_clean( $_POST['chosen_shipping'] ) );
+			WC()->session->set( 'chosen_shipping_methods', isset( $body_data['chosen_shipping'] ) ? wc_clean( $body_data['chosen_shipping'] ) : '' );
 			WC()->cart->calculate_shipping();
 			WC()->cart->calculate_totals();
 
@@ -268,7 +289,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 				$my_packages[ $i ] = $this->wfocu_parse_shipping_packages( $package['rates'] );
 			}
 			if ( defined( 'WFOCU_IS_DEV' ) && true === WFOCU_IS_DEV ) {
-				WFOCU_Core()->log->log( 'UpStroke PowerPack: Final parsed offer shipping Packages: ' . print_r( $my_packages, true ) );
+				WFOCU_Core()->log->log( 'UpStroke PowerPack: Final parsed offer shipping Packages: ' . wp_json_encode( $my_packages ) );
 			}
 
 			WC()->cart->empty_cart();

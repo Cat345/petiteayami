@@ -2617,7 +2617,7 @@
                                 product_search_timeout = setTimeout(
                                     function (query, vthis) {
                                         let wp_ajax = wfo_ajax();
-                                        let product_query = {'term': query, 'funnel_id': self.get_funnel_id()};
+                                        let product_query = {'term': query, 'funnel_id': self.get_funnel_id(), '_nonce': wfocuParams.ajax_nonce_page_search};
                                         wp_ajax.ajax('page_search', product_query);
                                         wp_ajax.success = function (rsp) {
                                             if (typeof rsp === "string") {

@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'BWFCRM_Lists' ) && BWFAN_Common::is_pro_3_0() ) {
+	#[\AllowDynamicProperties]
 	class BWFCRM_Lists extends BWFCRM_Term {
 		public function get_description() {
 			if ( is_array( $this->_data ) && isset( $this->_data['description'] ) ) {

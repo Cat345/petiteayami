@@ -6,10 +6,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Map' ) ) {
+	#[\AllowDynamicProperties]
 	class Map extends \Bricks\Element {
 		public $category = 'funnelkit';
-		public $name = 'wfty-map-widget';
-		public $icon = 'ti-map-alt';
+		public $name     = 'wfty-map-widget';
+		public $icon     = 'ti-map-alt';
 
 		/**
 		 * Retrieves the label for the Map element.
@@ -165,7 +166,6 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Map' ) ) {
 		 *
 		 * @return void
 		 * @since 1.0.0
-		 *
 		 */
 		public function render() {
 			$settings = $this->settings;
@@ -176,13 +176,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Map' ) ) {
 
 			$this->set_attribute( 'wrapper', 'class', 'bricks-map-widget-wrapper' );
 			?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 					<?php
 					echo do_shortcode( '[wfty-map-widget enable_map="' . $enable_map . '" enable_message="' . $enable_message . '" enable_timeline="' . $enable_timeline . '"]' );
 					?>
-                </div>
-            </div>
+				</div>
+			</div>
 			<?php
 		}
 	}

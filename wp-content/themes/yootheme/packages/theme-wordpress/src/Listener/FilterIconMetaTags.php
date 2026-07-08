@@ -24,7 +24,7 @@ class FilterIconMetaTags
      *
      * @link https://developer.wordpress.org/reference/hooks/site_icon_meta_tags/
      */
-    public function handle(array $tags)
+    public function handle(array $tags): array
     {
         $icons = array_filter([
             $this->load('favicon', 'icon', ['sizes' => 'any']),

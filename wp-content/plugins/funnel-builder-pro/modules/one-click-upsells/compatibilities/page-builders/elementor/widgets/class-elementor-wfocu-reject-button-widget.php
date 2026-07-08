@@ -11,11 +11,11 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Button_Widget' ) ) {
 	/**
 	 * Class Elementor_WFOCU_Reject_Button_Widget
 	 */
+	#[\AllowDynamicProperties]
 	class Elementor_WFOCU_Reject_Button_Widget extends \Elementor\Widget_Button {
 
 		/**
 		 * Get widget name.
-		 *
 		 *
 		 * @return string Widget name.
 		 */
@@ -47,7 +47,7 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Button_Widget' ) ) {
 		 * @return array Widget categories.
 		 */
 		public function get_categories() {
-			return [ 'upstroke' ];
+			return array( 'upstroke' );
 		}
 
 
@@ -60,230 +60,302 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Button_Widget' ) ) {
 		 */
 		protected function register_controls() {
 
+			$this->start_controls_section(
+				'section_button',
+				array(
+					'label' => __( 'Reject Offer', 'woofunnels-upstroke-one-click-upsell' ),
+					'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
+				)
+			);
 
-			$this->start_controls_section( 'section_button', [
-				'label' => __( 'Reject Offer', 'woofunnels-upstroke-one-click-upsell' ),
-				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
-			] );
+			$this->add_control(
+				'text',
+				array(
+					'label'       => __( 'Title', 'woofunnels-upstroke-one-click-upsell' ),
+					'type'        => \Elementor\Controls_Manager::TEXT,
+					'dynamic'     => array(
+						'active' => true,
+					),
+					'default'     => __( 'No thanks, I don’t want to take advantage of this one-time offer >', 'woofunnels-upstroke-one-click-upsell' ),
+					'placeholder' => __( 'Reject Offer', 'woofunnels-upstroke-one-click-upsell' ),
 
-			$this->add_control( 'text', [
-				'label'       => __( 'Title', 'woofunnels-upstroke-one-click-upsell' ),
-				'type'        => \Elementor\Controls_Manager::TEXT,
-				'dynamic'     => [
-					'active' => true,
-				],
-				'default'     => __( 'No thanks, I don’t want to take advantage of this one-time offer >', 'woofunnels-upstroke-one-click-upsell' ),
-				'placeholder' => __( 'Reject Offer', 'woofunnels-upstroke-one-click-upsell' ),
+				)
+			);
 
-			] );
+			$this->add_control(
+				'size',
+				array(
+					'label'          => __( 'Size', 'woofunnels-upstroke-one-click-upsel' ),
+					'type'           => \Elementor\Controls_Manager::SELECT,
+					'default'        => 'sm',
+					'options'        => self::get_button_sizes(),
+					'style_transfer' => true,
+				)
+			);
 
-			$this->add_control( 'size', [
-				'label'          => __( 'Size', 'woofunnels-upstroke-one-click-upsel' ),
-				'type'           => \Elementor\Controls_Manager::SELECT,
-				'default'        => 'sm',
-				'options'        => self::get_button_sizes(),
-				'style_transfer' => true,
-			] );
-
-			$this->add_responsive_control( 'align', [
-				'label'        => __( 'Alignment', 'woofunnels-upstroke-one-click-upsell' ),
-				'type'         => \Elementor\Controls_Manager::CHOOSE,
-				'options'      => [
-					'left'    => [
-						'title' => __( 'Left', 'woofunnels-upstroke-one-click-upsell' ),
-						'icon'  => 'eicon-text-align-left',
-					],
-					'center'  => [
-						'title' => __( 'Center', 'woofunnels-upstroke-one-click-upsell' ),
-						'icon'  => 'eicon-text-align-center',
-					],
-					'right'   => [
-						'title' => __( 'Right', 'woofunnels-upstroke-one-click-upsell' ),
-						'icon'  => 'eicon-text-align-right',
-					],
-					'justify' => [
-						'title' => __( 'Justified', 'woofunnels-upstroke-one-click-upsell' ),
-						'icon'  => 'eicon-text-align-justify',
-					],
-				],
-				'prefix_class' => 'elementor%s-align-',
-				'default'      => 'justify',
-				/*'selectors'    => [
+			$this->add_responsive_control(
+				'align',
+				array(
+					'label'        => __( 'Alignment', 'woofunnels-upstroke-one-click-upsell' ),
+					'type'         => \Elementor\Controls_Manager::CHOOSE,
+					'options'      => array(
+						'left'    => array(
+							'title' => __( 'Left', 'woofunnels-upstroke-one-click-upsell' ),
+							'icon'  => 'eicon-text-align-left',
+						),
+						'center'  => array(
+							'title' => __( 'Center', 'woofunnels-upstroke-one-click-upsell' ),
+							'icon'  => 'eicon-text-align-center',
+						),
+						'right'   => array(
+							'title' => __( 'Right', 'woofunnels-upstroke-one-click-upsell' ),
+							'icon'  => 'eicon-text-align-right',
+						),
+						'justify' => array(
+							'title' => __( 'Justified', 'woofunnels-upstroke-one-click-upsell' ),
+							'icon'  => 'eicon-text-align-justify',
+						),
+					),
+					'prefix_class' => 'elementor%s-align-',
+					'default'      => 'justify',
+				/*
+				'selectors'    => [
 					'{{WRAPPER}} .elementor-button .elementor-button-subtitle'                                                   => 'font-size: 15px; line-height: 1.3; font-weight: 400; display: block; margin-top: 5px; font-family: "Open Sans",sans-serif;',
 					'{{WRAPPER}} .elementor-button .elementor-button-text, {{WRAPPER}} .elementor-button .elementor-button-icon' => 'font-family: "Open Sans",sans-serif; font-size: 21px; font-weight: 700; line-height: 1.5;',
 					'body[data-elementor-device-mode="mobile"] {{WRAPPER}} .elementor-button .elementor-button-text'             => 'font-size: 18px;',
 				],*/
-			] );
+				)
+			);
 
-			$this->add_control( 'icon', [
-				'label'       => __( 'Icon', 'woofunnels-upstroke-one-click-upsell' ),
-				'type'        => \Elementor\Controls_Manager::ICON,
-				'label_block' => true,
-				'default'     => '',
-			] );
+			$this->add_control(
+				'icon',
+				array(
+					'label'       => __( 'Icon', 'woofunnels-upstroke-one-click-upsell' ),
+					'type'        => \Elementor\Controls_Manager::ICON,
+					'label_block' => true,
+					'default'     => '',
+				)
+			);
 
-			$this->add_control( 'icon_align', [
-				'label'     => __( 'Icon Position', 'elementor' ),
-				'type'      => Controls_Manager::SELECT,
-				'default'   => 'left',
-				'options'   => [
-					'left'  => __( 'Before', 'elementor' ),
-					'right' => __( 'After', 'elementor' ),
-				],
-				'condition' => [
-					'icon!' => '',
-				],
-			] );
+			$this->add_control(
+				'icon_align',
+				array(
+					'label'     => __( 'Icon Position', 'elementor' ),
+					'type'      => Controls_Manager::SELECT,
+					'default'   => 'left',
+					'options'   => array(
+						'left'  => __( 'Before', 'elementor' ),
+						'right' => __( 'After', 'elementor' ),
+					),
+					'condition' => array(
+						'icon!' => '',
+					),
+				)
+			);
 
-			$this->add_control( 'icon_indent', [
-				'label'     => __( 'Icon Spacing', 'elementor' ),
-				'type'      => Controls_Manager::SLIDER,
-				'range'     => [
-					'px' => [
-						'max' => 50,
-					],
-				],
-				'condition' => [
-					'icon!' => '',
-				],
-				'selectors' => [
-					'{{WRAPPER}} .elementor-button .elementor-align-icon-right' => 'margin-left: {{SIZE}}{{UNIT}};',
-					'{{WRAPPER}} .elementor-button .elementor-align-icon-left'  => 'margin-right: {{SIZE}}{{UNIT}};',
-				],
-			] );
-			$this->add_control( 'view', [
-				'label'   => __( 'View', 'woofunnels-upstroke-one-click-upsell' ),
-				'type'    => \Elementor\Controls_Manager::HIDDEN,
-				'default' => 'traditional',
-			] );
+			$this->add_control(
+				'icon_indent',
+				array(
+					'label'     => __( 'Icon Spacing', 'elementor' ),
+					'type'      => Controls_Manager::SLIDER,
+					'range'     => array(
+						'px' => array(
+							'max' => 50,
+						),
+					),
+					'condition' => array(
+						'icon!' => '',
+					),
+					'selectors' => array(
+						'{{WRAPPER}} .elementor-button .elementor-align-icon-right' => 'margin-left: {{SIZE}}{{UNIT}};',
+						'{{WRAPPER}} .elementor-button .elementor-align-icon-left'  => 'margin-right: {{SIZE}}{{UNIT}};',
+					),
+				)
+			);
+			$this->add_control(
+				'view',
+				array(
+					'label'   => __( 'View', 'woofunnels-upstroke-one-click-upsell' ),
+					'type'    => \Elementor\Controls_Manager::HIDDEN,
+					'default' => 'traditional',
+				)
+			);
 
 			$this->end_controls_tab();
 			$this->end_controls_section();
 
-			$this->start_controls_section( 'section_style', [
-				'label' => __( 'Reject Offer', 'elementor' ),
-				'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
-			] );
+			$this->start_controls_section(
+				'section_style',
+				array(
+					'label' => __( 'Reject Offer', 'elementor' ),
+					'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
+				)
+			);
 
-			$this->_add_typography( \Elementor\Group_Control_Typography::get_type(), [
-				'name'     => 'typography',
-				'selector' => '{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button',
-			] );
+			$this->_add_typography(
+				\Elementor\Group_Control_Typography::get_type(),
+				array(
+					'name'     => 'typography',
+					'selector' => '{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button',
+				)
+			);
 
 			$this->start_controls_tabs( 'tabs_button_style' );
 
-			$this->start_controls_tab( 'tab_button_normal', [
-				'label' => __( 'Normal', 'elementor' ),
-			] );
+			$this->start_controls_tab(
+				'tab_button_normal',
+				array(
+					'label' => __( 'Normal', 'elementor' ),
+				)
+			);
 
-			$this->add_control( 'button_text_color', [
-				'label'     => __( 'Text Color', 'elementor' ),
-				'type'      => \Elementor\Controls_Manager::COLOR,
-				'default'   => '#fff',
-				'selectors' => [
-					'{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button .elementor-button-text' => 'color: {{VALUE}};',
-				],
-			] );
+			$this->add_control(
+				'button_text_color',
+				array(
+					'label'     => __( 'Text Color', 'elementor' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'default'   => '#fff',
+					'selectors' => array(
+						'{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button .elementor-button-text' => 'color: {{VALUE}};',
+					),
+				)
+			);
 
-			$this->add_control( 'button_icon_color', [
-				'label'     => __( 'Icon Color', 'elementor' ),
-				'type'      => \Elementor\Controls_Manager::COLOR,
-				'default'   => '#fff',
-				'selectors' => [
-					'{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button .elementor-button-icon' => 'color: {{VALUE}};',
-				],
-			] );
+			$this->add_control(
+				'button_icon_color',
+				array(
+					'label'     => __( 'Icon Color', 'elementor' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'default'   => '#fff',
+					'selectors' => array(
+						'{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button .elementor-button-icon' => 'color: {{VALUE}};',
+					),
+				)
+			);
 
-			$this->_add_color( 'background_color', [
-				'label'   => __( 'Background Color', 'elementor' ),
-				'type'    => \Elementor\Controls_Manager::COLOR,
-				'default' => '#d9534f',
+			$this->_add_color(
+				'background_color',
+				array(
+					'label'     => __( 'Background Color', 'elementor' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'default'   => '#d9534f',
 
-				'selectors' => [
-					'{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button' => 'background-color: {{VALUE}};',
-				],
-			] );
+					'selectors' => array(
+						'{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button' => 'background-color: {{VALUE}};',
+					),
+				)
+			);
 
 			$this->end_controls_tab();
 
-			$this->start_controls_tab( 'tab_button_hover', [
-				'label' => __( 'Hover', 'elementor' ),
-			] );
+			$this->start_controls_tab(
+				'tab_button_hover',
+				array(
+					'label' => __( 'Hover', 'elementor' ),
+				)
+			);
 
-			$this->add_control( 'hover_color', [
-				'label'     => __( 'Text Color', 'elementor' ),
-				'type'      => \Elementor\Controls_Manager::COLOR,
-				'default'   => '#fff',
-				'selectors' => [
-					'{{WRAPPER}} a.elementor-button:hover, {{WRAPPER}} .elementor-button:hover .elementor-button-text' => 'color: {{VALUE}};',
-				],
-			] );
+			$this->add_control(
+				'hover_color',
+				array(
+					'label'     => __( 'Text Color', 'elementor' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'default'   => '#fff',
+					'selectors' => array(
+						'{{WRAPPER}} a.elementor-button:hover, {{WRAPPER}} .elementor-button:hover .elementor-button-text' => 'color: {{VALUE}};',
+					),
+				)
+			);
 
-			$this->add_control( 'button_hover_icon_color', [
-				'label'     => __( 'Icon Color', 'elementor' ),
-				'type'      => \Elementor\Controls_Manager::COLOR,
-				'default'   => '#fff',
-				'selectors' => [
-					'{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button:hover .elementor-button-icon' => 'color: {{VALUE}};',
-				],
-			] );
+			$this->add_control(
+				'button_hover_icon_color',
+				array(
+					'label'     => __( 'Icon Color', 'elementor' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'default'   => '#fff',
+					'selectors' => array(
+						'{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button:hover .elementor-button-icon' => 'color: {{VALUE}};',
+					),
+				)
+			);
 
-			$this->add_control( 'button_background_hover_color', [
-				'label'     => __( 'Background Color', 'elementor' ),
-				'default'   => '#d9534f',
-				'type'      => \Elementor\Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} a.elementor-button:hover, {{WRAPPER}} .elementor-button:hover' => 'background-color: {{VALUE}};',
-				],
-			] );
+			$this->add_control(
+				'button_background_hover_color',
+				array(
+					'label'     => __( 'Background Color', 'elementor' ),
+					'default'   => '#d9534f',
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'selectors' => array(
+						'{{WRAPPER}} a.elementor-button:hover, {{WRAPPER}} .elementor-button:hover' => 'background-color: {{VALUE}};',
+					),
+				)
+			);
 
-			$this->add_control( 'button_hover_border_color', [
-				'label'     => __( 'Border Color', 'elementor' ),
-				'type'      => \Elementor\Controls_Manager::COLOR,
-				'condition' => [
-					'border_border!' => '',
-				],
-				'selectors' => [
-					'{{WRAPPER}} a.elementor-button:hover, {{WRAPPER}} .elementor-button:hover' => 'border-color: {{VALUE}};',
-				],
-			] );
+			$this->add_control(
+				'button_hover_border_color',
+				array(
+					'label'     => __( 'Border Color', 'elementor' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'condition' => array(
+						'border_border!' => '',
+					),
+					'selectors' => array(
+						'{{WRAPPER}} a.elementor-button:hover, {{WRAPPER}} .elementor-button:hover' => 'border-color: {{VALUE}};',
+					),
+				)
+			);
 
-			$this->add_control( 'hover_animation', [
-				'label' => __( 'Hover Animation', 'elementor' ),
-				'type'  => \Elementor\Controls_Manager::HOVER_ANIMATION,
-			] );
+			$this->add_control(
+				'hover_animation',
+				array(
+					'label' => __( 'Hover Animation', 'elementor' ),
+					'type'  => \Elementor\Controls_Manager::HOVER_ANIMATION,
+				)
+			);
 
 			$this->end_controls_tabs();
 
-			$this->add_group_control( Group_Control_Border::get_type(), [
-				'name'      => 'border',
-				'selector'  => '{{WRAPPER}} .elementor-button',
-				'separator' => 'before',
-			] );
+			$this->add_group_control(
+				Group_Control_Border::get_type(),
+				array(
+					'name'      => 'border',
+					'selector'  => '{{WRAPPER}} .elementor-button',
+					'separator' => 'before',
+				)
+			);
 
-			$this->add_control( 'border_radius', [
-				'label'      => __( 'Border Radius', 'elementor' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%' ],
-				'selectors'  => [
-					'{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-			] );
+			$this->add_control(
+				'border_radius',
+				array(
+					'label'      => __( 'Border Radius', 'elementor' ),
+					'type'       => Controls_Manager::DIMENSIONS,
+					'size_units' => array( 'px', '%' ),
+					'selectors'  => array(
+						'{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					),
+				)
+			);
 
-			$this->add_group_control( Group_Control_Box_Shadow::get_type(), [
-				'name'     => 'button_box_shadow',
-				'selector' => '{{WRAPPER}} .elementor-button',
-			] );
+			$this->add_group_control(
+				Group_Control_Box_Shadow::get_type(),
+				array(
+					'name'     => 'button_box_shadow',
+					'selector' => '{{WRAPPER}} .elementor-button',
+				)
+			);
 
-			$this->add_responsive_control( 'text_padding', [
-				'label'      => __( 'Padding', 'elementor' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', 'em', '%' ],
-				'selectors'  => [
-					'{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-				'separator'  => 'before',
-			] );
+			$this->add_responsive_control(
+				'text_padding',
+				array(
+					'label'      => __( 'Padding', 'elementor' ),
+					'type'       => Controls_Manager::DIMENSIONS,
+					'size_units' => array( 'px', 'em', '%' ),
+					'selectors'  => array(
+						'{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					),
+					'separator'  => 'before',
+				)
+			);
 
 			$this->end_controls_section();
 		}
@@ -295,10 +367,10 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Button_Widget' ) ) {
 		public function _add_typography( $group, $args, $typography_type = 'TYPOGRAPHY_1' ) {
 
 			if ( version_compare( ELEMENTOR_VERSION, '3.15.0', '>=' ) ) {
-				$args['global'] = [
+				$args['global'] = array(
 					'default' => Elementor\Core\Kits\Documents\Tabs\Global_Typography::TYPOGRAPHY_ACCENT,
-				];
-			} else if ( defined( 'ELEMENTOR_VERSION' ) && version_compare( ELEMENTOR_VERSION, '2.8.0', '>=' ) ) {
+				);
+			} elseif ( defined( 'ELEMENTOR_VERSION' ) && version_compare( ELEMENTOR_VERSION, '2.8.0', '>=' ) ) {
 				$args['scheme'] = \Elementor\Core\Schemes\Typography::TYPOGRAPHY_4;
 			} else {
 				$args['scheme'] = \Elementor\Typography::TYPOGRAPHY_4;
@@ -336,13 +408,12 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Button_Widget' ) ) {
 			}
 
 			?>
-            <div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
-                <a <?php echo $this->get_render_attribute_string( 'button' ); ?>>
+			<div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
+				<a <?php echo $this->get_render_attribute_string( 'button' ); ?>>
 					<?php $this->render_button_text(); ?>
-                </a>
-            </div>
+				</a>
+			</div>
 			<?php
-
 		}
 
 		/**
@@ -354,13 +425,13 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Button_Widget' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <#
-            view.addRenderAttribute( 'text', 'class', 'elementor-button-text' );
+			<#
+			view.addRenderAttribute( 'text', 'class', 'elementor-button-text' );
 
-            view.addInlineEditingAttributes( 'text', 'none' );
-            #>
-            <div class="elementor-button-wrapper">
-                <a id="{{ settings.button_css_id }}" class="elementor-button elementor-size-{{ settings.size }} elementor-animation-{{ settings.hover_animation }}" href="javascript:void(0);" role="button">
+			view.addInlineEditingAttributes( 'text', 'none' );
+			#>
+			<div class="elementor-button-wrapper">
+				<a id="{{ settings.button_css_id }}" class="elementor-button elementor-size-{{ settings.size }} elementor-animation-{{ settings.hover_animation }}" href="javascript:void(0);" role="button">
 				<span class="elementor-button-content-wrapper">
 					<# if ( settings.icon ) { #>
 					<span class="elementor-button-icon elementor-align-icon-{{ settings.icon_align }}">
@@ -368,9 +439,9 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Button_Widget' ) ) {
 					</span>
 					<# } #>
 					<span {{{ view.getRenderAttributeString( 'text' ) }}}>{{{ settings.text }}}</span>
-                    </span>
-                </a>
-            </div>
+					</span>
+				</a>
+			</div>
 			<?php
 		}
 
@@ -385,26 +456,28 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Button_Widget' ) ) {
 			if ( isset( $settings['icon_align'] ) ) {
 				$alignment = $settings['icon_align'];
 			}
-			$this->add_render_attribute( [
-				'content-wrapper' => [
-					'class' => 'elementor-button-content-wrapper',
-				],
-				'icon-align'      => [
-					'class' => [
-						'elementor-button-icon',
-						'elementor-align-icon-' . $alignment,
-					],
-				],
-				'text'            => [
-					'class' => 'elementor-button-text',
-				],
-			] );
+			$this->add_render_attribute(
+				array(
+					'content-wrapper' => array(
+						'class' => 'elementor-button-content-wrapper',
+					),
+					'icon-align'      => array(
+						'class' => array(
+							'elementor-button-icon',
+							'elementor-align-icon-' . $alignment,
+						),
+					),
+					'text'            => array(
+						'class' => 'elementor-button-text',
+					),
+				)
+			);
 
 			$this->add_inline_editing_attributes( 'text', 'none' );
 			?>
-            <span <?php echo $this->get_render_attribute_string( 'content-wrapper' ); ?>>
+			<span <?php echo $this->get_render_attribute_string( 'content-wrapper' ); ?>>
 			<?php if ( isset( $settings['icon'] ) && ! empty( $settings['icon'] ) ) : ?>
-                <span <?php echo $this->get_render_attribute_string( 'icon-align' ); ?>>
+				<span <?php echo $this->get_render_attribute_string( 'icon-align' ); ?>>
 				<i class="<?php echo esc_attr( $settings['icon'] ); ?>" aria-hidden="true"></i>
 			</span>
 			<?php endif; ?>
@@ -412,6 +485,5 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Button_Widget' ) ) {
 		</span>
 			<?php
 		}
-
 	}
 }

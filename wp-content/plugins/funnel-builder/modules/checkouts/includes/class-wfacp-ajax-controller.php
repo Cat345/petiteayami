@@ -56,14 +56,22 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			if ( isset( $bump_action_data['data'] ) ) {
 				$input_data = $bump_action_data['data'];
 			}
+			$allowed_actions = array(
+				'update_cart_item_quantity',
+				'update_cart_multiple_page',
+				'remove_cart_item',
+				'undo_cart_item',
+				'prep_fees',
+			);
+
 			if ( 'apply_coupon_field' == $action || 'apply_coupon_main' == $action ) {
 				self::$output_resp = self::apply_coupon( $bump_action_data );
 			} elseif ( 'remove_coupon_field' == $action || 'remove_coupon_main' == $action ) {
 				self::$output_resp = self::remove_coupon( $bump_action_data );
-			} elseif ( method_exists( __CLASS__, $action ) ) {
+			} elseif ( is_string( $action ) && in_array( $action, $allowed_actions, true ) && method_exists( __CLASS__, $action ) ) {
 				self::$output_resp = self::$action( $input_data );
 			}
-			$bump_action_data['wfacp_id'] = isset( $_REQUEST['wfacp_id'] ) ? absint( wp_unslash( $_REQUEST['wfacp_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce AJAX handles nonce verification
+			$bump_action_data['wfacp_id'] = isset( $_REQUEST['wfacp_id'] ) ? absint( wp_unslash( $_REQUEST['wfacp_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- WooCommerce AJAX handles nonce verification; public checkout action, no capability check needed
 
 			self::$bump_action_data        = $action;
 			self::$output_resp['wfacp_id'] = $bump_action_data['wfacp_id'];
@@ -118,15 +126,15 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				'status' => 'false',
 				'msg'    => 'Invalid Call',
 			);
-			if ( isset( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- AJAX nonce verification handled by WordPress AJAX system
+			if ( isset( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- AJAX nonce verification handled by WordPress AJAX system; used inside the nonce check itself
 				$post_data = array();
-				parse_str( wp_unslash( $_POST['post_data'] ), $post_data ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- post_data is URL-encoded string parsed into array, individual values sanitized as used
+				parse_str( wp_unslash( $_POST['post_data'] ), $post_data ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- post_data is URL-encoded string parsed into array, individual values sanitized as used; used inside the nonce check itself
 				if ( ! empty( $post_data ) ) {
 					WFACP_Common::$post_data = $post_data;
 				}
 			}
 
-			if ( ! isset( $_REQUEST['wfacp_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['wfacp_nonce'] ) ), 'wfacp_secure_key' ) ) {
+			if ( ! isset( $_REQUEST['wfacp_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['wfacp_nonce'] ) ), 'wfacp_secure_key' ) ) { // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- nonce verification IS the security check for this endpoint
 				wp_send_json( $rsp );
 			}
 		}
@@ -151,17 +159,22 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function update_global_settings_fields( $options ) {
 
-			$options = ( is_array( $options ) && count( $options ) > 0 ) ? wp_unslash( $options ) : 0;
-			$resp    = array(
+			$resp = array(
 				'status' => false,
 				'msg'    => __( 'Changes saved', 'funnel-builder' ),
 			);
+
+			if ( ! current_user_can( 'manage_woocommerce' ) ) {
+				return $resp;
+			}
+
+			$options = ( is_array( $options ) && count( $options ) > 0 ) ? wp_unslash( $options ) : 0;
 
 			if ( ! is_array( $options ) || count( $options ) === 0 ) {
 				return $resp;
 			}
 
-			$options['wfacp_checkout_global_css']    = isset( $options['wfacp_checkout_global_css'] ) ? stripslashes_deep( $options['wfacp_checkout_global_css'] ) : '';
+			$options['wfacp_checkout_global_css']    = isset( $options['wfacp_checkout_global_css'] ) ? WFACP_Common::sanitize_global_css( stripslashes_deep( $options['wfacp_checkout_global_css'] ) ) : '';
 			$options['wfacp_global_external_script'] = isset( $options['wfacp_global_external_script'] ) ? stripslashes_deep( $options['wfacp_global_external_script'] ) : '';
 
 			update_option( '_wfacp_global_settings', $options, true );
@@ -238,7 +251,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				/* Add the wc Notice */
 				$current_session_order_id = isset( WC()->session->order_awaiting_payment ) ? absint( WC()->session->order_awaiting_payment ) : 0;
 				$held_stock               = wc_get_held_stock_quantity( $product_obj, $current_session_order_id );
-				$resp['error']            = sprintf( __( 'Sorry, we do not have enough "%1$s" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused.', 'woocommerce' ), $product_obj->get_name(), wc_format_stock_quantity_for_display( $product_obj->get_stock_quantity() - $held_stock, $product_obj ) );
+				$resp['error']            = sprintf( __( 'Sorry, we do not have enough "%1$s" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused.', 'woocommerce' ), $product_obj->get_name(), wc_format_stock_quantity_for_display( $product_obj->get_stock_quantity() - $held_stock, $product_obj ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- intentionally using WooCommerce translations for this stock message
 
 				$resp['qty']      = $cart_item['quantity'];
 				$resp['status']   = false;
@@ -453,11 +466,11 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			do_action( 'wfacp_before_coupon_removed', $bump_action_data );
 			$status = true;
 			if ( empty( $coupon ) ) {
-				$message = __( 'Sorry there was a problem removing this coupon.', 'woocommerce' );
+				$message = __( 'Sorry there was a problem removing this coupon.', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- intentionally using WooCommerce translations for this coupon message
 				$status  = false;
 			} else {
 				WC()->cart->remove_coupon( $coupon );
-				$message = __( 'Coupon has been removed.', 'woocommerce' );
+				$message = __( 'Coupon has been removed.', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- intentionally using WooCommerce translations for this coupon message
 				do_action( 'wfacp_after_coupon_removed', $bump_action_data );
 
 			}
@@ -508,11 +521,11 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 						// Don't show undo link if removed item is out of stock.
 						if ( $product && $product->is_in_stock() && $product->has_enough_stock( $cart_item['quantity'] ) ) {
 							$item_is_available = true;
-							$removed_notice    = '&nbsp;' . ' <a href="javascript:void(0)" class="wfacp_restore_cart_item" data-cart_key="' . $cart_item_key . '">' . __( 'Undo?', 'woocommerce' ) . '</a>';
+							$removed_notice    = '&nbsp;' . ' <a href="javascript:void(0)" class="wfacp_restore_cart_item" data-cart_key="' . $cart_item_key . '">' . __( 'Undo?', 'woocommerce' ) . '</a>'; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- intentionally using WooCommerce translations for this cart message
 						} else {
 							$item_is_available = false;
 							/* Translators: %s Product title. */
-							$removed_notice = sprintf( __( '%s removed.', 'woocommerce' ), '' );
+							$removed_notice = sprintf( __( '%s removed.', 'woocommerce' ), '' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- intentionally using WooCommerce translations for this cart message
 						}
 						$resp['item_is_available'] = $item_is_available;
 						$resp['status']            = true;
@@ -560,7 +573,15 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function get_divi_form_data() {
 
-			if ( isset( $_REQUEST['wfacp_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce AJAX handles nonce verification
+			if ( ! check_ajax_referer( 'wfacp_secure_key', 'wfacp_nonce', false ) ) {
+				wp_send_json_error( array( 'message' => __( 'Invalid security token.', 'funnel-builder' ) ), 403 );
+			}
+
+			if ( ! WFACP_Core()->role->user_access( 'checkout', 'read' ) ) {
+				wp_send_json_error( array( 'message' => __( 'You do not have permission to access this resource.', 'funnel-builder' ) ), 403 );
+			}
+
+			if ( isset( $_REQUEST['wfacp_id'] ) ) {
 				$post_id = absint( wp_unslash( $_REQUEST['wfacp_id'] ) );
 				$post    = get_post( $post_id );
 				if ( ! is_null( $post ) && $post->post_type == WFACP_Common::get_post_type_slug() ) {
@@ -590,7 +611,9 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			if ( isset( $_COOKIE['wfacp_divi_open_page'] ) && wp_doing_ajax() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading cookie data for builder state, nonce verification not required
 				$cookie = sanitize_text_field( wp_unslash( $_COOKIE['wfacp_divi_open_page'] ) );
 				$parts  = explode( '@', $cookie );
-				$template->set_current_open_step( $parts[1] );
+				if ( isset( $parts[1] ) ) {
+					$template->set_current_open_step( sanitize_html_class( $parts[1] ) );
+				}
 			}
 			include $template->wfacp_get_form();
 
@@ -599,10 +622,13 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function analytics() {
 			self::check_nonce();
-			$resp       = array( 'status' => false );
-			$data       = isset( $_POST['data'] ) ? map_deep( wp_unslash( $_POST['data'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce already verified in check_nonce()
-			$event_data = isset( $data['event_data'] ) ? $data['event_data'] : array();
-			$source     = isset( $data['source'] ) ? $data['source'] : '';
+			$resp           = array( 'status' => false );
+			$data           = isset( $_POST['data'] ) ? map_deep( wp_unslash( $_POST['data'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce already verified in check_nonce()
+			$allowed_events = array( 'InitiateCheckout', 'AddPaymentInfo', 'AddToCart' );
+			$event_data     = isset( $data['event_data'] ) && is_array( $data['event_data'] )
+								? array_slice( $data['event_data'], 0, 5 )
+								: array();
+			$source         = isset( $data['source'] ) ? $data['source'] : '';
 
 			if ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
 				$source = esc_url_raw( $_SERVER['HTTP_REFERER'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- HTTP_REFERER is URL, slashes are intentional; sanitized with esc_url_raw()
@@ -655,6 +681,12 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 				if ( is_array( $event_data ) && count( $event_data ) > 0 ) {
 					foreach ( $event_data as $single_item ) {
+						if ( ! isset( $single_item['event'] ) || ! in_array( $single_item['event'], $allowed_events, true ) ) {
+							continue;
+						}
+						if ( empty( $single_item['event_id'] ) || ! is_scalar( $single_item['event_id'] ) ) {
+							continue;
+						}
 						$instance->set_event_id( $single_item['event_id'] );
 						$instance->set_user_data( $user_data );
 						$instance->set_event_source_url( $source );

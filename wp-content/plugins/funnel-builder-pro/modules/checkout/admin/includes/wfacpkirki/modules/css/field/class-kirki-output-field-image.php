@@ -12,7 +12,12 @@
 /**
  * Output overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Output_Field_Image' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Output_Field_Image extends WFACPKirki_Output {
 
 		/**
@@ -28,12 +33,15 @@ if ( ! class_exists( 'WFACPKirki_Output_Field_Image' ) ) {
 			if ( ! isset( $output['element'] ) || ! isset( $output['property'] ) ) {
 				return;
 			}
-			$output = wp_parse_args( $output, array(
-				'media_query' => 'global',
-				'prefix'      => '',
-				'units'       => '',
-				'suffix'      => '',
-			) );
+			$output = wp_parse_args(
+				$output,
+				array(
+					'media_query' => 'global',
+					'prefix'      => '',
+					'units'       => '',
+					'suffix'      => '',
+				)
+			);
 			if ( is_array( $value ) ) {
 				if ( isset( $output['choice'] ) && $output['choice'] ) {
 					$this->styles[ $output['media_query'] ][ $output['element'] ][ $output['property'] ] = $output['prefix'] . $this->process_property_value( $output['property'], $value[ $output['choice'] ] ) . $output['units'] . $output['suffix'];

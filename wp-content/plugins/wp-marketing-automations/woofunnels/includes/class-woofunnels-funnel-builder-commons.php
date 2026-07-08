@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @author woofunnels
@@ -77,7 +80,7 @@ if ( ! class_exists( 'WooFunnels_Funnel_Builder_Commons' ) ) {
 				}
 			}
 
-			echo $html; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wp_kses_post( $html );
 
 		}
 

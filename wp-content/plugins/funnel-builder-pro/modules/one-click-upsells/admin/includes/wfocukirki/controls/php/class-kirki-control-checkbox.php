@@ -17,6 +17,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Checkbox' ) ) {
 	 *
 	 * @since 3.0.26
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Checkbox extends WFOCUKirki_Control_Base {
 
 		/**
@@ -38,18 +39,18 @@ if ( ! class_exists( 'WFOCUKirki_Control_Checkbox' ) ) {
 			$description_id   = '_customize-description-' . $this->id;
 			$describedby_attr = ( ! empty( $this->description ) ) ? ' aria-describedby="' . esc_attr( $description_id ) . '" ' : '';
 			?>
-            <span class="customize-inside-control-row">
+			<span class="customize-inside-control-row">
 			<input
-                id="<?php echo esc_attr( $input_id ); ?>"
+				id="<?php echo esc_attr( $input_id ); ?>"
 				<?php echo $describedby_attr; ?>
 				type="checkbox"
-                value="<?php echo esc_attr( $this->value() ); ?>"
+				value="<?php echo esc_attr( $this->value() ); ?>"
 				<?php $this->link(); ?>
 				<?php checked( $this->value() ); ?>
 			/>
 			<label for="<?php echo esc_attr( $input_id ); ?>"><?php echo esc_html( $this->label ); ?></label>
 			<?php if ( ! empty( $this->description ) ) : ?>
-                <span id="<?php echo esc_attr( $description_id ); ?>" class="description customize-control-description"><?php echo $this->description; ?></span>
+				<span id="<?php echo esc_attr( $description_id ); ?>" class="description customize-control-description"><?php echo $this->description; ?></span>
 			<?php endif; ?>
 		</span>
 			<?php

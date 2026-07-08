@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 	#[AllowDynamicProperties]
 	class BWF_AS_Actions_Crud {
@@ -14,6 +17,10 @@ if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 		 */
 		public static function get_single_action( $action_id, $return_vars = '*' ) {
 			global $wpdb;
+			$allowed_cols = [ '*', 'id', 'c_date', 'e_time', 'hook', 'args', 'status', 'recurring_interval', 'group_slug', 'claim_id' ];
+			if ( ! in_array( $return_vars, $allowed_cols, true ) ) {
+				$return_vars = '*';
+			}
 			$table = self::_table();
 			$p_key = self::$primary_key;
 			$sql   = "SELECT {$return_vars} FROM {$table} WHERE {$p_key}=%d";
@@ -48,10 +55,10 @@ if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 			}
 			json_decode( $string );
 
-			return ( json_last_error() == JSON_ERROR_NONE );
+			return ( json_last_error() === JSON_ERROR_NONE );
 		}
 
-		public static function get_executable_actions( $status, $group ) {
+		public static function get_executable_actions( $status, $group ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 
 		}
 
@@ -97,9 +104,7 @@ if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 				$sql_params[] = $args['recurring_interval'];
 			}
 
-			$sql = $wpdb->prepare( $sql, $sql_params ); //phpcs:ignore WordPress.DB.PreparedSQL
-
-			$action_ids = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$action_ids = $wpdb->get_results( $wpdb->prepare( $sql, $sql_params ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql assembled from static clause fragments with trusted {$p_key}/$table identifiers; all values bound via $sql_params.
 			if ( is_array( $action_ids ) && count( $action_ids ) > 0 ) {
 				$action_ids = array_column( $action_ids, 'id' );
 
@@ -157,9 +162,12 @@ if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 			return $rows_affected;
 		}
 
-		public static function query( $query ) {
+		public static function query( $query, $params = [] ) {
 			global $wpdb;
-			$query   = str_replace( '{table_name}', self::_table(), $query );
+			$query = str_replace( '{table_name}', self::_table(), $query );
+			if ( ! empty( $params ) ) {
+				$query = $wpdb->prepare( $query, ...$params ); //phpcs:ignore WordPress.DB.PreparedSQL
+			}
 			$results = $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
 			return $results;
@@ -171,9 +179,12 @@ if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 			return $wpdb->insert_id;
 		}
 
-		public static function get_results( $query ) {
+		public static function get_results( $query, $params = [] ) {
 			global $wpdb;
-			$query   = str_replace( '{table_name}', self::_table(), $query );
+			$query = str_replace( '{table_name}', self::_table(), $query );
+			if ( ! empty( $params ) ) {
+				$query = $wpdb->prepare( $query, ...$params ); //phpcs:ignore WordPress.DB.PreparedSQL
+			}
 			$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
 			return $results;

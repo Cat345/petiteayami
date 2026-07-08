@@ -130,7 +130,6 @@ if ( ! class_exists( 'WFACP_Oxy_Template' ) ) {
 					echo '</div>';
 
 				}
-				echo "<div class='" . implode( ' ', array( 'wfacp-form', $label_position ) ) . "'>";
 				echo "<div class='" . esc_attr( implode( ' ', array( 'wfacp-form', $label_position ) ) ) . "'>";
 
 			}
@@ -624,7 +623,7 @@ if ( ! class_exists( 'WFACP_Oxy_Template' ) ) {
 
 						$active  = apply_filters( 'wfacp_layout_9_active_progress_bar', $active, $step );
 						$p_class = 'wfacp_step_' . $key . ' wfacp_bred ' . $bread_visited . ' ' . $active . ' ' . $step;
-						echo "<li class='" . esc_attr( $p_class ) . "' step='" . esc_attr( $step ) . "' ><a href='javascript:void(0)' class='wfacp_step_text_have' data-text='" . esc_attr( sanitize_title( $value ) ) . "'>wp_kses_post($value)</a> </li>";//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo "<li class='" . esc_attr( $p_class ) . "' step='" . esc_attr( $step ) . "' ><a href='javascript:void(0)' class='wfacp_step_text_have' data-text='" . esc_attr( sanitize_title( $value ) ) . "'>" . wp_kses_post( $value ) . '</a> </li>';//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					}
 					do_action( 'wfacp_after_breadcrumb' );
 					echo '</ul></div></div></div>';
@@ -725,7 +724,7 @@ if ( ! class_exists( 'WFACP_Oxy_Template' ) ) {
 		public function add_body_class( $classes ) {
 			$classes[] = 'wfacp_oxygen_template';
 
-			if ( isset( $_GET['ct_builder'] ) && isset( $_GET['oxy_wfacp_id'] ) && true == $_GET['ct_builder'] ) {
+			if ( isset( $_GET['ct_builder'] ) && isset( $_GET['oxy_wfacp_id'] ) && true == $_GET['ct_builder'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				$classes[] = 'wfacp_editor_active';
 			}
 
@@ -858,7 +857,7 @@ if ( ! class_exists( 'WFACP_Oxy_Template' ) ) {
 				}
 
 				if ( $back_btn_text !== '' ) {
-					$output .= "<div class='place_order_back_btn wfacp_none_class '><a class='wfacp_back_page_button' data-next-step='" . $last_step . "' data-current-step='" . $this->current_step . "' href='javascript:void(0)'>" . __( $back_btn_text, 'woofunnels-aero-checkout' ) . '</a> </div>';
+					$output .= "<div class='place_order_back_btn wfacp_none_class '><a class='wfacp_back_page_button' data-next-step='" . esc_attr( $last_step ) . "' data-current-step='" . esc_attr( $this->current_step ) . "' href='javascript:void(0)'>" . esc_html( $back_btn_text ) . '</a> </div>'; // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 				}
 			}
 			$output .= '</div>';
@@ -986,15 +985,17 @@ if ( ! class_exists( 'WFACP_Oxy_Template' ) ) {
 			}
 
 			if ( ! empty( $icon ) && ! empty( $current ) && ! empty( $margin ) ) {
+				$safe_current = sanitize_html_class( $current );
+				$safe_content = in_array( $content, array( 'before', 'after' ), true ) ? $content : 'before';
 
 				if ( $form_step == 'place_order' ) {
-					echo '<style>';
-					echo 'body #wfacp-e-form .' . $current . ' #place_order:' . $content . "{content:'$icon';font-family: 'bwf-icons' !important; display: inline-block !important;margin-$margin:10px;position: relative;text-transform: none;}";
-					echo '</style>';
+					echo '<style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo 'body #wfacp-e-form .' . $safe_current . ' #place_order:' . $safe_content . "{content:'$icon';font-family: 'bwf-icons' !important; display: inline-block !important;margin-$margin:10px;position: relative;text-transform: none;}"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				} else {
-					echo '<style>';
-					echo 'body #wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content . "{content:'$icon'; font-family: 'bwf-icons' !important; display: inline-block !important;margin-$margin:10px;position: relative;text-transform: none;}";
-					echo '</style>';
+					echo '<style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo 'body #wfacp-e-form .' . $safe_current . ' .wfacp-next-btn-wrap button:' . $safe_content . "{content:'$icon'; font-family: 'bwf-icons' !important; display: inline-block !important;margin-$margin:10px;position: relative;text-transform: none;}"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 			}
 
@@ -1004,34 +1005,35 @@ if ( ! class_exists( 'WFACP_Oxy_Template' ) ) {
 
 				$button_subheading = do_shortcode( $button_subheading );
 				$content1          = 'before';
+				$safe_current      = sanitize_html_class( $current );
+				$safe_content      = in_array( $content, array( 'before', 'after' ), true ) ? $content : 'before';
 
 				if ( $form_step == 'place_order' ) {
-					echo '<style>';
-					echo '#wfacp-e-form .' . $current . ' #place_order:' . $content1 . '{top:3px;}';
-					echo '#wfacp-e-form .' . $current . ' #place_order:' . $content . "{content:'$button_subheading'; display: inline-block !important;position: relative;}";
-					echo '#wfacp-e-form .' . $current . ' button#place_order' . '{display:inline-block;}';
-					echo '#wfacp-e-form .' . $current . ' #place_order:' . $content . '{display: block !important;}';
-					echo '</style>';
+					echo '<style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '#wfacp-e-form .' . $safe_current . ' #place_order:' . $content1 . '{top:3px;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '#wfacp-e-form .' . $safe_current . ' #place_order:' . $safe_content . "{content:'$button_subheading'; display: inline-block !important;position: relative;}"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '#wfacp-e-form .' . $safe_current . ' button#place_order{display:inline-block;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '#wfacp-e-form .' . $safe_current . ' #place_order:' . $safe_content . '{display: block !important;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 				} else {
-					echo '<style>';
-					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content1 . '{top:3px;}';
-					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content . "{content:'$button_subheading';  display: inline-block !important;position: relative;}";
-					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button' . '{display:inline-block;}';
-					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content . '{display: block !important;}';
-					echo '</style>';
+					echo '<style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '#wfacp-e-form .' . $safe_current . ' .wfacp-next-btn-wrap button:' . $content1 . '{top:3px;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '#wfacp-e-form .' . $safe_current . ' .wfacp-next-btn-wrap button:' . $safe_content . "{content:'$button_subheading';  display: inline-block !important;position: relative;}"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '#wfacp-e-form .' . $safe_current . ' .wfacp-next-btn-wrap button{display:inline-block;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '#wfacp-e-form .' . $safe_current . ' .wfacp-next-btn-wrap button:' . $safe_content . '{display: block !important;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 			} elseif ( $form_step == 'place_order' ) {
-
-					echo '<style>';
-					echo '#wfacp-e-form .' . $current . ' #place_order' . '{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}';
-
-					echo '</style>';
+				$safe_current = sanitize_html_class( $current );
+				echo '<style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '#wfacp-e-form .' . $safe_current . ' #place_order{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			} else {
-
-				echo '<style>';
-				echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button' . '{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}';
-				echo '</style>';
+				$safe_current = sanitize_html_class( $current );
+				echo '<style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '#wfacp-e-form .' . $safe_current . ' .wfacp-next-btn-wrap button{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		}
 

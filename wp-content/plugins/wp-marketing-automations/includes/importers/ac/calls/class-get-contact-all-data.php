@@ -2,6 +2,7 @@
 
 namespace BWFAN\Importers\AC\Calls;
 
+#[\AllowDynamicProperties]
 class Get_Contact_All_Data extends Call {
 	protected $required_fields = array( 'api_key', 'api_url' );
 

@@ -135,7 +135,7 @@ class Admin implements Model_Interface, Initializable_Interface, Activatable_Int
                 WHERE t1.meta_key = 'discount_type'"
             );
 
-            update_option( 'acfwf_bogo_migrate_coupon_type', Plugin_Constants::VERSION );
+            update_option( 'acfwf_bogo_migrate_coupon_type', Plugin_Constants::VERSION, false );
         }
     }
 

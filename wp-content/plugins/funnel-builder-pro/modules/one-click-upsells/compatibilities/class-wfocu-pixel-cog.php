@@ -11,9 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 if ( ! class_exists( 'WFOCU_Compatibility_Pixel_COG' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_Pixel_COG {
 		public function __construct() {
-			add_filter( 'wfocu_ecommerce_pixel_tracking_value', [ $this, 'cog_line_subtotal' ], 10, 4 );
+			add_filter( 'wfocu_ecommerce_pixel_tracking_value', array( $this, 'cog_line_subtotal' ), 10, 4 );
 		}
 
 		public function is_enable() {
@@ -64,13 +65,13 @@ if ( ! class_exists( 'WFOCU_Compatibility_Pixel_COG' ) ) {
 			$cat_isset    = 0;
 			$isWithoutTax = get_option( '_pixel_cog_tax_calculating' ) === 'no';
 
-			$shipping    = $order->get_shipping_total( "edit" );
+			$shipping    = $order->get_shipping_total( 'edit' );
 			$order_total = $order->get_total( 'edit' ) - $shipping;
 
 			if ( $isWithoutTax ) {
 				$order_total -= $order->get_total_tax( 'edit' );
 			} else {
-				$order_total -= $order->get_shipping_tax( "edit" );
+				$order_total -= $order->get_shipping_tax( 'edit' );
 			}
 
 			foreach ( $order->get_items() as $item_id => $item ) {
@@ -83,13 +84,15 @@ if ( ! class_exists( 'WFOCU_Compatibility_Pixel_COG' ) ) {
 				$cost_type    = get_post_meta( $product->get_id(), '_pixel_cost_of_goods_cost_type', true );
 				$product_cost = get_post_meta( $product->get_id(), '_pixel_cost_of_goods_cost_val', true );
 
-				if ( ! $product_cost && $product->is_type( "variation" ) ) {
+				if ( ! $product_cost && $product->is_type( 'variation' ) ) {
 					$cost_type    = get_post_meta( $product->get_parent_id(), '_pixel_cost_of_goods_cost_type', true );
 					$product_cost = get_post_meta( $product->get_parent_id(), '_pixel_cost_of_goods_cost_val', true );
 				}
 
-
-				$args = array( 'qty' => 1, 'price' => $product->get_price() );
+				$args = array(
+					'qty'   => 1,
+					'price' => $product->get_price(),
+				);
 				$qlt  = $item['quantity'];
 
 				if ( $isWithoutTax ) {
@@ -97,7 +100,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_Pixel_COG' ) ) {
 				} else {
 					$price = wc_get_price_including_tax( $product, $args );
 				}
-				$price=floatval($price);
+				$price = floatval( $price );
 				if ( $product_cost ) {
 					$cost         = ( $cost_type === 'percent' ) ? $cost + ( $price * ( $product_cost / 100 ) * $qlt ) : $cost + ( $product_cost * $qlt );
 					$custom_total = $custom_total + ( $price * $qlt );
@@ -119,7 +122,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_Pixel_COG' ) ) {
 			}
 
 			return $order_total - $cost;
-
 		}
 
 		/**
@@ -154,7 +156,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_Pixel_COG' ) ) {
 			foreach ( $term_list as $term_id ) {
 				$cost[ $term_id ] = array(
 					get_term_meta( $term_id, '_pixel_cost_of_goods_cost_val', true ),
-					get_term_meta( $term_id, '_pixel_cost_of_goods_cost_type', true )
+					get_term_meta( $term_id, '_pixel_cost_of_goods_cost_type', true ),
 				);
 			}
 			if ( empty( $cost ) ) {
@@ -166,7 +168,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_Pixel_COG' ) ) {
 				return $max[1];
 			}
 		}
-
 	}
 
 

@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Spacing' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Spacing extends WFOCUKirki_Field_Dimensions {
 
 		/**
@@ -38,7 +39,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Spacing' ) ) {
 			);
 
 			$this->choices = wp_parse_args( $this->choices, $default_args );
-
 		}
 	}
 }

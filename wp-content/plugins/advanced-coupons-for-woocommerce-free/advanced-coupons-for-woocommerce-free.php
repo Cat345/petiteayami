@@ -4,13 +4,13 @@
  * Plugin Name: Advanced Coupons for WooCommerce Free
  * Plugin URI: https://advancedcouponsplugin.com
  * Description: Advanced Coupons for WooCommerce (Free Version) gives WooCommerce store owners extra coupon features so they can market their stores better.
- * Version: 4.7.2
+ * Version: 4.7.3
  * Author: Rymera Web Co
  * Author URI: https://rymera.com.au
- * Requires at least: 5.8
+ * Requires at least: 5.9
  * Tested up to: 7.0
  * WC requires at least: 4.0
- * WC tested up to: 10.6
+ * WC tested up to: 10.7.0
  *
  * Text Domain: advanced-coupons-for-woocommerce-free
  * Domain Path: /languages/
@@ -79,7 +79,7 @@ use ACFWF\Models\Third_Party_Integrations\Speed_Optimizer;
  */
 spl_autoload_register(
     function ( $class_name ) {
-        if ( strpos( $class_name, 'ACFWF\\' ) === 0 ) { // Only do autoload for our plugin files.
+        if ( str_starts_with( $class_name, 'ACFWF\\' ) ) { // Only do autoload for our plugin files.
             $class_file = str_replace( array( '\\', 'ACFWF' . DIRECTORY_SEPARATOR ), array( DIRECTORY_SEPARATOR, '' ), $class_name ) . '.php';
             require_once plugin_dir_path( __FILE__ ) . $class_file;
         }

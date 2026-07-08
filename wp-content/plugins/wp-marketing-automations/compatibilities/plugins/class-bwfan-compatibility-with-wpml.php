@@ -7,28 +7,31 @@
 if ( ! class_exists( 'BWFAN_Compatibility_With_WPML' ) ) {
 	class BWFAN_Compatibility_With_WPML {
 
-		private $original_wfacp_post_id = null;
+		private $intercept_post_id = null;
+		private $intercept_funnel_id = null;
 
 		public function __construct() {
 			add_action( 'bwfan_email_setup_locale', [ $this, 'translate_email_body' ] );
-			add_filter( 'wffn_wfty_filter_page_ids', [ $this, 'translate_checkout_post_id_for_funnel_lookup' ], 5, 2 );
-			add_filter( 'wffn_wfty_filter_page_ids', [ $this, 'restore_checkout_post_id_after_funnel_lookup' ], 11, 2 );
+			add_filter( 'wffn_wfty_filter_page_ids', [ $this, 'ensure_funnel_meta_for_translated_checkout' ], 5, 2 );
+			add_filter( 'wffn_wfty_filter_page_ids', [ $this, 'remove_funnel_meta_intercept' ], 11, 2 );
+			add_action( 'woocommerce_checkout_order_created', [ $this, 'maybe_save_order_language' ], 999 );
 		}
 
 		/**
-		 * Translate WPML checkout page ID to default language before funnel thank-you page lookup.
+		 * Ensure funnel association meta is accessible for translated checkout pages.
 		 *
-		 * When an order is placed on a translated checkout page, _wfacp_post_id stores the translated
-		 * post ID. The funnel builder's maybe_filter_thankyou() then fails to find _bwf_in_funnel meta
-		 * because it only exists on the original (default language) post. This translates the ID before
-		 * the lookup runs at priority 10.
+		 * Translated checkout pages lack _bwf_in_funnel meta (only the default language post has it).
+		 * Instead of translating _wfacp_post_id on the order (which corrupts language detection in
+		 * filter_thankyou_by_language at priority 10), we intercept get_post_meta reads to return
+		 * the funnel ID from the default language post — keeping _wfacp_post_id intact so the
+		 * language filter correctly identifies the customer's checkout language.
 		 *
-		 * @param array $thankyou_page_ids
+		 * @param array    $thankyou_page_ids
 		 * @param WC_Order $order
 		 *
 		 * @return array
 		 */
-		public function translate_checkout_post_id_for_funnel_lookup( $thankyou_page_ids, $order ) {
+		public function ensure_funnel_meta_for_translated_checkout( $thankyou_page_ids, $order ) {
 			if ( ! $order instanceof WC_Order ) {
 				return $thankyou_page_ids;
 			}
@@ -38,41 +41,102 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_WPML' ) ) {
 				return $thankyou_page_ids;
 			}
 
+			$aero_id = absint( $aero_id );
+
+			$funnel_id = get_post_meta( $aero_id, '_bwf_in_funnel', true );
+			if ( ! empty( $funnel_id ) ) {
+				return $thankyou_page_ids;
+			}
+
 			$default_lang = apply_filters( 'wpml_default_language', null );
 			if ( empty( $default_lang ) ) {
 				return $thankyou_page_ids;
 			}
 
-			$post_type = get_post_type( absint( $aero_id ) );
+			$post_type = get_post_type( $aero_id );
 			if ( empty( $post_type ) ) {
 				return $thankyou_page_ids;
 			}
 
-			$original_id = apply_filters( 'wpml_object_id', absint( $aero_id ), $post_type, true, $default_lang );
+			$original_id = apply_filters( 'wpml_object_id', $aero_id, $post_type, true, $default_lang );
 
-			if ( ! empty( $original_id ) && absint( $original_id ) !== absint( $aero_id ) ) {
-				$this->original_wfacp_post_id = $aero_id;
-				$order->update_meta_data( '_wfacp_post_id', $original_id );
+			if ( empty( $original_id ) || absint( $original_id ) === $aero_id ) {
+				return $thankyou_page_ids;
+			}
+
+			$default_funnel_id = get_post_meta( absint( $original_id ), '_bwf_in_funnel', true );
+			if ( empty( $default_funnel_id ) ) {
+				return $thankyou_page_ids;
+			}
+
+			$this->intercept_post_id   = $aero_id;
+			$this->intercept_funnel_id = $default_funnel_id;
+			add_filter( 'get_post_metadata', [ $this, 'intercept_funnel_meta' ], 10, 4 );
+
+			return $thankyou_page_ids;
+		}
+
+		/**
+		 * Intercept _bwf_in_funnel meta reads for translated checkout posts.
+		 *
+		 * @param mixed  $value     Current meta value (null = not yet retrieved).
+		 * @param int    $object_id Post ID being queried.
+		 * @param string $meta_key  Meta key being queried.
+		 * @param bool   $single    Whether to return a single value.
+		 *
+		 * @return mixed
+		 */
+		public function intercept_funnel_meta( $value, $object_id, $meta_key, $single ) {
+			if ( (int) $object_id !== $this->intercept_post_id || '_bwf_in_funnel' !== $meta_key ) {
+				return $value;
+			}
+
+			if ( $single ) {
+				return $this->intercept_funnel_id;
+			}
+
+			return array( $this->intercept_funnel_id );
+		}
+
+		/**
+		 * Remove the funnel meta intercept after the thankyou page filter chain completes.
+		 *
+		 * @param array    $thankyou_page_ids
+		 * @param WC_Order $order
+		 *
+		 * @return array
+		 */
+		public function remove_funnel_meta_intercept( $thankyou_page_ids, $order ) {
+			if ( null !== $this->intercept_post_id ) {
+				remove_filter( 'get_post_metadata', [ $this, 'intercept_funnel_meta' ], 10 );
+				$this->intercept_post_id   = null;
+				$this->intercept_funnel_id = null;
 			}
 
 			return $thankyou_page_ids;
 		}
 
 		/**
-		 * Restore original checkout page ID after funnel lookup completes.
+		 * Save wpml_language meta on order creation when WPML is active and meta is absent.
 		 *
-		 * @param array $thankyou_page_ids
 		 * @param WC_Order $order
-		 *
-		 * @return array
 		 */
-		public function restore_checkout_post_id_after_funnel_lookup( $thankyou_page_ids, $order ) {
-			if ( null !== $this->original_wfacp_post_id && $order instanceof WC_Order ) {
-				$order->update_meta_data( '_wfacp_post_id', $this->original_wfacp_post_id );
-				$this->original_wfacp_post_id = null;
+		public function maybe_save_order_language( $order ) {
+			if ( ! $order instanceof WC_Order ) {
+				return;
 			}
 
-			return $thankyou_page_ids;
+			if ( ! defined( 'ICL_LANGUAGE_CODE' ) ) {
+				return;
+			}
+
+			$existing = $order->get_meta( 'wpml_language' );
+			if ( ! empty( $existing ) ) {
+				return;
+			}
+
+			$order->update_meta_data( 'wpml_language', ICL_LANGUAGE_CODE );
+			$order->save_meta_data();
 		}
 
 		/**

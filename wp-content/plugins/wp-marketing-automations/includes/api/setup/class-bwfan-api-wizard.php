@@ -1,6 +1,7 @@
 <?php
 
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Wizard extends BWFAN_API_Base {
 
 	public static $ins;

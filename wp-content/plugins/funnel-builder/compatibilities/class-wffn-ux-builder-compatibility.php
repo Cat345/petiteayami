@@ -7,11 +7,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFFN_Compatibility_With_UX_Builder
  */
 if ( ! class_exists( 'WFFN_Compatibility_With_UX_Builder' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_UX_Builder {
 
 		public function __construct() {
 			add_action( 'admin_init', array( $this, 'maybe_filter' ) );
-
 		}
 
 		public function is_enable() {
@@ -36,4 +36,3 @@ if ( ! class_exists( 'WFFN_Compatibility_With_UX_Builder' ) ) {
 
 	WFFN_Plugin_Compatibilities::register( new WFFN_Compatibility_With_UX_Builder(), 'ux_builder' );
 }
-

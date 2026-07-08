@@ -1651,7 +1651,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Standard' ) ) {
 
 
 		public function create_express_checkout_token() {
-
+			check_ajax_referer( 'wfocu_front_charge', 'nonce' );
 
 			$get_current_offer      = WFOCU_Core()->data->get( 'current_offer' );
 			$get_current_offer_meta = WFOCU_Core()->offers->get_offer_meta( $get_current_offer );

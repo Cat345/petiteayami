@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Contact_Listing extends BWFAN_API_Base {
 	public static $ins;
 
@@ -36,6 +37,23 @@ class BWFAN_API_Contact_Listing extends BWFAN_API_Base {
 		/** checking if search present in params */
 		$search             = $this->get_sanitized_arg( 'search', 'text_field' );
 		$filters_collection = empty( $this->args['filters'] ) ? array() : $this->args['filters'];
+
+		/** Resolve audience_id from URL → override filters with audience's saved filters when valid */
+		$audience_id              = absint( $this->get_sanitized_arg( 'audience_id', 'text_field' ) );
+		$applied_audience_filters = null;
+		if ( $audience_id > 0 && class_exists( 'BWFCRM_Audience' ) ) {
+			$audience = new BWFCRM_Audience( $audience_id );
+			if ( $audience->is_audience_exists() ) {
+				$audience_data = $audience->get_array();
+				$decoded       = is_array( $audience_data ) && isset( $audience_data['data'] )
+					? json_decode( $audience_data['data'], true )
+					: null;
+				if ( is_array( $decoded ) && ! empty( $decoded['filters'] ) ) {
+					$filters_collection       = $decoded['filters'];
+					$applied_audience_filters = $decoded['filters'];
+				}
+			}
+		}
 
 		$get_wc_data          = $this->get_sanitized_arg( 'get_wc', 'bool' );
 		$grab_totals          = $this->get_sanitized_arg( 'grab_totals', 'bool' );
@@ -84,7 +102,14 @@ class BWFAN_API_Contact_Listing extends BWFAN_API_Base {
 
 		$this->response_code = 200;
 
-		return $this->success_response( $contacts['contacts'] );
+		$response = $this->success_response( $contacts['contacts'] );
+		if ( null !== $applied_audience_filters && $response instanceof WP_REST_Response ) {
+			$data                    = $response->get_data();
+			$data['applied_filters'] = $applied_audience_filters;
+			$response->set_data( $data );
+		}
+
+		return $response;
 	}
 
 	public function get_result_total_count() {

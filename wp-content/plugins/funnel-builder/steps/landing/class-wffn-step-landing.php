@@ -369,7 +369,7 @@ if ( ! class_exists( 'WFFN_Step_Landing' ) ) {
 
 	}
 
-	if ( class_exists( 'WFFN_Core' ) ) {
+	if ( class_exists( 'WFFN_Core' ) && is_object( WFFN_Core()->steps ) && method_exists( WFFN_Core()->steps, 'register' ) ) {
 		WFFN_Core()->steps->register( WFFN_Step_Landing::get_instance() );
 	}
 }

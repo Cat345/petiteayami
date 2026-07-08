@@ -22,84 +22,20 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 		protected function __construct() {
 			$this->current_section = __DIR__ . '/views/sections/design.php';
 			$this->wfacp_id        = WFACP_Common::get_id();
-			if ( isset( $_GET['page'] ) && 'wfacp' == $_GET['page'] && isset( $_GET['wfacp_id'] ) && $_GET['wfacp_id'] > 0 ) {
 
-				add_action( 'admin_init', array( $this, 'show_post_not_exist' ), 1 );
-			}
-			if ( isset( $_GET['wfacp_delete'] ) && isset( $_GET['wfacp_id'] ) && $_GET['wfacp_id'] > 0 ) {
-
-				add_action( 'admin_init', array( $this, 'delete_checkout_pages' ), 10 );
-			}
+			// GENERIC: WooCommerce order hooks — run regardless of admin UI status
 			add_action( 'woocommerce_process_shop_order_meta', array( $this, 'update_our_custom_field_data' ), 11, 2 );
-			if ( isset( $_GET['wfacp_duplicate'] ) && isset( $_GET['wfacp_id'] ) && $_GET['wfacp_id'] > 0 ) {
-
-				add_action( 'admin_init', array( $this, 'duplicate_checkout_pages' ), 11 );
-			}
-			add_action( 'admin_menu', array( $this, 'register_admin_menu' ), 90 );
-			if ( ! empty( $this->wfacp_id ) || 0 !== absint( $this->wfacp_id ) ) {
-
-				add_action( 'admin_menu', array( $this, 'remove_page_attributes' ), 90 );
-			}
-			add_filter( 'plugin_action_links_' . WFACP_PLUGIN_BASENAME, array( $this, 'plugin_actions' ) );
-			add_filter( 'woofunnels_uninstall_reasons', array( $this, 'plugin_uninstall_reasons' ), 20 );
-			if ( isset( $_GET['page'] ) && 'wfacp' === $_GET['page'] ) {
-
-				add_action( 'admin_init', array( $this, 'maybe_show_wizard' ) );
-			}
-			/*add_action( 'wfacp_license_activated', [ $this, 'creating_aero_default_pages' ] );*/
-			add_action( 'admin_head', array( $this, 'open_admin_bar' ), 90 );
-			add_action( 'admin_footer', array( $this, 'admin_footer' ), 90 );
-			add_action( 'wfacp_loaded', array( $this, 'include_notification' ) );
-			add_filter( 'get_pages', array( $this, 'add_pages_to_front_page_customize_screen' ), 10, 2 );
-
-			// Admin enqueue scripts
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_assets' ), 99 );
-			if ( WFACP_Common::is_load_admin_assets( 'builder' ) ) {
-
-				add_action( 'admin_enqueue_scripts', array( $this, 'maybe_register_breadcrumbs' ), 10 );
-			}
-			// Admin customizer enqueue scripts
-			add_action( 'customize_controls_print_styles', array( $this, 'admin_customizer_enqueue_assets' ), 10 );
+			add_action( 'woocommerce_admin_order_data_after_order_details', array( $this, 'show_advanced_field_order' ), 99 );
 			add_filter( 'woocommerce_billing_fields', array( $this, 'add_css_ready_classes' ) );
 			add_filter( 'woocommerce_shipping_fields', array( $this, 'add_css_ready_classes' ) );
-			if ( ( isset( $_GET['page'] ) && 'wfacp' == $_GET['page'] ) && isset( $_GET['section'] ) ) {
-
-				add_action( 'admin_menu', array( $this, 'set_section' ) );
-			}
-			add_action( 'woocommerce_admin_order_data_after_order_details', array( $this, 'show_advanced_field_order' ), 99 );
-			if ( isset( $_GET['page'] ) && 'wfacp' == $_GET['page'] ) {
-				add_action( 'in_admin_header', array( $this, 'maybe_remove_all_notices_on_page' ) );
-			}
-			if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'wfacp' ) {
-
-				add_action( 'in_admin_header', array( $this, 'restrict_notices_display' ) );
-			}
-			add_filter( 'wfacp_builder_merge_field_arguments', array( $this, 'wfacp_builder_merge_field_arguments' ), 10, 4 );
-			if ( WFACP_Common::is_builder() ) {
-				add_action( 'admin_print_styles', array( $this, 'remove_theme_css_and_scripts' ), 100 );
-			}
-			// Embed form code
-			add_action( 'add_meta_boxes_' . WFACP_Common::get_post_type_slug(), array( $this, 'add_meta_boxes_for_shortcodes' ), 10, 2 );
-			add_action( 'wfacp_builder_design_after_template', array( $this, 'add_short_code_wrapper' ) );
-			add_filter( 'wfacp_checkout_post_list', array( $this, 'append_checkout_post_list' ) );
-
 			add_filter( 'wfacp_address_fields_billing', array( $this, 'arrange_billing_fields' ), 9 );
 			add_filter( 'wfacp_address_fields_shipping', array( $this, 'arrange_shipping_fields' ), 9 );
-			add_action( 'edit_form_after_title', array( $this, 'add_back_button' ) );
-			add_filter( 'set-screen-option', array( $this, 'save_screen_option' ), 100, 3 );
+			add_filter( 'get_pages', array( $this, 'add_pages_to_front_page_customize_screen' ), 10, 2 );
 
-			add_action( 'admin_menu', array( $this, 'get_advanced_field' ), 95 );
-			add_filter( 'is_protected_meta', array( $this, 'wfacp_protected_meta' ), 10, 3 );
-			add_action( 'wfacp_listing_handle_query_args', array( $this, 'exclude_from_query' ) );
-
-			/*** bwf general setting */
-
-			add_filter( 'bwf_general_settings_link', array( $this, 'bwf_general_settings_link' ) );
+			// GENERIC: Tracking integrations — remain active even when checkout admin is disabled
 			add_filter( 'bwf_enable_ecommerce_integration_fb_checkout', '__return_true' );
 			add_filter( 'bwf_enable_ecommerce_integration_ga_checkout', '__return_true' );
 			add_filter( 'bwf_enable_ga4', '__return_true' );
-			add_filter( 'admin_footer_text', array( $this, 'admin_footer_text' ), 9999, 1 );
-			add_action( 'admin_footer', array( $this, 'permalink_box' ), 50 );
 			add_filter( 'bwf_enable_ecommerce_integration_gad', '__return_true' );
 			add_filter( 'bwf_enable_ecommerce_integration_gad_checkout', '__return_true' );
 			add_filter( 'bwf_enable_ecommerce_integration_pinterest', '__return_true' );
@@ -110,6 +46,85 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			add_filter( 'bwf_enable_ecommerce_integration_tiktok_checkout', '__return_true' );
 			add_filter( 'bwf_enable_ecommerce_integration_pint_checkout', '__return_true' );
 			add_filter( 'bwf_enable_ecommerce_integration_snapchat_checkout', '__return_true' );
+			add_filter( 'wfacp_builder_merge_field_arguments', array( $this, 'wfacp_builder_merge_field_arguments' ), 10, 4 );
+
+			add_action( 'admin_head', array( $this, 'open_admin_bar' ), 90 );
+			add_action( 'admin_footer', array( $this, 'admin_footer' ), 90 );
+
+			// Admin customizer enqueue scripts
+			add_action( 'customize_controls_print_styles', array( $this, 'admin_customizer_enqueue_assets' ), 10 );
+
+			add_action( 'admin_menu', array( $this, 'get_advanced_field' ), 95 );
+			add_filter( 'is_protected_meta', array( $this, 'wfacp_protected_meta' ), 10, 3 );
+			$is_admin_enabled = ! class_exists( 'WFFN_Pro_Checkout_Support' )
+				|| ! method_exists( 'WFFN_Pro_Checkout_Support', 'is_admin_enabled' )
+				|| WFFN_Pro_Checkout_Support::is_admin_enabled();
+
+			if ( ! $is_admin_enabled ) {
+				return;
+			}
+
+			if ( isset( $_GET['page'] ) && 'wfacp' == $_GET['page'] && isset( $_GET['wfacp_id'] ) && $_GET['wfacp_id'] > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+				add_action( 'admin_init', array( $this, 'show_post_not_exist' ), 1 );
+			}
+			if ( isset( $_GET['wfacp_delete'] ) && isset( $_GET['wfacp_id'] ) && $_GET['wfacp_id'] > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+				add_action( 'admin_init', array( $this, 'delete_checkout_pages' ), 10 );
+			}
+			if ( isset( $_GET['wfacp_duplicate'] ) && isset( $_GET['wfacp_id'] ) && $_GET['wfacp_id'] > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+				add_action( 'admin_init', array( $this, 'duplicate_checkout_pages' ), 11 );
+			}
+			add_action( 'edit_form_after_title', array( $this, 'add_back_button' ) );
+			add_action( 'admin_menu', array( $this, 'register_admin_menu' ), 90 );
+			if ( ! empty( $this->wfacp_id ) || 0 !== absint( $this->wfacp_id ) ) {
+
+				add_action( 'admin_menu', array( $this, 'remove_page_attributes' ), 90 );
+			}
+			add_filter( 'plugin_action_links_' . WFACP_PLUGIN_BASENAME, array( $this, 'plugin_actions' ) );
+			add_filter( 'woofunnels_uninstall_reasons', array( $this, 'plugin_uninstall_reasons' ), 20 );
+			if ( isset( $_GET['page'] ) && 'wfacp' === $_GET['page'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+				add_action( 'admin_init', array( $this, 'maybe_show_wizard' ) );
+			}
+
+			add_action( 'wfacp_loaded', array( $this, 'include_notification' ) );
+
+			// Admin enqueue scripts
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_assets' ), 99 );
+			if ( WFACP_Common::is_load_admin_assets( 'builder' ) ) {
+
+				add_action( 'admin_enqueue_scripts', array( $this, 'maybe_register_breadcrumbs' ), 10 );
+			}
+
+			if ( ( isset( $_GET['page'] ) && 'wfacp' == $_GET['page'] ) && isset( $_GET['section'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+				add_action( 'admin_menu', array( $this, 'set_section' ) );
+			}
+			if ( isset( $_GET['page'] ) && 'wfacp' == $_GET['page'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				add_action( 'in_admin_header', array( $this, 'maybe_remove_all_notices_on_page' ) );
+			}
+			if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'wfacp' ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+				add_action( 'in_admin_header', array( $this, 'restrict_notices_display' ) );
+			}
+			if ( WFACP_Common::is_builder() ) {
+				add_action( 'admin_print_styles', array( $this, 'remove_theme_css_and_scripts' ), 100 );
+			}
+			// Embed form code
+			add_action( 'add_meta_boxes_' . WFACP_Common::get_post_type_slug(), array( $this, 'add_meta_boxes_for_shortcodes' ), 10, 2 );
+			add_action( 'wfacp_builder_design_after_template', array( $this, 'add_short_code_wrapper' ) );
+			add_filter( 'wfacp_checkout_post_list', array( $this, 'append_checkout_post_list' ) );
+
+			add_filter( 'set-screen-option', array( $this, 'save_screen_option' ), 100, 3 );
+
+			add_action( 'wfacp_listing_handle_query_args', array( $this, 'exclude_from_query' ) );
+
+			/*** bwf general setting */
+			add_filter( 'bwf_general_settings_link', array( $this, 'bwf_general_settings_link' ) );
+			add_filter( 'admin_footer_text', array( $this, 'admin_footer_text' ), 9999, 1 );
+			add_action( 'admin_footer', array( $this, 'permalink_box' ), 50 );
 		}
 
 		public static function get_instance() {
@@ -747,7 +762,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			$output    = array();
 			$countries = WC()->countries->get_allowed_countries();
 			foreach ( $countries as $code => $country ) {
-				$country  = html_entity_decode( $country );
+				$country  = html_entity_decode( $country, ENT_QUOTES | ENT_HTML401 );
 				$output[] = array(
 					'id'   => $code,
 					'name' => $country,
@@ -1855,7 +1870,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 		public function show_post_not_exist() {
 
-				$post = get_post( $_GET['wfacp_id'] );
+				$post = get_post( absint( $_GET['wfacp_id'] ) );
 
 			if ( is_null( $post ) || $post->post_type != WFACP_Common::get_post_type_slug() ) {
 				wp_die( __( 'You attempted to edit an item that doesn&#8217;t exist. Perhaps it was deleted?' ) );

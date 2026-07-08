@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * WooCommerce Shipping - DPD baltic
@@ -12,9 +16,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_DPD_Baltic' ) ) {
 		private $process = false;
 
 		public function __construct() {
-			add_action( 'wfacp_internal_css', [ $this, 'js' ] );
-			add_action( 'woocommerce_checkout_update_order_review', [ $this, 'get_data' ], 5 );
-			add_filter( 'woocommerce_update_order_review_fragments', [ $this, 'unset_fragments' ], 900 );
+			add_action( 'wfacp_internal_css', array( $this, 'js' ) );
+			add_action( 'woocommerce_checkout_update_order_review', array( $this, 'get_data' ), 5 );
+			add_filter( 'woocommerce_update_order_review_fragments', array( $this, 'unset_fragments' ), 900 );
 		}
 
 
@@ -53,30 +57,30 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_DPD_Baltic' ) ) {
 
 		public function js() {
 			?>
-            <script>
-                window.addEventListener('bwf_checkout_load', function () {
-                    (function ($) {
-                        wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_apply_coupon_field', set_custom_data);
-                        wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_apply_coupon_main', set_custom_data);
-                        wfacp_frontend.hooks.addAction('wfacp_ajax_apply_coupon_field', trigger_checkout);
-                        wfacp_frontend.hooks.addAction('wfacp_ajax_apply_coupon_main', trigger_checkout);
+			<script>
+				window.addEventListener('bwf_checkout_load', function () {
+					(function ($) {
+						wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_apply_coupon_field', set_custom_data);
+						wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_apply_coupon_main', set_custom_data);
+						wfacp_frontend.hooks.addAction('wfacp_ajax_apply_coupon_field', trigger_checkout);
+						wfacp_frontend.hooks.addAction('wfacp_ajax_apply_coupon_main', trigger_checkout);
 
-                        function set_custom_data(data) {
-                            data['unset_fragments'] = 'yes';
-                            return data;
-                        }
+						function set_custom_data(data) {
+							data['unset_fragments'] = 'yes';
+							return data;
+						}
 
-                        function trigger_checkout(rsp) {
-                            if (rsp.hasOwnProperty('message')) {
-                                var message = rsp.message;
-                                if (!message.hasOwnProperty('error')) {
-                                    $(document.body).trigger('update_checkout');
-                                }
-                            }
-                        }
-                    })(jQuery);
-                });
-            </script>
+						function trigger_checkout(rsp) {
+							if (rsp.hasOwnProperty('message')) {
+								var message = rsp.message;
+								if (!message.hasOwnProperty('error')) {
+									$(document.body).trigger('update_checkout');
+								}
+							}
+						}
+					})(jQuery);
+				});
+			</script>
 			<?php
 		}
 	}

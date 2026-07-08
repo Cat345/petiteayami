@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'BWFAN_DEV_Get_Broadcast_Timing' ) ) {
+	#[\AllowDynamicProperties]
 	final class BWFAN_DEV_Get_Broadcast_Timing {
 		private static $ins = null;
 

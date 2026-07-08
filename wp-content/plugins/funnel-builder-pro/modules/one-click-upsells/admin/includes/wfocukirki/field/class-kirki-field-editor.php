@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Editor' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Editor extends WFOCUKirki_Field {
 
 		/**
@@ -34,7 +35,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Editor' ) ) {
 			}
 			$this->choices['element'] = 'textarea';
 			$this->choices['rows']    = '5';
-
 		}
 
 		/**
@@ -50,7 +50,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Editor' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'wp_kses_post';
-
 		}
 	}
 }

@@ -1,11 +1,12 @@
 <?php
 if ( ! class_exists( 'WFOCU_Guten_Variation_Selector' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Guten_Variation_Selector extends WFOCU_Guten_Field {
-		public $slug = 'wfocu_variation_selector';
+		public $slug  = 'wfocu_variation_selector';
 		protected $id = 'wfocu_variation_selector';
 
 		public function __construct() {
-			$this->name = __( "WF Variation Selector" );
+			$this->name = __( 'WF Variation Selector' );
 			$this->ajax = true;
 			parent::__construct();
 		}
@@ -48,9 +49,7 @@ if ( ! class_exists( 'WFOCU_Guten_Variation_Selector' ) ) {
 				}
 			}
 		}
-
-
 	}
 
-	return new WFOCU_Guten_Variation_Selector;
+	return new WFOCU_Guten_Variation_Selector();
 }

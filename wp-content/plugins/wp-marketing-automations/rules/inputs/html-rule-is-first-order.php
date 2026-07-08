@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class bwfan_Input_Html_Rule_Is_First_Order {
 	public function __construct() {
 		// vars

@@ -1,10 +1,9 @@
 <?php
 
-$gallery  = $data['gallery'];
-$hash_key = $data['key'];
-$product  = $data['product'];
-$title    = $data['title'];
-$style    = $data['style'];
+$gallery      = $data['gallery'];
+$hash_key     = $data['key'];
+$wfocu_title  = $data['title'];
+$style        = $data['style'];
 
 $gallery_img = array();
 foreach ( $gallery as $gallerys ) {
@@ -92,7 +91,7 @@ if ( is_array( $gallery_img ) && count( $gallery_img ) > 1 ) {
     $gallery_img = $new_gallery;
 	?>
 	<div class="wfocu-product-gallery ">
-		<div class="wfocu-product-carousel wfocu-product-gallery-slider wfocu-slider-unique-<?php echo $hash_key; ?> wfocu-slider-style<?php echo $style . '-' . $hash_key; ?> <?php echo $carousal_class; ?>" data-flickity='<?php echo $flickity_data; ?>' data-gallery="<?php echo htmlspecialchars( wp_json_encode( $gallery_img ) ); ?>">
+		<div class="wfocu-product-carousel wfocu-product-gallery-slider wfocu-slider-unique-<?php echo esc_attr( $hash_key ); ?> wfocu-slider-style<?php echo esc_attr( $style . '-' . $hash_key ); ?> <?php echo esc_attr( $carousal_class ); ?>" data-flickity='<?php echo $flickity_data; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode result in single-quoted attr ?>' data-gallery="<?php echo htmlspecialchars( wp_json_encode( $gallery_img ) ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- htmlspecialchars applied ?>">
 			<?php
 
 
@@ -104,7 +103,7 @@ if ( is_array( $gallery_img ) && count( $gallery_img ) > 1 ) {
 				?>
 				<div class="wfocu-carousel-cell">
 					<a>
-						<img class="skip-lazy" data-id="<?php echo $item['id']; ?>" src="<?php echo $item['src']; ?>" alt="<?php echo $title; ?>" title="<?php echo $title; ?>"/>
+						<img class="skip-lazy" data-id="<?php echo absint( $item['id'] ); ?>" src="<?php echo esc_url( $item['src'] ); ?>" alt="<?php echo esc_attr( $wfocu_title ); ?>" title="<?php echo esc_attr( $wfocu_title ); ?>"/>
 					</a>
 				</div>
 				<?php
@@ -112,27 +111,27 @@ if ( is_array( $gallery_img ) && count( $gallery_img ) > 1 ) {
 			?>
 		</div>
 	</div>
-	<?php echo $thumbnail_slider_before_element; ?>
-	<div class="wfocu-product-carousel-nav wfocu-product-thumbnails" data-flickity='<?php echo $flickity_thumb_data; ?>'>
+	<?php echo $thumbnail_slider_before_element; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- hardcoded HTML string ?>
+	<div class="wfocu-product-carousel-nav wfocu-product-thumbnails" data-flickity='<?php echo $flickity_thumb_data; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode result in single-quoted attr ?>'>
 		<?php
 		$h = 1;
 		foreach ( $gallery_img as $item ) {
 			$thumb_class = ( absint($h) === 1 ) ? ' is-nav-selected' : '';
 			?>
-			<div class="wfocu-thumb-col<?php echo $thumb_class; ?>">
-				<a><img class="skip-lazy" data-id="<?php echo $item['id']; ?>" src="<?php echo $item['thumb_src']; ?>" alt="<?php echo $title; ?>" title="<?php echo $title; ?>"/></a>
+			<div class="wfocu-thumb-col<?php echo esc_attr( $thumb_class ); ?>">
+				<a><img class="skip-lazy" data-id="<?php echo absint( $item['id'] ); ?>" src="<?php echo esc_url( $item['thumb_src'] ); ?>" alt="<?php echo esc_attr( $wfocu_title ); ?>" title="<?php echo esc_attr( $wfocu_title ); ?>"/></a>
 			</div>
 			<?php
 			$h ++;
 		}
 		?>
 	</div>
-	<?php echo $thumbnail_slider_after_element; ?>
+	<?php echo $thumbnail_slider_after_element; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- hardcoded HTML string ?>
 	<?php
 } elseif ( is_array( $gallery_img ) && count( $gallery_img ) === 1 ) {
 	?>
 	<div class="wfocu-product-gallery ">
-		<div class="wfocu-product-carousel wfocu-product-image-single <?php echo $carousal_class; ?>">
+		<div class="wfocu-product-carousel wfocu-product-image-single <?php echo esc_attr( $carousal_class ); ?>">
 			<?php
 			foreach ( $gallery_img as $item ) {
 				if ( empty( $item['src'] ) ) {
@@ -141,7 +140,7 @@ if ( is_array( $gallery_img ) && count( $gallery_img ) > 1 ) {
 				?>
 				<div class="wfocu-carousel-cell">
 					<a>
-						<img class="skip-lazy" data-id="<?php echo $item['id']; ?>" src="<?php echo $item['src']; ?>" alt="<?php echo $title; ?>" title="<?php echo $title; ?>"/>
+						<img class="skip-lazy" data-id="<?php echo absint( $item['id'] ); ?>" src="<?php echo esc_url( $item['src'] ); ?>" alt="<?php echo esc_attr( $wfocu_title ); ?>" title="<?php echo esc_attr( $wfocu_title ); ?>"/>
 					</a>
 				</div>
 				<?php

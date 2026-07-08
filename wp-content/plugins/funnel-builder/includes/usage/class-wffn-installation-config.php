@@ -15,6 +15,7 @@ if ( ! class_exists( 'WFFN_Installation_Config' ) ) {
 	/**
 	 * Class WFFN_Installation_Config
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_Installation_Config {
 
 		/**

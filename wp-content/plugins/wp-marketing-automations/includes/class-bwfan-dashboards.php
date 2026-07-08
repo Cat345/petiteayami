@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class BWFAN_Dashboards
  *
  */
+#[\AllowDynamicProperties]
 class BWFAN_Dashboards {
 
 	public function __construct() {
@@ -29,6 +30,8 @@ class BWFAN_Dashboards {
 	 * @return string|null
 	 */
 	public static function get_total_contacts( $start_date = '', $end_date = '', $is_interval = '', $interval = '' ) {
+		$start_date = preg_replace( '/[^0-9 :-]/', '', (string) $start_date );
+		$end_date   = preg_replace( '/[^0-9 :-]/', '', (string) $end_date );
 		global $wpdb;
 		$table          = $wpdb->prefix . 'bwf_contact';
 		$date_col       = "creation_date";
@@ -46,7 +49,7 @@ class BWFAN_Dashboards {
 		}
 
 		if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
-			$where = " AND " . $date_col . " >= '" . $start_date . " 00:00:00' AND `" . $date_col . "` <= '" . $end_date . " 23:59:59' ";
+			$where = $wpdb->prepare( " AND " . $date_col . " >= %s AND `" . $date_col . "` <= %s ", $start_date . ' 00:00:00', $end_date . ' 23:59:59' ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		$where .= " AND  email != '' AND email IS NOT NULL ";
@@ -241,6 +244,8 @@ class BWFAN_Dashboards {
 	 * @return array|object|null
 	 */
 	public static function get_total_engagement_sents( $start_date, $end_date, $is_interval, $interval ) {
+		$start_date = preg_replace( '/[^0-9 :-]/', '', (string) $start_date );
+		$end_date   = preg_replace( '/[^0-9 :-]/', '', (string) $end_date );
 		global $wpdb;
 		$table          = $wpdb->prefix . 'bwfan_engagement_tracking';
 		$date_col       = "created_at";
@@ -257,7 +262,7 @@ class BWFAN_Dashboards {
 		}
 
 		if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
-			$where = " AND " . $date_col . " >= '" . $start_date . " 00:00:00' AND `" . $date_col . "` <= '" . $end_date . " 23:59:59' ";
+			$where = $wpdb->prepare( " AND " . $date_col . " >= %s AND `" . $date_col . "` <= %s ", $start_date . ' 00:00:00', $end_date . ' 23:59:59' ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 		$arr = [];
 
@@ -285,6 +290,8 @@ class BWFAN_Dashboards {
 	 * @return array|object|null
 	 */
 	public static function get_total_email_open( $start_date, $end_date, $is_interval, $interval ) {
+		$start_date = preg_replace( '/[^0-9 :-]/', '', (string) $start_date );
+		$end_date   = preg_replace( '/[^0-9 :-]/', '', (string) $end_date );
 		global $wpdb;
 		$table          = $wpdb->prefix . 'bwfan_engagement_tracking';
 		$date_col       = "created_at";
@@ -301,7 +308,7 @@ class BWFAN_Dashboards {
 		}
 
 		if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
-			$where = " AND " . $date_col . " >= '" . $start_date . " 00:00:00' AND `" . $date_col . "` <= '" . $end_date . " 23:59:59' ";
+			$where = $wpdb->prepare( " AND " . $date_col . " >= %s AND `" . $date_col . "` <= %s ", $start_date . ' 00:00:00', $end_date . ' 23:59:59' ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		$base_query = "SELECT  sum( open ) as email_open" . $interval_query . "  FROM `" . $table . "` WHERE 1 = 1 " . $where . " and c_status = 2 " . $group_by . " ORDER BY " . $order_by . " ASC";
@@ -318,6 +325,8 @@ class BWFAN_Dashboards {
 	 * @return array|object|null
 	 */
 	public static function get_total_email_click( $start_date, $end_date, $is_interval, $interval ) {
+		$start_date = preg_replace( '/[^0-9 :-]/', '', (string) $start_date );
+		$end_date   = preg_replace( '/[^0-9 :-]/', '', (string) $end_date );
 		global $wpdb;
 
 		$table          = $wpdb->prefix . 'bwfan_engagement_tracking';
@@ -335,7 +344,7 @@ class BWFAN_Dashboards {
 		}
 
 		if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
-			$where = " AND " . $date_col . " >= '" . $start_date . " 00:00:00' AND `" . $date_col . "` <= '" . $end_date . " 23:59:59' ";
+			$where = $wpdb->prepare( " AND " . $date_col . " >= %s AND `" . $date_col . "` <= %s ", $start_date . ' 00:00:00', $end_date . ' 23:59:59' ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		$base_query = "SELECT  sum( click ) as email_click" . $interval_query . "  FROM `" . $table . "` WHERE 1 = 1 " . $where . " and c_status = 2 " . $group_by . " ORDER BY " . $order_by . " ASC";
@@ -352,6 +361,8 @@ class BWFAN_Dashboards {
 	 * @return array|object|null
 	 */
 	public static function get_total_orders( $start_date, $end_date, $is_interval, $interval ) {
+		$start_date = preg_replace( '/[^0-9 :-]/', '', (string) $start_date );
+		$end_date   = preg_replace( '/[^0-9 :-]/', '', (string) $end_date );
 		global $wpdb;
 
 		$table          = $wpdb->prefix . 'bwfan_conversions';
@@ -369,7 +380,7 @@ class BWFAN_Dashboards {
 		}
 
 		if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
-			$where = " AND " . $date_col . " >= '" . $start_date . " 00:00:00' AND " . $date_col . " <= '" . $end_date . " 23:59:59' ";
+			$where = $wpdb->prepare( " AND " . $date_col . " >= %s AND " . $date_col . " <= %s ", $start_date . ' 00:00:00', $end_date . ' 23:59:59' ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		$base_query = "SELECT  count( c.id ) as total_orders, sum( c.wctotal ) as total_revenue " . $interval_query . "  FROM  $table as c WHERE 1 = 1 " . $where . " and c.wcid != 0 " . $group_by . " ORDER BY " . $order_by . " ASC";
@@ -515,64 +526,6 @@ class BWFAN_Dashboards {
 		$datetime->setTimezone( new DateTimeZone( 'GMT' ) );
 
 		return $datetime;
-	}
-
-	/**
-	 * @param $start_date
-	 * @param $end_date
-	 * @param $is_interval
-	 * @param $interval
-	 *
-	 * @return array|object|null
-	 */
-	public static function get_unsubscribers_total( $start_date, $end_date, $is_interval, $interval ) {
-		global $wpdb;
-
-		$table          = $wpdb->prefix . 'bwfan_message_unsubscribe';
-		$date_col       = "c_date";
-		$interval_query = '';
-		$group_by       = '';
-		$order_by       = ' ID ';
-		if ( 'interval' === $is_interval ) {
-			$get_interval   = self::get_interval_format_query( $interval, $date_col );
-			$interval_query = $get_interval['interval_query'];
-			$interval_group = $get_interval['interval_group'];
-			$group_by       = "GROUP BY " . $interval_group;
-			$order_by       = ' time_interval ';
-		}
-
-		$base_query = "SELECT  COUNT( ID ) as unsubs_count" . $interval_query . "  FROM `" . $table . "` WHERE 1 = 1 and `" . $date_col . "` >= '" . $start_date . "' and `" . $date_col . "` <= '" . $end_date . "'" . $group_by . " ORDER BY " . $order_by . " ASC";
-
-		return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-	}
-
-	/**
-	 * @param $start_date
-	 * @param $end_date
-	 *
-	 * @return array|object|null
-	 */
-	public static function get_email_trends_by_day( $start_date, $end_date ) {
-		global $wpdb;
-		$table_name = $wpdb->prefix . 'bwfan_engagement_tracking';
-
-		$base_query = "SELECT day, (SUM(open)/count(ID)) as mean, SUM(open) as open, count(ID) as total from $table_name where DATE(created_at) >= '" . $start_date . "' and DATE(created_at) <= '" . $end_date . "' AND day!=0 GROUP BY day ";
-
-		return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-	}
-
-	/**
-	 * @param $start_date
-	 * @param $end_date
-	 *
-	 * @return array|object|null
-	 */
-	public static function get_email_trends_by_hour( $start_date, $end_date ) {
-		global $wpdb;
-		$table_name = $wpdb->prefix . 'bwfan_engagement_tracking';
-		$base_query = "SELECT hour, (SUM(open)/count(ID)) as mean, SUM(open) as open, count(ID) as total from $table_name where DATE(created_at) >= '" . $start_date . "' and DATE(created_at) <= '" . $end_date . "' GROUP BY hour ";
-
-		return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	public static function get_recent_contacts() {

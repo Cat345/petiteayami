@@ -9,6 +9,7 @@ use Exception;
  *
  * This class represents a logger that logs messages to a file.
  */
+#[\AllowDynamicProperties]
 class Logger {
 	private $file_path;
 
@@ -63,11 +64,14 @@ class Logger {
 						__( 'Contact Email', 'wp-marketing-automations' ),
 						__( 'Original ID', 'wp-marketing-automations' ),
 						__( 'Status', 'wp-marketing-automations' ),
-					)
+					),
+					',',
+					'"',
+					'\\'
 				);
 			}
 
-			fputcsv( $file, $data );
+			fputcsv( $file, $data, ',', '"', '\\' );
 
 			fclose( $file );
 		} catch ( Exception $e ) {

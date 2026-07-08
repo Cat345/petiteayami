@@ -20,6 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * A TinyMCE control.
  */
 if ( ! class_exists( 'WFACPKirki_Control_Editor' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Editor extends WFACPKirki_Control_Base {
 
 		/**
@@ -46,11 +47,11 @@ if ( ! class_exists( 'WFACPKirki_Control_Editor' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <label>
-                <# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
-                <# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
-            </label>
-            <textarea id="wfacpkirki-editor-{{{ data.id.replace( '[', '' ).replace( ']', '' ) }}}" {{{ data.inputAttrs }}} {{{ data.link }}}>{{ data.value }}</textarea>
+			<label>
+				<# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
+				<# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
+			</label>
+			<textarea id="wfacpkirki-editor-{{{ data.id.replace( '[', '' ).replace( ']', '' ) }}}" {{{ data.inputAttrs }}} {{{ data.link }}}>{{ data.value }}</textarea>
 			<?php
 		}
 	}

@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * WooCommerce Fattura24 by Fattura24.com (Version 7.1.0)
@@ -8,55 +12,55 @@ if ( ! class_exists( 'WFACP_Compatibility_Fattura_24' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_Fattura_24 {
 
-		private $add_fields = [
+		private $add_fields = array(
 			'billing_checkbox',
 			'billing_fiscalcode',
 			'billing_vatcode',
 			'billing_recipientcode',
 			'billing_pecaddress',
-		];
-		private $new_fields = [];
+		);
+		private $new_fields = array();
 
 		public function __construct() {
 			/* Register Add field */
 			if ( WFACP_Common::is_funnel_builder_3() ) {
-				add_action( 'wffn_rest_checkout_form_actions', [ $this, 'setup_fields_billing' ] );
+				add_action( 'wffn_rest_checkout_form_actions', array( $this, 'setup_fields_billing' ) );
 			} else {
-				add_action( 'init', [ $this, 'setup_fields_billing' ], 20 );
+				add_action( 'init', array( $this, 'setup_fields_billing' ), 20 );
 			}
 			add_filter( 'wfacp_html_fields_billing_fattura_24', '__return_false' );
 			/* Process Html */
-			add_action( 'process_wfacp_html', [ $this, 'call_fields_hook' ], 50, 2 );
+			add_action( 'process_wfacp_html', array( $this, 'call_fields_hook' ), 50, 2 );
 
 			/* Get Billing Checkout fields */
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'action' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'action' ) );
 
 			/* Add Default Styling  */
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 10, 2 );
+			add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 10, 2 );
 
 			/* Add Internal Css for plugin */
-			add_filter( 'wfacp_internal_css', [ $this, 'wfacp_internal_css' ] );
-
+			add_filter( 'wfacp_internal_css', array( $this, 'wfacp_internal_css' ) );
 
 			/* prevent third party fields and wrapper*/
 
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
-			add_filter( 'wfacp_third_party_billing_fields', [ $this, 'disabled_third_party_fields' ] );
-
-
+			add_filter( 'wfacp_third_party_billing_fields', array( $this, 'disabled_third_party_fields' ) );
 		}
 
 
 		public function setup_fields_billing() {
-			new WFACP_Add_Address_Field( 'fattura_24', [
-				'type'        => 'wfacp_html',
-				'label'       => __( 'Fattura 24', 'woofunnels-aero-checkout' ),
-				'placeholder' => __( 'Fattura 24', 'woofunnels-aero-checkout' ),
-				'cssready'    => [ 'wfacp-col-left-third' ],
-				'class'       => array( 'form-row-third first', 'wfacp-col-full' ),
-				'required'    => false,
-				'priority'    => 60,
-			] );
+			new WFACP_Add_Address_Field(
+				'fattura_24',
+				array(
+					'type'        => 'wfacp_html',
+					'label'       => __( 'Fattura 24', 'woofunnels-aero-checkout' ),
+					'placeholder' => __( 'Fattura 24', 'woofunnels-aero-checkout' ),
+					'cssready'    => array( 'wfacp-col-left-third' ),
+					'class'       => array( 'form-row-third first', 'wfacp-col-full' ),
+					'required'    => false,
+					'priority'    => 60,
+				)
+			);
 		}
 
 		public function checkout_fields( $fields ) {
@@ -80,16 +84,13 @@ if ( ! class_exists( 'WFACP_Compatibility_Fattura_24' ) ) {
 				return;
 			}
 
-
 			foreach ( $this->new_fields as $field_key => $field_val ) {
 				woocommerce_form_field( $field_key, $field_val );
 			}
-
-
 		}
 
 		public function action() {
-			add_action( 'woocommerce_checkout_fields', [ $this, 'checkout_fields' ], 100 );
+			add_action( 'woocommerce_checkout_fields', array( $this, 'checkout_fields' ), 100 );
 		}
 
 		public function add_default_wfacp_styling( $args, $key ) {
@@ -98,20 +99,17 @@ if ( ! class_exists( 'WFACP_Compatibility_Fattura_24' ) ) {
 				return $args;
 			}
 
-
 			if ( isset( $args['type'] ) && 'checkbox' !== $args['type'] ) {
 
-				$args['input_class'] = array_merge( [ 'wfacp-form-control' ], $args['input_class'] );
-				$args['label_class'] = array_merge( [ 'wfacp-form-control-label' ], $args['label_class'] );
-				$args['class']       = array_merge( [ 'wfacp-form-control-wrapper wfacp-col-left-half ' ], $args['class'] );
-				$args['cssready']    = [ 'wfacp-col-left-half' ];
-
+				$args['input_class'] = array_merge( array( 'wfacp-form-control' ), $args['input_class'] );
+				$args['label_class'] = array_merge( array( 'wfacp-form-control-label' ), $args['label_class'] );
+				$args['class']       = array_merge( array( 'wfacp-form-control-wrapper wfacp-col-left-half ' ), $args['class'] );
+				$args['cssready']    = array( 'wfacp-col-left-half' );
 
 			} else {
-				$args['class']    = array_merge( [ 'wfacp-form-control-wrapper wfacp-col-full ' ], $args['class'] );
-				$args['cssready'] = [ 'wfacp-col-full' ];
+				$args['class']    = array_merge( array( 'wfacp-form-control-wrapper wfacp-col-full ' ), $args['class'] );
+				$args['cssready'] = array( 'wfacp-col-full' );
 			}
-
 
 			return $args;
 		}
@@ -123,14 +121,13 @@ if ( ! class_exists( 'WFACP_Compatibility_Fattura_24' ) ) {
 				return;
 			}
 
-			$bodyClass = "body #wfacp-sec-wrapper ";
-			$cssHtml   = "<style>";
-			$cssHtml   .= $bodyClass . " .wfacp-form:not(.wfacp-top) p.wfacp-form-control-wrapper.wfacp-anim-wrap label.wfacp-form-control-label {top: 6px!important;font-size: 12px!important;background: 0 0!important;bottom: auto;right: 8px;margin-top: 0;line-height: 1.3;}";
-			$cssHtml   .= "";
+			$bodyClass = 'body #wfacp-sec-wrapper ';
+			$cssHtml   = '<style>';
+			$cssHtml  .= $bodyClass . ' .wfacp-form:not(.wfacp-top) p.wfacp-form-control-wrapper.wfacp-anim-wrap label.wfacp-form-control-label {top: 6px!important;font-size: 12px!important;background: 0 0!important;bottom: auto;right: 8px;margin-top: 0;line-height: 1.3;}';
+			$cssHtml  .= '';
 
-			$cssHtml .= "</style>";
+			$cssHtml .= '</style>';
 			echo $cssHtml;
-
 		}
 
 		public function disabled_third_party_fields( $fields ) {

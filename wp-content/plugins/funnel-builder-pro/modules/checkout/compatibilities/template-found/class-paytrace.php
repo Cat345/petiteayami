@@ -1,9 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'WFACP_Paytrace' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Paytrace {
 		public function __construct() {
-			add_action( 'wp_enqueue_scripts', [ $this, 'action' ], 7 );
+			add_action( 'wp_enqueue_scripts', array( $this, 'action' ), 7 );
 		}
 
 		public function action() {
@@ -16,5 +20,3 @@ if ( ! class_exists( 'WFACP_Paytrace' ) ) {
 	WFACP_Plugin_Compatibilities::register( new WFACP_Paytrace(), 'wfacp-paytrace' );
 
 }
-
-

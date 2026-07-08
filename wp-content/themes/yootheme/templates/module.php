@@ -138,9 +138,11 @@ if (preg_match('/^(top|bottom|builder-\d+)$/', $position)) {
 
 }
 
+$module_tag = $config("$modules.tag") ?: 'div';
+
 ?>
 
-<div<?= $this->attrs(compact('class'), ['class' => $list_class], $module->attrs) ?>>
+<<?= $module_tag ?><?= $this->attrs(['class' => $class], ['class' => $list_class], $module->attrs) ?>>
 
     <?php if ($title) : ?>
 
@@ -158,4 +160,4 @@ if (preg_match('/^(top|bottom|builder-\d+)$/', $position)) {
 
     <?= $module->content ?>
 
-</div>
+</<?= $module_tag ?>>

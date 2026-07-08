@@ -95,13 +95,13 @@ if ( ! class_exists( 'BWFABT_Report_Offer' ) ) {
 
 				if ( is_array( $get_all_dates ) && count( $get_all_dates ) ) {
 					foreach ( $get_all_dates as $date ) {
-						$date_query .= " ( events.timestamp >= '" . $date['start_date'] . "' AND events.timestamp <= '" . $date['end_date'] . "' ) OR ";
+						$date_query .= " ( events.timestamp >= '" . esc_sql( $date['start_date'] ) . "' AND events.timestamp <= '" . esc_sql( $date['end_date'] ) . "' ) OR ";
 					}
 					$date_query = ' AND ( ' . rtrim( $date_query, " OR " ) . ') ';
 				}
 
-				$sql   = "SELECT count( events.action_type_id) as trigger_count FROM " . $wpdb->prefix . "wfocu_event AS events WHERE 1=1 AND events.object_id IN (" . esc_sql( $query_funnel_id ) . ") AND events.action_type_id = '1' " . $date_query;
-				$query = "SELECT events.action_type_id as action_id, events.object_id as objects, events.timestamp as time, events.value as value FROM  " . $wpdb->prefix . "wfocu_event AS events INNER JOIN  " . $wpdb->prefix . "wfocu_event_meta AS events_meta__funnel_id ON ( events.ID = events_meta__funnel_id.event_id ) AND ( ( events_meta__funnel_id.meta_key = '_funnel_id' AND events_meta__funnel_id.meta_value = '" . esc_sql( $query_funnel_id ) . "' )) " . $date_query;
+				$sql   = "SELECT count( events.action_type_id) as trigger_count FROM " . $wpdb->prefix . "wfocu_event AS events WHERE 1=1 AND events.object_id IN (" . absint( $query_funnel_id ) . ") AND events.action_type_id = '1' " . $date_query;
+				$query = "SELECT events.action_type_id as action_id, events.object_id as objects, events.timestamp as time, events.value as value FROM  " . $wpdb->prefix . "wfocu_event AS events INNER JOIN  " . $wpdb->prefix . "wfocu_event_meta AS events_meta__funnel_id ON ( events.ID = events_meta__funnel_id.event_id ) AND ( ( events_meta__funnel_id.meta_key = '_funnel_id' AND events_meta__funnel_id.meta_value = '" . absint( $query_funnel_id ) . "' )) " . $date_query;
 
 
 				$sql_result       = $wpdb->get_row( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching

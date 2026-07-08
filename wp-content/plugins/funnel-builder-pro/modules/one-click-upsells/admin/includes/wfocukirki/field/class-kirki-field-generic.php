@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Generic' ) ) {
 	/**
 	 * This is simply an alias for the WFOCUKirki_Field_WFOCUKirki_Generic class.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Generic extends WFOCUKirki_Field_WFOCUKirki_Generic {
 	}
 }

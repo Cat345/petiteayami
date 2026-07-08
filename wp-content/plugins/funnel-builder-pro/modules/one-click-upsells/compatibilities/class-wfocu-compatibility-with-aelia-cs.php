@@ -1,6 +1,9 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 
 if ( ! class_exists( 'WFOCU_Compatibility_With_Aelia_CS' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Aelia_CS {
 
 		public function __construct() {
@@ -9,21 +12,23 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Aelia_CS' ) ) {
 				return;
 			}
 
-			add_action( 'init', function () {
-				if ( isset( $GLOBALS['woocommerce-tax-display-by-country'] ) ) {
-					if ( WFOCU_Core()->template_loader->is_valid_state_for_data_setup() ) {
-						if ( $GLOBALS['woocommerce-tax-display-by-country']::settings()->keep_prices_fixed() ) {
-							$GLOBALS['woocommerce-tax-display-by-country']->woocommerce_get_price( '' );
+			add_action(
+				'init',
+				function () {
+					if ( isset( $GLOBALS['woocommerce-tax-display-by-country'] ) ) {
+						if ( WFOCU_Core()->template_loader->is_valid_state_for_data_setup() ) {
+							if ( $GLOBALS['woocommerce-tax-display-by-country']::settings()->keep_prices_fixed() ) {
+								$GLOBALS['woocommerce-tax-display-by-country']->woocommerce_get_price( '' );
+							}
 						}
 					}
 				}
-			} );
+			);
 
 			$force_currency_by_country = \Aelia\WC\CurrencySwitcher\WC_Aelia_CurrencySwitcher::settings()->get( \Aelia\WC\CurrencySwitcher\Settings::FIELD_FORCE_CURRENCY_BY_COUNTRY, \Aelia\WC\CurrencySwitcher\Settings::OPTION_DISABLED );
 			if ( $force_currency_by_country !== \Aelia\WC\CurrencySwitcher\Settings::OPTION_DISABLED ) {
 				add_filter( 'wc_aelia_cs_selected_currency', array( $this, 'set_parent_order_currency' ), 99 );
 			}
-
 		}
 
 		public function is_enable() {
@@ -121,14 +126,10 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Aelia_CS' ) ) {
 				if ( ! empty( $p_currency ) ) {
 					return $p_currency;
 				}
-
 			}
 
 			return $currency;
-
 		}
-
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_Aelia_CS(), 'aelia_cs' );

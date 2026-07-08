@@ -8,9 +8,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFFN_Export_Contact
  */
 if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Export_Orders extends WFFN_Abstract_Exporter {
 		protected static $slug = 'orders';
-		private static $ins = null;
+		private static $ins    = null;
 		/**
 		 * Export action
 		 *
@@ -43,13 +44,13 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 		}
 
 		public function get_columns() {
-			return [
-				'order_id'     => __( 'Order Id', 'funnel-builder-powerpack' ),
-				'name'         => __( 'Name', 'funnel-builder-powerpack' ),
-				'email'        => __( 'Email', 'funnel-builder-powerpack' ),
-				'phone'        => __( 'Phone', 'funnel-builder-powerpack' ),
-				'funnel_title' => __( 'Funnel', 'funnel-builder-powerpack' ),
-				'date'         => __( 'Date', 'funnel-builder-powerpack' ),
+			return array(
+				'order_id'          => __( 'Order Id', 'funnel-builder-powerpack' ),
+				'name'              => __( 'Name', 'funnel-builder-powerpack' ),
+				'email'             => __( 'Email', 'funnel-builder-powerpack' ),
+				'phone'             => __( 'Phone', 'funnel-builder-powerpack' ),
+				'funnel_title'      => __( 'Funnel', 'funnel-builder-powerpack' ),
+				'date'              => __( 'Date', 'funnel-builder-powerpack' ),
 
 				'total_spent'       => __( 'Total Spent', 'funnel-builder-powerpack' ),
 				'checkout_name'     => __( 'Checkout Name', 'funnel-builder-powerpack' ),
@@ -57,31 +58,37 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 				'checkout_products' => __( 'Checkout Product', 'funnel-builder-powerpack' ),
 				'checkout_coupons'  => __( 'Checkout Coupons', 'funnel-builder-powerpack' ),
 
-				'bump_accepted' => __( 'Bump Accepted', 'funnel-builder-powerpack' ),
-				'bump_rejected' => __( 'Bump Rejected', 'funnel-builder-powerpack' ),
-				'bump_products' => __( 'Bump Products', 'funnel-builder-powerpack' ),
-				'bump_total'    => __( 'Bump Total', 'funnel-builder-powerpack' ),
+				'bump_accepted'     => __( 'Bump Accepted', 'funnel-builder-powerpack' ),
+				'bump_rejected'     => __( 'Bump Rejected', 'funnel-builder-powerpack' ),
+				'bump_products'     => __( 'Bump Products', 'funnel-builder-powerpack' ),
+				'bump_total'        => __( 'Bump Total', 'funnel-builder-powerpack' ),
 
-				'offer_accepted' => __( 'Offer Accepted', 'funnel-builder-powerpack' ),
-				'offer_rejected' => __( 'Offer Rejected', 'funnel-builder-powerpack' ),
-				'offer_products' => __( 'Offer Products', 'funnel-builder-powerpack' ),
-				'offer_total'    => __( 'Offer Total', 'funnel-builder-powerpack' ),
+				'offer_accepted'    => __( 'Offer Accepted', 'funnel-builder-powerpack' ),
+				'offer_rejected'    => __( 'Offer Rejected', 'funnel-builder-powerpack' ),
+				'offer_products'    => __( 'Offer Products', 'funnel-builder-powerpack' ),
+				'offer_total'       => __( 'Offer Total', 'funnel-builder-powerpack' ),
 
-				'device'       => __( 'Device', 'funnel-builder-powerpack' ),
-				'referrers'    => __( 'Referrers', 'funnel-builder-powerpack' ),
-				'utm_campaign' => __( 'Utm Campaign', 'funnel-builder-powerpack' ),
-				'utm_source'   => __( 'Utm Source', 'funnel-builder-powerpack' ),
-				'utm_medium'   => __( 'Utm Medium', 'funnel-builder-powerpack' ),
-				'utm_term'     => __( 'Utm Term', 'funnel-builder-powerpack' ),
-				'convert_time' => __( 'Time to Convert', 'funnel-builder-powerpack' ),
-			];
-
+				'device'            => __( 'Device', 'funnel-builder-powerpack' ),
+				'referrers'         => __( 'Referrers', 'funnel-builder-powerpack' ),
+				'utm_campaign'      => __( 'Utm Campaign', 'funnel-builder-powerpack' ),
+				'utm_source'        => __( 'Utm Source', 'funnel-builder-powerpack' ),
+				'utm_medium'        => __( 'Utm Medium', 'funnel-builder-powerpack' ),
+				'utm_term'          => __( 'Utm Term', 'funnel-builder-powerpack' ),
+				'convert_time'      => __( 'Time to Convert', 'funnel-builder-powerpack' ),
+			);
 		}
 
 		public function total_rows( $args ) {
 			$args['total_count'] = true;
 			$rest_endpoints      = WFFN_Funnel_Orders::get_instance();
-			$get_conversions     = $rest_endpoints->get_orders( [ 'total_count' => 'yes', 'filters' => $args['filters'], 'funnel_id' => $args['funnel_id'] ?? 0 ], true );
+			$get_conversions     = $rest_endpoints->get_orders(
+				array(
+					'total_count' => 'yes',
+					'filters'     => $args['filters'],
+					'funnel_id'   => $args['funnel_id'] ?? 0,
+				),
+				true
+			);
 
 			if ( isset( $get_conversions['status'] ) && false === $get_conversions['status'] ) {
 				return false;
@@ -107,35 +114,38 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 				'funnel_id' => $funnel_id,
 				'offset'    => $this->current_pos,
 				'limit'     => get_option( 'posts_per_page' ),
-				'filters'   => $this->export_meta['filters']
+				'filters'   => $this->export_meta['filters'],
 			);
 
 			$rest_endpoints  = WFFN_Funnel_Orders::get_instance();
 			$get_conversions = $rest_endpoints->get_orders( $args, true );
 
 			if ( isset( $get_conversions['status'] ) && false === $get_conversions['status'] ) {
-				WFFN_Core()->logger->log( "Something Went Wrong " . $this->get_slug() . " not exported for export id # {$this->export_id} " . print_r( $get_conversions, true ), 'wffn', true );
+				WFFN_Core()->logger->log( 'Something Went Wrong ' . $this->get_slug() . " not exported for export id # {$this->export_id} " . print_r( $get_conversions, true ), 'wffn', true ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 				return;
 			}
 			if ( isset( $get_conversions['db_error'] ) && true === $get_conversions['db_error'] ) {
-				WFFN_Core()->logger->log( "db error " . $this->get_slug() . " not exported for export id # {$this->export_id} " . print_r( $get_conversions, true ), 'wffn', true );
+				WFFN_Core()->logger->log( 'db error ' . $this->get_slug() . " not exported for export id # {$this->export_id} " . print_r( $get_conversions, true ), 'wffn', true ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 				return;
 			}
 
-			$get_conversions['records'] = array_map( function ( $item ) {
-				$item = array_merge( $item, $this->get_order_data( $item ) );
+			$get_conversions['records'] = array_map(
+				function ( $item ) {
+					$item = array_merge( $item, $this->get_order_data( $item ) );
 
-				return $this->map_columns( $item );
-			}, $get_conversions['records'] );
+					return $this->map_columns( $item );
+				},
+				$get_conversions['records']
+			);
 
 			unset( $get_conversions['total_count'] );
 			$this->data_populated_in_csv( '', $get_conversions['records'] );
-
 		}
 
-		/* prepared and import data in csv
+		/*
+		prepared and import data in csv
 		*
 		* @param $funnel_id
 		* @param $data
@@ -144,18 +154,18 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 		*/
 		public function data_populated_in_csv( $funnel_id, $data ) {
 			/* prepared data for csv header get maximum columns data using funnel data **/
-			$file  = fopen( WFFN_PRO_EXPORT_DIR . '/' . $this->export_meta['file'], "a" );
+			$file  = fopen( WFFN_PRO_EXPORT_DIR . '/' . $this->export_meta['file'], 'a' ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 			$count = 0;
 			foreach ( $data as $subdata ) {
-				fputcsv( $file, $subdata );
-				$count ++;
+				fputcsv( $file, $subdata, ',', '"', '\\' );
+				++$count;
 			}
-			fclose( $file );
+			fclose( $file ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 			$this->current_pos = $this->current_pos + $count;
 		}
 
 		protected function map_columns( $data ) {
-			$return_data = [];
+			$return_data = array();
 			foreach ( $this->get_columns() as $key => $column_name ) {
 				$return_data[ $key ] = $data[ $key ] ?? '';
 			}
@@ -164,7 +174,7 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 		}
 
 		public function get_product_name_by_order_id( $order_ids, $type = 'checkout' ) {
-			$result    = [];
+			$result    = array();
 			$order_ids = ! is_array( $order_ids ) ? explode( ',', $order_ids ) : $order_ids;
 			if ( empty( $order_ids ) ) {
 				return $result;
@@ -199,7 +209,7 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 		 * @return array
 		 */
 		public function get_coupon_code_by_order_id( $order_ids ) {
-			$coupons   = [];
+			$coupons   = array();
 			$order_ids = ! is_array( $order_ids ) ? explode( ',', $order_ids ) : $order_ids;
 			if ( empty( $order_ids ) ) {
 				return $coupons;
@@ -217,35 +227,37 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 
 
 		/**
-		 *Return Normalize Array of Given Array
+		 * Return Normalize Array of Given Array
 		 *
 		 * @param $final_data
 		 *
 		 * @return array|string[]
 		 */
 		public function map_item_keys( $final_data ) {
-			return array_map( function ( $item ) {
-				if ( is_array( $item ) ) {
-					return implode( ',', array_unique( $item ) );
-				}
+			return array_map(
+				function ( $item ) {
+					if ( is_array( $item ) ) {
+							return implode( ',', array_unique( $item ) );
+					}
 
-				return trim( $item, ',' );
-
-			}, $final_data );
+					return trim( $item, ',' );
+				},
+				$final_data
+			);
 		}
 
 
 		public function get_order_data( $data ) {
-			$results = [];
+			$results = array();
 
-			if ( function_exists( 'wffn_conversion_tracking_migrator' ) && in_array( absint( wffn_conversion_tracking_migrator()->get_upgrade_state() ), [ 3, 4 ] ) ) {
-				$results = [
+			if ( function_exists( 'wffn_conversion_tracking_migrator' ) && in_array( absint( wffn_conversion_tracking_migrator()->get_upgrade_state() ), array( 3, 4 ) ) ) {
+				$results = array(
 					'checkout_name'     => '',
 					'checkout_products' => '',
 					'checkout_coupon'   => '',
 					'bump_products'     => '',
-					'offer_products'    => ''
-				];
+					'offer_products'    => '',
+				);
 
 				if ( isset( $data['order_id'] ) && absint( $data['order_id'] ) > 0 ) {
 					$results['checkout_products'] = array_unique( $this->get_product_name_by_order_id( $data['order_id'] ) );
@@ -314,7 +326,10 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 
 		public function get_step_name( $ids ) {
 			$get_name = '';
-			$ids      = is_array( $ids ) ? implode( ',', $ids ) : str_replace( [ '"', '[', ']' ], '', $ids );
+			if ( ! is_array( $ids ) ) {
+				$ids = explode( ',', str_replace( array( '"', '[', ']', ' ' ), '', $ids ) );
+			}
+			$ids = array_filter( array_map( 'intval', $ids ) );
 
 			if ( empty( $ids ) ) {
 				return $get_name;
@@ -322,7 +337,8 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 
 			global $wpdb;
 
-			$result = $wpdb->get_row( $wpdb->prepare( "SELECT GROUP_CONCAT( post_title ) as 'post_title' FROM {$wpdb->prefix}posts WHERE 1 = 1 AND ID IN (%1s)", $ids ), ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+			$result       = $wpdb->get_row( $wpdb->prepare( "SELECT GROUP_CONCAT( post_title ) as 'post_title' FROM {$wpdb->prefix}posts WHERE 1 = 1 AND ID IN ({$placeholders})", ...$ids ), ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 			if ( ! empty( $result['post_title'] ) ) {
 				$get_name = $result['post_title'];
 			}
@@ -336,11 +352,14 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 		 * @param $bump_data
 		 *
 		 * @return array
-		 *
 		 */
 		public function prepare_bump_data( $bump_data ) {
-			$final_data = [ 'bump_accepted' => [], 'bump_rejected' => [], 'bump_total' => 0 ];
-			$products   = [];
+			$final_data = array(
+				'bump_accepted' => array(),
+				'bump_rejected' => array(),
+				'bump_total'    => 0,
+			);
+			$products   = array();
 			foreach ( $bump_data as $data ) {
 				if ( empty( $data['bump_name'] ) ) {
 					continue;
@@ -348,7 +367,7 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 				$final_data['bump_name'][] = $data['bump_name'];
 				if ( 'Yes' == $data['bump_converted'] ) {
 					$final_data['bump_accepted'][] = $data['bump_name'];
-					$final_data['bump_total']      += $data['bump_total'];
+					$final_data['bump_total']     += $data['bump_total'];
 				}
 				if ( 'No' == $data['bump_converted'] ) {
 					$final_data['bump_rejected'][] = $data['bump_name'];
@@ -368,17 +387,20 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 		 * @param $checkout_data
 		 *
 		 * @return array|string[]
-		 *
 		 */
 		public function prepare_checkout_data( $checkout_data ) {
-			$final_data = [ 'checkout_name' => [], 'checkout_order_id' => [], 'checkout_total' => 0 ];
-			$products   = [];
-			$coupons    = [];
+			$final_data = array(
+				'checkout_name'     => array(),
+				'checkout_order_id' => array(),
+				'checkout_total'    => 0,
+			);
+			$products   = array();
+			$coupons    = array();
 			foreach ( $checkout_data as $data ) {
 				if ( empty( $data['checkout_name'] ) ) {
 					continue;
 				}
-				$final_data['checkout_total']      += $data['checkout_total'];
+				$final_data['checkout_total']     += $data['checkout_total'];
 				$final_data['checkout_order_id'][] = $data['checkout_order_id'];
 				$final_data['checkout_name'][]     = $data['checkout_name'];
 				$products                          = array_merge( $products, $this->get_product_name_by_order_id( $data['checkout_order_id'] ) );
@@ -398,11 +420,14 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 		 * @param $upsell_data
 		 *
 		 * @return array
-		 *
 		 */
 		public function prepare_upsell_offer_data( $upsell_data ) {
-			$final_data = [ 'offer_accepted' => [], 'offer_rejected' => [], 'offer_total' => 0 ];
-			$products   = [];
+			$final_data = array(
+				'offer_accepted' => array(),
+				'offer_rejected' => array(),
+				'offer_total'    => 0,
+			);
+			$products   = array();
 			foreach ( $upsell_data as $data ) {
 				if ( empty( $data['offer_name'] ) ) {
 					continue;
@@ -411,7 +436,7 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 
 				if ( 'Yes' == $data['offer_converted'] ) {
 					$final_data['offer_accepted'][] = $data['offer_name'];
-					$final_data['offer_total']      += $data['offer_total'];
+					$final_data['offer_total']     += $data['offer_total'];
 				}
 				if ( 'No' == $data['offer_converted'] ) {
 					$final_data['offer_rejected'][] = $data['offer_name'];
@@ -426,7 +451,6 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 
 			return $this->map_item_keys( $final_data );
 		}
-
 	}
 
 	if ( class_exists( 'WFFN_Pro_Core' ) ) {

@@ -68,6 +68,7 @@ use WPDesk\FS\TableRate\FreeShipping\FreeShippingNoticeGenerator;
 use WPDesk\FS\TableRate\FreeShipping\FreeShippingNoticeRenderer;
 use WPDesk\FS\TableRate\FreeShipping\NoticeTextSettings;
 use WPDesk\FS\TableRate\FreeShipping\ProgressBarSettings;
+use WPDesk\FS\TableRate\FreeShipping\Tracker\ThresholdAlertTracker;
 use WPDesk\FS\TableRate\ImporterExporter\Exporter;
 use WPDesk\FS\TableRate\ImporterExporter\ExporterData;
 use WPDesk\FS\TableRate\ImporterExporter\ImporterData;
@@ -89,6 +90,7 @@ use WPDesk\FS\TableRate\ShippingMethod\Management\ShippingMethodManagement;
 use WPDesk\FS\TableRate\ShippingMethod\MethodDescription;
 use WPDesk\FS\TableRate\ShippingMethod\MethodLogoCheckoutBlocksAssets;
 use WPDesk\FS\TableRate\ShippingMethod\MethodLogoSettingsField;
+use WPDesk\FS\TableRate\ShippingMethod\Tracker\MethodLogoTracker;
 use WPDesk\FS\TableRate\ShippingMethod\MethodTitle;
 use WPDesk\FS\TableRate\ShippingMethodSingle;
 use WPDesk\FS\TableRate\ShippingMethodsIntegration\ShippingRate;
@@ -274,6 +276,7 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 		$this->add_hookable( new MethodDescription( $this->renderer ) );
 		$this->add_hookable( new MethodLogoCheckoutBlocksAssets( $this->get_plugin_url(), $this->scripts_version ) );
 		$this->add_hookable( new MethodLogoSettingsField() );
+		$this->add_hookable( new MethodLogoTracker() );
 
 		$this->add_hookable( new Exporter() );
 		$this->add_hookable( new ImporterData() );
@@ -588,6 +591,7 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 		( new NoticeTextSettings() )->hooks();
 		( new ProgressBarSettings() )->hooks();
 		( new \WPDesk\FS\TableRate\FreeShipping\Tracker() )->hooks();
+		( new ThresholdAlertTracker() )->hooks();
 	}
 
 	/**

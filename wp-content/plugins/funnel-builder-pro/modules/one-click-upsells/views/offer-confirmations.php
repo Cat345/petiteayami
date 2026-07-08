@@ -7,7 +7,6 @@ if ( ! empty( $template_group ) && $template_group instanceof WFOCU_Template_Gro
 	$yes_text  = WFOCU_Common::get_option( 'wfocu_offer_confirmation_offer_confirmation_cta_yes_text' );
 	$no_text   = WFOCU_Common::get_option( 'wfocu_offer_confirmation_offer_confirmation_cta_no_text' );
 
-	$img_product                                                                                       = wc_placeholder_img_src();
 	WFOCU_Core()->template_loader->current_template->internal_css['offer_confirm_yes_color']           = array();
 	WFOCU_Core()->template_loader->current_template->internal_css['offer_confirm_yes_color']['hover']  = array();
 	WFOCU_Core()->template_loader->current_template->internal_css['offer_confirm_yes_color']['bg']     = WFOCU_Common::get_option( 'wfocu_offer_confirmation_offer_confirmation_yes_btn_bg_color' );
@@ -36,7 +35,6 @@ if ( ! empty( $template_group ) && $template_group instanceof WFOCU_Template_Gro
 	$no_text          = WFOCU_Core()->data->get_option( 'offer_skip_link_text' );
 	$cart_opener_text = WFOCU_Core()->data->get_option( 'cart_opener_text' );
 
-	$img_product                                                                                       = wc_placeholder_img_src();
 	WFOCU_Core()->template_loader->current_template->internal_css['offer_confirm_yes_color']           = array();
 	WFOCU_Core()->template_loader->current_template->internal_css['offer_confirm_yes_color']['hover']  = array();
 	WFOCU_Core()->template_loader->current_template->internal_css['offer_confirm_yes_color']['bg']     = WFOCU_Core()->data->get_option( 'offer_yes_btn_bg_cl' );
@@ -210,10 +208,10 @@ if ( ! empty( $template_group ) && $template_group instanceof WFOCU_Template_Gro
 			<div class="wfocu-mc-footer-row wfocu-text-center">
 				<?php echo do_action('wfocu_offer_confirmation_before_btn');  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped  ?>
 				<div class="wfocu-mc-footer-btn ">
-					<a href="javascript:void(0);" class="wfocu-mc-button" <?php $this->add_attributes_to_confirmation_button(); ?>><?php echo $yes_text; ?></a> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped,VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable ?>
+					<a href="javascript:void(0);" class="wfocu-mc-button" <?php $this->add_attributes_to_confirmation_button(); ?>><?php echo esc_html( $yes_text ); ?></a> <?php //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable ?>
 				</div>
 				<div class="wfocu-mc-footer-btm-text">
-					<a href="javascript:void(0);" class="wfocu_skip_offer_mc"><?php echo $no_text; ?> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<a href="javascript:void(0);" class="wfocu_skip_offer_mc"><?php echo esc_html( $no_text ); ?>
 					</a>
 				</div>
 
@@ -221,7 +219,7 @@ if ( ! empty( $template_group ) && $template_group instanceof WFOCU_Template_Gro
 		</div>
 
 		<# } else { #>
-		<div class="wfocu-mc-empty-msg"><?php esc_attr_e( 'No products found', 'woofunnels-upstroke-one-click-upsell' ); ?></div>
+		<div class="wfocu-mc-empty-msg"><?php esc_html_e( 'No products found', 'woofunnels-upstroke-one-click-upsell' ); ?></div>
 		<# } #>
 	</div>
 </script>
@@ -229,7 +227,7 @@ if ( ! empty( $template_group ) && $template_group instanceof WFOCU_Template_Gro
 	<div class="wfocu-offer-btn-wrap wfocu-def-hide">
 		<a class="wfocu-confirm-order-btn" href="javascript:void(0)">
 			<span class="wfocu-left-arrow"></span>
-			<span class="wfocu-opener-btn-bg"><?php echo $cart_opener_text; ?></span> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<span class="wfocu-opener-btn-bg"><?php echo esc_html( $cart_opener_text ); ?></span>
 		</a>
 	</div>
 	<div class="wfocu-black-overlay"></div></div> </script>

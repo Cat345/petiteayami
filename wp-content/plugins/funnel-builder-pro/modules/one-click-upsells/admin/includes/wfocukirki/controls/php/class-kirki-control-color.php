@@ -19,6 +19,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Color' ) ) {
 	 *
 	 * @see https://github.com/23r9i0/wp-color-picker-alpha
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Color extends WFOCUKirki_Control_Base {
 
 		/**

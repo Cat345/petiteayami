@@ -18,9 +18,7 @@ class Helper
     ): Closure {
         add_filter($name, $fn, $priority, $args);
 
-        return function () use ($name, $fn, $priority) {
-            remove_filter($name, $fn, $priority);
-        };
+        return fn() => remove_filter($name, $fn, $priority);
     }
 
     /**

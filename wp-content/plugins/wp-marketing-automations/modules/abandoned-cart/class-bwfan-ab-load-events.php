@@ -4,6 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
+#[\AllowDynamicProperties]
 class BWFAN_AB_Load_Events {
 	private static $instance = null;
 

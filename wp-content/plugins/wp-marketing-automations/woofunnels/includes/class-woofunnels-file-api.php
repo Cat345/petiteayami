@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Including WordPress Filesystem API
@@ -43,15 +46,49 @@ if ( class_exists( 'WP_Filesystem_Direct' ) ) {
 		}
 
 		public function file_path( $file ) {
-			$file_path = $this->woofunnels_core_dir . '/' . $this->component . '/' . $file;
+			$file = sanitize_file_name( basename( $file ) );
+			if ( '' === $file ) {
+				return false;
+			}
+			$real_base = realpath( $this->woofunnels_core_dir . '/' . $this->component );
+			if ( false === $real_base ) {
+				return false;
+			}
+			$candidate = $real_base . '/' . $file;
+			$resolved  = realpath( $candidate );
+			/** If the file already exists, ensure it resolves inside $real_base (defends against symlink escape). */
+			if ( false !== $resolved ) {
+				if ( 0 !== strpos( $resolved, $real_base . DIRECTORY_SEPARATOR ) ) {
+					return false;
+				}
 
-			return $file_path;
+				return $resolved;
+			}
+
+			/** File does not exist yet (write/create path): parent is already resolved and basename is sanitized, so candidate is safe. */
+			return $candidate;
 		}
 
 		public function folder_path( $folder_name ) {
-			$folder_path = $this->woofunnels_core_dir . '/' . $folder_name . '/';
+			$folder_name = sanitize_file_name( basename( $folder_name ) );
+			if ( '' === $folder_name ) {
+				return false;
+			}
+			$real_base = realpath( $this->woofunnels_core_dir );
+			if ( false === $real_base ) {
+				return false;
+			}
+			$candidate = $real_base . '/' . $folder_name;
+			$resolved  = realpath( $candidate );
+			if ( false !== $resolved ) {
+				if ( 0 !== strpos( $resolved, $real_base . DIRECTORY_SEPARATOR ) ) {
+					return false;
+				}
 
-			return $folder_path;
+				return $resolved . '/';
+			}
+
+			return $candidate . '/';
 		}
 
 		public function is_readable( $file ) {
@@ -129,19 +166,19 @@ if ( class_exists( 'WP_Filesystem_Direct' ) ) {
 
 			$ret = array();
 
-			while ( false !== ( $entry = $dir->read() ) ) {
+			while ( false !== ( $entry = $dir->read() ) ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 				$struc         = array();
 				$struc['name'] = $entry;
 
-				if ( '.' == $struc['name'] || '..' == $struc['name'] ) {
+				if ( '.' === $struc['name'] || '..' === $struc['name'] ) {
 					continue;
 				}
 
-				if ( ! $include_hidden && '.' == $struc['name'][0] ) {
+				if ( ! $include_hidden && '.' === $struc['name'][0] ) {
 					continue;
 				}
 
-				if ( $limit_file && $struc['name'] != $limit_file ) {
+				if ( $limit_file && $struc['name'] !== $limit_file ) {
 					continue;
 				}
 
@@ -156,7 +193,7 @@ if ( class_exists( 'WP_Filesystem_Direct' ) ) {
 				$struc['time']        = gmdate( 'h:i:s', $struc['lastmodunix'] );
 				$struc['type']        = $this->is_dir( $path . '/' . $entry ) ? 'd' : 'f';
 
-				if ( 'd' == $struc['type'] ) {
+				if ( 'd' === $struc['type'] ) {
 					if ( $recursive ) {
 						$struc['files'] = $this->dirlist( $path . '/' . $struc['name'], $include_hidden, $recursive );
 					} else {
@@ -195,10 +232,10 @@ if ( class_exists( 'WP_Filesystem_Direct' ) ) {
 			if ( parent::is_writable( $this->upload_dir ) ) {
 				if ( false === $this->is_dir( $this->woofunnels_core_dir ) ) {
 					$this->mkdir( $this->woofunnels_core_dir );
-					$file_handle = @fopen( trailingslashit( $this->woofunnels_core_dir ) . '/.htaccess', 'w' ); // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_read_fopen
+					$file_handle = @fopen( trailingslashit( $this->woofunnels_core_dir ) . '/.htaccess', 'w' ); // phpcs:ignore WordPressVIPMinimum.PHP.SilencedErrors.Silenced, Generic.PHP.NoSilencedErrors.Discouraged, Generic.PHP.NoSilencedErrors.Forbidden, WordPress.WP.AlternativeFunctions.file_system_read_fopen, WordPress.WP.AlternativeFunctions.file_system_operations, WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 					if ( $file_handle ) {
-						fwrite( $file_handle, 'deny from all' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite
-						fclose( $file_handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
+						fwrite( $file_handle, 'deny from all' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite, WordPress.WP.AlternativeFunctions.file_system_operations
+						fclose( $file_handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose, WordPress.WP.AlternativeFunctions.file_system_operations, WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 					}
 				}
 				$dir = $this->woofunnels_core_dir . '/' . $component;

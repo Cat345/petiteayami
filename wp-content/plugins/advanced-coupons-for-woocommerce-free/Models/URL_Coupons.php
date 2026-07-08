@@ -220,19 +220,19 @@ class URL_Coupons implements Model_Interface {
         if (
             'yes' === $coupon->get_advanced_prop( 'redirect_to_origin_url' ) &&
             isset( $_SERVER['HTTP_REFERER'] ) &&
-            strpos( $referrer, home_url() ) !== false
+            str_contains( $referrer, home_url() )
         ) {
             $redirect_url = $referrer;
         }
 
         // append attributes that was added in the coupon to the redirect URL.
         if ( ! empty( $_GET ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            $connector     = strpos( $redirect_url, '?' ) === false ? '?' : '&';
+            $connector     = ! str_contains( $redirect_url, '?' ) ? '?' : '&';
             $redirect_url .= $connector . http_build_query( $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         }
 
         // Clear notices when redirecting to an external URL.
-        if ( strpos( $redirect_url, home_url() ) === false ) {
+        if ( ! str_contains( $redirect_url, home_url() ) ) {
             wc_clear_notices();
         }
 
@@ -260,7 +260,7 @@ class URL_Coupons implements Model_Interface {
         }
 
         // Display error notice if redirecting to an internal page.
-        if ( strpos( $redirect_url, home_url() ) !== false ) {
+        if ( str_contains( $redirect_url, home_url() ) ) {
             $adv_error_message = $coupon->get_advanced_error_message();
             wc_add_notice( $adv_error_message ? $adv_error_message : $error_message, 'error' );
         }

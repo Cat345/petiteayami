@@ -10,6 +10,7 @@ use WP_User;
  *
  * This class represents a Wishlist Member importer for the CRM system.
  */
+#[\AllowDynamicProperties]
 class WLM_Importer extends Importer {
 	const LIMIT = 25;
 	public static $LEVEL_STATUS_UNCONFIRMED = 1;

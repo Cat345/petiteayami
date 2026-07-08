@@ -79,7 +79,7 @@ class Node implements \JsonSerializable
     /**
      * @return array<object>
      */
-    public function toAST()
+    public function toAST(): array
     {
         return AST::build($this);
     }

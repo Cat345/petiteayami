@@ -7,13 +7,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFFN_Compatibility_With_Thrive_Theme
  */
 if ( ! class_exists( 'WFFN_Compatibility_With_Thrive_Theme' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_Thrive_Theme {
 
 		public function __construct() {
 
-			add_action( 'tve_editor_print_footer_scripts', function () {
+			add_action(
+				'tve_editor_print_footer_scripts',
+				function () {
 
-				?>
+					?>
 				<script type="text/javascript">
 					document.addEventListener('DOMContentLoaded', (event) => {
 						if (typeof TVE !== "undefined") {
@@ -31,22 +34,21 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Thrive_Theme' ) ) {
 
 
 				</script>
-				<?php
-			} );
+					<?php
+				}
+			);
 
-            add_action( 'tcb_landing_page_template_redirect', [ $this, 'maybe_tve_template_redirect'] );
+			add_action( 'tcb_landing_page_template_redirect', array( $this, 'maybe_tve_template_redirect' ) );
 		}
 
 		public function is_enable() {
 			return false;
 		}
 
-        public function maybe_tve_template_redirect(){
-            WFFN_Core()->public->maybe_initialize_setup();
-            WFFN_Common::remove_actions( 'template_redirect', 'WFFN_Public', 'maybe_initialize_setup' );
-        }
-
-
+		public function maybe_tve_template_redirect() {
+			WFFN_Core()->public->maybe_initialize_setup();
+			WFFN_Common::remove_actions( 'template_redirect', 'WFFN_Public', 'maybe_initialize_setup' );
+		}
 	}
 
 	WFFN_Plugin_Compatibilities::register( new WFFN_Compatibility_With_Thrive_Theme(), 'thrive_theme' );

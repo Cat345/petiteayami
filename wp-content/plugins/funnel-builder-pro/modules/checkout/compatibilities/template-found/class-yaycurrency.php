@@ -1,14 +1,19 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * YayCurrency – WooCommerce Multi-Currency Switcher
  * https://wordpress.org/plugins/yaycurrency/
  */
 if ( ! class_exists( 'WFACP_YayCurrency' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_YayCurrency {
 		public function __construct() {
 
-			add_filter( 'wfacp_product_switcher_price_data', [ $this, 'change_price' ], 20, 2 );
+			add_filter( 'wfacp_product_switcher_price_data', array( $this, 'change_price' ), 20, 2 );
 		}
 
 		public function change_price( $price_data, $pro ) {

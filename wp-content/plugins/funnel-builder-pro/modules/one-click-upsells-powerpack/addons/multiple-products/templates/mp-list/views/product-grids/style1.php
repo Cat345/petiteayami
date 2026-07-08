@@ -45,7 +45,7 @@ if ( true === $override_global ) {
 		<div class="wfocu-row">
 			<div class="wfocu-col-md-12">
 				<?php
-				echo '<div class="wfocu-top-content-area ' . wp_kses_post( $sec_top_desc_talign ) . ' wfocu-max-1024">';
+				echo '<div class="wfocu-top-content-area ' . esc_attr( $sec_top_desc_talign ) . ' wfocu-max-1024">';
 				echo wp_kses_post( apply_filters( 'wfocu_the_content', $sec_top_desc_text ) );
 				echo '</div>';
 				?>

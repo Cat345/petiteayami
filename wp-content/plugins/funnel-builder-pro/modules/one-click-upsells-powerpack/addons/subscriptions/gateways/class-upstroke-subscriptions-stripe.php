@@ -1,8 +1,10 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 /**
  * Author PhpStorm.
  */
 if ( ! class_exists( 'UpStroke_Subscriptions_Stripe' ) ) {
+	#[\AllowDynamicProperties]
 	class UpStroke_Subscriptions_Stripe extends WFOCU_Gateway_Integration_Stripe {
 
 		public function __construct() {
@@ -16,7 +18,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions_Stripe' ) ) {
 		 *
 		 * @param WC_Subscription $subscription
 		 * @param $key
-		 * @param WC_Order $order
+		 * @param WC_Order        $order
 		 */
 		public function save_stripe_source_to_subscription( $subscription, $key, $order ) {
 
@@ -37,7 +39,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_Stripe' ) ) {
 				$subscription->update_meta_data( '_stripe_source_id', $get_source_id );
 				$subscription->save();
 			}
-
 		}
 
 		public function set_stripe_keys_to_copy( $meta_keys ) {
@@ -45,7 +46,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_Stripe' ) ) {
 
 			return $meta_keys;
 		}
-
 	}
 
 	if ( class_exists( 'WC_Subscriptions' ) ) {

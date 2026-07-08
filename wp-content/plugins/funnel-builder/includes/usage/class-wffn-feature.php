@@ -15,6 +15,7 @@ if ( ! class_exists( 'WFFN_Feature' ) ) {
 	/**
 	 * Class WFFN_Feature
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_Feature {
 
 		/**
@@ -49,24 +50,18 @@ if ( ! class_exists( 'WFFN_Feature' ) ) {
 			$post_ids = array_map( 'intval', $post_ids );
 			$post_ids = array_unique( $post_ids );
 
-			$meta_keys = array_map( 'esc_sql', $meta_keys );
-
-			// OPTIMIZATION: Use a single query instead of looping queries (MySQL best practice)
+			// OPTIMIZATION: Use a single query instead of looping queries (MySQL best practice).
 			// MySQL can handle large IN clauses efficiently. Process results in PHP to avoid memory issues.
-			$post_ids_escaped = array_map( 'absint', $post_ids );
-			$post_ids_string  = implode( ',', $post_ids_escaped );
-			$meta_keys_string = "'" . implode( "','", $meta_keys ) . "'";
+			$post_ids  = array_values( $post_ids );
+			$meta_keys = array_values( $meta_keys );
 
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
-			// $post_ids_string and $meta_keys_string are already sanitized with absint() and esc_sql()
-			$query = "SELECT post_id, meta_key, meta_value
-				FROM {$wpdb->postmeta}
-				WHERE post_id IN ($post_ids_string)
-				AND meta_key IN ($meta_keys_string)
-				ORDER BY post_id, meta_id ASC";
-			// phpcs:enable
-
-			$results = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$results = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id IN ( " . implode( ', ', array_fill( 0, count( $post_ids ), '%d' ) ) . ' ) AND meta_key IN ( ' . implode( ', ', array_fill( 0, count( $meta_keys ), '%s' ) ) . ' ) ORDER BY post_id, meta_id ASC',
+					array_merge( $post_ids, $meta_keys )
+				),
+				ARRAY_A
+			);
 
 			// Organize by post_id
 			// OPTIMIZATION: Store raw meta_value first, only unserialize when actually accessed
@@ -150,47 +145,6 @@ if ( ! class_exists( 'WFFN_Feature' ) ) {
 			);
 		}
 
-		/**
-		 * Get published post IDs from a list of post IDs using a single SQL query
-		 * OPTIMIZATION: Avoids individual get_post() calls that trigger full post object loading
-		 * NOTE: This method is kept for backward compatibility but get_post_type_data() is preferred
-		 *
-		 * @param array  $post_ids Array of post IDs
-		 * @param string $post_type Post type (for validation)
-		 *
-		 * @return array Array of published post IDs
-		 */
-		private function get_published_post_ids( $post_ids, $post_type = '' ) {
-			if ( empty( $post_ids ) ) {
-				return array();
-			}
-
-			global $wpdb;
-
-			$post_ids        = array_map( 'intval', $post_ids );
-			$post_ids        = array_unique( $post_ids );
-			$ids_placeholder = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
-
-			$where_clause = "ID IN ($ids_placeholder) AND post_status = 'publish'";
-			$prepare_args = $post_ids;
-
-			if ( ! empty( $post_type ) ) {
-				$where_clause  .= ' AND post_type = %s';
-				$prepare_args[] = $post_type;
-			}
-
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
-			// $where_clause contains properly sanitized placeholders built with array_fill()
-			$query = $wpdb->prepare(
-				"SELECT ID FROM {$wpdb->posts} WHERE $where_clause",
-				$prepare_args
-			);
-			// phpcs:enable
-
-			$results = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-
-			return array_map( 'intval', $results );
-		}
 
 		/**
 		 * Collect feature adoption data
@@ -869,15 +823,13 @@ if ( ! class_exists( 'WFFN_Feature' ) ) {
 			$remaining_ids = array_diff( $page_ids, $pages_with_builder );
 			if ( ! empty( $remaining_ids ) ) {
 				global $wpdb;
-				$ids_placeholder = implode( ',', array_fill( 0, count( $remaining_ids ), '%d' ) );
-				// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
-				// $ids_placeholder is already a sanitized placeholder built with array_fill()
-				$query = $wpdb->prepare(
-					"SELECT ID, post_content FROM {$wpdb->posts} WHERE ID IN ($ids_placeholder) AND post_content IS NOT NULL AND post_content != ''",
-					$remaining_ids
+				$results = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT ID, post_content FROM {$wpdb->posts} WHERE ID IN ( " . implode( ', ', array_fill( 0, count( $remaining_ids ), '%d' ) ) . " ) AND post_content IS NOT NULL AND post_content != ''",
+						$remaining_ids
+					),
+					ARRAY_A
 				);
-				// phpcs:enable
-				$results = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 				foreach ( $results as $row ) {
 					if ( ! empty( $row['post_content'] ) && $this->has_gutenberg_blocks( $row['post_content'] ) ) {
@@ -1036,7 +988,7 @@ if ( ! class_exists( 'WFFN_Feature' ) ) {
 			global $wpdb;
 
 			// Get all funnels
-			$funnels = $wpdb->get_results( "SELECT id, steps FROM {$wpdb->prefix}bwf_funnels", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$funnels = $wpdb->get_results( "SELECT id, steps FROM {$wpdb->prefix}bwf_funnels", ARRAY_A );
 
 			if ( empty( $funnels ) ) {
 				return 0;

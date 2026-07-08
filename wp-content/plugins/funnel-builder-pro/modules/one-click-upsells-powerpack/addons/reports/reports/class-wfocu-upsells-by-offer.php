@@ -7,17 +7,17 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Offer' ) ) {
 	 * Upstroke Admin Report - upstroke by offer
 	 *
 	 * Find the offers accepted from funnels
-	 *
 	 */
+	#[\AllowDynamicProperties]
 	class WC_Report_Upsells_By_Offer extends WP_List_Table {
 
 		private $totals;
 		private $funnel_id;
 		private $offers_deleted = false;
-		private $filter_date = '';
-		private $no_of_days = '';
-		private $start_date = '';
-		private $end_date = '';
+		private $filter_date    = '';
+		private $no_of_days     = '';
+		private $start_date     = '';
+		private $end_date       = '';
 
 		/**
 		 * WC_Report_Upsells_By_Offer constructor.
@@ -26,15 +26,17 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Offer' ) ) {
 			$this->funnel_id = $funnel_id;
 			$this->detect_no_days();
 
-			parent::__construct( array(
-				'singular' => __( 'Offer', 'woofunnels-upstroke-power-pack' ),
-				'plural'   => __( 'Offers', 'woofunnels-upstroke-power-pack' ),
-			) );
+			parent::__construct(
+				array(
+					'singular' => __( 'Offer', 'woofunnels-upstroke-power-pack' ),
+					'plural'   => __( 'Offers', 'woofunnels-upstroke-power-pack' ),
+				)
+			);
 		}
 
 		private function detect_no_days() {
-			if ( isset( $_GET['no_of_days'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification
-				$no_of_days       = sanitize_text_field( $_GET['no_of_days'] ); //phpcs:ignore WordPress.Security.NonceVerification
+			if ( isset( $_GET['no_of_days'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$no_of_days       = sanitize_text_field( wp_unslash( $_GET['no_of_days'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				$this->no_of_days = $no_of_days;
 				if ( $no_of_days > - 1 ) {
 					$this->filter_date = absint( $this->no_of_days );
@@ -43,9 +45,12 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Offer' ) ) {
 				}
 			}
 
-			if ( isset( $_GET['date_range_first'] ) && isset( $_GET['date_range_second'] ) ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$this->start_date = sanitize_text_field( $_GET['date_range_first'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$this->end_date   = sanitize_text_field( $_GET['date_range_second'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_GET['date_range_first'] ) && isset( $_GET['date_range_second'] ) ) {
+				if ( ! isset( $_GET['wfocu_date_range_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['wfocu_date_range_nonce'] ), 'wfocu_date_range_nonce' ) ) {
+					return;
+				}
+				$this->start_date = sanitize_text_field( wp_unslash( $_GET['date_range_first'] ) );
+				$this->end_date   = sanitize_text_field( wp_unslash( $_GET['date_range_second'] ) );
 			}
 		}
 
@@ -256,196 +261,211 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Offer' ) ) {
 				wp_nonce_field( 'bulk-' . $this->_args['plural'] );
 			}
 			?>
-            <div class="tablenav <?php echo esc_attr( $which ); ?>">
+			<div class="tablenav <?php echo esc_attr( $which ); ?>">
 				<?php
 				$funnel_name = get_the_title( $this->funnel_id );
 				$funnel_name = empty( $funnel_name ) ? $this->funnel_id : get_the_title( $this->funnel_id );
 
 				if ( 'top' === $which ) {
 					?>
-                    <span class="wfocu-funnel_name">
+					<span class="wfocu-funnel_name">
 					<?php
 					/* translators: %s: Funnels name */
 					printf( '<strong>' . esc_html__( 'Funnel Name: %s', 'woofunnels-upstroke-power-pack' ) . '</strong>', esc_html( $funnel_name ) );
 					?>
 				</span>
 
-                    <div class="wfocu_abandoned_filter" style="margin: 15px 0px">
+					<div class="wfocu_abandoned_filter" style="margin: 15px 0px">
 						<?php
 						$menus = $this->get_filter_menu();
 						foreach ( $menus as $menu ) {
 							$default_menu_class = ( isset( $menu['current'] ) ) ? 'wfocur_btn_selected' : '';
 							$class              = $menu['class'] . ' ' . $default_menu_class;
-							echo '<a class="wfocur_design_btn ' . esc_attr__( $class ) . '" href="' . $menu['link'] . '">' . esc_html__( $menu['name'] ) . '</a>'; //phpcs:ignore WordPress.Security.EscapeOutput
+							echo '<a class="wfocur_design_btn ' . esc_attr( $class ) . '" href="' . esc_url( $menu['link'] ) . '">' . esc_html( $menu['name'] ) . '</a>';
 						}
 						$show_range = isset( $_GET['wfocu_date_range_nonce'] ) ? 'wfocu_show_date_range_search_form' : 'wfocu_hide_date_range_search_form';//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						?>
 
-                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=wc-reports&tab=upsells&report=upsells_by_funnel' ) ); ?>" class="button button-right right"><span class="dashicons dashicons-arrow-left-alt"></span><?php esc_html_e( 'Back to funnel reports', 'woofunnels-upstroke-power-pack' ); ?>
-                        </a>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=wc-reports&tab=upsells&report=upsells_by_funnel' ) ); ?>" class="button button-right right"><span class="dashicons dashicons-arrow-left-alt"></span><?php esc_html_e( 'Back to funnel reports', 'woofunnels-upstroke-power-pack' ); ?>
+						</a>
 
-                        <div class="wfocu_date_rage_container <?php esc_html_e( $show_range ); ?>">
-                            <form action="<?php esc_html_e( admin_url( 'admin.php' ) ); ?>">
-                                <input type="text" name="date_range_first" id="date_range_first" value="<?php esc_attr_e( $this->start_date ); ?>" class="wfocu_date_range" autocomplete="off" placeholder="Start Date" required/>
-                                <input type="text" name="date_range_second" id="date_range_second" value="<?php esc_attr_e( $this->end_date ); ?>" class="wfocu_date_range" autocomplete="off" placeholder="End Date" required/>
-                                <input type="hidden" name="wfocu_date_range_nonce" value="<?php esc_attr_e( wp_create_nonce( 'wfocu_date_range_nonce' ) ); ?>"/>
-                                <input type="hidden" name="page" value="wc-reports"/>
-                                <input type="hidden" name="tab" value="upsells"/>
-                                <input type="hidden" name="report" value="upsells_by_funnel"/>
-                                <input type="hidden" name="funnel_id" value="<?php echo $this->funnel_id; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"/>
-                                <input type="submit" class="button button-secondary" value="Submit"/>
-                            </form>
-                        </div>
-                    </div>
+						<div class="wfocu_date_rage_container <?php esc_html_e( $show_range ); ?>">
+							<form action="<?php esc_html_e( admin_url( 'admin.php' ) ); ?>">
+								<input type="text" name="date_range_first" id="date_range_first" value="<?php esc_attr_e( $this->start_date ); ?>" class="wfocu_date_range" autocomplete="off" placeholder="Start Date" required/>
+								<input type="text" name="date_range_second" id="date_range_second" value="<?php esc_attr_e( $this->end_date ); ?>" class="wfocu_date_range" autocomplete="off" placeholder="End Date" required/>
+								<input type="hidden" name="wfocu_date_range_nonce" value="<?php esc_attr_e( wp_create_nonce( 'wfocu_date_range_nonce' ) ); ?>"/>
+								<input type="hidden" name="page" value="wc-reports"/>
+								<input type="hidden" name="tab" value="upsells"/>
+								<input type="hidden" name="report" value="upsells_by_funnel"/>
+								<input type="hidden" name="funnel_id" value="<?php echo esc_attr( absint( $this->funnel_id ) ); ?>"/>
+								<input type="submit" class="button button-secondary" value="Submit"/>
+							</form>
+						</div>
+					</div>
 
-                    <style type="text/css">
-                        .wfocu_date_rage_container, .wfocu_show_date_range_search_form {
-                            display: inline-block
-                        }
+					<style type="text/css">
+						.wfocu_date_rage_container, .wfocu_show_date_range_search_form {
+							display: inline-block
+						}
 
-                        .wfocu_date_range {
-                            max-width: 120px
-                        }
+						.wfocu_date_range {
+							max-width: 120px
+						}
 
-                        .wfocu_hide_date_range_search_form {
-                            display: none
-                        }
+						.wfocu_hide_date_range_search_form {
+							display: none
+						}
 
-                        .wfocur_design_btn {
-                            display: inline-block;
-                            text-decoration: none;
-                            font-size: 13px;
-                            margin: 0 8px 0 0;
-                            cursor: pointer;
-                            border-width: 1px;
-                            border-style: solid;
-                            -webkit-appearance: none;
-                            border-radius: 50px;
-                            white-space: nowrap;
-                            box-sizing: border-box;
-                            height: 30px;
-                            min-width: 72px;
-                            line-height: 28px;
-                            padding: 0 12px 2px;
-                            color: #555;
-                            border-color: #ccc;
-                            text-align: center;
-                            background: #e5e5e5;
-                            box-shadow: none;
-                            vertical-align: top
-                        }
+						.wfocur_design_btn {
+							display: inline-block;
+							text-decoration: none;
+							font-size: 13px;
+							margin: 0 8px 0 0;
+							cursor: pointer;
+							border-width: 1px;
+							border-style: solid;
+							-webkit-appearance: none;
+							border-radius: 50px;
+							white-space: nowrap;
+							box-sizing: border-box;
+							height: 30px;
+							min-width: 72px;
+							line-height: 28px;
+							padding: 0 12px 2px;
+							color: #555;
+							border-color: #ccc;
+							text-align: center;
+							background: #e5e5e5;
+							box-shadow: none;
+							vertical-align: top
+						}
 
-                        .wfocu_abandoned_filter .button {
-                            display: flex;
-                            align-items: center
-                        }
+						.wfocu_abandoned_filter .button {
+							display: flex;
+							align-items: center
+						}
 
-                        .wfocu_abandoned_filter .button:hover {
-                            background: #ffffff;
-                            color: #000;
-                            border-color: #000
-                        }
+						.wfocu_abandoned_filter .button:hover {
+							background: #ffffff;
+							color: #000;
+							border-color: #000
+						}
 
-                        .wfocu_abandoned_filter .button .dashicons {
-                            margin: 6px
-                        }
+						.wfocu_abandoned_filter .button .dashicons {
+							margin: 6px
+						}
 
-                        .wfocur_design_btn.wfocur_btn_selected {
-                            background: #f7f7f7
-                        }
-                    </style>
+						.wfocur_design_btn.wfocur_btn_selected {
+							background: #f7f7f7
+						}
+					</style>
 
-                    <script type="text/javascript">
-                        jQuery(window).on('load', function () {
-                            var date_range = jQuery(".wfocu_date_range");
-                            if (date_range.length > 0) {
-                                jQuery('#date_range_first').datepicker({'dateFormat': 'yy-mm-dd', 'maxDate': 0});
-                                jQuery('#date_range_second').datepicker({'dateFormat': 'yy-mm-dd', 'maxDate': 0});
-                            }
-                        });
-                        jQuery(document).on('click', '.wfocur_default_custom', function (e) {
-                            e.preventDefault();
-                            jQuery('.wfocur_design_btn').removeClass('wfocur_btn_selected');
-                            jQuery(this).addClass('wfocur_btn_selected');
-                            jQuery(".wfocu_date_rage_container").toggleClass('wfocu_hide_date_range_search_form');
-                        });
-                    </script>
+					<script type="text/javascript">
+						jQuery(window).on('load', function () {
+							var date_range = jQuery(".wfocu_date_range");
+							if (date_range.length > 0) {
+								jQuery('#date_range_first').datepicker({'dateFormat': 'yy-mm-dd', 'maxDate': 0});
+								jQuery('#date_range_second').datepicker({'dateFormat': 'yy-mm-dd', 'maxDate': 0});
+							}
+						});
+						jQuery(document).on('click', '.wfocur_default_custom', function (e) {
+							e.preventDefault();
+							jQuery('.wfocur_design_btn').removeClass('wfocur_btn_selected');
+							jQuery(this).addClass('wfocur_btn_selected');
+							jQuery(".wfocu_date_rage_container").toggleClass('wfocu_hide_date_range_search_form');
+						});
+					</script>
 
 					<?php
 				}
 				?>
 
 				<?php if ( $this->has_items() ) { ?>
-                    <div class="alignleft actions bulkactions">
+					<div class="alignleft actions bulkactions">
 						<?php $this->bulk_actions( $which ); ?>
-                    </div>
+					</div>
 					<?php
 				}
 				$this->extra_tablenav( $which );
 				$this->pagination( $which );
 				?>
 
-                <br class="clear"/>
-            </div>
+				<br class="clear"/>
+			</div>
 			<?php
 		}
 
 		public function get_filter_menu() {
-			$menu = [
-				'all'    => [
+			$menu = array(
+				'all'    => array(
 					'name'  => 'All',
 					'class' => 'wfocur_default',
-					'link'  => add_query_arg( [
-						'page'      => 'wc-reports',
-						'tab'       => 'upsells',
-						'report'    => 'upsells_by_funnel',
-						'funnel_id' => $this->funnel_id,
-					], admin_url( 'admin.php' ) ),
-				],
-				'7'      => [
+					'link'  => add_query_arg(
+						array(
+							'page'      => 'wc-reports',
+							'tab'       => 'upsells',
+							'report'    => 'upsells_by_funnel',
+							'funnel_id' => $this->funnel_id,
+						),
+						admin_url( 'admin.php' )
+					),
+				),
+				'7'      => array(
 					'name'  => '7 Days',
 					'class' => 'wfocur_default_7',
-					'link'  => add_query_arg( [
-						'page'       => 'wc-reports',
-						'tab'        => 'upsells',
-						'report'     => 'upsells_by_funnel',
-						'funnel_id'  => $this->funnel_id,
-						'no_of_days' => 7,
-					], admin_url( 'admin.php' ) ),
-				],
-				'15'     => [
+					'link'  => add_query_arg(
+						array(
+							'page'       => 'wc-reports',
+							'tab'        => 'upsells',
+							'report'     => 'upsells_by_funnel',
+							'funnel_id'  => $this->funnel_id,
+							'no_of_days' => 7,
+						),
+						admin_url( 'admin.php' )
+					),
+				),
+				'15'     => array(
 					'name'  => '15 Days',
 					'class' => 'wfocur_default_15',
-					'link'  => add_query_arg( [
-						'page'       => 'wc-reports',
-						'tab'        => 'upsells',
-						'report'     => 'upsells_by_funnel',
-						'funnel_id'  => $this->funnel_id,
-						'no_of_days' => 15,
-					], admin_url( 'admin.php' ) ),
-				],
-				'30'     => [
+					'link'  => add_query_arg(
+						array(
+							'page'       => 'wc-reports',
+							'tab'        => 'upsells',
+							'report'     => 'upsells_by_funnel',
+							'funnel_id'  => $this->funnel_id,
+							'no_of_days' => 15,
+						),
+						admin_url( 'admin.php' )
+					),
+				),
+				'30'     => array(
 					'name'  => '30 Days',
 					'class' => 'wfocur_default_30',
-					'link'  => add_query_arg( [
-						'page'       => 'wc-reports',
-						'tab'        => 'upsells',
-						'report'     => 'upsells_by_funnel',
-						'funnel_id'  => $this->funnel_id,
-						'no_of_days' => 30,
-					], admin_url( 'admin.php' ) ),
-				],
-				'custom' => [
+					'link'  => add_query_arg(
+						array(
+							'page'       => 'wc-reports',
+							'tab'        => 'upsells',
+							'report'     => 'upsells_by_funnel',
+							'funnel_id'  => $this->funnel_id,
+							'no_of_days' => 30,
+						),
+						admin_url( 'admin.php' )
+					),
+				),
+				'custom' => array(
 					'name'  => 'Custom',
 					'class' => 'wfocur_default_custom',
-					'link'  => add_query_arg( [
-						'page'      => 'wc-reports',
-						'tab'       => 'upsells',
-						'report'    => 'upsells_by_funnel',
-						'funnel_id' => $this->funnel_id,
-					], admin_url( 'admin.php' ) ),
-				],
-			];
+					'link'  => add_query_arg(
+						array(
+							'page'      => 'wc-reports',
+							'tab'       => 'upsells',
+							'report'    => 'upsells_by_funnel',
+							'funnel_id' => $this->funnel_id,
+						),
+						admin_url( 'admin.php' )
+					),
+				),
+			);
 
 			if ( isset( $menu[ $this->no_of_days ] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				$menu[ $this->no_of_days ]['current'] = true;

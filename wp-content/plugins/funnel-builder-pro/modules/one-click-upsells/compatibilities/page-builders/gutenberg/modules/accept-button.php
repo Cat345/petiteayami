@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Guten_Accept_Button' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Guten_Accept_Button extends WFOCU_Guten_Field {
 		public $slug  = 'wfocu_accept_button';
 		protected $id = 'wfocu_accept_button';

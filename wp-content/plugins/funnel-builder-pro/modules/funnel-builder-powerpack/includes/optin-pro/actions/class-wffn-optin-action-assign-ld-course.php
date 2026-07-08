@@ -175,9 +175,11 @@ if ( ! class_exists( 'WFFN_Optin_Action_Assign_LD_Course' ) ) {
 				$template = get_course_meta_setting( get_the_id(), 'wffn_course_template' );
 			}
 
+			// Fix LOW-8: add exit after wp_safe_redirect to halt execution.
 			if ( 'none' !== $template && $template ) {
 				$link = get_permalink( $template );
-				wp_safe_redirect( $link ); //phpcs:ignore WordPressVIPMinimum.Security.ExitAfterRedirect.NoExit
+				wp_safe_redirect( $link );
+				exit;
 			}
 		}
 
@@ -194,8 +196,9 @@ if ( ! class_exists( 'WFFN_Optin_Action_Assign_LD_Course' ) ) {
 				return $fields;
 			}
 
-			if ( isset( $_GET['post'] ) && $_GET['post'] !== '' && isset( $_GET['action'] ) && $_GET['action'] === 'edit' ) {//phpcs:ignore
-				$post_type = get_post_type( $_GET['post'] ); //phpcs:ignore
+			// Fix MEDIUM-4: verify capability before processing $_GET data.
+			if ( isset( $_GET['post'] ) && $_GET['post'] !== '' && isset( $_GET['action'] ) && $_GET['action'] === 'edit' && current_user_can( 'edit_post', absint( $_GET['post'] ) ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$post_type = get_post_type( absint( $_GET['post'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				if ( $post_type === 'sfwd-courses' ) { //phpcs:ignore
 					$all_posts = array(
 						'none' => __( 'None', 'funnel-builder-powerpack' ),
@@ -242,8 +245,13 @@ if ( ! class_exists( 'WFFN_Optin_Action_Assign_LD_Course' ) ) {
 		 * @return mixed
 		 */
 		public function save_setting_for_classic_editor( $settings_field_updates ) {
-			if ( isset( $_POST['sfwd-courses_wffn_course_template'] ) ) {
-				$settings_field_updates['wffn_course_template'] = $_POST['sfwd-courses_wffn_course_template'];
+			// Fix MEDIUM-7: verify capability before processing $_POST data.
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return $settings_field_updates;
+			}
+
+			if ( isset( $_POST['sfwd-courses_wffn_course_template'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$settings_field_updates['wffn_course_template'] = sanitize_text_field( wp_unslash( $_POST['sfwd-courses_wffn_course_template'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 			}
 
 			return $settings_field_updates;

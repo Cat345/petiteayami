@@ -8,9 +8,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFFN_Export_Contact
  */
 if ( ! class_exists( 'WFFN_Export_Campaign' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Export_Campaign extends WFFN_Abstract_Exporter {
 		protected static $slug = 'campaigns';
-		private static $ins = null;
+		private static $ins    = null;
 		/**
 		 * Export action
 		 *
@@ -40,12 +41,12 @@ if ( ! class_exists( 'WFFN_Export_Campaign' ) ) {
 		}
 
 		public function get_columns() {
-			return [
+			return array(
 				'total_orders'    => __( 'Orders', 'funnel-builder-powerpack' ),
 				'total_revenue'   => __( 'Revenue', 'funnel-builder-powerpack' ),
 				'type'            => __( 'Type', 'funnel-builder-powerpack' ),
 				'average_revenue' => __( 'Average Order Value', 'funnel-builder-powerpack' ),
-			];
+			);
 		}
 
 		/**
@@ -59,7 +60,7 @@ if ( ! class_exists( 'WFFN_Export_Campaign' ) ) {
 				'status'  => false,
 				'message' => __( 'Error in exporting Referrers', 'funnel-builder-powerpack' ),
 			);
-			$data            = [];
+			$data            = array();
 			$rest_endpoints  = WFFN_REST_API_EndPoint::get_instance();
 			$get_conversions = $rest_endpoints->get_campaign_count( $args['funnel_id'], $args['type'], isset( $args['is_global_export'] ) );
 
@@ -68,7 +69,7 @@ if ( ! class_exists( 'WFFN_Export_Campaign' ) ) {
 				return $response;
 			}
 			if ( isset( $get_conversions['db_error'] ) && true === $get_conversions['db_error'] ) {
-				WFFN_Core()->logger->log( "Get total count Referrer db error # " . print_r( $get_conversions, true ), 'wffn', true );
+				WFFN_Core()->logger->log( 'Get total count Referrer db error # ' . print_r( $get_conversions, true ), 'wffn', true );
 				$response['message'] = __( 'Error in exporting Referrers check funnel logs', 'funnel-builder-powerpack' );
 
 				return $response;
@@ -99,13 +100,12 @@ if ( ! class_exists( 'WFFN_Export_Campaign' ) ) {
 				return $response;
 			}
 
-
 			$export_title     = __( 'wffn export', 'funnel-builder-powerpack' );
 			$funnel_id        = isset( $args['funnel_id'] ) ? $args['funnel_id'] : 0;
 			$fields           = isset( $args['fields'] ) ? $args['fields'] : '';
 			$count            = isset( $args['count'] ) ? $args['count'] : 0;
 			$is_global_export = isset( $args['is_global_export'] );
-			$csv_header       = ( isset( $args['csv_header'] ) && is_array( $args['csv_header'] ) ) ? $args['csv_header'] : [];
+			$csv_header       = ( isset( $args['csv_header'] ) && is_array( $args['csv_header'] ) ) ? $args['csv_header'] : array();
 
 			if ( '' === $fields || abs( $count ) === 0 ) {
 				$response['message'] = __( 'No data found', 'funnel-builder-powerpack' );
@@ -113,37 +113,42 @@ if ( ! class_exists( 'WFFN_Export_Campaign' ) ) {
 				return $response;
 			}
 
-
 			if ( ! file_exists( WFFN_PRO_EXPORT_DIR . '/' ) ) {
 				wp_mkdir_p( WFFN_PRO_EXPORT_DIR );
 			}
 
 			$file_name = 'funnelkit-' . $this->get_slug() . '-' . gmdate( 'm-d-Y' ) . '.csv';
-			$file      = fopen( WFFN_PRO_EXPORT_DIR . '/' . $file_name, "wb" );
-			fputcsv( $file, $fields );
+			$file      = fopen( WFFN_PRO_EXPORT_DIR . '/' . $file_name, 'wb' );
+			fputcsv( $file, $fields, ',', '"', '\\' );
 			fclose( $file );
 
-			$input_data = apply_filters( 'wffn_exporter_insert_post', array(
-				'post_type'    => WFFN_Pro_Core()->exporter->get_post_type_slug(),
-				'post_title'   => $export_title,
-				'post_name'    => sanitize_title( $export_title ),
-				'post_status'  => 'publish',
-				'post_content' => '',
-				'meta_input'   => array(
-					'offset'      => 0,
-					'type'        => self::$EXPORT,
-					'status'      => self::$EXPORT_IN_PROGRESS,
-					'count'       => $count,
-					'export_type' => $this->get_slug(),
-					'fid'         => $funnel_id,
-					'meta'        => array(
-						'fields'           => $fields,
-						'file'             => $file_name,
-						'is_global_export' => $is_global_export,
-						'export_type'      => $this->get_slug(),
+			$input_data = apply_filters(
+				'wffn_exporter_insert_post',
+				array(
+					'post_type'    => WFFN_Pro_Core()->exporter->get_post_type_slug(),
+					'post_title'   => $export_title,
+					'post_name'    => sanitize_title( $export_title ),
+					'post_status'  => 'publish',
+					'post_content' => '',
+					'meta_input'   => array(
+						'offset'      => 0,
+						'type'        => self::$EXPORT,
+						'status'      => self::$EXPORT_IN_PROGRESS,
+						'count'       => $count,
+						'export_type' => $this->get_slug(),
+						'fid'         => $funnel_id,
+						'meta'        => array(
+							'fields'           => $fields,
+							'file'             => $file_name,
+							'is_global_export' => $is_global_export,
+							'export_type'      => $this->get_slug(),
+						),
 					),
-				)
-			), $this->get_slug(), $args, $csv_header );
+				),
+				$this->get_slug(),
+				$args,
+				$csv_header
+			);
 
 			$input_data['meta_input']['meta'] = wp_json_encode( $input_data['meta_input']['meta'] );
 			$export_id                        = wp_insert_post( $input_data );
@@ -153,7 +158,7 @@ if ( ! class_exists( 'WFFN_Export_Campaign' ) ) {
 			} else {
 				wp_delete_file( WFFN_PRO_EXPORT_DIR . '/' . $file_name );
 			}
-			WFFN_Core()->logger->log( "successfully registered the export to run " . $export_id, 'wffn', true );
+			WFFN_Core()->logger->log( 'successfully registered the export to run ' . $export_id, 'wffn', true );
 
 			return array(
 				'status'    => $response,
@@ -169,14 +174,13 @@ if ( ! class_exists( 'WFFN_Export_Campaign' ) ) {
 		 *
 		 * @return false[]|void
 		 */
-
-		public function contact_csv_header( $funnel_id = 0, $field_data = [], $default_row = false ) {
+		public function contact_csv_header( $funnel_id = 0, $field_data = array(), $default_row = false ) {
 			/* prepared data for csv header get maximum columns data using funnel data **/
-			return [
+			return array(
 				'header'   => $field_data,
 				'status'   => true,
-				'step_ids' => []
-			];
+				'step_ids' => array(),
+			);
 		}
 
 		/**
@@ -195,16 +199,16 @@ if ( ! class_exists( 'WFFN_Export_Campaign' ) ) {
 			$rest_endpoints  = WFFN_REST_API_EndPoint::get_instance();
 			$get_conversions = $rest_endpoints->get_conversion_export_data( $args );
 			if ( isset( $get_conversions['db_error'] ) && true === $get_conversions['db_error'] ) {
-				WFFN_Core()->logger->log( "db error " . $this->get_slug() . " not exported for export id # {$this->export_id} " . print_r( $get_conversions, true ), 'wffn', true );
+				WFFN_Core()->logger->log( 'db error ' . $this->get_slug() . " not exported for export id # {$this->export_id} " . print_r( $get_conversions, true ), 'wffn', true );
 
 				return;
 			}
 			unset( $get_conversions['total_count'] );
 			$this->data_populated_in_csv( $funnel_id, $get_conversions );
-
 		}
 
-		/* prepared and import data in csv
+		/*
+		prepared and import data in csv
 		*
 		* @param $funnel_id
 		* @param $data
@@ -219,27 +223,26 @@ if ( ! class_exists( 'WFFN_Export_Campaign' ) ) {
 
 				return;
 			}
-			$file  = fopen( WFFN_PRO_EXPORT_DIR . '/' . $this->export_meta['file'], "a" );
+			$file  = fopen( WFFN_PRO_EXPORT_DIR . '/' . $this->export_meta['file'], 'a' );
 			$count = 0;
 
 			foreach ( $data as $subdata ) {
 				$append_data = $this->map_with_fields( $this->get_columns(), $subdata );
-				fputcsv( $file, $append_data );
-				$count ++;
+				fputcsv( $file, $append_data, ',', '"', '\\' );
+				++$count;
 			}
 			fclose( $file );
 			$this->current_pos = $this->current_pos + $count;
 		}
 
 		public function map_with_fields( $fields, $row_data ) {
-			$output = [];
+			$output = array();
 			foreach ( $fields as $key => $field ) {
 				$output[ $key ] = isset( $row_data[ $key ] ) ? $row_data[ $key ] : '';
 			}
 
 			return $output;
 		}
-
 	}
 
 	if ( class_exists( 'WFFN_Pro_Core' ) ) {

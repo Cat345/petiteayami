@@ -85,19 +85,19 @@ if ( 'manual' === $review_type ) {
 		);
 
 
-		$comments = get_comments( $args );
-		if ( is_array( $comments ) && count( $comments ) > 0 ) {
+		$wfocu_comments = get_comments( $args );
+		if ( is_array( $wfocu_comments ) && count( $wfocu_comments ) > 0 ) {
 			$h = 1;
-			foreach ( $comments as $comment ) {
-				if ( ! empty( $comment->comment_content ) ) {
-					$testimonial_boxes[ $comment->comment_ID ]['message'] = $comment->comment_content;
+			foreach ( $wfocu_comments as $wfocu_comment ) {
+				if ( ! empty( $wfocu_comment->comment_content ) ) {
+					$testimonial_boxes[ $wfocu_comment->comment_ID ]['message'] = $wfocu_comment->comment_content;
 				}
-				if ( ! empty( $comment->comment_author ) ) {
-					$testimonial_boxes[ $comment->comment_ID ]['name'] = $comment->comment_author;
+				if ( ! empty( $wfocu_comment->comment_author ) ) {
+					$testimonial_boxes[ $wfocu_comment->comment_ID ]['name'] = $wfocu_comment->comment_author;
 				}
-				$testimonial_boxes[ $comment->comment_ID ]['date']   = $comment->comment_date;
-				$testimonial_boxes[ $comment->comment_ID ]['rating'] = get_comment_meta( $comment->comment_ID, 'rating', true );
-				$testimonial_boxes[ $comment->comment_ID ]['image']  = $comment->comment_author_email ? get_avatar_url( $comment->comment_author_email, array( 'size' => 96 ) ) : '';
+				$testimonial_boxes[ $wfocu_comment->comment_ID ]['date']   = $wfocu_comment->comment_date;
+				$testimonial_boxes[ $wfocu_comment->comment_ID ]['rating'] = get_comment_meta( $wfocu_comment->comment_ID, 'rating', true );
+				$testimonial_boxes[ $wfocu_comment->comment_ID ]['image']  = $wfocu_comment->comment_author_email ? get_avatar_url( $wfocu_comment->comment_author_email, array( 'size' => 96 ) ) : '';
 				if ( $h === absint($limit) ) {
 					break;
 				}
@@ -118,8 +118,8 @@ if ( ! is_array( $testimonial_boxes ) || count( $testimonial_boxes ) === 0 ) {
             <div class="wfocu-col-md-12">
 				<?php if ( ! empty( $sec_heading ) || ! empty( $sec_sub_heading ) ) { ?>
                     <div class="wfocu-section-headings">
-						<?php echo $sec_heading ? '<div class="wfocu-heading">' . $sec_heading . '</div>' : ''; ?>
-						<?php echo $sec_sub_heading ? '<div class="wfocu-sub-heading wfocu-max-845">' . $sec_sub_heading . '</div>' : ''; ?>
+						<?php echo $sec_heading ? '<div class="wfocu-heading">' . wp_kses_post( $sec_heading ) . '</div>' : ''; ?>
+						<?php echo $sec_sub_heading ? '<div class="wfocu-sub-heading wfocu-max-845">' . wp_kses_post( $sec_sub_heading ) . '</div>' : ''; ?>
                     </div>
 				<?php } ?>
             </div>
@@ -135,7 +135,7 @@ if ( ! is_array( $testimonial_boxes ) || count( $testimonial_boxes ) === 0 ) {
 						$rbox_name        = isset( $review_box['name'] ) ? $review_box['name'] : '';
 						$rbox_date        = isset( $review_box['date'] ) ? $review_box['date'] : '';
 						$rbox_rating_val  = $review_box['rating'];
-						$rbox_date_format = $rbox_date ? date( 'M d, Y', strtotime( $rbox_date ) ) : '';
+						$rbox_date_format = $rbox_date ? gmdate( 'M d, Y', strtotime( $rbox_date ) ) : '';
 						$rbox_rating      = $rbox_rating_val ? ( ( $rbox_rating_val / 5 ) * 100 ) . '%' : '';
 
 						$rbox_meta_arr = array();
@@ -160,22 +160,22 @@ if ( ! is_array( $testimonial_boxes ) || count( $testimonial_boxes ) === 0 ) {
 						$rbox_img_src = WFOCU_Common::get_image_source( $rbox_img, 'full' );
 						?>
                         <div class="wfocu-col-md-6 wfocu-col-xs-12 wfocu-review-block-col">
-                            <div class="wfocu-review-block <?php echo $disp_img_class; ?>">
+                            <div class="wfocu-review-block <?php echo esc_attr( $disp_img_class ); ?>">
 								<?php if ( $rbox_img !== '' ) { ?>
                                     <div class="wfocu-review-img">
                                         <div class="wfocu-img-cover">
-                                            <img class="skip-lazy" src="<?php echo $rbox_img_src; ?>" alt="" title=""/>
+                                            <img class="skip-lazy" src="<?php echo esc_url( $rbox_img_src ); ?>" alt="" title=""/>
                                         </div>
                                     </div>
 								<?php } ?>
                                 <div class="wfocu-review-content">
-                                    <div class="wfocu-review-rating <?php echo $disp_rating_class; ?>">
-                                        <div class="wfocu-star-rating"><span style="width: <?php echo $rbox_rating; ?>"></span></div>
+                                    <div class="wfocu-review-rating <?php echo esc_attr( $disp_rating_class ); ?>">
+                                        <div class="wfocu-star-rating"><span style="width: <?php echo esc_attr( $rbox_rating ); ?>"></span></div>
                                     </div>
-									<?php echo $rbox_heading ? '<div class="wfocu-review-type">' . $rbox_heading . '</div>' : ''; ?>
+									<?php echo $rbox_heading ? '<div class="wfocu-review-type">' . wp_kses_post( $rbox_heading ) . '</div>' : ''; ?>
 									<?php if ( $rbox_meta !== '' ) { ?>
-                                        <div class="wfocu-review-meta <?php echo $disp_auth_date_class; ?>">
-											<?php echo $rbox_meta; ?>
+                                        <div class="wfocu-review-meta <?php echo esc_attr( $disp_auth_date_class ); ?>">
+											<?php echo esc_html( $rbox_meta ); ?>
                                         </div>
 									<?php } ?>
 									<?php echo $rbox_text ? '<div class="wfocu-review-text">' . apply_filters( 'wfocu_the_content', $rbox_text ) . '</div>' : ''; ?>
@@ -210,7 +210,7 @@ if ( ! is_array( $testimonial_boxes ) || count( $testimonial_boxes ) === 0 ) {
 			?>
             <div class="wfocu-row">
                 <div class="wfocu-col-md-12">
-                    <div class="wfocu-content-area <?php echo $additional_text_align; ?> wfocu-max-1024">
+                    <div class="wfocu-content-area <?php echo esc_attr( $additional_text_align ); ?> wfocu-max-1024">
 						<?php echo apply_filters( 'wfocu_the_content', $additional_text ); ?>
                     </div>
                 </div>

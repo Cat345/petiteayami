@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Cart_Total extends BWFAN_Rule_Base {
 
 	public $supports = array( 'cart' );
@@ -99,6 +100,7 @@ class BWFAN_Rule_Cart_Total extends BWFAN_Rule_Base {
 
 }
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_All_Cart_Items_Purchased extends BWFAN_Rule_Base {
 
 	public function __construct() {
@@ -223,6 +225,7 @@ class BWFAN_Rule_All_Cart_Items_Purchased extends BWFAN_Rule_Base {
 
 }
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Cart_Product extends BWFAN_Rule_Products {
 
 	public $supports = array( 'cart' );
@@ -383,6 +386,7 @@ class BWFAN_Rule_Cart_Product extends BWFAN_Rule_Products {
 	}
 }
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Cart_Category extends BWFAN_Rule_Term_Taxonomy {
 
 	public $supports = array( 'cart' );
@@ -469,6 +473,7 @@ class BWFAN_Rule_Cart_Category extends BWFAN_Rule_Term_Taxonomy {
 	}
 }
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Cart_Items_Tag extends BWFAN_Rule_Term_Taxonomy {
 
 	public $supports = array( 'cart' );
@@ -554,6 +559,7 @@ class BWFAN_Rule_Cart_Items_Tag extends BWFAN_Rule_Term_Taxonomy {
 	}
 }
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Cart_Coupons extends BWFAN_Dynamic_Option_Base {
 
 	public function __construct() {
@@ -740,6 +746,7 @@ class BWFAN_Rule_Cart_Coupons extends BWFAN_Dynamic_Option_Base {
 	}
 }
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Cart_Coupon_Text_Match extends BWFAN_Rule_Base {
 
 	public function __construct() {
@@ -806,6 +813,7 @@ class BWFAN_Rule_Cart_Coupon_Text_Match extends BWFAN_Rule_Base {
 	}
 }
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Cart_Contains_Coupon extends BWFAN_Rule_Base {
 
 	public function __construct() {
@@ -879,6 +887,7 @@ class BWFAN_Rule_Cart_Contains_Coupon extends BWFAN_Rule_Base {
 
 }
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Cart_Item_Count extends BWFAN_Rule_Base {
 
 	public $supports = array( 'cart' );
@@ -990,6 +999,7 @@ class BWFAN_Rule_Cart_Item_Count extends BWFAN_Rule_Base {
 
 }
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Is_Global_Checkout extends BWFAN_Rule_Base {
 
 	public function __construct() {

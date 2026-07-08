@@ -13,6 +13,7 @@ if ( ! class_exists( 'WFOCUKirki_Output_Property' ) ) {
 	/**
 	 * Output for CSS properties.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Output_Property {
 
 		/**
@@ -37,7 +38,7 @@ if ( ! class_exists( 'WFOCUKirki_Output_Property' ) ) {
 		 * @access public
 		 *
 		 * @param string $property The CSS property we're modifying.
-		 * @param mixed $value The value.
+		 * @param mixed  $value The value.
 		 */
 		public function __construct( $property, $value ) {
 			$this->property = $property;
@@ -51,7 +52,6 @@ if ( ! class_exists( 'WFOCUKirki_Output_Property' ) ) {
 		 * @access protected
 		 */
 		protected function process_value() {
-
 		}
 
 		/**

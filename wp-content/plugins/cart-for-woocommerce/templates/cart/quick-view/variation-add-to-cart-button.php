@@ -24,6 +24,9 @@ if ( $is_free_product ) {
         .fkcart-quick-view-drawer .fkcart-panel .woocommerce-variation-price {
             visibility: hidden;
         }
+        .fkcart-quick-view-drawer .fkcart-panel .fkcart-item-custom {
+            visibility: hidden;
+        }
     </style>
 	<?php
 }
@@ -39,13 +42,9 @@ if ( $is_free_product ) {
 						<?php fkcart_get_template_part( 'icon/minus' ); ?>
                     </div>
 					<?php
-					do_action( 'woocommerce_before_add_to_cart_quantity' );
 					list( $min, $max, $step ) = $front->get_min_max_step( $product );
 					?>
                     <input class="fkcart-quantity__input" type="text" autocomplete="off" name="quantity" aria-label="Quantity" step="<?php esc_attr_e( $step ) ?>" min="<?php esc_attr_e( $min ) ?>" max="<?php esc_attr_e( $max ) ?>" pattern="[0-9]*" value="<?php echo esc_attr( $quantity ) ?>">
-					<?php
-					do_action( 'woocommerce_after_add_to_cart_quantity' );
-					?>
                     <div class="fkcart-quantity-button fkcart-quantity-up" data-action="up">
 						<?php fkcart_get_template_part( 'icon/plus' ); ?>
                     </div>

@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Task_History extends BWFAN_API_Base {
 	public static $ins;
 
@@ -65,8 +66,8 @@ class BWFAN_API_Get_Task_History extends BWFAN_API_Base {
 		$automation_id = $this->get_sanitized_arg( 'automation_id', 'text_field' );
 		$action_slug   = $this->get_sanitized_arg( 'action_slug', 'text_field' );
 		$search        = $this->get_sanitized_arg( 'search', 'text_field' );
-		$offset        = ! empty( $this->get_sanitized_arg( 'offset', 'text_field' ) ) ? $this->get_sanitized_arg( 'offset', 'text_field' ) : 0;
-		$limit         = ! empty( $this->get_sanitized_arg( 'limit', 'text_field' ) ) ? $this->get_sanitized_arg( 'limit', 'text_field' ) : 25;
+		$offset        = ! empty( $this->get_sanitized_arg( 'offset', 'absint' ) ) ? $this->get_sanitized_arg( 'offset', 'absint' ) : 0;
+		$limit         = ! empty( $this->get_sanitized_arg( 'limit', 'absint' ) ) ? $this->get_sanitized_arg( 'limit', 'absint' ) : 25;
 
 		if ( $status === 't_0' || $status === 't_1' ) {
 			$get_task_history = BWFAN_Core()->tasks->get_history( $status, $automation_id, $action_slug, $search, $offset, $limit );

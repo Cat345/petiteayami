@@ -8,6 +8,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Variation_Bundles' ) ) {
 	 *
 	 * Class WFOCU_Compatibility_With_Product_Variation_Bundles
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Product_Variation_Bundles {
 
 		public function __construct() {
@@ -51,14 +52,12 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Variation_Bundles' ) ) {
 							$product['_offer_data']->data = $bundle_product;
 							unset( $product['_offer_data']->variations_data );
 						}
-
 					}
 				}
 			}
 
 			return $package;
 		}
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_Product_Variation_Bundles(), 'product_variation_bundles' );

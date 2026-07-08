@@ -15,7 +15,7 @@ class BWFAN_Rules {
 
 	public function __construct() {
 		add_filter( 'bwfan_rule_get_rule_types', array( $this, 'default_rule_types' ), 1 );
-		add_action( 'init', array( $this, 'maybe_save_rules' ) );
+		add_action( 'admin_init', array( $this, 'maybe_save_rules' ) );
 		add_action( 'bwfan_automation_v1_loaded', array( $this, 'maybe_load_scripts_templates' ) );
 	}
 
@@ -228,6 +228,7 @@ class BWFAN_Rules {
 			require_once plugin_dir_path( BWFAN_PLUGIN_FILE ) . 'rules/class-bwfan-input-builder.php';
 			require_once plugin_dir_path( BWFAN_PLUGIN_FILE ) . 'rules/inputs/html-always.php';
 			require_once plugin_dir_path( BWFAN_PLUGIN_FILE ) . 'rules/inputs/text.php';
+			require_once plugin_dir_path( BWFAN_PLUGIN_FILE ) . 'rules/inputs/number.php';
 			require_once plugin_dir_path( BWFAN_PLUGIN_FILE ) . 'rules/inputs/select.php';
 			require_once plugin_dir_path( BWFAN_PLUGIN_FILE ) . 'rules/inputs/product-select.php';
 			require_once plugin_dir_path( BWFAN_PLUGIN_FILE ) . 'rules/inputs/chosen-select.php';
@@ -277,11 +278,21 @@ class BWFAN_Rules {
 	}
 
 	public function maybe_save_rules() {
-		if ( null !== filter_input( INPUT_POST, 'bwfan_rule' ) ) {
-			$automation_id = filter_input( INPUT_POST, 'automation_id' );
-
-			update_post_meta( $automation_id, '_bwfan_rules', filter_input( INPUT_POST, 'bwfan_rule' ) );//phpcs:ignore WordPress.Security.NonceVerification
+		if ( null === filter_input( INPUT_POST, 'bwfan_rule' ) ) {
+			return;
 		}
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		$nonce = filter_input( INPUT_POST, '_bwfan_rules_nonce' );
+		if ( empty( $nonce ) || false === wp_verify_nonce( $nonce, 'bwfan_save_rules' ) ) {
+			return;
+		}
+		$automation_id = absint( filter_input( INPUT_POST, 'automation_id' ) );
+		if ( $automation_id <= 0 || 'bwfan-automation' !== get_post_type( $automation_id ) ) {
+			return;
+		}
+		update_post_meta( $automation_id, '_bwfan_rules', filter_input( INPUT_POST, 'bwfan_rule' ) );
 	}
 
 	public function get_environment_var( $key = 'order' ) {

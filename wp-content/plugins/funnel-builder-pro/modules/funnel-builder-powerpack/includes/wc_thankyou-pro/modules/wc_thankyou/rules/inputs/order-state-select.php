@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfty_Input_Order_State_Select' ) ) {
+	#[\AllowDynamicProperties]
 	class wfty_Input_Order_State_Select {
 		public function __construct() {
 			// vars
@@ -10,29 +11,30 @@ if ( ! class_exists( 'wfty_Input_Order_State_Select' ) ) {
 				'allow_null'    => 0,
 				'choices'       => array(),
 				'default_value' => array(),
-				'class'         => ''
+				'class'         => '',
 			);
 		}
 
 		public function render( $field, $value = null ) {
 
 			$field = array_merge( $this->defaults, $field );
-			if ( ! isset( $field['id'] ) ) {
+			if ( isset( $field['id'] ) ) {
 				$field['id'] = sanitize_title( $field['id'] );
+			} else {
+				$field['id'] = '';
 			}
 			$chosen_states = $value;
 
 			?>
 
-            <select id="<?php echo $field['id']; ?>" name="<?php echo $field['name']; ?>[states][]" class="chosen_select <?php echo esc_attr( $field['class'] ); ?>" multiple="multiple" data-placeholder="<?php echo( isset( $field['placeholder'] ) ? $field['placeholder'] : __( 'Search...', 'funnel-builder-powerpack' ) ); ?>">
+			<select id="<?php echo esc_attr( $field['id'] ); ?>" name="<?php echo esc_attr( $field['name'] ); ?>[states][]" class="chosen_select <?php echo esc_attr( $field['class'] ); ?>" multiple="multiple" data-placeholder="<?php echo esc_attr( isset( $field['placeholder'] ) ? $field['placeholder'] : __( 'Search...', 'funnel-builder-powerpack' ) ); ?>">
 				<?php
 				WC()->countries->country_dropdown_options( '', $chosen_states );
 				?>
-            </select>
+			</select>
 
 			<?php
 		}
-
 	}
 }
 ?>

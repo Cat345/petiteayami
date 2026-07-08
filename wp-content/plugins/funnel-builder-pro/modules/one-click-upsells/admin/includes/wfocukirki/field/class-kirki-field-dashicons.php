@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Dashicons' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Dashicons extends WFOCUKirki_Field {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Dashicons' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-dashicons';
-
 		}
 
 		/**

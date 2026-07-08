@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Radio_Image' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Radio_Image extends WFACPKirki_Field_Radio {
@@ -24,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Radio_Image' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-radio-image';
-
 		}
 	}
 }

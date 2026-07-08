@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Recent_Recovered extends BWFAN_API_Base {
 	public static $ins;
 
@@ -26,8 +27,8 @@ class BWFAN_API_Get_Recent_Recovered extends BWFAN_API_Base {
 	}
 
 	public function process_api_call() {
-		$offset = ! empty( $this->get_sanitized_arg( 'offset', 'text_field' ) ) ? $this->get_sanitized_arg( 'offset', 'text_field' ) : 0;
-		$limit  = ! empty( $this->get_sanitized_arg( 'limit', 'text_field' ) ) ? $this->get_sanitized_arg( 'limit', 'text_field' ) : 5;
+		$offset = ! empty( $this->get_sanitized_arg( 'offset', 'absint' ) ) ? $this->get_sanitized_arg( 'offset', 'absint' ) : 0;
+		$limit  = ! empty( $this->get_sanitized_arg( 'limit', 'absint' ) ) ? $this->get_sanitized_arg( 'limit', 'absint' ) : 5;
 
 		$recovered_carts = BWFAN_Automations::get_recovered_carts( $offset, $limit );
 

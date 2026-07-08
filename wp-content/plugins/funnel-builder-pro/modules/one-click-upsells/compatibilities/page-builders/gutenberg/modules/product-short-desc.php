@@ -1,14 +1,14 @@
 <?php
 if ( ! class_exists( 'WFOCU_Guten_Product_Short_Desc' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Guten_Product_Short_Desc extends WFOCU_Guten_Field {
-		public $slug = 'wfocu_product_short_description';
+		public $slug  = 'wfocu_product_short_description';
 		protected $id = 'wfocu_product_short_description';
 
 		public function __construct() {
-			$this->name = __( "WF Product Short Description" );
+			$this->name = __( 'WF Product Short Description' );
 			$this->ajax = true;
 			parent::__construct();
-
 		}
 
 		public function html( $settings ) {//phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
@@ -44,22 +44,20 @@ if ( ! class_exists( 'WFOCU_Guten_Product_Short_Desc' ) ) {
 				return;
 			}
 			?>
-            <div class="wfocu-widget-containe wfocu_short_description">
+			<div class="wfocu-widget-containe wfocu_short_description">
 				<?php echo wp_kses_post( "<{$settings['htmlTag']}>" . $short_description . "</{$settings['htmlTag']}>" ); ?>
-            </div>
+			</div>
 			<?php
 		}
 
 		public function defaultCSS() {
 
-			$defaultCSS = "
+			$defaultCSS = '
 			
-		";
+		';
 
 			return $defaultCSS;
 		}
-
-
 	}
 
 	return new WFOCU_Guten_Product_Short_Desc();

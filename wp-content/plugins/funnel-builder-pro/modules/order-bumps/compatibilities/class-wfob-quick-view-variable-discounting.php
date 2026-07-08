@@ -1,13 +1,14 @@
 <?php
 if ( ! class_exists( 'WFOB_Apply_Discount_Quick_View' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Apply_Discount_Quick_View {
-		private $item_key = '';
-		private $item_data = [];
-		private $wfob_id = '';
+		private $item_key      = '';
+		private $item_data     = array();
+		private $wfob_id       = '';
 		private $hook_priority = 98;
 
 		public function __construct() {
-			add_action( 'wfob_qv_images', [ $this, 'prepare_data' ] );
+			add_action( 'wfob_qv_images', array( $this, 'prepare_data' ) );
 			add_filter( 'woocommerce_product_variation_get_price', array( $this, 'wcct_trigger_get_price' ), $this->hook_priority, 2 );
 			add_filter( 'woocommerce_product_variation_get_sale_price', array( $this, 'wcct_trigger_get_price' ), $this->hook_priority, 2 );
 		}
@@ -22,9 +23,7 @@ if ( ! class_exists( 'WFOB_Apply_Discount_Quick_View' ) ) {
 				if ( isset( $bump_products[ $this->item_key ] ) ) {
 					$this->item_data = $bump_products[ $this->item_key ];
 				}
-
 			}
-
 		}
 
 		public function wcct_trigger_get_price( $get_price, $product_global ) {
@@ -48,7 +47,6 @@ if ( ! class_exists( 'WFOB_Apply_Discount_Quick_View' ) ) {
 			add_filter( 'woocommerce_product_variation_get_sale_price', array( $this, 'wcct_trigger_get_price' ), $this->hook_priority, 2 );
 
 			return $get_price;
-
 		}
 
 		private function get_price( $pro, $data, $get_price ) {
@@ -64,18 +62,27 @@ if ( ! class_exists( 'WFOB_Apply_Discount_Quick_View' ) ) {
 			$price           = (float) $get_price;
 			$regular_price   = (float) $pro->get_regular_price();
 			$discount_amount = (float) ( apply_filters( 'wfob_discount_amount_data', $data['discount_amount'], $discount_type ) );
-			$discount_data   = [
+			$discount_data   = array(
 				'wfob_product_rp'      => $regular_price * $qty,
 				'wfob_product_p'       => $price * $qty,
 				'wfob_discount_amount' => $discount_amount,
 				'wfob_discount_type'   => $discount_type,
-			];
+			);
 			if ( 'fixed_discount_sale' == $discount_type || 'fixed_discount_reg' == $discount_type ) {
 				$discount_data['wfob_discount_amount'] = $discount_amount * $qty;
 			}
 			$new_price = WFOB_Common::calculate_discount( $discount_data );
 			if ( ! is_null( $new_price ) ) {
-				$parse_data = apply_filters( 'wfob_discounted_price_data', [ 'regular_price' => $regular_price, 'price' => $new_price ], '', $pro, $raw_data, );
+				$parse_data = apply_filters(
+					'wfob_discounted_price_data',
+					array(
+						'regular_price' => $regular_price,
+						'price'         => $new_price,
+					),
+					'',
+					$pro,
+					$raw_data,
+				);
 
 				return $parse_data['price'];
 			}

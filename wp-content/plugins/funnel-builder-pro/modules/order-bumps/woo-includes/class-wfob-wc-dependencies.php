@@ -5,6 +5,7 @@ if ( ! class_exists( 'WFOB_WC_Dependencies' ) ) {
 	 * WC Dependency Checker
 	 * Checks if WooCommerce is enabled
 	 */
+	#[\AllowDynamicProperties]
 	class WFOB_WC_Dependencies {
 
 		private static $active_plugins;
@@ -26,6 +27,5 @@ if ( ! class_exists( 'WFOB_WC_Dependencies' ) ) {
 
 			return in_array( 'woocommerce/woocommerce.php', self::$active_plugins ) || array_key_exists( 'woocommerce/woocommerce.php', self::$active_plugins );
 		}
-
 	}
 }

@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 #[AllowDynamicProperties]
 class WFACP_Compatibility_Subscription {
@@ -20,7 +24,7 @@ class WFACP_Compatibility_Subscription {
 		add_action( 'wfacp_before_product_switcher_html', array( $this, 'before' ) );
 		add_action( 'wfacp_after_product_switcher_html', array( $this, 'after' ) );
 		add_action( 'wfacp_after_coupon_html', array( $this, 'add_hidden_html' ) );
-		if(class_exists( 'WCSG_Checkout' )) {
+		if ( class_exists( 'WCSG_Checkout' ) ) {
 			remove_action( 'woocommerce_before_checkout_shipping_form', array( 'WCSG_Checkout', 'maybe_display_recipient_shipping_notice' ), 10 );
 		}
 

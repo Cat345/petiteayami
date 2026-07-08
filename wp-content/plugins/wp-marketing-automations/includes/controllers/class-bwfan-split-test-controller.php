@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Split_Test_Controller extends BWFAN_Base_Step_Controller {
 	public $last_run_path = 0;
 	public $total_paths = 3;

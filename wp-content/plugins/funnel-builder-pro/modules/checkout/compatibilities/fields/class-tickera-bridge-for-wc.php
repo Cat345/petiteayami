@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Tickera Bridge for WooCommerce by Tickera
@@ -7,44 +11,40 @@
 if ( ! class_exists( 'Tickera_Bridge_For_WC' ) ) {
 	#[AllowDynamicProperties]
 	class Tickera_Bridge_For_WC {
-		public $instance = null;
-		private $tc_general_settings = [];
+		public $instance             = null;
+		private $tc_general_settings = array();
 
 
 		public function __construct() {
 
-
 			/* Register Add field */
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
 			add_filter( 'wfacp_html_fields_tickera_bridge_for_wc', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'display_field' ], 999, 2 );
+			add_action( 'process_wfacp_html', array( $this, 'display_field' ), 999, 2 );
 
 			/* Assign Object */
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'action' ] );
-			add_action( 'wfacp_before_process_checkout_template_loader', [ $this, 'action' ], 20 );
-
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'action' ) );
+			add_action( 'wfacp_before_process_checkout_template_loader', array( $this, 'action' ), 20 );
 
 			/* internal css for plugin */
-			add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
+			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
 
 			/* prevent third party fields and wrapper*/
 
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
-
 		}
 
 
 		public function add_field( $fields ) {
 
-
-			$fields['tickera_bridge_for_wc'] = [
+			$fields['tickera_bridge_for_wc'] = array(
 				'type'       => 'wfacp_html',
-				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'tickera_bridge_for_wc' ],
+				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'tickera_bridge_for_wc' ),
 				'id'         => 'tickera_bridge_for_wc',
 				'field_type' => 'tickera_bridge_for_wc',
 				'label'      => __( 'Tickera WC', 'woofunnels-aero-checkout' ),
 
-			];
+			);
 
 			return $fields;
 		}
@@ -69,25 +69,22 @@ if ( ! class_exists( 'Tickera_Bridge_For_WC' ) ) {
 			}
 
 			?>
-            <div class="tickera_wrap" id="tickera_wrap">
+			<div class="tickera_wrap" id="tickera_wrap">
 				<?php
 				$this->instance->render_tc_owner_fields();
 				?>
-            </div>
+			</div>
 
 
 			<?php
-
-
 		}
 
 		public function is_enable() {
-			if ( is_null( $this->instance ) || ! $this->instance instanceof TC_WooCommerce_Bridge || ! isset( $this->tc_general_settings['show_owner_fields'] ) || "no" === $this->tc_general_settings['show_owner_fields'] ) {
+			if ( is_null( $this->instance ) || ! $this->instance instanceof TC_WooCommerce_Bridge || ! isset( $this->tc_general_settings['show_owner_fields'] ) || 'no' === $this->tc_general_settings['show_owner_fields'] ) {
 				return false;
 			}
 
 			return true;
-
 		}
 
 		public function internal_css() {
@@ -97,22 +94,20 @@ if ( ! class_exists( 'Tickera_Bridge_For_WC' ) ) {
 				return;
 			}
 
-			$bodyClass = "body";
+			$bodyClass = 'body';
 			if ( 'pre_built' !== $instance->get_template_type() ) {
 
-				$bodyClass = "body #wfacp-e-form ";
+				$bodyClass = 'body #wfacp-e-form ';
 			}
 
-			$cssHtml = "<style>";
-			$cssHtml .= $bodyClass . "#tickera_wrap p:empty,#tickera_wrap div:empty,#tickera_wrap span:empty {display: none;}";
-			$cssHtml .= $bodyClass . "#tickera_wrap .tickera_additional_info h1,#tickera_wrap .tickera_additional_info h2,#tickera_wrap .tickera_additional_info h3,#tickera_wrap .tickera_additional_info h4,#tickera_wrap .tickera_additional_info h5,#tickera_wrap .tickera_additional_info h6,#tickera_wrap .tickera_additional_info p {margin: 0 0 15px;}";
-			$cssHtml .= $bodyClass . "#tickera_wrap input[type=text],#tickera_wrap input[type=email]{padding: 10px 15px;}";
-			$cssHtml .= "</style>";
+			$cssHtml  = '<style>';
+			$cssHtml .= $bodyClass . '#tickera_wrap p:empty,#tickera_wrap div:empty,#tickera_wrap span:empty {display: none;}';
+			$cssHtml .= $bodyClass . '#tickera_wrap .tickera_additional_info h1,#tickera_wrap .tickera_additional_info h2,#tickera_wrap .tickera_additional_info h3,#tickera_wrap .tickera_additional_info h4,#tickera_wrap .tickera_additional_info h5,#tickera_wrap .tickera_additional_info h6,#tickera_wrap .tickera_additional_info p {margin: 0 0 15px;}';
+			$cssHtml .= $bodyClass . '#tickera_wrap input[type=text],#tickera_wrap input[type=email]{padding: 10px 15px;}';
+			$cssHtml .= '</style>';
 
 			echo $cssHtml;
-
 		}
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new Tickera_Bridge_For_WC(), 'wfacp-tickera-bridge-for-wc' );

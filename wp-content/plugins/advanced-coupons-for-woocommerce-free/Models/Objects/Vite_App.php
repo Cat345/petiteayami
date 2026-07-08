@@ -471,12 +471,12 @@ class Vite_App {
          * We use the filemtime of the file as the version number in production mode
          * and the current time in development mode.
          */
+        $dist_file_path = ACFWF()->Plugin_Constants->PLUGIN_DIR_PATH .
+            "dist/{$this->manifest[ $this->entry_file_path ]['file']}";
+
         $script_version = $this->is_hmr
             ? time()
-            : filemtime(
-                ACFWF()->Plugin_Constants->PLUGIN_DIR_PATH .
-                "dist/{$this->manifest[ $this->entry_file_path ]['file']}"
-            );
+            : ( file_exists( $dist_file_path ) ? filemtime( $dist_file_path ) : \ACFWF\Helpers\Plugin_Constants::VERSION );
 
         /**************************************************************************
          * Full url to main app script file
@@ -558,11 +558,12 @@ class Vite_App {
 
             if ( ! empty( $styles ) ) {
                 foreach ( $styles as $style ) {
+                    $dist_style_path = ACFWF()->Plugin_Constants->PLUGIN_DIR_PATH . "dist/$style";
                     wp_enqueue_style(
                         $this->script_handle,
                         plugins_url( "dist/$style", ACFWF()->Plugin_Constants->MAIN_PLUGIN_FILE_PATH ),
                         $this->style_dependencies,
-                        filemtime( ACFWF()->Plugin_Constants->PLUGIN_DIR_PATH . "dist/$style" )
+                        file_exists( $dist_style_path ) ? filemtime( $dist_style_path ) : \ACFWF\Helpers\Plugin_Constants::VERSION
                     );
                 }
             }
@@ -670,7 +671,7 @@ class Vite_App {
              * attributes in production mode.
              */
             foreach ( $this->manifest[ $this->entry_file_path ]['css'] as $style ) {
-                if ( false !== strpos( $href, $style ) ) {
+                if ( str_contains( $href, $style ) ) {
                     $integrity = '';
                     if ( apply_filters( 'acfw_enable_subresource_integrity_check', false ) ) {
                         $integrity = sprintf(

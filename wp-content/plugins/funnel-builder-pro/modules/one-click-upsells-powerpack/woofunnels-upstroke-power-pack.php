@@ -42,6 +42,7 @@ if ( ! function_exists( 'woofunnels_upstroke_powerpack_dependency' ) ) {
 	}
 }
 if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
+	#[\AllowDynamicProperties]
 	class WooFunnels_UpStroke_PowerPack {
 
 		public static $instance;
@@ -65,7 +66,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 			add_action( 'plugins_loaded', array( $this, 'add_licence_support_file' ) );
 			add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 			add_action( 'wfocu_loaded', array( $this, 'load_upstroke_powerpack' ), 999 );
-			add_action( 'plugins_loaded', [ $this, 'load_sublium' ], 100 );
+			add_action( 'plugins_loaded', array( $this, 'load_sublium' ), 100 );
 			add_action( 'wfocu_load_rule_files', array( $this, 'load_rule_files' ) );
 			add_action( 'before_woocommerce_init', array( $this, 'declare_hpos_compatibility' ) );
 		}
@@ -119,10 +120,38 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 			if ( ! class_exists( '\Sublium_WCS\Plugin', false ) ) {
 				return;
 			}
-			
+
 			include_once plugin_dir_path( __FILE__ ) . 'addons/funnelkit/class-sublium-subscriptions.php';
 			include_once plugin_dir_path( __FILE__ ) . 'addons/funnelkit/class-wfocu-sublium-compatibility.php';
 
+			// Order bump rules — register types and load classes from powerpack.
+			add_filter( 'funnelkit_order_bump_rule_types', array( $this, 'register_sublium_order_bump_rule_types' ) );
+			add_action( 'wfob_after_rules_classes', array( $this, 'load_sublium_order_bump_rule_classes' ) );
+		}
+
+		/**
+		 * Register Sublium rule types for Order Bumps.
+		 *
+		 * @param array $types Existing rule types.
+		 *
+		 * @return array Modified rule types.
+		 */
+		public function register_sublium_order_bump_rule_types( $types ) {
+			$types[ __( 'Sublium Subscription', 'woofunnels-upstroke-power-pack' ) ] = array(
+				'cart_contain_sublium_subscription' => __( 'Cart Contain Subscriptions', 'woofunnels-upstroke-power-pack' ),
+				'cart_sublium_recurring_plan'       => __( 'Recurring Products', 'woofunnels-upstroke-power-pack' ),
+				'cart_sublium_subscribe_and_save'   => __( 'Subscribe & Save Products', 'woofunnels-upstroke-power-pack' ),
+				'cart_sublium_installment_plan'     => __( 'Installment Products', 'woofunnels-upstroke-power-pack' ),
+			);
+
+			return $types;
+		}
+
+		/**
+		 * Load Sublium order bump rule class files.
+		 */
+		public function load_sublium_order_bump_rule_classes() {
+			include_once plugin_dir_path( __FILE__ ) . 'addons/funnelkit/sublium-order-bump-rules.php';
 		}
 
 		public function old_plugins_notices() {
@@ -186,13 +215,10 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 
 			/** add new rule for all thing subscription */
 			include_once plugin_dir_path( __FILE__ ) . 'addons/rules/wfocu-rule-ats-order-subs.php';
-			if ( defined( 'SUBLIUM_WCS_WC_DIR' ) ) {
-				try {
-					include_once SUBLIUM_WCS_WC_DIR . '/compatibilities/funnelkit/upsell-rules.php';
-				} catch ( \Exception|\Error $e ) {
-					error_log( sprintf( 'Sublium: Failed to load upsell rule classes: %s', $e->getMessage() ) );
-				}
-			}
+
+			// Sublium upsell rules — now shipped inside the powerpack.
+			// The file has its own class_exists guard for Sublium and will bail safely if Sublium is not active.
+			include_once plugin_dir_path( __FILE__ ) . 'addons/funnelkit/sublium-upsell-rules.php';
 		}
 
 		public static function is_hpos_enabled() {
@@ -219,6 +245,11 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 			}
 
 			if ( ! empty( $meta_value ) ) {
+				// Prefer JSON; fall back to PHP unserialize only for legacy data already in the database.
+				$decoded = json_decode( $meta_value, true );
+				if ( null !== $decoded || 'null' === $meta_value ) {
+					return $decoded;
+				}
 				return maybe_unserialize( $meta_value );
 			}
 

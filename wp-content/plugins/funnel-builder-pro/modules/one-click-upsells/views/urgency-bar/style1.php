@@ -75,7 +75,7 @@ if ( is_array( $bar_display_on ) && count( $bar_display_on ) > 0 ) {
 
 ?>
 
-<div class="wfocu-urgency-bar <?php echo implode( ' ', $urgency_bar_classes ); ?>" data-scrollto="wfocu_urgency_bar_urgency_bar" data-id="1" data-delay="<?php echo $reveal_bar_secs; ?>" data-offer-id="<?php echo $current_offer_id; ?>" data-on-desktop="<?php echo $desk_stat; ?>" data-on-mobile="<?php echo $mobile_stat; ?>">
+<div class="wfocu-urgency-bar <?php echo esc_attr( implode( ' ', $urgency_bar_classes ) ); ?>" data-scrollto="wfocu_urgency_bar_urgency_bar" data-id="1" data-delay="<?php echo absint( $reveal_bar_secs ); ?>" data-offer-id="<?php echo absint( $current_offer_id ); ?>" data-on-desktop="<?php echo esc_attr( $desk_stat ); ?>" data-on-mobile="<?php echo esc_attr( $mobile_stat ); ?>">
     <div class="wfocu-container">
         <div class="wfocu-row">
             <div class="wfocu-col-md-12">
@@ -93,7 +93,7 @@ if ( is_array( $bar_display_on ) && count( $bar_display_on ) > 0 ) {
                             <div class="wfocu-urgency-col wfocu-urgency-right-col ">
                                 <div class="wfocu-content-div">
                                     <div class="wfocu-h3 wfocu-text-center">
-										<?php echo $headline; ?>
+										<?php echo wp_kses_post( $headline ); ?>
                                     </div>
                                 </div>
                             </div>
@@ -107,7 +107,7 @@ if ( is_array( $bar_display_on ) && count( $bar_display_on ) > 0 ) {
                             <div class="wfocu-urgency-col wfocu-urgency-left-col">
                                 <div class="wfocu-content-div">
                                     <div class="wfocu-h3 wfocu-text-center">
-										<?php echo $headline; ?>
+										<?php echo wp_kses_post( $headline ); ?>
                                     </div>
                                 </div>
                             </div>
@@ -129,7 +129,7 @@ if ( is_array( $bar_display_on ) && count( $bar_display_on ) > 0 ) {
                             <div class="wfocu-urgency-col">
                                 <div class="wfocu-content-div">
                                     <div class="wfocu-h3 wfocu-text-center">
-										<?php echo $headline; ?>
+										<?php echo wp_kses_post( $headline ); ?>
                                     </div>
                                 </div>
                             </div>

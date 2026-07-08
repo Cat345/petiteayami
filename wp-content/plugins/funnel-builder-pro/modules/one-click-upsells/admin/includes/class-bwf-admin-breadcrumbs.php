@@ -1,10 +1,12 @@
 <?php
 /**
  * Class to control breadcrumb and its behaviour accross the buildwoofunnels
+ *
  * @author buildwoofunnels
  */
 if ( ! class_exists( 'BWF_Admin_Breadcrumbs' ) ) {
 
+	#[\AllowDynamicProperties]
 	class BWF_Admin_Breadcrumbs {
 
 		private static $ins = null;
@@ -12,12 +14,12 @@ if ( ! class_exists( 'BWF_Admin_Breadcrumbs' ) ) {
 		/**
 		 * @var array nodes use to contain all the nodes
 		 */
-		public static $nodes = [];
+		public static $nodes = array();
 
 		/**
 		 * @var array ref used to contain refs to pass to the urls
 		 */
-		public static $ref = [];
+		public static $ref = array();
 
 		/**
 		 * Insert a single node into the property
@@ -25,7 +27,14 @@ if ( ! class_exists( 'BWF_Admin_Breadcrumbs' ) ) {
 		 * @param $config [] of the node getting registered
 		 */
 		public static function register_node( $config ) {
-			self::$nodes[] = wp_parse_args($config, ['class' => '', 'link' => '', 'text' => '']);
+			self::$nodes[] = wp_parse_args(
+				$config,
+				array(
+					'class' => '',
+					'link'  => '',
+					'text'  => '',
+				)
+			);
 		}
 
 
@@ -46,12 +55,14 @@ if ( ! class_exists( 'BWF_Admin_Breadcrumbs' ) ) {
 			if ( ! empty( self::$nodes ) ) {
 				?>
 				<ul><?php foreach ( self::$nodes as $node ) { ?>
-						<li class="<?php echo $node['class'] ?>">
+						<li class="<?php echo $node['class']; ?>">
 							<?php if ( ! empty( $node['link'] ) ) { ?>
-								<a href="<?php echo esc_url( $node['link'] ) ?>"><?php echo wp_kses_post( $node['text'] ); ?></a>
-							<?php } else {
+								<a href="<?php echo esc_url( $node['link'] ); ?>"><?php echo wp_kses_post( $node['text'] ); ?></a>
+								<?php
+							} else {
 								echo wp_kses_post( $node['text'] );
-							} ?>
+							}
+							?>
 
 						</li>
 					<?php } ?>
@@ -76,7 +87,5 @@ if ( ! class_exists( 'BWF_Admin_Breadcrumbs' ) ) {
 
 			return add_query_arg( self::$ref, $url );
 		}
-
-
 	}
 }

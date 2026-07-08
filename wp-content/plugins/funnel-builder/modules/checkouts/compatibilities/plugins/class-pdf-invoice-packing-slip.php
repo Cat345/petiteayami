@@ -4,15 +4,15 @@
  * http://www.wpovernight.com
  */
 if ( ! class_exists( 'WFACP_Compatibility_Pdf_Invoice_Packing_slip' ) ) {
-	class  WFACP_Compatibility_Pdf_Invoice_Packing_slip {
+	#[\AllowDynamicProperties]
+	class WFACP_Compatibility_Pdf_Invoice_Packing_slip {
 		public function __construct() {
-			add_filter( 'wpo_wcpdf_address_comparison_fields', [ $this, 'remove_shipping_data' ], 999, 2 );
+			add_filter( 'wpo_wcpdf_address_comparison_fields', array( $this, 'remove_shipping_data' ), 999, 2 );
 		}
 
 		/**
 		 * Remove Shipping data before printing in pdf if client using billing address.
 		 * and not fill shipping address
-		 *
 		 *
 		 * @param $data []
 		 * @param $instance WC_order
@@ -25,12 +25,11 @@ if ( ! class_exists( 'WFACP_Compatibility_Pdf_Invoice_Packing_slip' ) ) {
 			 */
 			$order = $instance->order;
 
-
 			$id   = $order->get_id();
 			$meta = get_post_meta( $id );
 
 			if ( isset( $meta['_shipping_same_as_billing'] ) && empty( $meta['_shipping_same_as_billing'] [0] ) ) {
-				return [];
+				return array();
 			}
 
 			return $data;

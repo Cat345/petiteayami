@@ -79,11 +79,14 @@ class StripeCalculationTracker {
 		// Store API (Cart/Checkout) endpoints.
 		'/wp-json/wc/store/v1/checkout',
 		'/wp-json/wc/store/v1/cart',
+		'/wp-json/wc/store/v1/cart/update-customer',
 
 		'rest_route=/wc/store/v1/checkout',
 		'rest_route=%2Fwc%2Fstore%2Fv1%2Fcheckout',
 		'rest_route=/wc/store/v1/cart',
 		'rest_route=%2Fwc%2Fstore%2Fv1%2Fcart',
+		'rest_route=/wc/store/v1/cart/update-customer',
+		'rest_route=%2Fwc%2Fstore%2Fv1%2Fcart%2Fupdate-customer',
 	);
 
 	/**
@@ -112,7 +115,7 @@ class StripeCalculationTracker {
 			}
 
 			if ( defined( 'REST_REQUEST' ) && REST_REQUEST && isset( $_SERVER['REQUEST_URI'] ) ) {
-				foreach ( self::$valid_rest_urls as $valid_rest_url ) {
+				foreach ( self::get_valid_rest_urls() as $valid_rest_url ) {
 					if ( strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), $valid_rest_url ) !== false ) {
 						return true;
 					}
@@ -174,6 +177,8 @@ class StripeCalculationTracker {
 		}
 	}
 
+
+
 	/**
 	 * Check if calculation is needed in cart ajax context
 	 *
@@ -213,6 +218,12 @@ class StripeCalculationTracker {
 			'get_refreshed_fragments',
 			'update_shipping_method',
 			'checkout_coupon',
+			// Express checkout actions used by the WooCommerce Stripe gateway.
+			'wc_stripe_get_shipping_options',
+			'wc_stripe_create_order',
+			'wc_stripe_update_payment_intent',
+			// Stripe gateway updates Checkout Session / PaymentIntent through this endpoint.
+			'wc_stripe_update_checkout_session',
 		);
 
 		$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '';

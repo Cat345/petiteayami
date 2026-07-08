@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * WooCommerce Extended Coupon Features PRO
@@ -9,8 +13,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Extended_Coupon_Pro' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_Extended_Coupon_Pro {
 		public function __construct() {
-			add_action( 'wfacp_before_coupon_apply', [ $this, 'remove_action' ] );
-
+			add_action( 'wfacp_before_coupon_apply', array( $this, 'remove_action' ) );
 		}
 
 		public function remove_action() {

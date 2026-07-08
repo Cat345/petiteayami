@@ -3,7 +3,6 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFTY_Divi_Field extends ET_Builder_Module {
 		protected $get_local_slug         = '';
-		protected $ajax                   = false;
 		public $vb_support                = 'on';
 		protected $post_id                = 0;
 		protected $tabs                   = array();
@@ -26,9 +25,6 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			$name       = get_class( $this );
 			$this->slug = 'et_' . strtolower( $name );
 			parent::__construct();
-			if ( true === $this->ajax ) {
-				add_action( 'wp_ajax_' . $this->slug, array( $this, 'render_ajax' ) );
-			}
 		}
 
 		/**
@@ -1134,13 +1130,6 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			$this->advanced_fields();
 			$this->setup_offer();
 			$this->setup_data();
-		}
-
-		public function render_ajax() {
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for Divi builder AJAX render
-			$this->props = $_REQUEST;
-			echo "<div id='{$this->slug}'>" . $this->html( [] ) . '</div>';//phpcs:ignore
-			exit;
 		}
 
 		private function setup_offer() {

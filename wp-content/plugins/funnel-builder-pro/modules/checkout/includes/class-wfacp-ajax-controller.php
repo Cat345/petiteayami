@@ -13,11 +13,13 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 
 		public static function init() {
-			/**
-			 * Backend AJAX actions
-			 */
 			if ( is_admin() ) {
-				self::handle_admin_ajax();
+				$is_admin_enabled = ! class_exists( 'WFFN_Pro_Checkout_Support' )
+					|| ! method_exists( 'WFFN_Pro_Checkout_Support', 'is_admin_enabled' )
+					|| WFFN_Pro_Checkout_Support::is_admin_enabled();
+				if ( $is_admin_enabled ) {
+					self::handle_admin_ajax();
+				}
 			}
 			self::handle_public_ajax();
 		}
@@ -98,11 +100,25 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			if ( isset( $bump_action_data['data'] ) ) {
 				$input_data = $bump_action_data['data'];
 			}
+			$allowed_actions = array(
+				'switch_product_addon',
+				'addon_product',
+				'remove_addon_product',
+				'update_variation_data',
+				'update_product_qty',
+				'delete_last_item',
+				'update_cart_item_quantity',
+				'update_cart_multiple_page',
+				'remove_cart_item',
+				'undo_cart_item',
+				'prep_fees',
+			);
+
 			if ( 'apply_coupon_field' == $action || 'apply_coupon_main' == $action ) {
 				self::$output_resp = self::apply_coupon( $bump_action_data );
 			} elseif ( 'remove_coupon_field' == $action || 'remove_coupon_main' == $action ) {
 				self::$output_resp = self::remove_coupon( $bump_action_data );
-			} elseif ( method_exists( __CLASS__, $action ) ) {
+			} elseif ( is_string( $action ) && in_array( $action, $allowed_actions, true ) && method_exists( __CLASS__, $action ) ) {
 				self::$output_resp = self::$action( $input_data );
 			}
 			$aero_id                       = isset( $_REQUEST['wfacp_id'] ) ? $_REQUEST['wfacp_id'] : 0;
@@ -163,10 +179,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			);
 			if ( isset( $_POST['wfacp_name'] ) && $_POST['wfacp_name'] != '' ) {
 				$post                = array();
-				$post['post_title']  = $_POST['wfacp_name'];
+				$post['post_title']  = sanitize_text_field( wp_unslash( $_POST['wfacp_name'] ) );
 				$post['post_type']   = WFACP_Common::get_post_type_slug();
 				$post['post_status'] = 'publish';
-				$post['post_name']   = isset( $_POST['post_name'] ) ? $_POST['post_name'] : $post['post_title'];
+				$post['post_name']   = isset( $_POST['post_name'] ) ? sanitize_title( wp_unslash( $_POST['post_name'] ) ) : $post['post_title'];
 				$post_description    = isset( $_POST['post_content'] ) ? $_POST['post_content'] : $post['post_content'];
 				if ( ! empty( $post ) ) {
 
@@ -231,7 +247,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				}
 			}
 
-			if ( true === $admin && false !== WFACP_Core()->role->user_access( 'checkout', 'write' ) ) {
+			if ( true === $admin ) {
+				if ( false === WFACP_Core()->role->user_access( 'checkout', 'write' ) ) {
+					wp_send_json( $rsp );
+				}
 				if ( ! isset( $_REQUEST['wfacp_nonce'] ) || ! wp_verify_nonce( $_REQUEST['wfacp_nonce'], 'wfacp_admin_secure_key' ) ) {
 					wp_send_json( $rsp );
 				}
@@ -253,7 +272,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function product_search( $term = false, $return = false ) {
 			self::check_nonce( true );
-			$term = wc_clean( empty( $term ) ? stripslashes( $_POST['term'] ) : $term );
+			$term = wc_clean( empty( $term ) ? wp_unslash( $_POST['term'] ) : $term );
 			if ( empty( $term ) ) {
 				wp_die();
 			}
@@ -315,7 +334,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			);
 			if ( isset( $_POST['wfacp_id'] ) && count( $_POST['products'] ) > 0 ) {
 				$wfacp_id = absint( $_POST['wfacp_id'] );
-				$products = $_POST['products'];
+				$products = wc_clean( wp_unslash( $_POST['products'] ) );
 
 				$existing_product = WFACP_Common::get_page_product( $wfacp_id );
 
@@ -408,7 +427,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				'products' => array(),
 			);
 			if ( isset( $_POST['products'] ) && count( $_POST['products'] ) > 0 ) {
-				$products = $_POST['products'];
+				$products = wc_clean( wp_unslash( $_POST['products'] ) );
 				$wfacp_id = $_POST['wfacp_id'];
 				$settings = isset( $_POST['settings'] ) ? $_POST['settings'] : array();
 				foreach ( $products as $key => $val ) {
@@ -473,16 +492,16 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			);
 			if ( isset( $_POST['wfacp_id'] ) && $_POST['wfacp_id'] > 0 ) {
 				$wfacp_id                      = $_POST['wfacp_id'];
-				$name                          = trim( $_POST['fields']['name'] );
+				$name                          = sanitize_text_field( wp_unslash( $_POST['fields']['name'] ) );
 				$name                          = sanitize_title( $name );
-				$label                         = trim( $_POST['fields']['label'] );
-				$placeholder                   = trim( $_POST['fields']['placeholder'] );
+				$label                         = sanitize_text_field( wp_unslash( $_POST['fields']['label'] ) );
+				$placeholder                   = sanitize_text_field( wp_unslash( $_POST['fields']['placeholder'] ) );
 				$cssready                      = $_POST['fields']['cssready'] != '' ? explode( ',', trim( $_POST['fields']['cssready'] ) ) : array();
-				$field_type                    = trim( $_POST['fields']['field_type'] );
-				$section_type                  = trim( $_POST['fields']['section_type'] );
-				$show_custom_field_at_thankyou = trim( $_POST['fields']['show_custom_field_at_thankyou'] );
-				$show_custom_field_at_email    = trim( $_POST['fields']['show_custom_field_at_email'] );
-				$default                       = trim( $_POST['fields']['default'] );
+				$field_type                    = sanitize_text_field( wp_unslash( $_POST['fields']['field_type'] ) );
+				$section_type                  = sanitize_text_field( wp_unslash( $_POST['fields']['section_type'] ) );
+				$show_custom_field_at_thankyou = sanitize_text_field( wp_unslash( $_POST['fields']['show_custom_field_at_thankyou'] ) );
+				$show_custom_field_at_email    = sanitize_text_field( wp_unslash( $_POST['fields']['show_custom_field_at_email'] ) );
+				$default                       = sanitize_text_field( wp_unslash( $_POST['fields']['default'] ) );
 				$options                       = $_POST['fields']['options'] != '' ? ( explode( '|', trim( $_POST['fields']['options'] ) ) ) : array();
 
 				$new_sanitize_option = array();
@@ -537,9 +556,9 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				'status' => false,
 			);
 			if ( isset( $_POST['wfacp_id'] ) && $_POST['wfacp_id'] > 0 ) {
-				$wfacp_id     = $_POST['wfacp_id'];
-				$section_type = $_POST['section'];
-				$index        = $_POST['index'];
+				$wfacp_id     = absint( $_POST['wfacp_id'] );
+				$section_type = sanitize_text_field( wp_unslash( $_POST['section'] ) );
+				$index        = sanitize_text_field( wp_unslash( $_POST['index'] ) );
 				if ( '' == $index ) {
 					self::send_resp( $resp );
 				}
@@ -565,8 +584,8 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				'status' => false,
 			);
 			if ( isset( $_POST['wfacp_id'] ) && $_POST['wfacp_id'] > 0 ) {
-				$wfacp_id     = $_POST['wfacp_id'];
-				$field        = $_POST['field'];
+				$wfacp_id     = absint( $_POST['wfacp_id'] );
+				$field        = map_deep( wp_unslash( $_POST['field'] ), 'sanitize_text_field' );
 				$section_type = trim( $_POST['section_type'] );
 				$index        = $field['id'];
 				unset( $field['label'] );
@@ -604,15 +623,20 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				'status' => false,
 			);
 			if ( isset( $_POST['id'] ) && $_POST['id'] > 0 && isset( $_POST['post_status'] ) ) {
+				$id = absint( $_POST['id'] );
+				if ( get_post_type( $id ) !== WFACP_Common::get_post_type_slug() ) {
+					self::send_resp( $resp );
+					return;
+				}
 				$args = array(
-					'ID'          => $_POST['id'],
+					'ID'          => $id,
 					'post_status' => 'true' == $_POST['post_status'] ? 'publish' : 'draft',
 				);
 
-				$meta = get_post_meta( $_POST['id'], '_wp_page_template', true );
+				$meta = get_post_meta( $id, '_wp_page_template', true );
 				wp_update_post( $args );
 
-				update_post_meta( $_POST['id'], '_wp_page_template', $meta );
+				update_post_meta( $id, '_wp_page_template', $meta );
 				$resp = array(
 					'msg'    => __( 'Checkout Page status updated', 'woofunnels-aero-checkout' ),
 					'status' => true,
@@ -932,7 +956,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			);
 
 			if ( ! WFACP_Common::cart_has_removed_bumps() ) {
-				WC()->cart->set_removed_cart_contents( [] );
+				WC()->cart->set_removed_cart_contents( array() );
 			}
 
 			$wfacp_id = absint( $post['wfacp_id'] );
@@ -940,7 +964,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			$product_variation_id = absint( isset( $post['variation_id'] ) ? $post['variation_id'] : 0 );
 			$product_qty          = ( isset( $post['quantity'] ) ? $post['quantity'] : 1 );
 			$cart_key             = ( $post['cart_key'] );
-			$attributes           = ( isset( $post['attributes'] ) && is_array( $post['attributes'] ) ) ? $post['attributes'] : [];
+			$attributes           = ( isset( $post['attributes'] ) && is_array( $post['attributes'] ) ) ? $post['attributes'] : array();
 			$plan_id              = isset( $post['sublium-option-plan'] ) ? absint( $post['sublium-option-plan'] ) : 0;
 
 			$cart = WC()->cart;
@@ -953,7 +977,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				return false;
 			}
 
-			//wp_send_json([$cart_item, $attributes]);
+			// wp_send_json([$cart_item, $attributes]);
 
 			if ( isset( $attributes ) ) {
 				foreach ( $attributes as $key => $value ) {
@@ -1279,7 +1303,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			);
 			if ( isset( $_POST['wfacp_id'] ) && $_POST['wfacp_id'] > 0 ) {
 				$wfacp_id = absint( $_POST['wfacp_id'] );
-				$settings = $_POST['settings'];
+				$settings = wp_unslash( $_POST['settings'] );
 				WFACP_Common::update_page_settings( $wfacp_id, $settings );
 				$resp = array(
 					'msg'    => __( 'Changes saved', 'woofunnels-aero-checkout' ),
@@ -1302,6 +1326,13 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function update_global_settings_fields( $options ) {
 
+			if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'manage_woocommerce' ) ) {
+				return array(
+					'status' => false,
+					'msg'    => __( 'Permission denied', 'woofunnels-aero-checkout' ),
+				);
+			}
+
 			$options = ( is_array( $options ) && count( $options ) > 0 ) ? wp_unslash( $options ) : 0;
 			$resp    = array(
 				'status' => false,
@@ -1312,8 +1343,8 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				return $resp;
 			}
 
-			$options['wfacp_checkout_global_css']    = isset( $options['wfacp_checkout_global_css'] ) ? stripslashes_deep( $options['wfacp_checkout_global_css'] ) : '';
-			$options['wfacp_global_external_script'] = isset( $options['wfacp_global_external_script'] ) ? stripslashes_deep( $options['wfacp_global_external_script'] ) : '';
+			$options['wfacp_checkout_global_css']    = isset( $options['wfacp_checkout_global_css'] ) ? WFACP_Common::sanitize_global_css( stripslashes_deep( $options['wfacp_checkout_global_css'] ) ) : '';
+			$options['wfacp_global_external_script'] = isset( $options['wfacp_global_external_script'] ) ? WFACP_Common::sanitize_global_script( stripslashes_deep( $options['wfacp_global_external_script'] ) ) : '';
 
 			update_option( '_wfacp_global_settings', $options, true );
 			do_action( 'wfacp_global_settings_updated', $options );
@@ -1431,8 +1462,8 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			);
 			if ( isset( $_POST['data'] ) && ( $post = $_POST['data'] ) && isset( $post['wfacp_id'] ) && $post['wfacp_id'] > 0 && isset( $post['product_id'] ) && $post['product_id'] > 0 ) {
 				$wfacp_id = absint( $post['wfacp_id'] );
-				$item_key = isset( $post['item_key'] ) ? $post['item_key'] : '';
-				$cart_key = isset( $post['cart_key'] ) ? $post['cart_key'] : '';
+				$item_key = isset( $post['item_key'] ) ? sanitize_text_field( $post['item_key'] ) : '';
+				$cart_key = isset( $post['cart_key'] ) ? sanitize_text_field( $post['cart_key'] ) : '';
 				WFACP_Common::set_id( $wfacp_id );
 
 				$product_id = absint( $post['product_id'] );
@@ -1444,9 +1475,9 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 				global $wfacp_product, $wfacp_post, $wfacp_qv_data;
 				$wfacp_qv_data = $post;
-				
+
 				include_once __DIR__ . '/class-wfacp-quick-view-discounting.php';
-				do_action('wfacp_before_quick_view_ajax', $post);
+				do_action( 'wfacp_before_quick_view_ajax', $post );
 				if ( $query->have_posts() ) {
 					while ( $query->have_posts() ) {
 						$query->the_post();
@@ -1462,7 +1493,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 							$product   = wc_get_product( $parent_id );
 
 						}
-						require_once( WFACP_TEMPLATE_COMMON . '/quick-view/qv-template.php' );
+						require_once WFACP_TEMPLATE_COMMON . '/quick-view/qv-template.php';
 						$html           = ob_get_clean();
 						$resp['status'] = true;
 						$resp['html']   = $html;
@@ -1936,18 +1967,22 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 
 		public static function hide_notification() {
+			self::check_nonce( true );
 			$rsp = array(
 				'status' => false,
 
 			);
 
 			if ( isset( $_POST['wfacp_id'] ) && isset( $_POST['index'] ) && isset( $_POST['message_type'] ) ) {
-				$index        = $_POST['index'];
-				$wfacp_id     = $_POST['wfacp_id'];
-				$message_type = $_POST['message_type'];
-				if ( isset( $message_type ) && 'global' == $message_type ) {
+				$index        = sanitize_text_field( wp_unslash( $_POST['index'] ) );
+				$wfacp_id     = absint( $_POST['wfacp_id'] );
+				$message_type = sanitize_text_field( wp_unslash( $_POST['message_type'] ) );
+				if ( 'global' == $message_type ) {
 					$notification = get_option( 'wfacp_global_notifications', array() );
 				} else {
+					if ( get_post_type( $wfacp_id ) !== WFACP_Common::get_post_type_slug() ) {
+						wp_send_json( $rsp );
+					}
 					$notification = get_post_meta( $wfacp_id, 'notifications', true );
 				}
 				if ( ! is_array( $notification ) ) {
@@ -1955,7 +1990,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				}
 
 				$notification[ $index ] = true;
-				if ( isset( $message_type ) && 'global' == $message_type ) {
+				if ( 'global' == $message_type ) {
 					update_option( 'wfacp_global_notifications', $notification, 'no' );
 				} else {
 					update_post_meta( $wfacp_id, 'notifications', $notification );
@@ -1972,10 +2007,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				'status' => false,
 				'msg'    => __( 'Importing of template failed', 'woofunnels-aero-checkout' ),
 			);
-			$builder  = $_REQUEST['builder'];
-			$template = $_REQUEST['template'];
-			$wfacp_id = $_REQUEST['wfacp_id'];
-			$is_multi = $_REQUEST['is_multi'];
+			$builder  = sanitize_text_field( wp_unslash( $_REQUEST['builder'] ) );
+			$template = sanitize_text_field( wp_unslash( $_REQUEST['template'] ) );
+			$wfacp_id = absint( $_REQUEST['wfacp_id'] );
+			$is_multi = absint( $_REQUEST['is_multi'] );
 
 			$response = WFACP_Core()->importer->import( $wfacp_id, $builder, $template, $is_multi );
 
@@ -2019,8 +2054,16 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function get_divi_form_data() {
 
+			if ( ! check_ajax_referer( 'wfacp_secure_key', 'wfacp_nonce', false ) ) {
+				wp_send_json_error( array( 'message' => __( 'Invalid security token.', 'funnel-builder' ) ), 403 );
+			}
+
+			if ( ! WFACP_Core()->role->user_access( 'checkout', 'read' ) ) {
+				wp_send_json_error( array( 'message' => __( 'You do not have permission to access this resource.', 'funnel-builder' ) ), 403 );
+			}
+
 			if ( isset( $_REQUEST['wfacp_id'] ) ) {
-				$post_id = $_REQUEST['wfacp_id'];
+				$post_id = absint( wp_unslash( $_REQUEST['wfacp_id'] ) );
 				$post    = get_post( $post_id );
 				if ( ! is_null( $post ) && $post->post_type == WFACP_Common::get_post_type_slug() ) {
 
@@ -2047,9 +2090,11 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			$template->set_form_data( $json );
 			do_action( 'wfacp_get_divi_form_data', $post, $json );
 			if ( isset( $_COOKIE['wfacp_divi_open_page'] ) && wp_doing_ajax() ) {
-				$cookie = $_COOKIE['wfacp_divi_open_page'];
+				$cookie = sanitize_text_field( wp_unslash( $_COOKIE['wfacp_divi_open_page'] ) );
 				$parts  = explode( '@', $cookie );
-				$template->set_current_open_step( $parts[1] );
+				if ( isset( $parts[1] ) ) {
+					$template->set_current_open_step( sanitize_html_class( $parts[1] ) );
+				}
 			}
 			include $template->wfacp_get_form();
 
@@ -2085,13 +2130,16 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function analytics() {
 			self::check_nonce();
-			$resp       = array( 'status' => false );
-			$data       = $_POST['data'];
-			$event_data = isset( $data['event_data'] ) ? $data['event_data'] : '';
-			$source     = isset( $data['source'] ) ? $data['source'] : '';
+			$resp           = array( 'status' => false );
+			$data           = isset( $_POST['data'] ) ? map_deep( wp_unslash( $_POST['data'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce already verified in check_nonce()
+			$allowed_events = array( 'InitiateCheckout', 'AddPaymentInfo', 'AddToCart' );
+			$event_data     = isset( $data['event_data'] ) && is_array( $data['event_data'] )
+								? array_slice( $data['event_data'], 0, 5 )
+								: array();
+			$source         = isset( $data['source'] ) ? $data['source'] : '';
 
 			if ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
-				$source = $_SERVER['HTTP_REFERER'];
+				$source = esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- HTTP_REFERER is URL; sanitized with esc_url_raw()
 			}
 			$pixel        = WFACP_Analytics_Pixel::get_instance();
 			$access_token = $pixel->get_conversion_api_access_token();
@@ -2118,7 +2166,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			if ( isset( $_COOKIE['_fbc'] ) && ! empty( $_COOKIE['_fbc'] ) ) {
 				$user_data['_fbc'] = wc_clean( $_COOKIE['_fbc'] ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
 			} elseif ( isset( $_COOKIE['wffn_fbclid'] ) && isset( $_COOKIE['wffn_flt'] ) && ! empty( $_COOKIE['wffn_fbclid'] ) ) {
-				$user_data['_fbc'] = 'fb.1.' . strtotime( $_COOKIE['wffn_flt'] ) . '.' . $_COOKIE['wffn_fbclid'];
+				$user_data['_fbc'] = 'fb.1.' . strtotime( sanitize_text_field( wp_unslash( $_COOKIE['wffn_flt'] ) ) ) . '.' . sanitize_text_field( wp_unslash( $_COOKIE['wffn_fbclid'] ) );
 			}
 
 			foreach ( $get_each_pixel_id as $key => $pixel_id ) {
@@ -2145,6 +2193,12 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 				if ( is_array( $event_data ) && count( $event_data ) > 0 ) {
 					foreach ( $event_data as $single_item ) {
+						if ( ! isset( $single_item['event'] ) || ! in_array( $single_item['event'], $allowed_events, true ) ) {
+							continue;
+						}
+						if ( empty( $single_item['event_id'] ) || ! is_scalar( $single_item['event_id'] ) ) {
+							continue;
+						}
 						$instance->set_event_id( $single_item['event_id'] );
 						$instance->set_user_data( $user_data );
 						$instance->set_event_source_url( $source );

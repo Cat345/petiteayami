@@ -13,6 +13,7 @@
  */
 if ( ! class_exists( 'WFFN_Divi5_Importer' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFFN_Divi5_Importer extends WFFN_Divi_Importer {
 
 		public function import_template_single( $post_id, $content ) {
@@ -30,16 +31,28 @@ if ( ! class_exists( 'WFFN_Divi5_Importer' ) ) {
 			if ( ! is_array( $content ) && is_string( $content ) ) {
 				try {
 					$content = json_decode( $content, true );
-				} catch ( Exception $error ) {
+				} catch ( Throwable $error ) {
 					return false;
 				}
+			}
+
+			if ( ! is_array( $content ) || empty( $content['data'] ) ) {
+				return false;
+			}
+
+			require_once WFFN_PLUGIN_DIR . '/includes/class-wffn-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			$alien_count = WFFN_Content_Validator::sanitize_response_urls( $content );
+			if ( $alien_count >= 5 ) {
+				return false;
 			}
 
 			$data = $content['data'];
 			$data = reset( $data );
 
-			// D5 block content has JSON unicode escapes (u003c for <).
-			// wp_slash() so they survive WordPress wp_unslash() on retrieval.
+			if ( WFFN_Content_Validator::contains_php_code( $data ) || WFFN_Content_Validator::contains_dangerous_tags( $data ) ) {
+				return false;
+			}
+
 			$data = wp_slash( $data );
 
 			$success = true;

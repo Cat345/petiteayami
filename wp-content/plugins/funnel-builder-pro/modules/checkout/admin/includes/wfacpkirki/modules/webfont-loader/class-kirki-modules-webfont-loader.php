@@ -20,6 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Adds script for tooltips.
  */
 if ( ! class_exists( 'WFACPKirki_Modules_Webfont_Loader' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Modules_Webfont_Loader {
 
 		/**

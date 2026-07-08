@@ -6,6 +6,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 	 *
 	 * @since 1.0.0
 	 */
+	#[\AllowDynamicProperties]
 	class BWFCRM_Model_Contact extends BWFAN_Model {
 		static $primary_key = 'ID';
 
@@ -259,14 +260,15 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			if ( ! empty( trim( $search ) ) ) {
 				$search = trim( $search );
 				/** Search Contact by f_name, l_name, contact_no (phone), email */
-				$search_query = "AND ( c.email like '%" . esc_sql( $search ) . "%' OR c.f_name like '%" . esc_sql( $search ) . "%' OR c.l_name LIKE '%" . esc_sql( $search ) . "%' OR c.contact_no LIKE '%" . esc_sql( $search ) . "%' )";
+				$like_search  = '%' . $wpdb->esc_like( $search ) . '%';
+				$search_query = $wpdb->prepare( "AND ( c.email LIKE %s OR c.f_name LIKE %s OR c.l_name LIKE %s OR c.contact_no LIKE %s )", $like_search, $like_search, $like_search, $like_search );
 
 				/** Get f_name and l_name from search string and append in a query */
 				if ( false !== strpos( $search, ' ' ) ) {
 					$search_arr   = explode( ' ', $search );
 					$first_name   = isset( $search_arr[0] ) ? $search_arr[0] : '';
 					$last_name    = ! empty( end( $search_arr ) ) ? end( $search_arr ) : '';
-					$search_query .= ! empty( $first_name ) && ! empty( $last_name ) ? " OR ( c.f_name like '%" . esc_sql( $first_name ) . "%' AND c.l_name like '%" . esc_sql( $last_name ) . "%' )" : '';
+					$search_query .= ! empty( $first_name ) && ! empty( $last_name ) ? $wpdb->prepare( " OR ( c.f_name LIKE %s AND c.l_name LIKE %s )", '%' . $wpdb->esc_like( $first_name ) . '%', '%' . $wpdb->esc_like( $last_name ) . '%' ) : '';
 				}
 			}
 
@@ -274,14 +276,16 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$empty_email_check = ( 2 === $contact_mode ) ? "AND ( c.contact_no != '' AND c.contact_no IS NOT NULL )" : "AND ( c.email != '' AND c.email IS NOT NULL )";
 			/** Order, Order By, Limit, Offset */
 			$order_column_alias = in_array( $order_by, self::$wc_filters, true ) ? 'wc' : 'c';
-			$order_by_query     = "ORDER BY {$order_column_alias}.{$order_by} {$order}";
+			$order          = ( 'ASC' === strtoupper( (string) $order ) ) ? 'ASC' : 'DESC';
+			$safe_order_by  = '`' . str_replace( '`', '``', (string) $order_by ) . '`';
+			$order_by_query     = "ORDER BY {$order_column_alias}.{$safe_order_by} {$order}";
 			$pagination_query   = empty( $limit ) ? '' : sprintf( 'limit %d, %d', absint( $offset ), absint( $limit ) );
 
 			/** Exclude Contacts from this query */
-			$exclude_ids_query = ! empty( $exclude_ids ) ? "AND c.id NOT IN (" . esc_sql( $exclude_ids ) . ")" : '';
+			$exclude_ids_query = ! empty( $exclude_ids ) ? "AND c.id NOT IN (" . $exclude_ids . ")" : '';
 
 			/** Include Contacts into this query */
-			$include_ids_query = ! empty( $include_ids ) ? "AND c.id IN (" . esc_sql( $include_ids ) . ")" : '';
+			$include_ids_query = ! empty( $include_ids ) ? "AND c.id IN (" . $include_ids . ")" : '';
 
 			/** Start ID and End ID queries */
 			$start_id_query  = ! empty( $start_id ) ? sprintf( 'AND c.id > %d', absint( $start_id ) ) : '';
@@ -334,15 +338,22 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			/** Default NOT EXISTS approach */
 			$exclude_unsub_query = "  NOT EXISTS ";
 			$include_unsub_query = " EXISTS ";
-			$email_query         = "(SELECT 1 FROM {$unsubscribe_table} AS unsub WHERE c.email = unsub.recipient )";
-			$contact_no_query    = "(SELECT 1 FROM {$unsubscribe_table} AS unsub1 WHERE c.contact_no = unsub1.recipient )";
+
+			$email_query      = "(SELECT 1 FROM {$unsubscribe_table} AS unsub WHERE c.email = unsub.recipient )";
+			$contact_no_query = "(SELECT 1 FROM {$unsubscribe_table} AS unsub1 WHERE c.contact_no = unsub1.recipient )";
 
 			if ( true === $exclude_unsubs ) {
 				return "AND " . "( $exclude_unsub_query  $email_query AND $exclude_unsub_query $contact_no_query )";
 			}
 
 			if ( ! empty( $additional_info['include_unsubscribe'] ) ) {
-				return "OR " . "( $include_unsub_query  $email_query AND $exclude_unsub_query $contact_no_query )";
+				/**
+				 * Include contacts unsubscribed via email OR phone. The earlier
+				 * "EXISTS email AND NOT EXISTS contact_no" form was a typo — it
+				 * dropped contacts unsubscribed through both channels. Matches
+				 * the symmetric OR pattern used for rule='is' / value=3 below.
+				 */
+				return "OR " . "( $include_unsub_query  $email_query OR $include_unsub_query $contact_no_query )";
 			}
 
 			$is_broadcast = isset( $additional_info['is_broadcast'] ) && ! empty( $additional_info['is_broadcast'] );
@@ -386,9 +397,8 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$unsubscribe_table = $wpdb->prefix . 'bwfan_message_unsubscribe';
 			$where_query       = '';
 
-			/** Add LEFT JOINs for unsubscribe table */
-			$join_query = "LEFT JOIN {$unsubscribe_table} AS unsub_email ON c.email = unsub_email.recipient ";
-			$join_query .= "LEFT JOIN {$unsubscribe_table} AS unsub_phone ON c.contact_no = unsub_phone.recipient ";
+			$join_query = " LEFT JOIN {$unsubscribe_table} AS unsub_email ON c.email = unsub_email.recipient ";
+			$join_query .= " LEFT JOIN {$unsubscribe_table} AS unsub_phone ON c.contact_no = unsub_phone.recipient ";
 
 			if ( true === $exclude_unsubs ) {
 				$where_query = "AND unsub_email.recipient IS NULL AND unsub_phone.recipient IS NULL";
@@ -503,6 +513,9 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 
 		public static function _set_json_array_filter_sql( $filter, $filter_group_key ) {
 			$filter_value = $filter['value'];
+			if ( ! self::_is_safe_filter_identifier( $filter['key'], $filter_group_key ) ) {
+				return;
+			}
 			/** Checking if value is not array and group key is from custom field */
 			if ( ! is_array( $filter_value ) || 'cm' === $filter_group_key ) {
 				$filter_value = array( $filter_value );
@@ -529,7 +542,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 
 				if ( false === $modified ) {
 					$val_item = array_map( function ( $val ) use ( $rule, $key, $filter_group_key ) {
-						return "$filter_group_key.$key $rule '%\"$val\"%'";
+						return "$filter_group_key.$key $rule '%\"" . esc_sql( $val ) . "\"%'";
 					}, $val_item );
 				} else {
 					/** If query is modified then passed modified query */
@@ -547,15 +560,37 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 		}
 
+		/**
+		 * Validate that a column key / table alias used in audience-filter SQL is
+		 * a plain identifier. Identifiers cannot be bound via $wpdb->prepare(), so
+		 * they are whitelisted by character class to block SQL injection through
+		 * crafted filter definitions.
+		 *
+		 * @return bool
+		 */
+		private static function _is_safe_filter_identifier( ...$identifiers ) {
+			foreach ( $identifiers as $identifier ) {
+				if ( '' === (string) $identifier || ! preg_match( '/^[A-Za-z0-9_]+$/', (string) $identifier ) ) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 		public static function _set_string_filter_sql( $filter, $filter_group_key ) {
 			$filter_value = $filter['value'];
 			$filter_rule  = $filter['rule'];
 			$filter_key   = $filter['key'];
 
+			if ( ! self::_is_safe_filter_identifier( $filter_key, $filter_group_key ) ) {
+				return;
+			}
+
 			if ( strpos( $filter_value, ',' ) ) {
 				$filter_value = explode( ',', $filter_value );
 			}
-
+			global $wpdb;
 			switch ( $filter_rule ) {
 				case 'is':
 					$filter_rule = is_array( $filter_value ) ? 'IN' : '=';
@@ -565,32 +600,32 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 					break;
 				case 'contains':
 					$filter_rule  = 'LIKE';
-					$filter_value = is_array( $filter_value ) ? array_map( function ( $fil_val ) use ( $filter_group_key, $filter_key ) {
-						$fil_val = trim( $fil_val );
+					$filter_value = is_array( $filter_value ) ? array_map( function ( $fil_val ) use ( $filter_group_key, $filter_key, $wpdb ) {
+						$fil_val = esc_sql( $wpdb->esc_like( trim( $fil_val ) ) );
 
 						return "{$filter_group_key}.{$filter_key} LIKE '%$fil_val%'";
 					}, $filter_value ) : "%{$filter_value}%";
 					break;
 				case 'not_contains':
 					$filter_rule  = 'NOT LIKE';
-					$filter_value = is_array( $filter_value ) ? array_map( function ( $fil_val ) use ( $filter_group_key, $filter_key ) {
-						$fil_val = trim( $fil_val );
+					$filter_value = is_array( $filter_value ) ? array_map( function ( $fil_val ) use ( $filter_group_key, $filter_key, $wpdb ) {
+						$fil_val = esc_sql( $wpdb->esc_like( trim( $fil_val ) ) );
 
 						return "{$filter_group_key}.{$filter_key} NOT LIKE '%$fil_val%'";
 					}, $filter_value ) : "%{$filter_value}%";
 					break;
 				case 'starts_with':
 					$filter_rule  = 'LIKE';
-					$filter_value = is_array( $filter_value ) ? array_map( function ( $fil_val ) use ( $filter_group_key, $filter_key ) {
-						$fil_val = trim( $fil_val );
+					$filter_value = is_array( $filter_value ) ? array_map( function ( $fil_val ) use ( $filter_group_key, $filter_key, $wpdb ) {
+						$fil_val = esc_sql( $wpdb->esc_like( trim( $fil_val ) ) );
 
 						return "{$filter_group_key}.{$filter_key} LIKE '$fil_val%'";
 					}, $filter_value ) : "{$filter_value}%";
 					break;
 				case 'ends_with':
 					$filter_rule  = 'LIKE';
-					$filter_value = is_array( $filter_value ) ? array_map( function ( $fil_val ) use ( $filter_group_key, $filter_key ) {
-						$fil_val = trim( $fil_val );
+					$filter_value = is_array( $filter_value ) ? array_map( function ( $fil_val ) use ( $filter_group_key, $filter_key, $wpdb ) {
+						$fil_val = esc_sql( $wpdb->esc_like( trim( $fil_val ) ) );
 
 						return "{$filter_group_key}.{$filter_key} LIKE '%$fil_val'";
 					}, $filter_value ) : "%{$filter_value}";
@@ -626,9 +661,9 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			if ( is_array( $filter_value ) ) {
-				$filter_value = "('" . implode( "','", array_map( 'trim', $filter_value ) ) . "')";
+				$filter_value = "('" . implode( "','", array_map( function ( $v ) { return esc_sql( trim( $v ) ); }, $filter_value ) ) . "')";
 			} else {
-				$filter_value = "'$filter_value'";
+				$filter_value = "'" . esc_sql( $filter_value ) . "'";
 			}
 
 			self::$filter_queries[] = "($if_column_exists $filter_group_key.$filter_key $filter_rule $filter_value)";
@@ -644,6 +679,9 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 
 		public static function _set_date_filter_sql( $filter, $filter_group_key, $null_checking = true ) {
 			$filter_key = $filter['key'];
+			if ( ! self::_is_safe_filter_identifier( $filter_key, $filter_group_key ) ) {
+				return '';
+			}
 			if ( empty( $filter['value'] ) ) {
 				return '';
 			}
@@ -734,6 +772,9 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 		public static function _set_bool_filter_sql( $filter, $filter_group_key ) {
 			$filter_value = $filter['value'];
 			$filter_key   = $filter['key'];
+			if ( ! self::_is_safe_filter_identifier( $filter_key, $filter_group_key ) ) {
+				return;
+			}
 			switch ( $filter_key ) {
 				case 'status':
 					$filter_value           = ( ( 'yes' === $filter_value ) ? 1 : 0 );
@@ -772,6 +813,10 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$filter_rule  = $filter['rule'];
 			$filter_key   = $filter['key'];
 
+			if ( ! self::_is_safe_filter_identifier( $filter_key, $filter_group_key ) ) {
+				return;
+			}
+
 			/** Only on Status filter */
 			/** Include Un-subscribers if any status other than 3 (unsubscribed) and rule = 'is_not' */
 			$include_unsub_query_or = '';
@@ -783,7 +828,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			if ( 'between' === $filter_rule ) {
 				if ( is_array( $filter_value ) && 2 === count( $filter_value ) ) {
 					sort( $filter_value );
-					self::$filter_queries[] = "($filter_group_key.$filter_key >= '$filter_value[0]' AND $filter_group_key.$filter_key <= '$filter_value[1]')";
+					self::$filter_queries[] = "($filter_group_key.$filter_key >= '" . floatval( $filter_value[0] ) . "' AND $filter_group_key.$filter_key <= '" . floatval( $filter_value[1] ) . "')";
 				}
 
 				return;
@@ -844,7 +889,9 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			if ( is_array( $filter_value ) ) {
-				$filter_value = "('" . implode( "','", array_map( 'trim', $filter_value ) ) . "')";
+				$filter_value = "('" . implode( "','", array_map( function ( $v ) { return esc_sql( trim( $v ) ); }, $filter_value ) ) . "')";
+			} else {
+				$filter_value = floatval( $filter_value );
 			}
 
 			if ( ! is_array( $filter_value ) ) {
@@ -863,6 +910,10 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$filter_value = $filter['value'];
 			$filter_rule  = $filter['rule'];
 			$filter_key   = $filter['key'];
+
+			if ( ! self::_is_safe_filter_identifier( $filter_key, $filter_group_key ) ) {
+				return;
+			}
 
 			switch ( $filter_rule ) {
 				case 'more_than':
@@ -887,18 +938,21 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			if ( ! is_array( $filter_value ) ) {
-				self::$filter_queries[] = "($if_column_exists $filter_group_key.$filter_key $filter_rule $filter_value)";
+				self::$filter_queries[] = "($if_column_exists $filter_group_key.$filter_key $filter_rule " . floatval( $filter_value ) . ")";
 
 				return;
 			}
 			foreach ( $filter_value as $values ) {
-				$values                 = trim( $values );
+				$values                 = floatval( trim( $values ) );
 				self::$filter_queries[] = "($if_column_exists $filter_group_key.$filter_key $filter_rule $values)";
 			}
 		}
 
 		public static function _set_date_relative_filter_sql( $filter, $filter_group_key ) {
 			$filter_key = $filter['key'];
+			if ( ! self::_is_safe_filter_identifier( $filter_key, $filter_group_key ) ) {
+				return;
+			}
 			if ( empty( $filter['value'] ) ) {
 				return;
 			}
@@ -1418,8 +1472,10 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			/** Order, Order By, Limit, Offset */
 			$order_column_alias = in_array( $order_by, BWFCRM_Filters::$wc_filters ) ? 'wc' : 'c';
-			$order_by_query     = " ORDER BY {$order_column_alias}.{$order_by} {$order}";
-			$pagination_query   = empty( $limit ) ? '' : " LIMIT $offset, $limit";
+			$order          = ( 'ASC' === strtoupper( (string) $order ) ) ? 'ASC' : 'DESC';
+			$safe_order_by  = '`' . str_replace( '`', '``', (string) $order_by ) . '`';
+			$order_by_query     = " ORDER BY {$order_column_alias}.{$safe_order_by} {$order}";
+			$pagination_query   = empty( $limit ) ? '' : ' LIMIT ' . absint( $offset ) . ', ' . absint( $limit );
 			$filter_ins  = BWFCRM_Load_Filters::get_instance();
 			$query       = $filter_ins->get_prepared_query( $filters, $preferences, $additional_info, trim( $search ) );
 

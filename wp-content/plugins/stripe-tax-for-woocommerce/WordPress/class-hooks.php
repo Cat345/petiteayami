@@ -417,6 +417,15 @@ class Hooks {
 			3
 		);
 		add_action(
+			'woocommerce_create_refund',
+			array(
+				static::class,
+				'action_woocommerce_create_refund_validate_line_items',
+			),
+			10,
+			2
+		);
+		add_action(
 			'woocommerce_order_partially_refunded',
 			array(
 				static::class,
@@ -509,7 +518,7 @@ class Hooks {
 				'handle_checkout_order_notice',
 			),
 			10,
-			2
+			1
 		);
 	}
 
@@ -589,8 +598,9 @@ class Hooks {
 					'__stripe_tax_behavior',
 					Data::CART_ITEM_REFERENCE_META_NAME,
 					Data::TAX_EXCLUDED_META_NAME,
+					'_stripe_tax_checkout_total_tax_inclusive',
+					'_stripe_tax_checkout_subtotal_tax_inclusive',
 				);
-
 				foreach ( $formatted_meta as $key => $meta ) {
 					if ( in_array( $meta->key, $meta_to_hide, true ) ) {
 						unset( $formatted_meta[ $key ] );
@@ -732,19 +742,141 @@ class Hooks {
 		}
 	}
 
+
+	/**
+	 * Validate refund args through wc_create_refund action.
+	 *
+	 * @param \WC_Order_Refund $refund Refund object being created.
+	 * @param array            $args Refund creation args.
+	 *
+	 * @throws Exception If a line item has zero quantity and non-zero refund values.
+	 */
+	public static function action_woocommerce_create_refund_validate_line_items( $refund, $args ) {
+		if ( ! is_array( $args ) ) {
+			return;
+		}
+
+		try {
+			static::validate_refund_line_items_args( $args );
+		} catch ( Exception $err ) {
+			if ( is_object( $refund ) && method_exists( $refund, 'get_id' ) && $refund->get_id() ) {
+				$refund->delete( true );
+			}
+
+			throw $err;
+		}
+	}
+
+	/**
+	 * Validate refund line-items payload.
+	 *
+	 * @param array $args Refund creation args.
+	 *
+	 * @throws Exception If a line item has zero quantity and non-zero refund values.
+	 */
+	protected static function validate_refund_line_items_args( array $args ): void {
+		if ( empty( $args['line_items'] ) || ! is_array( $args['line_items'] ) ) {
+			return;
+		}
+
+		$order = isset( $args['order_id'] ) ? wc_get_order( $args['order_id'] ) : false;
+
+		foreach ( $args['line_items'] as $item_id => $line_item_refund_data ) {
+			if ( ! is_array( $line_item_refund_data ) ) {
+				continue;
+			}
+
+			if ( ! static::refund_line_item_requires_quantity( $order, $item_id ) ) {
+				continue;
+			}
+
+			$quantity_raw = $line_item_refund_data['qty'] ?? ( $line_item_refund_data['quantity'] ?? 0 );
+			$quantity     = is_numeric( $quantity_raw ) ? (float) $quantity_raw : 0.0;
+
+			if ( 0.0 !== $quantity ) {
+				continue;
+			}
+
+			$has_non_zero_refund_total = static::has_non_zero_refund_value( $line_item_refund_data['refund_total'] ?? 0 );
+			$has_non_zero_refund_tax   = static::has_non_zero_refund_value( $line_item_refund_data['refund_tax'] ?? 0 );
+
+			if ( ! $has_non_zero_refund_total && ! $has_non_zero_refund_tax ) {
+				continue;
+			}
+
+			throw new Exception(
+				esc_html__( 'Stripe Tax: Please select a quantity for each refunded line item. Refund amounts cannot be processed without specifying the item quantity.', 'stripe-tax-for-woocommerce' )
+			);
+		}
+	}
+
+	/**
+	 * Determine whether a refunded order item requires a quantity selection.
+	 *
+	 * Only product line items (type "line_item") have a quantity counter in the
+	 * admin order UI. Shipping and fee items are refunded by amount only, so they
+	 * must be excluded from the quantity validation.
+	 *
+	 * @param \WC_Order|false $order   Order the refund belongs to, or false when unavailable.
+	 * @param int|string      $item_id Order item ID being refunded.
+	 */
+	protected static function refund_line_item_requires_quantity( $order, $item_id ): bool {
+		if ( ! is_object( $order ) || ! method_exists( $order, 'get_item' ) ) {
+			return false;
+		}
+
+		$item = $order->get_item( $item_id );
+
+		if ( ! $item || ! method_exists( $item, 'get_type' ) ) {
+			return false;
+		}
+
+		return 'line_item' === $item->get_type();
+	}
+
+	/**
+	 * Check whether a refund value contains a non-zero numeric amount.
+	 *
+	 * @param mixed $value Numeric scalar or nested array of numeric values.
+	 */
+	protected static function has_non_zero_refund_value( $value ): bool {
+		if ( is_array( $value ) ) {
+			foreach ( $value as $nested_value ) {
+				if ( static::has_non_zero_refund_value( $nested_value ) ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		if ( ! is_scalar( $value ) || '' === $value ) {
+			return false;
+		}
+
+		return abs( (float) $value ) > 0.0;
+	}
+
 	/**
 	 * WooCommerce order partially refunded action.
 	 *
 	 * @param int $order_id Order id.
 	 * @param int $refund_id Refund id.
 	 *
-	 * @throws Exception If something goes wrong.
+	 * @throws \Throwable If the Stripe Tax reversal fails.
 	 */
 	public static function action_woocommerce_order_partially_refunded( $order_id, $refund_id ) {
 		try {
 			TaxTransaction::create_order_refund_reversal( $refund_id );
 		} catch ( \Throwable $err ) {
 			StripeTaxLogger::log_error( $err->getMessage() );
+
+			$refund = wc_get_order( $refund_id );
+			if ( $refund ) {
+				$refund->delete( true );
+			}
+
+			throw $err;
 		}
 	}
 
@@ -885,11 +1017,17 @@ class Hooks {
 	 * Check if migrations needed.
 	 */
 	public static function check_migrations() {
-		$plugin_migration = get_option( 'stripe_tax_migration' );
+		$migration_version = intval( get_option( 'stripe_tax_migration', '0' ) );
 
-		if ( '1' !== $plugin_migration ) {
+		if ( $migration_version < 1 ) {
 			PluginActivate::maybe_migrate_tax_transactions_table();
 			update_option( 'stripe_tax_migration', '1' );
+			$migration_version = 1;
+		}
+
+		if ( $migration_version < 2 ) {
+			PluginActivate::maybe_add_time_index_to_calculate_tax_table();
+			update_option( 'stripe_tax_migration', '2' );
 		}
 	}
 
@@ -1230,6 +1368,7 @@ class Hooks {
 	 * @param \WC_Order $order The order being updated during checkout.
 	 *
 	 * @throws \Automattic\WooCommerce\StoreApi\Exceptions\RouteException If taxes have not been calculated.
+	 * @phpstan-throws \Throwable If taxes have not been calculated.
 	 */
 	public static function handle_checkout_order_notice( $order ) {
 		$handlers_class = null;

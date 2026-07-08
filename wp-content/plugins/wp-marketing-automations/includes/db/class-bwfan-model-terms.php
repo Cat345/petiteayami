@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
+	#[\AllowDynamicProperties]
 	class BWFAN_Model_Terms extends BWFAN_Model {
 		static $primary_key = 'ID';
 
@@ -13,7 +14,8 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 		 * function to return term_data using term slug
 		 **/
 		static function get_term_by_name( $term_slug, $type = 1 ) {
-			$query     = "SELECT * FROM `{table_name}` WHERE `name` LIKE '" . esc_sql( $term_slug ) . "' AND `type` = '" . $type . "'";
+			global $wpdb;
+			$query     = $wpdb->prepare( "SELECT * FROM `{table_name}` WHERE `name` LIKE %s AND `type` = %d", $term_slug, $type );
 			$query_md5 = md5( $query );
 
 			if ( isset( self::$query_cache[ $query_md5 ] ) && ! empty( self::$query_cache[ $query_md5 ] ) ) {
@@ -32,7 +34,8 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 		 * function to return term_data using term slug
 		 **/
 		static function search_term( $term_slug, $type = 1 ) {
-			$query     = "SELECT * FROM `{table_name}` WHERE `name` LIKE '%" . esc_sql( $term_slug ) . "%' AND `type` = '" . $type . "'";
+			global $wpdb;
+			$query     = $wpdb->prepare( "SELECT * FROM `{table_name}` WHERE `name` LIKE %s AND `type` = %d", '%' . $term_slug . '%', $type );
 			$term_data = self::get_results( $query );
 
 			return is_array( $term_data ) && ! empty( $term_data ) ? $term_data : array();
@@ -85,19 +88,18 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 			$order        = ' ORDER BY `ID` DESC';
 			if ( ! empty( $search ) ) {
 				if ( ! is_array( $search ) ) {
-					$search       = BWFAN_Common::get_formatted_value_for_dbquery( $search );
-					$search_terms = ( 'exact' === $search_nature ? " AND name = '$search'" : "AND name LIKE '%" . esc_sql( $search ) . "%'" );
+					if ( 'exact' === $search_nature ) {
+						$search_terms = $wpdb->prepare( ' AND name = %s', $search );
+					} else {
+						$search_terms = $wpdb->prepare( ' AND name LIKE %s', '%' . $wpdb->esc_like( $search ) . '%' );
+					}
 				} else if ( 'exact' === $search_nature ) {
-					$search       = array_map( function ( $value ) {
-						return BWFAN_Common::get_formatted_value_for_dbquery( $value );
-					}, $search );
-					$search       = implode( "','", $search );
-					$search_terms = " AND name IN ('$search')";
+					$search       = array_values( $search );
+					$placeholders = implode( ',', array_fill( 0, count( $search ), '%s' ) );
+					$search_terms = $wpdb->prepare( " AND name IN ( $placeholders )", ...$search );
 				} else {
-					$search_terms = array_map( function ( $s_term ) {
-						$s_term = BWFAN_Common::get_formatted_value_for_dbquery( $s_term );
-
-						return "name LIKE '%" . esc_sql( $s_term ) . "%'";
+					$search_terms = array_map( function ( $s_term ) use ( $wpdb ) {
+						return $wpdb->prepare( "name LIKE %s", '%' . $wpdb->esc_like( $s_term ) . '%' );
 					}, $search );
 					$search_terms = implode( ' OR ', $search_terms );
 					$search_terms = " AND ($search_terms)";
@@ -106,15 +108,15 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			if ( ! empty( $ids ) ) {
-				$search_terms .= " AND ID IN(" . implode( ',', $ids ) . ")";
+				$search_terms .= " AND ID IN(" . implode( ',', array_map( 'absint', (array) $ids ) ) . ")";
 			}
 
 			if ( ! empty( $limit ) ) {
 				$offset      = ! empty( $offset ) ? $offset : 0;
-				$limit_query = " LIMIT $offset,$limit";
+				$limit_query = ' LIMIT ' . absint( $offset ) . ',' . absint( $limit );
 			}
 
-			$type_query = empty( $type ) ? '' : " AND type='$type'";
+			$type_query = empty( $type ) ? '' : $wpdb->prepare( ' AND type = %d', $type );
 
 			$query     = "SELECT * FROM `{$wpdb->prefix}bwfan_terms` WHERE 1=1 $type_query $search_terms $order $limit_query";
 			$term_data = self::get_results( $query );
@@ -202,14 +204,16 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 
 		public static function checking_term( $term_id, $type = 1 ) {
 
-			$query       = "SELECT ID from {table_name} where ID='" . $term_id . "' and type='" . $type . "'";
+			global $wpdb;
+			$query       = $wpdb->prepare( "SELECT ID from {table_name} where ID = %d and type = %d", $term_id, $type );
 			$term_result = self::get_results( $query );
 
 			return $term_result;
 		}
 
 		public static function get_all( $type = 1 ) {
-			$query        = "select ID, name from {table_name} where type='" . $type . "'";
+			global $wpdb;
+			$query        = $wpdb->prepare( "select ID, name from {table_name} where type = %d", $type );
 			$term_results = self::get_results( $query );
 
 			return $term_results;
@@ -240,26 +244,26 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			global $wpdb;
 
-			$values = array_map( function ( $value ) use ( $keys ) {
-				$return = array();
+			$placeholders = array();
+			$prepare_args = array();
+			foreach ( $values as $value ) {
+				$row = array();
 				foreach ( $keys as $key ) {
 					if ( is_numeric( $value[ $key ] ) && 'name' !== $key ) {
-						$return[] = absint( $value[ $key ] );
-					}
-					if ( is_string( $value[ $key ] ) ) {
-						$formatted_value = BWFAN_Common::get_formatted_value_for_dbquery( $value[ $key ] );
-						$return[]        = "'" . $formatted_value . "'";
+						$row[]          = '%d';
+						$prepare_args[] = absint( $value[ $key ] );
+					} else {
+						$row[]          = '%s';
+						$prepare_args[] = (string) $value[ $key ];
 					}
 				}
-
-				return '(' . implode( ',', $return ) . ')';
-			}, $values );
-			$values = implode( ', ', $values );
+				$placeholders[] = '(' . implode( ', ', $row ) . ')';
+			}
 
 			$keys  = '(' . implode( ', ', $keys ) . ')';
-			$query = 'INSERT INTO ' . self::_table() . ' ' . $keys . ' VALUES ' . $values;
+			$query = 'INSERT INTO ' . self::_table() . ' ' . $keys . ' VALUES ' . implode( ', ', $placeholders );
 
-			return $wpdb->query( $wpdb->prepare( "$query ", $values ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->query( $wpdb->prepare( $query, $prepare_args ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
 
 		/**
@@ -276,14 +280,19 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 			$search_terms = '';
 			if ( ! empty( $search ) ) {
 				if ( ! is_array( $search ) ) {
-					$search_terms = ( 'exact' === $search_nature ? " AND name = '$search'" : "AND name LIKE '%" . esc_sql( $search ) . "%'" );
-					$search_terms = 'name_with_dash' === $search_nature ? " AND ( name = '$search' OR name LIKE '" . esc_sql( $search ) . " - %' ) " : $search_terms;
+					if ( 'exact' === $search_nature ) {
+						$search_terms = $wpdb->prepare( ' AND name = %s', $search );
+					} else {
+						$search_terms = $wpdb->prepare( ' AND name LIKE %s', '%' . $wpdb->esc_like( $search ) . '%' );
+					}
+					$search_terms = 'name_with_dash' === $search_nature ? $wpdb->prepare( ' AND ( name = %s OR name LIKE %s ) ', $search, $wpdb->esc_like( $search ) . ' - %' ) : $search_terms;
 				} else if ( 'exact' === $search_nature ) {
-					$search       = implode( "','", $search );
-					$search_terms = " AND name IN ('$search')";
+					$search       = array_values( $search );
+					$placeholders = implode( ',', array_fill( 0, count( $search ), '%s' ) );
+					$search_terms = $wpdb->prepare( " AND name IN ( $placeholders )", ...$search );
 				} else {
-					$search_terms = array_map( function ( $s_term ) {
-						return "name LIKE '%" . esc_sql( $s_term ) . "%'";
+					$search_terms = array_map( function ( $s_term ) use ( $wpdb ) {
+						return $wpdb->prepare( "name LIKE %s", '%' . $wpdb->esc_like( $s_term ) . '%' );
 					}, $search );
 					$search_terms = implode( ' OR ', $search_terms );
 					$search_terms = " AND ($search_terms)";
@@ -291,10 +300,10 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			if ( ! empty( $ids ) ) {
-				$search_terms .= " AND ID IN(" . implode( ',', $ids ) . ")";
+				$search_terms .= " AND ID IN(" . implode( ',', array_map( 'absint', (array) $ids ) ) . ")";
 			}
 
-			$query = "SELECT COUNT(ID) from {$wpdb->prefix}bwfan_terms where type='$type' $search_terms ";
+			$query = $wpdb->prepare( "SELECT COUNT(ID) from {$wpdb->prefix}bwfan_terms where type = %d ", $type ) . $search_terms;
 
 			return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
@@ -478,7 +487,8 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 		 * @return int|mixed
 		 */
 		public static function get_first_term_by_type( $type = 1 ) {
-			$query     = "SELECT ID FROM `{table_name}` WHERE `type` = '" . $type . "' ORDER BY `ID` ASC LIMIT 1";
+			global $wpdb;
+			$query     = $wpdb->prepare( "SELECT ID FROM `{table_name}` WHERE `type` = %d ORDER BY `ID` ASC LIMIT 1", $type );
 			$term_data = self::get_results( $query );
 
 			return is_array( $term_data ) && isset( $term_data[0] ) && ! empty( $term_data ) && isset( $term_data[0]['ID'] ) ? $term_data[0]['ID'] : 0;

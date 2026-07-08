@@ -10,6 +10,7 @@ if ( ! class_exists( 'Elementor_WFOCU_Price_Widget' ) ) {
 	/**
 	 * Class Elementor_WFOCU_Price_Widget
 	 */
+	#[\AllowDynamicProperties]
 	class Elementor_WFOCU_Price_Widget extends \Elementor\Widget_Base {
 
 		/**

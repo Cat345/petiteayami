@@ -1,11 +1,12 @@
 <?php
 if ( ! class_exists( 'WFOCU_Guten_Accept_Link' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Guten_Accept_Link extends WFOCU_Guten_Field {
-		public $slug = 'wfocu_accept_link';
+		public $slug  = 'wfocu_accept_link';
 		protected $id = 'wfocu_accept_link';
 
 		public function __construct() {
-			$this->name = __( "WF Accept Link" );
+			$this->name = __( 'WF Accept Link' );
 			parent::__construct();
 		}
 
@@ -17,8 +18,7 @@ if ( ! class_exists( 'WFOCU_Guten_Accept_Link' ) ) {
 
 			return BWFBlocksUpsell_Render_Block::do_button_block( $settings, $content );
 		}
-
 	}
 
-	return new WFOCU_Guten_Accept_Link;
+	return new WFOCU_Guten_Accept_Link();
 }

@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFACP_DIVI' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_DIVI {
 		private static $ins           = null;
 		private static $front_locals  = array();
@@ -9,8 +10,6 @@ if ( ! class_exists( 'WFACP_DIVI' ) ) {
 
 		private function __construct() {
 			add_action( 'after_setup_theme', array( $this, 'init' ), 5 );
-
-
 
 			add_action( 'wfacp_register_template_types', array( $this, 'register_template_type' ), 12 );
 			add_filter( 'wfacp_register_templates', array( $this, 'register_templates' ) );

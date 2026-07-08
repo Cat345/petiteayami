@@ -16,6 +16,10 @@
 /**
  * Wrapper class for static methods.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Values' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Values {
@@ -37,7 +41,7 @@ if ( ! class_exists( 'WFACPKirki_Values' ) ) {
 		 * @access public
 		 *
 		 * @param string|array $value The value.
-		 * @param string $field_id The field-ID.
+		 * @param string       $field_id The field-ID.
 		 *
 		 * @return array
 		 * @since 3.0.10
@@ -135,7 +139,6 @@ if ( ! class_exists( 'WFACPKirki_Values' ) ) {
 			} // End if().
 
 			return apply_filters( 'wfacpkirki_values_get_value', $value, $field_id );
-
 		}
 
 		/**
@@ -165,7 +168,6 @@ if ( ! class_exists( 'WFACPKirki_Values' ) ) {
 			}
 
 			return $value;
-
 		}
 	}
 }

@@ -83,6 +83,7 @@ if ( ! bwfan_is_autonami_pro_active() && ! class_exists( 'BWFAN_Funnel_Optin_For
 		}
 
 		public function bwfan_get_optin_form_fields() {
+			BWFAN_Common::check_nonce();
 			$form_id = filter_input( INPUT_POST, 'id' );
 			$fields  = [];
 			if ( ! empty( $form_id ) ) {

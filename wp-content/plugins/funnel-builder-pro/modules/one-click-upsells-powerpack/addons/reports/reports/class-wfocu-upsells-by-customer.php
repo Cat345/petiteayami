@@ -7,8 +7,8 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Customer' ) ) {
 	 * Upstroke Admin Report - upstroke by date
 	 *
 	 * Find the number upsells accepted between by dates
-	 *
 	 */
+	#[\AllowDynamicProperties]
 	class WC_Report_Upsells_By_Customer extends WP_List_Table {
 
 		private $totals;
@@ -17,11 +17,13 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Customer' ) ) {
 		 * WC_Report_Upsells_By_Customer constructor.
 		 */
 		public function __construct() {
-			parent::__construct( array(
-				'singular' => __( 'Customer', 'woocommerce' ),
-				'plural'   => __( 'Customers', 'woocommerce' ),
-				'ajax'     => false,
-			) );
+			parent::__construct(
+				array(
+					'singular' => __( 'Customer', 'woocommerce' ),
+					'plural'   => __( 'Customers', 'woocommerce' ),
+					'ajax'     => false,
+				)
+			);
 		}
 
 		/**
@@ -45,7 +47,6 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Customer' ) ) {
 			echo '</div></div>';
 			$this->display();
 			echo '</div>';
-
 		}
 
 		/**
@@ -67,33 +68,35 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Customer' ) ) {
 
 			$sess_ids        = implode( ',', wp_list_pluck( $customer_sessions, 'sess_ids' ) );
 			$sess_ids_arr    = explode( ',', $sess_ids );
-			$customer_events = WFOCU_Core()->track->query_results( array(
-				'data'       => array(
-					'sess_id'        => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'sess_id',
+			$customer_events = WFOCU_Core()->track->query_results(
+				array(
+					'data'       => array(
+						'sess_id'        => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'sess_id',
+						),
+						'value'          => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'upsells',
+						),
+						'action_type_id' => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'action_type_id',
+						),
 					),
-					'value'          => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'upsells',
+					'where'      => array(
+						array(
+							'key'      => 'events.sess_id',
+							'value'    => $sess_ids_arr,
+							'operator' => 'IN',
+						),
 					),
-					'action_type_id' => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'action_type_id',
-					),
-				),
-				'where'      => array(
-					array(
-						'key'      => 'events.sess_id',
-						'value'    => $sess_ids_arr,
-						'operator' => 'IN',
-					),
-				),
-				'query_type' => 'get_results',
-			) );
+					'query_type' => 'get_results',
+				)
+			);
 
 			/**
 			 * Preparing items for each customer
@@ -110,18 +113,18 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Customer' ) ) {
 					if ( in_array( $ct_evennt->sess_id, explode( ',', $customer_session->sess_ids ), true ) ) {
 						switch ( $ct_evennt->action_type_id ) {
 							case 1:
-								$this->items[ $key ]['funnels_triggered'] ++;
+								++$this->items[ $key ]['funnels_triggered'];
 								break;
 							case 4:
-								$this->items[ $key ]['offers_accepted'] ++;
+								++$this->items[ $key ]['offers_accepted'];
 								$this->items[ $key ]['upsells'] += ( $ct_evennt->upsells > 0 ) ? $ct_evennt->upsells : 0;
 
 								break;
 							case 6:
-								$this->items[ $key ]['offers_declined'] ++;
+								++$this->items[ $key ]['offers_declined'];
 								break;
 							case 7:
-								$this->items[ $key ]['offers_expired'] ++;
+								++$this->items[ $key ]['offers_expired'];
 								break;
 							default:
 								break;
@@ -133,11 +136,13 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Customer' ) ) {
 			/**
 			 * Setting Pagination.
 			 */
-			$this->set_pagination_args( array(
-				'total_items' => $this->totals['total_customers'],
-				'per_page'    => $per_page,
-				'total_pages' => ceil( $this->totals['total_customers'] / $per_page ),
-			) );
+			$this->set_pagination_args(
+				array(
+					'total_items' => $this->totals['total_customers'],
+					'per_page'    => $per_page,
+					'total_pages' => ceil( $this->totals['total_customers'] / $per_page ),
+				)
+			);
 		}
 
 		/**
@@ -175,35 +180,39 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Customer' ) ) {
 
 			$customer_totals = array();
 
-			$total_upsells = WFOCU_Core()->track->query_results( array(
-				'data'       => array(
-					'value' => array(
-						'type'     => 'col',
-						'function' => 'SUM',
-						'name'     => 'total_upsells',
+			$total_upsells = WFOCU_Core()->track->query_results(
+				array(
+					'data'       => array(
+						'value' => array(
+							'type'     => 'col',
+							'function' => 'SUM',
+							'name'     => 'total_upsells',
+						),
 					),
-				),
-				'where'      => array(
-					array(
-						'key'      => 'events.action_type_id',
-						'value'    => 4,
-						'operator' => '=',
+					'where'      => array(
+						array(
+							'key'      => 'events.action_type_id',
+							'value'    => 4,
+							'operator' => '=',
+						),
 					),
-				),
-				'query_type' => 'get_results',
-			) );
+					'query_type' => 'get_results',
+				)
+			);
 
-			$all_customers = WFOCU_Core()->track->query_results( array(
-				'data'          => array(
-					'email' => array(
-						'type'     => 'col',
-						'function' => 'DISTINCT',
-						'name'     => 'useremail',
+			$all_customers = WFOCU_Core()->track->query_results(
+				array(
+					'data'          => array(
+						'email' => array(
+							'type'     => 'col',
+							'function' => 'DISTINCT',
+							'name'     => 'useremail',
+						),
 					),
-				),
-				'query_type'    => 'get_results',
-				'session_table' => true,
-			) );
+					'query_type'    => 'get_results',
+					'session_table' => true,
+				)
+			);
 
 			$customer_totals['total_upsells']   = $total_upsells[0]->total_upsells;
 			$customer_totals['total_customers'] = count( wp_list_pluck( $all_customers, 'useremail' ) );

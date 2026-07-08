@@ -1,17 +1,20 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * PaysonCheckout for WooCommerce BY  Krokedril
  *
- * #[AllowDynamicProperties] 
- class WFACP_Compatibility_PaysonCheckout_For_WC
+ * #[AllowDynamicProperties]
+class WFACP_Compatibility_PaysonCheckout_For_WC
  */
 if ( ! class_exists( 'WFACP_Compatibility_PaysonCheckout_For_WC' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_PaysonCheckout_For_WC {
 		public function __construct() {
-			add_filter( 'wfacp_skip_checkout_page_detection', [ $this, 'disable_checkout_page_if_paysonCheckout_set' ], 100 );
-
+			add_filter( 'wfacp_skip_checkout_page_detection', array( $this, 'disable_checkout_page_if_paysonCheckout_set' ), 100 );
 		}
 
 		public function disable_checkout_page_if_paysonCheckout_set( $status ) {
@@ -27,7 +30,6 @@ if ( ! class_exists( 'WFACP_Compatibility_PaysonCheckout_For_WC' ) ) {
 
 			return true;
 		}
-
 	}
 
 

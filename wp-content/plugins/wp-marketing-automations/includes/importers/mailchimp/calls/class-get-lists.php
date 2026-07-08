@@ -5,6 +5,7 @@ namespace BWFAN\Importers\Mailchimp\Calls;
 /**
  * Get all lists (audiences)
  */
+#[\AllowDynamicProperties]
 class Get_Lists extends Call {
 	protected $required_fields = array( 'api_key' );
 

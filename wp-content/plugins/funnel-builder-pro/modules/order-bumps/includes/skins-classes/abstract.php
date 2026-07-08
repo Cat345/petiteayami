@@ -5,21 +5,25 @@
  * Class WFOB_Bump_Fc
  */
 if ( ! class_exists( 'WFOB_Bump_Fc' ) ) {
+	#[\AllowDynamicProperties]
 	abstract class WFOB_Bump_Fc {
 
-		public static $number_of_bump_print = [];
-		public static $maximum_bump_print = '';
-		private static $wfob_data = [];
-		private static $layouts = [];
-		private static $default_models = [];
-		private static $layouts_info = [];
+		public static $number_of_bump_print = array();
+		public static $maximum_bump_print   = '';
+		private static $wfob_data           = array();
+		private static $layouts             = array();
+		private static $default_models      = array();
+		private static $layouts_info        = array();
 
 
 		public static function register( $class ) {
 			if ( class_exists( $class ) && method_exists( $class, 'get_slug' ) ) {
 				self::$layouts[ $class::get_slug() ]        = $class;
 				self::$default_models[ $class::get_slug() ] = $class::get_default_models();
-				self::$layouts_info[ $class::get_slug() ]   = [ 'id' => $class::get_slug(), 'preview' => $class::get_preview_image_url() ];
+				self::$layouts_info[ $class::get_slug() ]   = array(
+					'id'      => $class::get_slug(),
+					'preview' => $class::get_preview_image_url(),
+				);
 			}
 		}
 
@@ -35,7 +39,7 @@ if ( ! class_exists( 'WFOB_Bump_Fc' ) ) {
 		}
 
 		public static function reset_bumps() {
-			self::$wfob_data = [];
+			self::$wfob_data = array();
 		}
 
 		/**
@@ -57,7 +61,6 @@ if ( ! class_exists( 'WFOB_Bump_Fc' ) ) {
 			if ( ! isset( self::$layouts[ $layout ] ) ) {
 				return null;
 			}
-
 
 			self::$wfob_data[ $wfob_id ] = new self::$layouts[ $layout ]( $wfob_id );
 			self::$wfob_data[ $wfob_id ]->prepare_frontend_data();
@@ -86,9 +89,7 @@ if ( ! class_exists( 'WFOB_Bump_Fc' ) ) {
 				return self::$default_models[ $layout ];
 			}
 
-
 			return self::$default_models;
-
 		}
 
 		public static function get_bumps() {
@@ -100,10 +101,6 @@ if ( ! class_exists( 'WFOB_Bump_Fc' ) ) {
 		}
 
 		public static function get_all_bump_css() {
-
-
 		}
-
-
 	}
 }

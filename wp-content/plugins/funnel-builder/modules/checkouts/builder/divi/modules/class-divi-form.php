@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_Divi_Form extends WFACP_Divi_HTML_BLOCK {
 		public $slug                 = 'wfacp_checkout_form';
 		public $form_sub_headings    = array();

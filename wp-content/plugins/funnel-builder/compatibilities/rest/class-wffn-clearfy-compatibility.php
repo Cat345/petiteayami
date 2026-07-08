@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WFFN_Compatibility_With_Clearfy' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_Clearfy {
 
 		public function __construct() {

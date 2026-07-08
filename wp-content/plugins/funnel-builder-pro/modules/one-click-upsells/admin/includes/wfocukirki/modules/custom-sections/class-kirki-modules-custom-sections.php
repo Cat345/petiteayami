@@ -19,6 +19,7 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Custom_Sections' ) ) {
 	/**
 	 * Adds styles to the customizer.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Modules_Custom_Sections {
 
 		/**
@@ -84,7 +85,6 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Custom_Sections' ) ) {
 			);
 
 			return array_merge( $section_types, $new_types );
-
 		}
 
 		/**
@@ -104,7 +104,6 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Custom_Sections' ) ) {
 			);
 
 			return array_merge( $panel_types, $new_types );
-
 		}
 
 		/**
@@ -116,7 +115,7 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Custom_Sections' ) ) {
 		public function include_sections_and_panels() {
 
 			// Sections.
-			$folder_path   = dirname( __FILE__ ) . '/sections/';
+			$folder_path   = __DIR__ . '/sections/';
 			$section_types = apply_filters( 'wfocukirki_section_types', array() );
 
 			foreach ( $section_types as $id => $class ) {
@@ -134,7 +133,7 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Custom_Sections' ) ) {
 			}
 
 			// Panels.
-			$folder_path = dirname( __FILE__ ) . '/panels/';
+			$folder_path = __DIR__ . '/panels/';
 			$panel_types = apply_filters( 'wfocukirki_panel_types', array() );
 
 			foreach ( $panel_types as $id => $class ) {
@@ -150,7 +149,6 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Custom_Sections' ) ) {
 					}
 				}
 			}
-
 		}
 
 		/**
@@ -162,13 +160,16 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Custom_Sections' ) ) {
 		public function enqueue_scrips() {
 
 			wp_enqueue_style( 'wfocukirki-custom-sections', trailingslashit( WFOCUKirki::$url ) . 'modules/custom-sections/sections.css', array(), WFOCU_KIRKI_VERSION );
-			wp_enqueue_script( 'wfocukirki-custom-sections', trailingslashit( WFOCUKirki::$url ) . 'modules/custom-sections/sections.js', array(
-				'jquery',
-				'customize-base',
-				'customize-controls'
-			), WFOCU_KIRKI_VERSION );
-
+			wp_enqueue_script(
+				'wfocukirki-custom-sections',
+				trailingslashit( WFOCUKirki::$url ) . 'modules/custom-sections/sections.js',
+				array(
+					'jquery',
+					'customize-base',
+					'customize-controls',
+				),
+				WFOCU_KIRKI_VERSION
+			);
 		}
-
 	}
 }

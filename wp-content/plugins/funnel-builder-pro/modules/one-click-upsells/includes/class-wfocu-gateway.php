@@ -7,17 +7,17 @@ if ( ! class_exists( 'WFOCU_Gateway' ) ) {
 	 * Abstract Class for all the Gateway Support Class
 	 * Class WFOCU_Gateway
 	 */
+	#[\AllowDynamicProperties]
 	abstract class WFOCU_Gateway extends WFOCU_SV_API_Base {
 
 
-		public $amount = 0;
-		public $token = null;
+		public $amount           = 0;
+		public $token            = null;
 		public $refund_supported = false;
-		protected $key = '';
-		public $supports = [];
+		protected $key           = '';
+		public $supports         = array();
 
 		public function __construct() {
-
 		}
 
 
@@ -46,8 +46,8 @@ if ( ! class_exists( 'WFOCU_Gateway' ) ) {
 		/**
 		 * This function checks for the need to do the tokenization.
 		 * We have to fetch the funnel to decide whether to tokenize the user or not.
-		 * @return int|false funnel ID on success false otherwise
 		 *
+		 * @return int|false funnel ID on success false otherwise
 		 */
 		public function should_tokenize() {
 
@@ -64,7 +64,6 @@ if ( ! class_exists( 'WFOCU_Gateway' ) ) {
 		 */
 		public function has_token( $order ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 			return false;
-
 		}
 
 
@@ -77,7 +76,6 @@ if ( ! class_exists( 'WFOCU_Gateway' ) ) {
 		 */
 		public function get_token( $order ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 			return false;
-
 		}
 
 		/**
@@ -89,7 +87,6 @@ if ( ! class_exists( 'WFOCU_Gateway' ) ) {
 		 */
 		public function process_charge( $order ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 			return false;
-
 		}
 
 		public function handle_result( $result, $message = '' ) {
@@ -133,11 +130,11 @@ if ( ! class_exists( 'WFOCU_Gateway' ) ) {
 			} else {
 				return WFOCU_WC_Compatibility::get_order_id( $order );
 			}
-
 		}
 
 		/**
 		 * Tell the system to run without a token or not
+		 *
 		 * @return bool
 		 */
 		public function is_run_without_token() {
@@ -290,22 +287,26 @@ if ( ! class_exists( 'WFOCU_Gateway' ) ) {
 				 * 2. Check if fk stripe not active
 				 * 3. If another stripe run on site
 				 */
-				if ( class_exists( 'WFFN_Core' ) && ! class_exists( '\FKWCS_Gateway_Stripe' ) && in_array( $order->get_payment_method(), [
+				if ( class_exists( 'WFFN_Core' ) && ! class_exists( '\FKWCS_Gateway_Stripe' ) && in_array(
+					$order->get_payment_method(),
+					array(
 						'stripe',
 						'stripe_cc',
 						'stripe_applepay',
 						'stripe_googlepay',
-						'stripe_sepa'
-					], true ) ) {
-					$stripe_link = admin_url( '/admin.php?page=bwf&path=/settings/stripe' );
-					$stripe_text = __( '<strong>Tip: </strong>We recommend using FunnelKit Stripe Gateway for better compatibility with upsells. <a target="_blank" href="' . $stripe_link . '">Click here to activate</a>', 'woofunnels-upstroke-one-click-upsell' );
+						'stripe_sepa',
+					),
+					true
+				) ) {
+					$stripe_link  = admin_url( '/admin.php?page=bwf&path=/settings/stripe' );
+					$stripe_text  = __( '<strong>Tip: </strong>We recommend using FunnelKit Stripe Gateway for better compatibility with upsells. <a target="_blank" href="' . $stripe_link . '">Click here to activate</a>', 'woofunnels-upstroke-one-click-upsell' );
 					$reason_base .= sprintf( __( '<div style="margin:8px 0px">%s</div> ', 'woofunnels-upstroke-one-click-upsell' ), $stripe_text );
 				}
 
 				$order->add_order_note( $reason_base );
 			}
 			if ( ! empty( $log ) ) {
-				WFOCU_Core()->log->log( 'Order #' . $order->get_id() . " - " . print_r( $log, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				WFOCU_Core()->log->log( 'Order #' . $order->get_id() . ' - ' . print_r( $log, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			}
 			if ( true === $create_failed_order ) {
 				$data = WFOCU_Core()->process_offer->_handle_upsell_charge( false );
@@ -313,10 +314,16 @@ if ( ! class_exists( 'WFOCU_Gateway' ) ) {
 					WFOCU_Core()->public->failed_order->add_order_note( $reason_base );
 				}
 
-				wp_send_json( apply_filters( 'wfocu_modify_error_json_response', array(
-					'result'   => 'error',
-					'response' => $data,
-				), $order ) );
+				wp_send_json(
+					apply_filters(
+						'wfocu_modify_error_json_response',
+						array(
+							'result'   => 'error',
+							'response' => $data,
+						),
+						$order
+					)
+				);
 			}
 		}
 
@@ -329,11 +336,11 @@ if ( ! class_exists( 'WFOCU_Gateway' ) ) {
 		 * Individual gateway classes can override this if needed.
 		 *
 		 * @param WC_Order $order
-		 * @param int $skip_key
-		 * @param array $reason_messages
-		 * @param string $edit_link
-		 * @param string $contact_support
-		 * @param string $upsell_s_link
+		 * @param int      $skip_key
+		 * @param array    $reason_messages
+		 * @param string   $edit_link
+		 * @param string   $contact_support
+		 * @param string   $upsell_s_link
 		 *
 		 * @return array
 		 */
@@ -341,10 +348,10 @@ if ( ! class_exists( 'WFOCU_Gateway' ) ) {
 			// Use default reason message if available
 			$custom_note = isset( $reason_messages[ $skip_key ] ) ? $reason_messages[ $skip_key ] : '';
 
-			return [
+			return array(
 				'skip_id' => $skip_key,
-				'note'    => $custom_note
-			];
+				'note'    => $custom_note,
+			);
 		}
 	}
 }

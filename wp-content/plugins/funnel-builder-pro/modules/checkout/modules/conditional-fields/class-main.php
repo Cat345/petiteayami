@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 2.0.0
  */
+#[\AllowDynamicProperties]
 class Main {
 
 	/**
@@ -120,29 +121,10 @@ class Main {
 		Api\Rest_Controller::get_instance();
 		Api\Checkout_Field_Rules::get_instance();
 
-		// Initialize admin components.
-		if ( is_admin() ) {
-			$this->init_admin();
-		}
-
 		// Initialize frontend components.
 		if ( ! is_admin() ) {
 			$this->init_frontend();
 		}
-	}
-
-	/**
-	 * Initialize admin components.
-	 */
-	private function init_admin() {
-		// Initialize admin class.
-		Admin\Admin::get_instance();
-
-		// Initialize admin pages.
-		Admin\Admin_Pages::get_instance();
-
-		// REST API is primary; Ajax_Handler no longer registers hooks.
-		Admin\Ajax_Handler::get_instance();
 	}
 
 	/**

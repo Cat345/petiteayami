@@ -1,6 +1,11 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 if ( ! class_exists( 'WFACP_Compatibility_With_Jubelio_Shipment' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_Compatibility_With_Jubelio_Shipment {
 		public function __construct() {
 			// Remove address_search fields filter

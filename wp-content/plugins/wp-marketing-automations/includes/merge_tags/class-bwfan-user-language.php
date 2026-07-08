@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+#[\AllowDynamicProperties]
 class BWFAN_Contact_Language extends BWFAN_Merge_Tag {
 
 	private static $instance = null;
@@ -46,7 +51,7 @@ class BWFAN_Contact_Language extends BWFAN_Merge_Tag {
 	 *
 	 * @return string
 	 */
-	public function get_dummy_preview() {
+	public function get_dummy_preview( $attr = array() ) {
 		return ! empty( $attr['fallback'] ) ? $attr['fallback'] : 'en';
 	}
 

@@ -1,6 +1,7 @@
 <?php
 namespace BWFAN\Importers\AC\Calls;
 
+#[\AllowDynamicProperties]
 class Get_Lists extends Call {
 	/**
 	 * Returns the endpoint URL for the request.

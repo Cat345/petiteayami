@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+#[\AllowDynamicProperties]
 class BWFAN_WC_Order_Refund_Reason extends BWFAN_Merge_Tag {
 
 	private static $instance = null;
@@ -28,7 +33,7 @@ class BWFAN_WC_Order_Refund_Reason extends BWFAN_Merge_Tag {
 
 		$refund_id = BWFAN_Merge_Tag_Loader::get_data( 'refund_id' );
 		if ( empty( $refund_id ) || ! class_exists( 'WC_Order_Refund' ) ) {
-			$this->parse_shortcode_output( '', $attr );
+			return $this->parse_shortcode_output( '', $attr );
 		}
 
 		$refund = new WC_Order_Refund( $refund_id );

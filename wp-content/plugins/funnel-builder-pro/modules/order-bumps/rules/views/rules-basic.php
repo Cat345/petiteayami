@@ -15,38 +15,38 @@ if ( empty( $groups ) ) {
 }
 ?>
 <div class="wfob-rules-builder woocommerce_options_panel" data-category="basic">
-    <div id="wfob-rules-groups" class="wfob_rules_common">
-        <div class="wfob-rule-group-target">
+	<div id="wfob-rules-groups" class="wfob_rules_common">
+		<div class="wfob-rule-group-target">
 			<?php
 			if ( is_array( $groups ) ) :
-			$group_counter = 0;
-			foreach ( $groups as $group_id => $group ) :
-				if ( empty( $group_id ) ) {
-					$group_id = 'group' . $group_id;
-				}
-				?>
+				$group_counter = 0;
+				foreach ( $groups as $group_id => $group ) :
+					if ( empty( $group_id ) ) {
+						$group_id = 'group' . $group_id;
+					}
+					?>
 
-                <div class="wfob-rule-group-container" data-groupid="<?php echo $group_id; ?>">
-                    <div class="wfob-rule-group-header">
+				<div class="wfob-rule-group-container" data-groupid="<?php echo esc_attr( $group_id ); ?>">
+					<div class="wfob-rule-group-header">
 						<?php if ( $group_counter !== 0 ) : ?>
 
-                            <h4 class="rules_or"><?php _e( 'or', 'woofunnels-order-bump' ); ?></h4>
+							<h4 class="rules_or"><?php _e( 'or', 'woofunnels-order-bump' ); ?></h4>
 						<?php endif; ?>
-                        <a href="#" class="wfob-remove-rule-group button"></a>
-                    </div>
+						<a href="#" class="wfob-remove-rule-group button"></a>
+					</div>
 					<?php
 					if ( is_array( $group ) ) :
 						?>
-                        <table class="wfob-rules" data-groupid="<?php echo $group_id; ?>">
-                            <tbody>
+						<table class="wfob-rules" data-groupid="<?php echo esc_attr( $group_id ); ?>">
+							<tbody>
 							<?php
 							foreach ( $group as $rule_id => $rule ) :
 								if ( empty( $rule_id ) ) {
 									$rule_id = 'rule' . $rule_id;
 								}
 								?>
-                            <tr data-ruleid="<?php echo $rule_id; ?>" class="wfob-rule">
-                                <td class="rule-type">
+							<tr data-ruleid="<?php echo esc_attr( $rule_id ); ?>" class="wfob-rule">
+								<td class="rule-type">
 									<?php
 									// allow custom location rules
 									$types = apply_filters( 'wfob_wfob_rule_get_rule_types', array() );
@@ -60,35 +60,37 @@ if ( empty( $groups ) ) {
 									);
 									wfob_Input_Builder::create_input_field( $args, $rule['rule_type'] );
 									?>
-                                </td>
+								</td>
 
 								<?php
 
-								WFOB_Common::ajax_render_rule_choice( array(
-									'group_id'      => $group_id,
-									'rule_id'       => $rule_id,
-									'rule_type'     => $rule['rule_type'],
-									'condition'     => isset( $rule['condition'] ) ? $rule['condition'] : false,
-									'operator'      => $rule['operator'],
-									'rule_category' => 'basic',
-								) );
+								WFOB_Common::ajax_render_rule_choice(
+									array(
+										'group_id'      => $group_id,
+										'rule_id'       => $rule_id,
+										'rule_type'     => $rule['rule_type'],
+										'condition'     => isset( $rule['condition'] ) ? $rule['condition'] : false,
+										'operator'      => $rule['operator'],
+										'rule_category' => 'basic',
+									)
+								);
 								?>
-                                <td class="loading" colspan="2" style="display:none;"><?php _e( 'Loading...', 'woofunnels-order-bump' ); ?></td>
-                                <td class="add">
-                                    <a href="#" class="wfob-add-rule button"><?php _e( 'AND', 'woofunnels-order-bump' ); ?></a>
-                                </td>
-                                <td class="remove">
-                                    <a href="#" class="wfob-remove-rule wfob-button-remove" title="<?php _e( 'Remove condition', 'woofunnels-order-bump' ); ?>"></a>
-                                </td>
-                                </tr><?php endforeach; ?></tbody>
-                        </table>
+								<td class="loading" colspan="2" style="display:none;"><?php _e( 'Loading...', 'woofunnels-order-bump' ); ?></td>
+								<td class="add">
+									<a href="#" class="wfob-add-rule button"><?php _e( 'AND', 'woofunnels-order-bump' ); ?></a>
+								</td>
+								<td class="remove">
+									<a href="#" class="wfob-remove-rule wfob-button-remove" title="<?php _e( 'Remove condition', 'woofunnels-order-bump' ); ?>"></a>
+								</td>
+								</tr><?php endforeach; ?></tbody>
+						</table>
 					<?php endif; ?>
-                </div>
-				<?php $group_counter ++; ?>
-			<?php endforeach; ?>
-        </div>
+				</div>
+					<?php ++$group_counter; ?>
+				<?php endforeach; ?>
+		</div>
 
-         <button class="button button-primary wfob-add-rule-group" title="<?php _e( 'Add a set of conditions', 'woofunnels-order-bump' ); ?>"><?php _e( 'OR', 'woofunnels-order-bump' ); ?></button>
+		<button class="button button-primary wfob-add-rule-group" title="<?php _e( 'Add a set of conditions', 'woofunnels-order-bump' ); ?>"><?php _e( 'OR', 'woofunnels-order-bump' ); ?></button>
 		<?php endif; ?>
-    </div>
+	</div>
 </div>

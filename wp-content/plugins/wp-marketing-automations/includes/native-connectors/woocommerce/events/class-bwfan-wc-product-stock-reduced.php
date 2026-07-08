@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 final class BWFAN_WC_Product_Stock_Reduced extends BWFAN_Event {
 	private static $instance = null;
 	public $reduced_products = [];

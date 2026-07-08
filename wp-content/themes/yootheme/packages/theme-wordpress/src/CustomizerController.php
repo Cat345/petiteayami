@@ -36,10 +36,20 @@ class CustomizerController
         );
 
         // get theme config
-        $values = Event::emit('config.save|filter', $request->getParam('config', []));
+        $values = $request->getParam('config');
+
+        $request->abortIf(!$values || !is_array($values), 400, 'Invalid configuration.');
+
+        $values = Event::emit('config.save|filter', $values);
+
+        $request->abortIf(!$values || !is_array($values), 400, 'Invalid configuration.');
+
+        $encoded = json_encode($values, JSON_UNESCAPED_SLASHES);
+
+        $request->abortIf($encoded === false, 400, 'Invalid configuration.');
 
         // save theme config
-        set_theme_mod('config', json_encode($values, JSON_UNESCAPED_SLASHES));
+        set_theme_mod('config', $encoded);
 
         return 'success';
     }

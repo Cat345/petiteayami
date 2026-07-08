@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_DB_Table_Options extends BWFAN_DB_Tables_Base {
 	public $table_name = 'bwf_options';
 

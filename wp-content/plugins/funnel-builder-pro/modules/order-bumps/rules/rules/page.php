@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Rule_Single_Page' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Single_Page extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -14,7 +15,6 @@ if ( ! class_exists( 'wfob_Rule_Single_Page' ) ) {
 			);
 
 			return $operators;
-
 		}
 
 		public function get_possible_rule_values() {
@@ -38,10 +38,10 @@ if ( ! class_exists( 'wfob_Rule_Single_Page' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Single_Term_Page' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Single_Term_Page extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -81,7 +81,6 @@ if ( ! class_exists( 'wfob_Rule_Single_Term_Page' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 
 }

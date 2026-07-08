@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WFFN_Compatibility_With_Perfmatters' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_Perfmatters {
 
 		public function __construct() {

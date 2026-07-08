@@ -11,6 +11,7 @@ use BWF_CO;
  * Base class for all Kit API calls.
  * Handles authentication, endpoint construction, and common API functionality.
  */
+#[\AllowDynamicProperties]
 class Call extends WFCO_Call {
 	/**
 	 * Required fields for API calls

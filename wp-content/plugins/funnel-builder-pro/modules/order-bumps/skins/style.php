@@ -11,7 +11,7 @@ $design_data = $this->get_design_data();
 
 $globalSetting = WFOB_Common::get_global_setting();
 if ( isset( $globalSetting['css'] ) && $globalSetting['css'] != '' ) {
-	echo "<style>" . $globalSetting['css'] . "</style>";
+	echo '<style>' . wp_strip_all_tags( $globalSetting['css'] ) . '</style>';
 }
 
 do_action( 'wfob_layout_style' );

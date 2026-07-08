@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFACP_Elementor' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_Elementor {
 		private static $ins = null;
 

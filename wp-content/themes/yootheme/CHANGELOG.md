@@ -1,5 +1,65 @@
 # Changelog
 
+## 5.0.36 (June 24, 2026)
+
+### Added
+
+- Add support for responsive embedded content (WordPress)
+- Add created date to Smart Search item source (Joomla)
+
+### Fixed
+
+- Fix Vimeo video lightbox link in Grid and Gallery elements
+
+## 5.0.35 (June 8, 2026)
+
+### Fixed
+
+- Fix redirecting to the original image when image processing fails
+- Fix filtered post content by stripping UIkit data attributes before KSES validation (WordPress)
+- Fix WordPress editor overlay font in posts element
+
+## 5.0.34 (May 23, 2026)
+
+### Fixed
+
+- Fix regression in WooCommerce integration (WordPress)
+
+## 5.0.33 (May 21, 2026)
+
+### Fixed
+
+- Fix applying global custom field plugin settings to dynamic source configuration (Joomla)
+- Fix WooCommerce variable product image handling with image middleware (WordPress)
+
+## 5.0.32 (May 7, 2026)
+
+### Fixed
+
+- Fix regression in generating YOOtheme button in admin menu (WordPress)
+
+## 5.0.31 (May 5, 2026)
+
+### Fixed
+
+- Fix respecting the configured module tag in module chrome (Joomla)
+- Fix resolving sources that use the same field
+
+## 5.0.30 (April 29, 2026)
+
+### Added
+
+- Add support for Audio, Document and Video custom fields as dynamic sources (Joomla 6.1+)
+
+### Deprecated
+
+- Deprecate the Field - File (mediafile) custom field plugin and recommend Joomla 6.1+ native `media_document` fields instead (Joomla)
+
+### Fixed
+
+- Fix applying modules renderer on templates other than YOOtheme Pro (Joomla)
+- Fix consent banner script appending undefined text when the banner template is missing
+
 ## 5.0.29 (April 21, 2026)
 
 ### Fixed

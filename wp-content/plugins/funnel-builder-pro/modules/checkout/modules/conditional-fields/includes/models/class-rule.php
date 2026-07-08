@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 2.0.0
  */
+#[\AllowDynamicProperties]
 class Rule {
 
 	/**

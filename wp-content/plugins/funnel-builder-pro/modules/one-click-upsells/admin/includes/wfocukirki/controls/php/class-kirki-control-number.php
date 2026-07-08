@@ -17,6 +17,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Number' ) ) {
 	/**
 	 * Create a simple number control
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Number extends WFOCUKirki_Control_Base {
 
 		/**

@@ -13,20 +13,20 @@ if ( false === $bump_id ) {
 }
 
 $sidebar_menu      = WFOB_Common::get_sidebar_menu();
-$bump_sticky_line  = __( 'OrderBumps', 'woofunnels-order-bump' );
-$bump_sticky_title = '';
-$bump_onboarding   = true;
+$bump_sticky_line  = __( 'OrderBumps', 'woofunnels-order-bump' ); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+$bump_sticky_title = ''; // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+$bump_onboarding   = true; // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 if ( isset( $bump_id ) && ! empty( $bump_id ) ) {
-	$bump_sticky_title = get_the_title( $bump_id );
+	$bump_sticky_title = get_the_title( $bump_id ); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 
 	$bump_onboarding_status = get_post_meta( $bump_id, '_wfob_is_rules_saved', true );
 
-	if ( 'yes' == $bump_onboarding_status ) {
-		$bump_onboarding = false;
+	if ( 'yes' === $bump_onboarding_status ) {
+		$bump_onboarding = false; // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 	}
 }
 
-$status  = get_post_status( $bump_id );
+$status = get_post_status( $bump_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 
 ?>
 	<style>
@@ -76,18 +76,18 @@ if ( class_exists( 'WFFN_Header' ) ) {
     ?>
     <div class="wffn-ellipsis-menu">
         <div class="wffn-menu__toggle">
-            <span class="bwfan-tag-rounded bwfan_ml_12 <?php echo 'publish' == $status ? 'clr-green' : 'clr-orange'; ?>">
-                <span class="bwfan-funnel-status"><?php echo 'publish' == $status ? 'Published' : 'Draft'; ?></span>
-                
-                <?php echo file_get_contents(  plugin_dir_path( WFOB_PLUGIN_FILE ) . 'admin/assets/img/icons/arrow-down.svg'  ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            <span class="bwfan-tag-rounded bwfan_ml_12 <?php echo 'publish' === $status ? 'clr-green' : 'clr-orange'; ?>">
+                <span class="bwfan-funnel-status"><?php echo 'publish' === $status ? 'Published' : 'Draft'; ?></span>
+
+                <?php echo file_get_contents( plugin_dir_path( WFOB_PLUGIN_FILE ) . 'admin/assets/img/icons/arrow-down.svg' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
             </span>
         </div>
         <div class="wffn-ellipsis-menu-dropdown">
             <a data-izimodal-open="#modal-add-bump" data-izimodal-transitionin="fadeInDown" href="javascript:void(0);" class="bwf_edt wffn-ellipsis-menu-item"><?php esc_html_e( 'Edit' ) ?></a>
             <div class="wf_funnel_card_switch">
                 <label class="bump_state_toggle wfob_toggle_btn wffn-ellipsis-menu-item">
-                    <span class="bwfan-status-toggle"><?php echo 'draft' == $status ? 'Publish' : 'Draft'; ?></span>
-                    <input name="offer_state" id="state<?php echo $bump_id; ?>" data-id="<?php echo $bump_id; ?>" type="checkbox" class="wfob-tgl wfob-tgl-ios wfob_checkout_page_status" <?php echo ( $status == 'publish' ) ? 'checked="checked"' : ''; ?> />
+                    <span class="bwfan-status-toggle"><?php echo 'draft' === $status ? 'Publish' : 'Draft'; ?></span>
+                    <input name="offer_state" id="state<?php echo $bump_id; ?>" data-id="<?php echo $bump_id; ?>" type="checkbox" class="wfob-tgl wfob-tgl-ios wfob_checkout_page_status" <?php echo ( $status === 'publish' ) ? 'checked="checked"' : ''; ?> />
                 </label>
             </div>
         </div>
@@ -129,11 +129,11 @@ if ( class_exists( 'WFFN_Header' ) ) {
 						<div class="bwf_before_bre">
 							<div class="wfob_head_mr" data-status="<?php echo ( $status !== 'publish' ) ? 'sandbox' : 'live'; ?>">
 								<div class="bump_state_toggle wfob_toggle_btn">
-									<input name="offer_state" id="state<?php echo $bump_id; ?>" data-id="<?php echo $bump_id; ?>" type="checkbox" class="wfob-tgl wfob-tgl-ios wfob_checkout_page_status" <?php echo ( $status == 'publish' ) ? 'checked="checked"' : ''; ?> />
+									<input name="offer_state" id="state<?php echo $bump_id; ?>" data-id="<?php echo $bump_id; ?>" type="checkbox" class="wfob-tgl wfob-tgl-ios wfob_checkout_page_status" <?php echo ( $status === 'publish' ) ? 'checked="checked"' : ''; ?> />
 									<label for="state<?php echo $bump_id; ?>" class="wfob-tgl-btn wfob-tgl-btn-small"></label>
 								</div>
-								<span class="wfob_head_bump_state_on" <?php echo ( $status !== 'publish' ) ? ' style="display:none"' : ''; ?>><?php _e( 'Live', 'woofunnels-order-bump' ); ?></span>
-								<span class="wfob_head_bump_state_off" <?php echo ( $status == 'publish' ) ? 'style="display:none"' : ''; ?>> <?php _e( 'Sandbox', 'woofunnels-order-bump' ); ?></span>
+								<span class="wfob_head_bump_state_on" <?php echo ( $status !== 'publish' ) ? ' style="display:none"' : ''; ?>><?php esc_html_e( 'Live', 'woofunnels-order-bump' ); ?></span>
+								<span class="wfob_head_bump_state_off" <?php echo ( $status === 'publish' ) ? 'style="display:none"' : ''; ?>> <?php esc_html_e( 'Sandbox', 'woofunnels-order-bump' ); ?></span>
 							</div>
 						</div>
 						<?php echo BWF_Admin_Breadcrumbs::render(); ?>
@@ -158,18 +158,18 @@ if ( class_exists( 'WFFN_Header' ) ) {
 					<ul>
 
 						<?php
-						foreach ( $sidebar_menu as $menu ) {
-							$menu_icon = ( isset( $menu['icon'] ) && ! empty( $menu['icon'] ) ) ? $menu['icon'] : 'dashicons dashicons-admin-generic';
-							if ( isset( $menu['name'] ) && ! empty( $menu['name'] ) ) {
+						foreach ( $sidebar_menu as $bump_menu_item ) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+							$menu_icon = ( isset( $bump_menu_item['icon'] ) && ! empty( $bump_menu_item['icon'] ) ) ? $bump_menu_item['icon'] : 'dashicons dashicons-admin-generic'; // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+							if ( isset( $bump_menu_item['name'] ) && ! empty( $bump_menu_item['name'] ) ) {
 
 								$section_url = BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( array(
 									'page'    => 'wfob',
-									'section' => $menu['key'],
+									'section' => $bump_menu_item['key'],
 									'wfob_id' => $bump_id,
 								), admin_url( 'admin.php' ) ) );
 
 								$class = '';
-								if ( $menu['key'] === $this->get_bump_section() ) {
+								if ( $bump_menu_item['key'] === $this->get_bump_section() ) {
 									$class = 'active';
 								}
 
@@ -179,7 +179,7 @@ if ( class_exists( 'WFFN_Header' ) ) {
 
 								<li class="<?php echo $class ?>">
 									<a href="<?php echo esc_url_raw( $main_url ) ?>">
-										<?php echo esc_attr( $menu['name'] ); ?>
+										<?php echo esc_attr( $bump_menu_item['name'] ); ?>
 									</a>
 								</li>
 								<?php
@@ -202,10 +202,10 @@ if ( class_exists( 'WFFN_Header' ) ) {
 		<div class="wfob_wrap wfob_box_size">
 			<div class="wfob_loader"><span class="spinner"></span></div>
 			<div class="wfob_box_size wfob_no_padd_left_right">
-				<div class="wfob_wrap_inner <?php echo $wrap_class; ?>">
+				<div class="wfob_wrap_inner <?php echo esc_attr( $wrap_class ); ?>">
 
 					<?php
-					$get_keys = wp_list_pluck( $sidebar_menu, 'key' );
+					$get_keys = wp_list_pluck( $sidebar_menu, 'key' ); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 
 					/**
 					 * Redirect if any unregistered section found

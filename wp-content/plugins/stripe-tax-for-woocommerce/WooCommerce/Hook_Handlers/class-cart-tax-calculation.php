@@ -39,7 +39,11 @@ abstract class Cart_Tax_Calculation extends Hook_Handlers {
 	 * @throws Throwable Throws caught exception.
 	 */
 	public static function after_calculate_totals( WC_Cart $cart ): void {
-		if ( ! static::is_enabled() || ! StripeCalculationTracker::is_calculation_needed() ) {
+		if ( ! static::is_enabled() ) {
+			return;
+		}
+
+		if ( ! StripeCalculationTracker::is_calculation_needed() ) {
 			return;
 		}
 

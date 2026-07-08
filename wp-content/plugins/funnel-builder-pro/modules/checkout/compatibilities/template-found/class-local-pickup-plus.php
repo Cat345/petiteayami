@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  *
@@ -12,10 +16,10 @@ if ( ! class_exists( 'WFACP_Local_Pickup_Plus_SkyVerge' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Local_Pickup_Plus_SkyVerge {
 		public function __construct() {
-			add_filter( 'wfacp_after_discount_added_to_item', [ $this, 'update_item' ] );
-			add_filter( 'woocommerce_is_checkout', [ $this, 'make_checkout' ] );
-			add_action( 'wfacp_internal_css', [ $this, 'restrict_our_fragments' ] );
-			add_action( 'wfacp_after_template_found', [ $this, 'remove_xt_floating_cart_fragments' ] );
+			add_filter( 'wfacp_after_discount_added_to_item', array( $this, 'update_item' ) );
+			add_filter( 'woocommerce_is_checkout', array( $this, 'make_checkout' ) );
+			add_action( 'wfacp_internal_css', array( $this, 'restrict_our_fragments' ) );
+			add_action( 'wfacp_after_template_found', array( $this, 'remove_xt_floating_cart_fragments' ) );
 		}
 
 		public function update_item( $item ) {
@@ -59,29 +63,29 @@ if ( ! class_exists( 'WFACP_Local_Pickup_Plus_SkyVerge' ) ) {
 				return;
 			}
 			?>
-            <script>
-                window.addEventListener('load', function () {
-                    (function ($) {
-                        wfacp_frontend.hooks.addFilter('wfacp_stop_updating_fragments', function (rsp, send_data) {
-                            if (send_data.hasOwnProperty('message') && send_data.message.hasOwnProperty('error')) {
-                                return rsp;
-                            }
-                            return true;
-                        });
+			<script>
+				window.addEventListener('load', function () {
+					(function ($) {
+						wfacp_frontend.hooks.addFilter('wfacp_stop_updating_fragments', function (rsp, send_data) {
+							if (send_data.hasOwnProperty('message') && send_data.message.hasOwnProperty('error')) {
+								return rsp;
+							}
+							return true;
+						});
 
-                        wfacp_frontend.hooks.addAction('wfacp_stop_updating_fragments', function (rsp, send_data) {
-                            jQuery('body').trigger('update_checkout');
-                        });
-                        $('body').on('updated_checkout', function () {
-                            var row = $('.wfacp_coupon_row');
-                            if (row.length > 0) {
-                                row.unblock();
-                                row.parents('form').removeClass('processing');
-                            }
-                        });
-                    })(jQuery);
-                });
-            </script>
+						wfacp_frontend.hooks.addAction('wfacp_stop_updating_fragments', function (rsp, send_data) {
+							jQuery('body').trigger('update_checkout');
+						});
+						$('body').on('updated_checkout', function () {
+							var row = $('.wfacp_coupon_row');
+							if (row.length > 0) {
+								row.unblock();
+								row.parents('form').removeClass('processing');
+							}
+						});
+					})(jQuery);
+				});
+			</script>
 			<?php
 		}
 	}

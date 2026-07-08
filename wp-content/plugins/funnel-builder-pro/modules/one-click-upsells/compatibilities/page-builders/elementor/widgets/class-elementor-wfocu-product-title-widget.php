@@ -10,6 +10,7 @@ if ( ! class_exists( 'Elementor_WFOCU_Product_Title_Widget' ) ) {
 	/**
 	 * Class Elementor_WFOCU_Product_Title_Widget
 	 */
+	#[\AllowDynamicProperties]
 	class Elementor_WFOCU_Product_Title_Widget extends \Elementor\Widget_Base {
 
 		/**

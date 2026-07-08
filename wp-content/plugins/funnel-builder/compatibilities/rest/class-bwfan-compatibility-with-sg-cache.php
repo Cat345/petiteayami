@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WFFN_Compatibility_With_SG_Cache' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_SG_Cache {
 
 		public function __construct() {
@@ -38,10 +39,10 @@ if ( ! class_exists( 'WFFN_Compatibility_With_SG_Cache' ) ) {
 				return $value;
 			}
 
-			$value[] = "/wp-json/funnelkit-app/*";
-			$value[] = "/wp-json/woofunnels-analytics/*";
-			$value[] = "/wp-json/woofunnels/*";
-			$value[] = "/wp-json/woofunnel_customer/*";
+			$value[] = '/wp-json/funnelkit-app/*';
+			$value[] = '/wp-json/woofunnels-analytics/*';
+			$value[] = '/wp-json/woofunnels/*';
+			$value[] = '/wp-json/woofunnel_customer/*';
 
 			return $value;
 		}
@@ -59,10 +60,10 @@ if ( ! class_exists( 'WFFN_Compatibility_With_SG_Cache' ) ) {
 				return $default;
 			}
 
-			$default[] = "/wp-json/funnelkit-app/*";
-			$default[] = "/wp-json/woofunnels-analytics/*";
-			$default[] = "/wp-json/woofunnels/*";
-			$default[] = "/wp-json/woofunnel_customer/*";
+			$default[] = '/wp-json/funnelkit-app/*';
+			$default[] = '/wp-json/woofunnels-analytics/*';
+			$default[] = '/wp-json/woofunnels/*';
+			$default[] = '/wp-json/woofunnel_customer/*';
 
 			return $default;
 		}

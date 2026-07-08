@@ -1,9 +1,10 @@
 <?php
 if ( ! class_exists( 'WFOCU_Compatibility_With_WPSEO' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_WPSEO {
 
 		public function __construct() {
-			add_filter( 'wfocu_should_render_scripts', [ $this, 'modify' ], 10, 4 );
+			add_filter( 'wfocu_should_render_scripts', array( $this, 'modify' ), 10, 4 );
 		}
 
 		public function is_enable() {
@@ -25,13 +26,9 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WPSEO' ) ) {
 			}
 
 			return $should_render;
-
 		}
-
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_WPSEO(), 'wpseo' );
 
 }
-

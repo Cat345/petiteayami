@@ -7,8 +7,8 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Date' ) ) {
 	 * Upstroke Admin Report - Upsells by date
 	 *
 	 * Find the upsells accepted between given dates
-	 *
 	 */
+	#[\AllowDynamicProperties]
 	class WC_Report_Upsells_By_Date extends WC_Admin_Report {
 
 		/**
@@ -115,174 +115,186 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Date' ) ) {
 
 			$this->end_date = strtotime( '+1 Day', $this->end_date );
 
-			$this->report_data->upsells = WFOCU_Core()->track->query_results( array(
-				'data'        => array(
-					'value'     => array(
-						'type'     => 'col',
-						'function' => 'SUM',
-						'name'     => 'total_upsells',
+			$this->report_data->upsells = WFOCU_Core()->track->query_results(
+				array(
+					'data'        => array(
+						'value'     => array(
+							'type'     => 'col',
+							'function' => 'SUM',
+							'name'     => 'total_upsells',
+						),
+						'timestamp' => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'upsells_date',
+						),
 					),
-					'timestamp' => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'upsells_date',
+					'where'       => array(
+						array(
+							'key'      => 'events.action_type_id',
+							'value'    => 4,
+							'operator' => '=',
+						),
 					),
-				),
-				'where'       => array(
-					array(
-						'key'      => 'events.action_type_id',
-						'value'    => 4,
-						'operator' => '=',
-					),
-				),
-				'group_by'    => 'YEAR(events.timestamp), MONTH(events.timestamp), DAY(events.timestamp)',
-				'order_by'    => 'events.id DESC',
-				'query_type'  => 'get_results',
-				'event_range' => true,
-				'start_date'  => $this->start_date,
-				'end_date'    => $this->end_date,
-			) );
+					'group_by'    => 'YEAR(events.timestamp), MONTH(events.timestamp), DAY(events.timestamp)',
+					'order_by'    => 'events.id DESC',
+					'query_type'  => 'get_results',
+					'event_range' => true,
+					'start_date'  => $this->start_date,
+					'end_date'    => $this->end_date,
+				)
+			);
 
-			$this->report_data->funnels_triggered = WFOCU_Core()->track->query_results( array(
-				'data'        => array(
-					'action_type_id' => array(
-						'type'     => 'col',
-						'function' => 'COUNT',
-						'name'     => 'total_triggers',
+			$this->report_data->funnels_triggered = WFOCU_Core()->track->query_results(
+				array(
+					'data'        => array(
+						'action_type_id' => array(
+							'type'     => 'col',
+							'function' => 'COUNT',
+							'name'     => 'total_triggers',
+						),
+						'timestamp'      => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'trigger_date',
+						),
 					),
-					'timestamp'      => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'trigger_date',
+					'where'       => array(
+						array(
+							'key'      => 'events.action_type_id',
+							'value'    => 1,
+							'operator' => '=',
+						),
 					),
-				),
-				'where'       => array(
-					array(
-						'key'      => 'events.action_type_id',
-						'value'    => 1,
-						'operator' => '=',
-					),
-				),
-				'group_by'    => 'YEAR(events.timestamp), MONTH(events.timestamp), DAY(events.timestamp)',
-				'order_by'    => 'events.id DESC',
-				'query_type'  => 'get_results',
-				'event_range' => true,
-				'start_date'  => $this->start_date,
-				'end_date'    => $this->end_date,
-			) );
+					'group_by'    => 'YEAR(events.timestamp), MONTH(events.timestamp), DAY(events.timestamp)',
+					'order_by'    => 'events.id DESC',
+					'query_type'  => 'get_results',
+					'event_range' => true,
+					'start_date'  => $this->start_date,
+					'end_date'    => $this->end_date,
+				)
+			);
 
-			$this->report_data->offered_viewed = WFOCU_Core()->track->query_results( array(
-				'data'        => array(
-					'action_type_id' => array(
-						'type'     => 'col',
-						'function' => 'COUNT',
-						'name'     => 'offered_viewed',
+			$this->report_data->offered_viewed = WFOCU_Core()->track->query_results(
+				array(
+					'data'        => array(
+						'action_type_id' => array(
+							'type'     => 'col',
+							'function' => 'COUNT',
+							'name'     => 'offered_viewed',
+						),
+						'timestamp'      => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'trigger_date',
+						),
 					),
-					'timestamp'      => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'trigger_date',
+					'where'       => array(
+						array(
+							'key'      => 'events.action_type_id',
+							'value'    => 2,
+							'operator' => '=',
+						),
 					),
-				),
-				'where'       => array(
-					array(
-						'key'      => 'events.action_type_id',
-						'value'    => 2,
-						'operator' => '=',
-					),
-				),
-				'group_by'    => 'YEAR(events.timestamp), MONTH(events.timestamp), DAY(events.timestamp)',
-				'order_by'    => 'events.id DESC',
-				'query_type'  => 'get_results',
-				'event_range' => true,
-				'start_date'  => $this->start_date,
-				'end_date'    => $this->end_date,
-			) );
+					'group_by'    => 'YEAR(events.timestamp), MONTH(events.timestamp), DAY(events.timestamp)',
+					'order_by'    => 'events.id DESC',
+					'query_type'  => 'get_results',
+					'event_range' => true,
+					'start_date'  => $this->start_date,
+					'end_date'    => $this->end_date,
+				)
+			);
 
-			$this->report_data->offers_accepted = WFOCU_Core()->track->query_results( array(
-				'data'        => array(
-					'value'     => array(
-						'type'     => 'col',
-						'function' => 'COUNT',
-						'name'     => 'offers_count',
-					),
-					'timestamp' => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'offer_date',
-					),
+			$this->report_data->offers_accepted = WFOCU_Core()->track->query_results(
+				array(
+					'data'        => array(
+						'value'     => array(
+							'type'     => 'col',
+							'function' => 'COUNT',
+							'name'     => 'offers_count',
+						),
+						'timestamp' => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'offer_date',
+						),
 
-				),
-				'where'       => array(
-					array(
-						'key'      => 'events.action_type_id',
-						'value'    => 4,
-						'operator' => '=',
 					),
-				),
-				'group_by'    => 'YEAR(events.timestamp), MONTH(events.timestamp), DAY(events.timestamp)',
-				'order_by'    => 'events.id DESC',
-				'query_type'  => 'get_results',
-				'event_range' => true,
-				'start_date'  => $this->start_date,
-				'end_date'    => $this->end_date,
-			) );
+					'where'       => array(
+						array(
+							'key'      => 'events.action_type_id',
+							'value'    => 4,
+							'operator' => '=',
+						),
+					),
+					'group_by'    => 'YEAR(events.timestamp), MONTH(events.timestamp), DAY(events.timestamp)',
+					'order_by'    => 'events.id DESC',
+					'query_type'  => 'get_results',
+					'event_range' => true,
+					'start_date'  => $this->start_date,
+					'end_date'    => $this->end_date,
+				)
+			);
 
-			$this->report_data->offers_declined = WFOCU_Core()->track->query_results( array(
-				'data'        => array(
-					'value'     => array(
-						'type'     => 'col',
-						'function' => 'COUNT',
-						'name'     => 'offers_declined',
+			$this->report_data->offers_declined = WFOCU_Core()->track->query_results(
+				array(
+					'data'        => array(
+						'value'     => array(
+							'type'     => 'col',
+							'function' => 'COUNT',
+							'name'     => 'offers_declined',
+						),
+						'timestamp' => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'declined_date',
+						),
 					),
-					'timestamp' => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'declined_date',
+					'where'       => array(
+						array(
+							'key'      => 'events.action_type_id',
+							'value'    => 6,
+							'operator' => '=',
+						),
 					),
-				),
-				'where'       => array(
-					array(
-						'key'      => 'events.action_type_id',
-						'value'    => 6,
-						'operator' => '=',
-					),
-				),
-				'group_by'    => 'YEAR(events.timestamp), MONTH(events.timestamp), DAY(events.timestamp)',
-				'order_by'    => 'events.id DESC',
-				'query_type'  => 'get_results',
-				'event_range' => true,
-				'start_date'  => $this->start_date,
-				'end_date'    => $this->end_date,
-			) );
+					'group_by'    => 'YEAR(events.timestamp), MONTH(events.timestamp), DAY(events.timestamp)',
+					'order_by'    => 'events.id DESC',
+					'query_type'  => 'get_results',
+					'event_range' => true,
+					'start_date'  => $this->start_date,
+					'end_date'    => $this->end_date,
+				)
+			);
 
-			$this->report_data->offers_expired = WFOCU_Core()->track->query_results( array(
-				'data'        => array(
-					'value'     => array(
-						'type'     => 'col',
-						'function' => 'COUNT',
-						'name'     => 'offers_expired',
+			$this->report_data->offers_expired = WFOCU_Core()->track->query_results(
+				array(
+					'data'        => array(
+						'value'     => array(
+							'type'     => 'col',
+							'function' => 'COUNT',
+							'name'     => 'offers_expired',
+						),
+						'timestamp' => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'expired_date',
+						),
 					),
-					'timestamp' => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'expired_date',
+					'where'       => array(
+						array(
+							'key'      => 'events.action_type_id',
+							'value'    => 7,
+							'operator' => '=',
+						),
 					),
-				),
-				'where'       => array(
-					array(
-						'key'      => 'events.action_type_id',
-						'value'    => 7,
-						'operator' => '=',
-					),
-				),
-				'group_by'    => 'YEAR(events.timestamp), MONTH(events.timestamp), DAY(events.timestamp)',
-				'order_by'    => 'events.id DESC',
-				'query_type'  => 'get_results',
-				'event_range' => true,
-				'start_date'  => $this->start_date,
-				'end_date'    => $this->end_date,
-			) );
+					'group_by'    => 'YEAR(events.timestamp), MONTH(events.timestamp), DAY(events.timestamp)',
+					'order_by'    => 'events.id DESC',
+					'query_type'  => 'get_results',
+					'event_range' => true,
+					'start_date'  => $this->start_date,
+					'end_date'    => $this->end_date,
+				)
+			);
 
 			$this->report_data->gross_upsells           = array_sum( wp_list_pluck( $this->report_data->upsells, 'total_upsells' ) );
 			$this->report_data->average_gross_upsells   = $this->report_data->gross_upsells / ( $this->chart_interval + 1 );
@@ -295,7 +307,6 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Date' ) ) {
 
 			// 3rd party filtering of report data
 			$this->report_data = apply_filters( 'woocommerce_admin_upstroke_report_data', $this->report_data );
-
 		}
 
 		/**
@@ -303,10 +314,11 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Date' ) ) {
 		 */
 		public function output_report() {
 
-			$ranges = array( 'year'       => __( 'Year', 'woocommerce' ),
-			                 'last_month' => __( 'Last month', 'woocommerce' ),
-			                 'month'      => __( 'This month', 'woocommerce' ),
-			                 '7day'       => __( 'Last 7 days', 'woocommerce' )
+			$ranges = array(
+				'year'       => __( 'Year', 'woocommerce' ),
+				'last_month' => __( 'Last month', 'woocommerce' ),
+				'month'      => __( 'This month', 'woocommerce' ),
+				'7day'       => __( 'Last 7 days', 'woocommerce' ),
 			);
 
 			$this->chart_colours = array(
@@ -337,9 +349,9 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Date' ) ) {
 		public function get_export_button() {
 			$current_range = ! empty( $_GET['range'] ) ? sanitize_text_field( $_GET['range'] ) : '7day';
 			?>
-            <a href="#" download="report-<?php echo esc_attr( $current_range ); ?>-<?php echo esc_attr( date_i18n( 'Y-m-d', current_time( 'timestamp' ) ) ); ?>.csv" class="export_csv" data-export="chart" data-xaxes="<?php esc_attr_e( 'Date', 'woofunnels-upstroke-power-pack' ); ?>" data-exclude_series="" data-groupby="<?php echo esc_attr( $this->chart_groupby ); ?>">
+			<a href="#" download="report-<?php echo esc_attr( $current_range ); ?>-<?php echo esc_attr( date_i18n( 'Y-m-d', current_time( 'timestamp' ) ) ); ?>.csv" class="export_csv" data-export="chart" data-xaxes="<?php esc_attr_e( 'Date', 'woofunnels-upstroke-power-pack' ); ?>" data-exclude_series="" data-groupby="<?php echo esc_attr( $this->chart_groupby ); ?>">
 				<?php esc_html_e( 'Export CSV', 'woocommerce' ); ?>
-            </a>
+			</a>
 			<?php
 		}
 
@@ -368,165 +380,165 @@ if ( ! class_exists( 'WC_Report_Upsells_By_Date' ) ) {
 			$chart_data = apply_filters( 'woocommerce_admin_upstroke_report_chart_data', $chart_data );
 
 			?>
-            <div class="chart-container">
-                <div class="chart-placeholder main"></div>
-            </div>
-            <script type="text/javascript">
+			<div class="chart-container">
+				<div class="chart-placeholder main"></div>
+			</div>
+			<script type="text/javascript">
 
-                var main_chart;
+				var main_chart;
 
-                jQuery(function () {
-                    var upsells_data = jQuery.parseJSON('<?php echo json_encode( $chart_data ); ?>');
-                    var drawGraph = function (highlight) {
-                        var series = [
-                            {
-                                label: "<?php echo esc_js( __( 'Funnels Triggered', 'woofunnels-upstroke-power-pack' ) ); ?>",
-                                data: upsells_data.funnels_triggered,
-                                color: '<?php echo esc_js( $this->chart_colours['funnels_triggered'] ); ?>',
-                                bars: {
-                                    fillColor: '<?php echo esc_js( $this->chart_colours['funnels_triggered'] ); ?>',
-                                    fill: true,
-                                    show: true,
-                                    lineWidth: 6,
-                                    order: 0,
-                                    barWidth: <?php echo esc_js( $this->barwidth ); ?>* 0.25,
-                                    align: 'center'
-                                },
-                                shadowSize: 0,
-                                hoverable: true,
-                            },
-                            {
-                                label: "<?php echo esc_js( __( 'Offers Declined', 'woofunnels-upstroke-power-pack' ) ); ?>",
-                                data: upsells_data.offers_declined,
-                                color: '<?php echo esc_js( $this->chart_colours['offers_declined'] ); ?>',
-                                bars: {
-                                    fillColor: '<?php echo esc_js( $this->chart_colours['offers_declined'] ); ?>',
-                                    fill: true,
-                                    order: 1,
-                                    show: true,
-                                    lineWidth: 5,
-                                    barWidth: <?php echo esc_js( $this->barwidth ); ?>
-                                    * 0.25,
-                                    align: 'center'
-                                },
-                                shadowSize: 0,
-                                hoverable: false,
-                            },
-                            {
-                                label: "<?php echo esc_js( __( 'Offers Accepted', 'woofunnels-upstroke-power-pack' ) ); ?>",
-                                data: upsells_data.offers_accepted,
-                                color: '<?php echo esc_js( $this->chart_colours['offers_accepted'] ); ?>',
-                                bars: {
-                                    fillColor: '<?php echo esc_js( $this->chart_colours['offers_accepted'] ); ?>',
-                                    fill: true,
-                                    show: true,
-                                    order: 2,
-                                    lineWidth: 3,
-                                    barWidth: <?php echo esc_js( $this->barwidth ); ?>
-                                    * 0.25,
-                                    align: 'center'
-                                },
-                                shadowSize: 0,
-                                hoverable: false,
-                            },
+				jQuery(function () {
+					var upsells_data = jQuery.parseJSON('<?php echo wp_json_encode( $chart_data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ); ?>');
+					var drawGraph = function (highlight) {
+						var series = [
+							{
+								label: "<?php echo esc_js( __( 'Funnels Triggered', 'woofunnels-upstroke-power-pack' ) ); ?>",
+								data: upsells_data.funnels_triggered,
+								color: '<?php echo esc_js( $this->chart_colours['funnels_triggered'] ); ?>',
+								bars: {
+									fillColor: '<?php echo esc_js( $this->chart_colours['funnels_triggered'] ); ?>',
+									fill: true,
+									show: true,
+									lineWidth: 6,
+									order: 0,
+									barWidth: <?php echo esc_js( $this->barwidth ); ?>* 0.25,
+									align: 'center'
+								},
+								shadowSize: 0,
+								hoverable: true,
+							},
+							{
+								label: "<?php echo esc_js( __( 'Offers Declined', 'woofunnels-upstroke-power-pack' ) ); ?>",
+								data: upsells_data.offers_declined,
+								color: '<?php echo esc_js( $this->chart_colours['offers_declined'] ); ?>',
+								bars: {
+									fillColor: '<?php echo esc_js( $this->chart_colours['offers_declined'] ); ?>',
+									fill: true,
+									order: 1,
+									show: true,
+									lineWidth: 5,
+									barWidth: <?php echo esc_js( $this->barwidth ); ?>
+									* 0.25,
+									align: 'center'
+								},
+								shadowSize: 0,
+								hoverable: false,
+							},
+							{
+								label: "<?php echo esc_js( __( 'Offers Accepted', 'woofunnels-upstroke-power-pack' ) ); ?>",
+								data: upsells_data.offers_accepted,
+								color: '<?php echo esc_js( $this->chart_colours['offers_accepted'] ); ?>',
+								bars: {
+									fillColor: '<?php echo esc_js( $this->chart_colours['offers_accepted'] ); ?>',
+									fill: true,
+									show: true,
+									order: 2,
+									lineWidth: 3,
+									barWidth: <?php echo esc_js( $this->barwidth ); ?>
+									* 0.25,
+									align: 'center'
+								},
+								shadowSize: 0,
+								hoverable: false,
+							},
 
-                            {
-                                label: "<?php echo esc_js( __( 'Upsells', 'woofunnels-upstroke-power-pack' ) ); ?>",
-                                data: upsells_data.upsells,
-                                yaxis: 2,
-                                color: '<?php echo esc_js( $this->chart_colours['gross_upsells'] ); ?>',
-                                points: {show: true, radius: 5, lineWidth: 2, fillColor: '#fff', fill: true},
-                                lines: {show: true, lineWidth: 5, fill: false},
-                                shadowSize: 0,
+							{
+								label: "<?php echo esc_js( __( 'Upsells', 'woofunnels-upstroke-power-pack' ) ); ?>",
+								data: upsells_data.upsells,
+								yaxis: 2,
+								color: '<?php echo esc_js( $this->chart_colours['gross_upsells'] ); ?>',
+								points: {show: true, radius: 5, lineWidth: 2, fillColor: '#fff', fill: true},
+								lines: {show: true, lineWidth: 5, fill: false},
+								shadowSize: 0,
 								<?php echo wp_kses_post( $this->get_currency_tooltip() ); ?>
-                            },
-                            {
-                                label: "<?php echo esc_js( __( 'Average gross upsells', 'woofunnels-upstroke-power-pack' ) ); ?>",
-                                data: [[ <?php echo esc_js( min( array_keys( $upsells ) ) ); ?>, <?php echo esc_js( $this->report_data->average_gross_upsells ); ?> ], [ <?php echo esc_js( max( array_keys( $upsells ) ) ); ?>, <?php echo esc_js( $this->report_data->average_gross_upsells ); ?> ]],
-                                yaxis: 2,
-                                color: '<?php echo esc_js( $this->chart_colours['average_gross_upsells'] ); ?>',
-                                points: {show: false},
-                                lines: {show: true, lineWidth: 4, fill: false},
-                                shadowSize: 0,
-                                hoverable: false
-                            },
-                        ];
+							},
+							{
+								label: "<?php echo esc_js( __( 'Average gross upsells', 'woofunnels-upstroke-power-pack' ) ); ?>",
+								data: [[ <?php echo esc_js( min( array_keys( $upsells ) ) ); ?>, <?php echo esc_js( $this->report_data->average_gross_upsells ); ?> ], [ <?php echo esc_js( max( array_keys( $upsells ) ) ); ?>, <?php echo esc_js( $this->report_data->average_gross_upsells ); ?> ]],
+								yaxis: 2,
+								color: '<?php echo esc_js( $this->chart_colours['average_gross_upsells'] ); ?>',
+								points: {show: false},
+								lines: {show: true, lineWidth: 4, fill: false},
+								shadowSize: 0,
+								hoverable: false
+							},
+						];
 
-                        if (highlight !== 'undefined' && series[highlight]) {
-                            highlight_series = series[highlight];
+						if (highlight !== 'undefined' && series[highlight]) {
+							highlight_series = series[highlight];
 
-                            highlight_series.color = '#9c5d90';
+							highlight_series.color = '#9c5d90';
 
-                            if (highlight_series.bars) {
-                                highlight_series.bars.fillColor = '#9c5d90';
-                            }
+							if (highlight_series.bars) {
+								highlight_series.bars.fillColor = '#9c5d90';
+							}
 
-                            if (highlight_series.lines) {
-                                highlight_series.lines.lineWidth = 5;
-                            }
-                        }
+							if (highlight_series.lines) {
+								highlight_series.lines.lineWidth = 5;
+							}
+						}
 
-                        main_chart = jQuery.plot(
-                            jQuery('.chart-placeholder.main'),
-                            series,
-                            {
-                                legend: {
-                                    show: false
-                                },
-                                grid: {
-                                    color: '#aaa',
-                                    borderColor: 'transparent',
-                                    borderWidth: 0,
-                                    hoverable: true
-                                },
-                                xaxes: [{
-                                    color: '#aaa',
-                                    position: "bottom",
-                                    tickColor: 'transparent',
-                                    mode: "time",
-                                    timeformat: "<?php echo ( 'day' === $this->chart_groupby ) ? '%d %b' : '%b'; ?>",
-                                    monthNames: <?php echo json_encode( array_values( $wp_locale->month_abbrev ) ); ?>,
-                                    tickLength: 1,
-                                    minTickSize: [1, "<?php echo esc_js( $this->chart_groupby ); ?>"],
-                                    font: {
-                                        color: "#aaa"
-                                    }
-                                }],
-                                yaxes: [
-                                    {
-                                        min: 0,
-                                        minTickSize: 1,
-                                        tickDecimals: 0,
-                                        color: '#d4d9dc',
-                                        font: {color: "#aaa"}
-                                    },
-                                    {
-                                        position: "right",
-                                        min: 0,
-                                        tickDecimals: 2,
-                                        alignTicksWithAxis: 1,
-                                        color: 'transparent',
-                                        font: {color: "#aaa"}
-                                    }
-                                ],
-                            }
-                        );
+						main_chart = jQuery.plot(
+							jQuery('.chart-placeholder.main'),
+							series,
+							{
+								legend: {
+									show: false
+								},
+								grid: {
+									color: '#aaa',
+									borderColor: 'transparent',
+									borderWidth: 0,
+									hoverable: true
+								},
+								xaxes: [{
+									color: '#aaa',
+									position: "bottom",
+									tickColor: 'transparent',
+									mode: "time",
+									timeformat: "<?php echo ( 'day' === $this->chart_groupby ) ? '%d %b' : '%b'; ?>",
+									monthNames: <?php echo wp_json_encode( array_values( $wp_locale->month_abbrev ), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ); ?>,
+									tickLength: 1,
+									minTickSize: [1, "<?php echo esc_js( $this->chart_groupby ); ?>"],
+									font: {
+										color: "#aaa"
+									}
+								}],
+								yaxes: [
+									{
+										min: 0,
+										minTickSize: 1,
+										tickDecimals: 0,
+										color: '#d4d9dc',
+										font: {color: "#aaa"}
+									},
+									{
+										position: "right",
+										min: 0,
+										tickDecimals: 2,
+										alignTicksWithAxis: 1,
+										color: 'transparent',
+										font: {color: "#aaa"}
+									}
+								],
+							}
+						);
 
-                        jQuery('.chart-placeholder').resize();
-                    }
+						jQuery('.chart-placeholder').resize();
+					}
 
-                    drawGraph();
+					drawGraph();
 
-                    jQuery('.highlight_series').hover(
-                        function () {
-                            drawGraph(jQuery(this).data('series'));
-                        },
-                        function () {
-                            drawGraph();
-                        }
-                    );
-                });
-            </script>
+					jQuery('.highlight_series').hover(
+						function () {
+							drawGraph(jQuery(this).data('series'));
+						},
+						function () {
+							drawGraph();
+						}
+					);
+				});
+			</script>
 			<?php
 		}
 

@@ -356,7 +356,7 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 				$request_args = WooFunnels_API::get_request_args(
 					array(
 						'timeout' => 0.5, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
-					'sslverify'   => WooFunnels_API::$is_ssl,
+					'sslverify'   => true,
 					'body'        => urlencode_deep( $api_params ),
 					)
 				);

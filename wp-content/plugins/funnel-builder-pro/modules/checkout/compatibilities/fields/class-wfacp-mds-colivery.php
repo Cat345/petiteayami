@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * MDS Collivery By MDS Technologies
@@ -8,44 +12,42 @@ if ( ! class_exists( 'WFACP_Compatibility_Colivery' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_Colivery {
 
-		private $checkout_keys = [];
-		private $temp_fields = [];
-		private $billing_new_fields = [
+		private $checkout_keys      = array();
+		private $temp_fields        = array();
+		private $billing_new_fields = array(
 			'billing_city_int',
 			'billing_suburb',
 			'billing_location_type',
 
-		];
-		private $shipping_new_fields = [
+		);
+		private $shipping_new_fields = array(
 			'shipping_location_type',
 			'shipping_location_type',
 			'shipping_location_type',
-		];
+		);
 
 
 		public function __construct() {
 			if ( WFACP_Common::is_funnel_builder_3() ) {
-				add_action( 'wffn_rest_checkout_form_actions', [ $this, 'setup_fields_billing' ] );
-				add_action( 'wffn_rest_checkout_form_actions', [ $this, 'setup_fields_shipping' ] );
+				add_action( 'wffn_rest_checkout_form_actions', array( $this, 'setup_fields_billing' ) );
+				add_action( 'wffn_rest_checkout_form_actions', array( $this, 'setup_fields_shipping' ) );
 			} else {
-				add_action( 'init', [ $this, 'setup_fields_billing' ], 20 );
-				add_action( 'init', [ $this, 'setup_fields_shipping' ], 20 );
+				add_action( 'init', array( $this, 'setup_fields_billing' ), 20 );
+				add_action( 'init', array( $this, 'setup_fields_shipping' ), 20 );
 			}
 
-			add_action( 'init', [ $this, 'setup_fields_billing' ], 20 );
-			add_action( 'init', [ $this, 'setup_fields_shipping' ], 20 );
-			add_action( 'wfacp_forms_field', [ $this, 'wfacp_forms_field' ], 20, 2 );
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'assign_data' ], 20 );
-			add_action( 'wfacp_internal_css', [ $this, 'add_internal_css' ] );
+			add_action( 'init', array( $this, 'setup_fields_billing' ), 20 );
+			add_action( 'init', array( $this, 'setup_fields_shipping' ), 20 );
+			add_action( 'wfacp_forms_field', array( $this, 'wfacp_forms_field' ), 20, 2 );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'assign_data' ), 20 );
+			add_action( 'wfacp_internal_css', array( $this, 'add_internal_css' ) );
 
 			/* prevent third party fields and wrapper*/
 
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
 
-			add_filter( 'wfacp_third_party_billing_fields', [ $this, 'disabled_third_party_billing_fields' ] );
-			add_filter( 'wfacp_third_party_shipping_fields', [ $this, 'disabled_third_party_shipping_fields' ] );
-
-
+			add_filter( 'wfacp_third_party_billing_fields', array( $this, 'disabled_third_party_billing_fields' ) );
+			add_filter( 'wfacp_third_party_shipping_fields', array( $this, 'disabled_third_party_shipping_fields' ) );
 		}
 
 		public function assign_data() {
@@ -58,7 +60,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Colivery' ) ) {
 				return;
 			}
 
-			$mdsCheckoutFields = new \MdsSupportingClasses\MdsCheckoutFields( [] );
+			$mdsCheckoutFields = new \MdsSupportingClasses\MdsCheckoutFields( array() );
 
 			if ( ! $mdsCheckoutFields instanceof MdsSupportingClasses\MdsCheckoutFields ) {
 				return;
@@ -67,15 +69,13 @@ if ( ! class_exists( 'WFACP_Compatibility_Colivery' ) ) {
 			$address_fields['shipping'] = $mdsCheckoutFields->getCheckoutFields( 'shipping' );
 
 			if ( ! is_array( $address_fields['billing'] ) ) {
-				$address_fields['billing'] = [];
+				$address_fields['billing'] = array();
 			}
 
 			if ( ! is_array( $address_fields['shipping'] ) ) {
-				$address_fields['shipping'] = [];
+				$address_fields['shipping'] = array();
 			}
 			$this->temp_fields = array_merge( $address_fields['billing'], $address_fields['shipping'] );
-
-
 		}
 
 		public function is_enabled() {
@@ -88,31 +88,38 @@ if ( ! class_exists( 'WFACP_Compatibility_Colivery' ) ) {
 				return;
 			}
 
-			new WFACP_Add_Address_Field( 'city_int', array(
-				'label'    => __( 'City Int', 'woocommerce' ),
-				'cssready' => [ 'wfacp-col-left-third' ],
-				'class'    => apply_filters( 'colivery_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
-				'required' => false,
-				'priority' => 60,
-			) );
+			new WFACP_Add_Address_Field(
+				'city_int',
+				array(
+					'label'    => __( 'City Int', 'woocommerce' ),
+					'cssready' => array( 'wfacp-col-left-third' ),
+					'class'    => apply_filters( 'colivery_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
+					'required' => false,
+					'priority' => 60,
+				)
+			);
 
-			new WFACP_Add_Address_Field( 'suburb', array(
-				'label'    => __( 'Suburb', 'woocommerce' ),
-				'cssready' => [ 'wfacp-col-left-third' ],
-				'class'    => apply_filters( 'colivery_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
-				'required' => true,
-				'priority' => 60,
-			) );
+			new WFACP_Add_Address_Field(
+				'suburb',
+				array(
+					'label'    => __( 'Suburb', 'woocommerce' ),
+					'cssready' => array( 'wfacp-col-left-third' ),
+					'class'    => apply_filters( 'colivery_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
+					'required' => true,
+					'priority' => 60,
+				)
+			);
 
-
-			new WFACP_Add_Address_Field( 'location_type', array(
-				'label'    => __( 'Location Type', 'woocommerce' ),
-				'cssready' => [ 'wfacp-col-left-third' ],
-				'class'    => apply_filters( 'colivery_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
-				'required' => true,
-				'priority' => 60,
-			) );
-
+			new WFACP_Add_Address_Field(
+				'location_type',
+				array(
+					'label'    => __( 'Location Type', 'woocommerce' ),
+					'cssready' => array( 'wfacp-col-left-third' ),
+					'class'    => apply_filters( 'colivery_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
+					'required' => true,
+					'priority' => 60,
+				)
+			);
 		}
 
 		public function setup_fields_shipping() {
@@ -121,30 +128,40 @@ if ( ! class_exists( 'WFACP_Compatibility_Colivery' ) ) {
 				return;
 			}
 
-			new WFACP_Add_Address_Field( 'city_int', array(
-				'label'    => __( 'City Int', 'woocommerce' ),
-				'cssready' => [ 'wfacp-col-left-third' ],
-				'class'    => apply_filters( 'colivery_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
-				'required' => false,
-				'priority' => 60,
-			), 'shipping' );
-			new WFACP_Add_Address_Field( 'suburb', array(
-				'label'    => __( 'Suburb', 'woocommerce' ),
-				'cssready' => [ 'wfacp-col-left-third' ],
-				'class'    => apply_filters( 'colivery_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
-				'required' => true,
+			new WFACP_Add_Address_Field(
+				'city_int',
+				array(
+					'label'    => __( 'City Int', 'woocommerce' ),
+					'cssready' => array( 'wfacp-col-left-third' ),
+					'class'    => apply_filters( 'colivery_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
+					'required' => false,
+					'priority' => 60,
+				),
+				'shipping'
+			);
+			new WFACP_Add_Address_Field(
+				'suburb',
+				array(
+					'label'    => __( 'Suburb', 'woocommerce' ),
+					'cssready' => array( 'wfacp-col-left-third' ),
+					'class'    => apply_filters( 'colivery_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
+					'required' => true,
 
-				'priority' => 60,
-			), 'shipping' );
-			new WFACP_Add_Address_Field( 'location_type', array(
-				'label'    => __( 'Location Type', 'woocommerce' ),
-				'cssready' => [ 'wfacp-col-left-third' ],
-				'class'    => apply_filters( 'colivery_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
-				'required' => true,
-				'priority' => 60,
-			), 'shipping' );
-
-
+					'priority' => 60,
+				),
+				'shipping'
+			);
+			new WFACP_Add_Address_Field(
+				'location_type',
+				array(
+					'label'    => __( 'Location Type', 'woocommerce' ),
+					'cssready' => array( 'wfacp-col-left-third' ),
+					'class'    => apply_filters( 'colivery_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
+					'required' => true,
+					'priority' => 60,
+				),
+				'shipping'
+			);
 		}
 
 		public function wfacp_forms_field( $field, $key ) {
@@ -156,11 +173,10 @@ if ( ! class_exists( 'WFACP_Compatibility_Colivery' ) ) {
 				return $field;
 			}
 
-
 			if ( isset( $this->temp_fields[ $key ]['class'] ) ) {
 
 				if ( ! is_array( $field['class'] ) ) {
-					$field['class'] = [];
+					$field['class'] = array();
 				}
 				$field['class'] = array_merge( $field['class'], $this->temp_fields[ $key ]['class'] );
 			}
@@ -184,9 +200,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Colivery' ) ) {
 				$field['placeholder'] = $this->temp_fields[ $key ]['placeholder'];
 			}
 
-
 			return $field;
-
 		}
 
 		public function add_internal_css() {
@@ -194,20 +208,18 @@ if ( ! class_exists( 'WFACP_Compatibility_Colivery' ) ) {
 				return;
 			}
 
-
 			$instance = wfacp_template();
 			if ( ! $instance instanceof WFACP_Template_Common ) {
 				return;
 			}
-			$bodyClass = "body ";
-
+			$bodyClass = 'body ';
 
 			if ( 'pre_built' !== $instance->get_template_type() ) {
 
-				$bodyClass = "body #wfacp-e-form ";
+				$bodyClass = 'body #wfacp-e-form ';
 			}
 
-			echo "<style>";
+			echo '<style>';
 			echo $bodyClass . '.colliveryfied p.wfacp_shipping_field_hide.active{display:none !important;}';
 			echo $bodyClass . '.colliveryfied p.wfacp_billing_field_hide.active{display:none !important;}';
 			echo $bodyClass . '.colliveryfied p.wfacp_billing_field_show.active{display:block !important;}';
@@ -219,8 +231,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Colivery' ) ) {
     line-height: 1.5;
 }
 ';
-			echo "</style>";
-
+			echo '</style>';
 		}
 
 		public function disabled_third_party_billing_fields( $fields ) {
@@ -246,8 +257,6 @@ if ( ! class_exists( 'WFACP_Compatibility_Colivery' ) ) {
 
 			return $fields;
 		}
-
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_Colivery(), 'mds-colivery' );

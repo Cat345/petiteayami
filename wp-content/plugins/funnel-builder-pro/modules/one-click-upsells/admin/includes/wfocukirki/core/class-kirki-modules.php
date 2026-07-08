@@ -13,6 +13,7 @@ if ( ! class_exists( 'WFOCUKirki_Modules' ) ) {
 	/**
 	 * The WFOCUKirki_Modules class.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Modules {
 
 		/**
@@ -45,7 +46,6 @@ if ( ! class_exists( 'WFOCUKirki_Modules' ) ) {
 
 			$this->default_modules();
 			$this->init();
-
 		}
 
 		/**
@@ -56,7 +56,9 @@ if ( ! class_exists( 'WFOCUKirki_Modules' ) ) {
 		 */
 		private function default_modules() {
 
-			self::$modules = apply_filters( 'wfocukirki_modules', array(
+			self::$modules = apply_filters(
+				'wfocukirki_modules',
+				array(
 					'css'                => 'WFOCUKirki_Modules_CSS',
 					'css-vars'           => 'WFOCUKirki_Modules_CSS_Vars',
 					'customizer-styling' => 'WFOCUKirki_Modules_Customizer_Styling',
@@ -71,8 +73,8 @@ if ( ! class_exists( 'WFOCUKirki_Modules' ) ) {
 					'webfonts'           => 'WFOCUKirki_Modules_Webfonts',
 					'webfont-loader'     => 'WFOCUKirki_Modules_Webfont_Loader',
 					'preset'             => 'WFOCUKirki_Modules_Preset',
-				) );
-
+				)
+			);
 		}
 
 		/**
@@ -107,7 +109,6 @@ if ( ! class_exists( 'WFOCUKirki_Modules' ) ) {
 			if ( ! in_array( $module, self::$modules, true ) ) {
 				self::$modules[] = $module;
 			}
-
 		}
 
 		/**
@@ -139,7 +140,6 @@ if ( ! class_exists( 'WFOCUKirki_Modules' ) ) {
 		public static function get_modules() {
 
 			return self::$modules;
-
 		}
 
 		/**
@@ -153,7 +153,6 @@ if ( ! class_exists( 'WFOCUKirki_Modules' ) ) {
 		public static function get_active_modules() {
 
 			return self::$active_modules;
-
 		}
 	}
 }

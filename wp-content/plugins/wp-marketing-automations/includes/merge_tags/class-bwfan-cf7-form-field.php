@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+#[\AllowDynamicProperties]
 class BWFAN_CF7_Form_Field extends BWFAN_Merge_Tag {
 
 	private static $instance = null;
@@ -76,6 +81,7 @@ class BWFAN_CF7_Form_Field extends BWFAN_Merge_Tag {
 	}
 
 	public function bwfan_get_automation_cf7_form_fields() {
+		BWFAN_Common::check_nonce();
 
 		$finalarr     = [];
 		$automationId = absint( sanitize_text_field( $_POST['automationId'] ) );

@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Input_Html_Always' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Input_Html_Always {
 		public function __construct() {
 			// vars
@@ -17,6 +18,5 @@ if ( ! class_exists( 'wfob_Input_Html_Always' ) ) {
 
 			echo '';
 		}
-
 	}
 }

@@ -5,13 +5,14 @@ if ( ! class_exists( 'WFOCU_Customizer_Common' ) ) {
 	 * Abstract Class for all the Template Loading
 	 * Class WFOCU_Customizer_Common
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Customizer_Common extends WFOCU_Template_Common {
 
-		public $data = null;
-		public $internal_css = array();
+		public $data            = null;
+		public $internal_css    = array();
 		public $customizer_data = array();
-		public $fields = array();
-		public $products_data = array();
+		public $fields          = array();
+		public $products_data   = array();
 		public $countdown_timer = '';
 
 		public function __construct() {
@@ -65,10 +66,13 @@ if ( ! class_exists( 'WFOCU_Customizer_Common' ) ) {
 								$maybe_panel = false;
 							} else {
 								$arr = $panel_arr['data'];
-								$arr = array_merge( $arr, array(
-									'capability'     => 'edit_theme_options',
-									'theme_supports' => '',
-								) );
+								$arr = array_merge(
+									$arr,
+									array(
+										'capability'     => 'edit_theme_options',
+										'theme_supports' => '',
+									)
+								);
 								$wp_customize->add_panel( $panel_key, $arr );
 							}
 
@@ -81,9 +85,12 @@ if ( ! class_exists( 'WFOCU_Customizer_Common' ) ) {
 
 									$arr = $section_arr['data'];
 									if ( true === $maybe_panel ) {
-										$arr = array_merge( $arr, array(
-											'panel' => $panel_key,
-										) );
+										$arr = array_merge(
+											$arr,
+											array(
+												'panel' => $panel_key,
+											)
+										);
 									}
 
 									$wp_customize->add_section( $section_key_final, $arr );
@@ -99,11 +106,14 @@ if ( ! class_exists( 'WFOCU_Customizer_Common' ) ) {
 											/** Checking if wfocu_partial class exist */
 											if ( isset( $field_data['wfocu_partial'] ) && is_array( $field_data['wfocu_partial'] ) && isset( $field_data['wfocu_partial']['elem'] ) ) {
 												$callback = isset( $field_data['wfocu_partial']['callback'] ) ? $field_data['wfocu_partial']['callback'] : 'render_callback';
-												$wp_customize->selective_refresh->add_partial( $field_key_final, array(
-													'selector'        => $field_data['wfocu_partial']['elem'],
-													'render_callback' => array( $this, $callback ),
-													'primary_setting' => $field_key_final,
-												) );
+												$wp_customize->selective_refresh->add_partial(
+													$field_key_final,
+													array(
+														'selector'        => $field_data['wfocu_partial']['elem'],
+														'render_callback' => array( $this, $callback ),
+														'primary_setting' => $field_key_final,
+													)
+												);
 											}
 										}
 									}
@@ -120,15 +130,13 @@ if ( ! class_exists( 'WFOCU_Customizer_Common' ) ) {
 
 			if ( false !== $offer_data ) {
 				$build_data = WFOCU_Core()->offers->build_offer_product( $offer_data );
-			} else {
-				if ( false !== $this->offer_products_meta ) {
+			} elseif ( false !== $this->offer_products_meta ) {
 					$build_data = $this->offer_products_meta;
-				} else {
-					$build_data    = WFOCU_Core()->offers->build_offer_product( $data );
-					$product_count = (array) $build_data->products;
-					if ( ! empty( $product_count ) && count( $product_count ) > 0 ) {
-						$this->offer_products_meta = $build_data;
-					}
+			} else {
+				$build_data    = WFOCU_Core()->offers->build_offer_product( $data );
+				$product_count = (array) $build_data->products;
+				if ( ! empty( $product_count ) && count( $product_count ) > 0 ) {
+					$this->offer_products_meta = $build_data;
 				}
 			}
 
@@ -151,14 +159,14 @@ if ( ! class_exists( 'WFOCU_Customizer_Common' ) ) {
 
 			$partial_key_base = $data->id_data();
 			if ( is_array( $partial_key_base ) && isset( $partial_key_base['keys'] ) ) {
-				$partial_key         = $partial_key_base['keys'][0];
+				$partial_key = $partial_key_base['keys'][0];
 
 				switch ( $partial_key ) {
 					case 'wfocu_header_top_logo':
-						$logo = WFOCU_Common::get_option( $partial_key );
+						$logo        = WFOCU_Common::get_option( $partial_key );
 						$no_logo_img = WFOCU_PLUGIN_URL . '/admin/assets/img/no_logo.jpg';
 						?>
-                        <img src="<?php echo $logo ? esc_url( $logo ) : esc_url( $no_logo_img ); ?>" alt="<?php bloginfo( 'name' ); ?>" title="<?php bloginfo( 'name' ); ?>"/>
+						<img src="<?php echo $logo ? esc_url( $logo ) : esc_url( $no_logo_img ); ?>" alt="<?php bloginfo( 'name' ); ?>" title="<?php bloginfo( 'name' ); ?>"/>
 						<?php
 						$logo_img_html = ob_get_clean();
 
@@ -190,7 +198,7 @@ if ( ! class_exists( 'WFOCU_Customizer_Common' ) ) {
 
 							ob_start();
 							?>
-                            <img data-id="<?php echo esc_attr( $product_img[0]['id'] ); ?>" src="<?php echo esc_url( $product_img[0]['src'] ); ?>" title=""/>
+							<img data-id="<?php echo esc_attr( $product_img[0]['id'] ); ?>" src="<?php echo esc_url( $product_img[0]['src'] ); ?>" title=""/>
 
 							<?php
 							return ob_get_clean();
@@ -204,7 +212,6 @@ if ( ! class_exists( 'WFOCU_Customizer_Common' ) ) {
 						break;
 				}
 			}
-
 		}
 
 		public function assign_key_to_array( $array, $key ) {
@@ -219,8 +226,6 @@ if ( ! class_exists( 'WFOCU_Customizer_Common' ) ) {
 		}
 
 		public function load_hooks() {
-
 		}
-
 	}
 }

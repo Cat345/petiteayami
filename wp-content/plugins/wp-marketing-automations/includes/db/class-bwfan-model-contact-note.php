@@ -2,6 +2,7 @@
 
 if ( ! class_exists( 'BWFAN_Model_Contact_Note' ) && BWFAN_Common::is_pro_3_0() ) {
 
+	#[\AllowDynamicProperties]
 	class BWFAN_Model_Contact_Note extends BWFAN_Model {
 
 		/**
@@ -12,10 +13,11 @@ if ( ! class_exists( 'BWFAN_Model_Contact_Note' ) && BWFAN_Common::is_pro_3_0() 
 		 * @return array
 		 */
 		public static function get_contact_notes( $contact_id, $offset = 0, $limit = 0 ) {
+			global $wpdb;
 			if ( empty( $offset ) && empty( $limit ) ) {
-				$query = "SELECT * FROM {table_name} WHERE `cid`='" . $contact_id . "' ORDER BY `created_date` DESC";
+				$query = $wpdb->prepare( "SELECT * FROM {table_name} WHERE `cid` = %d ORDER BY `created_date` DESC", $contact_id );
 			} else {
-				$query = "SELECT * FROM {table_name} WHERE `cid`='" . $contact_id . "' ORDER BY `created_date` DESC LIMIT $offset,$limit";
+				$query = $wpdb->prepare( "SELECT * FROM {table_name} WHERE `cid` = %d ORDER BY `created_date` DESC LIMIT %d,%d", $contact_id, $offset, $limit );
 			}
 
 			return self::get_results( $query );

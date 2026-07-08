@@ -1,8 +1,10 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'WFOCU_Rule_Order_Sublium' ) ) {
 	/**
 	 * FunnelKit Payment Plan Rule for WooFunnels Upstroke One-Click Upsell
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Sublium extends WFOCU_Rule_Base {
 		/**
 		 * Environments this rule supports
@@ -43,19 +45,20 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Sublium' ) ) {
 		/**
 		 * Get products that have FunnelKit payment plans
 		 *
-		 * @param int $limit Number of products to return (-1 for all)
+		 * @param int    $limit Number of products to return (-1 for all)
 		 * @param string $post_status Product status to include (default: 'publish')
 		 *
 		 * @return array Array of product options with plan details
 		 */
 		function get_posts_with_sublium_data( $limit = - 1, $post_status = 'publish' ) {
 			global $wpdb;
-			$output   = [];
+			$output   = array();
 			$meta_key = '_sublium_wcs_plan_data';
 
 			try {
 				// Prepare and execute SQL query
-				$sql = $wpdb->prepare( "SELECT
+				$sql = $wpdb->prepare(
+					"SELECT
 						p.ID as ID,
 						p.post_title as title,
 						pm.meta_value AS sublium_plan_data
@@ -68,18 +71,21 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Sublium' ) ) {
 						AND p.post_status = %s
 						AND p.post_type = 'product'
 					ORDER BY
-						p.post_title ASC", $meta_key, $post_status );
+						p.post_title ASC",
+					$meta_key,
+					$post_status
+				);
 
 				// Add limit if specified
 				if ( $limit > 0 ) {
-					$sql .= $wpdb->prepare( " LIMIT %d", $limit );
+					$sql .= $wpdb->prepare( ' LIMIT %d', $limit );
 				}
 
 				// Get the results
 				$products = $wpdb->get_results( $sql );
 
 				if ( empty( $products ) ) {
-					return [];
+					return array();
 				}
 
 				// Process each product's plans
@@ -117,12 +123,16 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Sublium' ) ) {
 
 							$output[ $option_key ] = $option_value;
 						}
-					} catch ( \Exception|\Error $e ) {
-						error_log( sprintf( 'FunnelKit Pay Rule: Error processing product #%d: %s', $product->ID, $e->getMessage() ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+					} catch ( \Exception | \Error $e ) {
+						if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+							error_log( sprintf( 'FunnelKit Pay Rule: Error processing product #%d: %s', $product->ID, $e->getMessage() ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+						}
 					}
 				}
-			} catch ( \Exception|\Error $e ) {
-				error_log( sprintf( 'FunnelKit Pay Rule: Database error: %s', $e->getMessage() ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			} catch ( \Exception | \Error $e ) {
+				if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+					error_log( sprintf( 'FunnelKit Pay Rule: Database error: %s', $e->getMessage() ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				}
 			}
 
 			return $output;
@@ -146,7 +156,7 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Sublium' ) ) {
 		/**
 		 * Check if the rule matches the current environment
 		 *
-		 * @param array $rule_data Rule configuration
+		 * @param array  $rule_data Rule configuration
 		 * @param string $env Environment (cart or order)
 		 *
 		 * @return bool Whether rule matches
@@ -162,7 +172,7 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Sublium' ) ) {
 				return $this->return_is_match( false, $rule_data );
 			}
 
-			$condition = isset( $rule_data['condition']['categories'] ) ? $rule_data['condition']['categories'] : [];
+			$condition = isset( $rule_data['condition']['categories'] ) ? $rule_data['condition']['categories'] : array();
 			$result    = false;
 
 			switch ( $type ) {

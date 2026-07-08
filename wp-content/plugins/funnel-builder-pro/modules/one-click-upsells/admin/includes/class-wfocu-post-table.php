@@ -5,9 +5,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
-	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Post_Table extends WP_List_Table {
 
 		public $per_page = 4;
@@ -18,15 +19,18 @@ if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
 
 		/**
 		 * Constructor.
+		 *
 		 * @since  1.0.0
 		 */
 		public function __construct( $args = array() ) {
 			global $status, $page;
-			parent::__construct( array(
-				'singular' => 'Funnel',
-				'plural'   => 'Funnels',
-				'ajax'     => false,
-			) );
+			parent::__construct(
+				array(
+					'singular' => 'Funnel',
+					'plural'   => 'Funnels',
+					'ajax'     => false,
+				)
+			);
 			$status            = 'all';
 			$page              = $this->get_pagenum();
 			$this->data        = array();
@@ -40,14 +44,14 @@ if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
 			}
 
 			// Make sure this file is loaded, so we have access to plugins_api(), etc.
-			require_once( ABSPATH . '/wp-admin/includes/plugin-install.php' );
+			require_once ABSPATH . '/wp-admin/includes/plugin-install.php';
 
 			parent::__construct( $args );
-
 		}
 
 		/**
 		 * Text to display if no items are present.
+		 *
 		 * @return  void
 		 * @since  1.0.0
 		 */
@@ -59,7 +63,7 @@ if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
 		/**
 		 * The content of each column.
 		 *
-		 * @param array $item The current item in the list.
+		 * @param array  $item The current item in the list.
 		 * @param string $column_name The key of the current column.
 		 *
 		 * @return string              Output for the current column.
@@ -96,12 +100,12 @@ if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
 				$funnel_status = "checked='checked'";
 			}
 			?>
-            <div class='wfocu_fsetting_table_title'>
-                <div class='offer_state wfocu_toggle_btn'>
-                    <input name='offer_state' id='state<?php echo esc_attr( $item['id'] ); ?>' data-id="<?php echo esc_attr( $item['id'] ); ?>" type='checkbox' class='wfocu-tgl wfocu-tgl-ios' <?php echo esc_attr( $funnel_status ); ?> >
-                    <label for='state<?php echo esc_attr( $item['id'] ); ?>' class='wfocu-tgl-btn wfocu-tgl-btn-small'></label>
-                </div>
-            </div>
+			<div class='wfocu_fsetting_table_title'>
+				<div class='offer_state wfocu_toggle_btn'>
+					<input name='offer_state' id='state<?php echo esc_attr( $item['id'] ); ?>' data-id="<?php echo esc_attr( $item['id'] ); ?>" type='checkbox' class='wfocu-tgl wfocu-tgl-ios' <?php echo esc_attr( $funnel_status ); ?> >
+					<label for='state<?php echo esc_attr( $item['id'] ); ?>' class='wfocu-tgl-btn wfocu-tgl-btn-small'></label>
+				</div>
+			</div>
 			<?php
 		}
 
@@ -116,14 +120,17 @@ if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
 			$column_string .= '<p>' . esc_html( $item['post_content'] ) . '</p>';
 
 			$column_string .= "<div style='clear:both'></div></div>";
-			$get_steps     = WFOCU_Core()->funnels->get_funnel_steps( $item['id'] );
+			$get_steps      = WFOCU_Core()->funnels->get_funnel_steps( $item['id'] );
 
 			if ( is_array( $get_steps ) && count( $get_steps ) > 0 ) {
 
 				$get_status = wp_list_pluck( $get_steps, 'state' );
-				$get_status = array_filter( $get_status, function ( $val ) {
-					return wc_string_to_bool( $val );
-				} );
+				$get_status = array_filter(
+					$get_status,
+					function ( $val ) {
+						return wc_string_to_bool( $val );
+					}
+				);
 
 				if ( empty( $get_status ) ) {
 					$column_string .= sprintf( '<div class="wfocu_row_notice">%s</div>', __( 'Activate at least one offer to show the funnel.', 'woofunnels-upstroke-one-click-upsell' ) );
@@ -180,9 +187,9 @@ if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
 			if ( defined( 'ICL_SITEPRESS_VERSION' ) && $this->sitepress_column instanceof WPML_Custom_Columns ) {
 				global $post;
 				$post = get_post( $item['id'] );
-				//WFACP_Common::remove_actions( 'wpml_icon_to_translation', 'WPML_TM_Translation_Status_Display', 'filter_status_icon' );
-				//WFACP_Common::remove_actions( 'wpml_link_to_translation', 'WPML_TM_Translation_Status_Display', 'filter_status_link' );
-				//WFACP_Common::remove_actions( 'wpml_text_to_translation', 'WPML_TM_Translation_Status_Display', 'filter_status_text' );
+				// WFACP_Common::remove_actions( 'wpml_icon_to_translation', 'WPML_TM_Translation_Status_Display', 'filter_status_icon' );
+				// WFACP_Common::remove_actions( 'wpml_link_to_translation', 'WPML_TM_Translation_Status_Display', 'filter_status_link' );
+				// WFACP_Common::remove_actions( 'wpml_text_to_translation', 'WPML_TM_Translation_Status_Display', 'filter_status_text' );
 
 				remove_action( 'wpml_icon_to_translation', 'WPML_TM_Translation_Status_Display', 'filter_status_icon' );
 				remove_action( 'wpml_link_to_translation', 'WPML_TM_Translation_Status_Display', 'filter_status_link' );
@@ -226,44 +233,59 @@ if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
 
 			$id = absint( $item['id'] );
 
-			$links = apply_filters( 'wfocu_funnel_quick_links', array(
+			$links = apply_filters(
+				'wfocu_funnel_quick_links',
 				array(
-					'text' => __( 'Offers', 'woofunnels-upstroke-one-click-upsell' ),
-					'link' => add_query_arg( array(
-						'page'    => 'upstroke',
-						'section' => 'offers',
-						'edit'    => $id,
-					), admin_url( 'admin.php' ) ),
+					array(
+						'text' => __( 'Offers', 'woofunnels-upstroke-one-click-upsell' ),
+						'link' => add_query_arg(
+							array(
+								'page'    => 'upstroke',
+								'section' => 'offers',
+								'edit'    => $id,
+							),
+							admin_url( 'admin.php' )
+						),
 
-				),
-				array(
-					'text' => __( 'Design', 'woofunnels-upstroke-one-click-upsell' ),
-					'link' => add_query_arg( array(
-						'page'    => 'upstroke',
-						'section' => 'design',
-						'edit'    => $id,
-					), admin_url( 'admin.php' ) ),
+					),
+					array(
+						'text' => __( 'Design', 'woofunnels-upstroke-one-click-upsell' ),
+						'link' => add_query_arg(
+							array(
+								'page'    => 'upstroke',
+								'section' => 'design',
+								'edit'    => $id,
+							),
+							admin_url( 'admin.php' )
+						),
 
-				),
-				array(
-					'text' => __( 'Rules', 'woofunnels-upstroke-one-click-upsell' ),
-					'link' => add_query_arg( array(
-						'page'    => 'upstroke',
-						'section' => 'rules',
-						'edit'    => $id,
-					), admin_url( 'admin.php' ) ),
+					),
+					array(
+						'text' => __( 'Rules', 'woofunnels-upstroke-one-click-upsell' ),
+						'link' => add_query_arg(
+							array(
+								'page'    => 'upstroke',
+								'section' => 'rules',
+								'edit'    => $id,
+							),
+							admin_url( 'admin.php' )
+						),
 
-				),
-				array(
-					'text' => __( 'Settings', 'woofunnels-upstroke-one-click-upsell' ),
-					'link' => add_query_arg( array(
-						'page'    => 'upstroke',
-						'section' => 'settings',
-						'edit'    => $id,
-					), admin_url( 'admin.php' ) ),
+					),
+					array(
+						'text' => __( 'Settings', 'woofunnels-upstroke-one-click-upsell' ),
+						'link' => add_query_arg(
+							array(
+								'page'    => 'upstroke',
+								'section' => 'settings',
+								'edit'    => $id,
+							),
+							admin_url( 'admin.php' )
+						),
 
-				),
-			) );
+					),
+				)
+			);
 			if ( 'yes' !== $wfocu_is_rules_saved ) {
 				$rules = $links[0];
 				unset( $links );
@@ -281,6 +303,7 @@ if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
 
 		/**
 		 * Retrieve an array of possible bulk actions.
+		 *
 		 * @return array
 		 * @since  1.0.0
 		 */
@@ -292,6 +315,7 @@ if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
 
 		/**
 		 * Prepare an array of items to be listed.
+		 *
 		 * @return array Prepared items.
 		 * @since  1.0.0
 		 */
@@ -303,22 +327,25 @@ if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
 
 			$total_items = $this->data['found_posts'];
 
-			$this->set_pagination_args( array(
-				'total_items' => $total_items, //WE have to calculate the total number of items
-				'per_page'    => $this->per_page, //WE have to determine how many items to show on a page
-			) );
+			$this->set_pagination_args(
+				array(
+					'total_items' => $total_items, // WE have to calculate the total number of items
+					'per_page'    => $this->per_page, // WE have to determine how many items to show on a page
+				)
+			);
 			$this->items = $this->data['items'];
 		}
 
 		protected function get_sortable_columns() {
 			return array(
-				'last_update' => [ 'modified', 1 ],
-				'priority'    => [ 'menu_order', 1 ],
+				'last_update' => array( 'modified', 1 ),
+				'priority'    => array( 'menu_order', 1 ),
 			);
 		}
 
 		/**
 		 * Retrieve an array of columns for the list table.
+		 *
 		 * @return array Key => Value pairs.
 		 * @since  1.0.0
 		 */
@@ -361,7 +388,6 @@ if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
 		 * @param string $input_id ID attribute value for the search input field.
 		 *
 		 * @since 3.1.0
-		 *
 		 */
 		public function search_box( $text = '', $input_id = 'wfocu' ) {
 			$input_id = $input_id . '-search-input';
@@ -379,20 +405,23 @@ if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
 				echo '<input type="hidden" name="detached" value="' . esc_attr( wc_clean( $_REQUEST['detached'] ) ) . '" />'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			}
 			?>
-            <p class="search-box">
-                <label class="screen-reader-text" for="<?php echo esc_attr( $input_id ); ?>"><?php echo esc_html( $text ); ?>:</label>
-                <input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="s" value="<?php _admin_search_query(); ?>"/>
+			<p class="search-box">
+				<label class="screen-reader-text" for="<?php echo esc_attr( $input_id ); ?>"><?php echo esc_html( $text ); ?>:</label>
+				<input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="s" value="<?php _admin_search_query(); ?>"/>
 				<?php submit_button( $text, '', '', false, array( 'id' => 'search-submit' ) ); ?>
-            </p>
+			</p>
 			<?php
 		}
 
 		public static function render_trigger_nav() {
-			$get_campaign_statuses = apply_filters( 'wfocu_admin_trigger_nav', array(
-				'all'      => __( 'All', 'woofunnels-upstroke-one-click-upsell' ),
-				'active'   => __( 'Active', 'woofunnels-upstroke-one-click-upsell' ),
-				'inactive' => __( 'Inactive', 'woofunnels-upstroke-one-click-upsell' ),
-			) );
+			$get_campaign_statuses = apply_filters(
+				'wfocu_admin_trigger_nav',
+				array(
+					'all'      => __( 'All', 'woofunnels-upstroke-one-click-upsell' ),
+					'active'   => __( 'Active', 'woofunnels-upstroke-one-click-upsell' ),
+					'inactive' => __( 'Inactive', 'woofunnels-upstroke-one-click-upsell' ),
+				)
+			);
 			$html                  = '<ul class="subsubsub subsubsub_wfocu">';
 			$html_inside           = array();
 			$current_status        = 'all';
@@ -420,54 +449,54 @@ if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
 
 		public function order_preview_template() {
 			?>
-            <script type="text/template" id="tmpl-wfocu-funnel-popup">
-                <div class="wc-backbone-modal wc-order-preview">
-                    <div class="wc-backbone-modal-content">
-                        <section class="wc-backbone-modal-main" role="main">
-                            <header class="wc-backbone-modal-header">
-                                <h1>{{data.funnel_name}}</h1>
-                                <mark class="wfocu-os order-status status-{{ data.status.toLowerCase() }}">
-                                    <# if(data.status == 'Deactivated') { #>
-                                    <span v-if="">Inactive</span>
-                                    <# } else {#>
-                                    <span v-else>Active</span>
-                                    <# } #>
-                                </mark>
-                                <button class="modal-close modal-close-link dashicons dashicons-no-alt">
-                                    <span class="screen-reader-text"><?php esc_html_e( 'Close modal panel', 'woocommerce' ); ?></span>
-                                </button>
-                            </header>
-                            <article>
-                                <div class="wfocu-fp-wrap">
-                                    <# if(data.offers.length > 0) { #>
-                                    <# _(data.offers).each(function(it) { #>
-                                    <div class="wfocu-fp-cont">
-                                        <div class="wfocu-fp-name wfocu-fp-state-{{it.offer_state}}">{{it.offer_name}}</div>
-                                        <div class="wfocu-fp-offer-type">Type: {{it.offer_type}}</div>
-                                        <div class="wfocu-fp-offer-products">Product(s):
-                                            <# if(it.offer_products == '') { #>
+			<script type="text/template" id="tmpl-wfocu-funnel-popup">
+				<div class="wc-backbone-modal wc-order-preview">
+					<div class="wc-backbone-modal-content">
+						<section class="wc-backbone-modal-main" role="main">
+							<header class="wc-backbone-modal-header">
+								<h1>{{data.funnel_name}}</h1>
+								<mark class="wfocu-os order-status status-{{ data.status.toLowerCase() }}">
+									<# if(data.status == 'Deactivated') { #>
+									<span v-if="">Inactive</span>
+									<# } else {#>
+									<span v-else>Active</span>
+									<# } #>
+								</mark>
+								<button class="modal-close modal-close-link dashicons dashicons-no-alt">
+									<span class="screen-reader-text"><?php esc_html_e( 'Close modal panel', 'woocommerce' ); ?></span>
+								</button>
+							</header>
+							<article>
+								<div class="wfocu-fp-wrap">
+									<# if(data.offers.length > 0) { #>
+									<# _(data.offers).each(function(it) { #>
+									<div class="wfocu-fp-cont">
+										<div class="wfocu-fp-name wfocu-fp-state-{{it.offer_state}}">{{it.offer_name}}</div>
+										<div class="wfocu-fp-offer-type">Type: {{it.offer_type}}</div>
+										<div class="wfocu-fp-offer-products">Product(s):
+											<# if(it.offer_products == '') { #>
 											<?php esc_attr_e( 'None', 'woofunnels-upstroke-one-click-upsell' ); ?>
-                                            <# } else {#>
-                                            <# print(it.offer_products) #>
-                                            <# } #>
-                                        </div>
-                                    </div>
-                                    <# }) #>
-                                    <# } else {#>
-                                    <div class="wfocu-funnel-pop-no-offer"> <?php esc_attr_e( 'No Offers in this funnel', 'woofunnels-upstroke-one-click-upsell' ); ?></div>
-                                    <# } #>
-                                </div>
-                            </article>
-                            <footer>
-                                <div class="inner">
-                                    <a href="{{data.launch_url}}" class="button button-primary wfocu-funnel-pop-launch-btn "><?php esc_attr_e( 'Launch', 'woofunnels-upstroke-one-click-upsell' ); ?></a>
-                                </div>
-                            </footer>
-                        </section>
-                    </div>
-                </div>
-                <div class="wc-backbone-modal-backdrop modal-close"></div>
-            </script>
+											<# } else {#>
+											<# print(it.offer_products) #>
+											<# } #>
+										</div>
+									</div>
+									<# }) #>
+									<# } else {#>
+									<div class="wfocu-funnel-pop-no-offer"> <?php esc_attr_e( 'No Offers in this funnel', 'woofunnels-upstroke-one-click-upsell' ); ?></div>
+									<# } #>
+								</div>
+							</article>
+							<footer>
+								<div class="inner">
+									<a href="{{data.launch_url}}" class="button button-primary wfocu-funnel-pop-launch-btn "><?php esc_attr_e( 'Launch', 'woofunnels-upstroke-one-click-upsell' ); ?></a>
+								</div>
+							</footer>
+						</section>
+					</div>
+				</div>
+				<div class="wc-backbone-modal-backdrop modal-close"></div>
+			</script>
 			<?php
 		}
 
@@ -477,27 +506,25 @@ if ( ! class_exists( 'WFOCU_Post_Table' ) ) {
 		 * @param string $which
 		 *
 		 * @since 3.1.0
-		 *
 		 */
 		protected function display_tablenav( $which ) {
 
 			?>
-            <div class="tablenav <?php echo esc_attr( $which ); ?>">
+			<div class="tablenav <?php echo esc_attr( $which ); ?>">
 
 				<?php if ( $this->has_items() ) : ?>
-                    <div class="alignleft actions bulkactions">
+					<div class="alignleft actions bulkactions">
 						<?php $this->bulk_actions( $which ); ?>
-                    </div>
-				<?php
+					</div>
+					<?php
 				endif;
 				$this->extra_tablenav( $which );
 				$this->pagination( $which );
 				?>
 
-                <br class="clear"/>
-            </div>
+				<br class="clear"/>
+			</div>
 			<?php
 		}
-
 	}
 }

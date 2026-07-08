@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFTY_Rule_Order_Total' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Total extends WFTY_Rule_Base {
 		public function __construct() {
 			parent::__construct( 'order_total' );
@@ -27,7 +28,10 @@ if ( ! class_exists( 'WFTY_Rule_Order_Total' ) ) {
 			$result   = false;
 			$order_id = $this->get_rule_instance()->get_environment_var( 'order' );
 			$order    = wc_get_order( $order_id );
-			$price    = $order->get_total();
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
+			$price = $order->get_total();
 
 			if ( isset( $rule_data['condition'] ) ) {
 				$value = (float) $rule_data['condition'];
@@ -60,13 +64,13 @@ if ( ! class_exists( 'WFTY_Rule_Order_Total' ) ) {
 		}
 
 		public function get_nice_string( $rule ) {
-			return sprintf( __( 'Order Total %s  <strong>%s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), wc_price( $rule['condition'] ) );
+			return sprintf( __( 'Order Total %1$s  <strong>%2$s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), wc_price( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Order_Item_Count' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Item_Count extends WFTY_Rule_Base {
 
 		public function __construct() {
@@ -95,6 +99,9 @@ if ( ! class_exists( 'WFTY_Rule_Order_Item_Count' ) ) {
 			$result   = false;
 			$order_id = $this->get_rule_instance()->get_environment_var( 'order' );
 			$order    = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
 
 			$count = $order->get_item_count();
 
@@ -130,12 +137,12 @@ if ( ! class_exists( 'WFTY_Rule_Order_Item_Count' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order Items count %s  <strong>%s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $rule['condition'] );
+			return sprintf( __( 'Order Items count %1$s  <strong>%2$s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $rule['condition'] );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Order_Item' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Item extends WFTY_Rule_Base {
 
 		public function __construct() {
@@ -145,11 +152,11 @@ if ( ! class_exists( 'WFTY_Rule_Order_Item' ) ) {
 		public function get_possible_rule_operators() {
 
 			$operators = array(
-				'>' => __( 'contains at least', 'funnel-builder-powerpack' ),
-				'<' => __( 'contains less than', 'funnel-builder-powerpack' ),
+				'>'  => __( 'contains at least', 'funnel-builder-powerpack' ),
+				'<'  => __( 'contains less than', 'funnel-builder-powerpack' ),
 
 				'==' => __( 'contains exactly', 'funnel-builder-powerpack' ),
-				'!=' => __( "does not contain at least", 'funnel-builder-powerpack' ),
+				'!=' => __( 'does not contain at least', 'funnel-builder-powerpack' ),
 			);
 
 			return $operators;
@@ -238,7 +245,7 @@ if ( ! class_exists( 'WFTY_Rule_Order_Item' ) ) {
 				case '==':
 					$result = absint( $quantity ) === absint( $found_quantity );
 					break;
-				case '!=' :
+				case '!=':
 					$result = ! ( $quantity <= $found_quantity );
 					break;
 				default:
@@ -251,7 +258,7 @@ if ( ! class_exists( 'WFTY_Rule_Order_Item' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order items %s <strong>%s qty</strong> of <strong>%s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $rule['condition']['qty'], wc_get_product( $rule['condition']['products'] )->get_title() );
+			return sprintf( __( 'Order items %1$s <strong>%2$s qty</strong> of <strong>%3$s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $rule['condition']['qty'], wc_get_product( $rule['condition']['products'] )->get_title() );
 		}
 
 		public function get_operators_string( $operator ) {
@@ -271,10 +278,10 @@ if ( ! class_exists( 'WFTY_Rule_Order_Item' ) ) {
 
 			}
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Order_Category' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Category extends WFTY_Rule_Base {
 
 
@@ -297,7 +304,12 @@ if ( ! class_exists( 'WFTY_Rule_Order_Category' ) ) {
 		public function get_possible_rule_values() {
 			$result = array();
 
-			$terms = get_terms( 'product_cat', array( 'hide_empty' => false ) );
+			$terms = get_terms(
+				array(
+					'taxonomy'   => 'product_cat',
+					'hide_empty' => false,
+				)
+			); //phpcs:ignore WordPress.WP.DeprecatedParameters.Get_termsParam2Found
 			if ( $terms && ! is_wp_error( $terms ) ) {
 				foreach ( $terms as $term ) {
 					$result[ $term->term_id ] = $term->name;
@@ -318,6 +330,9 @@ if ( ! class_exists( 'WFTY_Rule_Order_Category' ) ) {
 			$all_terms = array();
 			$order_id  = $this->get_rule_instance()->get_environment_var( 'order' );
 			$order     = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
 			if ( $order->get_items() && is_array( $order->get_items() ) && count( $order->get_items() ) ) {
 				foreach ( $order->get_items() as $cart_item ) {
 					$product = BWF_WC_Compatibility::get_product_from_item( $order, $cart_item );
@@ -365,13 +380,13 @@ if ( ! class_exists( 'WFTY_Rule_Order_Category' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order items %s Products with catergory(s) <strong>%s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_category_title( $rule['condition'] ) );
+			return sprintf( __( 'Order items %1$s Products with catergory(s) <strong>%2$s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_category_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Order_Term' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Term extends WFTY_Rule_Base {
 
 
@@ -394,7 +409,12 @@ if ( ! class_exists( 'WFTY_Rule_Order_Term' ) ) {
 		public function get_possible_rule_values() {
 			$result = array();
 
-			$terms = get_terms( 'product_tag', array( 'hide_empty' => false ) );
+			$terms = get_terms(
+				array(
+					'taxonomy'   => 'product_tag',
+					'hide_empty' => false,
+				)
+			); //phpcs:ignore WordPress.WP.DeprecatedParameters.Get_termsParam2Found
 			if ( $terms && ! is_wp_error( $terms ) ) {
 				foreach ( $terms as $term ) {
 					$result[ $term->term_id ] = $term->name;
@@ -414,6 +434,9 @@ if ( ! class_exists( 'WFTY_Rule_Order_Term' ) ) {
 			$all_terms = array();
 			$order_id  = $this->get_rule_instance()->get_environment_var( 'order' );
 			$order     = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
 			if ( $order->get_items() && is_array( $order->get_items() ) && count( $order->get_items() ) ) {
 				foreach ( $order->get_items() as $cart_item ) {
 					$product = BWF_WC_Compatibility::get_product_from_item( $order, $cart_item );
@@ -462,12 +485,12 @@ if ( ! class_exists( 'WFTY_Rule_Order_Term' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order items %s Products with term(s) <strong>%s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_terms_title( $rule['condition'] ) );
+			return sprintf( __( 'Order items %1$s Products with term(s) <strong>%2$s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_terms_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Order_Item_Type' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Item_Type extends WFTY_Rule_Base {
 
 
@@ -487,8 +510,13 @@ if ( ! class_exists( 'WFTY_Rule_Order_Item_Type' ) ) {
 		}
 
 		public function get_possible_rule_values() {
-			$result = [];
-			$terms  = get_terms( 'product_type', array( 'hide_empty' => false ) );
+			$result = array();
+			$terms  = get_terms(
+				array(
+					'taxonomy'   => 'product_type',
+					'hide_empty' => false,
+				)
+			); //phpcs:ignore WordPress.WP.DeprecatedParameters.Get_termsParam2Found
 			if ( $terms && ! is_wp_error( $terms ) ) {
 				foreach ( $terms as $term ) {
 					if ( 'grouped' === $term->name ) {
@@ -513,6 +541,9 @@ if ( ! class_exists( 'WFTY_Rule_Order_Item_Type' ) ) {
 
 			$order_id = $this->get_rule_instance()->get_environment_var( 'order' );
 			$order    = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
 
 			if ( $order->get_items() && count( $order->get_items() ) ) {
 				foreach ( $order->get_items() as $cart_item ) {
@@ -527,7 +558,6 @@ if ( ! class_exists( 'WFTY_Rule_Order_Item_Type' ) ) {
 
 				}
 			}
-
 
 			$all_types = array_filter( $all_types );
 			if ( empty( $all_types ) ) {
@@ -558,13 +588,12 @@ if ( ! class_exists( 'WFTY_Rule_Order_Item_Type' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order items %s Products with type(s) <strong>%s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_product_type( $rule['condition'] ) );
+			return sprintf( __( 'Order items %1$s Products with type(s) <strong>%2$s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_product_type( $rule['condition'] ) );
 		}
-
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Order_Coupons' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Coupons extends WFTY_Rule_Base {
 
 
@@ -585,11 +614,13 @@ if ( ! class_exists( 'WFTY_Rule_Order_Coupons' ) ) {
 
 		public function get_possible_rule_values() {
 			$result  = array();
-			$coupons = get_posts( array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
+			$coupons = get_posts(
+				array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
 				'post_type'      => 'shop_coupon',
 				'posts_per_page' => 5,
 
-			) );
+				)
+			);
 
 			foreach ( $coupons as $coupon ) {
 				$result[ sanitize_title( $coupon->post_title ) ] = $coupon->post_title;
@@ -603,10 +634,13 @@ if ( ! class_exists( 'WFTY_Rule_Order_Coupons' ) ) {
 		}
 
 		public function is_match( $rule_data, $env = 'cart' ) {
-			$result       = false;
-			$type         = $rule_data['operator'];
-			$order_id     = $this->get_rule_instance()->get_environment_var( 'order' );
-			$order        = wc_get_order( $order_id );
+			$result   = false;
+			$type     = $rule_data['operator'];
+			$order_id = $this->get_rule_instance()->get_environment_var( 'order' );
+			$order    = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
 			$used_coupons = BWF_WC_Compatibility::get_used_coupons( $order );
 
 			if ( empty( $used_coupons ) ) {
@@ -649,12 +683,12 @@ if ( ! class_exists( 'WFTY_Rule_Order_Coupons' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order %s coupons(s) <strong>%s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_coupons_title( $rule['condition'] ) );
+			return sprintf( __( 'Order %1$s coupons(s) <strong>%2$s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_coupons_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Order_Coupon_Exist' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Coupon_Exist extends WFTY_Rule_Base {
 
 
@@ -683,9 +717,12 @@ if ( ! class_exists( 'WFTY_Rule_Order_Coupon_Exist' ) ) {
 		}
 
 		public function is_match( $rule_data, $env = 'cart' ) {
-			$type         = $rule_data['operator'];
-			$order_id     = $this->get_rule_instance()->get_environment_var( 'order' );
-			$order        = wc_get_order( $order_id );
+			$type     = $rule_data['operator'];
+			$order_id = $this->get_rule_instance()->get_environment_var( 'order' );
+			$order    = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
 			$used_coupons = BWF_WC_Compatibility::get_used_coupons( $order );
 			$res          = true;
 			if ( empty( $used_coupons ) ) {
@@ -707,10 +744,10 @@ if ( ! class_exists( 'WFTY_Rule_Order_Coupon_Exist' ) ) {
 
 			return sprintf( __( 'Order %s any coupon. ', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Order_Coupon_Text_Match' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Coupon_Text_Match extends WFTY_Rule_Base {
 
 
@@ -742,15 +779,18 @@ if ( ! class_exists( 'WFTY_Rule_Order_Coupon_Text_Match' ) ) {
 
 		public function is_match( $rule_data, $env = 'cart' ) {
 
-			$type         = $rule_data['operator'];
-			$order_id     = $this->get_rule_instance()->get_environment_var( 'order' );
-			$order        = wc_get_order( $order_id );
+			$type     = $rule_data['operator'];
+			$order_id = $this->get_rule_instance()->get_environment_var( 'order' );
+			$order    = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
 			$used_coupons = BWF_WC_Compatibility::get_used_coupons( $order );
 
 			$result = false;
 			if ( empty( $used_coupons ) || empty( $rule_data['condition'] ) ) {
 
-				if ( $type === "doesnt_contain" ) {
+				if ( $type === 'doesnt_contain' ) {
 					$result = true;
 				}
 
@@ -790,12 +830,12 @@ if ( ! class_exists( 'WFTY_Rule_Order_Coupon_Text_Match' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order %s coupon that matches with %s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $rule['condition'] );
+			return sprintf( __( 'Order %1$s coupon that matches with %2$s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $rule['condition'] );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Order_Custom_Meta' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Custom_Meta extends WFTY_Rule_Base {
 		public $supports = array( 'order' );
 
@@ -854,12 +894,12 @@ if ( ! class_exists( 'WFTY_Rule_Order_Custom_Meta' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order %s meta %s with value %s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $rule['condition']['meta_key'], $rule['condition']['meta_value'] );
+			return sprintf( __( 'Order %1$s meta %2$s with value %3$s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $rule['condition']['meta_key'], $rule['condition']['meta_value'] );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Order_Payment_Gateway' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Payment_Gateway extends WFTY_Rule_Base {
 		public $supports = array( 'order' );
 
@@ -900,7 +940,10 @@ if ( ! class_exists( 'WFTY_Rule_Order_Payment_Gateway' ) ) {
 			$type     = $rule_data['operator'];
 			$order_id = $this->get_rule_instance()->get_environment_var( 'order' );
 			$order    = wc_get_order( $order_id );
-			$payment  = BWF_WC_Compatibility::get_payment_gateway_from_order( $order );
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
+			$payment = BWF_WC_Compatibility::get_payment_gateway_from_order( $order );
 
 			if ( empty( $payment ) ) {
 				return $this->return_is_match( false, $rule_data );
@@ -925,13 +968,13 @@ if ( ! class_exists( 'WFTY_Rule_Order_Payment_Gateway' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order payment method %s of %s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_gateways_title( $rule['condition'] ) );
+			return sprintf( __( 'Order payment method %1$s of %2$s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_gateways_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Order_Shipping_Country' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Shipping_Country extends WFTY_Rule_Base {
 
 
@@ -962,10 +1005,13 @@ if ( ! class_exists( 'WFTY_Rule_Order_Shipping_Country' ) ) {
 
 		public function is_match( $rule_data, $env = 'cart' ) {
 
-			$result           = false;
-			$type             = $rule_data['operator'];
-			$order_id         = $this->get_rule_instance()->get_environment_var( 'order' );
-			$order            = wc_get_order( $order_id );
+			$result   = false;
+			$type     = $rule_data['operator'];
+			$order_id = $this->get_rule_instance()->get_environment_var( 'order' );
+			$order    = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
 			$shipping_country = BWF_WC_Compatibility::get_shipping_country_from_order( $order );
 
 			if ( empty( $shipping_country ) ) {
@@ -998,13 +1044,13 @@ if ( ! class_exists( 'WFTY_Rule_Order_Shipping_Country' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order shipping country %s %s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_countries_title( $rule['condition'] ) );
+			return sprintf( __( 'Order shipping country %1$s %2$s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_countries_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Order_Shipping_Method' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Shipping_Method extends WFTY_Rule_Base {
 
 
@@ -1045,6 +1091,9 @@ if ( ! class_exists( 'WFTY_Rule_Order_Shipping_Method' ) ) {
 
 			$order_id = $this->get_rule_instance()->get_environment_var( 'order' );
 			$order    = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
 
 			$methods = array();
 
@@ -1082,13 +1131,13 @@ if ( ! class_exists( 'WFTY_Rule_Order_Shipping_Method' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order shipping method %s of %s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_shipping_method_title( $rule['condition'] ) );
+			return sprintf( __( 'Order shipping method %1$s of %2$s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_shipping_method_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Order_Billing_Country' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Billing_Country extends WFTY_Rule_Base {
 
 
@@ -1120,10 +1169,13 @@ if ( ! class_exists( 'WFTY_Rule_Order_Billing_Country' ) ) {
 
 		public function is_match( $rule_data, $env = 'cart' ) {
 
-			$result          = false;
-			$type            = $rule_data['operator'];
-			$order_id        = $this->get_rule_instance()->get_environment_var( 'order' );
-			$order           = wc_get_order( $order_id );
+			$result   = false;
+			$type     = $rule_data['operator'];
+			$order_id = $this->get_rule_instance()->get_environment_var( 'order' );
+			$order    = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
 			$billing_country = BWF_WC_Compatibility::get_billing_country_from_order( $order );
 
 			if ( empty( $billing_country ) ) {
@@ -1156,14 +1208,14 @@ if ( ! class_exists( 'WFTY_Rule_Order_Billing_Country' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order Billing country %s %s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_countries_title( $rule['condition'] ) );
+			return sprintf( __( 'Order Billing country %1$s %2$s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_countries_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Order_Billing_State' ) ) {
 
 	/** WOOCOMMERCE SUBSCRIPTION PLUGIN RULE ENDS */
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Order_Billing_State extends WFTY_Rule_Base {
 
 
@@ -1192,10 +1244,13 @@ if ( ! class_exists( 'WFTY_Rule_Order_Billing_State' ) ) {
 
 		public function is_match( $rule_data, $env = 'cart' ) {
 
-			$result          = false;
-			$type            = $rule_data['operator'];
-			$order_id        = $this->get_rule_instance()->get_environment_var( 'order' );
-			$order           = wc_get_order( $order_id );
+			$result   = false;
+			$type     = $rule_data['operator'];
+			$order_id = $this->get_rule_instance()->get_environment_var( 'order' );
+			$order    = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
 			$billing_country = BWF_WC_Compatibility::get_billing_country_from_order( $order );
 
 			if ( empty( $billing_country ) ) {
@@ -1228,9 +1283,7 @@ if ( ! class_exists( 'WFTY_Rule_Order_Billing_State' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Order Billing state %s of %s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_countries_title( $rule['condition'] ) );
+			return sprintf( __( 'Order Billing state %1$s of %2$s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_countries_title( $rule['condition'] ) );
 		}
-
-
 	}
 }

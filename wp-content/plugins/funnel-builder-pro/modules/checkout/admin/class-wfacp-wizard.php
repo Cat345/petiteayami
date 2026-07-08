@@ -15,6 +15,12 @@ if ( ! class_exists( 'WFACP_Wizard' ) ) {
 		public static $key = '';
 
 		public static function init() {
+			$is_admin_enabled = ! class_exists( 'WFFN_Pro_Checkout_Support' )
+				|| ! method_exists( 'WFFN_Pro_Checkout_Support', 'is_admin_enabled' )
+				|| WFFN_Pro_Checkout_Support::is_admin_enabled();
+			if ( ! $is_admin_enabled ) {
+				return;
+			}
 			add_action( 'admin_init', array( __CLASS__, 'steps' ), 4 );
 			if ( ! empty( $_GET['page'] ) && 'wfacp' === $_GET['page'] &&  // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			     ! empty( $_GET['tab'] ) && WFACP_SLUG . '-wizard' === $_GET['tab']  // phpcs:ignore WordPress.Security.NonceVerification.Missing

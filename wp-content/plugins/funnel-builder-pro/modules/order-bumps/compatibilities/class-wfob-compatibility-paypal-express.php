@@ -5,11 +5,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WFOB_Compatibility_With_Paypal_Express' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_Paypal_Express {
 
 		public function __construct() {
-			add_filter( 'wfob_skip_order_bump', [ $this, 'check_ppec_checkout_enable' ], 10, 2 );
-			add_filter( 'wfob_do_not_execute_bump_fragments', [ $this, 'do_not_print_bumps_html' ] );
+			add_filter( 'wfob_skip_order_bump', array( $this, 'check_ppec_checkout_enable' ), 10, 2 );
+			add_filter( 'wfob_do_not_execute_bump_fragments', array( $this, 'do_not_print_bumps_html' ) );
 		}
 
 		public function has_active_session() {

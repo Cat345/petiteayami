@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Output_Field_Background' ) ) {
 	/**
 	 * Output overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Output_Field_Background extends WFOCUKirki_Output {
 
 		/**
@@ -24,22 +25,25 @@ if ( ! class_exists( 'WFOCUKirki_Output_Field_Background' ) ) {
 		 */
 		protected function process_output( $output, $value ) {
 
-			$output = wp_parse_args( $output, array(
+			$output = wp_parse_args(
+				$output,
+				array(
 					'media_query' => 'global',
 					'element'     => 'body',
 					'prefix'      => '',
 					'suffix'      => '',
-				) );
+				)
+			);
 
 			foreach ( array( 'background-image', 'background-color', 'background-repeat', 'background-position', 'background-size', 'background-attachment' ) as $property ) {
 
 				// See https://github.com/aristath/kirki/issues/1808.
 				if ( 'background-color' === $property && ( ! isset( $value['background-image'] ) || empty( $value['background-image'] ) ) ) {
-					$this->styles[ $output['media_query'] ][ $output['element'] ]['background'] = $output['prefix'] . $this->process_property_value( $property, $value[ $property ] ) . $output['suffix'];
+					$this->styles[ $output['media_query'] ][ $output['element'] ]['background'] = $output['prefix'] . self::sanitize_css_value( $this->process_property_value( $property, $value[ $property ] ) ) . $output['suffix'];
 				}
 
 				if ( isset( $value[ $property ] ) && ! empty( $value[ $property ] ) ) {
-					$this->styles[ $output['media_query'] ][ $output['element'] ][ $property ] = $output['prefix'] . $this->process_property_value( $property, $value[ $property ] ) . $output['suffix'];
+					$this->styles[ $output['media_query'] ][ $output['element'] ][ $property ] = $output['prefix'] . self::sanitize_css_value( $this->process_property_value( $property, $value[ $property ] ) ) . $output['suffix'];
 				}
 			}
 		}

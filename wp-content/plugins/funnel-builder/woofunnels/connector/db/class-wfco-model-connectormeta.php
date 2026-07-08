@@ -1,5 +1,9 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFCO_Model_ConnectorMeta' ) ) {
+	#[\AllowDynamicProperties]
 	class WFCO_Model_ConnectorMeta extends WFCO_Model {
 		static $primary_key = 'ID';
 
@@ -21,9 +25,7 @@ if ( ! class_exists( 'WFCO_Model_ConnectorMeta' ) ) {
 			global $wpdb;
 			$table = self::_table();
 
-			$sql_query = "SELECT * FROM $table WHERE connector_id =%d";
-			$sql_query = $wpdb->prepare( $sql_query, $id ); //phpcs:ignore WordPress.DB.PreparedSQL
-			$result    = $wpdb->get_results( $sql_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$result = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table WHERE connector_id = %d", $id ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table is a trusted internal identifier from self::_table(); $id bound via %d.
 			$meta      = [];
 
 			if ( is_array( $result ) && count( $result ) > 0 ) {

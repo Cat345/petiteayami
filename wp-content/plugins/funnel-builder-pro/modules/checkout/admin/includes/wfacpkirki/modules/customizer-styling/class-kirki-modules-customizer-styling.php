@@ -24,6 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Adds styles to the customizer.
  */
 if ( ! class_exists( 'WFACPKirki_Modules_Customizer_Styling' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Modules_Customizer_Styling {
 
 		/**
@@ -121,9 +122,9 @@ if ( ! class_exists( 'WFACPKirki_Modules_Customizer_Styling' ) ) {
                 #customize-control-changeset_preview_link input,
                 #customize-control-changeset_scheduled_date,
                 .wp-core-ui .wp-full-overlay .collapse-sidebar {
-                    background: <?php echo $back; // WPCS: XSS ok. ?>;
-                    background-color: <?php echo $back; // WPCS: XSS ok. ?>;
-                    color: <?php echo $text_on_back; // WPCS: XSS ok. ?>;
+                    background: <?php echo esc_attr( $back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    background-color: <?php echo esc_attr( $back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    color: <?php echo esc_attr( $text_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 <?php if ( $back ) : ?>
@@ -132,7 +133,7 @@ if ( ! class_exists( 'WFACPKirki_Modules_Customizer_Styling' ) ) {
                 }
 
                 .wp-core-ui .button-link-delete {
-                    color: <?php echo ( 90 > $back_obj->lightness ) ? '#FF8A80' : '#a00'; // WPCS: XSS ok. ?>;
+                    color: <?php echo esc_attr( ( 90 > $back_obj->lightness ) ? '#FF8A80' : '#a00' ); ?>;
                 }
 
                 .button.wp-color-result {
@@ -143,8 +144,8 @@ if ( ! class_exists( 'WFACPKirki_Modules_Customizer_Styling' ) ) {
 
 
                 #customize-sidebar-outer-content {
-                    border-left-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    border-right-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
+                    border-left-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    border-right-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 #customize-controls .customize-info .panel-title,
@@ -152,70 +153,70 @@ if ( ! class_exists( 'WFACPKirki_Modules_Customizer_Styling' ) ) {
                 #customize-controls .customize-pane-child h3.customize-section-title,
                 .customize-control,
                 #customize-controls .description {
-                    color: <?php echo $text_on_back; // WPCS: XSS ok. ?>;
+                    color: <?php echo esc_attr( $text_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 #customize-controls .customize-info,
                 #customize-header-actions,
                 .customize-section-title {
-                    border-bottom-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
+                    border-bottom-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .wp-full-overlay-sidebar .wp-full-overlay-header,
                 .customize-controls-close,
                 .expanded .wp-full-overlay-footer {
-                    color: <?php echo $text_on_back; // WPCS: XSS ok. ?>;
-                    background-color: <?php echo $back_on_back; // WPCS: XSS ok. ?>;
-                    border-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
+                    color: <?php echo esc_attr( $text_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    background-color: <?php echo esc_attr( $back_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    border-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .accordion-section,
                 #customize-theme-controls .customize-pane-child.accordion-section-content {
-                    background: <?php echo $back_on_back; // WPCS: XSS ok. ?>;
+                    background: <?php echo esc_attr( $back_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 #accordion-section-themes + .control-section,
                 #customize-theme-controls .control-section:last-of-type.open,
                 #customize-theme-controls .control-section:last-of-type > .accordion-section-title,
                 #customize-theme-controls .control-section.open {
-                    border-bottom-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    border-top-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
+                    border-bottom-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    border-top-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 #customize-theme-controls .accordion-section-title {
-                    border-bottom-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    border-left-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
+                    border-bottom-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    border-left-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 #customize-theme-controls .control-section-themes .accordion-section-title,
                 #customize-theme-controls .control-section-themes .accordion-section-title:hover {
-                    border-bottom-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    border-top-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    border-bottom-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
+                    border-bottom-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    border-top-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    border-bottom-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 #customize-theme-controls .accordion-section-title:after {
-                    color: <?php echo $arrows_on_back; // WPCS: XSS ok. ?>;
+                    color: <?php echo esc_attr( $arrows_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .wp-core-ui .button,
                 .wp-core-ui .button-secondary {
-                    background-color: <?php echo $back; // WPCS: XSS ok. ?>;
-                    border-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    box-shadow: 0 1px 0<?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    -webkit-box-shadow: 0 1px 0<?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    text-shadow: 0 -1px 1px <?php echo $border_on_back; // WPCS: XSS ok. ?>, 1px 0 1px <?php echo $border_on_back; // WPCS: XSS ok. ?>, 0 1px 1px <?php echo $border_on_back; // WPCS: XSS ok. ?>, -1px 0 1px<?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    color: <?php echo $text_on_back; // WPCS: XSS ok. ?>;
+                    background-color: <?php echo esc_attr( $back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    border-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    box-shadow: 0 1px 0<?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    -webkit-box-shadow: 0 1px 0<?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    text-shadow: 0 -1px 1px <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, 1px 0 1px <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, 0 1px 1px <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, -1px 0 1px<?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    color: <?php echo esc_attr( $text_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 @media screen and (max-width: 640px) {
                     .customize-controls-preview-toggle {
-                        background-color: <?php echo $back; // WPCS: XSS ok. ?>;
-                        border-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                        box-shadow: 0 1px 0<?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                        -webkit-box-shadow: 0 1px 0<?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                        text-shadow: 0 -1px 1px <?php echo $border_on_back; // WPCS: XSS ok. ?>, 1px 0 1px <?php echo $border_on_back; // WPCS: XSS ok. ?>, 0 1px 1px <?php echo $border_on_back; // WPCS: XSS ok. ?>, -1px 0 1px<?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                        color: <?php echo $text_on_back; // WPCS: XSS ok. ?>;
+                        background-color: <?php echo esc_attr( $back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                        border-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                        box-shadow: 0 1px 0<?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                        -webkit-box-shadow: 0 1px 0<?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                        text-shadow: 0 -1px 1px <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, 1px 0 1px <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, 0 1px 1px <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, -1px 0 1px<?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                        color: <?php echo esc_attr( $text_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                     }
                 }
 
@@ -229,12 +230,12 @@ if ( ! class_exists( 'WFACPKirki_Modules_Customizer_Styling' ) ) {
                 .wp-core-ui .button-secondary:hover,
                 .customize-panel-back,
                 .customize-section-back {
-                    background-color: <?php echo $back_on_back; // WPCS: XSS ok. ?>;
-                    border-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    box-shadow: 0 1px 0<?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    -webkit-box-shadow: 0 1px 0<?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    text-shadow: 0 -1px 1px <?php echo $border_on_back; // WPCS: XSS ok. ?>, 1px 0 1px <?php echo $border_on_back; // WPCS: XSS ok. ?>, 0 1px 1px <?php echo $border_on_back; // WPCS: XSS ok. ?>, -1px 0 1px<?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    color: <?php echo $text_on_back; // WPCS: XSS ok. ?>;
+                    background-color: <?php echo esc_attr( $back_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    border-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    box-shadow: 0 1px 0<?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    -webkit-box-shadow: 0 1px 0<?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    text-shadow: 0 -1px 1px <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, 1px 0 1px <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, 0 1px 1px <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, -1px 0 1px<?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    color: <?php echo esc_attr( $text_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 @media screen and (max-width: 640px) {
@@ -242,42 +243,42 @@ if ( ! class_exists( 'WFACPKirki_Modules_Customizer_Styling' ) ) {
                     .customize-controls-preview-toggle.hover,
                     .customize-controls-preview-toggle:focus,
                     .customize-controls-preview-toggle:hover {
-                        background-color: <?php echo $back_on_back; // WPCS: XSS ok. ?>;
-                        border-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                        box-shadow: 0 1px 0<?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                        -webkit-box-shadow: 0 1px 0<?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                        text-shadow: 0 -1px 1px <?php echo $border_on_back; // WPCS: XSS ok. ?>, 1px 0 1px <?php echo $border_on_back; // WPCS: XSS ok. ?>, 0 1px 1px <?php echo $border_on_back; // WPCS: XSS ok. ?>, -1px 0 1px<?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                        color: <?php echo $text_on_back; // WPCS: XSS ok. ?>;
+                        background-color: <?php echo esc_attr( $back_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                        border-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                        box-shadow: 0 1px 0<?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                        -webkit-box-shadow: 0 1px 0<?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                        text-shadow: 0 -1px 1px <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, 1px 0 1px <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, 0 1px 1px <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, -1px 0 1px<?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                        color: <?php echo esc_attr( $text_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                     }
                 }
 
                 .customize-control-wfacpkirki-background .background-attachment .buttonset .switch-label,
                 .customize-control-wfacpkirki-background .background-size .buttonset .switch-label,
                 .customize-control-wfacpkirki-radio-buttonset .buttonset .switch-label {
-                    color: <?php echo $text_on_back; // WPCS: XSS ok. ?>;
+                    color: <?php echo esc_attr( $text_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .wp-color-result {
-                    border-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    -webkit-box-shadow: 0 1px 0<?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    box-shadow: 0 1px 0<?php echo $border_on_back; // WPCS: XSS ok. ?>;
+                    border-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    -webkit-box-shadow: 0 1px 0<?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    box-shadow: 0 1px 0<?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .wp-color-result:focus,
                 .wp-color-result:hover {
-                    border-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    background: <?php echo $back_on_back; // WPCS: XSS ok. ?>;
+                    border-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    background: <?php echo esc_attr( $back_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .wp-color-result:after {
-                    border-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    background: <?php echo $back; // WPCS: XSS ok. ?>;
-                    color: <?php echo $text_on_back; // WPCS: XSS ok. ?>;
+                    border-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    background: <?php echo esc_attr( $back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    color: <?php echo esc_attr( $text_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .wp-color-result:focus:after,
                 .wp-color-result:hover:after {
-                    color: <?php echo $text_on_back; // WPCS: XSS ok. ?>;
+                    color: <?php echo esc_attr( $text_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .customize-control input[type=tel],
@@ -292,29 +293,29 @@ if ( ! class_exists( 'WFACPKirki_Modules_Customizer_Styling' ) ) {
                 .customize-control select,
                 .select2-container--default .select2-selection--single,
                 .select2-container--default .select2-selection--multiple {
-                    background: <?php echo $back; // WPCS: XSS ok. ?>;
-                    border-color: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
-                    color: <?php echo $text_on_back; // WPCS: XSS ok. ?>;
+                    background: <?php echo esc_attr( $back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    border-color: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    color: <?php echo esc_attr( $text_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .customize-control-wfacpkirki-slider input[type=range]::-webkit-slider-thumb {
-                    background-color: <?php echo $accent; // WPCS: XSS ok. ?>;
+                    background-color: <?php echo esc_attr( $accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .customize-control-wfacpkirki-slider input[type=range]::-moz-range-thumb {
-                    background-color: <?php echo $accent; // WPCS: XSS ok. ?>;
+                    background-color: <?php echo esc_attr( $accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .customize-control-wfacpkirki-slider input[type=range]::-ms-thumb {
-                    background-color: <?php echo $accent; // WPCS: XSS ok. ?>;
+                    background-color: <?php echo esc_attr( $accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .customize-control-wfacpkirki-slider input[type=range] {
-                    background: <?php echo $border_on_back; // WPCS: XSS ok. ?>;
+                    background: <?php echo esc_attr( $border_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .select2-container--default .select2-selection--single .select2-selection__rendered {
-                    color: <?php echo $text_on_back; // WPCS: XSS ok. ?>;
+                    color: <?php echo esc_attr( $text_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .wp-full-overlay-footer .devices {
@@ -325,7 +326,7 @@ if ( ! class_exists( 'WFACPKirki_Modules_Customizer_Styling' ) ) {
                 }
 
                 .wfacpkirki-reset-section .dashicons {
-                    color: <?php echo $back_on_back; // WPCS: XSS ok. ?>;
+                    color: <?php echo esc_attr( $back_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 #customize-controls .control-section .accordion-section-title:focus,
@@ -336,72 +337,72 @@ if ( ! class_exists( 'WFACPKirki_Modules_Customizer_Styling' ) ) {
                 .customize-panel-back:hover,
                 .customize-section-back:focus,
                 .customize-section-back:hover {
-                    background: <?php echo $hover_on_back; // WPCS: XSS ok. ?>;
-                    color: <?php echo $accent; // WPCS: XSS ok. ?>;
-                    border-left-color: <?php echo $accent; // WPCS: XSS ok. ?>;
+                    background: <?php echo esc_attr( $hover_on_back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    color: <?php echo esc_attr( $accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    border-left-color: <?php echo esc_attr( $accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .customize-controls-close:hover {
-                    background-color: <?php echo $back; // WPCS: XSS ok. ?>;
-                    color: <?php echo $accent; // WPCS: XSS ok. ?>;
-                    border-color: <?php echo $accent; // WPCS: XSS ok. ?>;
+                    background-color: <?php echo esc_attr( $back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    color: <?php echo esc_attr( $accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    border-color: <?php echo esc_attr( $accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 #customize-theme-controls .control-section .accordion-section-title:focus:after,
                 #customize-theme-controls .control-section .accordion-section-title:hover:after,
                 #customize-theme-controls .control-section.open .accordion-section-title:after,
                 #customize-theme-controls .control-section:hover > .accordion-section-title:after {
-                    color: <?php echo $accent; // WPCS: XSS ok. ?>;
+                    color: <?php echo esc_attr( $accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .wp-core-ui .button.button-primary {
-                    background-color: <?php echo $accent; // WPCS: XSS ok. ?>;
-                    border-color: <?php echo $border_on_accent; // WPCS: XSS ok. ?>;
-                    box-shadow: 0 1px 0<?php echo $border_on_accent; // WPCS: XSS ok. ?>;
-                    -webkit-box-shadow: 0 1px 0<?php echo $border_on_accent; // WPCS: XSS ok. ?>;
-                    text-shadow: 0 -1px 1px <?php echo $border_on_accent; // WPCS: XSS ok. ?>, 1px 0 1px <?php echo $border_on_accent; // WPCS: XSS ok. ?>, 0 1px 1px <?php echo $border_on_accent; // WPCS: XSS ok. ?>, -1px 0 1px<?php echo $border_on_accent; // WPCS: XSS ok. ?>;
-                    color: <?php echo $text_on_accent; // WPCS: XSS ok. ?>;
+                    background-color: <?php echo esc_attr( $accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    border-color: <?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    box-shadow: 0 1px 0<?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    -webkit-box-shadow: 0 1px 0<?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    text-shadow: 0 -1px 1px <?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, 1px 0 1px <?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, 0 1px 1px <?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, -1px 0 1px<?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    color: <?php echo esc_attr( $text_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .wp-core-ui .button.button-primary.focus,
                 .wp-core-ui .button.button-primary.hover,
                 .wp-core-ui .button.button-primary:focus,
                 .wp-core-ui .button.button-primary:hover {
-                    background-color: <?php echo $accent; // WPCS: XSS ok. ?>;
-                    border-color: <?php echo $border_on_accent; // WPCS: XSS ok. ?>;
-                    box-shadow: 0 1px 0<?php echo $border_on_accent; // WPCS: XSS ok. ?>;
-                    -webkit-box-shadow: 0 1px 0<?php echo $border_on_accent; // WPCS: XSS ok. ?>;
-                    text-shadow: 0 -1px 1px <?php echo $border_on_accent; // WPCS: XSS ok. ?>, 1px 0 1px <?php echo $border_on_accent; // WPCS: XSS ok. ?>, 0 1px 1px <?php echo $border_on_accent; // WPCS: XSS ok. ?>, -1px 0 1px<?php echo $border_on_accent; // WPCS: XSS ok. ?>;
-                    color: <?php echo $text_on_accent; // WPCS: XSS ok. ?>;
+                    background-color: <?php echo esc_attr( $accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    border-color: <?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    box-shadow: 0 1px 0<?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    -webkit-box-shadow: 0 1px 0<?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    text-shadow: 0 -1px 1px <?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, 1px 0 1px <?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, 0 1px 1px <?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, -1px 0 1px<?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    color: <?php echo esc_attr( $text_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .wp-core-ui .button.button-primary-disabled,
                 .wp-core-ui .button.button-primary.disabled,
                 .wp-core-ui .button.button-primary:disabled,
                 .wp-core-ui .button.button-primary[disabled] {
-                    background-color: <?php echo $accent_disabled; // WPCS: XSS ok. ?> !important;
-                    border-color: <?php echo $border_on_accent_disabled; // WPCS: XSS ok. ?> !important;
-                    box-shadow: 0 1px 0 <?php echo $border_on_accent_disabled; // WPCS: XSS ok. ?> !important;
-                    -webkit-box-shadow: 0 1px 0 <?php echo $border_on_accent_disabled; // WPCS: XSS ok. ?> !important;
-                    text-shadow: 0 -1px 1px <?php echo $border_on_accent_disabled; // WPCS: XSS ok. ?>, 1px 0 1px <?php echo $border_on_accent_disabled; // WPCS: XSS ok. ?>, 0 1px 1px <?php echo $border_on_accent_disabled; // WPCS: XSS ok. ?>, -1px 0 1px <?php echo $border_on_accent_disabled; // WPCS: XSS ok. ?> !important;
-                    color: <?php echo $text_on_accent_disabled; // WPCS: XSS ok. ?> !important;
+                    background-color: <?php echo esc_attr( $accent_disabled ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> !important;
+                    border-color: <?php echo esc_attr( $border_on_accent_disabled ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> !important;
+                    box-shadow: 0 1px 0 <?php echo esc_attr( $border_on_accent_disabled ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> !important;
+                    -webkit-box-shadow: 0 1px 0 <?php echo esc_attr( $border_on_accent_disabled ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> !important;
+                    text-shadow: 0 -1px 1px <?php echo esc_attr( $border_on_accent_disabled ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, 1px 0 1px <?php echo esc_attr( $border_on_accent_disabled ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, 0 1px 1px <?php echo esc_attr( $border_on_accent_disabled ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>, -1px 0 1px <?php echo esc_attr( $border_on_accent_disabled ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> !important;
+                    color: <?php echo esc_attr( $text_on_accent_disabled ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> !important;
                 }
 
                 input[type=checkbox]:checked:before {
-                    color: <?php echo $accent; // WPCS: XSS ok. ?>;
+                    color: <?php echo esc_attr( $accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .select2-container--default .select2-results__option--highlighted[aria-selected] {
-                    background-color: <?php echo $accent; // WPCS: XSS ok. ?>;
-                    color: <?php echo $text_on_accent; // WPCS: XSS ok. ?>;
+                    background-color: <?php echo esc_attr( $accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    color: <?php echo esc_attr( $text_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .customize-control-wfacpkirki-radio-buttonset .buttonset .switch-input:checked + .switch-label,
                 .customize-control-wfacpkirki-background .background-attachment .buttonset .switch-input:checked + .switch-label,
                 .customize-control-wfacpkirki-background .background-size .buttonset .switch-input:checked + .switch-label {
-                    background-color: <?php echo $accent; // WPCS: XSS ok. ?>;
-                    border-color: <?php echo $border_on_accent; // WPCS: XSS ok. ?>;
-                    color: <?php echo $text_on_accent; // WPCS: XSS ok. ?>;
+                    background-color: <?php echo esc_attr( $accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    border-color: <?php echo esc_attr( $border_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+                    color: <?php echo esc_attr( $text_on_accent ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
                 }
 
                 .notice,

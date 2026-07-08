@@ -1826,9 +1826,11 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 			 * @var $template WFACP_Elementor_template;
 			 */
 			if ( isset( $_COOKIE['wfacp_elementor_open_page'] ) && wp_doing_ajax() ) {
-				$cookie             = $_COOKIE['wfacp_elementor_open_page'];
-				$parts              = explode( '@', $cookie );
-				$this->current_step = $parts[1];
+				$cookie = sanitize_text_field( wp_unslash( $_COOKIE['wfacp_elementor_open_page'] ) );
+				$parts  = explode( '@', $cookie );
+				if ( isset( $parts[1] ) ) {
+					$this->current_step = sanitize_html_class( $parts[1] );
+				}
 				if ( ! empty( $this->current_step ) && 'single_step' !== $this->current_step ) {
 					$template->set_current_open_step( $this->current_step );
 					add_filter( 'wfacp_el_bread_crumb_active_class_key', array( $this, 'set_breadcrumb' ), 10, 2 );

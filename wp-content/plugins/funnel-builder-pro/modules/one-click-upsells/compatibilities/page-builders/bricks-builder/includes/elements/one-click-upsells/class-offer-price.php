@@ -10,6 +10,7 @@ use WFOCU_Common;
 use WC_Product;
 
 if ( ! class_exists( '\WfocuFunnelKit\Offer_Price' ) ) {
+	#[\AllowDynamicProperties]
 	class Offer_Price extends \Bricks\Element {
 		public $category = 'funnelkit';
 		public $name     = 'wfocu-offer-price';

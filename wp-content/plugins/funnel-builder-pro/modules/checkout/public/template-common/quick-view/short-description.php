@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Single product short description
  *
@@ -40,7 +44,7 @@ if ( ! $short_description ) {
 	return;
 }
 
-$desc=__('Description','woocommerce');
+$desc = __( 'Description', 'woocommerce' );
 
 ?>
 
@@ -49,7 +53,8 @@ $desc=__('Description','woocommerce');
 <div class="woocommerce-product-details__short-description">
 
 	<?php
-    if($short_description!=''){echo "<label class='description_label_head'>$desc</label>";}
-    echo $short_description; // WPCS: XSS ok.
-     ?>
+	if ( $short_description != '' ) {
+		echo "<label class='description_label_head'>" . esc_html( $desc ) . '</label>';}
+	echo $short_description; // WPCS: XSS ok.
+	?>
 </div>

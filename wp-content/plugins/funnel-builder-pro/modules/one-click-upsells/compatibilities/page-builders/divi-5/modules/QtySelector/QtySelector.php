@@ -49,6 +49,7 @@ foreach ( $traits as $trait_file ) {
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class QtySelector extends BaseModule {
 	use RenderCallbackTrait;
 	use ModuleClassnamesTrait;

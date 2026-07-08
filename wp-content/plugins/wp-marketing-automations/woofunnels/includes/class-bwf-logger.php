@@ -38,7 +38,7 @@ if ( ! class_exists( 'BWF_Logger' ) ) {
 
 			$old_content = $file_api->get_contents( $transient_key );
 			if ( ! empty( $old_content ) ) {
-				$old_content     = maybe_unserialize( $old_content );
+				$old_content     = bwf_safe_unserialize( $old_content );
 				$transient_value = $old_content . $transient_value;
 			}
 			$transient_value = maybe_serialize( $transient_value );

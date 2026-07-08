@@ -9,6 +9,10 @@
  * @license     http://opensource.org/licenses/https://opensource.org/licenses/MIT
  * @since       1.0
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_L10n' ) ) {
 	/**
 	 * Handles translations
@@ -50,7 +54,6 @@ if ( ! class_exists( 'WFACPKirki_L10n' ) ) {
 			// If we got this far, then WFACPKirki is embedded in a plugin.
 			// We want the theme's textdomain to handle translations.
 			add_filter( 'override_load_textdomain', array( $this, 'override_load_textdomain' ), 5, 3 );
-
 		}
 
 		/**
@@ -64,7 +67,6 @@ if ( ! class_exists( 'WFACPKirki_L10n' ) ) {
 				load_textdomain( $this->textdomain, $this->get_path() );
 			}
 			load_plugin_textdomain( $this->textdomain, false, WFACPKirki::$path . '/languages' );
-
 		}
 
 		/**
@@ -88,7 +90,6 @@ if ( ! class_exists( 'WFACPKirki_L10n' ) ) {
 			}
 
 			return $found_path;
-
 		}
 
 		/**
@@ -103,13 +104,12 @@ if ( ! class_exists( 'WFACPKirki_L10n' ) ) {
 				WP_LANG_DIR . '/' . $this->textdomain . '-' . get_locale() . '.mo',
 				WFACPKirki::$path . '/languages/' . $this->textdomain . '-' . get_locale() . '.mo',
 			);
-
 		}
 
 		/**
 		 * Allows overriding the "wfacpkirki" textdomain from a theme.
 		 *
-		 * @param bool $override Whether to override the .mo file loading. Default false.
+		 * @param bool   $override Whether to override the .mo file loading. Default false.
 		 * @param string $domain Text domain. Unique identifier for retrieving translated strings.
 		 * @param string $mofile Path to the MO file.
 		 *
@@ -131,7 +131,6 @@ if ( ! class_exists( 'WFACPKirki_L10n' ) ) {
 			}
 
 			return $override;
-
 		}
 
 		/**
@@ -156,7 +155,6 @@ if ( ! class_exists( 'WFACPKirki_L10n' ) ) {
 			}
 
 			return $this->theme_textdomain;
-
 		}
 	}
 }

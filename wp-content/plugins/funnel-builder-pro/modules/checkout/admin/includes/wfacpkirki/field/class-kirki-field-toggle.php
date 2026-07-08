@@ -12,7 +12,12 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Toggle' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Field_Toggle extends WFACPKirki_Field_Checkbox {
 
 		/**
@@ -23,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Toggle' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-toggle';
-
 		}
 	}
 }

@@ -820,7 +820,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 
 						$active  = apply_filters( 'wfacp_layout_9_active_progress_bar', $active, $step );
 						$p_class = 'wfacp_step_' . $key . ' wfacp_bred ' . $bread_visited . ' ' . $active . ' ' . $step;
-						echo "<li class='" . esc_attr( $p_class ) . "' step='" . esc_attr( $step ) . "' ><a href='javascript:void(0)' class='wfacp_step_text_have' data-text='" . esc_attr( sanitize_title( $value ) ) . "'>wp_kses_post($value)</a> </li>";//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo "<li class='" . esc_attr( $p_class ) . "' step='" . esc_attr( $step ) . "' ><a href='javascript:void(0)' class='wfacp_step_text_have' data-text='" . esc_attr( sanitize_title( $value ) ) . "'>" . esc_html( $value ) . '</a> </li>';
 					}
 					do_action( 'wfacp_after_breadcrumb' );
 					echo '</ul></div></div></div>';
@@ -1017,7 +1017,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 
 			if ( isset( $this->stepsData['progress_bar'] ) ) {
 				if ( isset( $this->form_data['select_type'] ) && 'progress_bar' === $this->form_data['select_type'] ) {
-					echo $this->stepsData['progress_bar'];//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo $this->stepsData['progress_bar']; // Safe: step values escaped at render time
 				}
 			}
 		}
@@ -1161,9 +1161,11 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 
 		public function set_active_step_on_cookie() {
 			if ( isset( $_COOKIE['wfacp_gutenberg_open_page'] ) && wp_doing_ajax() ) {
-				$cookie            = $_COOKIE['wfacp_gutenberg_open_page'];
-				$parts             = explode( '@', $cookie );
-				$current_open_step = $parts[1];
+				$cookie = sanitize_text_field( wp_unslash( $_COOKIE['wfacp_gutenberg_open_page'] ) );
+				$parts  = explode( '@', $cookie );
+				if ( isset( $parts[1] ) ) {
+					$current_open_step = sanitize_html_class( $parts[1] );
+				}
 				if ( ! empty( $current_open_step ) && 'single_step' !== $current_open_step ) {
 					$this->set_current_open_step( $current_open_step );
 					add_filter( 'wfacp_el_bread_crumb_active_class_key', array( $this, 'set_breadcrumb' ), 10, 2 );

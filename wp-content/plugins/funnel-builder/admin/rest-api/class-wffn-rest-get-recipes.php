@@ -22,10 +22,10 @@ if ( ! class_exists( 'WFFN_REST_Recipes' ) ) {
 		 * @var string
 		 */
 
-		protected $namespace = 'funnelkit-app';
-		protected $rest_base = 'automation';
+		protected $namespace     = 'funnelkit-app';
+		protected $rest_base     = 'automation';
 		protected $response_code = 200;
-		protected $total_count = 0;
+		protected $total_count   = 0;
 
 		public function __construct() {
 			add_action( 'rest_api_init', array( $this, 'register_routes' ) );
@@ -33,7 +33,7 @@ if ( ! class_exists( 'WFFN_REST_Recipes' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -44,15 +44,18 @@ if ( ! class_exists( 'WFFN_REST_Recipes' ) ) {
 		 */
 		public function register_routes() {
 
-
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/recent-carts', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/recent-carts',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_recent_carts' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => [],
-				),
-			) );
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_recent_carts' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(),
+					),
+				)
+			);
 		}
 
 		public function get_read_api_permission_check() {
@@ -61,23 +64,26 @@ if ( ! class_exists( 'WFFN_REST_Recipes' ) ) {
 
 
 		public function get_recent_carts() {
-			$recent_abandoned = $recovered_carts = [];
+			$recent_abandoned = $recovered_carts = array();
 			$recovered_count  = $abandoned_count = 0;
 
 			if ( function_exists( 'bwfan_is_woocommerce_active' ) && bwfan_is_woocommerce_active() ) {
-				$recovered_carts  = self::get_recovered_carts( 0, 10 );
+				$recovered_carts  = self::get_recovered_carts();
 				$recovered_count  = $recovered_carts['total_count'] ?? 0;
-				$recovered_carts  = isset( $recovered_carts['items'] ) ? $this->get_formatted_recovered_cart( $recovered_carts['items'] ) : [];
+				$recovered_carts  = isset( $recovered_carts['items'] ) ? $this->get_formatted_recovered_cart( $recovered_carts['items'] ) : array();
 				$ab_carts         = self::get_recent_abandoned();
-				$recent_abandoned = $ab_carts['ab_carts'] ?? [];
+				$recent_abandoned = $ab_carts['ab_carts'] ?? array();
 				$abandoned_count  = $ab_carts['total_count'] ?? 0;
 
 			}
 
 			$carts = array_merge( $recovered_carts, $recent_abandoned );
-			uasort( $carts, function ( $a, $b ) {
-				return $a['created_on'] >= $b['created_on'] ? - 1 : 1;
-			} );
+			uasort(
+				$carts,
+				function ( $a, $b ) {
+					return $a['created_on'] >= $b['created_on'] ? - 1 : 1;
+				}
+			);
 			$carts             = array_values( $carts );
 			$carts             = count( $carts ) > 10 ? array_slice( $carts, 0, 10 ) : $carts;
 			$this->total_count = $recovered_count + $abandoned_count;
@@ -105,7 +111,7 @@ if ( ! class_exists( 'WFFN_REST_Recipes' ) ) {
 
 			$results = $wpdb->get_var( $wpdb->prepare( "SELECT count(*) FROM $table WHERE `event` = %s AND `v` = %d", $event, $v ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-			return !empty($results);
+			return ! empty( $results );
 		}
 
 		/**
@@ -117,39 +123,48 @@ if ( ! class_exists( 'WFFN_REST_Recipes' ) ) {
 		 */
 		public static function get_recent_abandoned( $limit = 10 ) {
 			global $wpdb;
-			$abandoned_table = $wpdb->prefix . 'bwfan_abandonedcarts';
-			$contact_table   = $wpdb->prefix . 'bwf_contact';
+			$result = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT abandon.email, abandon.status, abandon.checkout_data, abandon.total AS revenue, abandon.currency, COALESCE(con.id, 0) AS id, COALESCE(con.f_name, '') AS f_name, COALESCE(con.l_name, '') AS l_name, abandon.created_time AS created_on
+					 FROM {$wpdb->prefix}bwfan_abandonedcarts AS abandon
+					 LEFT JOIN {$wpdb->prefix}bwf_contact AS con ON abandon.email = con.email
+					 WHERE abandon.status IN (0,1,2,3,4)
+					 ORDER BY abandon.ID DESC
+					 LIMIT %d OFFSET 0",
+					$limit
+				),
+				ARRAY_A
+			);
 
-			$query  = "SELECT abandon.email, abandon.status, abandon.checkout_data, abandon.total AS revenue, abandon.currency, COALESCE(con.id, 0) AS id, COALESCE(con.f_name, '') AS f_name, COALESCE(con.l_name, '') AS l_name,abandon.created_time AS created_on from $abandoned_table AS abandon LEFT JOIN $contact_table AS con ON abandon.email = con.email WHERE abandon.status IN (0,1,2,3,4) ORDER BY abandon.ID DESC LIMIT %d OFFSET 0";
-			$result = $wpdb->get_results( $wpdb->prepare( $query, $limit ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			$abandoned_carts = array_map(
+				function ( $cart ) {
+					if ( empty( $cart['f_name'] ) || empty( $cart['l_name'] ) ) {
+							$checkout_data  = ! empty( $cart['checkout_data'] ) ? json_decode( $cart['checkout_data'], true ) : array();
+							$cart['f_name'] = empty( $cart['f_name'] ) && ! empty( $checkout_data['fields']['billing_first_name'] ) ? $checkout_data['fields']['billing_first_name'] : $cart['f_name'];
+							$cart['l_name'] = empty( $cart['l_name'] ) && ! empty( $checkout_data['fields']['billing_last_name'] ) ? $checkout_data['fields']['billing_last_name'] : $cart['l_name'];
+					}
 
-			$abandoned_carts = array_map( function ( $cart ) {
-				if ( empty( $cart['f_name'] ) || empty( $cart['l_name'] ) ) {
-					$checkout_data  = ! empty( $cart['checkout_data'] ) ? json_decode( $cart['checkout_data'], true ) : [];
-					$cart['f_name'] = empty( $cart['f_name'] ) && ! empty( $checkout_data['fields']['billing_first_name'] ) ? $checkout_data['fields']['billing_first_name'] : $cart['f_name'];
-					$cart['l_name'] = empty( $cart['l_name'] ) && ! empty( $checkout_data['fields']['billing_last_name'] ) ? $checkout_data['fields']['billing_last_name'] : $cart['l_name'];
-				}
+					if ( isset( $cart['checkout_data'] ) ) {
+						unset( $cart['checkout_data'] );
+					}
 
-				if ( isset( $cart['checkout_data'] ) ) {
-					unset( $cart['checkout_data'] );
-				}
+					if ( ! isset( $cart['currency'] ) ) {
+						return $cart;
+					}
+					$cart['type']     = isset( $cart['status'] ) && 2 === intval( $cart['status'] ) ? 3 : 2;
+					$cart['currency'] = class_exists( 'BWFAN_Automations' ) ? BWFAN_Automations::get_currency( $cart['currency'] ) : array();
 
-				if ( ! isset( $cart['currency'] ) ) {
 					return $cart;
-				}
-				$cart['type']     = isset( $cart['status'] ) && 2 === intval( $cart['status'] ) ? 3 : 2;
-				$cart['currency'] = class_exists( 'BWFAN_Automations' ) ? BWFAN_Automations::get_currency( $cart['currency'] ) : [];
+				},
+				$result
+			);
 
-				return $cart;
-			}, $result );
+			$total_count = $wpdb->get_var( "SELECT COUNT(`ID`) FROM {$wpdb->prefix}bwfan_abandonedcarts WHERE `status` IN (0,1,2,3,4)" );
 
-			$count_query = "SELECT COUNT(`ID`) FROM $abandoned_table  WHERE `status` IN (0,1,2,3,4)";
-			$total_count = $wpdb->get_var( $count_query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-
-			return [
+			return array(
 				'ab_carts'    => $abandoned_carts,
 				'total_count' => intval( $total_count ),
-			];
+			);
 		}
 
 		/**
@@ -160,27 +175,42 @@ if ( ! class_exists( 'WFFN_REST_Recipes' ) ) {
 		 *
 		 * @return array
 		 */
-		public static function get_recovered_carts( $offset = '', $limit = '' ) {
+		public static function get_recovered_carts() {
 			global $wpdb;
-			$left_join = '';
-
-			$post_statuses = apply_filters( 'bwfan_recovered_cart_excluded_statuses', array(
-				'wc-pending',
-				'wc-failed',
-				'wc-cancelled',
-				'wc-refunded',
-				'trash',
-				'draft'
-			) );
-			$post_status   = "('" . implode( "','", array_filter( $post_statuses ) ) . "')";
-			$found_posts   = array();
+			$post_statuses = apply_filters(
+				'bwfan_recovered_cart_excluded_statuses',
+				array(
+					'wc-pending',
+					'wc-failed',
+					'wc-cancelled',
+					'wc-refunded',
+					'trash',
+					'draft',
+				)
+			);
+			$post_statuses = array_values( array_filter( (array) $post_statuses ) );
+			if ( empty( $post_statuses ) ) {
+				$post_statuses = array( '' ); // preserve original NOT IN ('') behaviour when the filter empties the list.
+			}
+			$found_posts = array();
 
 			if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-				$query = $wpdb->prepare( "SELECT p.id as id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s ORDER BY p.date_created_gmt DESC LIMIT $offset,$limit", 'shop_order', '_bwfan_ab_cart_recovered_a_id' ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$recovered_carts = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT p.id as id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN ( " . implode( ', ', array_fill( 0, count( $post_statuses ), '%s' ) ) . ' ) AND m.meta_key = %s ORDER BY p.date_created_gmt DESC LIMIT %d,%d',
+						array_merge( array( 'shop_order' ), $post_statuses, array( '_bwfan_ab_cart_recovered_a_id', 0, 10 ) )
+					),
+					ARRAY_A
+				);
 			} else {
-				$query = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s ORDER BY p.post_modified DESC LIMIT $offset,$limit", 'shop_order', '_bwfan_ab_cart_recovered_a_id' ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$recovered_carts = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN ( " . implode( ', ', array_fill( 0, count( $post_statuses ), '%s' ) ) . ' ) AND m.meta_key = %s ORDER BY p.post_modified DESC LIMIT %d,%d',
+						array_merge( array( 'shop_order' ), $post_statuses, array( '_bwfan_ab_cart_recovered_a_id', 0, 10 ) )
+					),
+					ARRAY_A
+				);
 			}
-			$recovered_carts = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
 			if ( empty( $recovered_carts ) ) {
 				return array();
@@ -196,14 +226,22 @@ if ( ! class_exists( 'WFFN_REST_Recipes' ) ) {
 			$found_posts['items'] = $items;
 
 			if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-				$count_query                = $wpdb->prepare( "SELECT DISTINCT COUNT(p.id) FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s ", 'shop_order', '_bwfan_ab_cart_recovered_a_id' ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$found_posts['total_count'] = $wpdb->get_var( $count_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+				$found_posts['total_count'] = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT DISTINCT COUNT(p.id) FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN ( " . implode( ', ', array_fill( 0, count( $post_statuses ), '%s' ) ) . ' ) AND m.meta_key = %s ',
+						array_merge( array( 'shop_order' ), $post_statuses, array( '_bwfan_ab_cart_recovered_a_id' ) )
+					)
+				);
 
 				return $found_posts;
 			}
 
-			$count_query                = $wpdb->prepare( "SELECT COUNT(p.ID) FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s ", 'shop_order', '_bwfan_ab_cart_recovered_a_id' ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$found_posts['total_count'] = $wpdb->get_var( $count_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$found_posts['total_count'] = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT COUNT(p.ID) FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN ( " . implode( ', ', array_fill( 0, count( $post_statuses ), '%s' ) ) . ' ) AND m.meta_key = %s ',
+					array_merge( array( 'shop_order' ), $post_statuses, array( '_bwfan_ab_cart_recovered_a_id' ) )
+				)
+			);
 
 			return $found_posts;
 		}
@@ -217,31 +255,29 @@ if ( ! class_exists( 'WFFN_REST_Recipes' ) ) {
 		 */
 		public function get_formatted_recovered_cart( $recovered_carts ) {
 			if ( empty( $recovered_carts ) ) {
-				return [];
+				return array();
 			}
-			$result = [];
+			$result = array();
 			foreach ( $recovered_carts as $item ) {
 				if ( ! $item instanceof WC_Order ) {
 					continue;
 				}
 				$order_date = $item->get_date_created();
-				$result[]   = [
+				$result[]   = array(
 					'order_id'   => $item->get_id(),
 					'f_name'     => $item->get_billing_first_name(),
 					'l_name'     => $item->get_billing_last_name(),
 					'email'      => $item->get_billing_email(),
 					'created_on' => ( $order_date instanceof WC_DateTime ) ? ( $order_date->date( 'Y-m-d H:i:s' ) ) : '',
 					'revenue'    => $item->get_total(),
-					'currency'   => class_exists( 'BWFAN_Automations' ) ? BWFAN_Automations::get_currency( $item->get_currency() ) : [],
+					'currency'   => class_exists( 'BWFAN_Automations' ) ? BWFAN_Automations::get_currency( $item->get_currency() ) : array(),
 					'id'         => $item->get_meta( '_woofunnel_cid' ),
 					'type'       => 1,
-				];
+				);
 			}
 
 			return $result;
 		}
-
-
 	}
 
 

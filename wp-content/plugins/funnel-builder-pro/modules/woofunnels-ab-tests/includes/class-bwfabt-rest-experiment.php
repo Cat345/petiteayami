@@ -21,8 +21,8 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 		 * @var string
 		 */
 
-		protected $namespace = 'funnelkit-app';
-		protected $rest_base = 'experiment';
+		protected $namespace    = 'funnelkit-app';
+		protected $rest_base    = 'experiment';
 		protected $rest_base_id = 'experiment/(?P<experiment_id>[\d]+)';
 
 		public function __construct() {
@@ -31,7 +31,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -42,198 +42,238 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 		 */
 		public function register_routes() {
 
-			register_rest_route( $this->namespace, '/' . $this->rest_base, array(
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base,
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_all_experiment' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => array(
-						'offset'  => array(
-							'description'       => __( 'Offset', 'woofunnels-ab-tests' ),
-							'type'              => 'integer',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'limit'   => array(
-							'description'       => __( 'Limit', 'woofunnels-ab-tests' ),
-							'type'              => 'integer',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'status'  => array(
-							'description'       => __( 'Experiment status', 'woofunnels-ab-tests' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						's'       => array(
-							'description'       => __( 'Search experiment', 'woofunnels-ab-tests' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'control' => array(
-							'description'       => __( 'Control ID', 'woofunnels-ab-tests' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'data'    => array(
-							'description'       => __( 'Get all experiment with variant data', 'woofunnels-ab-tests' ),
-							'default'           => false,
-							'type'              => 'boolean',
-							'sanitize_callback' => 'bwfabt_string_to_bool',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'default' => array(
-							'description'       => __( 'Create default variant if not exists', 'woofunnels-ab-tests' ),
-							'default'           => false,
-							'type'              => 'boolean',
-							'sanitize_callback' => 'bwfabt_string_to_bool',
-							'validate_callback' => 'rest_validate_request_arg',
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_all_experiment' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(
+							'offset'  => array(
+								'description'       => __( 'Offset', 'woofunnels-ab-tests' ),
+								'type'              => 'integer',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'limit'   => array(
+								'description'       => __( 'Limit', 'woofunnels-ab-tests' ),
+								'type'              => 'integer',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'status'  => array(
+								'description'       => __( 'Experiment status', 'woofunnels-ab-tests' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							's'       => array(
+								'description'       => __( 'Search experiment', 'woofunnels-ab-tests' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'control' => array(
+								'description'       => __( 'Control ID', 'woofunnels-ab-tests' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'data'    => array(
+								'description'       => __( 'Get all experiment with variant data', 'woofunnels-ab-tests' ),
+								'default'           => false,
+								'type'              => 'boolean',
+								'sanitize_callback' => 'bwfabt_string_to_bool',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'default' => array(
+								'description'       => __( 'Create default variant if not exists', 'woofunnels-ab-tests' ),
+								'default'           => false,
+								'type'              => 'boolean',
+								'sanitize_callback' => 'bwfabt_string_to_bool',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
 						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'add_new_experiment' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array(
-						'control' => array(
-							'description'       => __( 'Control ID', 'woofunnels-ab-tests' ),
-							'type'              => 'integer',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'title'   => array(
-							'description'       => __( 'Title', 'woofunnels-ab-tests' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'type'    => array(
-							'description'       => __( 'Variant Type', 'woofunnels-ab-tests' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-					),
-				),
-			) );
-
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/controls/', array(
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_controls' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => array(
-						'type' => array(
-							'description'       => __( 'Variant Type', 'woofunnels-ab-tests' ),
-							'type'              => 'string',
-							'required'          => true,
-							'validate_callback' => 'rest_validate_request_arg',
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'add_new_experiment' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(
+							'control' => array(
+								'description'       => __( 'Control ID', 'woofunnels-ab-tests' ),
+								'type'              => 'integer',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'title'   => array(
+								'description'       => __( 'Title', 'woofunnels-ab-tests' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'type'    => array(
+								'description'       => __( 'Variant Type', 'woofunnels-ab-tests' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
 						),
 					),
-				),
-			) );
+				)
+			);
 
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id . '/', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/controls/',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_single_experiment' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => [],
-				),
-			) );
-
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id, array(
-				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'update_experiment' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array(
-						'title'    => array(
-							'description'       => __( 'Title', 'woofunnels-ab-tests' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'desc'     => array(
-							'description'       => __( 'Description', 'woofunnels-ab-tests' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'traffics' => array(
-							'description'       => __( 'Traffics', 'woofunnels-ab-tests' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-							'sanitize_callback' => array( $this, 'sanitize_custom' ),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_controls' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(
+							'type' => array(
+								'description'       => __( 'Variant Type', 'woofunnels-ab-tests' ),
+								'type'              => 'string',
+								'required'          => true,
+								'validate_callback' => 'rest_validate_request_arg',
+							),
 						),
 					),
-				),
-			) );
+				)
+			);
 
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id . '/start/', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id . '/',
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'start_experiment' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => [],
-				),
-			) );
-
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id . '/pause/', array(
-				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'stop_experiment' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => [],
-				),
-			) );
-
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id . '/reset/', array(
-				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'reset_stats' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => [],
-				),
-			) );
-
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id, array(
-				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_experiment' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-			) );
-
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id . '/winner/(?P<winner_id>[\d]+)', array(
-				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'choose_winner' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => [],
-				),
-			) );
-
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/step/search', array(
-
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'search_entity' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => array(
-						's'     => array(
-							'description'       => __( 'search term', 'woofunnels-ab-tests' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'type'  => array(
-							'description'       => __( 'Type of step', 'woofunnels-ab-tests' ),
-							'type'              => 'string',
-							'required'          => true,
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'limit' => array(
-							'description'       => __( 'Set search limit', 'woofunnels-ab-tests' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						)
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_single_experiment' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(),
 					),
-				),
-			) );
+				)
+			);
+
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id,
+				array(
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'update_experiment' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(
+							'title'    => array(
+								'description'       => __( 'Title', 'woofunnels-ab-tests' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'desc'     => array(
+								'description'       => __( 'Description', 'woofunnels-ab-tests' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'traffics' => array(
+								'description'       => __( 'Traffics', 'woofunnels-ab-tests' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+								'sanitize_callback' => array( $this, 'sanitize_custom' ),
+							),
+						),
+					),
+				)
+			);
+
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id . '/start/',
+				array(
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'start_experiment' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(),
+					),
+				)
+			);
+
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id . '/pause/',
+				array(
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'stop_experiment' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(),
+					),
+				)
+			);
+
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id . '/reset/',
+				array(
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'reset_stats' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(),
+					),
+				)
+			);
+
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id,
+				array(
+					array(
+						'methods'             => WP_REST_Server::DELETABLE,
+						'callback'            => array( $this, 'delete_experiment' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+				)
+			);
+
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id . '/winner/(?P<winner_id>[\d]+)',
+				array(
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'choose_winner' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(),
+					),
+				)
+			);
+
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/step/search',
+				array(
+
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'search_entity' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(
+							's'     => array(
+								'description'       => __( 'search term', 'woofunnels-ab-tests' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'type'  => array(
+								'description'       => __( 'Type of step', 'woofunnels-ab-tests' ),
+								'type'              => 'string',
+								'required'          => true,
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'limit' => array(
+								'description'       => __( 'Set search limit', 'woofunnels-ab-tests' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+						),
+					),
+				)
+			);
 		}
 
 		public function get_read_api_permission_check() {
@@ -241,8 +281,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 				return true;
 			}
 
-			return false;
-
+			return new WP_Error( 'rest_forbidden', __( 'You do not have permission to perform this action.', 'woofunnels-ab-tests' ), array( 'status' => 403 ) );
 		}
 
 		public function get_write_api_permission_check() {
@@ -250,7 +289,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 				return true;
 			}
 
-			return false;
+			return new WP_Error( 'rest_forbidden', __( 'You do not have permission to perform this action.', 'woofunnels-ab-tests' ), array( 'status' => 403 ) );
 		}
 
 		/**
@@ -258,12 +297,12 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 		 */
 		public function get_all_experiment( WP_REST_Request $request ) {
 
-			$result = [
+			$result = array(
 				'status'  => false,
-				'message' => __( 'No experiment found', 'woofunnels-ab-tests' )
-			];
+				'message' => __( 'No experiment found', 'woofunnels-ab-tests' ),
+			);
 
-			$args            = [];
+			$args            = array();
 			$status          = $request->get_param( 'status' );
 			$control         = $request->get_param( 'control' );
 			$get_data        = $request->get_param( 'data' );
@@ -307,7 +346,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 							}
 						}
 
-						$experiment['variants'] = isset( $data['variants'] ) ? $data['variants'] : [];
+						$experiment['variants'] = isset( $data['variants'] ) ? $data['variants'] : array();
 
 						if ( count( $experiment['variants'] ) > 0 && isset( $experiment['global_slug'] ) && empty( $experiment['global_slug'] ) ) {
 							foreach ( $experiment['variants'] as &$variant_data ) {
@@ -317,17 +356,19 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 								}
 							}
 						}
-
 					}
 				}
 
-				$exp_state = array_filter( $experiments['items'], function ( $a ) {
-					$statuses = BWFABT_Core()->admin->get_experiment_statuses();
-					if ( $a['status'] !== 'Completed' && in_array( $a['status'], $statuses, true ) ) {
-						return true;
+				$exp_state = array_filter(
+					$experiments['items'],
+					function ( $a ) {
+						$statuses = BWFABT_Core()->admin->get_experiment_statuses();
+						if ( $a['status'] !== 'Completed' && in_array( $a['status'], $statuses, true ) ) {
+							return true;
 
+						}
 					}
-				} );
+				);
 
 				if ( is_array( $exp_state ) && count( $exp_state ) > 0 ) {
 					$create_experiment = false;
@@ -338,7 +379,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 				$result['exp_create']    = $create_experiment;
 				$result['type']          = $experiment_type;
 				$result['step_slug']     = $this->get_step_slug_type( $experiment_type );
-				$result['control_title'] = ( isset( $control ) && absint( $control ) > 0 ) ? html_entity_decode( get_the_title( $control ) ) : '';
+				$result['control_title'] = ( isset( $control ) && absint( $control ) > 0 ) ? html_entity_decode( get_the_title( $control ), ENT_QUOTES | ENT_HTML401 ) : '';
 				$result['status']        = true;
 				$result['message']       = __( 'Get all experiments', 'woofunnels-ab-tests' );
 
@@ -350,7 +391,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 				}
 			} else {
 				$result['control_id']    = ! empty( $control ) ? absint( $control ) : 0;
-				$result['control_title'] = ( isset( $control ) && absint( $control ) > 0 ) ? html_entity_decode( get_the_title( $control ) ) : '';
+				$result['control_title'] = ( isset( $control ) && absint( $control ) > 0 ) ? html_entity_decode( get_the_title( $control ), ENT_QUOTES | ENT_HTML401 ) : '';
 				$result['status']        = true;
 				$result['exp_create']    = $create_experiment;
 				$result['found_posts']   = 0;
@@ -359,7 +400,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 
 			/** return message for dynamic show message on design screen */
 			$result['head_message'] = __( 'A/B test with {variant_count} variants was started on {start_date}', 'woofunnels-ab-tests' );
-			
+
 			$funnel_id = get_post_meta( $control, '_bwf_in_funnel', true );
 
 			if ( empty( $funnel_id ) ) {
@@ -428,7 +469,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 			}
 
 			if ( ! empty( $experiment_data['control'] ) && $experiment_data['control'] > 0 ) {
-				$args = [ 'control' => $experiment_data['control'] ];
+				$args = array( 'control' => $experiment_data['control'] );
 
 				if ( true === $default ) {
 					$experiments = BWFABT_Core()->admin->get_experiments( $args );
@@ -464,7 +505,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 					$get_controller = BWFABT_Core()->controllers->get_integration( $type );
 
 					$variant_data['variant_id'] = $experiment_data['control'];
-					$variant_data['traffic']    = "100.00";
+					$variant_data['traffic']    = '100.00';
 					$variant_data['control']    = true;
 					$variant_data['control_id'] = $experiment->get_control();
 
@@ -478,14 +519,21 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 					$resp['variant_id'] = $variant_id;
 
 					$variant_data['variant_title'] = $get_controller->get_variant_title( $variant_id );
-					$variant_data['traffic']       = isset( $variant_data['traffic'] ) ? $variant_data['traffic'] : "0.00";
+					$variant_data['traffic']       = isset( $variant_data['traffic'] ) ? $variant_data['traffic'] : '0.00';
 
 					$control    = $experiment->add_variant( $variant_data );
 					$control_id = $control->get_id();
 					if ( $control_id > 0 ) {
 						$resp['status']       = true;
 						$resp['control_id']   = $control_id;
-						$resp['redirect_url'] = add_query_arg( array( 'page' => 'bwf_ab_tests', 'section' => 'variants', 'edit' => $experiment_id, ), admin_url( 'admin.php' ) );
+						$resp['redirect_url'] = add_query_arg(
+							array(
+								'page'    => 'bwf_ab_tests',
+								'section' => 'variants',
+								'edit'    => $experiment_id,
+							),
+							admin_url( 'admin.php' )
+						);
 
 						$resp['message'] = __( 'Successfully created', 'woofunnels-ab-tests' );
 						$resp            = BWFABT_Core()->controllers->maybe_get_step_list_data( $control_id, $resp );
@@ -539,16 +587,15 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 			$experiment_id = isset( $experiment_id ) ? bwfabt_clean( $experiment_id ) : 0;
 
 			return rest_ensure_response( $this->get_experiment( $experiment_id ) );
-
 		}
 
 
 		public function get_experiment( $experiment_id ) {
 
-			$result = [
+			$result = array(
 				'status'  => false,
-				'message' => __( 'No experiment found', 'woofunnels-ab-tests' )
-			];
+				'message' => __( 'No experiment found', 'woofunnels-ab-tests' ),
+			);
 
 			$experiment_id = isset( $experiment_id ) ? bwfabt_clean( $experiment_id ) : 0;
 
@@ -560,18 +607,18 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 					$statuses             = BWFABT_Core()->admin->get_experiment_statuses();
 					$experiment['status'] = isset( $statuses[ $experiment['status'] ] ) ? $statuses[ $experiment['status'] ] : '';
 
-					$variants = [];
+					$variants = array();
 					if ( isset( $experiment['variants'] ) && $experiment['variants'] > 0 ) {
 						foreach ( $experiment['variants'] as $variant_id => $item ) {
 
-							$variant        = [];
+							$variant        = array();
 							$variant_obj    = new BWFABT_Variant( $variant_id, $experiment_obj );
 							$get_controller = BWFABT_Core()->controllers->get_integration( $experiment_obj->get_type() );
 							$heading_urls   = $get_controller->get_variant_heading_url( $variant_obj, $experiment_obj );
 
 							$variant['id']        = $variant_id;
 							$variant['edit']      = $heading_urls;
-							$variant['title']     = html_entity_decode( $get_controller->get_variant_title( $variant_obj->get_id() ) );
+							$variant['title']     = html_entity_decode( $get_controller->get_variant_title( $variant_obj->get_id() ), ENT_QUOTES | ENT_HTML401 );
 							$variant['desc']      = $get_controller->get_variant_desc( $variant_obj->get_id() );
 							$variant['traffic']   = $variant_obj->get_traffic();
 							$variant['control']   = $variant_obj->get_control();
@@ -581,14 +628,14 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 							$variants[]           = $variant;
 
 						}
-
 					}
 
-
-					$control = array_filter( $variants, function ( $c ) {
-						return ! empty( $c['control'] );
-					} );
-
+					$control = array_filter(
+						$variants,
+						function ( $c ) {
+							return ! empty( $c['control'] );
+						}
+					);
 
 					if ( is_array( $control ) && count( $control ) > 0 ) {
 						foreach ( $control as $key => $con ) {
@@ -609,7 +656,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 		 * Updating traffic for an experiment
 		 */
 		public function update_experiment( WP_REST_Request $request ) {
-			$experiment_data = [];
+			$experiment_data = array();
 
 			$experiment_id            = $request->get_param( 'experiment_id' );
 			$title                    = $request->get_param( 'title' );
@@ -705,7 +752,6 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 				return rest_ensure_response( $resp );
 			}
 
-
 			$experiment        = BWFABT_Core()->admin->get_experiment( $experiment_id );
 			$type              = $experiment->get_type();
 			$inactive_variants = false;
@@ -717,10 +763,8 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 				return rest_ensure_response( $resp );
 			}
 
-
 			$get_controller = BWFABT_Core()->controllers->get_integration( $type );
 			$variants       = $experiment->get_active_variants( true );
-
 
 			if ( count( $variants ) < 2 ) {
 				$inactive_variants        = true;
@@ -729,7 +773,6 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 			}
 			$traffic_total = 0;
 
-
 			if ( false === $get_controller->is_variant_active( $experiment->get_control() ) ) {
 				$inactive_variants        = true;
 				$resp['inactive_variant'] = true;
@@ -737,8 +780,8 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 
 			}
 
-			$select_template = [];
-			$select_product  = [];
+			$select_template = array();
+			$select_product  = array();
 
 			foreach ( $variants as $variant_id => $variant ) {
 
@@ -748,11 +791,11 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 				$step_data = $this->get_step_data( $type, $variant_id );
 
 				if ( ! is_array( $step_data ) || empty( $step_data['selected_type'] ) || ( isset( $step_data['template_active'] ) && 'no' === $step_data['template_active'] ) ) {
-					$select_template[] = html_entity_decode( $get_controller->get_variant_title( $variant_id ) );
+					$select_template[] = html_entity_decode( $get_controller->get_variant_title( $variant_id ), ENT_QUOTES | ENT_HTML401 );
 				}
 
 				if ( is_array( $step_data ) && isset( $step_data['is_product'] ) && false === $step_data['is_product'] ) {
-					$select_product[] = html_entity_decode( $get_controller->get_variant_title( $variant_id ) );
+					$select_product[] = html_entity_decode( $get_controller->get_variant_title( $variant_id ), ENT_QUOTES | ENT_HTML401 );
 				}
 
 				if ( floatval( 0 ) === floatval( $variant['traffic'] ) ) {
@@ -773,7 +816,8 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 				}
 				$resp['inactive_variant'] = true;
 				$resp['readiness_state']  = 2;
-				$resp['message']          = __( "Template missing for steps: {$variant_titles}", 'woofunnels-ab-tests' );
+				/* translators: %s: variant titles */
+				$resp['message'] = sprintf( __( 'Template missing for steps: %s', 'woofunnels-ab-tests' ), $variant_titles );
 
 				return rest_ensure_response( $resp );
 			}
@@ -789,7 +833,8 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 
 				$resp['inactive_variant'] = true;
 				$resp['readiness_state']  = 2;
-				$resp['message']          = __( "Product missing for steps: {$variant_titles}", 'woofunnels-ab-tests' );
+				/* translators: %s: variant titles */
+				$resp['message'] = sprintf( __( 'Product missing for steps: %s', 'woofunnels-ab-tests' ), $variant_titles );
 
 				return rest_ensure_response( $resp );
 			}
@@ -805,7 +850,6 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 
 			}
 
-
 			if ( 2 === $resp['readiness_state'] ) {
 
 				if ( $inactive_variants === true ) {
@@ -820,7 +864,6 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 
 				return rest_ensure_response( $resp );
 			}
-
 
 			BWFABT_Core()->admin->log( "Readiness response for experiment id: $experiment_id: " . print_r( $resp, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
@@ -848,7 +891,6 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 			BWFABT_Core()->admin->log( "Experiment not started $experiment_id, Response: " . print_r( $resp, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 			return rest_ensure_response( $resp );
-
 		}
 
 		/**
@@ -894,7 +936,8 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 				return rest_ensure_response( $resp );
 			}
 
-			$resp['message'] = __( "Success:  $success.", 'woofunnels-ab-tests' );
+			/* translators: %s: success message */
+			$resp['message'] = sprintf( __( 'Success: %s.', 'woofunnels-ab-tests' ), $success );
 			BWFABT_Core()->admin->log( "Experiment pause result for $experiment_id in stop experiment. Response: " . print_r( $resp, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 			return rest_ensure_response( $resp );
@@ -938,7 +981,6 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 			}
 
 			return rest_ensure_response( $resp );
-
 		}
 
 		/**
@@ -1010,8 +1052,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 					$winner_variant = new BWFABT_Variant( $winner_id, $experiment );
 					$is_control     = $winner_variant->get_control();
 
-
-					$control_variant = new BWFABT_Variant( $control_id, $experiment ); //c1
+					$control_variant = new BWFABT_Variant( $control_id, $experiment ); // c1
 					$variant_data    = array(
 						'variant_id'    => $control_id,
 						'control_id'    => $control_id,
@@ -1020,9 +1061,9 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 						'control'       => true,
 					);
 
-					$variant_data            = $get_controller->duplicate_variant( $variant_data ); //n1
+					$variant_data            = $get_controller->duplicate_variant( $variant_data ); // n1
 					$variant_data['control'] = true;
-					$resp['winner_title']    = html_entity_decode( $get_controller->get_variant_title( $winner_id ) );
+					$resp['winner_title']    = html_entity_decode( $get_controller->get_variant_title( $winner_id ), ENT_QUOTES | ENT_HTML401 );
 
 					$duplicated_variant_id = $variant_data['variant_id'];
 
@@ -1041,17 +1082,18 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 
 							foreach ( array_keys( $active_variants ) as $variantid ) {
 
-								if ( intval( $variantid ) === intval( $control_id ) ) { //Creating new control with copied old control
+								if ( intval( $variantid ) === intval( $control_id ) ) { // Creating new control with copied old control
 									$transfered = $get_controller->transfer_control( $control_variant, $experiment, $new_variant );
 									if ( false === $transfered ) {
 										$resp['message'] = __( 'Unable to transfer the control', 'woofunnels-ab-tests' );
 
 										return rest_ensure_response( $resp );
 									}
-									$deleted = $get_controller->delete_variant( $control_variant, $experiment, false ); //Only unset from experiment but don't delete actual post
+									$deleted = $get_controller->delete_variant( $control_variant, $experiment, false ); // Only unset from experiment but don't delete actual post
 
 									if ( false === $deleted ) {
-										$resp['message'] = __( "Unable to delete the old control variant $control_id", 'woofunnels-ab-tests' );
+										/* translators: %d: control variant ID */
+										$resp['message'] = sprintf( __( 'Unable to delete the old control variant %d', 'woofunnels-ab-tests' ), $control_id );
 
 										return rest_ensure_response( $resp );
 									}
@@ -1061,7 +1103,8 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 
 								$draft = $get_controller->draft_variant( $experiment, $variantid );
 								if ( false === $draft ) {
-									$resp['message'] = __( "Unable to draft the variant $variantid", 'woofunnels-ab-tests' );
+									/* translators: %d: variant ID */
+									$resp['message'] = sprintf( __( 'Unable to draft the variant %d', 'woofunnels-ab-tests' ), $variantid );
 								}
 							}
 
@@ -1153,14 +1196,13 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 				if ( 'thank_you' === $type ) {
 					$slug = WFFN_Core()->thank_you_pages->get_post_type_slug();
 				}
-
 			}
 
 			if ( '' !== $slug ) {
 				$active_pages = $this->search_funnel_steps( $slug, $term, $limit );
 			}
 
-			$data = [];
+			$data = array();
 
 			if ( count( $active_pages ) > 0 ) {
 
@@ -1193,11 +1235,14 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 		 */
 		public function search_funnel_steps( $slug, $term, $limit ) {
 
-			$args = apply_filters( 'bwfabt_search_custom_post_type', array(
-				'post_type'   => array( $slug ),
-				'post_status' => 'any',
+			$args = apply_filters(
+				'bwfabt_search_custom_post_type',
+				array(
+					'post_type'   => array( $slug ),
+					'post_status' => 'any',
 
-			) );
+				)
+			);
 
 			if ( ! empty( $limit ) ) {
 				$args['posts_per_page'] = $limit;
@@ -1221,7 +1266,6 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 						$p->funnel_id = get_post_meta( $p->ID, '_bwf_in_funnel', true );
 					}
 				}
-
 
 				return $query_result->posts;
 			}
@@ -1271,11 +1315,10 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 			}
 
 			return $experiment_type;
-
 		}
 
 		public function get_step_data( $type, $step_id ) {
-			$design = [];
+			$design = array();
 			if ( empty( $type ) || 0 === absint( $step_id ) ) {
 				return $design;
 			}
@@ -1308,7 +1351,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 						if ( ! empty( $offer_data['template'] ) && ! empty( $offer_data['template_group'] ) ) {
 							$design = array(
 								'selected'      => $offer_data['template'],
-								'selected_type' => $offer_data['template_group']
+								'selected_type' => $offer_data['template_group'],
 							);
 						}
 
@@ -1323,7 +1366,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 						$design = WFACP_Common::get_post_meta_data( $step_id, '_wfacp_selected_design', true );
 
 						if ( empty( $design ) || ! is_array( $design ) ) {
-							return [];
+							return array();
 						}
 
 						$funnel_id = get_post_meta( $step_id, '_bwf_in_funnel', true );
@@ -1342,7 +1385,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 						$design = WFOB_Common::get_post_meta_data( $step_id, '_wfob_selected_products', true );
 
 						if ( empty( $design ) || ! is_array( $design ) ) {
-							return [];
+							return array();
 						}
 						/*
 						 * bump step not have any specific key for template
@@ -1351,7 +1394,7 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 						if ( is_array( $design ) ) {
 							$design = array(
 								'selected'      => 'template',
-								'selected_type' => 'template_group'
+								'selected_type' => 'template_group',
 							);
 						}
 
@@ -1369,15 +1412,13 @@ if ( ! class_exists( 'BWFABT_REST_Experiment' ) ) {
 
 		public function get_experiment_title( $post_id ) {
 
-			return ( isset( $post_id ) && absint( $post_id ) > 0 ) ? html_entity_decode( get_the_title( $post_id ) ) . '- Test' : '';
-
+			return ( isset( $post_id ) && absint( $post_id ) > 0 ) ? html_entity_decode( get_the_title( $post_id ), ENT_QUOTES | ENT_HTML401 ) . '- Test' : '';
 		}
 
 		public function sanitize_custom( $data ) {
 
 			return json_decode( $data, true );
 		}
-
 	}
 
 	if ( ! function_exists( 'bwfabt_rest_experiment' ) ) {

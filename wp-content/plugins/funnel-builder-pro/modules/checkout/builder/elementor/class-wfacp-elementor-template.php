@@ -792,8 +792,8 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 									step="<?php echo $steps_count_here; ?>">
 									<div class="wfacp-order2StepNumber"><?php echo $count; ?></div>
 									<div class="wfacp-order2StepHeaderText">
-										<div class="wfacp-order2StepTitle wfacp-order2StepTitleS1 wfacp_tcolor"><?php echo $value['heading']; ?></div>
-										<div class="wfacp-order2StepSubTitle wfacp-order2StepSubTitleS1 wfacp_tcolor"><?php echo $value['subheading']; ?></div>
+										<div class="wfacp-order2StepTitle wfacp-order2StepTitleS1 wfacp_tcolor"><?php echo esc_html( $value['heading'] ); ?></div>
+										<div class="wfacp-order2StepSubTitle wfacp-order2StepSubTitleS1 wfacp_tcolor"><?php echo esc_html( $value['subheading'] ); ?></div>
 									</div>
 								</div>
 								<?php

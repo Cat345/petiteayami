@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Api_Get_WP_User extends BWFAN_API_Base {
 
 	public static $ins;
@@ -27,7 +28,7 @@ class BWFAN_Api_Get_WP_User extends BWFAN_API_Base {
 
 	public function process_api_call() {
 		$search = isset( $this->args['search'] ) ? $this->get_sanitized_arg( 'search', 'text_field' ) : '';
-		$limit  = isset( $this->args['limit'] ) ? $this->get_sanitized_arg( 'limit', 'text_field' ) : 10;
+		$limit  = isset( $this->args['limit'] ) ? $this->get_sanitized_arg( 'limit', 'absint' ) : 10;
 		$data   = $this->get_users( $search, $limit );
 
 		$this->response_code = 200;

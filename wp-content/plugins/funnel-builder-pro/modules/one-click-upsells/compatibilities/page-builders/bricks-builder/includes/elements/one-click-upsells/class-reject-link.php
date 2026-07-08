@@ -1,14 +1,16 @@
 <?php
 
 namespace WfocuFunnelKit;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 if ( ! class_exists( '\WfocuFunnelKit\Reject_Link' ) ) {
+	#[\AllowDynamicProperties]
 	class Reject_Link extends \Bricks\Element {
 		public $category = 'funnelkit';
-		public $name = 'wfocu-reject-offer-link';
-		public $icon = 'wfocu-icon-link_no-01';
+		public $name     = 'wfocu-reject-offer-link';
+		public $icon     = 'wfocu-icon-link_no-01';
 
 		/**
 		 * Retrieves the label for the Reject Link element.
@@ -109,11 +111,11 @@ if ( ! class_exists( '\WfocuFunnelKit\Reject_Link' ) ) {
 			$this->set_attribute( 'upstroke-reject', 'class', 'bricks-wfocu-reject bricks-wfocu-reject-link wfocu_skip_offer wfocu-skip-offer-link' );
 
 			?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <a <?php echo $this->render_attributes( 'upstroke-reject' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<a <?php echo $this->render_attributes( 'upstroke-reject' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 					<?php $this->render_link_text(); ?>
-                </a>
-            </div>
+				</a>
+			</div>
 			<?php
 		}
 

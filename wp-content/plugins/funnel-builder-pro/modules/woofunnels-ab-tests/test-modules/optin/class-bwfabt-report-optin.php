@@ -106,7 +106,7 @@ if ( ! class_exists( 'BWFABT_Report_Optin' ) ) {
 				$conv_query = ' AND ( ' . rtrim( $conv_query, " OR " ) . ') ';
 			}
 
-			$query_variant_ids = esc_sql( implode( ',', $query_variant_ids ) );
+			$query_variant_ids = implode( ',', array_map( 'absint', $query_variant_ids ) );
 
 			$sql   = "SELECT * from `" . $wpdb->prefix . "bwf_optin_entries` WHERE `step_id` IN( " . $query_variant_ids . " ) " . $conv_query;
 			$query = "SELECT * FROM {table_name} WHERE `object_id` IN (" . $query_variant_ids . ") AND `type`=16 " . $date_query;

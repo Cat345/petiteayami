@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Cropped_Image' ) ) {
 	/**
 	 * Adds the image control.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Cropped_Image extends WP_Customize_Cropped_Image_Control {
 
 		/**

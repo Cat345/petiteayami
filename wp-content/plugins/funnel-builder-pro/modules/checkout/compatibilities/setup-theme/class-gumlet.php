@@ -1,9 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * https://wordpress.org/plugins/gumlet/
- * #[AllowDynamicProperties] 
- class WFACP_Compatibility_GumLet
+ * #[AllowDynamicProperties]
+class WFACP_Compatibility_GumLet
  */
 if ( ! class_exists( 'WFACP_Compatibility_GumLet' ) ) {
 	#[AllowDynamicProperties]

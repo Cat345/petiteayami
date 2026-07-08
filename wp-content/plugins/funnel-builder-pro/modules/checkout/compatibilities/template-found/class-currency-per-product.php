@@ -1,17 +1,21 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Currency Per product by Tyche
  *
- * #[AllowDynamicProperties] 
- class WFACP_Compatibility_WC_Cpp
+ * #[AllowDynamicProperties]
+class WFACP_Compatibility_WC_Cpp
  */
 if ( ! class_exists( 'WFACP_Compatibility_WC_Cpp' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_WC_Cpp {
 		public function __construct() {
-			add_action( 'wfacp_after_template_found', [ $this, 'attach_action' ] );
-			add_filter( 'wfacp_product_switcher_price_data', [ $this, 'wfacp_product_switcher_price_data' ], 10, 2 );
+			add_action( 'wfacp_after_template_found', array( $this, 'attach_action' ) );
+			add_filter( 'wfacp_product_switcher_price_data', array( $this, 'wfacp_product_switcher_price_data' ), 10, 2 );
 		}
 
 		public static function is_enable() {
@@ -70,14 +74,12 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Cpp' ) ) {
 			}
 			$price = $pro->get_price();
 
-
 			if ( $price > 0 ) {
 				$price_data['price'] = (float) $price * $exchange_rate;
 			}
 
 			return $price_data;
 		}
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_WC_Cpp(), 'alg_wc_cpp' );

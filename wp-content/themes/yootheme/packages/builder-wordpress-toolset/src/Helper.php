@@ -225,9 +225,10 @@ class Helper
             /** @var Types_Field_Type_Post $fieldInstance */
             return $fieldInstance->get_post();
         } elseif ($fieldType === 'date') {
+            $timezone = wp_timezone();
             $value = $fieldInstance->get_value();
             foreach ($value as $i => $val) {
-                $date = date_create("@{$val}")->setTimezone(wp_timezone());
+                $date = date_create("@{$val}")->setTimezone($timezone);
                 $value[$i] = $date->getTimestamp() - $date->getOffset();
             }
         } else {

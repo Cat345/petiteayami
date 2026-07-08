@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Delete_Unsubscribers extends BWFAN_API_Base {
 	public static $ins;
 
@@ -37,6 +38,10 @@ class BWFAN_API_Delete_Unsubscribers extends BWFAN_API_Base {
 		$failed_ids = array();
 
 		foreach ( $unsubscribers_ids as $id ) {
+			$id = absint( $id );
+			if ( empty( $id ) ) {
+				continue;
+			}
 			$data = BWFAN_Model_Message_Unsubscribe::get( $id );
 			if ( empty( $data ) ) {
 				$failed_ids[] = $id;

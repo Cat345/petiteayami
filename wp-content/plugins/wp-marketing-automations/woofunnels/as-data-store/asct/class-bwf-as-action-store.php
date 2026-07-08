@@ -163,7 +163,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 		 * @return bool
 		 */
 		protected function action_is_recurring( $data ) {
-			if ( ! is_object( $data ) ) {
+			if ( ! is_object( $data ) || ! isset( $data->recurring_interval ) ) {
 				return false;
 			}
 			if ( (int) $data->recurring_interval < 1 ) {
@@ -182,7 +182,18 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 		 */
 		protected function make_action_from_db_record( $data ) {
 			$hook = $data->hook;
-			$args = ( is_array( $data->args ) && count( $data->args ) > 0 ) ? $data->args : [];
+			/**
+			 * Re-index args to a positional (numeric-keyed) list before execution.
+			 *
+			 * On PHP 8+, when an action's args are an associative array, passing them through
+			 * call_user_func_array() (inside do_action_ref_array()) treats the string keys as
+			 * named arguments, fataling with "Unknown named parameter $x" when the hook callback
+			 * has no matching parameter name. Recent Action Scheduler guards this with array_values()
+			 * at execute time, but an older AS copy (e.g. one bundled by another active plugin that
+			 * wins the version race) does not. Flattening here makes execution AS-version agnostic and
+			 * mirrors what modern AS does, so registered callbacks keep receiving positional args.
+			 */
+			$args = ( is_array( $data->args ) && count( $data->args ) > 0 ) ? array_values( $data->args ) : [];
 
 			/** creating fresh schedule */
 			$schedule = new ActionScheduler_NullSchedule();
@@ -481,45 +492,81 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 		protected function claim_actions( $claim_id, $limit, ?DateTime $before_date = null, $hooks = array(), $group = '' ) {
 			global $wpdb;
 
-			/** can't use $wpdb->update() because of the <= condition */
-			$update = "SELECT {$this->p_key} FROM {$this->action_table}";
-			$params = [];
-
-			$where    = 'WHERE `claim_id` = 0 AND `e_time` <= %s AND `status` = 0';
-			$params[] = time();
+			/**
+			 * Atomic, deadlock-safe claim.
+			 *
+			 * On MySQL 8.0+ / MariaDB 10.6+ the claimable rows are picked with FOR UPDATE SKIP LOCKED inside a
+			 * derived table and stamped in the SAME statement, so two concurrent runners never wait on each
+			 * other (no 1213 deadlock against the finished-action DELETE) and never double-claim a row. Older
+			 * servers fall back to the single guarded UPDATE. A transient deadlock / lock-wait timeout is
+			 * retried with a short backoff instead of throwing, matching core Action Scheduler behaviour.
+			 *
+			 * The claimed rows are read back afterwards via find_actions_by_claim_id().
+			 */
+			$where    = 'WHERE `claim_id` = 0 AND `e_time` <= %d AND `status` = 0';
+			$params   = array( time() );
 
 			if ( ! empty( $group ) ) {
-				$where    .= ' AND `group` = %s';
+				$where    .= ' AND `group_slug` = %s';
 				$params[] = $group;
 			}
 
-			$order    = 'ORDER BY `e_time` ASC LIMIT %d';
+			$where   .= ' ORDER BY `e_time` ASC LIMIT %d';
 			$params[] = $limit;
 
-			$sql = $wpdb->prepare( "{$update} {$where} {$order}", $params ); //phpcs:ignore WordPress.DB.PreparedSQL
+			$attempts = 0;
+			do {
+				$attempts ++;
 
-			$action_ids = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+				if ( $this->supports_skip_locked() ) {
+					/** Derived table materialises, so the same table can be read (FOR UPDATE SKIP LOCKED) and updated in one atomic statement. */
+					$sql = "UPDATE {$this->action_table} t1 JOIN ( SELECT `{$this->p_key}` FROM {$this->action_table} {$where} FOR UPDATE SKIP LOCKED ) t2 ON t1.`{$this->p_key}` = t2.`{$this->p_key}` SET t1.`claim_id` = %d";
+					$sql = $wpdb->prepare( $sql, array_merge( $params, array( $claim_id ) ) ); //phpcs:ignore WordPress.DB.PreparedSQL
+				} else {
+					$sql = "UPDATE {$this->action_table} SET `claim_id` = %d {$where}";
+					$sql = $wpdb->prepare( $sql, array_merge( array( $claim_id ), $params ) ); //phpcs:ignore WordPress.DB.PreparedSQL
+				}
 
-			if ( ! is_array( $action_ids ) || count( $action_ids ) == 0 ) {
-				return 0;
+				$rows_affected = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+				if ( false !== $rows_affected ) {
+					return (int) $rows_affected; // Zero claimable rows is a valid result, not an error.
+				}
+
+				$error = (string) $wpdb->last_error;
+				if ( false === stripos( $error, 'deadlock' ) && false === stripos( $error, 'lock wait timeout' ) ) {
+					break; // Non-transient DB error: stop retrying and surface it.
+				}
+
+				usleep( 50000 * $attempts ); // 50ms, then 100ms backoff before re-claiming.
+			} while ( $attempts < 3 );
+
+			$db_error = empty( $wpdb->last_error ) ? esc_html_x( 'unknown', 'database error', 'action-scheduler' ) : esc_html( $wpdb->last_error ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			/* translators: %s: database error message. */
+			throw new RuntimeException( sprintf( esc_html__( 'Unable to claim actions. Database error: %s.', 'action-scheduler' ), $db_error ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+		}
+
+		/**
+		 * Whether the DB server supports `SKIP LOCKED` (MySQL 8.0.1+ / MariaDB 10.6+).
+		 *
+		 * @return bool
+		 */
+		private function supports_skip_locked() {
+			global $wpdb;
+			static $supported = null;
+
+			if ( null !== $supported ) {
+				return $supported;
 			}
 
-			$action_ids = array_column( $action_ids, $this->p_key );
-
-			/** Update call */
-			$type   = array_fill( 0, count( $action_ids ), '%d' );
-			$format = implode( ', ', $type );
-			$query  = "UPDATE {$this->action_table} SET `claim_id` = %d WHERE {$this->p_key} IN ({$format})";
-			$params = array( $claim_id );
-			$params = array_merge( $params, $action_ids );
-			$sql    = $wpdb->prepare( $query, $params ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
-
-			$rows_affected = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
-			if ( $rows_affected === false ) {
-				throw new RuntimeException( esc_html__( 'Unable to claim actions. Database error.', 'action-scheduler' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			$info = strtolower( (string) $wpdb->db_server_info() );
+			if ( false !== strpos( $info, 'mariadb' ) ) {
+				$ver       = preg_replace( '/[^0-9.].*$/', '', str_replace( '5.5.5-', '', $info ) );
+				$supported = ( '' !== $ver && version_compare( $ver, '10.6', '>=' ) );
+			} else {
+				$supported = version_compare( $wpdb->db_version(), '8.0.1', '>=' );
 			}
 
-			return (int) $rows_affected;
+			return $supported;
 		}
 
 		/**
@@ -575,9 +622,19 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 		public function get_claim_id( $action_id ) {
 			$this->log( __FUNCTION__ . ' ' . $action_id );
 
-			$claim_id = BWF_AS_Actions_Crud::get_single_action( $action_id, 'claim_id' );
+			$action = BWF_AS_Actions_Crud::get_single_action( $action_id, 'claim_id' );
 
-			return (int) $claim_id;
+			/**
+			 * get_single_action() returns a stdClass, so the claim_id property must be
+			 * read explicitly. Casting the object directly (the previous behaviour)
+			 * always evaluated to 1. That was harmless until Action Scheduler 4.0,
+			 * whose QueueRunner::do_batch() re-verifies each action with
+			 * `$claim_id !== $store->get_claim_id( $action_id )`. The bogus 1 made that
+			 * check fail on the first action of every batch, so the runner dropped the
+			 * claim and processed nothing from the custom store. (AS 3.x used
+			 * find_actions_by_claim_id() instead, which is why this stayed dormant.)
+			 */
+			return ( is_object( $action ) && isset( $action->claim_id ) ) ? (int) $action->claim_id : 0;
 		}
 
 		/**

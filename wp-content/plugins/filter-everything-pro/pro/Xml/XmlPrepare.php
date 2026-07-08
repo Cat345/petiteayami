@@ -17,9 +17,14 @@ if (!class_exists('XmlPrepare')):
     class XmlPrepare
     {
         protected $links = [];
-        private $partOfUrl = '{any}';
         private $filter_sets = [];
-        private $partSep = '-';
+        private $partSep = '=';
+
+        private $permalinks_enabled;
+
+        private $wp_global_permalinks_enabled;
+
+        private $separator_for_path_segments = '/';
 
         public $file = '';
 
@@ -38,11 +43,17 @@ if (!class_exists('XmlPrepare')):
 
         private $pageHasNoQuery = [];
 
+        private $globalSlugs = [];
+
         public function __construct()
         {
             $this->wpManager = Container::instance()->getWpManager();
             $this->error = new \WP_Error();
             $this->deleteProgressTransient();
+
+            if ($this->executeStep('checkPermalinks')) {
+                return $this->error;
+            }
 
             if ($this->executeStep('checkSeoRulesSettings')) {
                 return $this->error;
@@ -78,6 +89,34 @@ if (!class_exists('XmlPrepare')):
 
             if (empty($this->links) && empty($this->error->get_error_code())) {
                 $this->error->add('empty_links', $this->errorNoticeTemplate(esc_html__("Error: No URLs were found for the XML sitemap. Please create filter sets and SEO rules before generating the XML sitemap again.", 'filter-everything')));
+            }
+        }
+
+        private function checkPermalinks()
+        {
+            $permalink_structure = get_option('permalink_structure');
+            $this->wp_global_permalinks_enabled = false;
+
+            if (!empty($permalink_structure)) {
+               $this->wp_global_permalinks_enabled = true;
+            }
+
+            $this->permalinks_enabled = true;
+            if ( defined('FLRT_PERMALINKS_ENABLED')) {
+                $this->permalinks_enabled = FLRT_PERMALINKS_ENABLED;
+            }
+
+            if (!$this->wp_global_permalinks_enabled){
+                $this->permalinks_enabled = $this->wp_global_permalinks_enabled;
+            }
+
+
+            if(!$this->permalinks_enabled){
+                $this->separator_for_path_segments = "&";
+            }
+
+            if($this->permalinks_enabled){
+                $this->partSep = FLRT_PREFIX_SEPARATOR;
             }
         }
 
@@ -156,10 +195,22 @@ if (!class_exists('XmlPrepare')):
             $this->writeProgressTransient($part_number);
             foreach ($this->links as $link => $seoRulePostId) {
                 $i++;
-                $requestParser = new RequestParser($link);
-                if ($requestParser->detectFilterRequest()) {
 
+                $request_link = ($this->wp_global_permalinks_enabled && $this->permalinks_enabled) ? $link : parse_url($link, PHP_URL_QUERY);
+
+                $requestParser = new RequestParser($request_link, $this->partSep, $this->separator_for_path_segments);
+                if ($requestParser->detectFilterRequest()) {
                     $queryVars = $requestParser->getQueryVars();
+                    if(!$this->permalinks_enabled && $this->wp_global_permalinks_enabled){
+                        $temp_link = $link;
+                        $temp_link = str_replace($request_link, '', $temp_link);
+                        $temp_link = trim($temp_link, '?');
+                        $temp_link = trim($temp_link, '/');
+                        if(empty($queryVars['non_filter_segments'])){
+                            $queryVars['non_filter_segments'] = explode('/', $temp_link);
+                        }
+                    }
+
                     $queriedFilters = $queryVars['queried_values'];
                     $indexedEnames  = [];
                     foreach ($queriedFilters as $filter) {
@@ -174,6 +225,15 @@ if (!class_exists('XmlPrepare')):
                             unset($queryVars['non_filter_segments'][0]);
                             foreach ($queryVars['non_filter_segments'] as $term) {
                                 $check_terms['non_filter_segments_values'][] = [$taxonomy => $term];
+                            }
+                        } elseif(!$this->wp_global_permalinks_enabled){
+                            foreach($queryVars['non_filter_segments'] as $params){
+                                parse_str($params, $term_params);
+                                $term_id = $term_params[key($term_params)];
+                                $term_info = get_term((int)$term_id);
+                                if(empty($term_info->errors) && !empty($term_info->taxonomy)){
+                                    $check_terms['non_filter_segments_values'][] = [$term_info->taxonomy => $term_info->slug];
+                                }
                             }
                         }
                     }
@@ -244,7 +304,7 @@ if (!class_exists('XmlPrepare')):
             global $wpdb;
 
 
-            $sql = "SELECT ID FROM tmp_terms";
+            $sql = "SELECT ID FROM wpc_tmp_terms";
 
             $temp_postsIDs = [];
             foreach ($sqlParams as $taxonomies) {
@@ -283,7 +343,6 @@ if (!class_exists('XmlPrepare')):
                     foreach ($results as $post) {
                         $temp_postsIDs[] = $post['ID'];
                     }
-
                 }
                 if(empty($temp_postsIDs)){
                     return false;
@@ -302,8 +361,19 @@ if (!class_exists('XmlPrepare')):
         {
             global $wpdb;
 
+            $wpdb->query('DROP TEMPORARY TABLE IF EXISTS wpc_tmp_terms');
+            if ($wpdb->last_error) {
+                $this->error->add(
+                    'tmp_terms_drop_failed',
+                    $this->errorNoticeTemplate(
+                        esc_html__('Failed to generate the XML sitemap. Please try again or contact support if the issue persists.', 'filter-everything') . ' ' . $wpdb->last_error
+                    )
+                );
+                return;
+            }
+
             $createSql = "
-                CREATE TEMPORARY TABLE tmp_terms (
+                CREATE TEMPORARY TABLE wpc_tmp_terms (
                     ID BIGINT(20) UNSIGNED NOT NULL,
                     user_nicename VARCHAR(60) NOT NULL,
                     taxonomy VARCHAR(32) NOT NULL,
@@ -317,11 +387,11 @@ if (!class_exists('XmlPrepare')):
             ";
             $wpdb->query($createSql);
             if ($wpdb->last_error) {
-                $this->error->add('tmp_terms_create_failed', $this->errorNoticeTemplate(esc_html__('Failed to generate the XML sitemap. Please try again or contact support if the issue persists.', 'filter-everything')));
+                $this->error->add('tmp_terms_create_failed', $this->errorNoticeTemplate(esc_html__('Failed to generate the XML sitemap. Please try again or contact support if the issue persists.', 'filter-everything') . ' ' . $wpdb->last_error));
             }
 
             $insertSql = "
-                INSERT INTO tmp_terms (ID, user_nicename, taxonomy, slug)
+                INSERT INTO wpc_tmp_terms (ID, user_nicename, taxonomy, slug)
                 SELECT DISTINCT p.ID, u.user_nicename, tt.taxonomy, t.slug
                 FROM {$wpdb->posts} p
                 JOIN {$wpdb->users} u ON p.post_author = u.ID
@@ -343,7 +413,7 @@ if (!class_exists('XmlPrepare')):
             ";
             $wpdb->query($insertSql);
             if ($wpdb->last_error) {
-                $this->error->add('tmp_terms_create_failed', $this->errorNoticeTemplate(esc_html__('Failed to generate the XML sitemap. Please try again or contact support if the issue persists.', 'filter-everything')));
+                $this->error->add('tmp_terms_create_failed', $this->errorNoticeTemplate(esc_html__('Failed to generate the XML sitemap. Please try again or contact support if the issue persists.', 'filter-everything')  . ' ' . $wpdb->last_error));
             }
         }
 
@@ -640,7 +710,9 @@ if (!class_exists('XmlPrepare')):
                 ));
                 foreach ($authors as $author) {
                     if(!empty($this->permalinksReversedSettings[$taxonomy_name])){
-                        $slug_parts[] = $this->permalinksReversedSettings[$taxonomy_name] . $this->partSep . $author->user_nicename;
+                        $slug_part = $this->permalinksReversedSettings[$taxonomy_name] . $this->partSep . $author->user_nicename;
+                        $slug_parts[] = $slug_part;
+                        $this->globalSlugs[$slug_part] = '';
                     }
 
                 }
@@ -648,7 +720,9 @@ if (!class_exists('XmlPrepare')):
                 $author = get_user_by('id', $author_id);
                 if ($author) {
                     if(!empty($this->permalinksReversedSettings[$taxonomy_name])) {
-                        $slug_parts[] = $this->permalinksReversedSettings[$taxonomy_name] . $this->partSep . $author->user_nicename;
+                        $slug_part = $this->permalinksReversedSettings[$taxonomy_name] . $this->partSep . $author->user_nicename;
+                        $slug_parts[] = $slug_part;
+                        $this->globalSlugs[$slug_part] = '';
                     }
                 }
             }
@@ -681,7 +755,9 @@ if (!class_exists('XmlPrepare')):
             if (!empty($results)) {
                 foreach ($results as $taxonomy) {
                     if(!empty($this->permalinksReversedSettings[$taxonomy_name])){
-                        $slug_parts[] = $this->permalinksReversedSettings[$taxonomy_name] . $this->partSep . $taxonomy['slug'];
+                        $slug_part = $this->permalinksReversedSettings[$taxonomy_name] . $this->partSep . $taxonomy['slug'];
+                        $slug_parts[] = $slug_part;
+                        $this->globalSlugs[$slug_part] = '';
                     }
                 }
                 return $slug_parts;
@@ -718,31 +794,71 @@ if (!class_exists('XmlPrepare')):
                         if (isset($temp_link_array['level_' . $prev_level])) {
                             foreach ($part as $p_slug) {
                                 foreach ($temp_link_array['level_' . $prev_level] as $prev_slug) {
-                                    $temp_link_array['level_' . $i][] = '' . $prev_slug . '/' . $p_slug;
+                                    $temp_link_array['level_' . $i][] = '' . $prev_slug . $this->separator_for_path_segments . $p_slug;
                                 }
                             }
                         } else {
                             foreach ($part as $p_slug) {
-                                $temp_link_array['level_' . $i][] = '/' . $p_slug;
+                                $temp_link_array['level_' . $i][] = $this->separator_for_path_segments . $p_slug;
                             }
                         }
                     } else {
                         if (isset($temp_link_array['level_' . $prev_level])) {
                             foreach ($temp_link_array['level_' . $prev_level] as $prev_slug) {
-                                $temp_link_array['level_' . $i][] = '' . $prev_slug . '/' . $part;
+                                $temp_link_array['level_' . $i][] = '' . $prev_slug . $this->separator_for_path_segments . $part;
                             }
                         } else {
-                            $temp_link_array['level_' . $i][] = '/' . $part;
+                            $temp_link_array['level_' . $i][] = $this->separator_for_path_segments . $part;
                         }
                     }
                     $i++;
                 }
+
                 for ($i = $link_deep_count; $i <= count($temp_link_array); $i++) {
                     foreach ($temp_link_array['level_' . $i] as $link) {
-                        $link_last_sug = explode('/', $link);
+                        $link_last_sug = explode($this->separator_for_path_segments, $link);
                         $link_last_sug = end($link_last_sug);
                         if (!in_array($link_last_sug, $this->existingSlugs) && !isset($this->permalinksSettings[$link_last_sug])) {
                             $link = str_replace('//', '/', $link);
+                            $link = str_replace('&?', '/?', $link);
+                            if(!$this->permalinks_enabled){
+                                $link_without_slug = [];
+                                $global_link = [];
+                                $total_link_parts = [];
+                                $new_link_parts = explode($this->separator_for_path_segments, $link);
+                                foreach ($new_link_parts as $link_part){
+                                    if(isset($this->globalSlugs[$link_part])){
+                                        $link_without_slug[] = $link_part;
+                                    }else{
+                                        $global_link[] = $link_part;
+                                    }
+                                }
+
+                                if ($this->wp_global_permalinks_enabled) {
+                                    $link = '';
+                                    if (!empty($global_link)) {
+                                        $link = implode('/', $global_link);
+                                    }
+
+                                    if (!empty($link_without_slug)) {
+                                        if (substr($link, 0, 1) !== '?') {
+                                            $link .= '?';
+                                        } else {
+                                            $link .= '&';
+                                        }
+                                        $link .= implode('&', $link_without_slug);
+                                    }
+                                }
+
+                                if(!$this->wp_global_permalinks_enabled){
+                                    $start_link_param = '';
+                                    if (substr($link, 0, 2) !== '/?') {
+                                        $start_link_param = '/?';
+                                    }
+                                    $filter_params = array_filter(array_merge($global_link, $link_without_slug));
+                                    $link = $start_link_param . implode($this->separator_for_path_segments, $filter_params);
+                                }
+                            }
                             $this->links[$link] = $seoRulePostId;
                         }
                     }
@@ -780,9 +896,12 @@ if (!class_exists('XmlPrepare')):
                         'show_on_front',
                         'shop_page');
                     $slug_parts = [];
+                    $page_id = 0;
                     foreach ($common_pages as $common_page) {
                         if ($common_page == 'shop_page') {
-                            $page_id = wc_get_page_id('shop');
+                            if(function_exists('wc_get_page_id')){
+                                $page_id = wc_get_page_id('shop');
+                            }
                         } else {
                             $page_id = get_option($common_page);
                         }

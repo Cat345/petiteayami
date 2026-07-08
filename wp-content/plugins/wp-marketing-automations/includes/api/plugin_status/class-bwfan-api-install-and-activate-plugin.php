@@ -3,6 +3,7 @@
 /**
  * Class BWFAN_API_Install_Activate_Plugin
  */
+#[\AllowDynamicProperties]
 class BWFAN_API_Install_Activate_Plugin extends BWFAN_API_Base {
 	public static $ins;
 
@@ -74,6 +75,19 @@ class BWFAN_API_Install_Activate_Plugin extends BWFAN_API_Base {
 		if ( empty( $plugin_url ) ) {
 			return $this->error_response( __( 'Plugin URL is missing', 'wp-marketing-automations' ) );
 		}
+		/**
+		 * Capability check: installing a plugin requires the install_plugins capability.
+		 * On multisite this is restricted to network admins, unlike manage_options.
+		 */
+		if ( ! current_user_can( 'install_plugins' ) ) {
+			return $this->error_response( __( "You don't have permission to install plugins", 'wp-marketing-automations' ) );
+		}
+
+		// Only allow installing ZIPs from trusted sources to prevent installing an arbitrary remote plugin.
+		if ( ! $this->is_allowed_plugin_source( $plugin_url ) ) {
+			return $this->error_response( __( 'Plugin source URL is not allowed', 'wp-marketing-automations' ) );
+		}
+
 		// Error check.
 		if ( ! method_exists( $installer, 'install' ) ) {
 			return $this->error_response( __( 'Some error occurred: install function not found', 'wp-marketing-automations' ) );
@@ -91,6 +105,48 @@ class BWFAN_API_Install_Activate_Plugin extends BWFAN_API_Base {
 		return $this->success_response( $result );
 	}
 
+	/**
+	 * Whether a plugin ZIP URL points at a trusted source.
+	 * Only HTTPS URLs on WordPress.org or FunnelKit-owned hosts are permitted.
+	 *
+	 * @param string $plugin_url
+	 *
+	 * @return bool
+	 */
+	public function is_allowed_plugin_source( $plugin_url ) {
+		$scheme = wp_parse_url( $plugin_url, PHP_URL_SCHEME );
+		$host   = wp_parse_url( $plugin_url, PHP_URL_HOST );
+
+		if ( empty( $host ) || 'https' !== strtolower( (string) $scheme ) ) {
+			return false;
+		}
+
+		$host = strtolower( $host );
+
+		$allowed_hosts = array(
+			'wordpress.org',
+			'funnelkit.com',
+			'buildwoofunnels.com',
+		);
+
+		/**
+		 * Filter the list of trusted plugin-source hosts for the install endpoint.
+		 *
+		 * @param array  $allowed_hosts List of allowed host suffixes.
+		 * @param string $plugin_url    The requested plugin ZIP URL.
+		 */
+		$allowed_hosts = apply_filters( 'bwfan_allowed_plugin_source_hosts', $allowed_hosts, $plugin_url );
+
+		foreach ( (array) $allowed_hosts as $allowed_host ) {
+			$allowed_host = strtolower( $allowed_host );
+			if ( $host === $allowed_host || substr( $host, - ( strlen( $allowed_host ) + 1 ) ) === '.' . $allowed_host ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public function activate_plugin( $plugin ) {
 		if ( empty( $plugin ) ) {
 			return $this->error_response( __( 'Plugin basename is missing', 'wp-marketing-automations' ) );
@@ -98,10 +154,7 @@ class BWFAN_API_Install_Activate_Plugin extends BWFAN_API_Base {
 
 		//Check for permissions.
 		if ( ! current_user_can( 'activate_plugins' ) ) {
-			$result['msg']       = esc_html__( 'You don\'t have permission to activate plugin', 'wp-marketing-automations' );
-			$this->response_code = 200;
-
-			return $this->success_response( $result );
+			return $this->error_response( __( "You don't have permission to activate plugin", 'wp-marketing-automations' ) );
 		}
 
 		// Activate the plugin silently.

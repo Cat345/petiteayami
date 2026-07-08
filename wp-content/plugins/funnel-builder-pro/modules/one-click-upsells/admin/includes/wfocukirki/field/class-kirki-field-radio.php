@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Radio' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Radio extends WFOCUKirki_Field {
 
 		/**
@@ -37,7 +38,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Radio' ) ) {
 				_doing_it_wrong( __METHOD__, sprintf( esc_attr__( 'Error in field %1$s. The "mode" argument has been deprecated since WFOCUKirki v0.8. Use the "radio-%2$s" type instead.', 'wfocukirki' ), esc_attr( $this->settings ), esc_attr( $this->mode ) ), '3.0.10' );
 				$this->type = 'radio-' . $this->mode;
 			}
-
 		}
 
 		/**
@@ -53,7 +53,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Radio' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'esc_attr';
-
 		}
 	}
 }

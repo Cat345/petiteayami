@@ -74,6 +74,9 @@ class Page implements Hookable
      */
     private function should_add_badge(): bool
     {
+        if (isset($_GET['page']) && sanitize_key(wp_unslash($_GET['page'])) === self::MENU_SLUG) {
+            return \false;
+        }
         return apply_filters('octolize/shipping-extensions/should-add-badge', !$this->view_page_tracker->option_exists(), $this->view_page_tracker);
     }
     /**
@@ -140,7 +143,6 @@ class Page implements Hookable
     }
     private function get_header_promo(): array
     {
-        $promo = [];
-        return array_values(apply_filters('octolize/shipping-extensions/header-promo', $promo));
+        return array_values(apply_filters('octolize/shipping-extensions/header-promo', []));
     }
 }

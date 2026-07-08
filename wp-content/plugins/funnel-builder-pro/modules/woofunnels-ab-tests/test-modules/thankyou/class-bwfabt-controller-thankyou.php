@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 	/**
 	 * Class contains all the thank_you related ab testing functionality
@@ -28,7 +28,7 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -61,7 +61,7 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 		 */
 		public function get_controls( $term ) {
 			global $wpdb;
-			$pages = [];
+			$pages = array();
 			if ( '' === $term ) {
 				return $pages;
 			}
@@ -86,7 +86,7 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 				}
 				$pages[] = array(
 					'id'   => $id,
-					'name' => html_entity_decode( get_the_title( $id ) ),
+					'name' => html_entity_decode( get_the_title( $id ), ENT_QUOTES | ENT_HTML401 ),
 				);
 			}
 
@@ -102,12 +102,12 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 		public function add_variant( $variant_data ) {
 			$variant_id = isset( $variant_data['variant_id'] ) ? $variant_data['variant_id'] : 0;
 			if ( $variant_id < 1 ) {
-				$args       = [
+				$args       = array(
 					'post_title'  => $variant_data['variant_title'],
 					'post_name'   => sanitize_title( $variant_data['variant_title'] ),
 					'post_type'   => WFFN_Core()->thank_you_pages->get_post_type_slug(),
 					'post_status' => 'publish',
-				];
+				);
 				$variant_id = wp_insert_post( $args );
 				if ( ! is_wp_error( $variant_id ) ) {
 					delete_post_meta( $variant_id, '_bwf_ab_control' );
@@ -158,10 +158,12 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 			if ( $variant_id > 0 ) {
 				$funnel_post = get_post( $variant_id );
 				if ( ! is_null( $funnel_post ) ) {
-					$draft = wp_update_post( array(
-						'ID'          => $variant_id,
-						'post_status' => 'draft',
-					) );
+					$draft = wp_update_post(
+						array(
+							'ID'          => $variant_id,
+							'post_status' => 'draft',
+						)
+					);
 				}
 			}
 
@@ -184,7 +186,7 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 				array(
 					'key'     => '_bwf_ab_variation_of',
 					'compare' => 'NOT EXISTS',
-					'value'   => ''
+					'value'   => '',
 				),
 			);
 
@@ -192,7 +194,6 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 				$args['post_status']  = array( 'publish', 'draft' );
 				$args['get_existing'] = true;
 			}
-
 
 			return $args;
 		}
@@ -224,7 +225,7 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 								/**
 								 * set wfty_source variation id for record view
 								 */
-								$query_var[ 'wfty_source' ] = $variation_id;
+								$query_var['wfty_source'] = $variation_id;
 								unset( $query_var[ $slug ] );
 								$url = add_query_arg( $query_var, $url );
 							}
@@ -259,13 +260,20 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 			$exclude_metas = array(
 				'_bwf_in_funnel',
 				'_bwf_ab_variation_of',
-				'_wp_old_slug'
+				'_wp_old_slug',
 			);
 
-			$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id=%d",$winner_variant_id ) );
+			$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id=%d", $winner_variant_id ) );
 			do_action( 'woofunnels_module_template_removed', $control_id );
 			$post_content = get_post_field( 'post_content', $winner_variant_id );
-			wp_update_post( wp_slash( [ 'ID' => $control_id, 'post_content' => $post_content ] ) );
+			wp_update_post(
+				wp_slash(
+					array(
+						'ID'           => $control_id,
+						'post_content' => $post_content,
+					)
+				)
+			);
 			$control_metas = get_post_meta( $control_id );
 
 			if ( ! empty( $post_meta_all ) ) {
@@ -280,9 +288,6 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 						continue;
 					}
 
-					$meta_key   = esc_sql( $meta_key );
-					$meta_value = esc_sql( $meta_info->meta_value );
-
 					if ( $meta_key === '_elementor_data' ) {
 						$content = $meta_info->meta_value;
 					}
@@ -291,14 +296,30 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 						$is_oxy = true;
 					}
 
-					if ( ! isset( $control_metas[ $meta_key ] ) ) {
-						$sql_query_meta_val = "($control_id, '$meta_key', '$meta_value')";
-						$sql_query_meta     = $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta );//phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared
-					} else {
-						$sql_query_meta = $wpdb->prepare( "UPDATE %1s SET `meta_value` = '" . $meta_value . "' WHERE `post_id` = " . $control_id . " AND `meta_key` = '" . $meta_key . "'", $wpdb->postmeta );//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
-					}
+					$meta_value = $meta_info->meta_value;
 
-					$wpdb->query( $sql_query_meta ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					if ( ! isset( $control_metas[ $meta_key ] ) ) {
+						$wpdb->insert(
+							$wpdb->postmeta,
+							array(
+								'post_id'    => $control_id,
+								'meta_key'   => $meta_key,
+								'meta_value' => $meta_value,
+							),
+							array( '%d', '%s', '%s' )
+						);
+					} else {
+						$wpdb->update(
+							$wpdb->postmeta,
+							array( 'meta_value' => $meta_value ),
+							array(
+								'post_id'  => $control_id,
+								'meta_key' => $meta_key,
+							),
+							array( '%s' ),
+							array( '%d', '%s' )
+						);
+					}
 				}
 
 				if ( $content !== '' ) {
@@ -321,17 +342,21 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 		 * @return string
 		 */
 		public function get_variant_heading_url( $variant, $experiment ) {
-			return BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( array(
-				'page'    => 'wf-ty',
-				'section' => 'design',
-				'edit'    => $variant->get_id(),
-			), admin_url( 'admin.php' ) ) );
-
+			return BWF_Admin_Breadcrumbs::maybe_add_refs(
+				add_query_arg(
+					array(
+						'page'    => 'wf-ty',
+						'section' => 'design',
+						'edit'    => $variant->get_id(),
+					),
+					admin_url( 'admin.php' )
+				)
+			);
 		}
 
 
 		/**
-		 * @param BWFABT_Variant $variant
+		 * @param BWFABT_Variant    $variant
 		 * @param BWFABT_Experiment $experiment
 		 *
 		 * @return array
@@ -341,12 +366,17 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 			$row_actions = array(
 				'edit' => array(
 					'text' => __( 'Edit', 'woofunnels-ab-tests' ),
-					'link' => BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( array(
-						'page'    => 'wf-ty',
-						'section' => 'design',
-						'edit'    => $variant->get_id(),
-					), admin_url( 'admin.php' ) ) ),
-				)
+					'link' => BWF_Admin_Breadcrumbs::maybe_add_refs(
+						add_query_arg(
+							array(
+								'page'    => 'wf-ty',
+								'section' => 'design',
+								'edit'    => $variant->get_id(),
+							),
+							admin_url( 'admin.php' )
+						)
+					),
+				),
 			);
 
 			return array_merge( $row_actions, parent::get_variant_row_actions( $variant, $experiment ) );
@@ -385,10 +415,12 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 			if ( $new_control_id > 0 ) {
 				$funnel_post = get_post( $new_control_id );
 				if ( ! is_null( $funnel_post ) ) {
-					$transferred = wp_update_post( array(
-						'ID'         => $new_control_id,
-						'post_title' => $original_title,
-					) );
+					$transferred = wp_update_post(
+						array(
+							'ID'         => $new_control_id,
+							'post_title' => $original_title,
+						)
+					);
 				}
 			}
 			if ( $new_control_id === $transferred ) {
@@ -471,9 +503,9 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 		 */
 		public function get_analytics_data( $step_ids, $experiment_id, $is_interval = '', $int_request = '' ) {
 			global $wpdb;
-			$data           = [];
-			$ids            = [];
-			$date_col       = "date";
+			$data           = array();
+			$ids            = array();
+			$date_col       = 'date';
 			$interval_query = '';
 			$group_by       = ' GROUP BY object_id ';
 			$params         = '';
@@ -503,26 +535,26 @@ if ( ! class_exists( 'BWFABT_Controller_Thank_You' ) ) {
 				$get_interval   = $this->get_interval_format_query( $int_request, $date_col );
 				$interval_query = $get_interval['interval_query'];
 				$interval_group = $get_interval['interval_group'];
-				$group_by       = "GROUP BY " . $interval_group;
+				$group_by       = 'GROUP BY ' . $interval_group;
 				$params         = " ,0 as converted, 0 as 'revenue' ";
 			}
 
-			$step_ids = esc_sql( implode( ',', $ids ) );
+			$step_ids = implode( ',', array_map( 'absint', $ids ) );
 
 			$get_all_dates = BWFABT_Core()->get_dataStore()->get_experiment_time_chunk( $experiment_id );
-			$date_query    = "";
+			$date_query    = '';
 
 			if ( is_array( $get_all_dates ) && count( $get_all_dates ) ) {
 				foreach ( $get_all_dates as $date ) {
-					$start_date = explode( " ", $date['start_date'] );
-					$end_date   = explode( " ", $date['end_date'] );
+					$start_date  = explode( ' ', $date['start_date'] );
+					$end_date    = explode( ' ', $date['end_date'] );
 					$date_query .= " ( `date` >= '" . esc_sql( $start_date[0] ) . "' AND `date` <= '" . esc_sql( $end_date[0] ) . "' ) OR ";
 				}
 
-				$date_query = ' AND ( ' . rtrim( $date_query, " OR " ) . ') ';
+				$date_query = ' AND ( ' . rtrim( $date_query, ' OR ' ) . ') ';
 			}
 
-			$get_query = "SELECT object_id, SUM(CASE WHEN type = 15 THEN `no_of_sessions` END) AS `viewed` " . $params . " " . $interval_query . " FROM  `" . $wpdb->prefix . "wfco_report_views`  WHERE object_id IN (" . $step_ids . ") " . $date_query . " " . $group_by . " ORDER BY object_id ASC";
+			$get_query = 'SELECT object_id, SUM(CASE WHEN type = 15 THEN `no_of_sessions` END) AS `viewed` ' . $params . ' ' . $interval_query . ' FROM  `' . $wpdb->prefix . 'wfco_report_views`  WHERE object_id IN (' . $step_ids . ') ' . $date_query . ' ' . $group_by . ' ORDER BY object_id ASC';
 			$get_data  = $wpdb->get_results( $get_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			if ( method_exists( 'BWFABT_Core', 'maybe_wpdb_error' ) ) {
 				$db_error = BWFABT_Core()->admin->maybe_wpdb_error( $wpdb );

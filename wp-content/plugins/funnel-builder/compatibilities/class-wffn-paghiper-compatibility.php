@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Handles compatibility with PagHiper payment gateway
  */
 if ( ! class_exists( 'WFFN_Compatibility_With_Paghiper' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_Paghiper {
 
 		public function __construct() {
@@ -22,8 +23,6 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Paghiper' ) ) {
 		public function is_enable() {
 			return class_exists( 'WC_Paghiper' );
 		}
-
-
 	}
 
 	WFFN_Plugin_Compatibilities::register( new WFFN_Compatibility_With_Paghiper(), 'paghiper' );

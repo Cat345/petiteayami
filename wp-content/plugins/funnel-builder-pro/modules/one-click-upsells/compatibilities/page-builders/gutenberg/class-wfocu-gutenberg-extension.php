@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Gutenberg {
 		private static $ins      = null;
 		public $modules_instance = array();
@@ -227,7 +228,7 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 						'products'           => WFOCU_Guten_Field::get_product_lists(),
 						'post_id'            => $post->ID,
 						'i18n'               => BWF_I18N,
-						'currency'           => html_entity_decode( get_woocommerce_currency_symbol() ),
+						'currency'           => html_entity_decode( get_woocommerce_currency_symbol(), ENT_QUOTES | ENT_HTML401 ),
 						'qty_enabled'        => $qty_selector_enabled,
 						'products_url'       => $products_url,
 						'bwf_g_fonts'        => bwf_get_fonts_list( 'all' ),

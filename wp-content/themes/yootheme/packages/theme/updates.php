@@ -297,11 +297,13 @@ return [
         if (Arr::has($config, 'menu.items')) {
             $items = Arr::get($config, 'menu.items', []);
             foreach ($items as &$item) {
-                unset($item['image_width']);
-                unset($item['image_height']);
-                unset($item['image_svg_inline']);
-                unset($item['icon_width']);
-                unset($item['image_margin']);
+                unset(
+                    $item['image_width'],
+                    $item['image_height'],
+                    $item['image_svg_inline'],
+                    $item['icon_width'],
+                    $item['image_margin'],
+                );
             }
             Arr::set($config, 'menu.items', $items);
         }

@@ -313,7 +313,12 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 		public function setup_options() {
 			$db_options    = get_option( 'wffn_op_settings', array() );
-			$db_options    = ( ! empty( $db_options ) && is_array( $db_options ) ) ? array_map( 'html_entity_decode', $db_options ) : array();
+			$db_options    = ( ! empty( $db_options ) && is_array( $db_options ) ) ? array_map(
+				static function ( $v ) {
+					return html_entity_decode( $v, ENT_QUOTES | ENT_HTML401 );
+				},
+				$db_options
+			) : array();
 			$this->options = wp_parse_args( $db_options, $this->default_global_settings() );
 
 			return $this->options;
@@ -437,7 +442,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 						global $wpdb;
 
-						$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$optin_page_id" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+						$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d", $optin_page_id ) );
 
 						if ( ! empty( $post_meta_all ) ) {
 
@@ -925,8 +930,8 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 				return $resp;
 			}
 
-			$options['css']    = isset( $options['css'] ) ? htmlentities( $options['css'] ) : '';
-			$options['script'] = isset( $options['script'] ) ? htmlentities( $options['script'] ) : '';
+			$options['css']    = isset( $options['css'] ) ? WFFN_Common::sanitize_global_css( $options['css'] ) : '';
+			$options['script'] = isset( $options['script'] ) ? WFFN_Common::sanitize_global_script( $options['script'] ) : '';
 			update_option( 'wffn_op_settings', $options, true );
 			$resp['status'] = true;
 
@@ -1770,11 +1775,11 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			if ( ! empty( $values ) ) {
 
 				if ( ! empty( $values['custom_css'] ) ) {
-					$tabs['custom_css']['values']['custom_css'] = html_entity_decode( $values['custom_css'] );
+					$tabs['custom_css']['values']['custom_css'] = html_entity_decode( $values['custom_css'], ENT_QUOTES | ENT_HTML401 );
 				}
 
 				if ( ! empty( $values['custom_js'] ) ) {
-					$tabs['custom_js']['values']['custom_js'] = html_entity_decode( $values['custom_js'] );
+					$tabs['custom_js']['values']['custom_js'] = html_entity_decode( $values['custom_js'], ENT_QUOTES | ENT_HTML401 );
 				}
 
 				if ( ! empty( $values['custom_redirect'] ) ) {

@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
+#[\AllowDynamicProperties]
 class Automation extends Base {
 	public function __construct() {
 		$this->type = 'automation';
@@ -96,7 +97,7 @@ class Automation extends Base {
 		$query = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}bwfan_automations WHERE v=%d", 2 );
 
 		if ( isset( $data['search'] ) ) {
-			$query .= $wpdb->prepare( " AND title LIKE %s", '%' . esc_sql( $data['search'] ) . '%' );
+			$query .= $wpdb->prepare( " AND title LIKE %s", '%' . $wpdb->esc_like( $data['search'] ) . '%' );
 		}
 		if ( isset( $data['status'] ) && intval( $data['status'] ) > 0 ) {
 			$query .= $wpdb->prepare( " AND status=%d", intval( $data['status'] ) );

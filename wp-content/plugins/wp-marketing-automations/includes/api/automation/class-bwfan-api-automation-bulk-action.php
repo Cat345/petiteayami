@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'BWFAN_API_Automation_Bulk_Action' ) && BWFAN_Common::is_pro_3_0() ) {
+	#[\AllowDynamicProperties]
 	class BWFAN_API_Automation_Bulk_Action extends BWFAN_API_Base {
 		public static $ins;
 

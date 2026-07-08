@@ -9,6 +9,10 @@
  * @license     http://opensource.org/licenses/https://opensource.org/licenses/MIT
  * @since       1.0
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Section' ) ) {
 	/**
 	 * Each section is a separate instrance of the WFACPKirki_Section object.
@@ -35,7 +39,6 @@ if ( ! class_exists( 'WFACPKirki_Section' ) ) {
 
 			$this->section_types = apply_filters( 'wfacpkirki_section_types', $this->section_types );
 			$this->add_section( $args );
-
 		}
 
 		/**
@@ -62,7 +65,6 @@ if ( ! class_exists( 'WFACPKirki_Section' ) ) {
 
 			// Add the section.
 			$wp_customize->add_section( new $section_classname( $wp_customize, sanitize_key( $args['id'] ), $args ) );
-
 		}
 	}
 }

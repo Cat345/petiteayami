@@ -1,33 +1,33 @@
 <?php
 if ( ! class_exists( 'WFOB_Reporting' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Reporting {
 
-		private static $ins = null;
-		private $no_of_bump_used_order = [];
-		private $no_of_bump_used_total = [];
+		private static $ins            = null;
+		private $no_of_bump_used_order = array();
+		private $no_of_bump_used_total = array();
 
 		private function __construct() {
-			add_action( 'plugins_loaded', [ $this, 'init_db' ], 2 );
-			add_action( 'admin_init', [ $this, 'create_table' ] );
-			add_action( 'woocommerce_checkout_create_order_line_item', [ $this, 'woocommerce_create_order_line_item' ], 999999, 4 );
-			add_action( 'woocommerce_thankyou', [ $this, 'insert_custom_row_from_meta' ], 99, 2 );
+			add_action( 'plugins_loaded', array( $this, 'init_db' ), 2 );
+			add_action( 'admin_init', array( $this, 'create_table' ) );
+			add_action( 'woocommerce_checkout_create_order_line_item', array( $this, 'woocommerce_create_order_line_item' ), 999999, 4 );
+			add_action( 'woocommerce_thankyou', array( $this, 'insert_custom_row_from_meta' ), 99, 2 );
 
-			add_filter( 'woocommerce_admin_reports', [ $this, 'add_report_menu' ] );
-			add_filter( 'wc_admin_reports_path', [ $this, 'initialize_bump_reports_path' ], 12, 3 );
+			add_filter( 'woocommerce_admin_reports', array( $this, 'add_report_menu' ) );
+			add_filter( 'wc_admin_reports_path', array( $this, 'initialize_bump_reports_path' ), 12, 3 );
 
 			if ( class_exists( 'BWF_WC_Compatibility' ) && BWF_WC_Compatibility::is_hpos_enabled() ) {
-				add_action( 'woocommerce_delete_order', [ $this, 'delete_report_for_order' ] );
+				add_action( 'woocommerce_delete_order', array( $this, 'delete_report_for_order' ) );
 			} else {
-				add_action( 'delete_post', [ $this, 'delete_report_for_order' ] );
+				add_action( 'delete_post', array( $this, 'delete_report_for_order' ) );
 			}
 
-			add_action( 'woocommerce_checkout_create_order', [ $this, 'update_used_bump_in_order_meta' ] );
+			add_action( 'woocommerce_checkout_create_order', array( $this, 'update_used_bump_in_order_meta' ) );
 
 			add_action( 'woocommerce_order_status_changed', array( $this, 'insert_row_for_ipn_based_gateways' ), 10, 3 );
 
 			add_action( 'woocommerce_order_fully_refunded', array( $this, 'fully_refunded_process' ), 10, 1 );
 			add_action( 'woocommerce_order_partially_refunded', array( $this, 'partially_refunded_process' ), 8, 2 );
-
 		}
 
 		public static function get_instance() {
@@ -48,7 +48,7 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 			if ( false !== get_option( 'wfob_db_ver_3_0', false ) ) {
 				return;
 			}
-			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			global $wpdb;
 			$collate = '';
 			if ( $wpdb->has_cap( 'collation' ) ) {
@@ -62,9 +62,9 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
  		  iid varchar(255) NOT NULL,
  		  converted tinyint(1) not null default 0,
  		  total varchar(255) not null default 0,
- 		  date datetime NOT NULL, 	
+ 		  date datetime NOT NULL,
  		  cid BIGINT(20) unsigned NOT NULL DEFAULT 0,
- 		  fid BIGINT(20) unsigned NOT NULL DEFAULT 0, 
+ 		  fid BIGINT(20) unsigned NOT NULL DEFAULT 0,
 		  PRIMARY KEY  (ID),
 		  KEY ID (ID),
 		  KEY oid (oid),
@@ -92,8 +92,8 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 					$this->no_of_bump_used_total[ $bump_id ] = 0;
 				}
 				$total                                     = floatval( $item->get_total() ) + floatval( $item->get_total_tax() );
-				$this->no_of_bump_used_total[ $bump_id ]   += BWF_Plugin_Compatibilities::get_fixed_currency_price_reverse( $total, BWF_WC_Compatibility::get_order_currency( $order ) );
-				$this->no_of_bump_used_order[ $bump_id ][] = [ $values ];
+				$this->no_of_bump_used_total[ $bump_id ]  += BWF_Plugin_Compatibilities::get_fixed_currency_price_reverse( $total, BWF_WC_Compatibility::get_order_currency( $order ) );
+				$this->no_of_bump_used_order[ $bump_id ][] = array( $values );
 			}
 		}
 
@@ -101,9 +101,9 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 		 * @param WC_Order $order
 		 */
 		public function update_used_bump_in_order_meta( $order ) {
-			$bump_data = [];
+			$bump_data = array();
 
-			$show_bumps = WC()->session->get( 'wfob_no_of_bump_shown', [] );
+			$show_bumps = WC()->session->get( 'wfob_no_of_bump_shown', array() );
 			if ( empty( $show_bumps ) && ! empty( $_POST['wfob_input_bump_shown_ids'] ) ) {
 				$show_bumps = explode( ',', $_POST['wfob_input_bump_shown_ids'] );
 			}
@@ -121,13 +121,13 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 					$funnel_id = $fid;
 				}
 
-				$data                  = [
+				$data                  = array(
 					'converted' => $converted,
 					'bid'       => absint( $bump_id ),
 					'total'     => $total,
 					'iid'       => '{}',
 					'fid'       => $funnel_id,
-				];
+				);
 				$bump_data[ $bump_id ] = $data;
 			}
 			do_action( 'wfob_used_bump_in_order', $order, $bump_data );
@@ -163,8 +163,7 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 				return false;
 			}
 
-
-			add_filter( 'woocommerce_order_is_paid_statuses', [ $this, 'wfob_custom_order_status' ] );
+			add_filter( 'woocommerce_order_is_paid_statuses', array( $this, 'wfob_custom_order_status' ) );
 
 			$payment_method = $order->get_payment_method();
 			/**
@@ -184,10 +183,9 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 				return $bump_data;
 			}
 
-			$sql     = "select item.order_item_id as item_id ,meta.meta_value as bump_id from {$wpdb->prefix}woocommerce_order_items as item INNER JOIN  {$wpdb->prefix}woocommerce_order_itemmeta as meta on item.order_item_id=meta.order_item_id and item.order_id='{$order_id}' and meta.meta_key='_wfob_id';";
-			$results = $wpdb->get_results( $sql, ARRAY_A );
+			$results = $wpdb->get_results( $wpdb->prepare( "select item.order_item_id as item_id ,meta.meta_value as bump_id from {$wpdb->prefix}woocommerce_order_items as item INNER JOIN  {$wpdb->prefix}woocommerce_order_itemmeta as meta on item.order_item_id=meta.order_item_id and item.order_id = %d and meta.meta_key='_wfob_id'", absint( $order_id ) ), ARRAY_A );
 
-			$bump_items = [];
+			$bump_items = array();
 			if ( ! empty( $results ) ) {
 				foreach ( $results as $result ) {
 					$bump_id                  = absint( $result['bump_id'] );
@@ -225,7 +223,7 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 			$order->delete_meta_data( '_wfob_report_data' );
 			$order->delete_meta_data( '_wfob_report_needs_normalization' );
 			$order->save();
-			remove_filter( 'woocommerce_order_is_paid_statuses', [ $this, 'wfob_custom_order_status' ] );
+			remove_filter( 'woocommerce_order_is_paid_statuses', array( $this, 'wfob_custom_order_status' ) );
 
 			if ( ! is_null( WC()->session ) ) {
 				WC()->session->set( 'license_expired_bump_rejected', '' );
@@ -243,22 +241,22 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 				}
 			}
 			global $wpdb;
-			$wpdb->delete( $wpdb->wfob_stats, [ 'oid' => $order_id ], [ '%d' ] );
+			$wpdb->delete( $wpdb->wfob_stats, array( 'oid' => $order_id ), array( '%d' ) );
 		}
 
 		private function insert_data( $data ) {
 			global $wpdb;
 			/* //phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-			 'converted' => 1,
-			  'bid' => XXXXX,
-			  'total' => XX.XX,
-			  'iid' => '{}',
-			  'fid' => 'XX',
-			  'cid' => 'XX',
-			  'oid' => 'XX',
-			  'date' => 'XX',
+			'converted' => 1,
+				'bid' => XXXXX,
+				'total' => XX.XX,
+				'iid' => '{}',
+				'fid' => 'XX',
+				'cid' => 'XX',
+				'oid' => 'XX',
+				'date' => 'XX',
 				 */
-			$status = $wpdb->insert( $wpdb->wfob_stats, $data, [ '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' ] );
+			$status = $wpdb->insert( $wpdb->wfob_stats, $data, array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' ) );
 			if ( false !== $status ) {
 				return $wpdb->insert_id;
 			}
@@ -268,7 +266,7 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 
 		private function update_data( $data, $where ) {
 			global $wpdb;
-			$status = $wpdb->update( $wpdb->wfob_stats, $data, $where, [ '%s' ], [ '%d', '%d' ] );
+			$status = $wpdb->update( $wpdb->wfob_stats, $data, $where, array( '%s' ), array( '%d', '%d' ) );
 			if ( false !== $status ) {
 				return true;
 			}
@@ -287,7 +285,7 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 						'callback'    => array( 'WC_Admin_Reports', 'get_report' ),
 					),
 
-					'wfob_bumps' => array(
+					'wfob_bumps'   => array(
 						'title'       => __( 'Sales By Bump', 'woofunnels-order-bump' ),
 						'description' => '',
 						'hide_title'  => true,
@@ -300,8 +298,8 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 		}
 
 		public function initialize_bump_reports_path( $reporting_path, $name, $class ) {
-			if ( in_array( strtolower( $class ), [ 'wc_report_wfob_bumps', 'wc_report_wfob_by_date' ], true ) ) {
-				$reporting_path = dirname( __FILE__ ) . '/reports/class-' . $name . '.php';
+			if ( in_array( strtolower( $class ), array( 'wc_report_wfob_bumps', 'wc_report_wfob_by_date' ), true ) ) {
+				$reporting_path = __DIR__ . '/reports/class-' . $name . '.php';
 			}
 
 			return $reporting_path;
@@ -339,12 +337,11 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 				/**
 				 * reaching this code means, 1) we have a ipn gateway OR 2) we have meta stored during thankyou
 				 */
-				add_filter( 'woocommerce_order_is_paid_statuses', [ $this, 'wfob_custom_order_status' ] );
+				add_filter( 'woocommerce_order_is_paid_statuses', array( $this, 'wfob_custom_order_status' ) );
 				if ( $order_id > 0 && in_array( $to, wc_get_is_paid_statuses(), true ) ) {
 					$this->insert_custom_row_from_meta( $order_id );
 				}
 			}
-
 		}
 
 		public function is_order_renewal( $order ) {
@@ -371,7 +368,7 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 		 */
 		public function fully_refunded_process( $order_id ) {
 			global $wpdb;
-			$wpdb->update( $wpdb->prefix . "wfob_stats", [ 'total' => 0 ], [ 'oid' => $order_id ] );
+			$wpdb->update( $wpdb->prefix . 'wfob_stats', array( 'total' => 0 ), array( 'oid' => $order_id ) );
 		}
 
 		/**
@@ -401,15 +398,14 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 					if ( '' !== $_bump_purchase ) {
 						$refund_amount += abs( $refund_item->get_total() );
 					}
-
 				}
 			}
 
 			if ( $refund_amount > 0 ) {
-				$get_total     = $wpdb->get_var( "SELECT total FROM " . $wpdb->prefix . "wfob_stats WHERE oid = " . $order_id ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared*/
+				$get_total     = $wpdb->get_var( $wpdb->prepare( "SELECT total FROM {$wpdb->prefix}wfob_stats WHERE oid = %d", absint( $order_id ) ) );
 				$refund_amount = ( $get_total <= $refund_amount ) ? 0 : $get_total - $refund_amount;
 
-				$wpdb->update( $wpdb->prefix . "wfob_stats", [ 'total' => $refund_amount ], [ 'oid' => $order_id ] );
+				$wpdb->update( $wpdb->prefix . 'wfob_stats', array( 'total' => $refund_amount ), array( 'oid' => absint( $order_id ) ) );
 			}
 		}
 
@@ -431,7 +427,7 @@ if ( ! class_exists( 'WFOB_Reporting' ) ) {
 				'linecredit',
 				'duitnowqriswallet',
 				'duitnowqr',
-				'duitnowqris'
+				'duitnowqris',
 			);
 
 			return apply_filters( 'wfob_ipn_gateways_list', $ipn_gateways );

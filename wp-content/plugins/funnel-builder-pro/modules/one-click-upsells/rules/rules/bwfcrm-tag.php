@@ -7,6 +7,7 @@
  * Time: 10:43 AM
  */
 if ( ! class_exists( 'WFOCU_Rule_Automation_Tag' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Automation_Tag extends WFOCU_Rule_Base {
 		public $supports = array( 'order' );
 
@@ -31,7 +32,7 @@ if ( ! class_exists( 'WFOCU_Rule_Automation_Tag' ) ) {
 			$tag_data = BWFCRM_Tag::get_tags( array(), false, '', '' );
 			if ( is_array( $tag_data ) && count( $tag_data ) > 0 ) {
 				foreach ( $tag_data as $tag ) {
-					if ( ! empty ( $tag['ID'] ) ) {
+					if ( ! empty( $tag['ID'] ) ) {
 						$result[ $tag['ID'] ] = $tag['name'];
 					}
 				}
@@ -94,8 +95,7 @@ if ( ! class_exists( 'WFOCU_Rule_Automation_Tag' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Open Upsell %s Automation Tags <strong>%s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_category_title( $rule['condition'] ) );
+			return sprintf( __( 'Open Upsell %1$s Automation Tags <strong>%2$s</strong>', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_category_title( $rule['condition'] ) );
 		}
-
 	}
 }

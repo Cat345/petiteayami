@@ -1,11 +1,11 @@
-<div class="<?php echo ( ! $has_preview ) ? 'wfocu_empty_template' : '' ?>" v-if="template_group==`<?php echo $temp_group; ?>`" v-bind:class="current_template==`<?php echo $temp_slug; ?>`?`<?php echo $template_class; ?> wfocu_template_box_single  wfocu_selected_template`:`wfocu_template_box <?php echo $template_class; ?> wfocu_template_box_single`  " data-slug="<?php echo $temp_slug; ?>">
+<div class="<?php echo ( ! $has_preview ) ? 'wfocu_empty_template' : '' ?>" v-if="template_group==`<?php echo esc_js( $temp_group ); ?>`" v-bind:class="current_template==`<?php echo esc_js( $temp_slug ); ?>`?`<?php echo esc_js( $template_class ); ?> wfocu_template_box_single  wfocu_selected_template`:`wfocu_template_box <?php echo esc_js( $template_class ); ?> wfocu_template_box_single`  " data-slug="<?php echo esc_attr( $temp_slug ); ?>">
 	<div class="wfocu_template_box_inner">
 		<?php if ( $has_preview ) { ?>
 			<div class="wfocu_template_sec_design">
 				<div class="wfocu_overlay">
 					<div class="wfocu_template_btm_strip wfocu_clearfix">
 						<div class="wfocu_template_button">
-							<a v-on:click="triggerPreview('<?php echo $temp_slug; ?>','<?php echo $temp_group; ?>')" target="_blank" class="wfocu_btn wfocu_step_btn wfocu_steps_btn_success"><?php esc_html_e( 'Preview', 'woofunnels-upstroke-one-click-upsell' ); ?></a>
+							<a v-on:click="triggerPreview('<?php echo esc_js( $temp_slug ); ?>','<?php echo esc_js( $temp_group ); ?>')" target="_blank" class="wfocu_btn wfocu_step_btn wfocu_steps_btn_success"><?php esc_html_e( 'Preview', 'woofunnels-upstroke-one-click-upsell' ); ?></a>
 							<?php
 							/**
 							 * Import status
@@ -16,24 +16,24 @@
 							if ( 'no' === $import_status ) {
 								?>
 								<a target="_blank" href="<?php echo esc_url( 'https://funnelkit.com/exclusive-offer/' ) ?>" class="wfocu_btn wfocu_step_btn wfocu_btn_blue wfocu_design_btn_no_license" >
-									<?php _e( 'Get PRO', 'woofunnels-upstroke-one-click-upsell' ) ?></a>
+									<?php esc_html_e( 'Get PRO', 'woofunnels-upstroke-one-click-upsell' ); ?></a>
 								<?php
 							} elseif ( null !== $import_status ) { ?>
-								<a href="javascript:void(0)" v-bind:class="getButtonClass(`<?php echo $temp_slug; ?>`)" class="wfocu_btn wfocu_step_btn wfocu_btn_blue wfocu_import_template" v-on:click="set_template(`<?php echo $temp_slug; ?>`,false, $event)">
-									{{getButtonText(`<?php echo $import_status;?>`,`<?php echo $temp_slug;?>`)}}</a>
+								<a href="javascript:void(0)" v-bind:class="getButtonClass(`<?php echo esc_js( $temp_slug ); ?>`)" class="wfocu_btn wfocu_step_btn wfocu_btn_blue wfocu_import_template" v-on:click="set_template(`<?php echo esc_js( $temp_slug ); ?>`,false, $event)">
+									{{getButtonText(`<?php echo esc_js( $import_status ); ?>`,`<?php echo esc_js( $temp_slug ); ?>`)}}</a>
 								<?php
 							} else { ?>
-								<a href="javascript:void(0)" v-bind:class="getButtonClass(`<?php echo $temp_slug; ?>`)" class="wfocu_btn wfocu_step_btn wfocu_btn_blue wfocu_import_template" v-on:click="set_template(`<?php echo $temp_slug; ?>`, true, $event)">
-									{{getButtonText(`<?php echo $import_status; ?>`,`<?php echo $temp_slug; ?>`)}}</a>
+								<a href="javascript:void(0)" v-bind:class="getButtonClass(`<?php echo esc_js( $temp_slug ); ?>`)" class="wfocu_btn wfocu_step_btn wfocu_btn_blue wfocu_import_template" v-on:click="set_template(`<?php echo esc_js( $temp_slug ); ?>`, true, $event)">
+									{{getButtonText(`<?php echo esc_js( $import_status ); ?>`,`<?php echo esc_js( $temp_slug ); ?>`)}}</a>
 								<?php
 							} ?>
 						</div>
 					</div>
-					<div class="wfocu_overlay_icon"><?php echo $overlay_icon; ?></div>
+					<div class="wfocu_overlay_icon"><?php echo wp_kses( $overlay_icon, wp_kses_allowed_html( 'post' ) ); ?></div>
 				</div>
 				<div class="wfocu_template_thumbnail">
 					<div class="wfocu_img_thumbnail ">
-						<img src="<?php echo $prev_thumbnail; ?>" alt="<?php echo $temp_name; ?>"/>
+						<img src="<?php echo esc_url( $prev_thumbnail ); ?>" alt="<?php echo esc_attr( $temp_name ); ?>"/>
 					</div>
 				</div>
 
@@ -67,8 +67,7 @@
 							</div>
 							<div class="wfocu_p">{{getButtonText(`<?php echo $import_status; ?>`,`<?php echo $temp_slug; ?>`,true)}}
 							</div>
-							<!-- <div class="wfocu_import_description"><?php _e( 'Create your funnel from scratch' ) ?></div> -->
-						</div>
+							</div>
 					</div>
 				</div>
 			</div>
@@ -82,7 +81,7 @@
 					<div class="wfocu_template_preview_header">
 						<div class="bwf_template_logo_title">
 							<img src="<?php echo esc_url( plugin_dir_url( WooFunnel_Loader::$ultimate_path ) . 'woofunnels/assets/img/menu/funnelkit-logo.svg' ); ?>" alt="Funnel Builder for WordPress" class="bwf-brand-logo-only" width="148">
-							<div class="bwf_preview_template_title"><?php echo $temp_name ?></div>
+							<div class="bwf_preview_template_title"><?php echo esc_html( $temp_name ); ?></div>
 						</div>
 						<div class="wfocu_template_viewport">
 							<div class="wfocu_template_viewport_inner">
@@ -99,9 +98,9 @@
 						</div>
 						<div class="bwf-t-center">
 							<?php if( 'no' !== $import_status ){ ?>
-								<a href="javascript:void(0)" v-bind:class="getButtonClass(`<?php echo $temp_slug; ?>`, true)" class="button button-primary wfocu-import-template-btn is-primary wfocu_steps_btn wfocu_import_template" v-on:click="set_template('<?php echo $temp_slug; ?>')">{{getButtonText(`<?php echo $import_status; ?>`,`<?php echo $temp_slug; ?>`, false)}}</a>
+								<a href="javascript:void(0)" v-bind:class="getButtonClass(`<?php echo esc_js( $temp_slug ); ?>`, true)" class="button button-primary wfocu-import-template-btn is-primary wfocu_steps_btn wfocu_import_template" v-on:click="set_template('<?php echo esc_js( $temp_slug ); ?>')">{{getButtonText(`<?php echo esc_js( $import_status ); ?>`,`<?php echo esc_js( $temp_slug ); ?>`, false)}}</a>
 							<?php }else{ ?>
-								<a href="javascript:void(0)" v-bind:class="getButtonClass(`<?php echo $temp_slug; ?>`, true)" class="button button-primary wfocu-import-template-btn is-primary wfocu_steps_btn wfocu_import_template">{{getButtonText(`<?php echo $import_status; ?>`,`<?php echo $temp_slug; ?>`, false)}}</a>
+								<a href="javascript:void(0)" v-bind:class="getButtonClass(`<?php echo esc_js( $temp_slug ); ?>`, true)" class="button button-primary wfocu-import-template-btn is-primary wfocu_steps_btn wfocu_import_template">{{getButtonText(`<?php echo esc_js( $import_status ); ?>`,`<?php echo esc_js( $temp_slug ); ?>`, false)}}</a>
 							<?php } ?>
 						</div>
 						<div class="wfocu_template_preview_close">
@@ -122,7 +121,7 @@
 											<div></div>
 										</div>
 									</div>
-									<iframe v-bind:src="getPreviewUrl('<?php echo $prevslug; ?>', '<?php echo $temp_group; ?>')" width="100%" height="100%"></iframe>
+									<iframe v-bind:src="getPreviewUrl('<?php echo esc_js( $prevslug ); ?>', '<?php echo esc_js( $temp_group ); ?>')" width="100%" height="100%"></iframe>
 								</div>
 							</div>
 						</div>
@@ -142,11 +141,11 @@
 											$p_name      = ( isset( $templates['name'] ) ) ? $templates['name'] : '';
 											?>
 											<div>
-												<label class="wfocu_template_page_options" pre_slug="<?php echo $t_slug;//phpcs:ignore ?>" v-on:click="triggerPreview('<?php echo $t_slug;//phpcs:ignore ?>','<?php echo $t_key;//phpcs:ignore ?>')">
+												<label class="wfocu_template_page_options" pre_slug="<?php echo esc_attr( $t_slug ); ?>" v-on:click="triggerPreview('<?php echo esc_js( $t_slug ); ?>','<?php echo esc_js( $t_key ); ?>')">
 													<div class="wfocu__preview_thumbnail">
-														<img src="<?php echo $p_thumbnail;//phpcs:ignore ?>">
+														<img src="<?php echo esc_url( $p_thumbnail ); ?>">
 													</div>
-													<span class="wfocu_template_name"><?php echo $p_name;//phpcs:ignore ?></span>
+													<span class="wfocu_template_name"><?php echo esc_html( $p_name ); ?></span>
 												</label>
 											</div>
 											<?php

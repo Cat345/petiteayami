@@ -13,6 +13,7 @@ if ( ! class_exists( 'WFOCUKirki_Sections' ) ) {
 	/**
 	 * Additional tweaks for sections.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Sections {
 
 		/**

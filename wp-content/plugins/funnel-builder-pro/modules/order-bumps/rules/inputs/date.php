@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Input_Date' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Input_Date extends wfob_Input_Text {
 
 		public function __construct() {
@@ -15,8 +16,7 @@ if ( ! class_exists( 'wfob_Input_Date' ) ) {
 				$field['id'] = sanitize_title( $field['id'] );
 			}
 
-			echo '<input name="' . $field['name'] . '" type="text" id="' . esc_attr( $field['id'] ) . '" class="wfob-date-picker-field' . esc_attr( $field['class'] ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . $value . '" />';
+			echo '<input name="' . $field['name'] . '" type="text" id="' . esc_attr( $field['id'] ) . '" class="wfob-date-picker-field' . esc_attr( $field['class'] ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $value ) . '" />';
 		}
-
 	}
 }

@@ -9,6 +9,7 @@ use BWF_CO;
  *
  * Handles Kit API connection validation
  */
+#[\AllowDynamicProperties]
 class Connect extends Call {
 	protected $required_fields = array( 'api_key' );
 

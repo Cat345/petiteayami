@@ -12,6 +12,10 @@
 /**
  * Our main WFACPKirki_Control object
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Control' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Control {
@@ -53,7 +57,6 @@ if ( ! class_exists( 'WFACPKirki_Control' ) ) {
 			$this->set_control_types();
 			// Add the control.
 			$this->add_control( $args );
-
 		}
 
 		/**
@@ -75,7 +78,6 @@ if ( ! class_exists( 'WFACPKirki_Control' ) ) {
 			}
 
 			return $class_name;
-
 		}
 
 		/**
@@ -91,7 +93,6 @@ if ( ! class_exists( 'WFACPKirki_Control' ) ) {
 			$class_name = $this->get_control_class_name( $args );
 			// Add the control.
 			$this->wp_customize->add_control( new $class_name( $this->wp_customize, $args['settings'], $args ) );
-
 		}
 
 		/**

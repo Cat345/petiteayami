@@ -1,17 +1,21 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * WooCommerce Affirm Gateway BY WooCommerce (v.1.2.2)
  *
- * #[AllowDynamicProperties] 
- class WFACP_Compatibility_WC_Affirm
+ * #[AllowDynamicProperties]
+class WFACP_Compatibility_WC_Affirm
  */
 if ( ! class_exists( 'WFACP_Compatibility_WC_Affirm' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_WC_Affirm {
 		public function __construct() {
-			add_action( 'wfacp_template_load', [ $this, 'action' ] );
-			add_action( 'wfacp_internal_css', [ $this, 'add_internal_css' ] );
+			add_action( 'wfacp_template_load', array( $this, 'action' ) );
+			add_action( 'wfacp_internal_css', array( $this, 'add_internal_css' ) );
 		}
 
 		public function action() {
@@ -32,7 +36,6 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Affirm' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function add_internal_css() {
@@ -43,14 +46,14 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Affirm' ) ) {
 			if ( ! $instance instanceof WFACP_Template_Common ) {
 				return;
 			}
-			$bodyClass = "body ";
+			$bodyClass = 'body ';
 			if ( 'pre_built' !== $instance->get_template_type() ) {
-				$bodyClass = "body #wfacp-e-form ";
+				$bodyClass = 'body #wfacp-e-form ';
 			}
 
-			$cssHtml = "<style>";
-			$cssHtml .= $bodyClass . ".affirm-iframe-widget{max-width: 100% !important;}";
-			$cssHtml .= "</style>";
+			$cssHtml  = '<style>';
+			$cssHtml .= $bodyClass . '.affirm-iframe-widget{max-width: 100% !important;}';
+			$cssHtml .= '</style>';
 			echo $cssHtml;
 		}
 	}

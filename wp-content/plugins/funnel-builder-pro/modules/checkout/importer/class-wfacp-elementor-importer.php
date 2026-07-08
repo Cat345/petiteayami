@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Elementor template library local source.
@@ -12,16 +13,16 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Elementor_Importer extends Elementor\TemplateLibrary\Source_Local implements WFACP_Import_Export {
 
-		private $is_multi = 'no';
-		private $slug = '';
-		private $post_id = 0;
-		private $settings_file = '';
-		private $builder = 'elementor';
+		private $is_multi        = 'no';
+		private $slug            = '';
+		private $post_id         = 0;
+		private $settings_file   = '';
+		private $builder         = 'elementor';
 		public $delete_page_meta = true;
 
 
 		public function __construct() {
-			//DO NOT DELETE
+			// DO NOT DELETE
 		}
 
 		public function import( $aero_id, $slug, $is_multi = 'no' ) {
@@ -31,12 +32,17 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 			$this->update_product_switcher_settings();
 
 			if ( 'elementor_1' === $slug ) {
-				wp_update_post( [ 'ID' => $this->post_id, 'post_content' => '' ] );
+				wp_update_post(
+					array(
+						'ID'           => $this->post_id,
+						'post_content' => '',
+					)
+				);
 				delete_post_meta( $this->post_id, '_elementor_data' );
 				$this->delete_template_data( $this->post_id );
 				update_post_meta( $this->post_id, '_wp_page_template', 'wfacp-canvas.php' );
 
-				return [ 'status' => true ];
+				return array( 'status' => true );
 			}
 
 			$templates = WFACP_Core()->template_loader->get_templates( $this->builder );
@@ -46,18 +52,21 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 			if ( $templates[ $slug ] && isset( $templates[ $slug ]['build_from_scratch'] ) ) {
 				$this->save_data( $aero_id );
 
-				return [ 'status' => true ];
+				return array( 'status' => true );
 			}
 
 			$data = WFACP_Core()->importer->get_remote_template( $slug, 'elementor' );
 
 			if ( isset( $data['data'] ) ) {
 
-
 				$translation_list = WFACP_Common::get_translation_field_aero_checkout_domain();
-				$translation_list = array_filter( $translation_list, function ( $key, $val ) {
-					return ! ( $key === $val );
-				}, ARRAY_FILTER_USE_BOTH );
+				$translation_list = array_filter(
+					$translation_list,
+					function ( $key, $val ) {
+						return ! ( $key === $val );
+					},
+					ARRAY_FILTER_USE_BOTH
+				);
 
 				foreach ( $translation_list as $key => $value ) {
 					if ( false !== strpos( $data['data'], $key ) ) {
@@ -66,14 +75,15 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 					}
 				}
 
-
 				$translation_list = WFACP_Common::get_translation_field_funnel_buider_domain();
-				$translation_list = array_filter( $translation_list, function ( $key, $val ) {
+				$translation_list = array_filter(
+					$translation_list,
+					function ( $key, $val ) {
 
-
-					return ! ( $key === $val );
-				}, ARRAY_FILTER_USE_BOTH );
-
+						return ! ( $key === $val );
+					},
+					ARRAY_FILTER_USE_BOTH
+				);
 
 				foreach ( $translation_list as $key => $value ) {
 					if ( false !== strpos( $data['data'], $key ) ) {
@@ -82,10 +92,9 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 				}
 			}
 
-
-		if ( isset( $data['error'] ) ) {
-			return $data;
-		}
+			if ( isset( $data['error'] ) ) {
+				return $data;
+			}
 
 			$content = $data['data'];
 
@@ -93,10 +102,10 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 				$content = is_string( $content ) ? $content : json_encode( $content );
 				$status  = $this->import_aero_template( $aero_id, $content );
 
-				return [ 'status' => $status ];
+				return array( 'status' => $status );
 			}
 
-			return [ 'error' => __( 'Something Went wrong', 'woofunnels-aero-checkout' ) ];
+			return array( 'error' => __( 'Something Went wrong', 'woofunnels-aero-checkout' ) );
 		}
 
 		public function export( $aero_id, $slug ) {
@@ -111,7 +120,12 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 		 * @param int $post_id post ID.
 		 */
 		public function import_aero_template( $post_id, $content ) {
-			wp_update_post( [ 'ID' => $post_id, 'post_content' => '' ] );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '',
+				)
+			);
 			delete_post_meta( $post_id, '_elementor_data' );
 
 			if ( empty( $content ) ) {
@@ -132,7 +146,7 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 			if ( isset( $content['content'] ) && ! empty( $content['content'] ) ) {
 				$content = $content['content'];
 			}
-			//go ahead and import the content
+			// go ahead and import the content
 
 			if ( empty( $content ) ) {
 				return false;
@@ -148,7 +162,10 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 				$this->delete_template_data( $post_id );
 			}
 			if ( '' !== $content ) {
-
+				if ( is_array( $content ) ) {
+					require_once WFACP_PLUGIN_DIR . '/includes/class-wfacp-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+					$content = WFACP_Content_Validator::validate_elementor_content( $content );
+				}
 				$content = wp_slash( wp_json_encode( $content ) );
 				update_post_meta( $post_id, '_elementor_data', $content );
 				WFACP_Common::update_label_meta( $post_id, $content );
@@ -168,8 +185,6 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 
 		private function delete_template_data( $post_id ) {
 			WFACP_Common::delete_page_layout( $post_id );
-
-
 		}
 
 		public function clear_cache() {
@@ -182,7 +197,7 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 
 		public function update_product_switcher_settings() {
 			if ( false !== strpos( $this->slug, 'elementor_' ) ) {
-				$pageProductSetting = [
+				$pageProductSetting = array(
 					'coupons'                             => '',
 					'enable_coupon'                       => 'false',
 					'disable_coupon'                      => 'false',
@@ -203,12 +218,12 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 					'preferred_countries_enable'          => 'false',
 					'preferred_countries'                 => '',
 					'product_switcher_template'           => 'default',
-				];
+				);
 
-				$product_settings                     = [];
+				$product_settings                     = array();
 				$product_settings['settings']         = $pageProductSetting;
-				$product_settings['products']         = [];
-				$product_settings['default_products'] = [];
+				$product_settings['products']         = array();
+				$product_settings['default_products'] = array();
 				if ( is_array( $product_settings ) && count( $product_settings ) > 0 ) {
 					update_post_meta( $this->post_id, '_wfacp_product_switcher_setting', $product_settings );
 				}

@@ -3,6 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 if ( ! class_exists( 'WFOCU_Upstroke_Timeline' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Upstroke_Timeline {
 
 
@@ -39,11 +40,16 @@ if ( ! class_exists( 'WFOCU_Upstroke_Timeline' ) ) {
 				return;
 			}
 
-			add_meta_box( 'wfocu_upstroke_reports_metabox', __( 'FunnelKit Timeline', 'woofunnels-upstroke-power-pack' ), array(
-				$this,
-				'wfocu_upstroke_reports_metabox_callback',
-			), function_exists( 'wc_get_page_screen_id' ) ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order', 'side' );
-
+			add_meta_box(
+				'wfocu_upstroke_reports_metabox',
+				__( 'FunnelKit Timeline', 'woofunnels-upstroke-power-pack' ),
+				array(
+					$this,
+					'wfocu_upstroke_reports_metabox_callback',
+				),
+				function_exists( 'wc_get_page_screen_id' ) ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
+				'side'
+			);
 		}
 
 		/**
@@ -52,59 +58,64 @@ if ( ! class_exists( 'WFOCU_Upstroke_Timeline' ) ) {
 		public function wfocu_upstroke_reports_metabox_callback() {
 			$order_id = self::get_edit_screen_order_id();
 
-			$upstroke_data = WFOCU_Core()->track->query_results( array(
-				'data'         => array(
-					'object_type'    => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'object_type',
+			$upstroke_data = WFOCU_Core()->track->query_results(
+				array(
+					'data'         => array(
+						'object_type'    => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'object_type',
+						),
+						'id'             => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'event_id',
+						),
+						'object_id'      => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'object_id',
+						),
+						'action_type_id' => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'action_type_id',
+						),
+						'timestamp'      => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'trigger_date',
+						),
 					),
-					'id'             => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'event_id',
+					'where'        => array(
+						array(
+							'key'      => 'session.order_id',
+							'value'    => $order_id,
+							'operator' => '=',
+						),
 					),
-					'object_id'      => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'object_id',
-					),
-					'action_type_id' => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'action_type_id',
-					),
-					'timestamp'      => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'trigger_date',
-					),
-				),
-				'where'        => array(
-					array(
-						'key'      => 'session.order_id',
-						'value'    => $order_id,
-						'operator' => '=',
-					),
-				),
-				'query_type'   => 'get_results',
-				'session_join' => true,
-				'nocache'      => true,
-			) );
+					'query_type'   => 'get_results',
+					'session_join' => true,
+					'nocache'      => true,
+				)
+			);
 
-			$template = apply_filters( 'wfocu_order_timeline_template', array(
-				1  => __( 'Funnel ({{funnel_name}}) initiated.', 'woofunnels-upstroke-power-pack' ),
-				2  => __( 'Offer ({{offer_name}}) viewed.', 'woofunnels-upstroke-power-pack' ),
-				4  => __( 'Offer ({{offer_name}}) converted.', 'woofunnels-upstroke-power-pack' ),
-				5  => __( 'Product ({{product_name}}) {{qty}} in offer ({{offer_name}}) accepted.', 'woofunnels-upstroke-power-pack' ),
-				6  => __( 'Offer ({{offer_name}}) rejected.', 'woofunnels-upstroke-power-pack' ),
-				7  => __( 'Offer ({{offer_name}}) expired.', 'woofunnels-upstroke-power-pack' ),
-				8  => __( 'Funnel ({{funnel_name}}) Terminated.', 'woofunnels-upstroke-power-pack' ),
-				9  => __( 'Funnel ({{funnel_name}}) payment failed.', 'woofunnels-upstroke-power-pack' ),
-				10 => __( 'Offer ({{offer_name}}) skipped. Reason: {{invalidation_reason_html}}', 'woofunnels-upstroke-power-pack' ),
-				11 => __( 'Funnel ({{funnel_name}}) Closed. Order Recieved Page Shown to User.', 'woofunnels-upstroke-power-pack' ),
-				12 => __( 'Offer ({{offer_name}}) Refunded.', 'woofunnels-upstroke-power-pack' ),
-			) );
+			$template = apply_filters(
+				'wfocu_order_timeline_template',
+				array(
+					1  => __( 'Funnel ({{funnel_name}}) initiated.', 'woofunnels-upstroke-power-pack' ),
+					2  => __( 'Offer ({{offer_name}}) viewed.', 'woofunnels-upstroke-power-pack' ),
+					4  => __( 'Offer ({{offer_name}}) converted.', 'woofunnels-upstroke-power-pack' ),
+					5  => __( 'Product ({{product_name}}) {{qty}} in offer ({{offer_name}}) accepted.', 'woofunnels-upstroke-power-pack' ),
+					6  => __( 'Offer ({{offer_name}}) rejected.', 'woofunnels-upstroke-power-pack' ),
+					7  => __( 'Offer ({{offer_name}}) expired.', 'woofunnels-upstroke-power-pack' ),
+					8  => __( 'Funnel ({{funnel_name}}) Terminated.', 'woofunnels-upstroke-power-pack' ),
+					9  => __( 'Funnel ({{funnel_name}}) payment failed.', 'woofunnels-upstroke-power-pack' ),
+					10 => __( 'Offer ({{offer_name}}) skipped. Reason: {{invalidation_reason_html}}', 'woofunnels-upstroke-power-pack' ),
+					11 => __( 'Funnel ({{funnel_name}}) Closed. Order Recieved Page Shown to User.', 'woofunnels-upstroke-power-pack' ),
+					12 => __( 'Offer ({{offer_name}}) Refunded.', 'woofunnels-upstroke-power-pack' ),
+				)
+			);
 
 			if ( count( $upstroke_data ) > 1 ) {
 				echo '<ul class="wfocu-timeline">';
@@ -138,7 +149,6 @@ if ( ! class_exists( 'WFOCU_Upstroke_Timeline' ) ) {
 			} else {
 				echo '<p>' . esc_html__( 'No upsells activity', 'woofunnels-upstroke-power-pack' ) . '</p>';
 			}
-
 		}
 
 		/**
@@ -163,7 +173,7 @@ if ( ! class_exists( 'WFOCU_Upstroke_Timeline' ) ) {
 			if ( 10 === $upstroke->action_type_id || '10' === $upstroke->action_type_id ) {
 				$get_reason_id = WFOCU_Core()->track->get_meta( $upstroke->event_id, '_invalidation_reason' );
 
-				$reason_html = is_callable( [ WFOCU_Core()->offers, 'get_invalidation_reason_string' ] ) ? WFOCU_Core()->offers->get_invalidation_reason_string( $get_reason_id ) : 'NA';
+				$reason_html = is_callable( array( WFOCU_Core()->offers, 'get_invalidation_reason_string' ) ) ? WFOCU_Core()->offers->get_invalidation_reason_string( $get_reason_id ) : 'NA';
 
 				$template = str_replace( '{{invalidation_reason_html}}', $reason_html, $template );
 
@@ -172,7 +182,6 @@ if ( ! class_exists( 'WFOCU_Upstroke_Timeline' ) ) {
 			$template = str_replace( '{{product_name}}', get_the_title( $upstroke->object_id ), $template );
 
 			return $template;
-
 		}
 	}
 }

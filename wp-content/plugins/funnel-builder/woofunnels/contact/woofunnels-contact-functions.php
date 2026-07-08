@@ -228,9 +228,7 @@ if ( ! function_exists( 'bwf_get_timezone_from_order' ) ) {
 		/** Check for country */
 		$country = $order->get_billing_country();
 
-		ob_start();
-		include dirname( __DIR__ ) . '/contact/data/contries-timzone.json'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingNonPHPFile.IncludingNonPHPFile
-		$list = ob_get_clean();
+		$list = file_get_contents( dirname( __DIR__ ) . '/contact/data/contries-timzone.json' ); //phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
 		$list = json_decode( $list, true );
 
 		if ( ! is_array( $list ) || ! array_key_exists( $country, $list ) ) {
@@ -267,9 +265,7 @@ if ( ! function_exists( 'bwf_get_countries_data' ) ) {
 	 * @return mixed|null
 	 */
 	function bwf_get_countries_data() {
-		ob_start();
-		include dirname( __DIR__ ) . '/contact/data/countries.json'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingNonPHPFile.IncludingNonPHPFile
-		$countries_data = ob_get_clean();
+		$countries_data = file_get_contents( dirname( __DIR__ ) . '/contact/data/countries.json' ); //phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
 		$countries      = json_decode( $countries_data, true );
 
 		return $countries;

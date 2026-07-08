@@ -1,10 +1,14 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 #[AllowDynamicProperties]
 class WFACP_Add_Address_Field {
-	private $type = 'billing';
-	private $id = '';
-	private $field = [];
+	private $type  = 'billing';
+	private $id    = '';
+	private $field = array();
 
 	public function __construct( $id, $field, $type = 'billing', $show_admin = true ) {
 
@@ -15,13 +19,13 @@ class WFACP_Add_Address_Field {
 		$this->id    = $id;
 		$this->field = $field;
 		$this->type  = $type;
-		add_filter( 'wfacp_unset_address_fields', [ $this, 'add_to_unset_field' ] );
+		add_filter( 'wfacp_unset_address_fields', array( $this, 'add_to_unset_field' ) );
 		if ( true == $show_admin ) {
-			add_filter( 'woocommerce_admin_' . $type . '_fields', [ $this, 'display_in_order_edit_screen' ] );
+			add_filter( 'woocommerce_admin_' . $type . '_fields', array( $this, 'display_in_order_edit_screen' ) );
 		}
 
-		add_filter( 'wfacp_default_' . $this->type . '_address_fields', [ $this, 'add_to_default_address_fields' ] );
-		add_filter( 'wfacp_' . $this->type . '_address_options', [ $this, 'add_to_address_options' ] );
+		add_filter( 'wfacp_default_' . $this->type . '_address_fields', array( $this, 'add_to_default_address_fields' ) );
+		add_filter( 'wfacp_' . $this->type . '_address_options', array( $this, 'add_to_address_options' ) );
 	}
 
 	public function add_to_unset_field( $unset_fields ) {
@@ -50,7 +54,7 @@ class WFACP_Add_Address_Field {
 	}
 
 	public function display_in_order_edit_screen( $fields ) {
-		$fields[ $this->id ] = [ 'label' => $this->field['label'] ];
+		$fields[ $this->id ] = array( 'label' => $this->field['label'] );
 
 		return $fields;
 	}

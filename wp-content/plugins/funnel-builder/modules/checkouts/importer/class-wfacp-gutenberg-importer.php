@@ -11,10 +11,10 @@
 if ( ! class_exists( 'WFACP_Gutenberg_Importer' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Gutenberg_Importer implements WFACP_Import_Export {
-		private $slug = '';
-		private $post_id = 0;
-		private $settings_file = '';
-		private $builder = 'gutenberg';
+		private $slug            = '';
+		private $post_id         = 0;
+		private $settings_file   = '';
+		private $builder         = 'gutenberg';
 		public $delete_page_meta = true;
 
 		public function __construct() {
@@ -36,7 +36,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Importer' ) ) {
 				$this->save_data( $aero_id, '' );
 				update_post_meta( $aero_id, '_wp_page_template', 'wfacp-canvas.php' );
 
-				return [ 'status' => true ];
+				return array( 'status' => true );
 			}
 
 			$data = WFACP_Core()->importer->get_remote_template( $slug, $this->builder );
@@ -56,27 +56,34 @@ if ( ! class_exists( 'WFACP_Gutenberg_Importer' ) ) {
 			$content = $data['data'];
 			if ( ! empty( $content ) ) {
 				$contents = json_decode( $content, true );
-				if ( ! is_array( $contents ) || empty( $contents ) ) {
-					return [ 'status' => false ];
+				if ( ! is_array( $contents ) || empty( $contents ) || ! isset( $contents['post_content'], $contents['meta_data'] ) ) {
+					return array( 'status' => false );
 				}
 				$post_content = $contents['post_content'];
-				$meta_data    = $contents['meta_data'];
+				require_once WFFN_PLUGIN_DIR . '/includes/class-wffn-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+
+				// Remote template content must pass the same dangerous-content checks the other importers use.
+				if ( WFFN_Content_Validator::contains_php_code( $post_content ) || WFFN_Content_Validator::contains_dangerous_tags( $post_content ) ) {
+					return array( 'status' => false );
+				}
+
+				$meta_data = WFFN_Content_Validator::sanitize_meta_keys( $contents['meta_data'] );
 
 				$this->save_data( $this->post_id, $post_content );
 				foreach ( $meta_data as $meta_key => $meta_value ) {
 					update_post_meta( $aero_id, $meta_key, trim( $meta_value ) );
 				}
 
-				return [ 'status' => true ];
+				return array( 'status' => true );
 			}
 
-			return [ 'status' => true ];
+			return array( 'status' => true );
 		}
 
 
 		public function update_product_switcher_settings() {
 			if ( false !== strpos( $this->slug, 'gutenberg_' ) ) {
-				$pageProductSetting = [
+				$pageProductSetting = array(
 					'coupons'                             => '',
 					'enable_coupon'                       => 'false',
 					'disable_coupon'                      => 'false',
@@ -89,7 +96,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Importer' ) ) {
 					'hide_you_save'                       => 'true',
 					'hide_best_value'                     => 'false',
 					'best_value_product'                  => '',
-					'best_value_text'                     => __( 'Best Value', 'woofunnels-aero-checkout' ),
+					'best_value_text'                     => __( 'Best Value', 'funnel-builder' ),
 					'best_value_position'                 => 'above',
 					'enable_custom_name_in_order_summary' => 'false',
 					'autocomplete_enable'                 => 'false',
@@ -97,12 +104,12 @@ if ( ! class_exists( 'WFACP_Gutenberg_Importer' ) ) {
 					'preferred_countries_enable'          => 'false',
 					'preferred_countries'                 => '',
 					'product_switcher_template'           => 'default',
-				];
+				);
 
-				$product_settings                     = [];
+				$product_settings                     = array();
 				$product_settings['settings']         = $pageProductSetting;
-				$product_settings['products']         = [];
-				$product_settings['default_products'] = [];
+				$product_settings['products']         = array();
+				$product_settings['default_products'] = array();
 				if ( is_array( $product_settings ) && count( $product_settings ) > 0 ) {
 					update_post_meta( $this->post_id, '_wfacp_product_switcher_setting', $product_settings );
 				}
@@ -123,7 +130,6 @@ if ( ! class_exists( 'WFACP_Gutenberg_Importer' ) ) {
 			$file_path = WFACP_PLUGIN_DIR . '/importer/checkout-settings/' . $this->settings_file;
 
 			WFACP_Common::import_checkout_settings( $post_id, $file_path );
-
 		}
 
 		private function delete_template_data( $post_id ) {
@@ -137,13 +143,6 @@ if ( ! class_exists( 'WFACP_Gutenberg_Importer' ) ) {
 		}
 
 
-		public function download_image( $url ) {
-			require_once WFACP_PLUGIN_DIR . '/importer/class-wfacp-image-importer.php';
-			$importer       = new WFACP_Image_Importer();
-			$new_attachment = $importer->import( [ 'url' => $url ] );
-
-			return $new_attachment['url'];
-		}
 
 
 		public function delete_other_builder_data( $post_id ) {

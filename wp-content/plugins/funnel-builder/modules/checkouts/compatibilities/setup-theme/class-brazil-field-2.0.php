@@ -3,6 +3,7 @@
  * Plugin: Brazilian Market on WooCommerce by Claudio Sanches v.4.0.2
  */
 if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_Brazil_Field_2 {
 		private static $instance    = null;
 		private $settings           = array();

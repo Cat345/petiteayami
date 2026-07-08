@@ -8,9 +8,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 if ( ! class_exists( 'BWF_Google_Fonts' ) ) {
+	#[\AllowDynamicProperties]
 	class BWF_Google_Fonts {
 
-		public static $google_fonts = [];
+		public static $google_fonts = array();
 
 		function __construct() {
 			add_filter( 'render_block', array( $this, 'gather_google_fonts' ), 10, 2 );
@@ -48,7 +49,7 @@ if ( ! class_exists( 'BWF_Google_Fonts' ) ) {
 		}
 
 		public static function is_web_font( $font_name ) {
-			return ! in_array( strtolower( $font_name ), [ 'serif', 'sans-serif', 'monospace', 'serif-alt' ] );
+			return ! in_array( strtolower( $font_name ), array( 'serif', 'sans-serif', 'monospace', 'serif-alt' ) );
 		}
 
 		public static function is_system_font( $font_name ) {
@@ -114,7 +115,7 @@ if ( ! class_exists( 'BWF_Google_Fonts' ) ) {
 
 			$fonts_url = sprintf( 'https://fonts.googleapis.com/css?family=%s', implode( rawurlencode( '|' ), $google_fonts ) );
 
-			$subsets = [
+			$subsets = array(
 				'ru_RU' => 'cyrillic',
 				'bg_BG' => 'cyrillic',
 				'he_IL' => 'hebrew',
@@ -124,7 +125,7 @@ if ( ! class_exists( 'BWF_Google_Fonts' ) ) {
 				'cs_CZ' => 'latin-ext',
 				'ro_RO' => 'latin-ext',
 				'pl_PL' => 'latin-ext',
-			];
+			);
 
 			$locale = get_locale();
 			if ( isset( $subsets[ $locale ] ) ) {
@@ -140,7 +141,6 @@ if ( ! class_exists( 'BWF_Google_Fonts' ) ) {
 				wp_add_inline_style( $handle, $default_font_css );
 			}
 		}
-
 	}
 
 	new BWF_Google_Fonts();

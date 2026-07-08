@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Typography' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Typography extends WFOCUKirki_Field {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Typography' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-typography';
-
 		}
 
 		/**
@@ -35,7 +35,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Typography' ) ) {
 		 * @param string $config_id The ID of the config we want to use.
 		 *                             Defaults to "global".
 		 *                             Configs are handled by the WFOCUKirki_Config class.
-		 * @param array $args The arguments of the field.
+		 * @param array  $args The arguments of the field.
 		 */
 		public function __construct( $config_id = 'global', $args = array() ) {
 			parent::__construct( $config_id, $args );
@@ -73,7 +73,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Typography' ) ) {
 				return;
 			}
 			$this->sanitize_callback = array( __CLASS__, 'sanitize' );
-
 		}
 
 		/**
@@ -127,7 +126,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Typography' ) ) {
 				$this->transport = 'postMessage';
 
 			}
-
 		}
 
 		/**
@@ -212,13 +210,16 @@ if ( ! class_exists( 'WFOCUKirki_Field_Typography' ) ) {
 			if ( ! is_array( $this->choices ) ) {
 				$this->choices = array();
 			}
-			$this->choices = wp_parse_args( $this->choices, array(
+			$this->choices = wp_parse_args(
+				$this->choices,
+				array(
 					'variant' => array(),
 					'fonts'   => array(
 						'standard' => array(),
 						'google'   => array(),
 					),
-				) );
+				)
+			);
 		}
 	}
 }

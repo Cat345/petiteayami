@@ -1,8 +1,13 @@
 <?php
 // @codingStandardsIgnoreFile
 
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Active_Callback' ) ) {
 	// Removed in https://github.com/aristath/wfacpkirki/pull/1682/files
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Active_Callback {
 		public static function evaluate() {
 			_deprecated_function( __METHOD__, '3.0.17', null );

@@ -178,17 +178,20 @@ trait RenderCallbackTrait {
 				// Extract value from nested Divi 5 structure or use flat value
 				if ( is_array( $value ) ) {
 					if ( isset( $value['desktop']['value'] ) ) {
-						$settings[ $key ] = $value['desktop']['value'];
+						$extracted        = $value['desktop']['value'];
+						$settings[ $key ] = is_string( $extracted ) ? sanitize_text_field( $extracted ) : $extracted;
 					} elseif ( isset( $value['innerContent']['desktop']['value'] ) ) {
-						$settings[ $key ] = $value['innerContent']['desktop']['value'];
+						$extracted        = $value['innerContent']['desktop']['value'];
+						$settings[ $key ] = is_string( $extracted ) ? sanitize_text_field( $extracted ) : $extracted;
 					} elseif ( isset( $value['value'] ) ) {
-						$settings[ $key ] = $value['value'];
+						$extracted        = $value['value'];
+						$settings[ $key ] = is_string( $extracted ) ? sanitize_text_field( $extracted ) : $extracted;
 					} else {
 						// Keep as-is if can't extract (might be needed for some fields)
 						$settings[ $key ] = $value;
 					}
 				} else {
-					$settings[ $key ] = $value;
+					$settings[ $key ] = is_string( $value ) ? sanitize_text_field( $value ) : $value;
 				}
 			}
 
@@ -270,7 +273,7 @@ trait RenderCallbackTrait {
 				// Apply width settings from attributes to form fields - MATCH DIVI 4 EXACTLY
 				foreach ( $optin_fields as $step_slug => $optinFields ) {
 					foreach ( $optinFields as $key => $optin_field ) {
-						$input_name = $optin_field['InputName'] ?? '';
+						$input_name = sanitize_key( $optin_field['InputName'] ?? '' );
 						if ( ! empty( $input_name ) ) {
 							$width_value                                 = $settings[ $input_name ] ?? '';
 							$optin_fields[ $step_slug ][ $key ]['width'] = $width_value;
@@ -300,9 +303,9 @@ trait RenderCallbackTrait {
 
 			// Process icon HTML if icon is set
 			if ( ! empty( $settings['btn_icon'] ) && function_exists( 'et_pb_process_font_icon' ) ) {
-				$icon_html                = html_entity_decode( et_pb_process_font_icon( $settings['btn_icon'] ) );
+				$icon_html                = html_entity_decode( et_pb_process_font_icon( $settings['btn_icon'] ), ENT_QUOTES | ENT_HTML401 );
 				$btn_icon_position        = $settings['btn_icon_position'] ?? 'left';
-				$button_args['icon_html'] = "<span class='wfocu-button-icon et-pb-icon $btn_icon_position'>" . $icon_html . '</span>';
+				$button_args['icon_html'] = "<span class='wfocu-button-icon et-pb-icon " . esc_attr( $btn_icon_position ) . "'>" . wp_kses( $icon_html, array( 'i' => array( 'class' => array() ), 'span' => array( 'class' => array() ) ) ) . '</span>';
 			}
 
 			// Determine popup show class
@@ -346,7 +349,7 @@ trait RenderCallbackTrait {
 					// Process icon if it exists
 					$icon_html = '';
 					if ( ! empty( $settings['btn_icon'] ) && function_exists( 'et_pb_process_font_icon' ) ) {
-						$icon_html = html_entity_decode( et_pb_process_font_icon( $settings['btn_icon'] ) );
+						$icon_html = html_entity_decode( et_pb_process_font_icon( $settings['btn_icon'] ), ENT_QUOTES | ENT_HTML401 );
 					}
 					?>
 					<div class="wfop_popup_form" id="bwf-custom-button-wrap">

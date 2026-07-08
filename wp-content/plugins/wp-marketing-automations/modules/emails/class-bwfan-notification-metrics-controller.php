@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class BWFAN_Notification_Metrics_Controller
  */
+#[\AllowDynamicProperties]
 class BWFAN_Notification_Metrics_Controller {
 	protected $data = array();
 	protected $date_params = array();

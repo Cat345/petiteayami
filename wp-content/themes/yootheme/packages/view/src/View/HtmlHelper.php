@@ -29,7 +29,7 @@ class HtmlHelper implements HtmlHelperInterface
     /**
      * @inheritdoc
      */
-    public function el(string $name, array $attrs = [], $contents = false)
+    public function el(string $name, array $attrs = [], $contents = false): HtmlElement
     {
         return new HtmlElement(
             $name,

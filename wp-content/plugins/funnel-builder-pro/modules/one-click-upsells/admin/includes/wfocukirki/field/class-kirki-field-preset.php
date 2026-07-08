@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Preset' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Preset extends WFOCUKirki_Field_Select {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Preset' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-select';
-
 		}
 
 		/**

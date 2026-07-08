@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Custom' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Custom extends WFOCUKirki_Field {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Custom' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-custom';
-
 		}
 
 		/**
@@ -40,7 +40,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Custom' ) ) {
 			// Custom fields don't actually save any value.
 			// just use __return_true.
 			$this->sanitize_callback = '__return_true';
-
 		}
 	}
 }

@@ -12,34 +12,6 @@
 		return item ? item.value : null;
 	};
 
-	const decodeBase64 = ( value ) => {
-		if ( ! value || 'string' !== typeof value ) {
-			return '';
-		}
-
-		try {
-			return window.atob( value );
-		} catch ( error ) {
-			return '';
-		}
-	};
-
-	const getRateDescription = ( rate ) => {
-		if ( ! rate ) {
-			return '';
-		}
-
-		const encodedDescription = getMetaValue( rate.meta_data, config.description_encoded_key || 'description_base64encoded' );
-		if ( encodedDescription ) {
-			const decodedDescription = decodeBase64( encodedDescription );
-			if ( decodedDescription ) {
-				return decodedDescription;
-			}
-		}
-
-		return getMetaValue( rate.meta_data, config.description_key || 'description' ) || '';
-	};
-
 	const getRateId = ( rate ) => rate?.rate_id || rate?.id || '';
 
 	const isFlexibleShippingRate = ( rate ) => {
@@ -118,14 +90,6 @@
 		return wrapper;
 	};
 
-	const createDescriptionNode = ( description ) => {
-		const wrapper = document.createElement( 'div' );
-		wrapper.className = config.description_class || 'shipping-method-description flexible-shipping-method-description-block';
-		wrapper.innerHTML = description;
-
-		return wrapper;
-	};
-
 	const getRatesFromCart = ( cartData ) => {
 		if ( ! cartData || ! Array.isArray( cartData.shippingRates ) ) {
 			return [];
@@ -161,7 +125,6 @@
 				return;
 			}
 
-			const description = getRateDescription( rate );
 			const logoUrl = getMetaValue( rate.meta_data, config.logo_url_key || 'method_logo_url' );
 			const option = getOptionForRate( getRateId( rate ) );
 			if ( ! option ) {
@@ -169,30 +132,13 @@
 			}
 
 			const wrapperClass = config.wrapper_class || 'flexible-shipping-method-logo-block';
-			const descriptionClass = ( config.description_class || 'shipping-method-description flexible-shipping-method-description-block' )
-				.split( ' ' )
-				.filter( Boolean )
-				.map( ( className ) => `.${ className }` )
-				.join( '' );
-			const existingDescription = descriptionClass ? option.querySelector( descriptionClass ) : null;
 			const existingLogo = option.querySelector( `.${ wrapperClass }` );
 			const input = option.querySelector( 'input' );
+			const nativeDescription = findDescriptionElement( option, input );
 			const insertionAnchor = getInsertionAnchor( option, input );
 			const logoAlt = getMetaValue( rate.meta_data, config.logo_alt_key || 'method_logo_alt' ) || '';
 
-			if ( description ) {
-				if ( existingDescription ) {
-					if ( existingDescription.innerHTML !== description ) {
-						existingDescription.innerHTML = description;
-					}
-				} else if ( insertionAnchor ) {
-					insertionAnchor.insertAdjacentElement( 'afterend', createDescriptionNode( description ) );
-				}
-			} else if ( existingDescription ) {
-				existingDescription.remove();
-			}
-
-			const descriptionAnchor = option.querySelector( descriptionClass ) || insertionAnchor;
+			const descriptionAnchor = nativeDescription || insertionAnchor;
 
 			if ( ! logoUrl ) {
 				if ( existingLogo ) {

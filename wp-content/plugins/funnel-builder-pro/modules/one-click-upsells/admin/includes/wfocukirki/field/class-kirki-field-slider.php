@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Slider' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Slider extends WFOCUKirki_Field_Number {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Slider' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-slider';
-
 		}
 	}
 }

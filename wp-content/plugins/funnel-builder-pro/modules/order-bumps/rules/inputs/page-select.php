@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Input_Page_Select' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Input_Page_Select extends wfob_Input_Text {
 
 		public function __construct() {
@@ -35,8 +36,6 @@ if ( ! class_exists( 'wfob_Input_Page_Select' ) ) {
 			);
 
 			echo wp_dropdown_pages( $args );
-
 		}
-
 	}
 }

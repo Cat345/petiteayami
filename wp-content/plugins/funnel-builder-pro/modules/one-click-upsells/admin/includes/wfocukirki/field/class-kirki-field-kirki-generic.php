@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_WFOCUKirki_Generic' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_WFOCUKirki_Generic extends WFOCUKirki_Field {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_WFOCUKirki_Generic' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-generic';
-
 		}
 
 
@@ -39,7 +39,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_WFOCUKirki_Generic' ) ) {
 			if ( ! isset( $this->choices['element'] ) ) {
 				$this->choices['element'] = 'input';
 			}
-
 		}
 
 		/**
@@ -55,7 +54,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_WFOCUKirki_Generic' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'wp_kses_post';
-
 		}
 	}
 }

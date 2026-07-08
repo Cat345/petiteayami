@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Input_Chosen_Select' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Input_Chosen_Select {
 
 		public function __construct() {
@@ -27,17 +28,16 @@ if ( ! class_exists( 'wfob_Input_Chosen_Select' ) ) {
 			$choices = $field['choices'];
 			?>
 
-            <select id="<?php echo $field['id']; ?>" name="<?php echo $field['name']; ?>[]" class="chosen_select <?php echo esc_attr( $field['class'] ); ?>" multiple="multiple" data-placeholder="<?php echo( isset( $field['placeholder'] ) ? $field['placeholder'] : __( 'Search...', 'woofunnels-order-bump' ) ); ?>">
+			<select id="<?php echo $field['id']; ?>" name="<?php echo $field['name']; ?>[]" class="chosen_select <?php echo esc_attr( $field['class'] ); ?>" multiple="multiple" data-placeholder="<?php echo( isset( $field['placeholder'] ) ? $field['placeholder'] : __( 'Search...', 'woofunnels-order-bump' ) ); ?>">
 				<?php
 				foreach ( $choices as $choice => $title ) {
 					$selected = in_array( $choice, $current );
 					echo '<option value="' . esc_attr( $choice ) . '" ' . selected( $selected, true, false ) . '>' . esc_html( $title ) . '</option>';
 				}
 				?>
-            </select>
+			</select>
 
 			<?php
 		}
-
 	}
 }

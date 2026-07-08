@@ -7,10 +7,11 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Gutenberg' ) ) {
 	/**
 	 * Class WFOCU_Compatibility_With_Oxygen
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Gutenberg {
 
 		public function __construct() {
-			add_action( 'plugins_loaded', [ $this, 'init_upstroke' ], 12 );
+			add_action( 'plugins_loaded', array( $this, 'init_upstroke' ), 12 );
 		}
 
 		public function is_enable() {

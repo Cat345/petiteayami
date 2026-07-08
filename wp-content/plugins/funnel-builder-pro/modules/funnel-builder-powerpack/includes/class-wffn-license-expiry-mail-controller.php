@@ -4,6 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 if ( ! class_exists( 'WFFN_License_Expiry_Mail_controller' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_License_Expiry_Mail_controller {
 
 
@@ -20,42 +21,45 @@ if ( ! class_exists( 'WFFN_License_Expiry_Mail_controller' ) ) {
 			$upgrade_link          = 'https://funnelkit.com/exclusive-offer/';
 			$highlight_subtitle    = __( 'Please renew your license to continue using pro features without interruption', 'Funnelkit' );
 			$highlight_button_text = __( 'Renew Your License Now', 'Funnelkit' );
-			$highlight_button_url  = add_query_arg( [
-				'utm_source'   => 'WordPress',
-				'utm_campaign' => 'Pro+Plugin',
-				'utm_medium'   => 'Expiry+Email+Notification'
-			], $upgrade_link );
+			$highlight_button_url  = add_query_arg(
+				array(
+					'utm_source'   => 'WordPress',
+					'utm_campaign' => 'Pro+Plugin',
+					'utm_medium'   => 'Expiry+Email+Notification',
+				),
+				$upgrade_link
+			);
 			$wffn_pro_admin        = new WFFN_Pro_Admin();
 			$texts                 = $wffn_pro_admin->add_license_related_code( null );
-			$email_sections        = [
-				[
+			$email_sections        = array(
+				array(
 					'type' => 'email_header',
-				],
-				[
+				),
+				array(
 					'type' => 'highlight',
-					'data' => [
+					'data' => array(
 						'date'        => $formatted_date,
 						'title'       => __( 'Funnelkit License Expired', 'Funnelkit' ),
 						'subtitle'    => $highlight_subtitle,
 						'button_text' => $highlight_button_text,
 						'button_url'  => $highlight_button_url,
-					],
-				],
-				[
+					),
+				),
+				array(
 					'type' => 'body',
-					'data' => [
+					'data' => array(
 						'totals'     => $texts,
 						'button_url' => $highlight_button_url,
 						'support'    => 'https://funnelkit.com/contact/',
-					],
-				],
-				[
+					),
+				),
+				array(
 					'type' => 'email_footer',
-					'data' => [
+					'data' => array(
 						'business_name' => 'funnelkit.com',
-					],
-				],
-			];
+					),
+				),
+			);
 
 			return apply_filters( 'bwfan_weekly_notification_email_section', $email_sections );
 		}
@@ -88,7 +92,7 @@ if ( ! class_exists( 'WFFN_License_Expiry_Mail_controller' ) ) {
 						echo $this->get_template_html( '/expiry-email-template/email-footer.php', $section['data'] );
 						break;
 					default:
-						do_action( 'bwfan_email_section_' . $section['type'], $section['data'] ?? [] );
+						do_action( 'bwfan_email_section_' . $section['type'], $section['data'] ?? array() );
 						break;
 				}
 			}
@@ -103,7 +107,7 @@ if ( ! class_exists( 'WFFN_License_Expiry_Mail_controller' ) ) {
 		 * This method includes the specified template file and allows passing arguments to it.
 		 *
 		 * @param string $template The name of the template file to include.
-		 * @param array $args Optional. An array of arguments to pass to the template file. Default is an empty array.
+		 * @param array  $args Optional. An array of arguments to pass to the template file. Default is an empty array.
 		 *
 		 * @return string
 		 */
@@ -117,7 +121,5 @@ if ( ! class_exists( 'WFFN_License_Expiry_Mail_controller' ) ) {
 
 			return ob_get_clean();// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		}
-
-
 	}
 }

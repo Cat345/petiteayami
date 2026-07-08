@@ -1,9 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'WFACP_NextGen_Social_Login' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_NextGen_Social_Login {
 		public function __construct() {
-			add_action( 'wfacp_outside_header', [ $this, 'actions' ] );
+			add_action( 'wfacp_outside_header', array( $this, 'actions' ) );
 		}
 
 		public function actions() {
@@ -14,9 +18,8 @@ if ( ! class_exists( 'WFACP_NextGen_Social_Login' ) ) {
 			if ( ! $available ) {
 				return;
 			}
-			add_action( 'woocommerce_before_checkout_form', [ $this, 'add_div_wrapper' ], 12 );
-			add_action( 'wfacp_internal_css', [ $this, 'css' ], 12 );
-
+			add_action( 'woocommerce_before_checkout_form', array( $this, 'add_div_wrapper' ), 12 );
+			add_action( 'wfacp_internal_css', array( $this, 'css' ), 12 );
 
 			/** Pro checking */
 			if ( ! class_exists( 'NextendSocialLoginPRO' ) ) {
@@ -50,7 +53,7 @@ if ( ! class_exists( 'WFACP_NextGen_Social_Login' ) ) {
 		}
 
 		public function css() {
-			echo "<style>#wfacp-e-form div.nsl-container-block-fullwidth .nsl-container-buttons a, #wfacp-e-form div.nsl-container-block .nsl-container-buttons a{	margin:5px}</style>";
+			echo '<style>#wfacp-e-form div.nsl-container-block-fullwidth .nsl-container-buttons a, #wfacp-e-form div.nsl-container-block .nsl-container-buttons a{	margin:5px}</style>';
 		}
 	}
 

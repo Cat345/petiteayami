@@ -9,10 +9,12 @@
  */
 
 use WooCommerce\Facebook\Events\Event;
+use WooCommerce\Facebook\Events\FacebookSignalsState;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Framework\Logger;
 use WooCommerce\Facebook\Integrations\CostOfGoods\CostOfGoods;
+use WooCommerce\Facebook\RolloutSwitches;
 
 if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
@@ -68,6 +70,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		private static $param_builder = null;
 
+		/** @var string|null Cached fbc value from ParamBuilder */
+		private static $cached_fbc = null;
+
+		/** @var string|null Cached fbp value from ParamBuilder */
+		private static $cached_fbp = null;
+
 		/**
 		 * Order meta keys used by the tracker.
 		 */
@@ -102,11 +110,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		public static function get_param_builder() {
 			if ( null === self::$param_builder ) {
 				try {
-					$site_url = get_site_url();
+					$site_url            = get_site_url();
 					self::$param_builder = new \FacebookAds\ParamBuilder( array( $site_url ) );
 
 					self::$param_builder->processRequest(
 						$site_url,
+						// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Param builder intentionally inspects current request query parameters.
 						$_GET,
 						$_COOKIE,
 						isset( $_SERVER['HTTP_REFERER'] ) ?
@@ -118,15 +127,35 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 						'Error initializing CAPI Parameter Builder: ' . $exception->getMessage(),
 						array(),
 						array(
-							'should_send_log_to_meta'        => true,
+							'should_send_log_to_meta' => true,
 							'should_save_log_in_woocommerce' => true,
-							'woocommerce_log_level'          => \WC_Log_Levels::ERROR,
+							'woocommerce_log_level'   => \WC_Log_Levels::ERROR,
 						)
 					);
 				}
 			}
 
 			return self::$param_builder;
+		}
+
+		public static function get_fbc() {
+			if ( null === self::$cached_fbc ) {
+				$param_builder = self::get_param_builder();
+				if ( $param_builder ) {
+					self::$cached_fbc = $param_builder->getFbc();
+				}
+			}
+			return self::$cached_fbc;
+		}
+
+		public static function get_fbp() {
+			if ( null === self::$cached_fbp ) {
+				$param_builder = self::get_param_builder();
+				if ( $param_builder ) {
+					self::$cached_fbp = $param_builder->getFbp();
+				}
+			}
+			return self::$cached_fbp;
 		}
 
 		/**
@@ -139,17 +168,41 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					return;
 				}
 
-				$cookie_to_set = self::get_param_builder()->getCookiesToSet();
+				$param_builder = self::get_param_builder();
 
-				if ( ! headers_sent() ) {
-					foreach ( $cookie_to_set as $cookie ) {
-						setcookie(
-							$cookie->name,
-							$cookie->value,
-							time() + $cookie->max_age,
-							'/',
-							$cookie->domain
-						);
+				// When signals are held, still run ParamBuilder so it can generate
+				// attribution IDs, but do not write cookies until signals are released.
+				if ( FacebookSignalsState::is_held() ) {
+					$fbc = self::get_fbc();
+					$fbp = self::get_fbp();
+
+					if ( ! empty( $fbc ) ) {
+						FacebookSignalsState::set_attribution_data( 'fbc', $fbc );
+					}
+					if ( ! empty( $fbp ) ) {
+						FacebookSignalsState::set_attribution_data( 'fbp', $fbp );
+					}
+
+					foreach ( $param_builder->getCookiesToSet() as $cookie ) {
+						if ( '_fbp' === $cookie->name ) {
+							FacebookSignalsState::set_attribution_data( 'fbp_domain', $cookie->domain );
+						} elseif ( '_fbc' === $cookie->name ) {
+							FacebookSignalsState::set_attribution_data( 'fbc_domain', $cookie->domain );
+						}
+					}
+				} else {
+					$cookie_to_set = $param_builder->getCookiesToSet();
+
+					if ( ! headers_sent() ) {
+						foreach ( $cookie_to_set as $cookie ) {
+							setcookie(
+								$cookie->name,
+								$cookie->value,
+								time() + $cookie->max_age,
+								'/',
+								$cookie->domain
+							);
+						}
 					}
 				}
 			} catch ( \Exception $exception ) {
@@ -242,8 +295,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'inject_purchase_event' ), 30 );
 			add_action( 'woocommerce_thankyou', array( $this, 'inject_purchase_event' ), 40 );
 
-			// Lead events through Contact Form 7
-			add_action( 'wpcf7_contact_form', array( $this, 'inject_lead_event_hook' ), 11 );
+			// Lead events through Contact Form 7 / WPForms.
+			add_action( 'wp_footer', array( $this, 'inject_lead_event' ), 11 );
+			add_action( 'wpforms_process_complete', array( $this, 'track_wpforms_lead_event' ), 20, 3 );
+			add_filter( 'wpforms_ajax_submit_success_response', array( $this, 'inject_wpforms_lead_event_ajax' ), 20, 3 );
+			add_filter( 'wpforms_ajax_submit_redirect', array( $this, 'inject_wpforms_lead_event_ajax' ), 20, 3 );
+			add_action( 'wp_footer', array( $this, 'inject_wpforms_ajax_listener' ), 20 );
 
 			// Flush pending events on shutdown
 			add_action( 'shutdown', array( $this, 'send_pending_events' ) );
@@ -289,13 +346,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'facebook-capi-param-builder',
 				self::CAPI_PARAM_BUILDER_JS_URL,
 				array(),
-				null,
+				\WC_Facebookcommerce::PLUGIN_VERSION,
 				true
 			);
 			// Add inline script that executes after the external script has loaded
 			wp_add_inline_script(
 				'facebook-capi-param-builder',
-				'if (typeof clientParamBuilder !== "undefined") {
+				'if (typeof clientParamBuilder !== "undefined" && !/(?:^|;\s*)wc_facebook_signals_state=held(?:;|$)/.test(document.cookie)) {
 					clientParamBuilder.processAndCollectAllParams(window.location.href);
 				}'
 			);
@@ -784,9 +841,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			// store the ID in the session to be sent in AJAX JS event tracking as well
 			WC()->session->set( 'facebook_for_woocommerce_add_to_cart_event_id', $event->get_id() );
 
-			// Store pending pixel event for WooCommerce Blocks Store API
-			// Reuse custom_data and add event_id for deduplication
-			$pending_pixel_params = array_merge( $custom_data, array( 'event_id' => $event->get_id() ) );
+			// Store pending pixel event for WooCommerce Blocks Store API.
+			// Reuse custom_data and add event_id for deduplication.
+			// NOTE: single-slot — if a batch request adds multiple products this gets
+			// overwritten for each one and get_store_api_pixel_event_data() will only
+			// return the last product's event. Fix: convert to an array and flush all.
+			$pending_pixel_params                = array_merge( $custom_data, array( 'event_id' => $event->get_id() ) );
 			$this->pending_store_api_pixel_event = array(
 				'event'  => 'AddToCart',
 				'params' => $pending_pixel_params,
@@ -965,7 +1025,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function get_store_api_pixel_event_data() {
 			if ( ! empty( $this->pending_store_api_pixel_event ) ) {
-				$pending_event = $this->pending_store_api_pixel_event;
+				$pending_event                       = $this->pending_store_api_pixel_event;
 				$this->pending_store_api_pixel_event = null;
 				return $pending_event;
 			}
@@ -1071,17 +1131,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_purchase_event( $order_id ) {
 
-			if ( \WC_Facebookcommerce_Utils::is_admin_user() ) {
+			if ( \WC_Facebookcommerce_Utils::is_admin_user() || ! $this->is_pixel_enabled() ) {
 				return;
 			}
 
-			$event_name = 'Purchase';
-
+			$event_name                  = 'Purchase';
 			$valid_purchase_order_states = array( 'processing', 'completed', 'on-hold', 'pending' );
-
-			if ( ! $this->is_pixel_enabled() ) {
-				return;
-			}
 
 			$order = wc_get_order( $order_id );
 
@@ -1103,8 +1158,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			// Get the status of the order to ensure we track the actual purchases and not the ones that have a failed payment.
 			$order_state = $order->get_status();
-
-			// Return if this Purchase event order state is invalid.
 			if ( ! in_array( $order_state, $valid_purchase_order_states, true ) ) {
 				return;
 			}
@@ -1171,14 +1224,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 						$content_type = 'product_group';
 					}
 
-					$quantity = $item->get_quantity();
+					$quantity   = $item->get_quantity();
 					$products[] = array(
 						'product' => $product,
-						'qty' => $quantity,
+						'qty'     => $quantity,
 					);
 
-					$content  = new \stdClass();
-
+					$content           = new \stdClass();
 					$content->id       = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
 					$content->quantity = $quantity;
 
@@ -1251,42 +1303,256 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				// TODO consider 'StartTrial' event for free trial Subscriptions, which is the same as here (minus sign_up_fee) and tracks "when a person starts a free trial of a product or service" {FN 2020-03-20}
 				$event_name = 'Subscribe';
 
-				// TODO consider including (int|float) 'predicted_ltv': "Predicted lifetime value of a subscriber as defined by the advertiser and expressed as an exact value." {FN 2020-03-20}
-				$event_data = array(
-					'event_name'  => $event_name,
-					'custom_data' => array(
-						'sign_up_fee' => $subscription->get_sign_up_fee(),
-						'value'       => $subscription->get_total(),
-						'currency'    => ( method_exists( $subscription, 'get_currency' ) ? $subscription->get_currency() : get_woocommerce_currency() ),
-					),
-					'user_data'   => $this->pixel->get_user_info(),
-				);
+					// TODO: consider adding predicted_ltv for subscription events.
+					$event_data = array(
+						'event_name'  => $event_name,
+						'custom_data' => array(
+							'sign_up_fee' => $subscription->get_sign_up_fee(),
+							'value'       => $subscription->get_total(),
+							'currency'    => ( method_exists( $subscription, 'get_currency' ) ? $subscription->get_currency() : get_woocommerce_currency() ),
+						),
+						'user_data'   => $this->pixel->get_user_info(),
+					);
 
-				$event = new Event( $event_data );
+					$event = new Event( $event_data );
 
-				$this->send_api_event( $event );
+					$this->send_api_event( $event );
 
-				$event_data['event_id'] = $event->get_id();
+					$event_data['event_id'] = $event->get_id();
 
-				$this->pixel->inject_event( $event_name, $event_data );
+					$this->pixel->inject_event( $event_name, $event_data );
 			}
 		}
 
 
-		/** Contact Form 7 Support **/
-		public function inject_lead_event_hook() {
-			add_action( 'wp_footer', array( $this, 'inject_lead_event' ), 11 );
-		}
-
+		/** Contact Form 7 Lead Support **/
 		public function inject_lead_event() {
-			if ( ! is_admin() ) {
-				$this->pixel->inject_conditional_event(
+			if ( is_admin() ) {
+				return;
+			}
+
+			if ( wp_script_is( 'contact-form-7', 'enqueued' ) ) {
+				echo $this->pixel->inject_conditional_event(
 					'Lead',
 					array(),
 					'wpcf7submit',
 					'{ em: event.detail.inputs.filter(ele => ele.name.includes("email"))[0].value }'
 				);
 			}
+		}
+
+		/**
+		 * Tracks WPForms Lead event for server-side delivery.
+		 *
+		 * Fires only after WPForms completes a successful entry save (wpforms_process_complete),
+		 * so CAPI Lead events are not sent for invalid/rejected form submissions.
+		 *
+		 * @param array $fields     Sanitised field values.
+		 * @param array $entry      Raw entry values.
+		 * @param array $form_data  WPForms form config.
+		 */
+		public function track_wpforms_lead_event( $fields, $entry, $form_data ) {
+			if ( ( is_admin() && ! wp_doing_ajax() ) || ! $this->is_pixel_enabled() ) {
+				return;
+			}
+
+			$event_data = array(
+				'event_name'  => 'Lead',
+				'user_data'   => $this->get_wpforms_user_data( $entry, $form_data ),
+				'custom_data' => array(
+					'fb_integration_tracking' => 'wpforms-lite',
+				),
+			);
+
+			$event = new Event( $event_data );
+			$this->send_api_event( $event );
+
+			// Non-AJAX fallback: inject matching browser event in footer.
+			add_action( 'wp_footer', array( $this, 'inject_wpforms_lead_event' ), 20 );
+		}
+
+		/**
+		 * Injects browser Lead event in normal (non-AJAX) page flow.
+		 */
+		public function inject_wpforms_lead_event() {
+			if ( is_admin() ) {
+				return;
+			}
+
+			$event = $this->get_latest_tracked_wpforms_lead_event();
+			if ( ! $event ) {
+				return;
+			}
+
+			echo $this->pixel->get_event_script( 'Lead', $this->build_wpforms_lead_pixel_params( $event ) );
+		}
+
+		/**
+		 * Injects WPForms Lead pixel code into AJAX success/redirect response payload.
+		 *
+		 * @param array $response Existing WPForms response.
+		 * @return array
+		 */
+		public function inject_wpforms_lead_event_ajax( $response ) {
+			if ( is_admin() && ! wp_doing_ajax() ) {
+				return $response;
+			}
+
+			$event = $this->get_latest_tracked_wpforms_lead_event();
+			if ( ! $event ) {
+				return $response;
+			}
+
+			$response['fb_pxl_code'] = $this->pixel->get_event_code( 'Lead', $this->build_wpforms_lead_pixel_params( $event ) );
+			return $response;
+		}
+
+		/**
+		 * Adds a front-end listener to execute fb_pxl_code returned in WPForms AJAX responses.
+		 */
+		public function inject_wpforms_ajax_listener() {
+			if ( is_admin() || ! wp_script_is( 'wpforms', 'enqueued' ) ) {
+				return;
+			}
+			?>
+			<script type='text/javascript'>
+			(function ( $ ) {
+				if ( ! $ || typeof document === 'undefined' ) {
+					return;
+				}
+				$( document ).on( 'wpformsAjaxSubmitSuccess', function ( event, data ) {
+					if ( data && data.data && data.data.fb_pxl_code ) {
+						try {
+							var s = document.createElement( 'script' );
+							s.textContent = data.data.fb_pxl_code;
+							document.head.appendChild( s );
+						} catch ( e ) {
+							// no-op
+						}
+					}
+				} );
+			})( window.jQuery );
+			</script>
+			<?php
+		}
+
+		/**
+		 * Gets latest tracked WPForms Lead event from current request.
+		 *
+		 * @return Event|null
+		 */
+		private function get_latest_tracked_wpforms_lead_event() {
+			if ( empty( $this->tracked_events ) ) {
+				return null;
+			}
+
+			$lead_events = array_values(
+				array_filter(
+					$this->tracked_events,
+					function ( $event ) {
+						if ( ! $event instanceof Event ) {
+							return false;
+						}
+
+						$event_name = $event->get_name();
+						if ( 'Lead' !== $event_name ) {
+							return false;
+						}
+
+						$custom_data = $event->get_custom_data();
+						return is_array( $custom_data )
+							&& isset( $custom_data['fb_integration_tracking'] )
+							&& 'wpforms-lite' === $custom_data['fb_integration_tracking'];
+					}
+				)
+			);
+
+			if ( empty( $lead_events ) ) {
+				return null;
+			}
+
+			return end( $lead_events );
+		}
+
+		/**
+		 * Builds browser pixel params for WPForms Lead event.
+		 *
+		 * @param Event $event Lead event.
+		 * @return array
+		 */
+		private function build_wpforms_lead_pixel_params( Event $event ) {
+			$params = array(
+				'event_id' => $event->get_id(),
+			);
+
+			$user_data = $event->get_user_data();
+			if ( is_array( $user_data ) && ! empty( $user_data['em'] ) ) {
+				$params['user_data'] = array( 'em' => $user_data['em'] );
+			}
+
+			return $params;
+		}
+
+		/**
+		 * Extracts WPForms user_data payload for Lead tracking.
+		 *
+		 * @param array $entry WPForms entry values.
+		 * @param array $form_data WPForms form config.
+		 * @return array
+		 */
+		private function get_wpforms_user_data( $entry, $form_data ) {
+			$user_data = $this->pixel->get_user_info();
+			$email     = $this->get_wpforms_email( $entry, $form_data );
+			if ( ! empty( $email ) ) {
+				$user_data['em'] = $email;
+			}
+
+			return $user_data;
+		}
+
+		/**
+		 * Tries to resolve submitted WPForms email from form schema and entry values.
+		 *
+		 * @param array $entry WPForms entry values.
+		 * @param array $form_data WPForms form config.
+		 * @return string|null
+		 */
+		private function get_wpforms_email( $entry, $form_data ) {
+			if ( empty( $entry ) || empty( $form_data['fields'] ) ) {
+				return null;
+			}
+
+			foreach ( $form_data['fields'] as $field ) {
+				if ( isset( $field['type'] ) && 'email' === $field['type'] ) {
+					$field_id = isset( $field['id'] ) ? (string) $field['id'] : null;
+					if ( $field_id && isset( $entry[ $field_id ] ) ) {
+						$value = sanitize_email( (string) $entry[ $field_id ] );
+						if ( ! empty( $value ) ) {
+							return $value;
+						}
+					}
+
+					if ( $field_id && isset( $entry['fields'] ) && is_array( $entry['fields'] ) && isset( $entry['fields'][ $field_id ] ) ) {
+						$value = sanitize_email( (string) $entry['fields'][ $field_id ] );
+						if ( ! empty( $value ) ) {
+							return $value;
+						}
+					}
+				}
+			}
+
+			// Fallback for unexpected entry shapes.
+			foreach ( (array) $entry as $value ) {
+				if ( is_array( $value ) ) {
+					continue;
+				}
+				$email = sanitize_email( (string) $value );
+				if ( ! empty( $email ) && is_email( $email ) ) {
+					return $email;
+				}
+			}
+
+			return null;
 		}
 
 
@@ -1299,7 +1565,29 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * @param bool  $send_now optional, defaults to true
 		 */
 		protected function send_api_event( Event $event, bool $send_now = true ) {
+			if ( $this->is_crawler_request( $event ) ) {
+				facebook_for_woocommerce()->log( 'Blocked CAPI event for crawler: ' . $event->get_client_user_agent() );
+				return;
+			}
+
+			// Skip CAPI events when the connection is known-invalid (auth error detected),
+			// gated on the server-side rollout switch. Events resume after the merchant reconnects.
+			if ( get_transient( 'wc_facebook_connection_invalid' )
+				&& facebook_for_woocommerce()->get_rollout_switches()->is_switch_enabled(
+					RolloutSwitches::SWITCH_BLOCK_CAPI_ON_INVALID_TOKEN
+				)
+			) {
+				return;
+			}
+
 			$this->tracked_events[] = $event;
+
+			// Skip CAPI sends for frontend requests while signals are held.
+			// Backend/cron events (e.g. admin order status changes) still fire.
+			if ( FacebookSignalsState::is_held() && ! is_admin() && ! wp_doing_cron() ) {
+				FacebookSignalsState::queue_event( $event );
+				return;
+			}
 
 			if ( $send_now ) {
 				try {
@@ -1312,6 +1600,57 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			}
 		}
 
+
+		/**
+		 * Determines whether the current request is from a known crawler.
+		 *
+		 * Checks the User-Agent header against a list of known crawler identifiers
+		 * to prevent server-side events from firing for non-human traffic.
+		 * This helps close the gap between pixel and CAPI event counts,
+		 * since crawlers trigger CAPI events but never execute client-side JavaScript.
+		 *
+		 * @since 3.3.0
+		 *
+		 * @param Event $event Event object to read the User-Agent from.
+		 * @return bool
+		 */
+		private function is_crawler_request( Event $event ): bool {
+			$user_agent = strtolower( $event->get_client_user_agent() );
+
+			$crawler_patterns = array(
+				// Meta crawlers.
+				'meta-externalagent',
+				'meta-externalads',
+				'meta-webindexer',
+				// Generic crawler identifier.
+				'crawler',
+			);
+
+			/**
+			 * Filters the list of crawler user-agent patterns.
+			 *
+			 * @since 3.3.0
+			 *
+			 * @param string[] $crawler_patterns Array of lowercase crawler identifier strings to match against the User-Agent.
+			 */
+			$crawler_patterns = apply_filters( 'wc_facebook_crawler_user_agent_patterns', $crawler_patterns );
+
+			foreach ( $crawler_patterns as $pattern ) {
+				if ( false !== strpos( $user_agent, $pattern ) ) {
+					return true;
+				}
+			}
+
+			/**
+			 * Filters whether the current request should be treated as a crawler request.
+			 *
+			 * @since 3.3.0
+			 *
+			 * @param bool   $is_crawler Whether the request is from a crawler. Default false after pattern checks pass.
+			 * @param string $user_agent The request User-Agent string.
+			 */
+			return (bool) apply_filters( 'wc_facebook_is_crawler_request', false, $user_agent );
+		}
 
 		/**
 		 * Gets the cart content items count.
@@ -1459,15 +1798,15 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		}
 
 		/**
-		 * Checks the value, if it's not null, updates the array at array_key with value
+		 * Checks the value, if it's not null, updates the target array entry.
 		 *
-		 * @param mixed  $value
-		 * @param array  $array
-		 * @param string $array_key
+		 * @param mixed  $value        Value to set when not empty.
+		 * @param array  $target_array Target array to update.
+		 * @param string $array_key    Target array key.
 		 */
-		private static function update_array_if_not_null( $value, &$array, $array_key ) {
+		private static function update_array_if_not_null( $value, &$target_array, $array_key ) {
 			if ( ! empty( $value ) ) {
-				$array[ $array_key ] = $value;
+				$target_array[ $array_key ] = $value;
 			}
 		}
 
@@ -1493,6 +1832,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * Send pending events.
 		 */
 		public function send_pending_events() {
+
+			// Don't batch-send pending events while signals are held.
+			if ( FacebookSignalsState::is_held() && ! is_admin() && ! wp_doing_cron() ) {
+				return;
+			}
 
 			$pending_events = $this->get_pending_events();
 

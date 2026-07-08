@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_unsubscribe {
 
 	private static $ins = null;
@@ -675,8 +676,7 @@ class BWFAN_unsubscribe {
 
 		/** Security check */
 		$nonce = filter_input( INPUT_POST, '_nonce' ); //phpcs:ignore WordPress.Security.NonceVerification
-		$form_not_exist = filter_input( INPUT_POST, 'form_not_exist' );
-		if ( false === $post && ! $form_not_exist && ! wp_verify_nonce( $nonce, 'bwfan-unsubscribe-nonce' ) ) {
+		if ( false === $post && ! wp_verify_nonce( $nonce, 'bwfan-unsubscribe-nonce' ) ) {
 			$this->return_message( 7 );
 		}
 

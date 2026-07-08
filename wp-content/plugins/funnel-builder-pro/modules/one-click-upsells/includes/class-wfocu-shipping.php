@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Shipping' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Shipping {
 
 		private static $ins = null;
@@ -13,7 +14,7 @@ if ( ! class_exists( 'WFOCU_Shipping' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -23,7 +24,7 @@ if ( ! class_exists( 'WFOCU_Shipping' ) ) {
 		 * @param stdClass $product_details
 		 * @param stdClass $output
 		 * @param stdClass $offer_data
-		 * @param bool $is_front
+		 * @param bool     $is_front
 		 *
 		 * @return mixed
 		 */
@@ -142,10 +143,13 @@ if ( ! class_exists( 'WFOCU_Shipping' ) ) {
 				if ( $is_batching_on ) {
 					foreach ( $get_order->get_items() as $item ) {
 
-						array_push( $products, array(
-							'product_id' => $item->get_variation_id() ? $item->get_variation_id() : $item->get_product_id(),
-							'qty'        => $item->get_quantity(),
-						) );
+						array_push(
+							$products,
+							array(
+								'product_id' => $item->get_variation_id() ? $item->get_variation_id() : $item->get_product_id(),
+								'qty'        => $item->get_quantity(),
+							)
+						);
 					}
 				}
 
@@ -153,15 +157,21 @@ if ( ! class_exists( 'WFOCU_Shipping' ) ) {
 				 * In case of variations, we need to work on the default variation only
 				 */
 				if ( isset( $product_details->variations_data ) ) {
-					array_push( $products, array(
-						'product_id' => $product_details->variations_data['default'],
-						'qty'        => $product_details->quantity,
-					) );
+					array_push(
+						$products,
+						array(
+							'product_id' => $product_details->variations_data['default'],
+							'qty'        => $product_details->quantity,
+						)
+					);
 				} else {
-					array_push( $products, array(
-						'product_id' => $product_details->data->get_id(),
-						'qty'        => $product_details->quantity,
-					) );
+					array_push(
+						$products,
+						array(
+							'product_id' => $product_details->data->get_id(),
+							'qty'        => $product_details->quantity,
+						)
+					);
 				}
 
 				if ( class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) && true === apply_filters( 'wfocu_show_prices_with_shipping', false, $product_details ) ) {
@@ -202,12 +212,15 @@ if ( ! class_exists( 'WFOCU_Shipping' ) ) {
 
 					$get_shipping = $get_dynamic_shipping_module->calculate_dynamic_shipping( $products, $location, $existing_methods, $get_order );
 
-					$product_details->shipping = wp_parse_args( $get_shipping, array(
-						'free_shipping' => array(),
-						'shipping'      => array(),
-						'shipping_prev' => $old_shipping_cost,
+					$product_details->shipping = wp_parse_args(
+						$get_shipping,
+						array(
+							'free_shipping' => array(),
+							'shipping'      => array(),
+							'shipping_prev' => $old_shipping_cost,
 
-					) );
+						)
+					);
 				} else {
 					$product_details->shipping = array(
 						'free_shipping' => array(),
@@ -219,7 +232,6 @@ if ( ! class_exists( 'WFOCU_Shipping' ) ) {
 			}
 
 			return $product_details;
-
 		}
 
 		public function get_flat_shipping_rates( $price ) {
@@ -276,8 +288,6 @@ if ( ! class_exists( 'WFOCU_Shipping' ) ) {
 
 			return 0;
 		}
-
-
 	}
 
 	if ( class_exists( 'WFOCU_Core' ) ) {

@@ -13,6 +13,7 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 
 if ( ! class_exists( 'WFACP_Compatibility_With_Sezzle_Payment_Gateway' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFACP_Compatibility_With_Sezzle_Payment_Gateway {
 
 		public function __construct() {

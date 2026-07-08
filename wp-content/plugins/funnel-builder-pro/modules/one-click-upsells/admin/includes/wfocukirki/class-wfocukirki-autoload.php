@@ -16,6 +16,7 @@ if ( ! class_exists( 'WFOCUKirki_Autoload' ) ) {
 	 *
 	 * @since 3.0.10
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Autoload {
 
 		/**
@@ -47,7 +48,6 @@ if ( ! class_exists( 'WFOCUKirki_Autoload' ) ) {
 		 * @param string $class_name The name of the class we're trying to load.
 		 *
 		 * @since 3.0.10
-		 *
 		 */
 		protected function autoload( $class_name ) {
 
@@ -85,7 +85,6 @@ if ( ! class_exists( 'WFOCUKirki_Autoload' ) ) {
 		 *
 		 * @return array
 		 * @since 3.0.10
-		 *
 		 */
 		protected function get_paths( $class_name ) {
 
@@ -100,8 +99,8 @@ if ( ! class_exists( 'WFOCUKirki_Autoload' ) ) {
 
 			// Handle modules loading.
 			if ( isset( $name_parts[0] ) && 'Modules' === $name_parts[0] ) {
-				$path    = dirname( __FILE__ ) . '/modules/';
-				$path    .= strtolower( str_replace( '_', '-', str_replace( 'Kirki_Modules_', '', $class_name ) ) ) . '/';
+				$path    = __DIR__ . '/modules/';
+				$path   .= strtolower( str_replace( '_', '-', str_replace( 'Kirki_Modules_', '', $class_name ) ) ) . '/';
 				$paths[] = $path . $filename;
 			}
 
@@ -109,21 +108,21 @@ if ( ! class_exists( 'WFOCUKirki_Autoload' ) ) {
 
 				// Handle controls loading.
 				if ( 'Control' === $name_parts[0] || 'Settings' === $name_parts[0] ) {
-					$path    = dirname( __FILE__ ) . '/controls/php/';
+					$path    = __DIR__ . '/controls/php/';
 					$paths[] = $path . $filename;
 				}
 			}
 
-			$paths[] = dirname( __FILE__ ) . '/core/' . $filename;
-			$paths[] = dirname( __FILE__ ) . '/lib/' . $filename;
+			$paths[] = __DIR__ . '/core/' . $filename;
+			$paths[] = __DIR__ . '/lib/' . $filename;
 
 			$substr   = str_replace( 'Kirki_', '', $class_name );
 			$exploded = explode( '_', $substr );
 			$levels   = count( $exploded );
 
 			$previous_path = '';
-			for ( $i = 0; $i < $levels; $i ++ ) {
-				$paths[]       = dirname( __FILE__ ) . '/' . $previous_path . strtolower( $exploded[ $i ] ) . '/' . $filename;
+			for ( $i = 0; $i < $levels; $i++ ) {
+				$paths[]        = __DIR__ . '/' . $previous_path . strtolower( $exploded[ $i ] ) . '/' . $filename;
 				$previous_path .= strtolower( $exploded[ $i ] ) . '/';
 			}
 

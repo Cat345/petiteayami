@@ -12,7 +12,12 @@
 /**
  * Handles field CSS output.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Output' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Output {
 
 		/**
@@ -60,10 +65,10 @@ if ( ! class_exists( 'WFACPKirki_Output' ) ) {
 		 *
 		 * @access public
 		 *
-		 * @param string $config_id The config ID.
-		 * @param array $output The output argument.
+		 * @param string       $config_id The config ID.
+		 * @param array        $output The output argument.
 		 * @param string|array $value The value.
-		 * @param array $field The field.
+		 * @param array        $field The field.
 		 */
 		public function __construct( $config_id, $output, $value, $field ) {
 
@@ -78,7 +83,7 @@ if ( ! class_exists( 'WFACPKirki_Output' ) ) {
 		/**
 		 * If we have a sanitize_callback defined, apply it to the value.
 		 *
-		 * @param array $output The output args.
+		 * @param array        $output The output args.
 		 * @param string|array $value The value.
 		 *
 		 * @return string|array
@@ -96,13 +101,12 @@ if ( ! class_exists( 'WFACPKirki_Output' ) ) {
 			}
 
 			return $value;
-
 		}
 
 		/**
 		 * If we have a value_pattern defined, apply it to the value.
 		 *
-		 * @param array $output The output args.
+		 * @param array        $output The output args.
 		 * @param string|array $value The value.
 		 *
 		 * @return string|array
@@ -136,7 +140,7 @@ if ( ! class_exists( 'WFACPKirki_Output' ) ) {
 		/**
 		 * If we have a value_pattern defined, apply it to the value.
 		 *
-		 * @param array $output The output args.
+		 * @param array        $output The output args.
 		 * @param string|array $value The value.
 		 *
 		 * @return string|array
@@ -263,7 +267,7 @@ if ( ! class_exists( 'WFACPKirki_Output' ) ) {
 		 *
 		 * @access protected
 		 *
-		 * @param array $output The field output.
+		 * @param array        $output The field output.
 		 * @param string|array $value The value.
 		 *
 		 * @return null
@@ -303,17 +307,20 @@ if ( ! class_exists( 'WFACPKirki_Output' ) ) {
 		 *
 		 * @access protected
 		 *
-		 * @param string $property The CSS property.
+		 * @param string       $property The CSS property.
 		 * @param string|array $value The value.
 		 *
 		 * @return array
 		 */
 		protected function process_property_value( $property, $value ) {
-			$properties = apply_filters( "wfacpkirki_{$this->config_id}_output_property_classnames", array(
+			$properties = apply_filters(
+				"wfacpkirki_{$this->config_id}_output_property_classnames",
+				array(
 					'font-family'         => 'WFACPKirki_Output_Property_Font_Family',
 					'background-image'    => 'WFACPKirki_Output_Property_Background_Image',
 					'background-position' => 'WFACPKirki_Output_Property_Background_Position',
-				) );
+				)
+			);
 			if ( array_key_exists( $property, $properties ) ) {
 				$classname = $properties[ $property ];
 				$obj       = new $classname( $property, $value );
@@ -330,7 +337,7 @@ if ( ! class_exists( 'WFACPKirki_Output' ) ) {
 		 * @access protected
 		 *
 		 * @param string|array $value The value.
-		 * @param array $output The field "output".
+		 * @param array        $output The field "output".
 		 *
 		 * @return string|array
 		 */

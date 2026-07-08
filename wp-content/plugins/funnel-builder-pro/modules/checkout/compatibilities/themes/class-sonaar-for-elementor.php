@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Elementor Sonaar Addons
@@ -11,7 +15,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Soonar_El' ) ) {
 
 		public function __construct() {
 			$this->register_elementor_widget();
-
 		}
 
 		public function register_elementor_widget() {
@@ -26,8 +29,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Soonar_El' ) ) {
 			if ( $r_instance instanceof Elementor_Sonaar ) {
 				add_action( 'wp', array( $r_instance, 'sr_init_extensions' ), 100 );
 			}
-
-
 		}
 	}
 

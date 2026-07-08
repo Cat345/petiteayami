@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Payoneer Checkout  by Inpsyde GmbH (v.0.2.1)
@@ -10,21 +14,23 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Payoneer_Checkout_Gateway' ) ) {
 		public function __construct() {
 
 			/* checkout page */
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'actions' ] );
-
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'actions' ) );
 		}
 
 		public function actions() {
-			add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
-			add_action( 'wfacp_checkout_before_order_review', function () {
-				echo '<div id=order_review>';
-
-			} );
-			add_action( 'wfacp_checkout_after_order_review', function () {
-				echo '</div>';
-
-			} );
-
+			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
+			add_action(
+				'wfacp_checkout_before_order_review',
+				function () {
+					echo '<div id=order_review>';
+				}
+			);
+			add_action(
+				'wfacp_checkout_after_order_review',
+				function () {
+					echo '</div>';
+				}
+			);
 		}
 
 		public function internal_css() {
@@ -33,18 +39,16 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Payoneer_Checkout_Gateway' ) ) {
 			if ( ! $instance instanceof WFACP_Template_Common ) {
 				return;
 			}
-			$bodyClass = "body ";
+			$bodyClass = 'body ';
 			if ( 'pre_built' !== $instance->get_template_type() ) {
-				$bodyClass = "body #wfacp-e-form ";
+				$bodyClass = 'body #wfacp-e-form ';
 			}
 
-			$cssHtml = "<style>";
-			$cssHtml .= $bodyClass . "#order_review {width:100%;}";
-			$cssHtml .= "</style>";
+			$cssHtml  = '<style>';
+			$cssHtml .= $bodyClass . '#order_review {width:100%;}';
+			$cssHtml .= '</style>';
 			echo $cssHtml;
 		}
-
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_With_Payoneer_Checkout_Gateway(), 'afterpay' );

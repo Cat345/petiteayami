@@ -3,6 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 if ( ! class_exists( 'WFOCU_Template_Group_Divi5' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Template_Group_Divi5 extends WFOCU_Template_Group {
 		public $allow_empty_template = true;
 		public $prefix               = 'divi-5';

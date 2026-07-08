@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Elementor template library local source.
@@ -12,10 +13,10 @@
 if ( ! class_exists( 'WFACP_Oxy_Importer' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Oxy_Importer {
-		private $slug = '';
-		private $post_id = 0;
-		private $settings_file = '';
-		private $builder = 'oxy';
+		private $slug            = '';
+		private $post_id         = 0;
+		private $settings_file   = '';
+		private $builder         = 'oxy';
 		public $delete_page_meta = true;
 
 		public function __construct() {
@@ -25,7 +26,6 @@ if ( ! class_exists( 'WFACP_Oxy_Importer' ) ) {
 		public function import( $aero_id, $slug, $is_multi = 'no' ) {//phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
 			$this->slug    = $slug;
 			$this->post_id = $aero_id;
-
 
 			$this->update_product_switcher_settings();
 
@@ -38,7 +38,7 @@ if ( ! class_exists( 'WFACP_Oxy_Importer' ) ) {
 				update_post_meta( $aero_id, WFACP_Common::oxy_get_meta_prefix( 'ct_other_template' ), '-1' );
 				$this->save_data( $aero_id );
 
-				return [ 'status' => true ];
+				return array( 'status' => true );
 			}
 
 			$data = WFACP_Core()->importer->get_remote_template( $slug, 'oxy' );
@@ -48,7 +48,8 @@ if ( ! class_exists( 'WFACP_Oxy_Importer' ) ) {
 			}
 
 			$content = $data['data'];
-			if ( ! empty( $content ) && ( false == strpos( $content, '<script' ) ) ) {
+			require_once WFACP_PLUGIN_DIR . '/includes/class-wfacp-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			if ( ! empty( $content ) && ! WFACP_Content_Validator::contains_dangerous_tags( $content ) && ! WFACP_Content_Validator::contains_php_code( $content ) ) {
 				$oxy_setting = get_post_meta( $aero_id, '_wfacp_post_id', true );
 				if ( empty( $oxy_setting ) ) {
 					$oxy_setting = array( 'max-width' => '' );
@@ -56,13 +57,16 @@ if ( ! class_exists( 'WFACP_Oxy_Importer' ) ) {
 				}
 				update_post_meta( $aero_id, WFACP_Common::oxy_get_meta_prefix( 'ct_other_template' ), '-1' );
 
-
 				/* Translation for gutenburg  Start */
 
 				$translation_list = WFACP_Common::get_translation_field_aero_checkout_domain();
-				$translation_list = array_filter( $translation_list, function ( $key, $val ) {
-					return ! ( $key === $val );
-				}, ARRAY_FILTER_USE_BOTH );
+				$translation_list = array_filter(
+					$translation_list,
+					function ( $key, $val ) {
+						return ! ( $key === $val );
+					},
+					ARRAY_FILTER_USE_BOTH
+				);
 
 				foreach ( $translation_list as $key => $value ) {
 					if ( false !== strpos( $content, $key ) ) {
@@ -72,9 +76,13 @@ if ( ! class_exists( 'WFACP_Oxy_Importer' ) ) {
 
 				$translation_list = WFACP_Common::get_translation_field_funnel_buider_domain();
 
-				$translation_list = array_filter( $translation_list, function ( $key, $val ) {
-					return ! ( $key === $val );
-				}, ARRAY_FILTER_USE_BOTH );
+				$translation_list = array_filter(
+					$translation_list,
+					function ( $key, $val ) {
+						return ! ( $key === $val );
+					},
+					ARRAY_FILTER_USE_BOTH
+				);
 
 				foreach ( $translation_list as $key => $value ) {
 					if ( false !== strpos( $content, $key ) ) {
@@ -84,24 +92,21 @@ if ( ! class_exists( 'WFACP_Oxy_Importer' ) ) {
 
 				/* End */
 
-
 				update_post_meta( $aero_id, WFACP_Common::oxy_get_meta_prefix( 'ct_builder_shortcodes' ), $content );
 				WFACP_Common::update_label_meta( $aero_id, $content );
 				$this->clear_oxy_page_cache_css( $aero_id );
 				$this->save_data( $this->post_id );
 
-				return [ 'status' => true ];
+				return array( 'status' => true );
 			}
 
-
-			return [ 'status' => true ];
-
+			return array( 'status' => true );
 		}
 
 
 		public function update_product_switcher_settings() {
 			if ( false !== strpos( $this->slug, 'oxy_' ) ) {
-				$pageProductSetting = [
+				$pageProductSetting = array(
 					'coupons'                             => '',
 					'enable_coupon'                       => 'false',
 					'disable_coupon'                      => 'false',
@@ -122,12 +127,12 @@ if ( ! class_exists( 'WFACP_Oxy_Importer' ) ) {
 					'preferred_countries_enable'          => 'false',
 					'preferred_countries'                 => '',
 					'product_switcher_template'           => 'default',
-				];
+				);
 
-				$product_settings                     = [];
+				$product_settings                     = array();
 				$product_settings['settings']         = $pageProductSetting;
-				$product_settings['products']         = [];
-				$product_settings['default_products'] = [];
+				$product_settings['products']         = array();
+				$product_settings['default_products'] = array();
 				if ( is_array( $product_settings ) && count( $product_settings ) > 0 ) {
 					update_post_meta( $this->post_id, '_wfacp_product_switcher_setting', $product_settings );
 				}
@@ -143,7 +148,6 @@ if ( ! class_exists( 'WFACP_Oxy_Importer' ) ) {
 				$file_path = __DIR__ . '/checkout-settings/' . $this->settings_file;
 				WFACP_Common::import_checkout_settings( $post_id, $file_path );
 			}
-
 		}
 
 		private function delete_template_data( $post_id ) {
@@ -152,7 +156,7 @@ if ( ! class_exists( 'WFACP_Oxy_Importer' ) ) {
 
 		public function clear_oxy_page_cache_css( $post_id ) {
 
-			if ( function_exists( 'oxygen_vsb_cache_universal_css' ) && function_exists( 'oxygen_vsb_delete_css_file' ) && get_option( "oxygen_vsb_universal_css_cache" ) == 'true' ) {
+			if ( function_exists( 'oxygen_vsb_cache_universal_css' ) && function_exists( 'oxygen_vsb_delete_css_file' ) && get_option( 'oxygen_vsb_universal_css_cache' ) == 'true' ) {
 				/**
 				 * generate universal css when oxygen cache setting is enabled and delete previous css
 				 */
@@ -166,7 +170,6 @@ if ( ! class_exists( 'WFACP_Oxy_Importer' ) ) {
 				oxygen_vsb_cache_page_css( $post_id );
 			}
 		}
-
 	}
 
 	if ( class_exists( 'WFACP_Template_Importer' ) ) {

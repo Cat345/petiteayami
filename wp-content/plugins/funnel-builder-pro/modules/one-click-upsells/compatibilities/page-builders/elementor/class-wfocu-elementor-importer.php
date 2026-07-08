@@ -8,10 +8,11 @@ if ( ! class_exists( 'WFOCU_Importer_Elementor' ) ) {
 	 *
 	 * @since 1.0.0
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Importer_Elementor extends Elementor\TemplateLibrary\Source_Local {
 
 		public function __construct() {
-			add_action( 'wfocu_template_removed', [ $this, 'delete_elementor_data' ] );
+			add_action( 'wfocu_template_removed', array( $this, 'delete_elementor_data' ) );
 		}
 
 		/**
@@ -28,9 +29,9 @@ if ( ! class_exists( 'WFOCU_Importer_Elementor' ) ) {
 			$content = json_decode( $content, true );
 
 			if ( ! is_array( $content ) ) {
-				//skip if not an array
+				// skip if not an array
 			} else {
-				//go ahead and import the content
+				// go ahead and import the content
 				if ( isset( $content['content'] ) && ! empty( $content['content'] ) ) {
 					$content = $content['content'];
 				}
@@ -44,7 +45,8 @@ if ( ! class_exists( 'WFOCU_Importer_Elementor' ) ) {
 				// Update content.
 				do_action( 'wfocu_import_elementor_content_data', $content, $post_id, $offer_settings );
 				$content = apply_filters( 'wfocu_import_elementor_content', $content, $post_id, $offer_settings );
-
+				require_once WFOCU_PLUGIN_DIR . '/includes/class-wfocu-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+				$content = WFOCU_Content_Validator::validate_elementor_content( $content );
 				$content = wp_slash( wp_json_encode( $content ) );
 				update_metadata( 'post', $post_id, '_elementor_data', $content );
 				if ( defined( 'ELEMENTOR_VERSION' ) ) {
@@ -66,16 +68,14 @@ if ( ! class_exists( 'WFOCU_Importer_Elementor' ) ) {
 
 				if ( is_array( $el_value ) ) {
 					$output[ $el_key ] = $this->wfocu_replace_position_to_selected_products( $product_keys, $el_value );
-				} else {
-					if ( 'product_position' === $el_key && 1 < $el_value ) {
-						if ( isset( $product_keys[ $el_value - 1 ] ) ) {
-							$output['selected_product'] = $product_keys[ $el_value - 1 ];
-						}
-					} elseif ( 'product_position' === $el_key ) {
-						unset( $el_data[ $el_key ] );
-					} else {
-						$output[ $el_key ] = $el_value;
+				} elseif ( 'product_position' === $el_key && 1 < $el_value ) {
+					if ( isset( $product_keys[ $el_value - 1 ] ) ) {
+						$output['selected_product'] = $product_keys[ $el_value - 1 ];
 					}
+				} elseif ( 'product_position' === $el_key ) {
+					unset( $el_data[ $el_key ] );
+				} else {
+					$output[ $el_key ] = $el_value;
 				}
 			}
 
@@ -99,7 +99,12 @@ if ( ! class_exists( 'WFOCU_Importer_Elementor' ) ) {
 
 		public function delete_elementor_data( $post_id ) {
 
-			wp_update_post( [ 'ID' => $post_id, 'post_content' => '' ] );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '',
+				)
+			);
 			delete_post_meta( $post_id, '_elementor_version' );
 			delete_post_meta( $post_id, '_elementor_template_type' );
 			delete_post_meta( $post_id, '_elementor_edit_mode' );

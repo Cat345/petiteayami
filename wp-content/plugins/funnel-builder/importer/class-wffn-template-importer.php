@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'WFFN_Template_Importer' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Template_Importer {
 
 		private static $instance = null;
@@ -68,14 +69,24 @@ if ( ! class_exists( 'WFFN_Template_Importer' ) ) {
 
 			do_action( 'wffn_template_import_remote', $module_id, $builder, $slug, $step );
 
-			$template_file_path = $builder . '/' . $step . '/' . $slug;
-			if ( ! file_exists( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' ) ) {
-				// Pull Template from cloud
+			$safe_builder = sanitize_file_name( $builder );
+			$safe_step    = sanitize_file_name( $step );
+			$safe_slug    = sanitize_file_name( $slug );
+
+			$template_file_path = $safe_builder . '/' . $safe_step . '/' . $safe_slug;
+			$full_path          = WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json';
+
+			if ( ! file_exists( $full_path ) ) {
 				$content = WFFN_Core()->remote_importer->get_remote_template( $step, $slug, $builder );
 
 			} else {
-				$content = file_get_contents( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' );
-				wp_delete_file( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' );
+				$real_upload_dir = realpath( WFFN_TEMPLATE_UPLOAD_DIR );
+				$real_file_path  = realpath( $full_path );
+				if ( false === $real_upload_dir || false === $real_file_path || 0 !== strpos( $real_file_path, $real_upload_dir ) ) {
+					return $result;
+				}
+				$content = file_get_contents( $full_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_get_contents
+				wp_delete_file( $full_path );
 			}
 
 			if ( empty( $content ) ) {

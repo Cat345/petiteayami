@@ -15,6 +15,7 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 	 *
 	 * @since 1.2.0
 	 */
+	#[\AllowDynamicProperties]
 	class BWFBlocksUpsell_Render_Block {
 		/**
 		 * Instance.

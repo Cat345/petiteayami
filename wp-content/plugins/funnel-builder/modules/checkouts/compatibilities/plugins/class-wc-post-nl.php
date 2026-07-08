@@ -13,29 +13,30 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wc_PostNL' ) ) {
 		public function __construct() {
 
 			/* Register Field */
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
 			add_filter( 'wfacp_html_fields_wc_output_delivery_options', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'display_field' ], 999, 2 );
+			add_action( 'process_wfacp_html', array( $this, 'display_field' ), 999, 2 );
 
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'action' ) );
 
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'action' ] );
-
-			add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
-			add_filter( 'wc_postnl_delivery_options_location', function () {
-				return "wfacp_after_wfacp_divider_billing_end_field";
-			} );
-			add_action( 'wp_footer', [ $this, 'add_js' ] );
-
+			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
+			add_filter(
+				'wc_postnl_delivery_options_location',
+				function () {
+					return 'wfacp_after_wfacp_divider_billing_end_field';
+				}
+			);
+			add_action( 'wp_footer', array( $this, 'add_js' ) );
 		}
 
 		public function add_field( $fields ) {
-			$fields['wc_output_delivery_options'] = [
+			$fields['wc_output_delivery_options'] = array(
 				'type'       => 'wfacp_html',
-				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_wc_output_delivery_options' ],
+				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_wc_output_delivery_options' ),
 				'id'         => 'wc_output_delivery_options',
 				'field_type' => 'wc_output_delivery_options',
 				'label'      => __( 'PostNl Delivery Options', 'woofunnels-aero-checkout' ),
-			];
+			);
 
 			return $fields;
 		}
@@ -63,7 +64,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wc_PostNL' ) ) {
 			if ( ! $this->wc_postNl instanceof WCPN_Checkout ) {
 				return;
 			}
-			add_action( "wp_enqueue_scripts", [ $this->wc_postNl, "enqueue_frontend_scripts" ], 101 );
+			add_action( 'wp_enqueue_scripts', array( $this->wc_postNl, 'enqueue_frontend_scripts' ), 101 );
 		}
 
 		public function internal_css() {
@@ -76,9 +77,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wc_PostNL' ) ) {
 				return;
 			}
 
-			$bodyClass = "body ";
+			$bodyClass = 'body ';
 			if ( 'pre_built' !== $instance->get_template_type() ) {
-				$bodyClass = "body #wfacp-e-form ";
+				$bodyClass = 'body #wfacp-e-form ';
 			}
 			$css = "
 		<style>
@@ -264,32 +265,29 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wc_PostNL' ) ) {
 		";
 
 			echo $css;
-
 		}
 
 		public function add_js() {
 			?>
-            <script>
-                window.addEventListener('bwf_checkout_load', function () {
-                    (function ($) {
-                        setTimeout(function () {
-                            add_aero_title_class();
-                        }, 200);
+			<script>
+				window.addEventListener('bwf_checkout_load', function () {
+					(function ($) {
+						setTimeout(function () {
+							add_aero_title_class();
+						}, 200);
 
-                        function add_aero_title_class() {
-                            if ($('#post-message h3').length > 0) {
-                                $('#post-message h3').addClass('wfacp_section_title');
-                            }
-                            if ($('#header-delivery-options-title td h3').length > 0) {
-                                $('#header-delivery-options-title td h3').addClass('wfacp_section_title');
-                            }
-                        }
-                    })(jQuery);
-                });
-            </script>
+						function add_aero_title_class() {
+							if ($('#post-message h3').length > 0) {
+								$('#post-message h3').addClass('wfacp_section_title');
+							}
+							if ($('#header-delivery-options-title td h3').length > 0) {
+								$('#header-delivery-options-title td h3').addClass('wfacp_section_title');
+							}
+						}
+					})(jQuery);
+				});
+			</script>
 			<?php
-
-
 		}
 	}
 
@@ -302,73 +300,81 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wc_PostNL' ) ) {
  * https://github.com/Progressus-io/postnl-for-woocommerce/
  */
 if ( ! class_exists( 'WFACP_PostNLWooCommerce' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_PostNLWooCommerce {
 		public function __construct() {
-			add_action( 'after_setup_theme', [ $this, 'register_field' ] );
-			add_action( 'wfacp_template_load', [ $this, 'remove_action' ] );
-			add_action( 'wfacp_internal_css', [ $this, 'js' ] );
+			add_action( 'after_setup_theme', array( $this, 'register_field' ) );
+			add_action( 'wfacp_template_load', array( $this, 'remove_action' ) );
+			add_action( 'wfacp_internal_css', array( $this, 'js' ) );
 		}
 
 		public function register_field() {
 			if ( ! class_exists( 'WFACP_Add_Address_Field' ) ) {
 				return;
 			}
-			new WFACP_Add_Address_Field( 'house_number', array(
-				'label'       => __( 'House number', 'postnl-for-woocommerce' ),
-				'placeholder' => esc_attr__( 'House number', 'postnl-for-woocommerce' ),
-				'class'       => [ 'form-row-first', 'address-field', 'wfacp_house_number', 'wfacp-draggable' ],
-				'cssready'    => [ 'wfacp-col-full' ],
-				'clear'       => false,
-				'required'    => false,
-				'priority'    => 90,
-			) );
-			new WFACP_Add_Address_Field( 'house_number', array(
-				'label'       => __( 'House number', 'postnl-for-woocommerce' ),
-				'placeholder' => esc_attr__( 'House number', 'postnl-for-woocommerce' ),
-				'class'       => [ 'form-row-first', 'address-field', 'wfacp_house_number', 'wfacp-draggable' ],
-				'cssready'    => [ 'wfacp-col-full' ],
-				'clear'       => false,
-				'required'    => false,
-				'priority'    => 90,
-			), 'shipping' );
+			new WFACP_Add_Address_Field(
+				'house_number',
+				array(
+					'label'       => __( 'House number', 'postnl-for-woocommerce' ),
+					'placeholder' => esc_attr__( 'House number', 'postnl-for-woocommerce' ),
+					'class'       => array( 'form-row-first', 'address-field', 'wfacp_house_number', 'wfacp-draggable' ),
+					'cssready'    => array( 'wfacp-col-full' ),
+					'clear'       => false,
+					'required'    => false,
+					'priority'    => 90,
+				)
+			);
+			new WFACP_Add_Address_Field(
+				'house_number',
+				array(
+					'label'       => __( 'House number', 'postnl-for-woocommerce' ),
+					'placeholder' => esc_attr__( 'House number', 'postnl-for-woocommerce' ),
+					'class'       => array( 'form-row-first', 'address-field', 'wfacp_house_number', 'wfacp-draggable' ),
+					'cssready'    => array( 'wfacp-col-full' ),
+					'clear'       => false,
+					'required'    => false,
+					'priority'    => 90,
+				),
+				'shipping'
+			);
 		}
 
 		public function remove_Action() {
 			$container = WFACP_Common::remove_actions( 'woocommerce_review_order_after_shipping', 'PostNLWooCommerce\Frontend\Container', 'postnl_fields' );
 			if ( $container instanceof PostNLWooCommerce\Frontend\Container ) {
-				add_action( 'wfacp_woocommerce_review_order_after_shipping', [ $container, 'postnl_fields' ] );
+				add_action( 'wfacp_woocommerce_review_order_after_shipping', array( $container, 'postnl_fields' ) );
 			}
 		}
 
 		public function js() {
 			?>
-            <script>
-                window.addEventListener('bwf_checkout_load', function () {
-                    (function ($) {
-                        $(document.body).on('updated_checkout', function () {
-                            add_hide_animate();
-                        });
+			<script>
+				window.addEventListener('bwf_checkout_load', function () {
+					(function ($) {
+						$(document.body).on('updated_checkout', function () {
+							add_hide_animate();
+						});
 
-                        function add_hide_animate() {
-                            var addresses = ['billing', 'shipping'];
-                            for (var i in addresses) {
-                                var key = addresses[i];
-                                $(".wfacp_divider_" + key + " .form-row").each(function () {
-                                    let field_id = $(this).attr("id");
-                                    if (field_id != '') {
-                                        let field_val_id1 = field_id.replace('_field', '');
-                                        let field_val = $('#' + field_val_id1).val();
-                                        $('#' + field_val_id1).addClass('wfacp-form-control');
-                                        if (field_val != '' && field_val != null && !$(this).hasClass('wfacp-anim-wrap')) {
-                                            $(this).addClass("wfacp-anim-wrap");
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    })(jQuery);
-                });
-            </script>
+						function add_hide_animate() {
+							var addresses = ['billing', 'shipping'];
+							for (var i in addresses) {
+								var key = addresses[i];
+								$(".wfacp_divider_" + key + " .form-row").each(function () {
+									let field_id = $(this).attr("id");
+									if (field_id != '') {
+										let field_val_id1 = field_id.replace('_field', '');
+										let field_val = $('#' + field_val_id1).val();
+										$('#' + field_val_id1).addClass('wfacp-form-control');
+										if (field_val != '' && field_val != null && !$(this).hasClass('wfacp-anim-wrap')) {
+											$(this).addClass("wfacp-anim-wrap");
+										}
+									}
+								});
+							}
+						}
+					})(jQuery);
+				});
+			</script>
 			<?php
 		}
 	}

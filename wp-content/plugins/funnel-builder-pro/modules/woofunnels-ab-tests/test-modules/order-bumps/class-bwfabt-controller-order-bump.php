@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'BWFABT_Controller_Order_Bump' ) ) {
 	/**
 	 * Class contains all the order bump related ab testing functionality
@@ -25,7 +25,7 @@ if ( ! class_exists( 'BWFABT_Controller_Order_Bump' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -59,7 +59,7 @@ if ( ! class_exists( 'BWFABT_Controller_Order_Bump' ) ) {
 		 */
 		public function get_controls( $term ) {
 			global $wpdb;
-			$pages = [];
+			$pages = array();
 			if ( '' === $term ) {
 				return $pages;
 			}
@@ -84,12 +84,11 @@ if ( ! class_exists( 'BWFABT_Controller_Order_Bump' ) ) {
 				}
 				$pages[] = array(
 					'id'   => $id,
-					'name' => html_entity_decode( get_the_title( $id ) ),
+					'name' => html_entity_decode( get_the_title( $id ), ENT_QUOTES | ENT_HTML401 ),
 				);
 			}
 
 			return $pages;
-
 		}
 
 		/**
@@ -101,7 +100,7 @@ if ( ! class_exists( 'BWFABT_Controller_Order_Bump' ) ) {
 			$meta_query = array(
 				'key'     => '_bwf_ab_variation_of',
 				'compare' => 'NOT EXISTS',
-				'value'   => ''
+				'value'   => '',
 			);
 
 			if ( isset( $args['meta_query'] ) ) {
@@ -138,7 +137,7 @@ if ( ! class_exists( 'BWFABT_Controller_Order_Bump' ) ) {
 					$variant_data['variant_id'] = $variant_id;
 				}
 
-				BWFABT_Core()->admin->log( "Updated variant Data after creating variant bump: " . print_r( $variant_data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				BWFABT_Core()->admin->log( 'Updated variant Data after creating variant bump: ' . print_r( $variant_data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			}
 
 			return parent::add_variant( $variant_data );
@@ -176,10 +175,12 @@ if ( ! class_exists( 'BWFABT_Controller_Order_Bump' ) ) {
 			if ( $variant_id > 0 ) {
 				$funnel_post = get_post( $variant_id );
 				if ( ! is_null( $funnel_post ) ) {
-					$draft = wp_update_post( array(
-						'ID'          => $variant_id,
-						'post_status' => 'draft',
-					) );
+					$draft = wp_update_post(
+						array(
+							'ID'          => $variant_id,
+							'post_status' => 'draft',
+						)
+					);
 				}
 			}
 
@@ -245,7 +246,6 @@ if ( ! class_exists( 'BWFABT_Controller_Order_Bump' ) ) {
 			update_post_meta( $control_id, '_wfob_selected_products', $selected_products );
 			update_post_meta( $control_id, '_wfob_design_data', $design_data );
 			update_post_meta( $control_id, '_wfob_settings', $wfob_settings );
-
 		}
 
 		/**
@@ -255,16 +255,20 @@ if ( ! class_exists( 'BWFABT_Controller_Order_Bump' ) ) {
 		 * @return string
 		 */
 		public function get_variant_heading_url( $variant, $experiment ) {
-			return BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( array(
-				'page'    => 'wfob',
-				'section' => 'products',
-				'wfob_id' => $variant->get_id(),
-			), admin_url( 'admin.php' ) ) );
-
+			return BWF_Admin_Breadcrumbs::maybe_add_refs(
+				add_query_arg(
+					array(
+						'page'    => 'wfob',
+						'section' => 'products',
+						'wfob_id' => $variant->get_id(),
+					),
+					admin_url( 'admin.php' )
+				)
+			);
 		}
 
 		/**
-		 * @param BWFABT_Variant $variant
+		 * @param BWFABT_Variant    $variant
 		 * @param BWFABT_Experiment $experiment
 		 *
 		 * @return array|array[]
@@ -274,13 +278,16 @@ if ( ! class_exists( 'BWFABT_Controller_Order_Bump' ) ) {
 			$row_actions = array(
 				'edit' => array(
 					'text' => __( 'Edit', 'woofunnels-ab-tests' ),
-					'link' => add_query_arg( array(
-						'page'    => 'wfob',
-						'section' => 'products',
-						'wfob_id' => $variant->get_id(),
-						'ref'     => 'bwfabt_' . $experiment->get_id()
-					), admin_url( 'admin.php' ) ),
-				)
+					'link' => add_query_arg(
+						array(
+							'page'    => 'wfob',
+							'section' => 'products',
+							'wfob_id' => $variant->get_id(),
+							'ref'     => 'bwfabt_' . $experiment->get_id(),
+						),
+						admin_url( 'admin.php' )
+					),
+				),
 			);
 
 			return array_merge( $row_actions, parent::get_variant_row_actions( $variant, $experiment ) );
@@ -318,10 +325,12 @@ if ( ! class_exists( 'BWFABT_Controller_Order_Bump' ) ) {
 			if ( $new_control_id > 0 ) {
 				$new_control_post = get_post( $new_control_id );
 				if ( ! is_null( $new_control_post ) ) {
-					$transfered = wp_update_post( array(
-						'ID'         => $new_control_id,
-						'post_title' => $original_title,
-					) );
+					$transfered = wp_update_post(
+						array(
+							'ID'         => $new_control_id,
+							'post_title' => $original_title,
+						)
+					);
 				}
 			}
 			if ( $new_control_id === $transfered ) {
@@ -382,8 +391,8 @@ if ( ! class_exists( 'BWFABT_Controller_Order_Bump' ) ) {
 		 */
 		public function get_analytics_data( $step_ids, $experiment_id ) {
 			global $wpdb;
-			$data = [];
-			$ids  = [];
+			$data = array();
+			$ids  = array();
 
 			if ( class_exists( 'WFOB_Core' ) && version_compare( WFOB_VERSION, '1.8,1', '<=' ) ) {
 				return $data;
@@ -410,20 +419,20 @@ if ( ! class_exists( 'BWFABT_Controller_Order_Bump' ) ) {
 				return $data;
 			}
 
-			$step_ids = esc_sql( implode( ',', $ids ) );
+			$step_ids = implode( ',', array_map( 'absint', $ids ) );
 
 			$get_all_dates = BWFABT_Core()->get_dataStore()->get_experiment_time_chunk( $experiment_id );
-			$date_query    = "";
+			$date_query    = '';
 
 			if ( is_array( $get_all_dates ) && count( $get_all_dates ) ) {
 				foreach ( $get_all_dates as $date ) {
 					$date_query .= " ( `date` >= '" . esc_sql( $date['start_date'] ) . "' AND `date` <= '" . esc_sql( $date['end_date'] ) . "' ) OR ";
 				}
 
-				$date_query = ' AND ( ' . rtrim( $date_query, " OR " ) . ') ';
+				$date_query = ' AND ( ' . rtrim( $date_query, ' OR ' ) . ') ';
 			}
 
-			$bump_sql = "SELECT bump.bid as 'object_id',COUNT(CASE WHEN converted = 1 THEN 1 END) AS `converted`, p.post_title as 'object_name',SUM(bump.total) as 'total_revenue',COUNT(bump.ID) as viewed, 'bump' as 'type' FROM " . $wpdb->prefix . 'wfob_stats' . " AS bump LEFT JOIN " . $wpdb->prefix . 'posts' . " as p ON bump.bid  = p.id WHERE bump.bid IN (" . $step_ids . ") " . $date_query . " GROUP by bump.bid ORDER BY bump.bid ASC";
+			$bump_sql = "SELECT bump.bid as 'object_id',COUNT(CASE WHEN converted = 1 THEN 1 END) AS `converted`, p.post_title as 'object_name',SUM(bump.total) as 'total_revenue',COUNT(bump.ID) as viewed, 'bump' as 'type' FROM " . $wpdb->prefix . 'wfob_stats' . ' AS bump LEFT JOIN ' . $wpdb->prefix . 'posts' . ' as p ON bump.bid  = p.id WHERE bump.bid IN (' . $step_ids . ') ' . $date_query . ' GROUP by bump.bid ORDER BY bump.bid ASC';
 
 			$get_all_bump_records = $wpdb->get_results( $bump_sql, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			if ( method_exists( 'BWFABT_Core', 'maybe_wpdb_error' ) ) {

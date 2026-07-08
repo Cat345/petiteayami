@@ -1,9 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'WFACP_Bwf_Autonami' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Bwf_Autonami {
 		public function __construct() {
-			add_filter( 'bwfan_public_scripts_include', [ $this, 'disable_script' ] );
+			add_filter( 'bwfan_public_scripts_include', array( $this, 'disable_script' ) );
 		}
 
 		public function disable_script( $status ) {
@@ -13,7 +17,6 @@ if ( ! class_exists( 'WFACP_Bwf_Autonami' ) ) {
 
 			return $status;
 		}
-
 	}
 
 

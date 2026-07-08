@@ -12,6 +12,12 @@ if ( ! class_exists( 'WFACP_Exporter' ) ) {
 		private static $ins = null;
 
 		public function __construct() {
+			$is_admin_enabled = ! class_exists( 'WFFN_Pro_Checkout_Support' )
+				|| ! method_exists( 'WFFN_Pro_Checkout_Support', 'is_admin_enabled' )
+				|| WFFN_Pro_Checkout_Support::is_admin_enabled();
+			if ( ! $is_admin_enabled ) {
+				return;
+			}
 			add_action( 'admin_init', [ $this, 'maybe_export' ] );
 			add_action( 'admin_init', [ $this, 'maybe_export_single' ] );
 		}

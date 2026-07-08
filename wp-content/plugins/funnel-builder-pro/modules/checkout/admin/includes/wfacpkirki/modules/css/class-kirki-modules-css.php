@@ -13,7 +13,12 @@
 /**
  * The WFACPKirki_Modules_CSS object.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Modules_CSS' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Modules_CSS {
 
 		/**
@@ -77,28 +82,27 @@ if ( ! class_exists( 'WFACPKirki_Modules_CSS' ) ) {
 		protected function __construct() {
 
 			$class_files = array(
-				'WFACPKirki_CSS_To_File'                         => '/class-kirki-css-to-file.php',
-				'WFACPKirki_Modules_CSS_Generator'               => '/class-kirki-modules-css-generator.php',
-				'WFACPKirki_Output'                              => '/class-kirki-output.php',
-				'WFACPKirki_Output_Field_Background'             => '/field/class-kirki-output-field-background.php',
-				'WFACPKirki_Output_Field_Image'                  => '/field/class-kirki-output-field-image.php',
-				'WFACPKirki_Output_Field_Multicolor'             => '/field/class-kirki-output-field-multicolor.php',
-				'WFACPKirki_Output_Field_Dimensions'             => '/field/class-kirki-output-field-dimensions.php',
-				'WFACPKirki_Output_Field_Typography'             => '/field/class-kirki-output-field-typography.php',
-				'WFACPKirki_Output_Property'                     => '/property/class-kirki-output-property.php',
-				'WFACPKirki_Output_Property_Background_Image'    => '/property/class-kirki-output-property-background-image.php',
+				'WFACPKirki_CSS_To_File'                 => '/class-kirki-css-to-file.php',
+				'WFACPKirki_Modules_CSS_Generator'       => '/class-kirki-modules-css-generator.php',
+				'WFACPKirki_Output'                      => '/class-kirki-output.php',
+				'WFACPKirki_Output_Field_Background'     => '/field/class-kirki-output-field-background.php',
+				'WFACPKirki_Output_Field_Image'          => '/field/class-kirki-output-field-image.php',
+				'WFACPKirki_Output_Field_Multicolor'     => '/field/class-kirki-output-field-multicolor.php',
+				'WFACPKirki_Output_Field_Dimensions'     => '/field/class-kirki-output-field-dimensions.php',
+				'WFACPKirki_Output_Field_Typography'     => '/field/class-kirki-output-field-typography.php',
+				'WFACPKirki_Output_Property'             => '/property/class-kirki-output-property.php',
+				'WFACPKirki_Output_Property_Background_Image' => '/property/class-kirki-output-property-background-image.php',
 				'WFACPKirki_Output_Property_Background_Position' => '/property/class-kirki-output-property-background-position.php',
-				'WFACPKirki_Output_Property_Font_Family'         => '/property/class-kirki-output-property-font-family.php',
+				'WFACPKirki_Output_Property_Font_Family' => '/property/class-kirki-output-property-font-family.php',
 			);
 
 			foreach ( $class_files as $class_name => $file ) {
 				if ( ! class_exists( $class_name ) ) {
-					include_once wp_normalize_path( dirname( __FILE__ ) . $file );
+					include_once wp_normalize_path( __DIR__ . $file );
 				}
 			}
 
 			add_action( 'init', array( $this, 'init' ) );
-
 		}
 
 		/**
@@ -190,7 +194,6 @@ if ( ! class_exists( 'WFACPKirki_Modules_CSS' ) ) {
 		public function enqueue_compiled_file() {
 
 			wp_enqueue_style( 'wfacpkirki-styles', $this->css_to_file->get_url(), array(), $this->css_to_file->get_timestamp() );
-
 		}
 
 		/**

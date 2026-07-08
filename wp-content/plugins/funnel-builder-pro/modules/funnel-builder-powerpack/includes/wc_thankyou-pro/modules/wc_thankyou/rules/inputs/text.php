@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfty_Input_Text' ) ) {
+	#[\AllowDynamicProperties]
 	class wfty_Input_Text {
 
 		public function __construct() {
@@ -9,18 +10,19 @@ if ( ! class_exists( 'wfty_Input_Text' ) ) {
 			$this->defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 		}
 
 		public function render( $field, $value = null ) {
 			$field = array_merge( $this->defaults, $field );
-			if ( ! isset( $field['id'] ) ) {
+			if ( isset( $field['id'] ) ) {
 				$field['id'] = sanitize_title( $field['id'] );
+			} else {
+				$field['id'] = '';
 			}
 
-			echo '<input name="' . $field['name'] . '" type="text" id="' . esc_attr( $field['id'] ) . '" class="' . esc_attr( $field['class'] ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . $value . '" />';
+			echo '<input name="' . esc_attr( $field['name'] ) . '" type="text" id="' . esc_attr( $field['id'] ) . '" class="' . esc_attr( $field['class'] ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $value ) . '" />';
 		}
-
 	}
 }

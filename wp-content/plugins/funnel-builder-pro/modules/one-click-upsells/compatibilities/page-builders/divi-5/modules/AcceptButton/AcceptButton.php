@@ -49,6 +49,7 @@ foreach ( $traits as $trait_file ) {
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class AcceptButton extends BaseModule {
 	use RenderCallbackTrait;
 	use ModuleClassnamesTrait;

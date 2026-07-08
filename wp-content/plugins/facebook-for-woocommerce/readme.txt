@@ -1,15 +1,15 @@
 === Meta for WooCommerce ===
-Contributors: meta
-Tags: meta, facebook, whatsapp, conversions api, catalog sync, ads
+Contributors: facebook
+Tags: meta, facebook, whatsapp, conversions api, catalog sync
 Requires at least: 5.6
-Tested up to: 6.9.4
-Stable tag: 3.6.2
+Tested up to: 7.0
+Stable tag: 3.7.3
 Requires PHP: 7.4
 MySQL: 5.6 or greater
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Get the Official Meta for WooCommerce plugin for powerful ways to help grow your business.
+Reach more customers and drive sales on Facebook, Instagram and WhatsApp with the official Meta for WooCommerce plugin.
 
 == Description ==
 
@@ -42,12 +42,8 @@ To suggest technical improvements, you can raise an issue on our [Github reposit
 
 == Changelog ==
 
-= 3.6.3 - 2026-04-10 =
-* Fix - Fix minimatch vulnerability (CVE-2026-27903) by @vahidkay-meta in #3897
-* Fix - Added checks and safeguards. by @vahidkay-meta in #3887
-* Dev - Migrate CAPI Param Builder script to unpkg CDN by @cshing-meta in #3895
-* Dev - Bump tar-fs from 3.1.0 to 3.1.2 by @mrharel in #3896
-* Add - Add WooCommerce Blocks Store API support for AddToCart Pixel events by @cshing-meta in #3888
-* Dev - Dev/break down e2e tests and automate supported version bumpup by @vahidkay-meta in #3876
+= 3.7.4 - 2026-06-22 =
+* Add - Move WhatsApp to a standalone top-level admin menu with a scheme-aware icon by @ceciliazeng-wa in #3947
+* Fix - Prevent duplicate AddToCart Pixel fires from repeated AJAX fragment execution by @cshing-meta in #3939
 
 [See changelog for all versions](https://raw.githubusercontent.com/facebook/facebook-for-woocommerce/refs/heads/main/changelog.txt).

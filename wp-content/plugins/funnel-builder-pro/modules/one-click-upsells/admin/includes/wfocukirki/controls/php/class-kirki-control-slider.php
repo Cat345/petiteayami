@@ -19,6 +19,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Slider' ) ) {
 	/**
 	 * Slider control (range).
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Slider extends WFOCUKirki_Control_Base {
 
 		/**
@@ -37,12 +38,15 @@ if ( ! class_exists( 'WFOCUKirki_Control_Slider' ) ) {
 		public function to_json() {
 			parent::to_json();
 
-			$this->json['choices'] = wp_parse_args( $this->json['choices'], array(
-				'min'    => '0',
-				'max'    => '100',
-				'step'   => '1',
-				'suffix' => '',
-			) );
+			$this->json['choices'] = wp_parse_args(
+				$this->json['choices'],
+				array(
+					'min'    => '0',
+					'max'    => '100',
+					'step'   => '1',
+					'suffix' => '',
+				)
+			);
 		}
 
 		/**
@@ -57,18 +61,18 @@ if ( ! class_exists( 'WFOCUKirki_Control_Slider' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <label>
-                <# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
-                <# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
-                <div class="wrapper">
-                    <input {{{ data.inputAttrs }}} type="range" min="{{ data.choices['min'] }}" max="{{ data.choices['max'] }}" step="{{ data.choices['step'] }}" value="{{ data.value }}" {{{ data.link }}}/>
-                    <span class="slider-reset dashicons dashicons-image-rotate"><span class="screen-reader-text"><?php esc_attr_e( 'Reset', 'wfocukirki' ); ?></span></span>
-                    <span class="value">
+			<label>
+				<# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
+				<# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
+				<div class="wrapper">
+					<input {{{ data.inputAttrs }}} type="range" min="{{ data.choices['min'] }}" max="{{ data.choices['max'] }}" step="{{ data.choices['step'] }}" value="{{ data.value }}" {{{ data.link }}}/>
+					<span class="slider-reset dashicons dashicons-image-rotate"><span class="screen-reader-text"><?php esc_attr_e( 'Reset', 'wfocukirki' ); ?></span></span>
+					<span class="value">
 					<input {{{ data.inputAttrs }}} type="text"/>
 					<span class="suffix">{{ data.choices['suffix'] }}</span>
 				</span>
-                </div>
-            </label>
+				</div>
+			</label>
 			<?php
 		}
 	}

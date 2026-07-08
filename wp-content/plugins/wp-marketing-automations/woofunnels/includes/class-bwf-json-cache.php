@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'BWF_JSON_Cache' ) ) {
+	#[\AllowDynamicProperties]
 	class BWF_JSON_Cache {
 
 		public static function run_json_endpoints_cache_handling() {

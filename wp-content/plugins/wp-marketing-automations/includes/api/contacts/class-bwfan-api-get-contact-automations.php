@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Contact_Automations extends BWFAN_API_Base {
 	public static $ins;
 
@@ -29,8 +30,8 @@ class BWFAN_API_Get_Contact_Automations extends BWFAN_API_Base {
 	public function process_api_call() {
 		/** checking if id or email present in params **/
 		$contact_id = $this->get_sanitized_arg( 'contact_id', 'key' );
-		$offset     = ! empty( $this->get_sanitized_arg( 'offset', 'text_field' ) ) ? absint( $this->get_sanitized_arg( 'offset', 'text_field' ) ) : 0;
-		$limit      = ! empty( $this->get_sanitized_arg( 'limit', 'text_field' ) ) ? $this->get_sanitized_arg( 'limit', 'text_field' ) : 25;
+		$offset     = ! empty( $this->get_sanitized_arg( 'offset', 'absint' ) ) ? absint( $this->get_sanitized_arg( 'offset', 'absint' ) ) : 0;
+		$limit      = ! empty( $this->get_sanitized_arg( 'limit', 'absint' ) ) ? $this->get_sanitized_arg( 'limit', 'absint' ) : 25;
 
 		/** contact id missing than return  */
 		if ( empty( $contact_id ) ) {

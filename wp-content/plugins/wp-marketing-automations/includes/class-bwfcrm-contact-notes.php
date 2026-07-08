@@ -11,6 +11,7 @@ if ( ! class_exists( 'BWFCRM_Note' ) && BWFAN_Common::is_pro_3_0() ) {
 	 * Class BWFCRM_Note
 	 *
 	 */
+	#[\AllowDynamicProperties]
 	class BWFCRM_Note {
 		public $already_exists_in_db = true;
 

@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_REST_API_Helpers extends WFFN_REST_Controller {
 
 		private static $ins = null;
@@ -52,9 +53,8 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 								if ( $stp['type'] === 'wc_checkout' && isset( $stp['substeps'] ) && isset( $stp['substeps']['wc_order_bump'] ) && ! empty( $stp['substeps']['wc_order_bump'] ) ) {
 									$stp['substeps']['wc_order_bump'] = array_map( 'absint', $stp['substeps']['wc_order_bump'] );
 									if ( in_array( absint( $step_id ), $stp['substeps']['wc_order_bump'], true ) ) {
-										$step_data['view_link']      = get_the_permalink( $stp['id'] );
-										$step_data['edit_link_past'] = admin_url( 'admin.php?page=wfob&section=products&wfob_id=' . $step_id );
-										$step_data['checkout_id']    = $stp['id'];
+										$step_data['view_link']   = get_the_permalink( $stp['id'] );
+										$step_data['checkout_id'] = $stp['id'];
 										break;
 									}
 								}
@@ -85,8 +85,6 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 								$step_data['view_link'] = get_the_permalink( $custom_page );
 							}
 						}
-						$step_data['edit_link_past'] = admin_url( 'admin.php?page=upstroke&section=offers&edit=' . $step_data['upsell_id'] );
-
 					}
 
 					if ( 'wfacp_checkout' === $post_data->post_type && class_exists( 'WFACP_Common' ) ) {
@@ -94,8 +92,6 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 						 * clear wfacp cache data for get updated data
 						 */
 						add_filter( 'wfacp_get_post_meta_data', '__return_true' );
-						$step_data['edit_link_past'] = admin_url( 'admin.php?page=wfacp&section=design&wfacp_id=' . $step_id );
-
 					}
 
 					/**
@@ -419,7 +415,7 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 				$prices = $product->get_variation_prices( true );
 
 				if ( empty( $prices['price'] ) ) {
-					$price = html_entity_decode( wp_strip_all_tags( apply_filters( 'woocommerce_variable_empty_price_html', '', $product ) ) );
+					$price = html_entity_decode( wp_strip_all_tags( apply_filters( 'woocommerce_variable_empty_price_html', '', $product ) ), ENT_QUOTES | ENT_HTML401 );
 				} else {
 
 					$price         = array();
@@ -461,7 +457,7 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 				if ( '' === $price ) {
 					$price = $product->get_regular_price();
 				}
-				$price = html_entity_decode( wp_strip_all_tags( wc_price( $price ) ) );
+				$price = html_entity_decode( wp_strip_all_tags( wc_price( $price ) ), ENT_QUOTES | ENT_HTML401 );
 			}
 
 			return $price;

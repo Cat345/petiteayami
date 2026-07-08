@@ -18,6 +18,7 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 	/**
 	 * A simple object containing static methods.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Helper {
 
 		/**
@@ -44,7 +45,7 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 				return $array;
 			}
 			$count = count( $args );
-			for ( $i = 1; $i < $count; $i ++ ) {
+			for ( $i = 1; $i < $count; $i++ ) {
 				if ( is_array( $args[ $i ] ) ) {
 					$array = self::recurse( $array, $args[ $i ] );
 				}
@@ -183,7 +184,6 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 				'height'    => $image[2],
 				'thumbnail' => $image[3],
 			);
-
 		}
 
 		/**
@@ -199,9 +199,11 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 		public static function get_posts( $args ) {
 
 			if ( is_string( $args ) ) {
-				$args = add_query_arg( array(
+				$args = add_query_arg(
+					array(
 						'suppress_filters' => false,
-					) );
+					)
+				);
 			} elseif ( is_array( $args ) && ! isset( $args['suppress_filters'] ) ) {
 				$args['suppress_filters'] = false;
 			}
@@ -218,7 +220,6 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 			wp_reset_postdata();
 
 			return $items;
-
 		}
 
 		/**
@@ -233,9 +234,11 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 			$items = array();
 
 			// Get the taxonomies.
-			$taxonomies = get_taxonomies( array(
+			$taxonomies = get_taxonomies(
+				array(
 					'public' => true,
-				) );
+				)
+			);
 
 			// Build the array.
 			foreach ( $taxonomies as $taxonomy ) {
@@ -245,7 +248,6 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 			}
 
 			return $items;
-
 		}
 
 		/**
@@ -260,9 +262,12 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 			$items = array();
 
 			// Get the post types.
-			$post_types = get_post_types( array(
+			$post_types = get_post_types(
+				array(
 					'public' => true,
-				), 'objects' );
+				),
+				'objects'
+			);
 
 			// Build the array.
 			foreach ( $post_types as $post_type ) {
@@ -270,7 +275,6 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 			}
 
 			return $items;
-
 		}
 
 		/**
@@ -296,7 +300,6 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 			}
 
 			return $items;
-
 		}
 
 		/**
@@ -333,7 +336,7 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 					'#FF5722',
 					'#795548',
 					'#9E9E9E',
-					'#607D8B'
+					'#607D8B',
 				),
 				'red'         => array( '#FFEBEE', '#FFCDD2', '#EF9A9A', '#E57373', '#EF5350', '#F44336', '#E53935', '#D32F2F', '#C62828', '#B71C1C', '#FF8A80', '#FF5252', '#FF1744', '#D50000' ),
 				'pink'        => array( '#FCE4EC', '#F8BBD0', '#F48FB1', '#F06292', '#EC407A', '#E91E63', '#D81B60', '#C2185B', '#AD1457', '#880E4F', '#FF80AB', '#FF4081', '#F50057', '#C51162' ),
@@ -446,7 +449,7 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 					'admin-collapse',
 					'filter',
 					'admin-customizer',
-					'admin-multisite'
+					'admin-multisite',
 				),
 				'welcome-screen' => array( 'welcome-write-blog', 'welcome-add-page', 'welcome-view-site', 'welcome-widgets-menus', 'welcome-comments', 'welcome-learn-more' ),
 				'post-formats'   => array(
@@ -463,7 +466,7 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 					'images-alt2',
 					'video-alt',
 					'video-alt2',
-					'video-alt3'
+					'video-alt3',
 				),
 				'media'          => array(
 					'media-archive',
@@ -485,7 +488,7 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 					'controls-skipback',
 					'controls-repeat',
 					'controls-volumeon',
-					'controls-volumeoff'
+					'controls-volumeoff',
 				),
 				'image-editing'  => array( 'image-crop', 'image-rotate', 'image-rotate-left', 'image-rotate-right', 'image-flip-vertical', 'image-flip-horizontal', 'image-filter', 'undo', 'redo' ),
 				'tinymce'        => array(
@@ -519,7 +522,7 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 					'editor-break',
 					'editor-code',
 					'editor-paragraph',
-					'editor-table'
+					'editor-table',
 				),
 				'posts'          => array(
 					'align-left',
@@ -535,7 +538,7 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 					'post-status',
 					'edit',
 					'trash',
-					'sticky'
+					'sticky',
 				),
 				'sorting'        => array(
 					'external',
@@ -556,7 +559,7 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 					'randomize',
 					'list-view',
 					'exerpt-view',
-					'grid-view'
+					'grid-view',
 				),
 				'social'         => array( 'share', 'share-alt', 'share-alt2', 'twitter', 'rss', 'email', 'email-alt', 'facebook', 'facebook-alt', 'googleplus', 'networking' ),
 				'wordpress_org'  => array( 'hammer', 'art', 'migrate', 'performance', 'universal-access', 'universal-access-alt', 'tickets', 'nametag', 'clipboard', 'heart', 'megaphone', 'schedule' ),
@@ -610,17 +613,16 @@ if ( ! class_exists( 'WFOCUKirki_Helper' ) ) {
 					'smiley',
 					'thumbs-up',
 					'thumbs-down',
-					'layout'
+					'layout',
 				),
 			);
-
 		}
 
 		/**
 		 * Compares the 2 values given the condition
 		 *
-		 * @param mixed $value1 The 1st value in the comparison.
-		 * @param mixed $value2 The 2nd value in the comparison.
+		 * @param mixed  $value1 The 1st value in the comparison.
+		 * @param mixed  $value2 The 2nd value in the comparison.
 		 * @param string $operator The operator we'll use for the comparison.
 		 *
 		 * @return boolean whether The comparison has succeded (true) or failed (false).

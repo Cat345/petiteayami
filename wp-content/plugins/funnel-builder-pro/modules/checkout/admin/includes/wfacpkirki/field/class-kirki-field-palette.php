@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Palette' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Palette extends WFACPKirki_Field_Radio {
@@ -24,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Palette' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-palette';
-
 		}
 	}
 }

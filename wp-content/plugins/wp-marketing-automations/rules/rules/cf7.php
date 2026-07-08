@@ -1,6 +1,7 @@
 <?php
 if ( bwfan_is_cf7_active() ) {
 
+	#[\AllowDynamicProperties]
 	class BWFAN_Rule_CF7_Form_Field extends BWFAN_Rule_Base {
 
 		public function __construct() {

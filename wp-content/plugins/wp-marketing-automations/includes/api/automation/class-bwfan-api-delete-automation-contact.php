@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Delete_Automation_Contacts extends BWFAN_API_Base {
 
 	public static $ins;

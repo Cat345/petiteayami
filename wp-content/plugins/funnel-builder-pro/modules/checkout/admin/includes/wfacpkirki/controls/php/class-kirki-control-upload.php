@@ -12,7 +12,12 @@
 /**
  * Adds the image control.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Control_Upload' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Upload extends WP_Customize_Upload_Control {
 
 		/**

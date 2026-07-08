@@ -198,30 +198,30 @@ if ( ! class_exists( 'WFOCU_Wizard' ) ) {
 		public static function wfocu_setup_activate() {
 
 			?>
-<h2> <?php _e( 'Activate UpStroke', 'woofunnels-upstroke-one-click-upsell' ); ?></h2>
+<h2> <?php esc_html_e( 'Activate UpStroke', 'woofunnels-upstroke-one-click-upsell' ); ?></h2>
 <form id="wfocu_verify_license" action="" method="POST">
     <input type="hidden" name="_step_name" value="license_key">
     <div class="about-text">
         <p>
-
 			<?php
-			_e(
-				'Enter your UpStroke License Key below. Your key unlocks access to dashboard updates and support.
-                    <br/>You can find your key on the Account <a target="_blank" href="https://funnelkit.com/">Dashboard Page</a> site.', 'woofunnels-upstroke-one-click-upsell'
-			)
+			echo wp_kses_post(
+				__(
+					'Enter your UpStroke License Key below. Your key unlocks access to dashboard updates and support.<br/>You can find your key on the Account <a target="_blank" href="https://funnelkit.com/">Dashboard Page</a> site.',
+					'woofunnels-upstroke-one-click-upsell'
+				)
+			);
 			?>
-
         </p>
         <p>
-            <input style="width: 100%; padding: 10px;" type="text" required="required" class="regular-text" id="license_key" value="<?php echo self::$key; ?>" name="license_key" placeholder="Enter Your License Key">
+            <input style="width: 100%; padding: 10px;" type="text" required="required" class="regular-text" id="license_key" value="<?php echo esc_attr( self::$key ); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.SelfOutsideClass ?>" name="license_key" placeholder="Enter Your License Key">
 			<?php
-			if ( self::$license_state === false ) {
+			if ( self::$license_state === false ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.SelfOutsideClass
 				echo '<span class="wfocu_invalid_license">Invalid Key. Ensure that your are using valid license key. Try again.</span>';
 			}
 			?>
         </p>
         <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce( 'woocommerce-settings' ); ?>"/>
-        <input type="hidden" name="_redirect_link" value="<?php echo self::get_next_step_link(); ?>"/>
+        <input type="hidden" name="_redirect_link" value="<?php echo self::get_next_step_link(); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.SelfOutsideClass ?>"/>
     </div>
     <div>
         <p class="wfocu-setup-actions step">
@@ -229,14 +229,12 @@ if ( ! class_exists( 'WFOCU_Wizard' ) ) {
     </p>
     <p>
         Unable to find license key? <br/>
-        Follow <a target="_blank" href="https://funnelkit.com/docs/one-click-upsell/getting-started/">this step by step
-            guide</a> to find the license key.
+        Follow <a target="_blank" href="https://funnelkit.com/docs/one-click-upsell/getting-started/">this step by step guide</a> to find the license key.
     </p>
-
-    <p><strong>Note:</strong> This is just a one time activation process. <i>You plugin would continue to work as it is even if your license key is expired.</i> Ofcourse,you would loose access
-        to support and future updates if your license expires.</p>
+    <p><strong>Note:</strong> This is just a one time activation process. <i>Your plugin would continue to work as it is even if your license key is expired.</i> Of course, you would lose access to support and future updates if your license expires.</p>
 </form>
 <?php
+
 		}
 
 		public static function get_next_step_link() {

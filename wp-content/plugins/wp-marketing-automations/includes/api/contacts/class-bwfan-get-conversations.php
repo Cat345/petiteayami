@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Contact_Conversations extends BWFAN_API_Base {
 	public static $ins;
 
@@ -37,8 +38,8 @@ class BWFAN_API_Get_Contact_Conversations extends BWFAN_API_Base {
 		/** checking if id or email present in params **/
 		$id         = $this->get_sanitized_arg( 'contact_id', 'key' );
 		$this->mode = $this->get_sanitized_arg( 'mode', 'key' );
-		$limit      = ! empty( $this->get_sanitized_arg( 'limit', 'text_field' ) ) ? $this->get_sanitized_arg( 'limit', 'text_field' ) : 25;
-		$offset     = ! empty( $this->get_sanitized_arg( 'offset', 'text_field' ) ) ? $this->get_sanitized_arg( 'offset', 'text_field' ) : 0;
+		$limit      = ! empty( $this->get_sanitized_arg( 'limit', 'absint' ) ) ? $this->get_sanitized_arg( 'limit', 'absint' ) : 25;
+		$offset     = ! empty( $this->get_sanitized_arg( 'offset', 'absint' ) ) ? $this->get_sanitized_arg( 'offset', 'absint' ) : 0;
 
 		if ( ! class_exists( 'BWFAN_Email_Conversations' ) || ! isset( BWFAN_Core()->conversations ) || ! BWFAN_Core()->conversations instanceof BWFAN_Email_Conversations ) {
 			return $this->error_response( __( 'Unable to find conversations module', 'wp-marketing-automations' ), null, 500 );

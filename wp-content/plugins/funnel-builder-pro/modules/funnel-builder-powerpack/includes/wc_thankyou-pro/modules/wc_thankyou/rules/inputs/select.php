@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfty_Input_Select' ) ) {
+	#[\AllowDynamicProperties]
 	class wfty_Input_Select {
 
 		public function __construct() {
@@ -11,7 +12,7 @@ if ( ! class_exists( 'wfty_Input_Select' ) ) {
 				'allow_null'    => 0,
 				'choices'       => array(),
 				'default_value' => '',
-				'class'         => ''
+				'class'         => '',
 			);
 		}
 
@@ -20,7 +21,6 @@ if ( ! class_exists( 'wfty_Input_Select' ) ) {
 			$field          = array_merge( $this->defaults, $field );
 			$field['value'] = $value;
 			$optgroup       = false;
-
 
 			// determine if choices are grouped (2 levels of array)
 			if ( is_array( $field['choices'] ) ) {
@@ -43,17 +43,16 @@ if ( ! class_exists( 'wfty_Input_Select' ) ) {
 				}
 			}
 
-
 			// trim value
 			$field['value'] = array_map( 'trim', $field['value'] );
 
 			$multiple = '';
 			if ( $field['multiple'] ) {
-				$multiple      = ' multiple="multiple" size="5" ';
+				$multiple       = ' multiple="multiple" size="5" ';
 				$field['name'] .= '[]';
 			}
 
-			echo '<select id="' . $field['id'] . '" class="' . $field['class'] . '" name="' . $field['name'] . '" ' . $multiple . ' >';
+			echo '<select id="' . esc_attr( $field['id'] ) . '" class="' . esc_attr( $field['class'] ) . '" name="' . esc_attr( $field['name'] ) . '" ' . esc_attr( $multiple ) . ' >';
 
 			// null
 			if ( $field['allow_null'] ) {
@@ -66,14 +65,14 @@ if ( ! class_exists( 'wfty_Input_Select' ) ) {
 					if ( $optgroup ) {
 						// this select is grouped with optgroup
 						if ( $key != '' ) {
-							echo '<optgroup label="' . $key . '">';
+							echo '<optgroup label="' . esc_attr( $key ) . '">';
 						}
 
 						if ( is_array( $value ) ) {
 							foreach ( $value as $id => $label ) {
 								$selected = in_array( $id, $field['value'] ) ? 'selected="selected"' : '';
 
-								echo '<option value="' . $id . '" ' . $selected . '>' . $label . '</option>';
+								echo '<option value="' . esc_attr( $id ) . '" ' . esc_attr( $selected ) . '>' . esc_html( $label ) . '</option>';
 							}
 						}
 
@@ -82,15 +81,12 @@ if ( ! class_exists( 'wfty_Input_Select' ) ) {
 						}
 					} else {
 						$selected = in_array( $key, $field['value'] ) ? 'selected="selected"' : '';
-						echo '<option value="' . $key . '" ' . $selected . '>' . $value . '</option>';
+						echo '<option value="' . esc_attr( $key ) . '" ' . esc_attr( $selected ) . '>' . esc_html( $value ) . '</option>';
 					}
 				}
 			}
 
 			echo '</select>';
 		}
-
 	}
 }
-
-

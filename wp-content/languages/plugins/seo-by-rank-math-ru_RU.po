@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Rank Math SEO – AI SEO Tools to Dominate SEO Rankings - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-04-15 10:53:02+0000\n"
+"PO-Revision-Date: 2026-07-08 06:11:32+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -11,64 +11,87 @@ msgstr ""
 "Language: ru\n"
 "Project-Id-Version: Plugins - Rank Math SEO – AI SEO Tools to Dominate SEO Rankings - Stable (latest release)\n"
 
-#. Translators: placeholder is the new label.
-#: includes/modules/links/Admin/class-admin.php:57
-msgid "Link Genius %s"
-msgstr "Link Genius %s"
+#: includes/frontend/paper/class-singular.php:133
+msgid "Post not found."
+msgstr "Запись не найдена."
+
+#: includes/helpers/class-content-ai.php:501
+msgid "You've reached the monthly usage limit for this feature on your domain."
+msgstr "Вы достигли месячного лимита использования этой функции для своего домена."
+
+#: includes/helpers/class-content-ai.php:502
+msgid "You've reached the monthly usage limit for this feature."
+msgstr "Вы достигли месячного лимита использования этой функции."
+
+#. Translators: placeholder is the number of modified posts.
+#: includes/modules/content-ai/class-bulk-edit-seo-meta.php:161
+msgid "SEO meta successfully updated in %d posts. The process was stopped as you have reached the monthly limit for this feature."
+msgstr "SEO-метаданные успешно обновлены в записях (%d). Процесс был остановлен, так как вы достигли месячного лимита для этой функции."
+
+#. Translators: placeholder is the number of modified posts.
+#: includes/modules/content-ai/class-bulk-image-alt.php:174
+msgid "Image alt attributes successfully updated in %d posts. The process was stopped as you have reached the monthly limit for this feature."
+msgstr "Атрибуты alt для изображений успешно обновлены в записях (%d). Процесс был остановлен, так как вы достигли месячного лимита для этой функции."
+
+#: includes/modules/content-ai/class-rest.php:125
+msgid "Per-tool usage data returned by the API."
+msgstr "Данные об использовании каждого инструмента, возвращаемые API."
 
 #: includes/modules/links/Api/class-controller.php:113
 msgid "You do not have permission to access this resource."
 msgstr "У вас нет разрешения на доступ к этому ресурсу."
 
-#: includes/modules/links/Api/class-controller.php:642
-#: includes/modules/links/Api/class-controller.php:702
+#: includes/modules/links/Api/class-controller.php:721
+#: includes/modules/links/Api/class-controller.php:787
 msgid "Items per page."
 msgstr "Элементов на страницу."
 
-#: includes/modules/links/Api/class-controller.php:654
+#: includes/modules/links/Api/class-controller.php:733
 msgid "Filter by post type. Supports multiple values."
 msgstr "Фильтрация по типу записи. Поддерживает несколько значений."
 
-#: includes/modules/links/Api/class-controller.php:663
+#: includes/modules/links/Api/class-controller.php:742
 msgid "Filter by orphan status (orphan, linked)."
 msgstr "Фильтрация по сиротливости."
 
-#: includes/modules/links/Api/class-controller.php:669
+#: includes/modules/links/Api/class-controller.php:748
 msgid "Filter by SEO score range (great, good, bad, no-score)."
 msgstr "Фильтрация по SEO-оценкам."
 
-#: includes/modules/links/Api/class-controller.php:675
-#: includes/modules/links/Api/class-controller.php:730
+#: includes/modules/links/Api/class-controller.php:760
+#: includes/modules/links/Api/class-controller.php:815
 msgid "Order by field."
 msgstr "Упорядочивание по полям."
 
-#: includes/modules/links/Api/class-controller.php:681
-#: includes/modules/links/Api/class-controller.php:736
+#: includes/modules/links/Api/class-controller.php:766
+#: includes/modules/links/Api/class-controller.php:821
 msgid "Order direction (ASC, DESC)."
 msgstr "Направление сортировки."
 
-#: includes/modules/links/Api/class-controller.php:708
+#: includes/modules/links/Api/class-controller.php:793
 msgid "Search in URL."
 msgstr "Поиск по URL."
 
-#: includes/modules/links/Api/class-controller.php:648
+#: includes/modules/links/Api/class-controller.php:727
 msgid "Search in post title."
 msgstr "Поиск по названиям записей."
 
-#: includes/modules/links/Api/class-controller.php:714
+#: includes/modules/links/Api/class-controller.php:799
 msgid "Filter by source post ID."
 msgstr "Фильтрация по ID исходной записи."
 
-#: includes/modules/links/Api/class-controller.php:719
+#: includes/modules/links/Api/class-controller.php:804
 msgid "Filter by target post ID."
 msgstr "Фильтрация по ID целевой записи."
 
-#: includes/modules/links/Api/class-controller.php:724
+#: includes/modules/links/Api/class-controller.php:809
 msgid "Filter by link type (1 = internal, 0 = external)."
 msgstr "Фильтрация по типу ссылки (1=внутренняя, 0=внешняя)."
 
+#: includes/abilities/link-genius/class-subscriber.php:66
 #: includes/module/class-manager.php:158
-#: includes/modules/links/Admin/class-admin.php:52
+#: includes/modules/links/Admin/class-admin.php:51
+#: includes/modules/links/Admin/class-admin.php:55
 #: includes/modules/links/assets/js/links-page.js:1
 #: includes/modules/links/assets/src/features/links-page/LinksPage.js:86
 msgid "Link Genius"
@@ -261,23 +284,23 @@ msgstr "Текущий шаг"
 msgid "Current Step Data"
 msgstr "Данные о текущем шаге"
 
-#: includes/helpers/class-content-ai.php:450
+#: includes/helpers/class-content-ai.php:507
 msgid "The input provided is invalid. Please check the format and try again."
 msgstr "Введённые данные неверны. Проверьте формат и попробуйте еще раз."
 
-#: includes/helpers/class-content-ai.php:451
+#: includes/helpers/class-content-ai.php:508
 msgid "The service is temporarily unavailable. Please try again later."
 msgstr "Услуга временно недоступна. Повторите попытку позже."
 
-#: includes/helpers/class-content-ai.php:452
+#: includes/helpers/class-content-ai.php:509
 msgid "Unauthorized request. The client credentials are invalid."
 msgstr "Несанкционированный запрос. Учётные данные клиента недействительны."
 
-#: includes/helpers/class-content-ai.php:453
+#: includes/helpers/class-content-ai.php:510
 msgid "No results found for the given query. Please modify your request and try again"
 msgstr "По данному запросу данных не найдено. Измените запрос и попробуйте ещё раз."
 
-#: includes/helpers/class-content-ai.php:454
+#: includes/helpers/class-content-ai.php:511
 msgid "Insufficient results to complete the request. Please refine your query or reduce the requirements."
 msgstr "Недостаточно данных для выполнения запроса. Уточните запрос или уменьшите требования."
 
@@ -301,7 +324,7 @@ msgstr "ID переадресации"
 msgid "Whether the object has a redirect or not"
 msgstr "Имеет ли объект перенаправление"
 
-#: includes/rest/class-rest-helper.php:289
+#: includes/rest/class-rest-helper.php:296
 msgid "Sorry, the field contains invalid characters."
 msgstr "Поле содержит недопустимые символы."
 
@@ -337,56 +360,56 @@ msgstr "Фильтрация журнала по типу."
 msgid "The list of urls to submit to the Instant Indexing API."
 msgstr "Список URL для отправки в API мгновенной индексации."
 
-#: includes/modules/content-ai/class-rest.php:412
+#: includes/modules/content-ai/class-rest.php:421
 msgid "If true, forces a fresh research request."
 msgstr "Если «да», запрашивается новое исследование."
 
-#: includes/modules/content-ai/class-rest.php:407
+#: includes/modules/content-ai/class-rest.php:416
 msgid "The ID of the post initiating the keyword research request."
 msgstr "ID записи, инициирующей запрос на исследование ключевиков."
 
-#: includes/modules/content-ai/class-rest.php:402
+#: includes/modules/content-ai/class-rest.php:411
 msgid "The country for which the keyword should be researched."
 msgstr "Страна, для которой следует исследовать ключевик."
 
-#: includes/modules/content-ai/class-rest.php:397
+#: includes/modules/content-ai/class-rest.php:406
 msgid "The keyword to be researched."
 msgstr "Ключевик, подлежащий исследованию."
 
-#: includes/modules/content-ai/class-rest.php:232
+#: includes/modules/content-ai/class-rest.php:237
 msgid "List of attachment IDs for which to generate alt text."
 msgstr "Список ID вложений, для которых необходимо сгенерировать альтернативный текст."
 
-#: includes/modules/content-ai/class-rest.php:215
+#: includes/modules/content-ai/class-rest.php:220
 msgid "Content AI reset date to update in the Database"
 msgstr "Сбрасываемые данные Контентного ИИ для обновления в базе данных."
 
-#: includes/modules/content-ai/class-rest.php:210
+#: includes/modules/content-ai/class-rest.php:215
 msgid "Content AI plan to update in the Database."
 msgstr "План контентного ИИ для обновления в базе данных."
 
-#: includes/modules/content-ai/class-rest.php:193
+#: includes/modules/content-ai/class-rest.php:198
 msgid "A list of prompts received from the API to be saved in the database."
 msgstr "Список запросов, полученных от API, который будет сохранён в базе данных."
 
-#: includes/modules/content-ai/class-rest.php:176
+#: includes/modules/content-ai/class-rest.php:181
 msgid "The prompt data to be saved in the database."
 msgstr "Данные запроса для сохранения в базе данных."
 
-#: includes/modules/content-ai/class-rest.php:159
+#: includes/modules/content-ai/class-rest.php:164
 msgid "The selected prompt to be updated in the recent prompts."
 msgstr "Выбранный запрос, который будет обновлён в журнале."
 
-#: includes/modules/content-ai/class-rest.php:142
+#: includes/modules/content-ai/class-rest.php:147
 msgid "The output index to delete, applicable only to the Chat endpoint."
 msgstr "Выходной индекс для удаления, применимый только к конечной точке Чата."
 
-#: includes/modules/content-ai/class-rest.php:137
+#: includes/modules/content-ai/class-rest.php:142
 msgid "Indicates if the request to delete the output was for the Chat endpoint."
 msgstr "Указывает, был ли запрос на удаление выходных данных направлен на конечную точку Чата."
 
 #: includes/modules/content-ai/class-rest.php:120
-#: includes/modules/content-ai/class-rest.php:249
+#: includes/modules/content-ai/class-rest.php:254
 msgid "Credit usage details returned by the API."
 msgstr "Сведения об использовании кредита, возвращаемые API."
 
@@ -456,8 +479,8 @@ msgstr "Результатов на страницу."
 
 #: includes/modules/analytics/rest/class-rest.php:78
 #: includes/modules/analytics/rest/class-rest.php:119
-#: includes/modules/links/Api/class-controller.php:637
-#: includes/modules/links/Api/class-controller.php:697
+#: includes/modules/links/Api/class-controller.php:716
+#: includes/modules/links/Api/class-controller.php:782
 msgid "Page number."
 msgstr "Номер страницы."
 
@@ -481,16 +504,16 @@ msgstr "Определение цели поиска"
 msgid "Your current plugin version does not support this feature. Please update Rank Math PRO to version 3.0.83 or later to unlock full functionality."
 msgstr "Текущая версия плагина не поддерживает эту функцию. Обновите Rank Math PRO до версии 3.0.83 или более поздней, чтобы разблокировать полный функционал."
 
-#: includes/admin/wizard/views/search-console-ui.php:358
-#: assets/admin/js/generalSettings.js:1 assets/admin/js/wizard.js:1
-msgid "Select Account"
-msgstr "Выбрать учётную запись"
-
 #. Translators: placeholders are opening and closing tags for connect analytics
 #. setting and using ga4 property doc.
 #: includes/updates/update-1.0.239.php:35
 msgid "Universal Analytics (UA) is no longer supported. Please connect your Google Analytics GA4 account by navigating to %1$sGeneral Settings → Analytics%2$s. For more details, refer to this guide: %3$sHow to Use Google Analytics 4 (GA4) Property with Rank Math%4$s."
 msgstr "Universal Analytics (UA) больше не поддерживается. Подключите свою учётную запись Google Analytics GA4, перейдя в раздел %1$sОбщие настройки → Аналитика%2$s. Для получения более подробной информации обратитесь к этому руководству: %3$sПоказать, как использовать свойство Google Analytics 4 (GA4) с математическим ранжированием%4$s."
+
+#: includes/admin/wizard/views/search-console-ui.php:358
+#: assets/admin/js/generalSettings.js:1 assets/admin/js/wizard.js:1
+msgid "Select Account"
+msgstr "Выбрать учётную запись"
 
 #. Translators: placeholder is the URL to the robots.txt tester tool.
 #: includes/modules/robots-txt/options.php:96
@@ -654,11 +677,6 @@ msgstr[2] "Alt изображений успешно обновлены в %d з
 msgid "Bulk image alt generation failed."
 msgstr "Пакетная генерация альтернативных тегов изображений не удалась."
 
-#. Translators: placeholder is the number of modified posts.
-#: includes/modules/content-ai/class-bulk-image-alt.php:174
-msgid "Image alt attributes successfully updated in %d posts. The process was stopped as you have used all the credits on your site."
-msgstr "Alt изображений успешно обновлены в %d записях. Процесс был остановлен, так как исчерпаны кредиты сайта."
-
 #: includes/modules/local-seo/views/titles-options.php:250
 #: assets/admin/js/titleSettings.js:1
 msgid "Provide relevant details of your company to include in the Organization Schema."
@@ -756,6 +774,11 @@ msgstr "Rank Math SEO - это лучший SEO-плагин WordPress со мн
 msgid "Cancel Content AI Bulk Editing Process"
 msgstr "Отменить процесс пакетной правки Контентного ИИ"
 
+#. Translators: placeholders are the number of posts that were processed.
+#: includes/modules/content-ai/class-bulk-actions.php:245
+msgid "Terminate the ongoing Content AI Bulk Editing Process to halt any pending modifications and revert to the previous state. The bulk metadata has been generated for %1$d out of %1$d posts so far."
+msgstr "Прекращение текущего процесса пакетного редактирования Контентного ИИ, чтобы остановить все планируемые изменения и вернуться к предыдущему состоянию. На данный момент для %1$d из %1$d записей были пакетно сгенерированы метаданные."
+
 #: includes/modules/content-ai/class-bulk-actions.php:249
 msgid "Terminate"
 msgstr "Прекратить"
@@ -763,11 +786,6 @@ msgstr "Прекратить"
 #: includes/modules/content-ai/class-bulk-actions.php:261
 msgid "Bulk Editing Process Successfully Cancelled"
 msgstr "Процесс пакетной правки успешно отменён"
-
-#. Translators: placeholders are the number of posts that were processed.
-#: includes/modules/content-ai/class-bulk-actions.php:245
-msgid "Terminate the ongoing Content AI Bulk Editing Process to halt any pending modifications and revert to the previous state. The bulk metadata has been generated for %1$d out of %1$d posts so far."
-msgstr "Прекращение текущего процесса пакетного редактирования Контентного ИИ, чтобы остановить все планируемые изменения и вернуться к предыдущему состоянию. На данный момент для %1$d из %1$d записей были пакетно сгенерированы метаданные."
 
 #: includes/admin/class-admin-menu.php:286
 msgid "Christmas Sale"
@@ -827,11 +845,11 @@ msgstr "Установить Schema: нет"
 msgid "Set Schema: Default (%s)"
 msgstr "Установить Schema: по умолчанию (%s)"
 
-#: includes/helpers/class-content-ai.php:449
+#: includes/helpers/class-content-ai.php:506
 msgid "Invalid API key. Please check your API key or reconnect the site and try again."
 msgstr "Неверный ключ API. Проверьте свой ключ API или повторно подключите сайт и повторите попытку."
 
-#: includes/helpers/class-content-ai.php:455
+#: includes/helpers/class-content-ai.php:512
 msgid "User wallet not found."
 msgstr "Бумажник пользователя не найден."
 
@@ -1292,50 +1310,37 @@ msgstr "Коллекционеры"
 msgid "Cooks"
 msgstr "Повара"
 
-#: includes/helpers/class-content-ai.php:440
+#: includes/helpers/class-content-ai.php:497
 msgid "Please connect your account to use the Content AI."
 msgstr "Подключите свою учётную запись, чтобы использовать Контетный ИИ."
 
-#: includes/helpers/class-content-ai.php:441
+#: includes/helpers/class-content-ai.php:498
 msgid "Please update the Rank Math SEO plugin to the latest version to use this feature."
 msgstr "Обновите плагин Rank Math SEO до последней версии, чтобы использовать эту функцию."
 
-#: includes/helpers/class-content-ai.php:442
+#: includes/helpers/class-content-ai.php:499
 msgid "This feature is only available for Content AI subscribers."
 msgstr "Эта функция доступна только для подписчиков Контетного ИИ."
 
-#: includes/helpers/class-content-ai.php:443
+#: includes/helpers/class-content-ai.php:500
 msgid "Oops! Too many requests in a short time. Please try again after some time."
 msgstr "Слишком много запросов за короткое время! Повторите попытку через некоторое время."
 
-#: includes/helpers/class-content-ai.php:444
-msgid "You've used up all available credits for this domain."
-msgstr "Вы израсходовали все доступные кредиты для этого домена."
-
-#: includes/helpers/class-content-ai.php:445
-msgid "You've used up all available credits from the connected account."
-msgstr "Вы израсходовали все доступные кредиты подключенного аккаунта."
-
-#: includes/helpers/class-content-ai.php:446
+#: includes/helpers/class-content-ai.php:503
 msgid "Please revise the entered values in the fields as they are not secure. Make the required adjustments and try again."
 msgstr "Пересмотрите введённые значения в полях, поскольку они небезопасны. Внесите необходимые коррективы и повторите попытку."
 
-#: includes/helpers/class-content-ai.php:447
+#: includes/helpers/class-content-ai.php:504
 msgid "The output was stopped as it was identified as potentially unsafe by the content filter."
 msgstr "Вывод был остановлен, поскольку фильтр содержимого определил его как потенциально небезопасный."
 
-#: includes/helpers/class-content-ai.php:448
+#: includes/helpers/class-content-ai.php:505
 msgid "Could not generate. Please try again later."
 msgstr "Не удалось сгенерировать текст. Повторите попытку позже."
 
 #: includes/modules/content-ai/class-bulk-edit-seo-meta.php:54
 msgid "Bulk editing SEO meta started. It might take few minutes to complete the process."
 msgstr "Началось пакетное редактирование SEO-метаданных. Завершение процесса может занять несколько минут."
-
-#. Translators: placeholder is the number of modified posts.
-#: includes/modules/content-ai/class-bulk-edit-seo-meta.php:161
-msgid "SEO meta successfully updated in %d posts. The process was stopped as you have used all the credits on your site."
-msgstr "SEO-метаданные успешно обновлены в %d записях. Процесс был остановлен, так как вы использовали все кредиты на своем сайте."
 
 #: includes/modules/content-ai/class-bulk-actions.php:87
 #: includes/modules/content-ai/class-bulk-actions.php:107
@@ -1577,11 +1582,11 @@ msgid "Selected roles will be excluded from the XML &amp; HTML sitemaps."
 msgstr "Выбранные роли будут исключены из XML- и HTML-карт сайта."
 
 #. Translators: link to the update page.
-#: includes/modules/content-ai/class-rest.php:668
+#: includes/modules/content-ai/class-rest.php:678
 msgid "There is a new version of Content AI available! %s the Rank Math SEO plugin to use this feature."
 msgstr "Доступна новая версия Контентого ИИ! %s плагин SEO Rank Math для использования этой функции."
 
-#: includes/modules/content-ai/class-rest.php:669
+#: includes/modules/content-ai/class-rest.php:679
 msgid "Please update"
 msgstr "Пожалуйста, обновитесь"
 
@@ -1601,7 +1606,7 @@ msgstr "На вашем сайте отключена опция автомат�
 msgid "The Google Search Console request failed."
 msgstr "Не удалось выполнить запрос Google Search Console."
 
-#: includes/modules/analytics/google/class-analytics.php:249
+#: includes/modules/analytics/google/class-analytics.php:240
 msgid "The Google Analytics Console request failed."
 msgstr "Не удалось выполнить запрос консоли Google Analytics."
 
@@ -1644,7 +1649,7 @@ msgstr "Импорт URL-адресов страниц в соцсетях ва�
 msgid "Add social account information to your website's Schema and Open Graph. %s."
 msgstr "Добавьте информацию о социальной учётной записи в Schema и OpenGraph вашего сайта. %s."
 
-#: includes/admin/class-admin.php:520 includes/settings/titles/social.php:88
+#: includes/admin/class-admin.php:551 includes/settings/titles/social.php:88
 #: assets/admin/js/titleSettings.js:1
 msgid "Additional Profiles to add in the <code>sameAs</code> Schema property."
 msgstr "Дополнительные профили для добавления в свойстве Schema <code>sameAs</code>."
@@ -1653,16 +1658,16 @@ msgstr "Дополнительные профили для добавления 
 msgid "Additional profile URLs"
 msgstr "URL дополнительных профилей"
 
-#: includes/modules/seo-analysis/class-seo-analyzer.php:534
+#: includes/modules/seo-analysis/class-seo-analyzer.php:545
 msgid "(No Description)"
 msgstr "(нет описания)"
 
-#: includes/modules/seo-analysis/class-seo-analyzer.php:526
+#: includes/modules/seo-analysis/class-seo-analyzer.php:537
 msgid "(No Title)"
 msgstr "(нет заголовка)"
 
 #. Translators: placeholder is the new Rank Math label.
-#: includes/module/class-manager.php:261
+#: includes/module/class-manager.php:269
 #: includes/modules/seo-analysis/class-admin.php:85
 #: includes/modules/seo-analysis/class-seo-analysis.php:59
 #: includes/modules/seo-analysis/class-seo-analysis.php:72
@@ -1921,7 +1926,7 @@ msgstr "Включить в XML-карту сайта архивы авторо�
 msgid "Include in HTML Sitemap"
 msgstr "Включить в HTML-карту сайта"
 
-#: includes/admin/class-admin.php:504
+#: includes/admin/class-admin.php:535
 msgid "Exclusive Offer!"
 msgstr "Эксклюзивное предложение!"
 
@@ -2021,11 +2026,11 @@ msgstr "При размещении на сайте видеоконтента �
 msgid "Podcast"
 msgstr "Подкаст"
 
-#: includes/module/class-manager.php:444 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:452 assets/admin/js/modules.js:1
 msgid "More powerful options are available in the PRO version."
 msgstr "В про-версии доступны более мощные опции."
 
-#: includes/module/class-manager.php:449 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:457 assets/admin/js/modules.js:1
 msgid "PRO options are enabled."
 msgstr "Про-опции включены."
 
@@ -2510,35 +2515,31 @@ msgstr "Заполучите Rank Math PRO!"
 msgid "Click here to see all the exciting features."
 msgstr "Нажмите сюда, чтобы увидеть все захватывающие функции."
 
-#: includes/module/class-manager.php:547 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:555 assets/admin/js/modules.js:1
 msgid "Take SEO to the Next Level!"
 msgstr "Поднимите SEO на новый уровень!"
 
-#: includes/module/class-manager.php:549 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:557 assets/admin/js/modules.js:1
 msgid "Unlimited personal websites"
 msgstr "Неограниченное количество персональных сайтов"
 
-#: includes/module/class-manager.php:551 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:559 assets/admin/js/modules.js:1
 msgid "Track 500 Keywords"
 msgstr "Отслеживание 500 ключевиков"
 
 #: includes/admin/class-pro-notice.php:220
 #: includes/admin/class-pro-notice.php:239
-#: includes/module/class-manager.php:552 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:560 assets/admin/js/modules.js:1
 msgid "Powerful Schema Generator"
 msgstr "Мощный Schema-генератор"
 
-#: includes/module/class-manager.php:553 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:561 assets/admin/js/modules.js:1
 msgid "24/7 Support"
 msgstr "Поддержка 24/7"
 
-#: includes/module/class-manager.php:557 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:565 assets/admin/js/modules.js:1
 msgid "Buy"
 msgstr "Купить"
-
-#: includes/module/class-manager.php:550 assets/admin/js/modules.js:1
-msgid "Free 15 Content AI Credits"
-msgstr "15 бесплатных кредитов Контентного ИИ"
 
 #: includes/opengraph/class-slack.php:320
 msgid "Less than a minute"
@@ -2599,8 +2600,6 @@ msgid "URL to get HTML tags for."
 msgstr "URL, для которого нужно получить HTML-теги."
 
 #: includes/modules/content-ai/views/options.php:214
-#: assets/admin/js/generalSettings.js:1
-#: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "Click to refresh the available credits."
 msgstr "Нажмите, чтобы обновить доступные кредиты."
 
@@ -2613,7 +2612,7 @@ msgstr "Headless CMS"
 msgid "Enable this option to register a REST API endpoint that returns the HTML meta tags for a given URL. %s"
 msgstr "Регистрация эндпойнт REST API, который возвращает HTML-метатеги для заданного URL. %s"
 
-#: includes/modules/links/Admin/class-admin.php:49
+#: includes/modules/ai-visibility/Admin/class-admin.php:59
 #: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "New!"
 msgstr "Новинка!"
@@ -2628,15 +2627,15 @@ msgstr "Выберите типы записей"
 msgid "Default Country"
 msgstr "Страна по умолчанию"
 
-#: includes/modules/content-ai/class-rest.php:326
+#: includes/modules/content-ai/class-rest.php:334
 msgid "Content AI is not enabled on this Post type."
 msgstr "Контентный ИИ не включен для данного типа записей."
 
-#: includes/module/class-manager.php:435 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:443 assets/admin/js/modules.js:1
 msgid "NEW!"
 msgstr "Новинка!"
 
-#: includes/module/class-manager.php:397
+#: includes/module/class-manager.php:405
 msgid "You cant access this page."
 msgstr "Вы не можете получить доступ к этой странице."
 
@@ -2825,19 +2824,19 @@ msgstr "Алжир"
 msgid "Get sophisticated AI suggestions for related Keywords, Questions & Links to include in the SEO meta & Content Area. Supports 80+ Countries."
 msgstr "Получите сложные предложения ИИ по связанным ключевым словам, вопросам и ссылкам для включения в SEO-метаданные и в область содержимого. Поддерживаются стандарты более 80 стран."
 
-#: includes/modules/content-ai/class-rest.php:703
+#: includes/modules/content-ai/class-rest.php:713
 msgid "You have used all the free credits which are allowed to this domain."
 msgstr "Использованы все бесплатные кредиты, доступные для этого домена."
 
-#: includes/modules/content-ai/class-rest.php:697
+#: includes/modules/content-ai/class-rest.php:707
 msgid "This feature is not available on the localhost."
 msgstr "Данная функция недоступна на localhost."
 
-#: includes/modules/content-ai/class-rest.php:282
+#: includes/modules/content-ai/class-rest.php:287
 msgid "Sorry, only authenticated users can research the keyword."
 msgstr "Извините, только авторизованные пользователи могут исследовать ключевики."
 
-#: includes/modules/content-ai/class-rest.php:648
+#: includes/modules/content-ai/class-rest.php:658
 msgid "No data found for the researched keyword."
 msgstr "Нет данных по исследуемому ключевику."
 
@@ -2900,11 +2899,11 @@ msgstr "Да, я хочу лучшее SEO"
 msgid "I already purchased"
 msgstr "Я уже купил"
 
-#: includes/rest/class-rest-helper.php:183
+#: includes/rest/class-rest-helper.php:190
 msgid "Sorry, you are not allowed to edit this term."
 msgstr "Извините, вам не разрешено редактировать этот термин."
 
-#: includes/rest/class-rest-helper.php:201
+#: includes/rest/class-rest-helper.php:208
 msgid "Invalid term ID."
 msgstr "Недействительный ID термина."
 
@@ -2935,11 +2934,11 @@ msgstr "Нет, не хочу"
 msgid "I already upgraded"
 msgstr "Я уже повысил тариф"
 
-#: rank-math.php:479
+#: rank-math.php:491
 msgid "CAUTION:"
 msgstr "ВНИМАНИЕ:"
 
-#: rank-math.php:480
+#: rank-math.php:492
 msgid "This action is IRREVERSIBLE."
 msgstr "Это действие НЕОБРАТИМО."
 
@@ -3039,15 +3038,15 @@ msgstr "Каждые 30 дн."
 msgid "Last ###PERIOD_DAYS### Days"
 msgstr "Последние ###PERIOD_DAYS### дн."
 
+#: includes/admin/class-notices.php:312
+msgid "<b>Rank Math Warning:</b> Changing the permalinks on a live, indexed site may result in serious loss of traffic if done incorrectly. Consider adding a new redirection from the old URL format to the new one."
+msgstr "<b>Предупреждение Rank Math:</b> изменение постоянных ссылок на активном проиндексированном сайте может привести к серьёзной потере трафика, если оно производится неправильно. Рассмотрите возможность добавления переадресации старого формата URL на новый."
+
 #. Translators: Code to add support for Rank Math Breadcrumbs.
 #: includes/settings/general/breadcrumbs.php:26
 #: assets/admin/js/generalSettings.js:1
 msgid "This option cannot be changed since your theme has added the support for Rank Math Breadcrumbs using: %s"
 msgstr "Эту опцию нельзя изменить, так как в вашей теме добавлена ​​поддержка цепочки навигации Rank Math, используя: %s"
-
-#: includes/admin/class-notices.php:312
-msgid "<b>Rank Math Warning:</b> Changing the permalinks on a live, indexed site may result in serious loss of traffic if done incorrectly. Consider adding a new redirection from the old URL format to the new one."
-msgstr "<b>Предупреждение Rank Math:</b> изменение постоянных ссылок на активном проиндексированном сайте может привести к серьёзной потере трафика, если оно производится неправильно. Рассмотрите возможность добавления переадресации старого формата URL на новый."
 
 #. Translators: the placeholder is for the sitemap base url.
 #: includes/modules/sitemap/class-admin.php:373
@@ -3321,7 +3320,7 @@ msgstr "Версия БД"
 msgid "Plugin subscription plan"
 msgstr "Тариф подписки плагина"
 
-#: includes/module/class-manager.php:429
+#: includes/module/class-manager.php:437
 #: includes/modules/status/class-system-status.php:63
 #: assets/admin/js/modules.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
@@ -3414,19 +3413,19 @@ msgstr "(открывается в новом окне)"
 msgid "Blog"
 msgstr "Блог"
 
-#: includes/modules/404-monitor/class-monitor.php:81
+#: includes/modules/404-monitor/class-monitor.php:105
 msgid "Total number visits received on all the 404 pages."
 msgstr "Общее количество посещений на всех 404 страницах."
 
-#: includes/modules/404-monitor/class-monitor.php:80
+#: includes/modules/404-monitor/class-monitor.php:104
 msgid "URL Hits"
 msgstr "Переходы по URL"
 
-#: includes/modules/404-monitor/class-monitor.php:74
+#: includes/modules/404-monitor/class-monitor.php:98
 msgid "Total number of 404 pages opened by the users."
 msgstr "Общее количество 404 страниц, открытых пользователями."
 
-#: includes/modules/404-monitor/class-monitor.php:73
+#: includes/modules/404-monitor/class-monitor.php:97
 msgid "Log Count"
 msgstr "Счётчик"
 
@@ -3454,7 +3453,7 @@ msgstr "Общее количество обращений, полученных
 msgid "Total number of Redirections created in the Rank Math."
 msgstr "Общее количество переадресаций, созданных Rank Math."
 
-#: includes/modules/404-monitor/class-monitor.php:68
+#: includes/modules/404-monitor/class-monitor.php:92
 #: includes/modules/analytics/class-analytics-common.php:77
 #: includes/modules/redirections/class-redirections.php:68
 msgid "View Report"
@@ -3514,9 +3513,10 @@ msgstr "Сколько раз ваш сайт появлялся в резуль
 msgid "Search Traffic"
 msgstr "Поисковый трафик"
 
-#: includes/admin/metabox/class-screen.php:171
+#: includes/admin/metabox/class-screen.php:172
 #: includes/modules/analytics/assets/js/admin-bar.js:1
 #: includes/modules/analytics/assets/js/stats.js:1
+#: includes/modules/content-ai/assets/js/content-ai.js:1
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
 #: includes/modules/schema/assets/js/schema-template.js:1
 #: includes/modules/seo-analysis/assets/js/seo-analysis.js:1
@@ -3566,7 +3566,7 @@ msgstr "AdSense"
 #: includes/admin/wizard/views/search-console-ui.php:284
 #: includes/admin/wizard/views/search-console-ui.php:309
 #: includes/admin/wizard/views/search-console-ui.php:365
-#: includes/module/class-manager.php:437
+#: includes/module/class-manager.php:445
 #: includes/modules/analytics/views/options.php:149
 #: assets/admin/js/components.js:1 assets/admin/js/generalSettings.js:1
 #: assets/admin/js/modules.js:1 assets/admin/js/wizard.js:1
@@ -3587,6 +3587,10 @@ msgstr "Установить код аналитики"
 #: includes/modules/404-monitor/class-table.php:145
 #: includes/modules/redirections/class-table.php:253
 #: assets/admin/js/common.js:1
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/shared/components/ActionButtons.js:41
+#: includes/modules/ai-visibility/assets/src/shared/components/ActionButtons.js:45
+#: includes/modules/ai-visibility/assets/src/shared/components/TranscriptViewer.js:83
 msgid "View"
 msgstr "Просмотреть"
 
@@ -3615,6 +3619,8 @@ msgid "We do not store any of the data from your Google account on our servers, 
 msgstr "Мы не храним какие-либо данные из вашей учетной записи Google на наших серверах, все обрабатываются и хранятся на вашем сервере. Мы очень серьезно относимся к вашей конфиденциальности и гарантируем, что ею никогда не будут злоупотреблять. %s"
 
 #: includes/modules/redirections/class-table.php:277
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/BrandDetail/QueriesTable.js:145
 msgid "Created"
 msgstr "Создано"
 
@@ -3836,6 +3842,13 @@ msgstr "Удалить данные"
 msgid "free version"
 msgstr "бесплатная версия"
 
+#. Translators: placeholder is a link to rankmath.com, with "free version" as
+#. the anchor text.
+#: includes/modules/analytics/class-analytics.php:624
+#: includes/modules/analytics/views/options.php:86
+msgid "Enter the number of days to keep Analytics data in your database. The maximum allowed days are 90 in the %s. Though, 2x data will be stored in the DB for calculating the difference properly."
+msgstr "Введите количество дней для хранения данных Analytics в базе данных. Максимально допустимое количество дней: 90 в %s. Тем не менее, данные 2x будут сохранены в БД для правильного расчета разницы."
+
 #: includes/modules/analytics/views/options.php:94
 #: assets/admin/js/generalSettings.js:1 assets/admin/js/wizard.js:1
 msgid "Analytics Database"
@@ -3852,13 +3865,6 @@ msgstr "Выполняется переиндексирование записи
 #: includes/modules/analytics/class-analytics-common.php:161
 msgid "Analytics cache cleared."
 msgstr "Кэш аналитики очищен."
-
-#. Translators: placeholder is a link to rankmath.com, with "free version" as
-#. the anchor text.
-#: includes/modules/analytics/class-analytics.php:624
-#: includes/modules/analytics/views/options.php:86
-msgid "Enter the number of days to keep Analytics data in your database. The maximum allowed days are 90 in the %s. Though, 2x data will be stored in the DB for calculating the difference properly."
-msgstr "Введите количество дней для хранения данных Analytics в базе данных. Максимально допустимое количество дней: 90 в %s. Тем не менее, данные 2x будут сохранены в БД для правильного расчета разницы."
 
 #: includes/modules/database-tools/class-database-tools.php:384
 msgid "Clear Cache"
@@ -4117,12 +4123,12 @@ msgstr "Логотип организации добавлен в настрой
 msgid "You are using the outdated WordPress, please update it to version %s or higher."
 msgstr "Вы используете устаревшую версию WordPress, пожалуйста, обновите его до версии %s или выше."
 
-#: includes/modules/seo-analysis/class-seo-analyzer.php:420
+#: includes/modules/seo-analysis/class-seo-analyzer.php:432
 msgid "Unexpected API response."
 msgstr "Неожиданный ответ API."
 
 #. Translators: placeholder is a HTTP error code.
-#: includes/modules/seo-analysis/class-seo-analyzer.php:413
+#: includes/modules/seo-analysis/class-seo-analyzer.php:425
 msgid "HTTP %d error."
 msgstr "HTTP %d ошибка."
 
@@ -4130,15 +4136,15 @@ msgstr "HTTP %d ошибка."
 msgid "SEO Score: Ok"
 msgstr "SEO Оценка: Ok"
 
-#: includes/module/class-manager.php:374
+#: includes/module/class-manager.php:382
 msgid "Please activate Web Stories plugin to use this module."
 msgstr "Пожалуйста, активируйте плагин Web Stories, чтобы использовать этот модуль."
 
-#: includes/module/class-manager.php:370
+#: includes/module/class-manager.php:378
 msgid "Make any Story created with the Web Stories WordPress plugin SEO-Ready with automatic support for Schema and Meta tags."
 msgstr "Сделайте любую историю, созданную с помощью плагина Web Stories WordPress, SEO Ready с автоматической поддержкой Schema и метатегов."
 
-#: includes/module/class-manager.php:369
+#: includes/module/class-manager.php:377
 msgid "Google Web Stories"
 msgstr "Google Web Stories"
 
@@ -4234,7 +4240,7 @@ msgstr "Измените способ открытия и работы неко�
 msgid "Advanced Mode"
 msgstr "Расширенный режим"
 
-#: includes/module/class-manager.php:350
+#: includes/module/class-manager.php:358
 msgid "Optimize WooCommerce Pages for Search Engines by adding required metadata and Product Schema which will make your site stand out in the SERPs."
 msgstr "Оптимизируйте страницы WooCommerce для поисковых систем, добавив необходимые метаданные и Schema для продукта, которые выделят ваш сайт в результатах поиска."
 
@@ -4296,7 +4302,7 @@ msgid "Here you can set up the breadcrumbs function. %s"
 msgstr "Здесь вы можете настроить функцию цепочек навигации. %s"
 
 #. translators: Link to AMP plugin
-#: includes/module/class-manager.php:322
+#: includes/module/class-manager.php:330
 msgid "Install %s to make Rank Math work with Accelerated Mobile Pages. Rank Math automatically adds required meta tags in all the AMP pages."
 msgstr "Установите %s, чтобы Rank Math работал с ускоренными мобильными страницами (AMP). Rank Math автоматически добавляет необходимые мета-теги на все AMP страницы."
 
@@ -4318,7 +4324,7 @@ msgstr "Легко переадресуйте URL на несуществующ�
 msgid "Optimize for local searches and Knowledge Graph using these settings. %s."
 msgstr "Оптимизируйте локальный поиск и граф знаний с помощью этих настроек. %s."
 
-#: includes/module/class-manager.php:243 assets/admin/js/wizard.js:1
+#: includes/module/class-manager.php:251 assets/admin/js/wizard.js:1
 msgid "The Role Manager allows you to use WordPress roles to control which of your site users can have edit or view access to Rank Math's settings."
 msgstr "Диспетчер ролей позволяет использовать роли WordPress для управления тем, кто из пользователей вашего сайта может редактировать или просматривать доступ к настройкам Rank Math."
 
@@ -4398,7 +4404,7 @@ msgstr "Удалить префикс типа %1$s из URL продукта, �
 msgid "Enable Auto Updates"
 msgstr "Включить автообновления"
 
-#: includes/modules/seo-analysis/class-seo-analyzer.php:348
+#: includes/modules/seo-analysis/class-seo-analyzer.php:360
 #: includes/modules/seo-analysis/seo-analysis-tests.php:187
 #: includes/modules/seo-analysis/seo-analysis-tests.php:199
 msgid "Rank Math auto-update option is enabled on your site."
@@ -4412,7 +4418,7 @@ msgstr "Включите автообновления, чтобы всегда �
 msgid "Automatic Updates"
 msgstr "Автоматические обновления"
 
-#: includes/rest/class-rest-helper.php:132
+#: includes/rest/class-rest-helper.php:139
 msgid "Sorry, you are not allowed to edit this post."
 msgstr "Извините, вам нельзя редактировать эту запись."
 
@@ -4420,7 +4426,8 @@ msgstr "Извините, вам нельзя редактировать эту 
 msgid "configuration file"
 msgstr "файл конфигурации"
 
-#: includes/rest/class-rest-helper.php:147
+#: includes/abilities/schema/class-get-post-schema.php:118
+#: includes/rest/class-rest-helper.php:154
 msgid "Invalid post ID."
 msgstr "Неверный ID записи."
 
@@ -4432,7 +4439,7 @@ msgstr "Извините, вам нельзя создавать/обновля�
 msgid "Click here to see the code."
 msgstr "Нажмите сюда, чтобы увидеть код."
 
-#: includes/rest/class-rest-helper.php:116
+#: includes/rest/class-rest-helper.php:123
 msgid "Sorry, you are not allowed to edit this post type."
 msgstr "Вам нельзя редактировать этот тип записей."
 
@@ -4564,7 +4571,7 @@ msgstr "Нет записей для преобразования."
 msgid "Convert TOC block created using AIOSEO. Use this option to easily move your previous blocks into Rank Math."
 msgstr "Конвертация блока оглавления, созданного с помощью AIOSEO. Используйте эту опцию для переноса ранее созданного блока в Rank Math."
 
-#: includes/module/class-manager.php:289 assets/admin/js/components.js:1
+#: includes/module/class-manager.php:297 assets/admin/js/components.js:1
 #: assets/admin/js/modules.js:1 includes/modules/status/assets/js/status.js:1
 msgid "Version Control"
 msgstr "Управление версиями"
@@ -4586,7 +4593,7 @@ msgstr "Откатить плагин"
 msgid "This update will install a beta version of Rank Math."
 msgstr "Это обновление установит бета версию Rank Math."
 
-#: includes/module/class-manager.php:295
+#: includes/module/class-manager.php:303
 #: includes/modules/status/assets/js/status.js:1
 msgid "Database Tools"
 msgstr "Инструменты БД"
@@ -4645,7 +4652,7 @@ msgid "SEO Description"
 msgstr "SEO-описание"
 
 #. translators: 1. Bold text 2. Bold text
-#: rank-math.php:478
+#: rank-math.php:490
 msgid "%1$s A filter to remove the Rank Math data from the database is present. Deactivating & Deleting this plugin will remove everything related to the Rank Math plugin. %2$s"
 msgstr "%1$s Фильтр для удаления данных Rank Math из базы данных в наличии. Деактивация и удаление плагина Rank Math устранит всё, что связано с ним. %2$s"
 
@@ -4664,7 +4671,7 @@ msgstr "Мета для добавления или обновления дан�
 msgid "Object unique id"
 msgstr "Уникальный ID объекта"
 
-#: includes/admin/metabox/class-screen.php:280
+#: includes/admin/metabox/class-screen.php:311
 msgid "username"
 msgstr "имя пользователя"
 
@@ -4699,7 +4706,7 @@ msgstr "Переадресация успешно обновлена."
 msgid "Object Type i.e. post, term, user"
 msgstr "Тип объекта, т.е. запись, термин, пользователь"
 
-#: includes/module/class-manager.php:341
+#: includes/module/class-manager.php:349
 msgid "Enable the BuddyPress module for Rank Math SEO to make your BuddyPress forum SEO friendly by adding proper meta tags to all forum pages."
 msgstr "Включите модуль BuddyPress для Rank Math SEO, чтобы сделать форум BuddyPress SEO-оптимизированным, добавив соответствующие метатеги на все страницы форума."
 
@@ -4804,7 +4811,7 @@ msgstr "Расширенные Robots автор"
 msgid "Homepage Advanced Robots"
 msgstr "Расширенные Robots главная страница"
 
-#: includes/admin/class-assets.php:234
+#: includes/admin/class-assets.php:205
 msgid "Add <code>rel=\"sponsored\"</code>"
 msgstr "Добавить <code>rel=\"sponsored\"</code>"
 
@@ -4853,11 +4860,11 @@ msgstr "Только фрагмент записи"
 msgid "List of custom fields name to include in the Page analysis. Add one per line."
 msgstr "Список названий произвольных полей для включения в анализ страницы. Добавляйте по одному на строку."
 
-#: includes/module/class-manager.php:365
+#: includes/module/class-manager.php:373
 msgid "Please activate ACF plugin to use this module."
 msgstr "Пожалуйста, активируйте плагин ACF, чтобы использовать этот модуль."
 
-#: includes/module/class-manager.php:360
+#: includes/module/class-manager.php:368
 msgid "ACF"
 msgstr "ACF"
 
@@ -4909,7 +4916,7 @@ msgstr "Удалить переадресации"
 msgid "Redirection rules successfully deleted."
 msgstr "Правила переадресации успешно удалены."
 
-#: includes/module/class-manager.php:361
+#: includes/module/class-manager.php:369
 msgid "ACF support helps Rank Math SEO read and analyze content written in the Advanced Custom Fields. If your theme uses ACF, you should enable this option."
 msgstr "Поддержка ACF помогает Rank Math SEO читать и анализировать текст, созданный в Advanced Custom Fields. Если ваша тема использует ACF, необходимо включить данную опцию."
 
@@ -4944,7 +4951,7 @@ msgstr "Группы"
 msgid "BuddyPress:"
 msgstr "BuddyPress:"
 
-#: includes/module/class-manager.php:345
+#: includes/module/class-manager.php:353
 msgid "Please activate BuddyPress plugin to use this module."
 msgstr "Пожалуйста, активируйте плагин BuddyPress, чтобы использовать этот модуль."
 
@@ -5002,16 +5009,18 @@ msgstr "<strong>Внимание:</strong> включена опция \"поп�
 msgid "Custom values for robots meta tag on groups page."
 msgstr "Произвольные значения для метатега robots на странице групп."
 
-#: includes/module/class-manager.php:340
+#: includes/module/class-manager.php:348
 msgid "BuddyPress"
 msgstr "BuddyPress"
 
-#: includes/module/class-manager.php:283
+#: includes/module/class-manager.php:291
 msgid "Robots Txt"
 msgstr "Robotx.txt"
 
 #: includes/admin/class-cmb2-options.php:311 assets/admin/js/common.js:1
 #: assets/admin/js/modules.js:1 assets/admin/js/settings.js:1
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/shared/Modals/AddBrandModal.js:448
 #: includes/modules/status/assets/js/status.js:1
 msgid "Save Changes"
 msgstr "Сохранить изменения"
@@ -5090,7 +5099,7 @@ msgid "%s Title"
 msgstr "Заголовок для %s"
 
 #: includes/3rdparty/divi/class-divi.php:158
-#: includes/admin/class-assets.php:135
+#: includes/admin/class-assets.php:106
 msgid "Please enter a valid email address."
 msgstr "Пожалуйста, введите валидный емайл."
 
@@ -5111,6 +5120,9 @@ msgid "Phone number"
 msgstr "Номер телефона"
 
 #: includes/modules/woocommerce/views/options-general.php:79
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/Analyses/AnalysesTable.js:48
+#: includes/modules/ai-visibility/assets/src/Dashboard/BrandsTable.js:62
 msgid "Brand"
 msgstr "Бренд"
 
@@ -5136,7 +5148,7 @@ msgstr "Квадрат"
 msgid "Circle"
 msgstr "Круг"
 
-#: includes/module/class-manager.php:330
+#: includes/module/class-manager.php:338
 msgid "bbPress"
 msgstr "bbPress"
 
@@ -5150,16 +5162,16 @@ msgid "Powered by %s"
 msgstr "При поддержке %s"
 
 #: includes/3rdparty/divi/class-divi.php:159
-#: includes/admin/class-assets.php:136
+#: includes/admin/class-assets.php:107
 msgid "Please enter a valid URL."
 msgstr "Введите правильный URL-адрес."
 
-#: includes/module/class-manager.php:335
+#: includes/module/class-manager.php:343
 msgid "Please activate bbPress plugin to use this module."
 msgstr "Пожалуйста, активируйте плагин bbPress, чтобы использовать этот модуль."
 
 #: includes/3rdparty/divi/class-divi.php:156
-#: includes/admin/class-assets.php:133
+#: includes/admin/class-assets.php:104
 msgid "Please use the correct format."
 msgstr "Пожалуйста, используйте правильный формат."
 
@@ -5278,7 +5290,7 @@ msgstr "Типы записей для оценки SEO"
 msgid "Display the badges automatically, or insert the %1$s shortcode in your posts and the %2$s template tag in your theme template files."
 msgstr "Отображайте значки автоматически или вставляйте шорткод %1$s в записи и тег шаблона %2$s в файлы шаблона темы."
 
-#: includes/module/class-manager.php:331
+#: includes/module/class-manager.php:339
 msgid "Add proper Meta tags to your bbPress forum posts, categories, profiles, etc. Get more options to take control of what search engines see and how they see it."
 msgstr "Добавьте правильные метатеги в записи, рубрики, профили и т.д. bbPress форума. Получите больше возможностей для управления тем, что видят поисковые системы и как они это видят."
 
@@ -5373,6 +5385,7 @@ msgstr "SEO от Rank Math - https://rankmath.com/"
 msgid "Thumbnail for Facebook"
 msgstr "Миниатюра для Facebook"
 
+#: includes/abilities/schema/class-subscriber.php:65
 #: includes/modules/schema/class-admin.php:70 assets/admin/js/blocks.js:1
 #: includes/modules/analytics/assets/js/stats.js:1
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
@@ -5383,11 +5396,6 @@ msgstr "Schema"
 #: assets/admin/js/titleSettings.js:1
 msgid "Image displayed when your page is shared on Facebook and other social networks. Use images that are at least 1200 x 630 pixels for the best display on high resolution devices."
 msgstr "Изображение отображается при публикации вашей страницы в Facebook и других соц сетях. Для лучшего отображения на устройствах с высоким разрешением, используйте изображения размером не менее 1200 x 630 пикселей."
-
-#. translators: API error
-#: includes/modules/seo-analysis/class-seo-analyzer.php:301
-msgid "<strong>API Error:</strong> %s"
-msgstr "<strong>Ошибка API:</strong> %s"
 
 #: includes/settings/general/breadcrumbs.php:74
 #: assets/admin/js/generalSettings.js:1
@@ -5402,8 +5410,8 @@ msgstr "Переписать заголовки"
 msgid "Module slug"
 msgstr "Ярлык модуля"
 
-#: includes/rest/class-rest-helper.php:241
-#: includes/rest/class-rest-helper.php:271 includes/rest/class-shared.php:320
+#: includes/rest/class-rest-helper.php:248
+#: includes/rest/class-rest-helper.php:278 includes/rest/class-shared.php:320
 msgid "Sorry, field is empty which is not allowed."
 msgstr "Извините, поле пустое, что не допускается."
 
@@ -6162,7 +6170,9 @@ msgstr "От"
 msgid "Invalid regex pattern: %s"
 msgstr "Неверный шаблон регулярного выражения: %s"
 
-#: includes/module/class-manager.php:301 assets/admin/js/components.js:1
+#: includes/module/class-manager.php:309 assets/admin/js/components.js:1
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/BrandDetail/QueriesTable.js:155
 #: includes/modules/analytics/assets/js/stats.js:1
 #: includes/modules/redirections/assets/js/redirections.js:1
 msgid "Status"
@@ -6502,7 +6512,7 @@ msgid "Rank Math WordPress SEO plugin"
 msgstr "Rank Math WordPress SEO плагин"
 
 #: includes/frontend/paper/class-error-404.php:26
-#: includes/frontend/paper/class-singular.php:128
+#: includes/frontend/paper/class-singular.php:196
 #: includes/frontend/paper/class-taxonomy.php:31
 msgid "Page not found"
 msgstr "Страница не найдена"
@@ -6759,7 +6769,7 @@ msgstr "Дата публикации"
 msgid "Phone"
 msgstr "Телефон"
 
-#: includes/modules/404-monitor/class-monitor.php:100
+#: includes/modules/404-monitor/class-monitor.php:124
 msgid "Review 404 errors on your site"
 msgstr "Просмотрите 404 ошибки на вашем сайте"
 
@@ -6800,12 +6810,20 @@ msgstr "%s архивы"
 
 #: includes/modules/redirections/class-table.php:250
 #: includes/modules/redirections/class-table.php:313
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/Dashboard/index.js:345
+#: includes/modules/ai-visibility/assets/src/shared/components/ActionButtons.js:65
+#: includes/modules/ai-visibility/assets/src/shared/components/ActionButtons.js:76
 #: includes/modules/redirections/assets/js/redirections.js:1
 msgid "Deactivate"
 msgstr "Деактивировать"
 
 #: includes/modules/redirections/class-table.php:251
 #: includes/modules/redirections/class-table.php:312
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/Dashboard/index.js:344
+#: includes/modules/ai-visibility/assets/src/shared/components/ActionButtons.js:65
+#: includes/modules/ai-visibility/assets/src/shared/components/ActionButtons.js:71
 #: includes/modules/redirections/assets/js/redirections.js:1
 msgid "Activate"
 msgstr "Активировать"
@@ -6931,6 +6949,8 @@ msgstr "Вы можете настроить отображение содерж
 
 #: includes/modules/404-monitor/class-admin.php:151
 #: includes/modules/redirections/class-admin.php:163
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/BrandDetail/index.js:47
 msgid "Overview"
 msgstr "Обзор"
 
@@ -6983,7 +7003,7 @@ msgstr "Тип услуги"
 msgid "Average Position"
 msgstr "Средняя позиция"
 
-#: includes/admin/class-admin.php:436 includes/traits/class-ajax.php:59
+#: includes/admin/class-admin.php:467 includes/traits/class-ajax.php:59
 msgid "You are not authorized to perform this action."
 msgstr "Вы не авторизованы для выполнения этого действия."
 
@@ -7040,6 +7060,8 @@ msgstr "Корзина"
 
 #: includes/modules/local-seo/views/titles-options.php:252
 #: assets/admin/js/titleSettings.js:1
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/shared/Modals/AddBrandModal.js:449
 msgid "Add"
 msgstr "Добавить"
 
@@ -7241,7 +7263,7 @@ msgstr "Заголовок записи"
 msgid "Page %1$d of %2$d"
 msgstr "Страница %1$d из %2$d"
 
-#: rank-math.php:499
+#: rank-math.php:511
 msgid "Documentation"
 msgstr "Документация"
 
@@ -7252,7 +7274,7 @@ msgstr "Элементов на странице"
 #: includes/module/class-module.php:105
 #: includes/modules/404-monitor/class-admin.php:222
 #: includes/modules/instant-indexing/class-instant-indexing.php:222
-#: includes/modules/redirections/class-admin.php:319 rank-math.php:441
+#: includes/modules/redirections/class-admin.php:319 rank-math.php:453
 #: assets/admin/js/instantIndexingSettings.js:1 assets/admin/js/modules.js:1
 #: assets/admin/js/rank-math-app.js:1
 #: includes/modules/schema/blocks/schema/assets/js/index.js:1
@@ -7262,11 +7284,11 @@ msgstr "Элементов на странице"
 msgid "Settings"
 msgstr "Настройки"
 
-#: includes/module/class-manager.php:355
+#: includes/module/class-manager.php:363
 msgid "Please activate WooCommerce plugin to use this module."
 msgstr "Пожалуйста, активируйте плагин WooCommerce, чтобы использовать этот модуль."
 
-#: includes/module/class-manager.php:349
+#: includes/module/class-manager.php:357
 #: includes/modules/woocommerce/class-admin.php:75
 #: assets/admin/js/generalSettings.js:1
 msgid "WooCommerce"
@@ -7295,6 +7317,8 @@ msgstr "Настройки SEO для архивов дат"
 #: includes/modules/404-monitor/views/main.php:27
 #: includes/modules/redirections/views/main.php:45
 #: assets/admin/js/components.js:1 assets/admin/js/wizard.js:1
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/Analyses/AnalysesFilterBar.js:108
 msgid "Search"
 msgstr "Поиск"
 
@@ -7349,6 +7373,8 @@ msgstr "Узнать больше."
 #: includes/modules/woocommerce/class-admin.php:77
 #: assets/admin/js/settings.js:1 assets/admin/js/titleSettings.js:1
 #: assets/admin/js/wizard.js:1
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/shared/Modals/AddBrandModal.js:292
 #: includes/modules/redirections/assets/js/redirections.js:1
 #: includes/modules/role-manager/assets/js/role-manager.js:1
 msgid "Learn more"
@@ -7384,7 +7410,7 @@ msgstr "Экспорт"
 msgid "Delete"
 msgstr "Удалить"
 
-#: includes/module/class-manager.php:319
+#: includes/module/class-manager.php:327
 msgid "AMP"
 msgstr "AMP"
 
@@ -7396,7 +7422,7 @@ msgstr "Плагин успешно деактивирован."
 msgid "Settings imported successfully."
 msgstr "Настройки успешно импортированы."
 
-#: includes/module/class-manager.php:242
+#: includes/module/class-manager.php:250
 #: includes/modules/role-manager/class-capability-manager.php:62
 #: includes/modules/role-manager/class-role-manager.php:60
 #: assets/admin/js/components.js:1 assets/admin/js/wizard.js:1
@@ -7497,6 +7523,8 @@ msgstr "База автора"
 #: includes/settings/titles/post-types.php:331
 #: includes/settings/titles/post-types.php:369
 #: assets/admin/js/titleSettings.js:1
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/shared/components/StatusToggle.js:36
 msgid "Enabled"
 msgstr "Включено"
 
@@ -7504,6 +7532,8 @@ msgstr "Включено"
 #: includes/settings/titles/post-types.php:330
 #: includes/settings/titles/post-types.php:368
 #: assets/admin/js/titleSettings.js:1
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/shared/components/StatusToggle.js:37
 msgid "Disabled"
 msgstr "Выключено"
 
@@ -7706,7 +7736,7 @@ msgid "Update data manually"
 msgstr "Обновить данные вручную"
 
 #: includes/admin/wizard/views/search-console-ui.php:192
-#: includes/module/class-manager.php:251
+#: includes/module/class-manager.php:259
 #: includes/modules/analytics/class-analytics-common.php:75
 #: includes/modules/analytics/class-analytics-common.php:146
 #: includes/modules/analytics/class-analytics.php:76
@@ -7814,6 +7844,9 @@ msgid "To"
 msgstr "На"
 
 #: includes/modules/redirections/class-table.php:249
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/shared/components/ActionButtons.js:53
+#: includes/modules/ai-visibility/assets/src/shared/components/ActionButtons.js:57
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
 #: includes/modules/schema/assets/js/schema-template.js:1
 msgid "Edit"
@@ -7895,7 +7928,7 @@ msgstr "Запросы"
 msgid "Referer"
 msgstr "Реферер"
 
-#: includes/modules/404-monitor/class-monitor.php:117
+#: includes/modules/404-monitor/class-monitor.php:141
 msgid "No valid id found."
 msgstr "Действительный ID не найден."
 
@@ -7968,11 +8001,6 @@ msgstr "Запрещает индексировать страницы и ото
 msgid "No Index"
 msgstr "Не индексировать"
 
-#: includes/modules/robots-txt/class-robots-txt.php:72
-#: assets/admin/js/generalSettings.js:1
-msgid "Leave the field empty to let WordPress handle the contents dynamically. If an actual robots.txt file is present in the root folder of your site, this option won't take effect and you have to edit the file directly, or delete it and then edit from here."
-msgstr "Оставьте поле пустым, чтобы WordPress мог динамически обрабатывать его содержимое. Если фактический robots.txt присутствует в корневой папке вашего сайта, эта опция не вступит в силу, и вам придется редактировать файл напрямую или удалить его, а затем редактировать отсюда."
-
 #: includes/admin/class-option-center.php:193
 #: assets/admin/js/titleSettings.js:1
 msgid "Misc Pages"
@@ -7989,6 +8017,11 @@ msgstr "Текущее серверное время с настраиваемы
 #: includes/replace-variables/class-post-variables.php:173
 msgid "Modified date with custom formatting pattern."
 msgstr "Дата изменения с настраиваемым шаблоном форматирования."
+
+#: includes/modules/robots-txt/class-robots-txt.php:72
+#: assets/admin/js/generalSettings.js:1
+msgid "Leave the field empty to let WordPress handle the contents dynamically. If an actual robots.txt file is present in the root folder of your site, this option won't take effect and you have to edit the file directly, or delete it and then edit from here."
+msgstr "Оставьте поле пустым, чтобы WordPress мог динамически обрабатывать его содержимое. Если фактический robots.txt присутствует в корневой папке вашего сайта, эта опция не вступит в силу, и вам придется редактировать файл напрямую или удалить его, а затем редактировать отсюда."
 
 #: includes/replace-variables/class-post-variables.php:162
 msgid "Publish date with custom formatting pattern."
@@ -8094,18 +8127,22 @@ msgid "Title of the parent page of the current post/page"
 msgstr "Заголовок родительской страницы текущей записи/страницы"
 
 #: includes/modules/redirections/class-table.php:339
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/BrandDetail/BrandHeader.js:88
 msgid "Inactive"
 msgstr "Неактивно"
 
 #: includes/modules/redirections/class-table.php:338
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/BrandDetail/BrandHeader.js:88
 msgid "Active"
 msgstr "Активно"
 
-#: includes/module/class-manager.php:323
+#: includes/module/class-manager.php:331
 msgid "AMP plugin"
 msgstr "AMP плагин"
 
-#: includes/module/class-manager.php:252
+#: includes/module/class-manager.php:260
 msgid "Connect Rank Math with Google Search Console to see the most important information from Google directly in your WordPress dashboard."
 msgstr "Свяжите Rank Math с Google Search Console, чтобы видеть самую важную информацию от Google прямо на панели WordPress."
 
@@ -8243,8 +8280,8 @@ msgstr "При создании нового товара выбран расш�
 #: includes/module/class-manager.php:107
 #: includes/modules/404-monitor/class-admin.php:143
 #: includes/modules/404-monitor/class-admin.php:197
-#: includes/modules/404-monitor/class-monitor.php:67
-#: includes/modules/404-monitor/class-monitor.php:98
+#: includes/modules/404-monitor/class-monitor.php:91
+#: includes/modules/404-monitor/class-monitor.php:122
 #: includes/modules/404-monitor/views/help-tab-overview.php:26
 #: assets/admin/js/generalSettings.js:1 assets/admin/js/wizard.js:1
 msgid "404 Monitor"
@@ -8347,7 +8384,7 @@ msgstr "Выберите страницу сайта, на которой буд
 msgid "SEO Titles &amp; Meta"
 msgstr "SEO-заголовки и мета"
 
-#: includes/modules/404-monitor/class-monitor.php:121
+#: includes/modules/404-monitor/class-monitor.php:145
 msgid "Log item successfully deleted."
 msgstr "Запись журнала успешно удалена."
 
@@ -8411,7 +8448,7 @@ msgstr "Скрыть имя таксономии в цепочке навига�
 msgid "Products tagged &ldquo;%s&rdquo;"
 msgstr "Товары с меткой &ldquo;%s&rdquo;"
 
-#: includes/class-installer.php:384
+#: includes/class-installer.php:385
 #: includes/settings/general/breadcrumbs.php:65
 #: assets/admin/js/generalSettings.js:1
 msgid "Home"
@@ -8419,7 +8456,7 @@ msgstr "Главная"
 
 #. translators: Archive title
 #. translators: placeholder
-#: includes/class-installer.php:386
+#: includes/class-installer.php:387
 #: includes/settings/general/breadcrumbs.php:98
 #: assets/admin/js/generalSettings.js:1
 msgid "Archives for %s"
@@ -8427,13 +8464,13 @@ msgstr "Архивы для %s"
 
 #. translators: Search query term
 #. translators: placeholder
-#: includes/class-installer.php:388
+#: includes/class-installer.php:389
 #: includes/settings/general/breadcrumbs.php:110
 #: assets/admin/js/generalSettings.js:1
 msgid "Results for %s"
 msgstr "Результаты для %s"
 
-#: includes/class-installer.php:389
+#: includes/class-installer.php:390
 #: includes/settings/general/breadcrumbs.php:121
 #: assets/admin/js/generalSettings.js:1
 msgid "404 Error: page not found"
@@ -8684,7 +8721,7 @@ msgstr "Диспетчер переадресации"
 msgid "Redirections Manager"
 msgstr "Диспетчер переадресаций"
 
-#: rank-math.php:498 assets/admin/js/wizard.js:1
+#: rank-math.php:510 assets/admin/js/wizard.js:1
 msgid "Getting Started"
 msgstr "Введение"
 
@@ -8742,6 +8779,10 @@ msgstr "Формат: +7-999-555-7733"
 #: includes/modules/seo-analysis/class-seo-analysis.php:74
 msgid "SEO Analysis for this page"
 msgstr "Анализ SEO этой страницы"
+
+#: includes/abilities/seo-analysis/class-subscriber.php:66
+msgid "SEO Analysis"
+msgstr "Анализ SEO"
 
 #: includes/modules/redirections/views/help-tab-overview.php:17
 msgid "Using a 302 <em>temporary</em> redirection is useful when you want to test a new page for client feedback temporarily without affecting the SEO scores of the original page."
@@ -8872,6 +8913,11 @@ msgstr "Параметры SEO, связанные с главным изобр�
 msgid "The standard permalink structure is pretty ugly - WordPress generates offputting URLs like: http://www.yoursite.com/?p=99"
 msgstr "Стандартная структура постоянных ссылок довольно неказиста - WordPress генерирует URL такого типа: http://www.yoursite.com/?p=99"
 
+#. translators: link to permalink setting screen
+#: includes/modules/seo-analysis/seo-analysis-tests.php:62
+msgid "For the best SEO results, use a custom permalink structure, preferably one that includes the post title (<code>%%postname%%</code>). You can change it by navigating to <a href=\"%s\">Settings &gt; Permalinks</a>"
+msgstr "Для достижения наилучших результатов SEO используйте произвольную структуру постоянных ссылок, предпочтительно такую, которая включает заголовок записи (<code>%%postname%%</code>). Вы можете изменить её, перейдя в раздел <a href=\"%s\">Настройки &gt; Постоянные ссылки</a>"
+
 #: includes/modules/seo-analysis/seo-analysis-tests.php:265
 msgid "Permalinks are set to the default value. <em>Pretty permalinks</em> are disabled. "
 msgstr "Постоянные ссылки имеют стандартное значение. <em>Красивые постоянные ссылки</em> отключены. "
@@ -8886,19 +8932,14 @@ msgstr "Структура постоянных ссылок записей ус
 msgid "Include reference to images from the post content in sitemaps. This helps search engines index the important images on your pages."
 msgstr "Включите ссылку на изображения из содержимого записи в карты сайта. Это помогает поисковым системам индексировать важные изображения на ваших страницах."
 
+#: includes/modules/seo-analysis/seo-analysis-tests.php:87
+msgid "HTML Page Titles play a large role in Google's ranking algorithm.  When you add a Focus Keyword to a post or page, Rank Math will check to see that you used the keyword in the title.  If it finds any posts or pages that are missing the keyword in the title, it will tell you here."
+msgstr "HTML-заголовки страниц играют большую роль в алгоритме ранжирования Google. Когда вы добавляете фокусный ключевик в запись или страницу, Rank Math проверит, что вы использовали ключевое слово в заголовке. Если плагин найдет какие-либо записи или страницы, в заголовке которых отсутствует ключевое слово, он сообщит вам об этом тут."
+
 #: includes/modules/sitemap/settings/taxonomies.php:46
 #: assets/admin/js/sitemapSettings.js:1
 msgid "Include archive pages of terms that have no posts associated."
 msgstr "Включить архивные страницы терминов, у которых нет связанных записей."
-
-#. translators: link to permalink setting screen
-#: includes/modules/seo-analysis/seo-analysis-tests.php:62
-msgid "For the best SEO results, use a custom permalink structure, preferably one that includes the post title (<code>%%postname%%</code>). You can change it by navigating to <a href=\"%s\">Settings &gt; Permalinks</a>"
-msgstr "Для достижения наилучших результатов SEO используйте произвольную структуру постоянных ссылок, предпочтительно такую, которая включает заголовок записи (<code>%%postname%%</code>). Вы можете изменить её, перейдя в раздел <a href=\"%s\">Настройки &gt; Постоянные ссылки</a>"
-
-#: includes/modules/seo-analysis/seo-analysis-tests.php:87
-msgid "HTML Page Titles play a large role in Google's ranking algorithm.  When you add a Focus Keyword to a post or page, Rank Math will check to see that you used the keyword in the title.  If it finds any posts or pages that are missing the keyword in the title, it will tell you here."
-msgstr "HTML-заголовки страниц играют большую роль в алгоритме ранжирования Google. Когда вы добавляете фокусный ключевик в запись или страницу, Rank Math проверит, что вы использовали ключевое слово в заголовке. Если плагин найдет какие-либо записи или страницы, в заголовке которых отсутствует ключевое слово, он сообщит вам об этом тут."
 
 #: includes/settings/general/rss-vars-table.php:26
 #: assets/admin/js/generalSettings.js:1
@@ -8912,11 +8953,6 @@ msgstr "Значения по умолчанию для метатэга robots.
 #: includes/settings/titles/global.php:98 assets/admin/js/titleSettings.js:1
 msgid "Card type selected when creating a new post. This will also be applied for posts without a card type selected."
 msgstr "Тип карточки выбирается при создании новой записи. Также будет применяться к записям без выбранного типа карточки."
-
-#: includes/settings/general/htaccess.php:52
-#: assets/admin/js/generalSettings.js:1
-msgid "Be careful when editing the htaccess file, it is easy to make mistakes and break your site. If that happens, you can restore the file to its state <strong>before the last edit</strong> by replacing the htaccess file with the backup copy created by Rank Math in the same directory (<em>.htaccess_back_xxxxxx</em>) using an FTP client."
-msgstr "Будьте осторожны, при редактировании файла .htaccess легко ошибиться и поломать весь сайт. Если это произойдет, вы можете восстановить состояние файла <strong>перед последним редактированием</strong>, заменив испорченный .htaccess резервной копией, созданной плагином Rank Math в том же каталоге (<em>.htaccess_back_xxxxxx</em>), используя FTP-клиент."
 
 #: includes/settings/titles/homepage.php:68 assets/admin/js/titleSettings.js:1
 msgid "Select custom robots meta for homepage, such as <code>nofollow</code>, <code>noarchive</code>, etc. Otherwise the default meta will be used, as set in the Global Meta tab."
@@ -8933,6 +8969,11 @@ msgstr "Первая метка (в алфавитном порядке), свя
 #: includes/replace-variables/class-term-variables.php:51
 msgid "Example Term Description"
 msgstr "Пример описания термина"
+
+#: includes/settings/general/htaccess.php:52
+#: assets/admin/js/generalSettings.js:1
+msgid "Be careful when editing the htaccess file, it is easy to make mistakes and break your site. If that happens, you can restore the file to its state <strong>before the last edit</strong> by replacing the htaccess file with the backup copy created by Rank Math in the same directory (<em>.htaccess_back_xxxxxx</em>) using an FTP client."
+msgstr "Будьте осторожны, при редактировании файла .htaccess легко ошибиться и поломать весь сайт. Если это произойдет, вы можете восстановить состояние файла <strong>перед последним редактированием</strong>, заменив испорченный .htaccess резервной копией, созданной плагином Rank Math в том же каталоге (<em>.htaccess_back_xxxxxx</em>), используя FTP-клиент."
 
 #: includes/replace-variables/class-advanced-variables.php:87
 msgid "Page number with context (i.e. page 2 of 4). Only displayed on page 2 and above."
@@ -9076,15 +9117,15 @@ msgstr "Переадресация на главную"
 msgid "Default 404"
 msgstr "Стандарт 404"
 
-#: includes/modules/redirections/views/options.php:61
-#: assets/admin/js/generalSettings.js:1
-msgid "Auto Post Redirect"
-msgstr "Автопереадресация записи"
-
 #: includes/modules/redirections/views/options.php:62
 #: assets/admin/js/generalSettings.js:1
 msgid "Extend the functionality of WordPress by creating redirects in our plugin when you change the slug of a post, page, category or a CPT. You can modify the redirection further according to your needs."
 msgstr "Расширение функционала WordPress механизмом переадресации, который срабатывает когда меняется ярлык записи, страницы, категории или произвольного типа записи. Переадресацию можно перенастраивать в любое время, в соответствии с текущими задачами."
+
+#: includes/modules/redirections/views/options.php:61
+#: assets/admin/js/generalSettings.js:1
+msgid "Auto Post Redirect"
+msgstr "Автопереадресация записи"
 
 #: includes/modules/analytics/class-analytics-common.php:349
 #: includes/modules/analytics/views/email-reports/sections/summary.php:50
@@ -9126,7 +9167,7 @@ msgstr "Введите HTML-код подтверждения Baidu Webmaster To
 msgid "Enter your Google Search Console verification HTML code or ID. Learn how to get it: %s"
 msgstr "Введите HTML-код подтверждения Google Search Console или ID. Узнайте, как его получить: %s"
 
-#: includes/module/class-manager.php:262
+#: includes/module/class-manager.php:270
 msgid "Let Rank Math analyze your website and your website's content using 28+ different tests to provide tailor-made SEO Analysis to you."
 msgstr "Позвольте Rank Math проанализировать ваш сайт и его содержимое, используя более 28 различных тестов, чтобы предоставить вам индивидуальный анализ SEO."
 
@@ -9249,6 +9290,8 @@ msgstr "Ряды данных: %s"
 #: includes/settings/titles/post-types.php:191
 #: assets/admin/js/generalSettings.js:1 assets/admin/js/rank-math-app.js:1
 #: assets/admin/js/titleSettings.js:1
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/BrandDetail/BrandHeader.js:105
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
 #: includes/modules/schema/assets/js/schema-template.js:1
 msgid "Description"
@@ -9283,7 +9326,7 @@ msgstr "Нет"
 msgid "Save"
 msgstr "Сохранить"
 
-#: includes/admin/class-assets.php:229
+#: includes/admin/class-assets.php:200
 #: includes/modules/links/assets/js/links-page.js:1
 #: includes/modules/links/assets/src/features/links-page/tabs/Links.js:123
 #: includes/modules/links/assets/src/features/links-page/tabs/Links.js:126
@@ -9292,37 +9335,37 @@ msgstr "Сохранить"
 msgid "(no title)"
 msgstr "(без заголовка)"
 
-#: includes/admin/class-assets.php:228
+#: includes/admin/class-assets.php:199
 msgid "Add Link"
 msgstr "Добавить ссылку"
 
-#: includes/admin/class-assets.php:227
+#: includes/admin/class-assets.php:198
 msgid "Update"
 msgstr "Обновить"
 
-#: includes/admin/class-assets.php:226
+#: includes/admin/class-assets.php:197
 msgid "Insert/edit link"
 msgstr "Вставить/изменить ссылку"
 
-#: includes/admin/class-assets.php:230
+#: includes/admin/class-assets.php:201
 msgid "No matches found."
 msgstr "Совпадений не найдено."
 
-#: includes/admin/class-assets.php:231
+#: includes/admin/class-assets.php:202
 msgid "Link selected."
 msgstr "Ссылка выбрана."
 
-#: includes/admin/class-assets.php:232 assets/admin/js/gutenberg-formats.js:1
+#: includes/admin/class-assets.php:203 assets/admin/js/gutenberg-formats.js:1
 msgid "Link inserted."
 msgstr "Ссылка вставлена."
 
-#: includes/admin/class-assets.php:233
+#: includes/admin/class-assets.php:204
 msgid "Add <code>rel=\"nofollow\"</code>"
 msgstr "Добавить <code>rel=\"nofollow\"</code>"
 
 #: includes/admin/class-admin-dashboard-nav.php:111
 #: includes/admin/class-setup-wizard.php:68
-#: includes/admin/class-setup-wizard.php:69 rank-math.php:442 rank-math.php:447
+#: includes/admin/class-setup-wizard.php:69 rank-math.php:454 rank-math.php:459
 #: assets/admin/js/modules.js:1
 msgid "Setup Wizard"
 msgstr "Мастер установки"
@@ -9344,7 +9387,7 @@ msgstr "Модули"
 msgid "Facebook profile URL"
 msgstr "Ссылка на профиль в Facebook"
 
-#: includes/admin/class-assets.php:235
+#: includes/admin/class-assets.php:206
 msgid "Link Title"
 msgstr "Заголовок ссылки"
 
@@ -9366,15 +9409,15 @@ msgid "Import &amp; Export"
 msgstr "Импорт и Экспорт"
 
 #. translators: plugin url
-#: includes/admin/class-assets.php:210
+#: includes/admin/class-assets.php:181
 msgid "Thank you for using <a href=\"%s\" target=\"_blank\">Rank Math</a>"
 msgstr "Спасибо, что используете <a href=\"%s\" target=\"_blank\">Rank Math</a>"
 
-#: includes/admin/class-admin.php:405
+#: includes/admin/class-admin.php:436
 msgid "Copy Link URL to Clipboard"
 msgstr "Скопировать ссылку в буфер обмена"
 
-#: includes/admin/class-admin.php:406
+#: includes/admin/class-admin.php:437
 msgid "Insert Link in Content"
 msgstr "Вставить ссылку в контент"
 
@@ -9496,6 +9539,9 @@ msgstr "Не найдены настройки для импорта."
 #: includes/admin/class-post-columns.php:308
 #: includes/admin/class-post-columns.php:328
 #: includes/admin/class-post-columns.php:341 assets/admin/js/post-list.js:1
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/shared/Modals/AddBrandModal.js:433
+#: includes/modules/ai-visibility/assets/src/shared/Modals/ConfirmModal.js:39
 #: includes/modules/redirections/assets/js/redirections.js:1
 msgid "Cancel"
 msgstr "Отменить"
@@ -9527,7 +9573,7 @@ msgid "SEO Details"
 msgstr "SEO детали"
 
 #: includes/3rdparty/divi/class-divi.php:157
-#: includes/admin/class-assets.php:134
+#: includes/admin/class-assets.php:105
 msgid "This field is required."
 msgstr "Это обязательное поле."
 
@@ -9570,7 +9616,10 @@ msgstr "Настройки успешно импортированы. Ваша �
 #: includes/admin/class-admin-bar-menu.php:187
 #: includes/admin/class-admin-breadcrumbs.php:33
 #: includes/admin/class-admin-menu.php:141 assets/admin/js/components.js:1
-#: assets/admin/js/modules.js:1 includes/modules/analytics/assets/js/stats.js:1
+#: assets/admin/js/modules.js:1
+#: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
+#: includes/modules/ai-visibility/assets/src/App.js:39
+#: includes/modules/analytics/assets/js/stats.js:1
 msgid "Dashboard"
 msgstr "Консоль"
 

@@ -1,16 +1,20 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * https://makewebbetter.com/
  * Author   MakeWebBetter
- * #[AllowDynamicProperties] 
- class WFACP_Compatibility_Gift_Card_MakeWebBetter
+ * #[AllowDynamicProperties]
+class WFACP_Compatibility_Gift_Card_MakeWebBetter
  */
 if ( ! class_exists( 'WFACP_Compatibility_Gift_Card_MakeWebBetter' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_Gift_Card_MakeWebBetter {
 		public function __construct() {
-			add_action( 'wfacp_checkout_page_found', [ $this, 'action' ] );
+			add_action( 'wfacp_checkout_page_found', array( $this, 'action' ) );
 		}
 
 		public function action() {

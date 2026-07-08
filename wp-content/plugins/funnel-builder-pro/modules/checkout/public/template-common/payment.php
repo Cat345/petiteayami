@@ -1,14 +1,18 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
-$instance                    = wfacp_template();
-$selected_template_slug      = $instance->get_template_slug();
-$payment_des                 = $instance->get_payment_desc();
+$instance               = wfacp_template();
+$selected_template_slug = $instance->get_template_slug();
+$payment_des            = $instance->get_payment_desc();
 
 
-$border_cls                  = $instance->get_heading_title_class();
-$payment_methods_heading     = $instance->payment_heading();
+$border_cls              = $instance->get_heading_title_class();
+$payment_methods_heading = $instance->payment_heading();
 
 $payment_methods_sub_heading = $instance->payment_sub_heading();
 $current_step                = $instance->get_current_step();
@@ -37,7 +41,7 @@ if ( ! empty( $payment_des ) ) {
 }
 ?>
 <div class="wfacp-section wfacp_payment <?php echo $hide_payment_cls; ?>  <?php echo $payment_des_class; ?> form_section_your_order_0_<?php echo $selected_template_slug; ?> wfacp-section-title wfacp-hg-by-box">
-    <div style="clear: both;"></div>
+	<div style="clear: both;"></div>
 	<?php
 	// Divi 5: Only display heading section if at least one of heading or subheading has content
 	// Check if we're using Divi 5 template
@@ -46,36 +50,36 @@ if ( ! empty( $payment_des ) ) {
 		// Divi 5: Conditional rendering
 		if ( ! empty( $payment_methods_heading ) || ! empty( $payment_methods_sub_heading ) ) {
 			?>
-    <div class="wfacp-comm-title <?php echo $border_cls; ?>">
-		<?php if ( ! empty( $payment_methods_heading ) ) { ?>
-        <h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class() ?> "><?php echo $payment_methods_heading; ?></h2>
+	<div class="wfacp-comm-title <?php echo $border_cls; ?>">
+			<?php if ( ! empty( $payment_methods_heading ) ) { ?>
+		<h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class(); ?> "><?php echo $payment_methods_heading; ?></h2>
 		<?php } ?>
-		<?php if ( ! empty( $payment_methods_sub_heading ) ) { ?>
-        <h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
+			<?php if ( ! empty( $payment_methods_sub_heading ) ) { ?>
+		<h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
 		<?php } ?>
-    </div>
-		<?php
+	</div>
+			<?php
 		}
 	} else {
 		// Divi 4 and other builders: Always show heading section
 		?>
-    <div class="wfacp-comm-title <?php echo $border_cls; ?>">
-        <h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class() ?> "><?php echo $payment_methods_heading; ?></h2>
-        <h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
-    </div>
+	<div class="wfacp-comm-title <?php echo $border_cls; ?>">
+		<h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class(); ?> "><?php echo $payment_methods_heading; ?></h2>
+		<h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
+	</div>
 	<?php } ?>
 	<?php do_action( 'wfacp_checkout_before_order_review' ); ?>
-    <div class="woocommerce-checkout-review-order wfacp-oder-detail clearfix">
+	<div class="woocommerce-checkout-review-order wfacp-oder-detail clearfix">
 		<?php do_action( 'woocommerce_checkout_order_review' ); ?>
 		<?php
 		if ( $payment_des != '' ) {
 			?>
-            <div class="wfacp-payment-dec">
+			<div class="wfacp-payment-dec">
 				<?php echo $payment_des; ?>
-            </div>
+			</div>
 			<?php
 		}
 		?>
-    </div>
+	</div>
 	<?php do_action( 'wfacp_checkout_after_order_review' ); ?>
 </div>

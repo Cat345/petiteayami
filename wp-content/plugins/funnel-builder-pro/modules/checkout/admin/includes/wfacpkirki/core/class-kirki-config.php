@@ -12,6 +12,10 @@
 /**
  * The WFACPKirki_Config object
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Config' ) ) {
 	#[AllowDynamicProperties]
 	final class WFACPKirki_Config {
@@ -88,7 +92,7 @@ if ( ! class_exists( 'WFACPKirki_Config' ) ) {
 		 * @access private
 		 *
 		 * @param string $config_id @see WFACPKirki_Config::get_instance().
-		 * @param array $args @see WFACPKirki_Config::get_instance().
+		 * @param array  $args @see WFACPKirki_Config::get_instance().
 		 */
 		private function __construct( $config_id = 'global', $args = array() ) {
 
@@ -111,9 +115,12 @@ if ( ! class_exists( 'WFACPKirki_Config' ) ) {
 			}
 			$this->id = $config_id;
 
-			$this->config_final = wp_parse_args( array(
+			$this->config_final = wp_parse_args(
+				array(
 					'id' => $config_id,
-				), $args );
+				),
+				$args
+			);
 		}
 
 		/**
@@ -124,8 +131,8 @@ if ( ! class_exists( 'WFACPKirki_Config' ) ) {
 		 * @access public
 		 *
 		 * @param string $id Config ID.
-		 * @param array $args {
-		 * Optional. Arguments to override config defaults.
+		 * @param array  $args {
+		 *  Optional. Arguments to override config defaults.
 		 *
 		 * @type string $capability @see https://codex.wordpress.org/Roles_and_Capabilities
 		 * @type string $option_type theme_mod or option.
@@ -149,7 +156,6 @@ if ( ! class_exists( 'WFACPKirki_Config' ) ) {
 			}
 
 			return self::$instances[ $id_md5 ];
-
 		}
 
 		/**

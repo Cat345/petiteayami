@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class bwfan_Input_Html_Always {
 	public function __construct() {
 		// vars

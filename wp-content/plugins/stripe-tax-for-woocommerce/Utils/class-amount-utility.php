@@ -73,6 +73,7 @@ abstract class Amount_Utility {
 	 */
 	public static function round( $amount ) {
 		// Ensure we default (2 decimals) even if nothing called init yet.
+		// @phpstan-ignore-next-line.
 		if ( ! isset( static::$num_decimals ) || ! isset( static::$decimals_multiplier ) ) {
 			static::init_internals( '' );
 		}

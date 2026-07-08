@@ -7,6 +7,7 @@ if ( ! class_exists( 'WFOCU_Remote_Template_Importer' ) ) {
 	 * @package WFOCU
 	 * @author XlPlugins
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Remote_Template_Importer {
 
 		private static $instance = null;
@@ -46,13 +47,22 @@ if ( ! class_exists( 'WFOCU_Remote_Template_Importer' ) ) {
 
 			$funnel_step = 'wc_upsells';
 
-			$template_file_path = $builder . '/' . $funnel_step . '/' . $template_id;
+			$safe_builder  = sanitize_file_name( $builder );
+			$safe_template = sanitize_file_name( $template_id );
+
+			$template_file_path = $safe_builder . '/' . $funnel_step . '/' . $safe_template;
 			$defined_wffn       = defined( 'WFFN_TEMPLATE_UPLOAD_DIR' );
-			$file_exist         = ( $defined_wffn ) ? file_exists( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' ) : false;
+			$full_path          = WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json';
+			$file_exist         = ( $defined_wffn ) ? file_exists( $full_path ) : false;
 
 			if ( $defined_wffn && $file_exist ) {
-				$content = file_get_contents( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' );
-				wp_delete_file( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' );
+				$real_upload_dir = realpath( WFFN_TEMPLATE_UPLOAD_DIR );
+				$real_file_path  = realpath( $full_path );
+				if ( false === $real_upload_dir || false === $real_file_path || 0 !== strpos( $real_file_path, $real_upload_dir ) ) {
+					return '';
+				}
+				$content = file_get_contents( $full_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_get_contents
+				wp_delete_file( $full_path );
 
 				return WFOCU_Core()->template_loader->get_group( $builder )->handle_remote_import( $content );
 			}
@@ -80,32 +90,45 @@ if ( ! class_exists( 'WFOCU_Remote_Template_Importer' ) ) {
 
 			$requestBody  = wp_json_encode( $requestBody );
 			$endpoint_url = $this->get_template_api_url();
-			$response     = wp_remote_post(
+
+			require_once WFOCU_PLUGIN_DIR . '/includes/class-wfocu-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			WFOCU_Content_Validator::register_http_guard();
+			WFOCU_Content_Validator::begin_import();
+			$response = wp_remote_post(
 				$endpoint_url,
 				array(
-					'body' => $requestBody,
-			"timeout" => 30, //phpcs:ignore
-				'headers'  => array(
-				'content-type' => 'application/json',
-				),
+					'body'               => $requestBody,
+					'timeout'            => 30, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
+					'sslverify'          => true,
+					'reject_unsafe_urls' => true,
+					'redirection'        => 0,
+					'headers'            => array(
+						'content-type' => 'application/json',
+					),
 				)
 			);
+			WFOCU_Content_Validator::end_import();
 
 			if ( $response instanceof WP_Error ) {
 				return array( 'error' => __( 'Unable to import template', 'woofunnels-upstroke-one-click-upsell' ) );
 			}
 
-			$response_temp = json_decode( $response['body'], true );
-
-			if ( null === $response ) {
-				$response = $response['body'];
-			} else {
-				$response = $response_temp;
+			$body = wp_remote_retrieve_body( $response );
+			if ( strlen( $body ) > 5 * 1024 * 1024 ) {
+				return array( 'error' => __( 'Template response is too large to process.', 'woofunnels-upstroke-one-click-upsell' ) );
 			}
+
+			$response = json_decode( $body, true );
 
 			if ( ! is_array( $response ) ) {
 				return array( 'error' => __( 'It seems we are unable to import this template from the cloud library. Please contact support.', 'woofunnels-upstroke-one-click-upsell' ) );
 			}
+
+			$alien_count = WFOCU_Content_Validator::sanitize_response_urls( $response );
+			if ( $alien_count >= 5 ) {
+				return array( 'error' => __( 'We are unable to import this template. Please contact support.', 'woofunnels-upstroke-one-click-upsell' ) );
+			}
+
 			if ( isset( $response['error'] ) ) {
 				return array( 'error' => self::get_error_message( $response['error'] ) );
 			}

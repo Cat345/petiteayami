@@ -1,6 +1,7 @@
 <?php
 if ( ! class_exists( 'WFOCU_Rule_Funnel_Skip' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Funnel_Skip extends WFOCU_Rule_Base {
 		public $supports = array( 'order' );
 
@@ -38,30 +39,32 @@ if ( ! class_exists( 'WFOCU_Rule_Funnel_Skip' ) ) {
 					return true;
 				}
 
-				$results = WFOCU_Core()->track->query_results( array(
-					'data'         => array(),
-					'where'        => array(
-						array(
-							'key'      => 'session.email',
-							'value'    => $email,
-							'operator' => '=',
-						),
-						array(
-							'key'      => 'events.action_type_id',
-							'value'    => 1,
-							'operator' => '=',
-						),
-						array(
-							'key'      => 'events.object_id',
-							'value'    => $funnel_id,
-							'operator' => '=',
-						),
+				$results = WFOCU_Core()->track->query_results(
+					array(
+						'data'         => array(),
+						'where'        => array(
+							array(
+								'key'      => 'session.email',
+								'value'    => $email,
+								'operator' => '=',
+							),
+							array(
+								'key'      => 'events.action_type_id',
+								'value'    => 1,
+								'operator' => '=',
+							),
+							array(
+								'key'      => 'events.object_id',
+								'value'    => $funnel_id,
+								'operator' => '=',
+							),
 
-					),
-					'session_join' => true,
-					'order_by'     => 'events.id DESC',
-					'query_type'   => 'get_results',
-				) );
+						),
+						'session_join' => true,
+						'order_by'     => 'events.id DESC',
+						'query_type'   => 'get_results',
+					)
+				);
 
 				if ( count( $results ) > 0 ) {
 					return false;
@@ -95,7 +98,7 @@ if ( ! class_exists( 'WFOCU_Rule_Funnel_Skip' ) ) {
 						}
 
 						if ( in_array( $cart_item_product, $get_products, true ) ) {
-							$found_quantity ++;
+							++$found_quantity;
 						}
 					}
 				}
@@ -108,13 +111,11 @@ if ( ! class_exists( 'WFOCU_Rule_Funnel_Skip' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function get_nice_string( $rule ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
 
 			return sprintf( __( 'Skip One Click Upsells if User Previously Viewed Upsells', 'woofunnels-upstroke-one-click-upsell' ) );
 		}
-
 	}
 }

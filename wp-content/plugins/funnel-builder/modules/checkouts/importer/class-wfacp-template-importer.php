@@ -121,13 +121,22 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 			}
 			$funnel_step = 'wc_checkout';
 
-			$template_file_path = $builder . '/' . $funnel_step . '/' . $template_id;
+			$safe_builder     = sanitize_file_name( $builder );
+			$safe_template_id = sanitize_file_name( $template_id );
+
+			$template_file_path = $safe_builder . '/' . $funnel_step . '/' . $safe_template_id;
 			$defined_wffn       = defined( 'WFFN_TEMPLATE_UPLOAD_DIR' );
-			$file_exist         = ( $defined_wffn ) ? file_exists( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' ) : false;
+			$full_path          = WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json';
+			$file_exist         = ( $defined_wffn ) ? file_exists( $full_path ) : false;
 
 			if ( $defined_wffn && $file_exist ) {
-				$content = file_get_contents( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' );
-				unlink( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Cleaning up temporary template file after import
+				$real_upload_dir = realpath( WFFN_TEMPLATE_UPLOAD_DIR );
+				$real_file_path  = realpath( $full_path );
+				if ( false === $real_upload_dir || false === $real_file_path || 0 !== strpos( $real_file_path, $real_upload_dir ) ) {
+					return '';
+				}
+				$content = file_get_contents( $full_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_get_contents
+				wp_delete_file( $full_path );
 
 				return array(
 					'success' => true,

@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -20,12 +24,12 @@ $sec_heading            = $switcher_settings['settings']['additional_information
 $add_to_cart_setting    = $page_settings['add_to_cart_setting'];
 $type                   = $add_to_cart_setting == 2 ? 'radio' : 'checkbox';
 
-$ps_cls_settings = [
+$ps_cls_settings = array(
 	'ps_productSelection'    => 'wfacp_not_force_all',
 	'ps_other_image_setting' => 'wfacp_setting_not_image_hide',
 	'ps_other_qty_setting'   => 'wfacp_setting_not_qty_hide',
 	'ps_delete_item'         => 'wfacp_enable_delete_item',
-];
+);
 
 
 $ps_productSelection    = 'wfacp_not_force_all';
@@ -70,7 +74,7 @@ $detectDevice             = WFACP_Mobile_Detect::get_instance();
 $instance_temp            = wfacp_template();
 $template_type_temp       = $instance_temp->get_template_type();
 $deviceType               = '';
-$is_sold_individually_arr = [];
+$is_sold_individually_arr = array();
 $deviceType               = 'wfacp_for_desktop_tablet desk_only ';
 $mb_style                 = '';
 $mb_style                 = apply_filters( 'wfacp_for_mb_style', $mb_style );
@@ -105,7 +109,7 @@ if ( is_array( $products ) && count( $products ) > 0 ) {
 	$classes = isset( $field['cssready'] ) ? implode( ' ', $field['cssready'] ) : '';
 
 	?>
-    <div class="wfacp_anim wfacp_pro_switch <?php echo $deviceType; ?>shop_table wfacp-product-switch-panel <?php echo $classes . ' ' . $ps_setting_wrapper_class . ' wfacp_type_' . $type ?>" cellspacing="0" id="product_switching_field" <?php echo WFACP_Common::get_fragments_attr() ?> >
+	<div class="wfacp_anim wfacp_pro_switch <?php echo $deviceType; ?>shop_table wfacp-product-switch-panel <?php echo $classes . ' ' . $ps_setting_wrapper_class . ' wfacp_type_' . $type; ?>" cellspacing="0" id="product_switching_field" <?php echo WFACP_Common::get_fragments_attr(); ?> >
 		<?php
 		do_action( 'wfacp_before_product_switcher_html' );
 
@@ -123,18 +127,18 @@ if ( is_array( $products ) && count( $products ) > 0 ) {
 
 
 			?>
-            <div class="wfacp-product-switch-title">
+			<div class="wfacp-product-switch-title">
 
-                <div class="product-remove"><?php echo $product_switcher_label; ?> </div>
-                <div class="wfacp_qty_price_wrap">
+				<div class="product-remove"><?php echo $product_switcher_label; ?> </div>
+				<div class="wfacp_qty_price_wrap">
 					<?php if ( ! $hide_quantity_switcher ) { ?>
-                        <div class="product-quantity"><?php _e( 'Qty', 'woocommerce' ); ?></div>
+						<div class="product-quantity"><?php _e( 'Qty', 'woocommerce' ); ?></div>
 					<?php } ?>
-                    <div class="product-name"><?php _e( 'Price', 'woocommerce' ); ?></div>
-                </div>
-            </div>
+					<div class="product-name"><?php _e( 'Price', 'woocommerce' ); ?></div>
+				</div>
+			</div>
 		<?php } ?>
-        <div class="wfacp_product_switcher_container">
+		<div class="wfacp_product_switcher_container">
 			<?php
 			global $wfacp_products_attributes_data;
 			$counter                           = 0;
@@ -156,51 +160,52 @@ if ( is_array( $products ) && count( $products ) > 0 ) {
 				if ( ! isset( $is_sold_individually_arr['total_products'] ) ) {
 					$is_sold_individually_arr['total_products'] = 1;
 				} else {
-					$is_sold_individually_arr['total_products'] ++;
+					++$is_sold_individually_arr['total_products'];
 				}
 				if ( $product_obj->is_sold_individually() ) {
 					if ( ! isset( $is_sold_individually_arr['is_sold_individual'] ) ) {
 						$is_sold_individually_arr['is_sold_individual'] = 1;
 					} else {
-						$is_sold_individually_arr['is_sold_individual'] ++;
+						++$is_sold_individually_arr['is_sold_individual'];
 					}
-				} else {
-					if ( ! isset( $is_sold_individually_arr['not_sold_individual'] ) ) {
+				} elseif ( ! isset( $is_sold_individually_arr['not_sold_individual'] ) ) {
 						$is_sold_individually_arr['not_sold_individual'] = 1;
-					} else {
-						$is_sold_individually_arr['not_sold_individual'] ++;
-					}
+				} else {
+					++$is_sold_individually_arr['not_sold_individual'];
 				}
 				$product_data['hide_product_image'] = $hide_product_image;
 				WFACP_Common::get_product_switcher_row( $product_data, $item_key, $type, $switcher_settings );
 				$product_switcher_description_html .= WFACP_Common::get_product_switcher_row_description( $product_data, $product_obj, $switcher_settings, true );
-				$best_value_counter ++;
+				++$best_value_counter;
 			}
 			?>
-        </div>
+		</div>
 		<?php
 
 		if ( '' != $product_switcher_description_html && false == $hide_whats_included ) {
 			?>
-            <div class="wfacp_whats_included">
+			<div class="wfacp_whats_included">
 				<?php
 				echo $sec_heading ? '<h3>' . $sec_heading . '</h3>' : '';
 				echo $product_switcher_description_html;
 				?>
-            </div>
+			</div>
 			<?php
 		}
 
 		do_action( 'wfacp_after_product_switcher_html' );
 		?>
-    </div>
+	</div>
 	<?php
 
 } elseif ( is_super_admin() ) {
-	$product_url = add_query_arg( [
-		'page'     => 'bwf',
-		'path'  => '/funnel-checkout/'.$wfacp_id.'/products',
-	], admin_url( 'admin.php' ) );
+	$product_url = add_query_arg(
+		array(
+			'page' => 'bwf',
+			'path' => '/funnel-checkout/' . $wfacp_id . '/products',
+		),
+		admin_url( 'admin.php' )
+	);
 
 
 	$no_products_msg = __( 'No products added to this checkout page. <a target="_blank" href="' . $product_url . '">Add Product</a>', 'woofunnels-aero-checkout' );
@@ -224,19 +229,19 @@ if ( ( is_array( $is_sold_individually_arr ) && count( $is_sold_individually_arr
 	if ( isset( $is_sold_individually_arr['is_sold_individual'] ) && $total_products > 0 ) {
 		if ( $total_products == $is_sold_individually_arr['is_sold_individual'] ) {
 			?>
-            <style>.wfacp-product-switch-title .product-quantity {
-                    display: none
-                }
+			<style>.wfacp-product-switch-title .product-quantity {
+					display: none
+				}
 
-                body .wfacp_main_form .wfacp_qty_price_wrap .product-name {
-                    width: 100%;
-                    padding-left: 0;
-                }
+				body .wfacp_main_form .wfacp_qty_price_wrap .product-name {
+					width: 100%;
+					padding-left: 0;
+				}
 
-                body .wfacp_main_form #product_switching_field.wfacp_for_desktop_tablet .wfacp_product_switcher_col_2 {
-                    padding-right: 0;
-                }
-            </style>
+				body .wfacp_main_form #product_switching_field.wfacp_for_desktop_tablet .wfacp_product_switcher_col_2 {
+					padding-right: 0;
+				}
+			</style>
 			<?php
 		}
 	}
@@ -248,5 +253,5 @@ if ( wp_doing_ajax() ) {
 global $wfacp_products_attributes_data;
 ?>
 <script>
-    var wfacp_variation_attributes_data =<?php echo wp_json_encode( $wfacp_products_attributes_data ); ?>;
+	var wfacp_variation_attributes_data =<?php echo wp_json_encode( $wfacp_products_attributes_data ); ?>;
 </script>

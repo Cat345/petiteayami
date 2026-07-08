@@ -12,7 +12,12 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Dimension' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Field_Dimension extends WFACPKirki_Field {
 
 		/**
@@ -23,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Dimension' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-dimension';
-
 		}
 
 		/**

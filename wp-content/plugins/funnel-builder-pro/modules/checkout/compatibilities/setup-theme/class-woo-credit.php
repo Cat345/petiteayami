@@ -1,9 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**.
  * Woo Credits Platinum
  * by http://woocredits.com/
- * #[AllowDynamicProperties] 
- class WFACP_Compatibility_Woo_Credit
+ * #[AllowDynamicProperties]
+class WFACP_Compatibility_Woo_Credit
  */
 if ( ! class_exists( 'WFACP_Compatibility_Woo_Credit' ) ) {
 	#[AllowDynamicProperties]

@@ -1,20 +1,21 @@
 <?php
 if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
+	#[\AllowDynamicProperties]
 	abstract class WFOCU_OXY_Field extends OxyEl {
-		protected $media_settings = [];
-		protected $name = '';
-		public $slug = '';
-		protected $id = '';
-		protected $settings = [];
-		protected $post_id = 0;
-		protected $tabs = [];
-		protected $sub_tabs = [];
-		protected $html_fields = [];
-		private $add_tab_number = 1;
-		protected static $product_options = [];
-		protected $style_box = null;
-		protected $props = [];
-		static $css_build = false;
+		protected $media_settings         = array();
+		protected $name                   = '';
+		public $slug                      = '';
+		protected $id                     = '';
+		protected $settings               = array();
+		protected $post_id                = 0;
+		protected $tabs                   = array();
+		protected $sub_tabs               = array();
+		protected $html_fields            = array();
+		private $add_tab_number           = 1;
+		protected static $product_options = array();
+		protected $style_box              = null;
+		protected $props                  = array();
+		static $css_build                 = false;
 
 		public function name() {
 			return $this->name;
@@ -26,7 +27,7 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 
 		public function get_settings() {
 			if ( ! $this->El instanceof OxygenElement ) {
-				return [];
+				return array();
 			}
 
 			return $this->El->getParam( 'shortcode_options' );
@@ -35,9 +36,9 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 		public function init() {
 			$this->El->useAJAXControls();
 		}    /*
-	  * used by OxyEl class to show the element button in a specific section/subsection
-	  * @returns {string}
-	  */
+		* used by OxyEl class to show the element button in a specific section/subsection
+		* @returns {string}
+		*/
 		public function button_place() {
 			return 'woofunnels::woofunnels';
 		}
@@ -46,14 +47,14 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( empty( $title ) ) {
 				$title = $this->get_title();
 			}
-			$field_key = 'wfocu_' . $this->add_tab_number . "_tab";
-			$control   = $this->addControlSection( $field_key, $title, "assets/icon.png", $this );
-			$this->add_tab_number ++;
+			$field_key = 'wfocu_' . $this->add_tab_number . '_tab';
+			$control   = $this->addControlSection( $field_key, $title, 'assets/icon.png', $this );
+			++$this->add_tab_number;
 
 			return $control;
 		}
 
-		public function add_heading( $control, $heading, $separator = '', $conditions = [] ) {
+		public function add_heading( $control, $heading, $separator = '', $conditions = array() ) {
 			$key            = $this->get_unique_id();
 			$custom_control = $control->addCustomControl( __( '<div class="oxygen-option-default"  style="color: #fff; line-height: 1.3; font-size: 15px;font-weight: 900;    text-transform: uppercase;    text-decoration: underline;">' . $heading . '</div>' ), 'description' );
 			$custom_control->setParam( $key, '' );
@@ -67,7 +68,7 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			return $custom_control;
 		}
 
-		public function add_sub_heading( $control, $heading, $separator = '', $conditions = [] ) {
+		public function add_sub_heading( $control, $heading, $separator = '', $conditions = array() ) {
 			$key            = $this->get_unique_id();
 			$custom_control = $control->addCustomControl( __( '<div class="oxygen-option-default"  style="color: #fff; line-height: 1.3; font-size: 13px;font-weight: 600;    text-transform: uppercase;    text-decoration: underline;">' . $heading . '</div>' ), 'description' );
 			$custom_control->setParam( $key, '' );
@@ -81,25 +82,26 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			return $custom_control;
 		}
 
-		protected function add_switcher( $control, $key, $label = '', $default = 'off', $conditions = [] ) {
+		protected function add_switcher( $control, $key, $label = '', $default = 'off', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = __( 'Enable', 'woofunnels-aero-checkout' );
 			}
-			$input = [
-				"type"    => "radio",
-				"name"    => $label,
-				"slug"    => $key,
-				"value"   => [ 'on' => __( "Yes" ), "off" => __( 'No' ) ],
-				"default" => $default,
-				"css"     => false,
-			];
-
+			$input = array(
+				'type'    => 'radio',
+				'name'    => $label,
+				'slug'    => $key,
+				'value'   => array(
+					'on'  => __( 'Yes' ),
+					'off' => __( 'No' ),
+				),
+				'default' => $default,
+				'css'     => false,
+			);
 
 			$condition_string = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$condition_string = $this->get_condition_string( $key, $conditions );
 			}
-
 
 			if ( '' !== $condition_string ) {
 				$input['condition'] = $condition_string;
@@ -111,14 +113,14 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_icon( $control, $key, $label = 'Icon', $default = '', $conditions = [], $selector = '' ) {
+		protected function add_icon( $control, $key, $label = 'Icon', $default = '', $conditions = array(), $selector = '' ) {
 
-			$input = [
+			$input = array(
 				'type'    => 'icon_finder',
 				'name'    => $label,
 				'slug'    => $key,
-				'default' => $default
-			];
+				'default' => $default,
+			);
 			if ( ! empty( $selector ) ) {
 				$input['selector'] = $selector;
 
@@ -132,19 +134,18 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			}
 			$control->addOptionControl( $input )->rebuildElementOnChange();
 
-
 			return $key;
 		}
 
-		protected function add_select( $control, $key, $label, $options, $default, $conditions = [] ) {
+		protected function add_select( $control, $key, $label, $options, $default, $conditions = array() ) {
 
-			$input            = [
+			$input            = array(
 				'type'    => 'dropdown',
 				'name'    => $label,
 				'slug'    => $key,
 				'value'   => $options,
-				'default' => $default
-			];
+				'default' => $default,
+			);
 			$condition_string = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$condition_string = $this->get_condition_string( $key, $conditions );
@@ -154,11 +155,10 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			}
 			$control->addOptionControl( $input )->rebuildElementOnChange();
 
-
 			return $key;
 		}
 
-		public function add_text( $control, $key, $label, $default = '', $conditions = [], $description = '', $placeholder = '' ) {
+		public function add_text( $control, $key, $label, $default = '', $conditions = array(), $description = '', $placeholder = '' ) {
 
 			$input = array(
 				'name'        => $label,
@@ -167,7 +167,6 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				'default'     => $default,
 				'placeholder' => $placeholder,
 			);
-
 
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -181,14 +180,13 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_textArea( $control, $key, $label, $default = '', $conditions = [] ) {
+		protected function add_textArea( $control, $key, $label, $default = '', $conditions = array() ) {
 			$input = array(
 				'name'    => $label,
 				'slug'    => $key,
 				'type'    => 'textarea',
-				'default' => $default
+				'default' => $default,
 			);
-
 
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -209,20 +207,19 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			}
 			$typo = $control->typographySection( $label, $selectors, $this );
 
-
 			return $typo;
 		}
 
-		protected function add_font( $tab_id, $key, $selectors = '', $label = 'Color', $default = '', $conditions = [] ) {
+		protected function add_font( $tab_id, $key, $selectors = '', $label = 'Color', $default = '', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = 'Font Family';
 			}
 
 			$input     = array(
-				"name"     => $label,
-				"slug"     => $key,
-				"selector" => $selectors,
-				"property" => 'font-family',
+				'name'     => $label,
+				'slug'     => $key,
+				'selector' => $selectors,
+				'property' => 'font-family',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -231,22 +228,21 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
-
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
-		protected function add_color( $tab_id, $key, $selectors = '', $label = 'Color', $default = '#000000', $conditions = [] ) {
+		protected function add_color( $tab_id, $key, $selectors = '', $label = 'Color', $default = '#000000', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = 'Color';
 			}
 
-			$input     = array(
-				"name"     => $label,
-				"slug"     => $key,
-				"selector" => $selectors,
-				"property" => 'color',
+			$input = array(
+				'name'     => $label,
+				'slug'     => $key,
+				'selector' => $selectors,
+				'property' => 'color',
 
 			);
 			$condition = '';
@@ -256,22 +252,21 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
-
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
-		protected function add_background_color( $tab_id, $key, $selectors = [], $default = '#000000', $label = '', $conditions = [] ) {
+		protected function add_background_color( $tab_id, $key, $selectors = array(), $default = '#000000', $label = '', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Background', 'woofunnels-upstroke-one-click-upsell' );
 			}
 			$input     = array(
-				"name"     => $label,
-				"selector" => $selectors,
-				"slug"     => $key,
+				'name'     => $label,
+				'selector' => $selectors,
+				'slug'     => $key,
 				'default'  => $default,
-				"property" => 'background-color',
+				'property' => 'background-color',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -280,23 +275,22 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
-
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
-		protected function add_border_color( $tab_id, $key, $selectors = [], $default = '#000000', $label = '', $box_shadow = false, $conditions = [] ) {
+		protected function add_border_color( $tab_id, $key, $selectors = array(), $default = '#000000', $label = '', $box_shadow = false, $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Border Color', 'woofunnels-upstroke-one-click-upsell' );
 			}
 
 			$input     = array(
-				"name"     => $label,
-				"selector" => $selectors,
-				"slug"     => $key,
+				'name'     => $label,
+				'selector' => $selectors,
+				'slug'     => $key,
 				'default'  => $default,
-				"property" => 'border-color',
+				'property' => 'border-color',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -305,13 +299,12 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
-		public function custom_typography( $tab_id, $key, $selector, $label = '', $default = [], $tab_condition = [] ) {
-
+		public function custom_typography( $tab_id, $key, $selector, $label = '', $default = array(), $tab_condition = array() ) {
 
 			$font_family    = '';
 			$font_size      = '';
@@ -339,7 +332,6 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 					$line_height = $default['line_height'];
 				}
 
-
 				if ( isset( $default['letter_spacing'] ) && ! empty( $default['letter_spacing'] ) ) {
 					$letter_spacing = $default['letter_spacing'];
 				}
@@ -351,20 +343,19 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				if ( isset( $default['decoration'] ) && ! empty( $default['decoration'] ) ) {
 					$decoration = $default['decoration'];
 				}
-
 			}
-			$this->add_font_family( $tab_id, $key . '_font_family', $selector, "", $font_family, $tab_condition );
-			$this->add_font_size( $tab_id, $key . '_font_size', $selector, "", $font_size, $tab_condition );
-			$this->add_font_weight( $tab_id, $key . '_font_weight', $selector, "", $font_weight, $tab_condition );
-			$this->add_line_height( $tab_id, $key . '_line_height', $selector, "", $line_height, $tab_condition );
-			$this->add_letter_spacing( $tab_id, $key . '_letter_spacing', $selector, "", $letter_spacing, $tab_condition );
-			$this->add_text_transform( $tab_id, $key . '_transform', $selector, "", $transform, $tab_condition );
-			$this->add_text_decoration( $tab_id, $key . '_decoration', $selector, "", $decoration, $tab_condition );
+			$this->add_font_family( $tab_id, $key . '_font_family', $selector, '', $font_family, $tab_condition );
+			$this->add_font_size( $tab_id, $key . '_font_size', $selector, '', $font_size, $tab_condition );
+			$this->add_font_weight( $tab_id, $key . '_font_weight', $selector, '', $font_weight, $tab_condition );
+			$this->add_line_height( $tab_id, $key . '_line_height', $selector, '', $line_height, $tab_condition );
+			$this->add_letter_spacing( $tab_id, $key . '_letter_spacing', $selector, '', $letter_spacing, $tab_condition );
+			$this->add_text_transform( $tab_id, $key . '_transform', $selector, '', $transform, $tab_condition );
+			$this->add_text_decoration( $tab_id, $key . '_decoration', $selector, '', $decoration, $tab_condition );
 		}
 
 		/* Typography Fields  Start*/
 
-		protected function add_font_family( $tab_id, $key, $selectors = '', $label = 'Font Family', $default = 'Inherit', $conditions = [] ) {
+		protected function add_font_family( $tab_id, $key, $selectors = '', $label = 'Font Family', $default = 'Inherit', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = __( 'Font Family', 'woofunnels-upstroke-one-click-upsell' );
@@ -374,15 +365,14 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				$default = 'inherit';
 			}
 
-
 			$input     = array(
-				"name"        => $label,
-				"slug"        => $key,
-				"selector"    => $selectors,
-				"param_name"  => "font-family",
-				"param_value" => $default,
-				"default"     => $default,
-				"property"    => 'font-family',
+				'name'        => $label,
+				'slug'        => $key,
+				'selector'    => $selectors,
+				'param_name'  => 'font-family',
+				'param_value' => $default,
+				'default'     => $default,
+				'property'    => 'font-family',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -391,13 +381,12 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
-
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
-		protected function add_font_size( $tab_id, $key, $selectors = '', $label = 'Color', $default = '', $conditions = [] ) {
+		protected function add_font_size( $tab_id, $key, $selectors = '', $label = 'Color', $default = '', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = __( 'Font Size', 'woofunnels-upstroke-one-click-upsell' );
 			}
@@ -406,11 +395,11 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				$default = '16';
 			}
 			$input     = array(
-				"name"     => $label,
-				"slug"     => $key,
-				"selector" => $selectors,
-				"default"  => $default,
-				"property" => 'font-size',
+				'name'     => $label,
+				'slug'     => $key,
+				'selector' => $selectors,
+				'default'  => $default,
+				'property' => 'font-size',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -419,13 +408,12 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
-
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
-		protected function add_font_weight( $tab_id, $key, $selectors = '', $label = 'Font Weight', $default = 'noormal', $conditions = [] ) {
+		protected function add_font_weight( $tab_id, $key, $selectors = '', $label = 'Font Weight', $default = 'noormal', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = __( 'Font Weight', 'woofunnels-upstroke-one-click-upsell' );
@@ -434,11 +422,11 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				$default = '400';
 			}
 			$input     = array(
-				"name"     => $label,
-				"slug"     => $key,
-				"selector" => $selectors,
-				"default"  => $default,
-				"property" => 'font-weight',
+				'name'     => $label,
+				'slug'     => $key,
+				'selector' => $selectors,
+				'default'  => $default,
+				'property' => 'font-weight',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -447,13 +435,12 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
-
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
-		protected function add_line_height( $tab_id, $key, $selectors = '', $label = 'Line Height', $default = '1.5', $conditions = [] ) {
+		protected function add_line_height( $tab_id, $key, $selectors = '', $label = 'Line Height', $default = '1.5', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = __( 'Line Height', 'woofunnels-upstroke-one-click-upsell' );
@@ -462,11 +449,11 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				$default = '1.5';
 			}
 			$input     = array(
-				"name"     => $label,
-				"slug"     => $key,
-				"selector" => $selectors,
-				"default"  => $default,
-				"property" => 'line-height',
+				'name'     => $label,
+				'slug'     => $key,
+				'selector' => $selectors,
+				'default'  => $default,
+				'property' => 'line-height',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -475,47 +462,49 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
-
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
-		protected function add_text_alignments( $tab_id, $key, $selectors = '', $label = '', $default = 'left', $conditions = [] ) {
+		protected function add_text_alignments( $tab_id, $key, $selectors = '', $label = '', $default = 'left', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = __( 'Alignment', 'woofunnels-upstroke-one-click-upsell' );
 			}
-
 
 			if ( empty( $default ) ) {
 				$default = 'left';
 			}
 
-			$items_align = $tab_id->addControl( "buttons-list", $key, $label );
+			$items_align = $tab_id->addControl( 'buttons-list', $key, $label );
 
-			$items_align->setValue( array(
-				"left"   => "Left",
-				"center" => "Center",
-				"right"  => "Right"
-			) );
+			$items_align->setValue(
+				array(
+					'left'   => 'Left',
+					'center' => 'Center',
+					'right'  => 'Right',
+				)
+			);
 			$items_align->setDefaultValue( $default );
-			$items_align->setValueCSS( array(
-				"left"   => "
+			$items_align->setValueCSS(
+				array(
+					'left'   => "
                 $selectors{
                     text-align: left;
                 }
             ",
-				"center" => "
+					'center' => "
 				$selectors{
                     text-align: center;
                 }
             ",
-				"right"  => "
+					'right'  => "
                $selectors{
                     text-align: right;
                 }
             ",
-			) );
+				)
+			);
 			$items_align->whiteList();
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$condition_string = $this->get_condition_string( $key, $conditions );
@@ -527,7 +516,7 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_letter_spacing( $tab_id, $key, $selectors = '', $label = 'Letter Spacing', $default = '1', $conditions = [] ) {
+		protected function add_letter_spacing( $tab_id, $key, $selectors = '', $label = 'Letter Spacing', $default = '1', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = __( 'Letter Spacing', 'woofunnels-upstroke-one-click-upsell' );
@@ -538,11 +527,11 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			}
 
 			$input     = array(
-				"name"     => $label,
-				"slug"     => $key,
-				"selector" => $selectors,
-				"default"  => $default,
-				"property" => 'letter-spacing',
+				'name'     => $label,
+				'slug'     => $key,
+				'selector' => $selectors,
+				'default'  => $default,
+				'property' => 'letter-spacing',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -551,13 +540,12 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
-
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
-		protected function add_text_transform( $tab_id, $key, $selectors = '', $label = 'Text Transform', $default = 'none', $conditions = [] ) {
+		protected function add_text_transform( $tab_id, $key, $selectors = '', $label = 'Text Transform', $default = 'none', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = __( 'Text Transform', 'woofunnels-upstroke-one-click-upsell' );
@@ -566,11 +554,11 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				$default = 'none';
 			}
 			$input     = array(
-				"name"     => $label,
-				"slug"     => $key,
-				"selector" => $selectors,
-				"default"  => $default,
-				"property" => 'text-transform',
+				'name'     => $label,
+				'slug'     => $key,
+				'selector' => $selectors,
+				'default'  => $default,
+				'property' => 'text-transform',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -579,13 +567,12 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
-
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
-		protected function add_text_decoration( $tab_id, $key, $selectors = '', $label = 'Text Decoration', $default = 'none', $conditions = [] ) {
+		protected function add_text_decoration( $tab_id, $key, $selectors = '', $label = 'Text Decoration', $default = 'none', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = __( 'Text Decoration', 'woofunnels-upstroke-one-click-upsell' );
@@ -594,11 +581,11 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				$default = 'none';
 			}
 			$input     = array(
-				"name"     => $label,
-				"slug"     => $key,
-				"selector" => $selectors,
-				"default"  => $default,
-				"property" => 'text-decoration',
+				'name'     => $label,
+				'slug'     => $key,
+				'selector' => $selectors,
+				'default'  => $default,
+				'property' => 'text-decoration',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -607,25 +594,24 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
-
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
 		/* Typography Fields End*/
 
-		protected function add_border_radius( $tab_id, $key, $selector, $conditions = [], $default = [] ) {
+		protected function add_border_radius( $tab_id, $key, $selector, $conditions = array(), $default = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Border Radius', 'woofunnels-upstroke-one-click-upsell' );
 			}
 
 			$input     = array(
-				"name"     => $label,
-				"selector" => $selector,
-				"slug"     => $key,
+				'name'     => $label,
+				'selector' => $selector,
+				'slug'     => $key,
 				'default'  => $default,
-				"property" => 'border-radius',
+				'property' => 'border-radius',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -634,7 +620,7 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
@@ -643,7 +629,7 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Padding', 'woofunnels-upstroke-one-click-upsell' );
 			}
-			$tab_id->addPreset( "padding", $key, $label, $selector )->whiteList();
+			$tab_id->addPreset( 'padding', $key, $label, $selector )->whiteList();
 
 			return $key;
 		}
@@ -652,14 +638,14 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Margin', 'woofunnels-upstroke-one-click-upsell' );
 			}
-			$tab_id->addPreset( "margin", $key, $label, $selector )->whiteList();
+			$tab_id->addPreset( 'margin', $key, $label, $selector )->whiteList();
 
 			return $key;
 		}
 
 		protected function add_border( $tab_id, $key, $selectors, $label = '' ) {
 			if ( empty( $label ) ) {
-				$label = __( "Border" );
+				$label = __( 'Border' );
 			}
 			$tab_id->borderSection( $label, $selectors, $this );
 
@@ -668,18 +654,16 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 
 		protected function add_only_border_radius( $tab_id, $key, $selector, $name = '' ) {
 			if ( empty( $name ) ) {
-				$name = __( "Border Radius" );
+				$name = __( 'Border Radius' );
 			}
 
-			$borderRadiusPreset = $tab_id->addPreset( "border-radius", $key, __( $name . " Border Radius" ) );
+			$borderRadiusPreset = $tab_id->addPreset( 'border-radius', $key, __( $name . ' Border Radius' ) );
 			$borderRadiusPreset->whiteList();
 			$borderSelector = $this->El->registerCSSSelector( $selector );
 
 			$borderSelector->mapPreset( 'border-radius', $key );
 
-
 			return $key;
-
 		}
 
 		protected function add_box_shadow( $tab_id, $key, $selector, $label = '' ) {
@@ -699,17 +683,17 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			return $key;
 		}
 
-		protected function range( $tab_id, $key, $label = '', $selectors = '', $property = 'transition-duration', $default = [], $conditions = [] ) {
+		protected function range( $tab_id, $key, $label = '', $selectors = '', $property = 'transition-duration', $default = array(), $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = __( 'Transition Duration' );
 			}
 
 			$input     = array(
-				"name"         => __( 'Transition Duration' ),
-				"selector"     => $selectors,
-				"slug"         => $key,
-				"property"     => $property,
-				"control_type" => 'slider-measurebox',
+				'name'         => __( 'Transition Duration' ),
+				'selector'     => $selectors,
+				'slug'         => $key,
+				'property'     => $property,
+				'control_type' => 'slider-measurebox',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -719,24 +703,23 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				$input['condition'] = $condition;
 			}
 
-			$transition = $tab_id->addStyleControl( [ $input ] );
+			$transition = $tab_id->addStyleControl( array( $input ) );
 
 			$transition->setUnits( 's', 's' );
 			$transition->setRange( 0, 1, 0.1 );
-
 		}
 
-		protected function add_width( $tab_id, $key, $selectors = '', $label = '', $default = [], $conditions = [] ) {
+		protected function add_width( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Width', 'woofunnels-upstroke-one-click-upsell' );
 			}
 			$input     = array(
-				"name"     => $label,
-				"selector" => $selectors,
-				"slug"     => $key,
+				'name'     => $label,
+				'selector' => $selectors,
+				'slug'     => $key,
 				'default'  => isset( $default['default'] ) ? $default['default'] : '',
-				'unit'     => "%",
-				"property" => 'width',
+				'unit'     => '%',
+				'property' => 'width',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -745,24 +728,23 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
-
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
-		protected function slider_measure_box( $tab_id, $key, $selectors, $label, $default, $conditions = [], $property = "margin-bottom" ) {
+		protected function slider_measure_box( $tab_id, $key, $selectors, $label, $default, $conditions = array(), $property = 'margin-bottom' ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Icon Font Size', 'woofunnels-upstroke-one-click-upsell' );
 			}
-			$input     = array(
-				"name"         => $label,
-				"selector"     => $selectors,
-				"slug"         => $key,
+			$input = array(
+				'name'         => $label,
+				'selector'     => $selectors,
+				'slug'         => $key,
 				'default'      => $default,
-				"property"     => $property,
-				"control_type" => 'slider-measurebox',
-				"unit"         => 'px',
+				'property'     => $property,
+				'control_type' => 'slider-measurebox',
+				'unit'         => 'px',
 
 			);
 			$condition = '';
@@ -772,22 +754,21 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
-
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
-		protected function add_height( $tab_id, $key, $selectors = '', $label = '', $default = [], $conditions = [] ) {
+		protected function add_height( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Height', 'woofunnels-upstroke-one-click-upsell' );
 			}
 			$input     = array(
-				"name"     => $label,
-				"selector" => $selectors,
-				"slug"     => $key,
+				'name'     => $label,
+				'selector' => $selectors,
+				'slug'     => $key,
 				'default'  => $default['default'],
-				"property" => 'height',
+				'property' => 'height',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -796,22 +777,21 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			if ( '' !== $condition ) {
 				$input['condition'] = $condition;
 			}
-			$tab_id->addStyleControls( [ $input ] );
-
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
-		protected function add_min_width( $tab_id, $key, $selectors = '', $label = '', $default = [], $conditions = [] ) {
+		protected function add_min_width( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Min Width', 'woofunnels-upstroke-one-click-upsell' );
 			}
 			$input     = array(
-				"name"     => $label,
-				"selector" => $selectors,
-				"slug"     => $key,
+				'name'     => $label,
+				'selector' => $selectors,
+				'slug'     => $key,
 				'default'  => $default,
-				"property" => 'min-width',
+				'property' => 'min-width',
 			);
 			$condition = '';
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -821,18 +801,18 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				$input['condition'] = $condition;
 			}
 
-			$tab_id->addStyleControls( [ $input ] );
+			$tab_id->addStyleControls( array( $input ) );
 
 			return $key;
 		}
 
 		protected function get_class_options() {
-			return [
+			return array(
 				'wffn-sm-100' => __( 'Full', 'woofunnels-upstroke-one-click-upsell' ),
 				'wffn-sm-50'  => __( 'One Half', 'woofunnels-upstroke-one-click-upsell' ),
 				'wffn-sm-33'  => __( 'One Third', 'woofunnels-upstroke-one-click-upsell' ),
 				'wffn-sm-67'  => __( 'Two Third', 'woofunnels-upstroke-one-click-upsell' ),
-			];
+			);
 		}
 
 		protected function get_condition_string( $key, $condition ) {
@@ -841,7 +821,7 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				return '';
 			}
 
-			$output = [];
+			$output = array();
 			foreach ( $condition as $key => $value ) {
 				if ( is_array( $value ) ) {
 					$value = implode( ',', $value );
@@ -854,7 +834,7 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 
 		protected function get_unique_id() {
 			static $count = 0;
-			$count ++;
+			++$count;
 			$key = md5( 'wfocu_' . $count );
 
 			return $key;
@@ -887,7 +867,7 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				$run_setup = false;
 			}
 			if ( false === $run_setup ) {
-				return [];
+				return array();
 			}
 
 			global $post;
@@ -910,13 +890,11 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 						WFOCU_Core()->template_loader->maybe_setup_offer();
 					}
 				}
-
 			}
 
 			if ( is_null( $post ) || ( ! is_null( $post ) && $post->post_type !== WFOCU_Common::get_offer_post_type_slug() ) ) {
-				return [];
+				return array();
 			}
-
 
 			$this->setup_offer();
 			$this->setup_data();
@@ -940,13 +918,12 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				$status       = true;
 			}
 
-
 			return $status;
 		}
 
 		private function setup_offer() {
 			if ( empty( self::$product_options ) ) {
-				self::$product_options = array( '0' => __( '--No Product--', 'woofunnels-upstroke-one-click-upsell' ) );;
+				self::$product_options = array( '0' => __( '--No Product--', 'woofunnels-upstroke-one-click-upsell' ) );
 
 				if ( is_null( WFOCU_Core()->template_loader->product_data ) ) {
 					return;
@@ -954,22 +931,21 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				$products = WFOCU_Core()->template_loader->product_data->products;
 
 				if ( ! empty( $products ) ) {
-					self::$product_options = [];
+					self::$product_options = array();
 					foreach ( $products as $key => $product ) {
 						self::$product_options[ $key ] = preg_replace( '/[\'"\\\\\/\n\r\t]/', '', $product->data->get_name() );
 					}
 				}
-
 			}
 		}
 
 		public static function get_input_fields_sizes() {
-			return [
+			return array(
 				'6px'  => __( 'Small', 'woofunnels-upstroke-one-click-upsell' ),
 				'9px'  => __( 'Medium', 'woofunnels-upstroke-one-click-upsell' ),
 				'12px' => __( 'Large', 'woofunnels-upstroke-one-click-upsell' ),
 				'15px' => __( 'Extra Large', 'woofunnels-upstroke-one-click-upsell' ),
-			];
+			);
 		}
 
 		function defaultCSS() {
@@ -981,7 +957,6 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 			self::$css_build = true;
 
 			return file_get_contents( WFOCU_BUILDER_DIR . '/oxygen/css/wfocu-oxygen.css' );
-
 		}
 
 		function slug() {
@@ -998,13 +973,11 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				case 'border-bottom-color':
 				case 'border-left-color':
 				case 'border-right-color':
-
 					return 'colorpicker';
 					break;
 
 				case 'font-size':
 				case 'border-radius':
-
 					return 'slider-measurebox';
 					break;
 
@@ -1031,12 +1004,10 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				case 'padding-right':
 				case 'padding-bottom':
 				case 'padding-left':
-
 					return 'measurebox';
 					break;
 
 				case 'opacity':
-
 					return 'slider-measurebox';
 					break;
 
@@ -1047,25 +1018,21 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				case 'flex-wrap':
 				case 'visibility':
 				case 'align-items':
-
 					return 'radio';
 					break;
 
 				case 'font-family':
-
 					return 'font-family';
 					break;
 
 				case 'font-weight':
-
 					return 'dropdown';
 					break;
 
 				default:
-					return "textfield";
+					return 'textfield';
 					break;
 			}
 		}
-
 	}
 }

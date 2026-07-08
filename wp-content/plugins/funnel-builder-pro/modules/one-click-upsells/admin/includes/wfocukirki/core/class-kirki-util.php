@@ -13,6 +13,7 @@ if ( ! class_exists( 'WFOCUKirki_Util' ) ) {
 	/**
 	 * Utility class.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Util {
 
 		/**
@@ -111,7 +112,6 @@ if ( ! class_exists( 'WFOCUKirki_Util' ) ) {
 
 			// Pass the variables through a filter ('wfocukirki_variable') and return the array of variables.
 			return apply_filters( 'wfocukirki_variable', $variables );
-
 		}
 
 		/**
@@ -119,7 +119,7 @@ if ( ! class_exists( 'WFOCUKirki_Util' ) ) {
 		 *
 		 * @access public
 		 *
-		 * @param array $request The request params.
+		 * @param array  $request The request params.
 		 * @param string $url The request URL.
 		 *
 		 * @return array
@@ -157,7 +157,7 @@ if ( ! class_exists( 'WFOCUKirki_Util' ) ) {
 		 * @static
 		 * @access public
 		 *
-		 * @param string $context Use 'minor' or 'major'.
+		 * @param string  $context Use 'minor' or 'major'.
 		 * @param boolean $only_numeric Set to true if you want to skip the alpha/beta etc parts.
 		 *
 		 * @return int|float|string     Returns integer when getting the 'major' version.

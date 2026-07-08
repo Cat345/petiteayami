@@ -15,6 +15,7 @@ if ( ! class_exists( 'WooFunnels_Usage_Registry' ) ) {
 	/**
 	 * Class WooFunnels_Usage_Registry
 	 */
+	#[\AllowDynamicProperties]
 	class WooFunnels_Usage_Registry {
 
 		/**

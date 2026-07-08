@@ -19,6 +19,7 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Webfont_Loader' ) ) {
 	/**
 	 * Adds script for tooltips.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Modules_Webfont_Loader {
 
 		/**

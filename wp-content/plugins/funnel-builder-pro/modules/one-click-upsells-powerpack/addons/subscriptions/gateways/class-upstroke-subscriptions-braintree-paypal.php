@@ -1,8 +1,10 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 /**
  * Author PhpStorm.
  */
 if ( ! class_exists( 'UpStroke_Subscriptions_Braintree_PayPal' ) ) {
+	#[\AllowDynamicProperties]
 	class UpStroke_Subscriptions_Braintree_PayPal extends WFOCU_Gateway_Integration_Braintree_PayPal {
 
 		public function __construct() {
@@ -16,7 +18,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions_Braintree_PayPal' ) ) {
 		 *
 		 * @param WC_Subscription $subscription
 		 * @param $key
-		 * @param WC_Order $order
+		 * @param WC_Order        $order
 		 */
 		public function save_braintree_paypal_token_to_subscription( $subscription, $key, $order ) {
 
@@ -50,7 +52,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_Braintree_PayPal' ) ) {
 
 			return $meta_keys;
 		}
-
 	}
 
 	if ( class_exists( 'WC_Subscriptions' ) ) {

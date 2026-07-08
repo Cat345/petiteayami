@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Select control.
  */
 if ( ! class_exists( 'WFACPKirki_Control_Select' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Select extends WFACPKirki_Control_Base {
 
 		/**

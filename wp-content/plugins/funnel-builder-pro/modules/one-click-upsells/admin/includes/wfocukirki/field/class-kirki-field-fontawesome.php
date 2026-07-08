@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_FontAwesome' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_FontAwesome extends WFOCUKirki_Field {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_FontAwesome' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-fontawesome';
-
 		}
 
 		/**
@@ -38,7 +38,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_FontAwesome' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'esc_attr';
-
 		}
 	}
 }

@@ -11,9 +11,13 @@
  * @since       1.0
  */
 
-require_once wp_normalize_path( dirname( __FILE__ ) . '/functions.php' );
-require_once wp_normalize_path( dirname( __FILE__ ) . '/classes.php' );
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+require_once wp_normalize_path( __DIR__ . '/functions.php' );
+require_once wp_normalize_path( __DIR__ . '/classes.php' );
 // Filters require PHP 5.3.
 if ( version_compare( PHP_VERSION, '5.3.0' ) >= 0 ) {
-	require_once wp_normalize_path( dirname( __FILE__ ) . '/filters.php' );
+	require_once wp_normalize_path( __DIR__ . '/filters.php' );
 }

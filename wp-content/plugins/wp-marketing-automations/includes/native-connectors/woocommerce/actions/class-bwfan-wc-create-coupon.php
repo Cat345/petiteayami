@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 final class BWFAN_WC_Create_Coupon extends BWFAN_Action {
 
 	private static $ins = null;

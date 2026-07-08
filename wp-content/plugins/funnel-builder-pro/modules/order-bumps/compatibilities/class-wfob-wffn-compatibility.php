@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOB_WFFN_Compatibility' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_WFFN_Compatibility {
 
 		public function __construct() {
@@ -21,10 +22,7 @@ if ( ! class_exists( 'WFOB_WFFN_Compatibility' ) ) {
 		public function add_file() {
 			require_once plugin_dir_path( WFOB_PLUGIN_FILE ) . '/compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php';
 			require_once plugin_dir_path( WFOB_PLUGIN_FILE ) . '/compatibilities/funnel-builder/class-wffn-rest-bump-api-endpoint.php';
-
 		}
-
-
 	}
 
 	new WFOB_WFFN_Compatibility();

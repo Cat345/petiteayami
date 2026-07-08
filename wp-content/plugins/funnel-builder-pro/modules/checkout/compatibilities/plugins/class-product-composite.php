@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * plugin name : Woo Composite Products by WooCommerce v.10.0.2
@@ -8,23 +12,22 @@ if ( ! class_exists( 'WFACP_WooCommerce_Product_Composite' ) ) {
 	class WFACP_WooCommerce_Product_Composite {
 
 		public function __construct() {
-			add_filter( 'wfacp_show_item_quantity', [ $this, 'do_not_display_quantity_increment' ], 10, 2 );
-			add_filter( 'wfacp_show_you_save_text', [ $this, 'do_not_display' ], 10, 2 );
-			add_filter( 'wfacp_mini_cart_enable_delete_item', [ $this, 'do_not_display' ], 10, 2 );
-			add_filter( 'wfacp_display_quantity_increment', [ $this, 'do_not_display_quantity_increment' ], 10, 2 );
-			add_filter( 'wfacp_show_item_price', [ $this, 'do_not_display_main_product_price' ], 10, 2 );
-			add_filter( 'wfacp_enable_delete_item', [ $this, 'do_not_display' ], 10, 2 );
-			add_filter( 'wfacp_show_undo_message_for_item', [ $this, 'do_not_undo' ], 10, 2 );
-			add_filter( 'wfacp_exclude_product_cart_count', [ $this, 'do_not_undo' ], 10, 2 );
-			add_filter( 'wfacp_show_item_quantity_placeholder', [ $this, 'display_item_quantity' ], 10, 3 );
-			add_action( 'wfacp_internal_css', [ $this, 'hide_quantity' ] );
+			add_filter( 'wfacp_show_item_quantity', array( $this, 'do_not_display_quantity_increment' ), 10, 2 );
+			add_filter( 'wfacp_show_you_save_text', array( $this, 'do_not_display' ), 10, 2 );
+			add_filter( 'wfacp_mini_cart_enable_delete_item', array( $this, 'do_not_display' ), 10, 2 );
+			add_filter( 'wfacp_display_quantity_increment', array( $this, 'do_not_display_quantity_increment' ), 10, 2 );
+			add_filter( 'wfacp_show_item_price', array( $this, 'do_not_display_main_product_price' ), 10, 2 );
+			add_filter( 'wfacp_enable_delete_item', array( $this, 'do_not_display' ), 10, 2 );
+			add_filter( 'wfacp_show_undo_message_for_item', array( $this, 'do_not_undo' ), 10, 2 );
+			add_filter( 'wfacp_exclude_product_cart_count', array( $this, 'do_not_undo' ), 10, 2 );
+			add_filter( 'wfacp_show_item_quantity_placeholder', array( $this, 'display_item_quantity' ), 10, 3 );
+			add_action( 'wfacp_internal_css', array( $this, 'hide_quantity' ) );
 
 			/**
 			 * Composite product item quantity count min max handling
 			 */
 
-			add_filter( 'wfacp_cart_item_min_max_quantity', [ $this, 'handle_min_max_quantity' ], 99, 2 );
-
+			add_filter( 'wfacp_cart_item_min_max_quantity', array( $this, 'handle_min_max_quantity' ), 99, 2 );
 		}
 
 		public function do_not_display( $status, $cart_item ) {
@@ -63,7 +66,6 @@ if ( ! class_exists( 'WFACP_WooCommerce_Product_Composite' ) ) {
 			}
 
 			return $status;
-
 		}
 
 		public function do_not_undo( $status, $cart_item ) {
@@ -88,13 +90,13 @@ if ( ! class_exists( 'WFACP_WooCommerce_Product_Composite' ) ) {
 
 			if ( isset( $cart_item['composite_parent'] ) ) {
 				?>
-                <span><?php echo $cart_item['quantity']; ?></span>
+				<span><?php echo $cart_item['quantity']; ?></span>
 				<?php
 			}
 		}
 
 		public function hide_quantity() {
-			echo "<style>.composited_product_quantity{display:none}</style>";
+			echo '<style>.composited_product_quantity{display:none}</style>';
 		}
 
 
@@ -120,11 +122,8 @@ if ( ! class_exists( 'WFACP_WooCommerce_Product_Composite' ) ) {
 				}
 			}
 
-
 			return $MinMax;
 		}
-
-
 	}
 
 	new WFACP_WooCommerce_Product_Composite();

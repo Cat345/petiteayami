@@ -12,37 +12,41 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Elementor_Importer extends Elementor\TemplateLibrary\Source_Local implements WFACP_Import_Export {
 
-		private $is_multi = 'no';
-		private $slug = '';
+		private $is_multi        = 'no';
+		private $slug            = '';
 		public $delete_page_meta = true;
-		private $post_id = 0;
-		private $settings_file = '';
-		private $builder = 'elementor';
+		private $post_id         = 0;
+		private $settings_file   = '';
+		private $builder         = 'elementor';
 
 		public function __construct() {
-			//DO NOT DELETE
+			// DO NOT DELETE
 		}
 
 		public function import( $aero_id, $slug, $is_multi = 'no' ) {
 			$this->slug     = $slug;
 			$this->is_multi = $is_multi;
 			if ( 'elementor_1' === $slug ) {
-				wp_update_post( [ 'ID' => $aero_id, 'post_content' => '' ] );
+				wp_update_post(
+					array(
+						'ID'           => $aero_id,
+						'post_content' => '',
+					)
+				);
 				delete_post_meta( $aero_id, '_elementor_data' );
 				$this->delete_template_data( $aero_id );
 
 				update_post_meta( $aero_id, '_wp_page_template', 'wfacp-canvas.php' );
 
-				return [ 'status' => true ];
+				return array( 'status' => true );
 			}
-
 
 			$templates           = WFACP_Core()->template_loader->get_templates( $this->builder );
 			$this->settings_file = $templates[ $slug ]['settings_file'];
 			if ( $templates[ $slug ] && isset( $templates[ $slug ]['build_from_scratch'] ) ) {
 				$this->save_data( $aero_id );
 
-				return [ 'status' => true ];
+				return array( 'status' => true );
 			}
 
 			$data = WFACP_Core()->importer->get_remote_template( $slug, $this->builder );
@@ -65,11 +69,10 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 			if ( ! empty( $content ) ) {
 				$status = $this->import_aero_template( $aero_id, $content );
 
-
-				return [ 'status' => $status ];
+				return array( 'status' => $status );
 			}
 
-			return [ 'error' => __( 'Something Went wrong', 'woofunnels-aero-checkout' ) ];
+			return array( 'error' => __( 'Something Went wrong', 'woofunnels-aero-checkout' ) ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 		}
 
 
@@ -87,10 +90,13 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 		 */
 		public function import_aero_template( $post_id, $content ) {
 
-
-			wp_update_post( [ 'ID' => $post_id, 'post_content' => '' ] );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '',
+				)
+			);
 			delete_post_meta( $post_id, '_elementor_data' );
-
 
 			if ( empty( $content ) ) {
 				$this->clear_cache();
@@ -105,7 +111,6 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 			if ( ! is_array( $content ) ) {
 				return false;
 			}
-
 
 			if ( isset( $content['content'] ) && ! empty( $content['content'] ) ) {
 				$content = $content['content'];
@@ -125,6 +130,10 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 				$this->delete_template_data( $post_id );
 			}
 			if ( '' !== $content ) {
+				if ( is_array( $content ) ) {
+					require_once WFFN_PLUGIN_DIR . '/includes/class-wffn-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+					$content = WFFN_Content_Validator::validate_elementor_content( $content );
+				}
 				$content = wp_slash( wp_json_encode( $content ) );
 				update_post_meta( $post_id, '_elementor_data', $content );
 				WFACP_Common::update_label_meta( $post_id, $content );
@@ -166,8 +175,6 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 			}
 			update_option( Elementor\Core\Kits\Manager::OPTION_ACTIVE, $created_default_kit );
 		}
-
-
 	}
 
 	if ( class_exists( 'WFACP_Template_Importer' ) ) {

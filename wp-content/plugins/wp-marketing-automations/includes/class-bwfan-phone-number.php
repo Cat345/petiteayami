@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Phone_Numbers {
 
 	public function __construct() {

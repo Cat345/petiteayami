@@ -1,7 +1,8 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 if ( ! class_exists( 'WooFunnels_UpStroke_Subscriptions' ) ) {
+	#[\AllowDynamicProperties]
 	class WooFunnels_UpStroke_Subscriptions {
 
 		public static $instance;
@@ -41,7 +42,6 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Subscriptions' ) ) {
 			}
 			add_action( 'wp_loaded', array( $this, 'load_integration_gateway_files' ) );
 
-
 			include_once plugin_dir_path( __FILE__ ) . 'class-upstroke-subscriptions.php';
 		}
 
@@ -52,7 +52,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Subscriptions' ) ) {
 					<strong><?php esc_html_e( 'Attention', 'woofunnels-upstroke-power-pack' ); ?></strong>
 					<?php
 					/* translators: %1$s: Min required upstroke version */
-					echo sprintf( esc_html__( 'UpStroke Subscriptions requires  WooFunnels UpStroke: One Click Upsell version %1$s or greater. Kindly update the WooFunnels UpStroke: One Click Upsell plugin.', 'woofunnels-upstroke-power-pack' ), esc_attr( WFOCU_MIN_POWERPACK_VERSION ) );
+					printf( esc_html__( 'UpStroke Subscriptions requires  WooFunnels UpStroke: One Click Upsell version %1$s or greater. Kindly update the WooFunnels UpStroke: One Click Upsell plugin.', 'woofunnels-upstroke-power-pack' ), esc_attr( WFOCU_MIN_POWERPACK_VERSION ) );
 					?>
 				</p>
 			</div>
@@ -88,7 +88,6 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Subscriptions' ) ) {
 					include_once plugin_dir_path( __FILE__ ) . '/gateways/' . $val;
 				}
 			}
-
 		}
 	}
 }

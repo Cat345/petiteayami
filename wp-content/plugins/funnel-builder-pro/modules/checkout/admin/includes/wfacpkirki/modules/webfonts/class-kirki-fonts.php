@@ -13,6 +13,10 @@
 /**
  * The WFACPKirki_Fonts object.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Fonts' ) ) {
 	#[AllowDynamicProperties]
 	final class WFACPKirki_Fonts {
@@ -141,7 +145,7 @@ if ( ! class_exists( 'WFACPKirki_Fonts' ) ) {
 
 			// If we got this far, cache was empty so we need to get from JSON.
 			ob_start();
-			include wp_normalize_path( dirname( __FILE__ ) . '/webfonts.json' );
+			include wp_normalize_path( __DIR__ . '/webfonts.json' );
 
 			$fonts_json = ob_get_clean();
 			$fonts      = json_decode( $fonts_json, true );

@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_FontAwesome' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_FontAwesome extends WFACPKirki_Field {
@@ -24,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_FontAwesome' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-fontawesome';
-
 		}
 
 		/**
@@ -40,7 +43,6 @@ if ( ! class_exists( 'WFACPKirki_Field_FontAwesome' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'esc_attr';
-
 		}
 	}
 }

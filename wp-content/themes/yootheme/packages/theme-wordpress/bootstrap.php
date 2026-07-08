@@ -21,10 +21,12 @@ return [
         'image' => ['cacheDir' => "{$upload['basedir']}/yootheme/cache"],
     ],
 
-    'routes' => [
-        ['get', '/customizer', [CustomizerController::class, 'index'], ['customizer' => true]],
-        ['post', '/customizer', [CustomizerController::class, 'save']],
-    ],
+    'routes' => is_admin()
+        ? [
+            ['get', '/customizer', [CustomizerController::class, 'index'], ['customizer' => true]],
+            ['post', '/customizer', [CustomizerController::class, 'save']],
+        ]
+        : [],
 
     'events' => [
         'app.request' => [
@@ -87,6 +89,7 @@ return [
             'wp_check_filetype_and_ext' => [Listener\AddSvgFileType::class => ['handle', 10, 4]],
             'wp_prepare_themes_for_js' => [Listener\DisableAutoUpdate::class => 'handle'],
             'site_icon_meta_tags' => [Listener\FilterIconMetaTags::class => '@handle'],
+            'pre_kses' => [Listener\FilterUikitAttributes::class => ['handle', 10, 2]],
         ] +
         (!is_admin() && !wp_doing_cron()
             ? [

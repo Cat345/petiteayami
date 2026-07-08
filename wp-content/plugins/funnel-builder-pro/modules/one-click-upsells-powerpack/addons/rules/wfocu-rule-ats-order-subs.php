@@ -1,6 +1,8 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'WFOCU_Rule_Order_Subs' ) ) {
 	/** WooCommerce all thing subscription plugin rule */
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Order_Subs extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -125,8 +127,6 @@ if ( ! class_exists( 'WFOCU_Rule_Order_Subs' ) ) {
 			}
 
 			return $this->return_is_match( $result, $rule_data );
-
 		}
-
 	}
 }

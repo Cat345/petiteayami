@@ -8,10 +8,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 
-if ( ! file_exists( WFOB_SKIN_DIR . "/" . $selected_layout . '/layout-body.php' ) ) {
+$allowed_layouts = array( 'layout_1', 'layout_2', 'layout_3', 'layout_4', 'layout_5', 'layout_6', 'layout_7', 'layout_8', 'layout_9', 'layout_10', 'layout_11' );
+if ( ! in_array( $selected_layout, $allowed_layouts, true ) ) {
+	$selected_layout = 'layout_1';
+}
+if ( ! file_exists( WFOB_SKIN_DIR . '/' . $selected_layout . '/layout-body.php' ) ) {
 	return;
 }
 
+
+$wc_product = isset( $wc_product ) ? $wc_product : null;
 
 if ( $preview_bump == false ) {
 
@@ -72,7 +78,7 @@ if ( $preview_bump == false ) {
 	if ( isset( $data['variable'] ) && $cart_variation_id == 0 ) {
 		$variable_checkbox = 'wfob_choose_variation';
 	}
-	$price_data = apply_filters( 'wfob_product_switcher_price_data', [], $wc_product, $qty );
+	$price_data = apply_filters( 'wfob_product_switcher_price_data', array(), $wc_product, $qty );
 
 	if ( empty( $price_data ) ) {
 		$price_data['regular_org'] = $wc_product->get_regular_price( 'edit' );
@@ -87,7 +93,7 @@ if ( $preview_bump == false ) {
 
 	$price_data['regular_org'] *= $qty;
 	$price_data['price']       *= $qty;
-	$price_data['quantity']    = $qty;
+	$price_data['quantity']     = $qty;
 
 	$enable_price = true;
 
@@ -98,8 +104,8 @@ if ( $preview_bump == false ) {
 		}
 	}
 
-	$variation_attributes = [];
-	$product_attributes   = [];
+	$variation_attributes = array();
+	$product_attributes   = array();
 	if ( ! is_null( $cart_item ) && isset( $cart_item['variation_id'] ) ) {
 		if ( is_array( $cart_item['variation'] ) && count( $cart_item['variation'] ) ) {
 			$product_attributes = $cart_item['variation'];
@@ -143,8 +149,6 @@ if ( $preview_bump == false ) {
 	if ( $this->need_to_hide( $wc_product, $cart_item_key ) ) {
 		return 'success';
 	}
-
-
 }
 
 if ( true == wc_string_to_bool( $exclusive_content_enable ) ) {
@@ -165,7 +169,7 @@ $inner_wrapper_class = implode( ' ', $css_class );
 
 ?>
 
-    <div class="wfob_wrap_start <?php echo "wfob_" . $selected_layout; ?>" data-product-title="<?php echo $wc_product_name; ?>" data-product-price="<?php echo $wc_product_price ?>">
+	<div class="wfob_wrap_start <?php echo 'wfob_' . $selected_layout; ?>" data-product-title="<?php echo esc_attr( $wc_product_name ); ?>" data-product-price="<?php echo esc_attr( $wc_product_price ); ?>">
 
 
 		<?php
@@ -175,14 +179,14 @@ $inner_wrapper_class = implode( ' ', $css_class );
 
 
 		?>
-        <div class="wfob_wrapper" data-wfob-id="<?php echo $bump_id; ?>">
+		<div class="wfob_wrapper" data-wfob-id="<?php echo esc_attr( $bump_id ); ?>">
 
 
-            <div class="<?php echo $inner_wrapper_class; ?>" data-product-key="<?php echo $product_key; ?>"
-                 data-wfob-id="<?php echo $bump_id; ?>" cart_key="<?php echo $cart_item_key; ?>">
+			<div class="<?php echo esc_attr( $inner_wrapper_class ); ?>" data-product-key="<?php echo esc_attr( $product_key ); ?>"
+				data-wfob-id="<?php echo esc_attr( $bump_id ); ?>" cart_key="<?php echo esc_attr( $cart_item_key ); ?>">
 
 
-                <div id="wfob_wrapper_<?php echo $bump_id; ?>" class="wfob_sec_start">
+				<div id="wfob_wrapper_<?php echo esc_attr( $bump_id ); ?>" class="wfob_sec_start">
 
 					<?php
 
@@ -190,22 +194,22 @@ $inner_wrapper_class = implode( ' ', $css_class );
 					 * Special Offer Html
 					 */
 					$special_offer_position = 'wfob_exclusive_outside_top_left';
-					include WFOB_SKIN_DIR . '/template-parts/wfob-special-offer.php';
+					require WFOB_SKIN_DIR . '/template-parts/wfob-special-offer.php';
 					$special_offer_position = 'wfob_exclusive_outside_top_right';
-					include WFOB_SKIN_DIR . '/template-parts/wfob-special-offer.php';
+					require WFOB_SKIN_DIR . '/template-parts/wfob-special-offer.php';
 
-					include WFOB_SKIN_DIR . "/" . $selected_layout . '/layout-body.php';
+					require WFOB_SKIN_DIR . '/' . $selected_layout . '/layout-body.php';
 					?>
 
-                </div>
+				</div>
 
-            </div>
-        </div>
+			</div>
+		</div>
 		<?php
 		if ( isset( $wc_product ) && ! is_null( $wc_product ) ) {
 			do_action( 'wfob_after_wrapper', $this->get_id(), $wc_product, $product_key, $cart_item_key );
 		}
 
 		?>
-    </div>
+	</div>
 <?php

@@ -1,11 +1,12 @@
 <?php
 if ( ! class_exists( 'WFOCU_Guten_Reject_Button' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Guten_Reject_Button extends WFOCU_Guten_Field {
-		public $slug = 'wfocu_reject_button';
+		public $slug  = 'wfocu_reject_button';
 		protected $id = 'wfocu_reject_button';
 
 		public function __construct() {
-			$this->name = __( "WF Reject Button" );
+			$this->name = __( 'WF Reject Button' );
 			parent::__construct();
 		}
 
@@ -17,9 +18,7 @@ if ( ! class_exists( 'WFOCU_Guten_Reject_Button' ) ) {
 
 			return BWFBlocksUpsell_Render_Block::do_button_block( $settings, $content );
 		}
-
-
 	}
 
-	return new WFOCU_Guten_Reject_Button;
+	return new WFOCU_Guten_Reject_Button();
 }

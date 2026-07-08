@@ -3,12 +3,12 @@ if ( ! class_exists( 'WFTY_Rule_Base' ) ) {
 	/**
 	 * Base class for a Conditional_Content rule.
 	 */
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Base {
 
 		public $supports = array( 'order' );
 
 		public function __construct( $name ) {
-
 		}
 
 		protected function get_rule_instance() {
@@ -19,6 +19,7 @@ if ( ! class_exists( 'WFTY_Rule_Base' ) ) {
 		 * Get's the list of possibile values for the rule.
 		 *
 		 * Override to return the correct list of possibile values for your rule object.
+		 *
 		 * @return array
 		 */
 		public function get_possible_rule_values() {
@@ -34,8 +35,8 @@ if ( ! class_exists( 'WFTY_Rule_Base' ) ) {
 		 */
 		public function get_possible_rule_operators() {
 			return array(
-				'==' => __( "is equal to", 'funnel-builder-powerpack' ),
-				'!=' => __( "is not equal to", 'funnel-builder-powerpack' ),
+				'==' => __( 'is equal to', 'funnel-builder-powerpack' ),
+				'!=' => __( 'is not equal to', 'funnel-builder-powerpack' ),
 			);
 		}
 
@@ -62,7 +63,7 @@ if ( ! class_exists( 'WFTY_Rule_Base' ) ) {
 		 * Helper function to wrap the return value from is_match and apply filters or other modifications in sub classes.
 		 *
 		 * @param boolean $result The result that should be returned.
-		 * @param array $rule_data The array config object for the current rule.
+		 * @param array   $rule_data The array config object for the current rule.
 		 *
 		 * @return boolean
 		 */
@@ -81,46 +82,46 @@ if ( ! class_exists( 'WFTY_Rule_Base' ) ) {
 		}
 
 		public function get_terms_title( $terms ) {
-			$string = [];
+			$string = array();
 			foreach ( $terms as $term ) {
 				$term     = get_term_by( 'id', $term, 'product_tag' );
 				$string[] = $term->name;
 			}
 
-			return implode( ',', $string );
+			return esc_html( implode( ',', $string ) );
 		}
 
 		public function get_category_title( $terms ) {
-			$string = [];
+			$string = array();
 			foreach ( $terms as $term ) {
 				$term     = get_term_by( 'id', $term, 'product_cat' );
 				$string[] = $term->name;
 			}
 
-			return implode( ',', $string );
+			return esc_html( implode( ',', $string ) );
 		}
 
 		public function get_product_type( $terms ) {
-			$string = [];
+			$string = array();
 			foreach ( $terms as $term ) {
 				$term     = get_term_by( 'id', $term, 'product_type' );
 				$string[] = $term->name;
 			}
 
-			return implode( ',', $string );
+			return esc_html( implode( ',', $string ) );
 		}
 
 		public function get_coupons_title( $coupons ) {
-			$string = [];
+			$string = array();
 			foreach ( $coupons as $coupon ) {
 				$string[] = $coupon;
 			}
 
-			return implode( ',', $string );
+			return esc_html( implode( ',', $string ) );
 		}
 
 		public function get_gateways_title( $gateways ) {
-			$result = [];
+			$result = array();
 
 			foreach ( WC()->payment_gateways()->payment_gateways() as $gateway ) {
 				foreach ( $gateways as $gate ) {
@@ -128,15 +129,14 @@ if ( ! class_exists( 'WFTY_Rule_Base' ) ) {
 					if ( $gate === $gateway->id ) {
 						$result[] = ! empty( $gateway->get_title() ) ? $gateway->get_title() : $gateway->get_method_title();
 					}
-
 				}
 			}
 
-			return implode( ',', $result );
+			return esc_html( implode( ',', $result ) );
 		}
 
 		public function get_countries_title( $countries ) {
-			$result = [];
+			$result = array();
 
 			foreach ( WC()->countries->get_allowed_countries() as $country => $country_title ) {
 				if ( in_array( $country, $countries, true ) ) {
@@ -144,11 +144,11 @@ if ( ! class_exists( 'WFTY_Rule_Base' ) ) {
 				}
 			}
 
-			return implode( ',', $result );
+			return esc_html( implode( ',', $result ) );
 		}
 
 		public function get_states_title( $countries ) {
-			$result = [];
+			$result = array();
 
 			foreach ( WC()->countries->get_allowed_countries() as $country => $country_title ) {
 				if ( in_array( $country, $countries, true ) ) {
@@ -156,33 +156,36 @@ if ( ! class_exists( 'WFTY_Rule_Base' ) ) {
 				}
 			}
 
-			return implode( ',', $result );
+			return esc_html( implode( ',', $result ) );
 		}
 
 		public function get_users_name( $names ) {
-			$result = [];
+			$result = array();
 
 			foreach ( $names as $user ) {
-
-				$result[] = get_user_by( 'id', $user )->display_name;
+				$user_obj = get_user_by( 'id', $user );
+				if ( ! $user_obj ) {
+					continue;
+				}
+				$result[] = $user_obj->display_name;
 			}
 
-			return implode( ',', $result );
+			return esc_html( implode( ',', $result ) );
 		}
 
 		public function get_user_role_title( $names ) {
-			$result         = [];
+			$result         = array();
 			$editable_roles = get_editable_roles();
 			foreach ( $names as $user ) {
 
 				$result[] = translate_user_role( $editable_roles[ $user ]['name'] );
 			}
 
-			return implode( ',', $result );
+			return esc_html( implode( ',', $result ) );
 		}
 
 		public function get_shipping_method_title( $method_ids ) {
-			$result = [];
+			$result = array();
 
 			foreach ( WC()->shipping()->get_shipping_methods() as $country => $country_title ) {
 				if ( in_array( $country, $method_ids, true ) ) {
@@ -190,11 +193,11 @@ if ( ! class_exists( 'WFTY_Rule_Base' ) ) {
 				}
 			}
 
-			return implode( ',', $result );
+			return esc_html( implode( ',', $result ) );
 		}
 
 		public function get_product_title( $items ) {
-			$result = [];
+			$result = array();
 
 			foreach ( $items as $item ) {
 				$object   = wc_get_product( $item );
@@ -202,7 +205,7 @@ if ( ! class_exists( 'WFTY_Rule_Base' ) ) {
 
 			}
 
-			return implode( ',', $result );
+			return esc_html( implode( ',', $result ) );
 		}
 
 		public function get_day_title( $items ) {
@@ -216,7 +219,7 @@ if ( ! class_exists( 'WFTY_Rule_Base' ) ) {
 				'6' => __( 'Saturday', 'funnel-builder-powerpack' ),
 
 			);
-			$result  = [];
+			$result = array();
 
 			foreach ( $items as $item ) {
 
@@ -224,7 +227,7 @@ if ( ! class_exists( 'WFTY_Rule_Base' ) ) {
 
 			}
 
-			return implode( ',', $result );
+			return esc_html( implode( ',', $result ) );
 		}
 
 		public function get_operators_string( $operator ) {
@@ -276,6 +279,5 @@ if ( ! class_exists( 'WFTY_Rule_Base' ) ) {
 					break;
 			}
 		}
-
 	}
 }

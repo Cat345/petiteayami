@@ -1,14 +1,16 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 /**
  * Author Woofunnels.
  */
 
-use Sublium_WCS\Compatibilities\Compatibility as Compatibility;
+use Sublium_WCS\Compatibilities\Compatibility;
 use Sublium_WCS\Includes\Controller\Subscriptions\Subscription;
 use Sublium_WCS\Includes\Helpers\Dates;
 use Sublium_WCS\Includes\Helpers\Subscription as SubscriptionHelper;
 
 if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
+	#[\AllowDynamicProperties]
 	class UpStroke_Sublium_Subscriptions {
 
 		public static $instance = null;
@@ -20,13 +22,13 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 			add_action( 'wfocu_offer_accepted_and_processed', array( $this, 'maybe_create_new_subscriptions' ), 1, 5 );
 			add_action( 'wfocu_offer_new_order_created_before_complete', array( $this, 'maybe_create_new_subscriptions_on_new_order' ), 1, 1 );
 			add_action( 'wfocu_offer_payment_failed_event', array( $this, 'create_pending_subscription' ), 10, 1 );
-			add_filter('sublium_wcs_plan_data',[$this,'append_price_html'],10,3);
+			add_filter( 'sublium_wcs_plan_data', array( $this, 'append_price_html' ), 10, 3 );
 			add_filter( 'wfocu_add_product_to_order_item_meta', array( $this, 'add_plan_id_to_order_item_meta' ), 10, 3 );
 		}
-	public function append_price_html($plan_data,$plan,$product){
+		public function append_price_html( $plan_data, $plan, $product ) {
 
-		if($plan->get_type()===1){
-			$rg_price = $product->get_regular_price();
+			if ( $plan->get_type() === 1 ) {
+				$rg_price = $product->get_regular_price();
 
 				if ( \Sublium_WCS\Includes\Main\Product::is_variable_product_types( $product ) ) {
 					/** @var \WC_Product_Variable $product */
@@ -37,63 +39,63 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 				$rg_price = apply_filters( 'sublium_wcs_plan_regular_price', $rg_price, $product, $this );
 				$price    = $plan->get_recurring_cart_price( $product->get_price(), $product );
 				$price    = \Sublium_WCS\Includes\Main\Product::get_instance()->get_price_based_on_tax( $price, $product );
-		}else if($plan->get_type()===2){
+			} elseif ( $plan->get_type() === 2 ) {
 
-			if ( empty( $plan->product_plan_map_data ) ) {
-				return $plan_data;
+				if ( empty( $plan->product_plan_map_data ) ) {
+					return $plan_data;
+				}
+				$rg_price = $plan->product_plan_map_data['regular_price'];
+				$price    = $plan->get_recurring_cart_price( $product->get_price(), $product );
+				if ( empty( $price ) ) {
+					$price = $rg_price;
+				}
+
+				$signup_fee = $plan->get_signup_fee( $product );
+				if ( $signup_fee > 0 ) {
+					$price += $signup_fee;
+				}
+
+				$rg_price = \Sublium_WCS\Includes\Main\Product::get_instance()->get_price_based_on_tax( $rg_price, $product );
+				$rg_price = apply_filters( 'sublium_wcs_plan_regular_price', $rg_price, $product, $this );
+				$price    = \Sublium_WCS\Includes\Main\Product::get_instance()->get_price_based_on_tax( $price, $product );
+
+			} elseif ( $plan->get_type() === 3 ) {
+				/**
+				 * display the recurring price with tax applied need to check if tax is enabled
+				 */
+				$rg_price = $product->get_regular_price();
+				if ( \Sublium_WCS\Includes\Main\Product::is_variable_product_types( $product ) ) {
+					/** @var \WC_Product_Variable $product */
+					$rg_price = $product->get_variation_regular_price( 'max' );
+				}
+				$rg_price = \Sublium_WCS\Includes\Main\Product::get_instance()->get_price_based_on_tax( $rg_price, $product );
+				$rg_price = apply_filters( 'sublium_wcs_plan_regular_price', $rg_price, $product, $this );
+
+				$recurring_price = $plan->get_recurring_cart_price( $product->get_price(), $product );
+				$tax_result      = \Sublium_WCS\Includes\Helpers\Utility::apply_tax_to_price( $product, $recurring_price, 1 );
+				$price           = $tax_result['price'];
 			}
-			$rg_price = $plan->product_plan_map_data['regular_price'];
-			$price    = $plan->get_recurring_cart_price( $product->get_price(), $product );
-			if ( empty( $price ) ) {
-				$price = $rg_price;
+
+			// Apply currency conversion for multi-currency compatibility
+			if ( class_exists( '\Sublium_WCS\Compatibilities\Compatibility' ) ) {
+				$rg_price = Compatibility::get_fixed_currency_price( $rg_price );
+				$price    = Compatibility::get_fixed_currency_price( $price );
 			}
 
-			$signup_fee = $plan->get_signup_fee( $product );
-			if ( $signup_fee > 0 ) {
-				$price += $signup_fee;
-			}
-
-			$rg_price = \Sublium_WCS\Includes\Main\Product::get_instance()->get_price_based_on_tax( $rg_price, $product );
-			$rg_price = apply_filters( 'sublium_wcs_plan_regular_price', $rg_price, $product, $this );
-			$price    = \Sublium_WCS\Includes\Main\Product::get_instance()->get_price_based_on_tax( $price, $product );
-
-		}else if($plan->get_type()===3){
-			/**
-			 * display the recurring price with tax applied need to check if tax is enabled
-			 */
-			$rg_price = $product->get_regular_price();
-			if ( \Sublium_WCS\Includes\Main\Product::is_variable_product_types( $product ) ) {
-				/** @var \WC_Product_Variable $product */
-				$rg_price = $product->get_variation_regular_price( 'max' );
-			}
-			$rg_price = \Sublium_WCS\Includes\Main\Product::get_instance()->get_price_based_on_tax( $rg_price, $product );
-			$rg_price = apply_filters( 'sublium_wcs_plan_regular_price', $rg_price, $product, $this );
-
-			$recurring_price = $plan->get_recurring_cart_price( $product->get_price(), $product );
-			$tax_result      = \Sublium_WCS\Includes\Helpers\Utility::apply_tax_to_price( $product, $recurring_price, 1 );
-			$price = $tax_result['price'];
-		}
-
-		// Apply currency conversion for multi-currency compatibility
-		if ( class_exists( '\Sublium_WCS\Compatibilities\Compatibility' ) ) {
-			$rg_price = Compatibility::get_fixed_currency_price( $rg_price );
-			$price    = Compatibility::get_fixed_currency_price( $price );
-		}
-
-		ob_start();
-		?>
+			ob_start();
+			?>
 		<div class="wfocu-price-wrapper">
 			<div class="wfocu-product-price wfocu-product-on-sale" bis_skin_checked="1">
 			<span class="wfocu-regular-price"><?php echo wp_kses_post( wc_price( $rg_price ) ); ?></span>
-			<?php if($price < $rg_price): ?>
+			<?php if ( $price < $rg_price ) : ?>
 				<span class="wfocu-sale-price"><?php echo wp_kses_post( wc_price( $price ) ); ?></span>
 			<?php endif; ?>
 			</div>
 		</div>
-		<?php
-		$plan_data['discounted_upsell_price_html']=ob_get_clean();
-		return $plan_data;
-	}
+			<?php
+			$plan_data['discounted_upsell_price_html'] = ob_get_clean();
+			return $plan_data;
+		}
 
 
 		/**
@@ -118,7 +120,6 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function get_plan_sublium_data( $data ) {
@@ -129,8 +130,7 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 				return $sublium_data['data'];
 			}
 
-			return [];
-
+			return array();
 		}
 
 
@@ -162,7 +162,7 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 
 				$this->create_sublium_subscriptions( $get_package, $subscription_order, 'ACTIVE' );
 
-			} catch ( Error|Exception $error ) {
+			} catch ( Error | Exception $error ) {
 
 			}
 		}
@@ -173,7 +173,7 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 				$subscription_order = $new_order;
 				$get_package        = WFOCU_Core()->data->get( '_upsell_package' );
 				$this->create_sublium_subscriptions( $get_package, $subscription_order, 'PENDING' );
-			} catch ( Error|Exception $error ) {
+			} catch ( Error | Exception $error ) {
 
 			}
 		}
@@ -187,7 +187,7 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 				$is_new_upsell_order = $subscription_order->get_parent_id() > 0;
 
 				// Prepare offers data - one subscription per offer/product
-				$offers_data = [];
+				$offers_data = array();
 				foreach ( $get_package['products'] as $offer_data ) {
 					$get_product = $offer_data['data'];
 					if ( ! $get_product instanceof WC_Product ) {
@@ -197,11 +197,11 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 					if ( false === $plan_id ) {
 						continue;
 					}
-					$offers_data[] = [
+					$offers_data[] = array(
 						'offer_data' => $offer_data,
 						'plan_id'    => $plan_id,
 						'product'    => $get_product,
-					];
+					);
 				}
 
 				if ( empty( $offers_data ) ) {
@@ -218,11 +218,11 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 						$product    = $offer_info['product'];
 
 						// Prepare plan data for single offer
-						$plan_data = [ $offer_data ];
+						$plan_data                      = array( $offer_data );
 						$plan_data['_sublium_wcs_plan'] = $plan_id;
 
-						$subscription_items = $this->prepare_subscription_items( $plan_data, $subscription_order );
-						$subscription_data  = $this->prepare_subscription_data( $subscription_order, $plan_data, $subscription_items );
+						$subscription_items           = $this->prepare_subscription_items( $plan_data, $subscription_order );
+						$subscription_data            = $this->prepare_subscription_data( $subscription_order, $plan_data, $subscription_items );
 						$subscription_data['plan_id'] = $plan_id;
 
 						$subscription = Subscription::create( $subscription_data );
@@ -240,13 +240,17 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 								$subscription->update_items( $item_ids );
 							}
 							$subscription->update_status( $new_status );
-							SubscriptionHelper::create_activity( $subscription->get_id(), [
-								'object_type' => SubscriptionHelper::ACTIVITY_OBJECT_TYPE['SUBSCRIPTION'],
-								'action'      => SubscriptionHelper::ACTIVITY_ACTION['CREATED'],
-								'new_value'   => 0,
-								'old_value'   => 0,
-								'user_type'   => SubscriptionHelper::ACTIVITY_USER_TYPES['SYSTEM'],
-							], sprintf( __( 'Sublium Subscription created using upsell for Order - %d', 'sublium' ), $subscription_order->get_id() ) );
+							SubscriptionHelper::create_activity(
+								$subscription->get_id(),
+								array(
+									'object_type' => SubscriptionHelper::ACTIVITY_OBJECT_TYPE['SUBSCRIPTION'],
+									'action'      => SubscriptionHelper::ACTIVITY_ACTION['CREATED'],
+									'new_value'   => 0,
+									'old_value'   => 0,
+									'user_type'   => SubscriptionHelper::ACTIVITY_USER_TYPES['SYSTEM'],
+								),
+								sprintf( __( 'Sublium Subscription created using upsell for Order - %d', 'sublium' ), $subscription_order->get_id() )
+							);
 							$subscription->save();
 							$modifier = new Sublium_WCS\Includes\Controller\Subscriptions\Subscriptionmodifier( $subscription->get_id() );
 							$modifier->recalculate_totals();
@@ -274,11 +278,11 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 						$product    = $offer_info['product'];
 
 						// Prepare plan data for single offer
-						$plan_data = [ $offer_data ];
+						$plan_data                      = array( $offer_data );
 						$plan_data['_sublium_wcs_plan'] = $plan_id;
 
-						$subscription_items = $this->prepare_subscription_items( $plan_data, $subscription_order );
-						$subscription_data  = $this->prepare_subscription_data( $subscription_order, $plan_data, $subscription_items );
+						$subscription_items           = $this->prepare_subscription_items( $plan_data, $subscription_order );
+						$subscription_data            = $this->prepare_subscription_data( $subscription_order, $plan_data, $subscription_items );
 						$subscription_data['plan_id'] = $plan_id;
 
 						$subscription = Subscription::create( $subscription_data );
@@ -296,13 +300,17 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 								$subscription->update_items( $item_ids );
 							}
 							$subscription->update_status( $new_status );
-							SubscriptionHelper::create_activity( $subscription->get_id(), [
-								'object_type' => SubscriptionHelper::ACTIVITY_OBJECT_TYPE['SUBSCRIPTION'],
-								'action'      => SubscriptionHelper::ACTIVITY_ACTION['CREATED'],
-								'new_value'   => 0,
-								'old_value'   => 0,
-								'user_type'   => SubscriptionHelper::ACTIVITY_USER_TYPES['SYSTEM'],
-							], sprintf( __( 'Sublium Subscription created using upsell for Order - %d', 'sublium' ), $subscription_order->get_id() ) );
+							SubscriptionHelper::create_activity(
+								$subscription->get_id(),
+								array(
+									'object_type' => SubscriptionHelper::ACTIVITY_OBJECT_TYPE['SUBSCRIPTION'],
+									'action'      => SubscriptionHelper::ACTIVITY_ACTION['CREATED'],
+									'new_value'   => 0,
+									'old_value'   => 0,
+									'user_type'   => SubscriptionHelper::ACTIVITY_USER_TYPES['SYSTEM'],
+								),
+								sprintf( __( 'Sublium Subscription created using upsell for Order - %d', 'sublium' ), $subscription_order->get_id() )
+							);
 							$subscription->save();
 							$modifier = new Sublium_WCS\Includes\Controller\Subscriptions\Subscriptionmodifier( $subscription->get_id() );
 							$modifier->recalculate_totals();
@@ -320,51 +328,50 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 						$subscription_order->save();
 					}
 				}
-			} catch ( Error|Exception $error ) {
+			} catch ( Error | Exception $error ) {
 			}
 		}
 
-	public function find_tax_and_apply() {
+		public function find_tax_and_apply() {
+		}
 
-	}
-
-	/**
-	 * Collect item IDs (product IDs and variation IDs) from subscription items
-	 *
-	 * @param array $subscription_items Array of subscription items with item_type and item_data
-	 * @return array Array of unique product IDs and variation IDs as strings
-	 */
-	private function collect_item_ids_from_subscription_items( $subscription_items ) {
-		$item_ids = array();
-		foreach ( $subscription_items as $item ) {
-			if ( ! isset( $item['item_type'] ) || ! isset( $item['item_data'] ) ) {
-				continue;
-			}
-			// Only collect IDs for product items (item_type === 1)
-			if ( (int) $item['item_type'] === 1 && isset( $item['item_data']['product_id'] ) ) {
-				$values = array( (string) $item['item_data']['product_id'] );
-				if ( ! empty( $item['item_data']['variation_id'] ) ) {
-					$values[] = (string) $item['item_data']['variation_id'];
+		/**
+		 * Collect item IDs (product IDs and variation IDs) from subscription items
+		 *
+		 * @param array $subscription_items Array of subscription items with item_type and item_data
+		 * @return array Array of unique product IDs and variation IDs as strings
+		 */
+		private function collect_item_ids_from_subscription_items( $subscription_items ) {
+			$item_ids = array();
+			foreach ( $subscription_items as $item ) {
+				if ( ! isset( $item['item_type'] ) || ! isset( $item['item_data'] ) ) {
+					continue;
 				}
-				$item_ids = array_merge( $item_ids, array_filter( $values ) );
+				// Only collect IDs for product items (item_type === 1)
+				if ( (int) $item['item_type'] === 1 && isset( $item['item_data']['product_id'] ) ) {
+					$values = array( (string) $item['item_data']['product_id'] );
+					if ( ! empty( $item['item_data']['variation_id'] ) ) {
+						$values[] = (string) $item['item_data']['variation_id'];
+					}
+					$item_ids = array_merge( $item_ids, array_filter( $values ) );
+				}
 			}
+			// Remove duplicates to ensure unique product/variation IDs only
+			// This prevents duplicate products from appearing in the admin listing
+			return array_values( array_unique( $item_ids ) );
 		}
-		// Remove duplicates to ensure unique product/variation IDs only
-		// This prevents duplicate products from appearing in the admin listing
-		return array_values( array_unique( $item_ids ) );
-	}
 
-	/**
-	 * Prepare subscription items with down payment & item IDs
-	 *
-	 * @param object $recurring_cart
-	 * @param \WC_Order $order
-	 *
-	 * @return array
-	 */
-	public function prepare_subscription_items( $plans_data, $order = null ) {
-			$items    = [];
-			$item_ids = [];
+		/**
+		 * Prepare subscription items with down payment & item IDs
+		 *
+		 * @param object    $recurring_cart
+		 * @param \WC_Order $order
+		 *
+		 * @return array
+		 */
+		public function prepare_subscription_items( $plans_data, $order = null ) {
+			$items    = array();
+			$item_ids = array();
 			$address  = $order->get_address();
 			$total    = 0;
 			foreach ( $plans_data as $offer_data ) {
@@ -379,30 +386,34 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 				 * We are creating simple item object here just so that we could run the action to get all metadata
 				 */
 				$item = new \WC_Order_Item_Product();
-				$item->set_props( array(
-					'quantity'  => ( is_array( $offer_data ) && isset( $offer_data['qty'] ) && (int) $offer_data['qty'] > 1 ) ? $offer_data['qty'] : 1,
-					'variation' => [],
-				) );
+				$item->set_props(
+					array(
+						'quantity'  => ( is_array( $offer_data ) && isset( $offer_data['qty'] ) && (int) $offer_data['qty'] > 1 ) ? $offer_data['qty'] : 1,
+						'variation' => array(),
+					)
+				);
 				if ( $product ) {
-					$item->set_props( array(
-						'name'         => $product->get_name(),
-						'tax_class'    => $product->get_tax_class(),
-						'product_id'   => $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id(),
-						'variation_id' => $product->is_type( 'variation' ) ? $product->get_id() : 0,
-					) );
+					$item->set_props(
+						array(
+							'name'         => $product->get_name(),
+							'tax_class'    => $product->get_tax_class(),
+							'product_id'   => $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id(),
+							'variation_id' => $product->is_type( 'variation' ) ? $product->get_id() : 0,
+						)
+					);
 				}
-				$address_data = [
+				$address_data = array(
 					'country'   => $address['country'],
 					'state'     => $address['state'],
 					'postcode'  => $address['postcode'],
 					'city'      => $address['city'],
 					'tax_class' => $product->get_tax_class(),
-				];
+				);
 				if ( wc_tax_enabled() ) {
 
 					$sublium_data = $this->get_plan_sublium_data( $offer_data );
 
-					$taxes = [];
+					$taxes = array();
 					if ( ! empty( $sublium_data ) && isset( $sublium_data['sublium_tax_data'] ) ) {
 						foreach ( $sublium_data['sublium_tax_data'] as $_tax ) {
 							$taxes[ $_tax['item_data']['rate_id'] ] = $_tax['item_data']['amount'];
@@ -414,7 +425,12 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 					$taxes     = WC_Tax::calc_tax( $offer_data['price'], $tax_rates, true ); // extract tax
 					$item->set_subtotal( $offer_data['price'] );
 					$item->set_total( $offer_data['price'] );
-					$item->set_taxes( [ 'total' => $taxes, 'subtotal' => $taxes ] );
+					$item->set_taxes(
+						array(
+							'total'    => $taxes,
+							'subtotal' => $taxes,
+						)
+					);
 					$total += $offer_data['price'];
 
 				} else {
@@ -431,41 +447,43 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 			if ( count( $shippings ) > 0 ) {
 				$first_shipping = current( $shippings );
 				$s_item         = new WC_Order_Item_Shipping();
-				$s_item->set_props( array(
-					'method_title' => $first_shipping->get_method_title(),
-					'method_id'    => $first_shipping->get_method_id(),
-					'total'        => $first_shipping->get_total(),
-					'instance_id'  => $first_shipping->get_instance_id(),
-				) );
+				$s_item->set_props(
+					array(
+						'method_title' => $first_shipping->get_method_title(),
+						'method_id'    => $first_shipping->get_method_id(),
+						'total'        => $first_shipping->get_total(),
+						'instance_id'  => $first_shipping->get_instance_id(),
+					)
+				);
 				$s_item->calculate_taxes( $address );
 				$items[] = array(
 					'item_type' => 2,
-					'item_data' => [
+					'item_data' => array(
 						'method_title' => $s_item->get_method_title(),
 						'method_id'    => $s_item->get_method_id(),
 						'total'        => $s_item->get_total(),
 						'instance_id'  => $s_item->get_instance_id(),
-						'tax'          => $s_item->get_taxes()
-					],
+						'tax'          => $s_item->get_taxes(),
+					),
 				);
-				$total   += $first_shipping->get_total();
+				$total  += $first_shipping->get_total();
 
 			}
 
-			return [
+			return array(
 				'line_items'  => $items,
 				'item_ids'    => $item_ids,
 				'downpayment' => 0,
 				'total'       => $total,
-			];
+			);
 		}
 
 		/**
 		 * Prepare subscription data
 		 *
 		 * @param \WC_Order $order
-		 * @param object $recurring_cart
-		 * @param array $subscription_items
+		 * @param object    $recurring_cart
+		 * @param array     $subscription_items
 		 *
 		 * @return array
 		 */
@@ -476,7 +494,6 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 			$base_total = $subscription_items['total'];
 
 				$base_total = Compatibility::get_fixed_currency_price_reverse( $base_total, $order->get_currency() );
-
 
 			// get customer id from order
 			$user_id = $order->get_customer_id();
@@ -504,7 +521,7 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 
 			$plan = \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_data['_sublium_wcs_plan'], $product );
 
-			return [
+			return array(
 				'parent_order_id'       => $order->get_id(),
 				'gateway'               => $order->get_payment_method(),
 				'user_id'               => $user_id,
@@ -521,15 +538,15 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 				'search_str'            => $search_str,
 				'end_date'              => $plan->get_end_date(),
 				'end_date_utc'          => $plan->get_end_date( 'Y-m-d H:i:s', '', true ),
-				'meta_data'             => $this->get_meta_data( $order, $plan_data, $subscription_items )
-			];
+				'meta_data'             => $this->get_meta_data( $order, $plan_data, $subscription_items ),
+			);
 		}
 
 		/**
 		 * Get meta data for subscription
 		 *
 		 * @param \WC_Order $order
-		 * @param object $recurring_cart
+		 * @param object    $recurring_cart
 		 *
 		 * @return array
 		 */
@@ -547,7 +564,7 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 
 			$plan      = \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_data['_sublium_wcs_plan'], $product );
 			$data      = $plan->get_data();
-			$meta_data = [
+			$meta_data = array(
 				'billing_details'                 => $order->get_address(),
 				'shipping_details'                => $order->get_address( 'shipping' ),
 				'gateway_multiple_fields'         => '',
@@ -559,16 +576,19 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 				'free_trial'                      => $plan->get_trial_days_left(),
 				'subscription_ends'               => $data['subscription_ends'] ?? 'never',
 				'subscription_ends_payment_count' => $data['subscription_ends_payment_count'] ?? '',
-			];
+			);
 
 			$order_meta = SubscriptionHelper::get_filtered_order_meta_data( $order );
 
 			$meta_data = array_merge( $meta_data, $order_meta );
 
 			// filter meta data for blank values
-			$meta_data = array_filter( $meta_data, function ( $value ) {
-				return ! empty( $value );
-			} );
+			$meta_data = array_filter(
+				$meta_data,
+				function ( $value ) {
+					return ! empty( $value );
+				}
+			);
 
 			return $meta_data;
 		}
@@ -577,7 +597,7 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 		 * Build search string from order and posted data
 		 *
 		 * @param \WC_Order $order
-		 * @param array $posted_data
+		 * @param array     $posted_data
 		 *
 		 * @return string
 		 */
@@ -585,48 +605,48 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 			return $order->get_billing_email() . ' ' . $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() . ' ' . $order->get_billing_phone();
 		}
 
-	/**
-	 * Create item data for subscription
-	 *
-	 * @param \WC_Product $product
-	 * @param array $values
-	 * @param \WC_Order_Item_Product $item
-	 *
-	 * @return array
-	 */
-	private function create_item_data( $product, $values, $item ) {
-		$plan_id = $this->get_plan_id( $values );
+		/**
+		 * Create item data for subscription
+		 *
+		 * @param \WC_Product            $product
+		 * @param array                  $values
+		 * @param \WC_Order_Item_Product $item
+		 *
+		 * @return array
+		 */
+		private function create_item_data( $product, $values, $item ) {
+			$plan_id = $this->get_plan_id( $values );
 
-		// Add plan summary to item meta if plan exists
-		if ( $plan_id > 0 && $product instanceof \WC_Product ) {
-			$plan = \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_id, $product );
-			if ( $plan instanceof \Sublium_WCS\Includes\Abstracts\Plan ) {
-				$summary = $plan->display_summary( $product );
-				if ( ! empty( $summary ) ) {
-					$item->add_meta_data( 'sublium_summary', wp_kses_post( $summary ) );
+			// Add plan summary to item meta if plan exists
+			if ( $plan_id > 0 && $product instanceof \WC_Product ) {
+				$plan = \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_id, $product );
+				if ( $plan instanceof \Sublium_WCS\Includes\Abstracts\Plan ) {
+					$summary = $plan->display_summary( $product );
+					if ( ! empty( $summary ) ) {
+						$item->add_meta_data( 'sublium_summary', wp_kses_post( $summary ) );
+					}
 				}
 			}
+
+			$item_data = array(
+				'quantity'     => $item->get_quantity(),
+				'variation'    => $item->get_variation_id(),
+				'subtotal'     => $item->get_subtotal(),
+				'total'        => $item->get_total(),
+				'name'         => $product->get_name(),
+				'tax_class'    => $product->get_tax_class(),
+				'product_id'   => $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id(),
+				'variation_id' => $item->get_variation_id(),
+				'plan'         => $plan_id,
+				'tax'          => $item->get_taxes(),
+				'meta'         => $item->get_meta_data(),
+			);
+
+			return array(
+				'item_type' => 1,
+				'item_data' => $item_data,
+			);
 		}
-
-		$item_data = [
-			'quantity'     => $item->get_quantity(),
-			'variation'    => $item->get_variation_id(),
-			'subtotal'     => $item->get_subtotal(),
-			'total'        => $item->get_total(),
-			'name'         => $product->get_name(),
-			'tax_class'    => $product->get_tax_class(),
-			'product_id'   => $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id(),
-			'variation_id' => $item->get_variation_id(),
-			'plan'         => $plan_id,
-			'tax'          => $item->get_taxes(),
-			'meta'         => $item->get_meta_data()
-		];
-
-		return [
-			'item_type' => 1,
-			'item_data' => $item_data,
-		];
-	}
 
 
 		/**
@@ -644,9 +664,9 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 		/**
 		 * Add plan_id to order item meta when products are added to order
 		 *
-		 * @param array    $item_meta Existing item meta array
-		 * @param int      $item_id   Order item ID
-		 * @param array    $product   Product data from package
+		 * @param array $item_meta Existing item meta array
+		 * @param int   $item_id   Order item ID
+		 * @param array $product   Product data from package
 		 *
 		 * @return array Modified item meta array
 		 */
@@ -675,8 +695,6 @@ if ( ! class_exists( 'UpStroke_Sublium_Subscriptions' ) ) {
 			}
 			return $item_meta;
 		}
-
-
 	}
 
 

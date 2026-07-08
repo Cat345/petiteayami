@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFCO_Connector_Screen_Factory' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFCO_Connector_Screen_Factory {

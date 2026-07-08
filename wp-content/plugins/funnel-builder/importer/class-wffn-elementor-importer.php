@@ -9,11 +9,11 @@
  * @since 1.0.0
  */
 if ( ! class_exists( 'WFFN_Elementor_Importer' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Elementor_Importer extends Elementor\TemplateLibrary\Source_Local implements WFFN_Import_Export {
 		public function __construct() {
-			add_action( 'woofunnels_module_template_removed', [ $this, 'delete_elementor_data' ] );
-			add_action( 'wp_enqueue_scripts', [ $this, 'fb_dequeue_scripts_if_page_is_not_built_using_elementor' ], 12 );
-
+			add_action( 'woofunnels_module_template_removed', array( $this, 'delete_elementor_data' ) );
+			add_action( 'wp_enqueue_scripts', array( $this, 'fb_dequeue_scripts_if_page_is_not_built_using_elementor' ), 12 );
 		}
 
 		public function import( $module_id, $export_content = '' ) {
@@ -29,10 +29,12 @@ if ( ! class_exists( 'WFFN_Elementor_Importer' ) ) {
 		 * @param int $post_id post ID.
 		 */
 		public function import_template_single( $post_id, $content ) {
-			wp_update_post( [
-				'ID'           => $post_id,
-				'post_content' => '',
-			] );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '',
+				)
+			);
 
 			delete_post_meta( $post_id, '_elementor_data' );
 			delete_post_meta( $post_id, '_elementor_version' );
@@ -63,6 +65,8 @@ if ( ! class_exists( 'WFFN_Elementor_Importer' ) ) {
 			// Update content.
 
 			$content = apply_filters( 'wffn_import_elementor_content', $content, $post_id );
+			require_once WFFN_PLUGIN_DIR . '/includes/class-wffn-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			$content = WFFN_Content_Validator::validate_elementor_content( $content );
 			$content = wp_slash( wp_json_encode( $content ) );
 
 			update_post_meta( $post_id, '_elementor_edit_mode', 'builder' );
@@ -90,7 +94,12 @@ if ( ! class_exists( 'WFFN_Elementor_Importer' ) ) {
 		}
 
 		public function delete_elementor_data( $post_id ) {
-			wp_update_post( [ 'ID' => $post_id, 'post_content' => '' ] );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '',
+				)
+			);
 			delete_post_meta( $post_id, '_elementor_version' );
 			delete_post_meta( $post_id, '_elementor_template_type' );
 			delete_post_meta( $post_id, '_elementor_edit_mode' );
@@ -161,7 +170,7 @@ if ( ! class_exists( 'WFFN_Elementor_Importer' ) ) {
 					return;
 				}
 
-				//Check if either global header or footer set using theme builder
+				// Check if either global header or footer set using theme builder
 				if ( ( array_key_exists( 'header', $locations ) || array_key_exists( 'footer', $locations ) ) ) {
 					// Validate post object
 					if ( is_null( $post ) || ! $post instanceof WP_Post ) {
@@ -169,14 +178,18 @@ if ( ! class_exists( 'WFFN_Elementor_Importer' ) ) {
 					}
 
 					// Check if post-type is a FunnelKit Builder type
-					if ( ! in_array( $post->post_type, array(
-						'wffn_landing',    // Landing pages
-						'wffn_ty',         // Thank you pages
-						'wffn_optin',      // Optin pages
-						'wffn_oty',        // Optin thank you pages
-						'wfacp_checkout',  // Checkout pages
-						'wfocu_offer',     // One click upsell offers
-					), true ) ) {
+					if ( ! in_array(
+						$post->post_type,
+						array(
+							'wffn_landing',    // Landing pages
+							'wffn_ty',         // Thank you pages
+							'wffn_optin',      // Optin pages
+							'wffn_oty',        // Optin thank you pages
+							'wfacp_checkout',  // Checkout pages
+							'wfocu_offer',     // One click upsell offers
+						),
+						true
+					) ) {
 						return;
 					}
 
@@ -200,10 +213,9 @@ if ( ! class_exists( 'WFFN_Elementor_Importer' ) ) {
 						wp_dequeue_script( 'elementor-frontend-modules' );
 					}
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 				WFFN_Core()->logger->log( 'Error in : ' . __FUNCTION__ . '---' . $e->getMessage() );
 			}
-
 		}
 	}
 

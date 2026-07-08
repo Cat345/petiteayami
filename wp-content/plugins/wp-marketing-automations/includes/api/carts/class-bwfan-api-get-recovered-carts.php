@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Recovered_Carts extends BWFAN_API_Base {
 	public static $ins;
 	public $total_count = 0;
@@ -45,8 +46,8 @@ class BWFAN_API_Get_Recovered_Carts extends BWFAN_API_Base {
 
 	public function process_api_call() {
 		$search = $this->get_sanitized_arg( 'search', 'text_field' );
-		$offset = ! empty( $this->get_sanitized_arg( 'offset', 'text_field' ) ) ? $this->get_sanitized_arg( 'offset', 'text_field' ) : 0;
-		$limit  = ! empty( $this->get_sanitized_arg( 'limit', 'text_field' ) ) ? $this->get_sanitized_arg( 'limit', 'text_field' ) : 25;
+		$offset = ! empty( $this->get_sanitized_arg( 'offset', 'absint' ) ) ? $this->get_sanitized_arg( 'offset', 'absint' ) : 0;
+		$limit  = ! empty( $this->get_sanitized_arg( 'limit', 'absint' ) ) ? $this->get_sanitized_arg( 'limit', 'absint' ) : 25;
 
 		$recovered_carts  = BWFAN_Recoverable_Carts::get_recovered_carts( $search, $offset, $limit );
 		$result           = [];
@@ -65,14 +66,27 @@ class BWFAN_API_Get_Recovered_Carts extends BWFAN_API_Base {
 			$diff          = date_diff( $nowDate, $cartDate, true );
 			$diff          = BWFAN_Common::get_difference_string( $diff );
 			$currency_data = BWFAN_Recoverable_Carts::get_currency( $order );
-			$result[]      = [
-				'id'            => $order->get_meta( '_bwfan_recovered_ab_id' ),
+			$ab_cart_id   = $order->get_meta( '_bwfan_recovered_ab_id' );
+			$preview_data = $this->get_preview( $order );
+
+			/** Attach visitor fingerprint from order meta (copied before abandoned cart row was deleted) */
+			$fingerprint_json = $order->get_meta( '_bwfan_visitor_fingerprint' );
+			if ( ! empty( $fingerprint_json ) ) {
+				$fingerprint = json_decode( $fingerprint_json, true );
+				if ( is_array( $fingerprint ) ) {
+					$preview_data['user_info'] = BWFAN_Common::add_visitor_info_to_others( $fingerprint );
+					$preview_data['visitor_info'] = $fingerprint;
+				}
+			}
+
+			$result[] = [
+				'id'            => $ab_cart_id,
 				'order_id'      => $order->get_id(),
 				'email'         => $order->get_billing_email(),
 				'phone'         => $order->get_billing_phone(),
 				'f_name'        => $order->get_billing_first_name(),
 				'l_name'        => $order->get_billing_last_name(),
-				'preview'       => $this->get_preview( $order ),
+				'preview'       => $preview_data,
 				'diffstring'    => $diff,
 				'date'          => $order->get_date_created()->date( 'Y-m-d H:i:s' ),
 				'items'         => $this->get_items( $order ),

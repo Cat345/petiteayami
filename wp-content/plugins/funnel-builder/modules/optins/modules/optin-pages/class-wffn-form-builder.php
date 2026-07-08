@@ -7,6 +7,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
  * Class WFFN_Optin_Pages
  */
 if ( ! class_exists( 'WFFN_Form_Builder' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Form_Builder {
 
 		private static $ins = null;

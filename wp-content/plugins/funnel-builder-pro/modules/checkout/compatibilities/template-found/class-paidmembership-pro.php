@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Paid Memberships Pro - WooCommerce Add On
@@ -11,8 +15,8 @@ if ( ! class_exists( 'WFACP_Compatibility_PaidMembershipWCPro' ) ) {
 
 		public function __construct() {
 
-			add_action( 'wfacp_before_product_switcher_html', [ $this, 'before' ] );
-			add_action( 'wfacp_after_product_switcher_html', [ $this, 'after' ] );
+			add_action( 'wfacp_before_product_switcher_html', array( $this, 'before' ) );
+			add_action( 'wfacp_after_product_switcher_html', array( $this, 'after' ) );
 		}
 
 		public function before() {
@@ -25,11 +29,8 @@ if ( ! class_exists( 'WFACP_Compatibility_PaidMembershipWCPro' ) ) {
 			}
 			add_filter( 'woocommerce_is_purchasable', 'pmprowoo_is_purchasable', 10, 2 );
 		}
-
-
 	}
 
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_PaidMembershipWCPro(), 'paid-membership-pro-woocommerce' );
 }
-

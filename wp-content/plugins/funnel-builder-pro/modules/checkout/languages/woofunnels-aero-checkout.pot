@@ -9,14 +9,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-04-23T14:51:06+00:00\n"
+"POT-Creation-Date: 2026-07-01T12:38:06+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woofunnels-aero-checkout\n"
 
 #. Plugin Name of the plugin
 #: woofunnels-aero-checkout.php
-#: admin/class-wfacp-admin.php:1439
+#: admin/class-wfacp-admin.php:1454
 msgid "FunnelKit Checkout"
 msgstr ""
 
@@ -39,284 +39,287 @@ msgstr ""
 msgid "FunnelKit"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:133
+#: admin/class-wfacp-admin.php:148
 #: admin/views/admin.php:5
 #: admin/views/admin.php:32
 msgid "Checkouts"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:139
+#: admin/class-wfacp-admin.php:154
 msgid "(no title)"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:330
+#: admin/class-wfacp-admin.php:345
 msgid "Activating plugin..."
 msgstr ""
 
-#: admin/class-wfacp-admin.php:331
+#: admin/class-wfacp-admin.php:346
 msgid "Installing plugin..."
 msgstr ""
 
-#: admin/class-wfacp-admin.php:332
+#: admin/class-wfacp-admin.php:347
 msgid "Importing template..."
 msgstr ""
 
-#: admin/class-wfacp-admin.php:367
+#: admin/class-wfacp-admin.php:382
 msgid "Customize"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:371
+#: admin/class-wfacp-admin.php:386
 msgid "Customize Form"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:385
-#: admin/rest-api/class-wfacp-rest-funnels.php:499
+#: admin/class-wfacp-admin.php:400
+#: admin/rest-api/class-wfacp-rest-funnels.php:500
 #: builder/gutenberg/class-wfacp-gutenberg.php:234
 msgid "Edit"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:651
+#: admin/class-wfacp-admin.php:666
 #, php-format
 msgid "<a href='%s'>Shipping destination</a> is set to 'Force shipping to customer billing address'. Please remove Shipping Address field from the checkout form."
 msgstr ""
 
-#: admin/class-wfacp-admin.php:669
+#: admin/class-wfacp-admin.php:684
 #, php-format
 msgid "<a href='%s' target='_blank'>Shipping Location</a> is disabled. Please replace Shipping Address with Billing Address field or enable Shipping Location."
 msgstr ""
 
-#: admin/class-wfacp-admin.php:684
+#: admin/class-wfacp-admin.php:699
 msgid "Billing First Name & Last Name are available in the form. Please disable First Name and Last Name from Billing Address field."
 msgstr ""
 
-#: admin/class-wfacp-admin.php:826
+#: admin/class-wfacp-admin.php:841
 msgid "No path found"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:944
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:435
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:446
+#: admin/class-wfacp-admin.php:959
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:447
 msgid "Custom Fields"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:1392
+#: admin/class-wfacp-admin.php:1407
 msgid "Doing testing"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:1401
+#: admin/class-wfacp-admin.php:1416
 msgid "My checkout is not looking good"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:1410
+#: admin/class-wfacp-admin.php:1425
 msgid "Troubleshooting conflicts with other plugins"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:1462
+#: admin/class-wfacp-admin.php:1477
 msgid "Form Shortcode"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:1472
+#: admin/class-wfacp-admin.php:1487
 msgid "Mini Cart Shortcode"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:1513
+#: admin/class-wfacp-admin.php:1528
 msgid "Page"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:1659
+#: admin/class-wfacp-admin.php:1674
 msgid "&#8592; Back to Checkout Page"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:1741
+#: admin/class-wfacp-admin.php:1756
 msgid "← Back to Checkout Page"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:1742
+#: admin/class-wfacp-admin.php:1757
 msgid "Back to Checkout Page"
 msgstr ""
 
-#: admin/class-wfacp-admin.php:1839
+#: admin/class-wfacp-admin.php:1854
 msgid "Checkout per page"
 msgstr ""
 
-#: admin/class-wfacp-importer.php:64
+#: admin/class-wfacp-importer.php:72
 msgid "Please upload a valid .json file"
 msgstr ""
 
-#: admin/class-wfacp-importer.php:70
+#: admin/class-wfacp-importer.php:79
 msgid "Please upload a file to import"
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:29
+#: admin/class-wfacp-importer.php:304
+msgid "Imported Successfully!"
+msgstr ""
+
+#: admin/class-wfacp-wizard.php:35
 msgid "Welcome"
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:33
+#: admin/class-wfacp-wizard.php:39
 #: includes/class-wfacp-template-loader.php:775
 msgid "Activate"
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:37
+#: admin/class-wfacp-wizard.php:43
 msgid "Ready"
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:92
+#: admin/class-wfacp-wizard.php:98
 msgid "Plugin &rsaquo; Setup Wizard"
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:142
+#: admin/class-wfacp-wizard.php:148
 msgid "Return to the WordPress Dashboard"
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:166
+#: admin/class-wfacp-wizard.php:172
 msgid "Thank you for choosing FunnelKit Checkout."
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:171
+#: admin/class-wfacp-wizard.php:177
 msgid "Let's Go!"
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:180
+#: admin/class-wfacp-wizard.php:186
 msgid "We have created few sample checkout pages for you. You can edit existing pages or create new."
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:181
+#: admin/class-wfacp-wizard.php:187
 msgid "Click on these links below and keep them handy. You are ready to go!"
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:194
+#: admin/class-wfacp-wizard.php:200
 #: admin/views/flex-import.php:33
 msgid "Go to FunnelKit Checkout Pages"
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:203
+#: admin/class-wfacp-wizard.php:209
 msgid "Activate FunnelKit Checkout"
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:209
+#: admin/class-wfacp-wizard.php:215
 msgid "Enter your FunnelKit Checkout License Key below. Your key unlocks access to dashboard updates and support."
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:211
+#: admin/class-wfacp-wizard.php:217
 msgid "You can find your key on the Account"
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:212
+#: admin/class-wfacp-wizard.php:218
 msgid "Dashboard Page"
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:212
+#: admin/class-wfacp-wizard.php:218
 msgid "site."
 msgstr ""
 
-#: admin/class-wfacp-wizard.php:221
+#: admin/class-wfacp-wizard.php:227
 msgid "Invalid Key. Ensure that your are using valid license key. Try again."
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:50
-#: admin/rest-api/class-wfacp-rest-funnels.php:75
-#: admin/rest-api/class-wfacp-rest-funnels.php:95
-#: admin/rest-api/class-wfacp-rest-funnels.php:115
-#: admin/rest-api/class-wfacp-rest-funnels.php:140
+#: admin/rest-api/class-wfacp-rest-funnels.php:51
+#: admin/rest-api/class-wfacp-rest-funnels.php:76
+#: admin/rest-api/class-wfacp-rest-funnels.php:96
+#: admin/rest-api/class-wfacp-rest-funnels.php:116
+#: admin/rest-api/class-wfacp-rest-funnels.php:141
 msgid "Checkout id."
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:163
+#: admin/rest-api/class-wfacp-rest-funnels.php:164
 msgid "Check plugin status"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:168
+#: admin/rest-api/class-wfacp-rest-funnels.php:169
 msgid "Check plugin slug"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:173
+#: admin/rest-api/class-wfacp-rest-funnels.php:174
 msgid "Check builder status"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:194
+#: admin/rest-api/class-wfacp-rest-funnels.php:195
 msgid "search term"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:214
+#: admin/rest-api/class-wfacp-rest-funnels.php:215
 msgid "Product name"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:230
-#: admin/rest-api/class-wfacp-rest-funnels.php:262
-#: admin/rest-api/class-wfacp-rest-funnels.php:287
-#: admin/rest-api/class-wfacp-rest-funnels.php:312
-#: admin/rest-api/class-wfacp-rest-funnels.php:337
+#: admin/rest-api/class-wfacp-rest-funnels.php:231
+#: admin/rest-api/class-wfacp-rest-funnels.php:263
+#: admin/rest-api/class-wfacp-rest-funnels.php:288
+#: admin/rest-api/class-wfacp-rest-funnels.php:313
+#: admin/rest-api/class-wfacp-rest-funnels.php:338
 msgid "Current step id."
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:266
+#: admin/rest-api/class-wfacp-rest-funnels.php:267
 msgid "Step state."
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:376
-#: admin/rest-api/class-wfacp-rest-funnels.php:400
-#: admin/rest-api/class-wfacp-rest-funnels.php:550
-#: admin/rest-api/class-wfacp-rest-funnels.php:577
-#: admin/rest-api/class-wfacp-rest-funnels.php:601
-#: admin/rest-api/class-wfacp-rest-funnels.php:624
-#: admin/rest-api/class-wfacp-rest-funnels.php:695
-#: admin/rest-api/class-wfacp-rest-funnels.php:717
-#: admin/rest-api/class-wfacp-rest-funnels.php:742
+#: admin/rest-api/class-wfacp-rest-funnels.php:377
+#: admin/rest-api/class-wfacp-rest-funnels.php:401
+#: admin/rest-api/class-wfacp-rest-funnels.php:551
+#: admin/rest-api/class-wfacp-rest-funnels.php:578
+#: admin/rest-api/class-wfacp-rest-funnels.php:602
+#: admin/rest-api/class-wfacp-rest-funnels.php:625
+#: admin/rest-api/class-wfacp-rest-funnels.php:696
+#: admin/rest-api/class-wfacp-rest-funnels.php:718
+#: admin/rest-api/class-wfacp-rest-funnels.php:743
 msgid "Failed"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:506
-#: includes/class-wfacp-common.php:2506
+#: admin/rest-api/class-wfacp-rest-funnels.php:507
+#: includes/class-wfacp-common.php:2516
 msgid "View"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:513
-#: includes/class-wfacp-common.php:2514
+#: admin/rest-api/class-wfacp-rest-funnels.php:514
+#: includes/class-wfacp-common.php:2524
 msgid "Duplicate"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:520
+#: admin/rest-api/class-wfacp-rest-funnels.php:521
 #: admin/views/admin.php:13
 #: admin/views/admin.php:35
-#: includes/class-wfacp-common.php:2521
+#: includes/class-wfacp-common.php:2531
 msgid "Export"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:527
+#: admin/rest-api/class-wfacp-rest-funnels.php:528
 #: includes/class-wfacp-common-helper.php:1189
 #: includes/class-wfacp-common-helper.php:1412
-#: includes/class-wfacp-common.php:2528
+#: includes/class-wfacp-common.php:2538
 msgid "Delete"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:567
+#: admin/rest-api/class-wfacp-rest-funnels.php:568
 msgid "Funnels Loaded"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:612
+#: admin/rest-api/class-wfacp-rest-funnels.php:613
 msgid "Checkout Deleted"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:659
-#: includes/class-wfacp-ajax-controller.php:188
+#: admin/rest-api/class-wfacp-rest-funnels.php:660
+#: includes/class-wfacp-ajax-controller.php:204
 msgid "Checkout Page Successfully Update"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:677
-#: includes/class-wfacp-ajax-controller.php:204
+#: admin/rest-api/class-wfacp-rest-funnels.php:678
+#: includes/class-wfacp-ajax-controller.php:220
 msgid "Checkout Page Successfully Created"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:705
-#: admin/rest-api/class-wfacp-rest-funnels.php:730
+#: admin/rest-api/class-wfacp-rest-funnels.php:706
+#: admin/rest-api/class-wfacp-rest-funnels.php:731
 msgid "Checkout Exported"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:753
+#: admin/rest-api/class-wfacp-rest-funnels.php:754
 msgid "Checkout Duplicated"
 msgstr ""
 
-#: admin/rest-api/class-wfacp-rest-funnels.php:871
+#: admin/rest-api/class-wfacp-rest-funnels.php:872
 msgid "Step type."
 msgstr ""
 
@@ -364,11 +367,6 @@ msgstr ""
 #: includes/class-wfacp-common-helper.php:1170
 #: includes/class-wfacp-common-helper.php:1194
 #: includes/class-wfacp-template-loader.php:776
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:168
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:210
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:231
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:303
-#: modules/conditional-fields/includes/admin/views/settings-page.php:146
 msgid "Cancel"
 msgstr ""
 
@@ -380,13 +378,13 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:85
 #: builder/divi/class-wfacp-divi-extension.php:89
 #: builder/divi/class-wfacp-html-block-divi.php:43
-#: builder/divi/modules/class-divi-form.php:11
+#: builder/divi/modules/class-divi-form.php:12
 #: builder/elementor/widgets/class-elementor-form.php:29
 #: builder/elementor/widgets/class-elementor-form.php:1312
 #: builder/oxygen/class-wfacp-html-block-oxy.php:83
 #: builder/oxygen/class-wfacp-oxy.php:308
 #: builder/oxygen/modules/class-oxy-form.php:13
-#: builder/oxygen/modules/class-oxy-form.php:886
+#: builder/oxygen/modules/class-oxy-form.php:888
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/index.js:20
 #: builder/gutenberg/src/blocks/checkout-form/index.js:23
@@ -463,10 +461,6 @@ msgstr ""
 msgid " Switch to WordPress Editor"
 msgstr ""
 
-#: admin/views/sections/fields.php:44
-msgid "<i class=\"dashicons dashicons-plus\"></i>"
-msgstr ""
-
 #: admin/views/sections/fields.php:45
 msgid "Add Next Step"
 msgstr ""
@@ -480,13 +474,13 @@ msgstr ""
 msgid "Save Changes"
 msgstr ""
 
-#: admin/views/sections/fields.php:73
-#: builder/divi/modules/class-divi-form.php:501
+#: admin/views/sections/fields.php:75
+#: builder/divi/modules/class-divi-form.php:502
 #: builder/elementor/widgets/class-elementor-form.php:802
-#: builder/oxygen/modules/class-oxy-form.php:297
+#: builder/oxygen/modules/class-oxy-form.php:299
 #: includes/class-wfacp-common-helper.php:1608
-#: includes/class-wfacp-common.php:556
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:487
+#: includes/class-wfacp-common.php:557
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:488
 msgid "Fields"
 msgstr ""
 
@@ -501,9 +495,9 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:2438
 #: builder/divi/class-wfacp-html-block-divi.php:586
 #: builder/divi/class-wfacp-html-block-divi.php:593
-#: builder/divi/modules/class-divi-form.php:502
-#: builder/divi/modules/class-divi-mini-cart.php:192
-#: builder/divi/modules/class-divi-mini-cart.php:197
+#: builder/divi/modules/class-divi-form.php:503
+#: builder/divi/modules/class-divi-mini-cart.php:205
+#: builder/divi/modules/class-divi-mini-cart.php:210
 #: builder/elementor/class-wfacp-html-block-elementor.php:597
 #: builder/elementor/class-wfacp-html-block-elementor.php:602
 #: builder/elementor/widgets/class-elementor-form.php:444
@@ -511,7 +505,7 @@ msgstr ""
 #: builder/elementor/widgets/class-elementor-summary.php:186
 #: builder/oxygen/class-wfacp-html-block-oxy.php:510
 #: builder/oxygen/class-wfacp-html-block-oxy.php:514
-#: builder/oxygen/modules/class-oxy-form.php:393
+#: builder/oxygen/modules/class-oxy-form.php:395
 #: includes/class-wfacp-common-helper.php:1287
 #: includes/class-wfacp-common-helper.php:1349
 msgid "Label"
@@ -613,13 +607,12 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-twidget.php:214
 #: builder/customizer/templates/layout_9/template.php:1271
 #: builder/divi/class-wfacp-html-block-divi.php:419
-#: builder/divi/modules/class-divi-form.php:481
+#: builder/divi/modules/class-divi-form.php:482
 #: builder/elementor/class-wfacp-html-block-elementor.php:452
 #: builder/elementor/widgets/class-elementor-form.php:783
-#: builder/oxygen/modules/class-oxy-form.php:519
-#: builder/oxygen/modules/class-oxy-form.php:805
-#: builder/oxygen/modules/class-oxy-form.php:1179
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:433
+#: builder/oxygen/modules/class-oxy-form.php:521
+#: builder/oxygen/modules/class-oxy-form.php:807
+#: builder/oxygen/modules/class-oxy-form.php:1181
 msgid "Advanced"
 msgstr ""
 
@@ -639,14 +632,14 @@ msgstr ""
 #: builder/customizer/class-wfacp-pre-built.php:2434
 #: builder/customizer/customizer-options/class-section-product-details.php:71
 #: builder/divi/class-wfacp-html-block-divi.php:398
-#: builder/divi/modules/class-divi-form.php:197
-#: builder/divi/modules/class-divi-form.php:229
-#: builder/divi/modules/class-divi-mini-cart.php:25
+#: builder/divi/modules/class-divi-form.php:198
+#: builder/divi/modules/class-divi-form.php:230
+#: builder/divi/modules/class-divi-mini-cart.php:26
 #: builder/elementor/class-wfacp-html-block-elementor.php:430
 #: builder/elementor/widgets/class-elementor-form.php:565
 #: builder/elementor/widgets/class-elementor-summary.php:41
-#: builder/oxygen/modules/class-oxy-form.php:200
-#: builder/oxygen/modules/class-oxy-form.php:207
+#: builder/oxygen/modules/class-oxy-form.php:202
+#: builder/oxygen/modules/class-oxy-form.php:209
 #: builder/oxygen/modules/class-oxy-mini-cart.php:34
 #: includes/class-wfacp-common-helper.php:1185
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
@@ -826,15 +819,15 @@ msgid "Generate URL to populate checkout"
 msgstr ""
 
 #: admin/views/sections/product.php:14
-#: builder/divi/modules/class-divi-form.php:181
+#: builder/divi/modules/class-divi-form.php:182
 #: builder/divi/modules/class-divi-mini-cart.php:28
 #: builder/elementor/widgets/class-elementor-form.php:508
 #: builder/elementor/widgets/class-elementor-summary.php:44
 #: builder/gutenberg/class-wfacp-gutenberg.php:530
-#: builder/oxygen/modules/class-oxy-form.php:184
+#: builder/oxygen/modules/class-oxy-form.php:186
 #: builder/oxygen/modules/class-oxy-mini-cart.php:39
-#: includes/class-wfacp-common.php:550
-#: includes/class-wfacp-common.php:4003
+#: includes/class-wfacp-common.php:551
+#: includes/class-wfacp-common.php:4125
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/mini-cart/inspector-control/style.js:140
 msgid "Products"
@@ -934,10 +927,10 @@ msgstr ""
 
 #: admin/views/settings.php:5
 #: builder/customizer/customizer-options/class-section-mini-cart-summary.php:57
-#: builder/divi/modules/class-divi-mini-cart.php:335
+#: builder/divi/modules/class-divi-mini-cart.php:341
 #: builder/elementor/widgets/class-elementor-summary.php:298
 #: builder/oxygen/modules/class-oxy-mini-cart.php:264
-#: includes/class-wfacp-common.php:566
+#: includes/class-wfacp-common.php:567
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/mini-cart/inspector-control/style.js:535
 msgid "Settings"
@@ -951,6 +944,7 @@ msgid "<strong> Attention: </strong>FunnelKit Checkout requires WooCommerce vers
 msgstr ""
 
 #. translators: %1$s: Min required woocommerce version
+#. translators: %1$s: Min required WordPress version
 #: bin/sample.php:316
 #: woofunnels-aero-checkout.php:318
 #, php-format
@@ -1021,7 +1015,7 @@ msgid "Cart Title"
 msgstr ""
 
 #: builder/customizer/class-wfacp-pre-built.php:2823
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:366
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:367
 msgid "Cart"
 msgstr ""
 
@@ -1043,8 +1037,8 @@ msgstr ""
 #: builder/customizer/templates/embed_forms_1/template.php:1183
 #: builder/divi/class-wfacp-html-block-divi.php:585
 #: builder/divi/class-wfacp-html-block-divi.php:592
-#: builder/divi/modules/class-divi-mini-cart.php:191
-#: builder/divi/modules/class-divi-mini-cart.php:196
+#: builder/divi/modules/class-divi-mini-cart.php:204
+#: builder/divi/modules/class-divi-mini-cart.php:209
 #: builder/elementor/class-wfacp-html-block-elementor.php:596
 #: builder/elementor/class-wfacp-html-block-elementor.php:601
 #: builder/elementor/widgets/class-elementor-form.php:443
@@ -1148,12 +1142,12 @@ msgstr ""
 #: importer/checkout-settings/shoppe-step-3.php:157
 #: importer/checkout-settings/shoppe.php:172
 #: importer/class-wfacp-customizer-importer.php:39
-#: importer/class-wfacp-divi-importer.php:179
-#: importer/class-wfacp-elementor-importer.php:198
-#: importer/class-wfacp-gutenberg-importer.php:112
-#: importer/class-wfacp-oxy-importer.php:117
-#: includes/class-wfacp-common.php:1265
-#: includes/class-wfacp-common.php:3991
+#: importer/class-wfacp-divi-importer.php:186
+#: importer/class-wfacp-elementor-importer.php:213
+#: importer/class-wfacp-gutenberg-importer.php:121
+#: importer/class-wfacp-oxy-importer.php:122
+#: includes/class-wfacp-common.php:1269
+#: includes/class-wfacp-common.php:4113
 msgid "Best Value"
 msgstr ""
 
@@ -1172,21 +1166,21 @@ msgstr ""
 #: builder/customizer/templates/embed_forms_1/template.php:685
 #: builder/customizer/templates/layout_9/template.php:1126
 #: builder/divi/class-wfacp-html-block-divi.php:392
-#: builder/divi/modules/class-divi-form.php:198
-#: builder/divi/modules/class-divi-form.php:202
-#: builder/divi/modules/class-divi-form.php:460
-#: builder/divi/modules/class-divi-form.php:465
-#: builder/divi/modules/class-divi-mini-cart.php:24
-#: builder/divi/modules/class-divi-mini-cart.php:56
+#: builder/divi/modules/class-divi-form.php:199
+#: builder/divi/modules/class-divi-form.php:203
+#: builder/divi/modules/class-divi-form.php:461
+#: builder/divi/modules/class-divi-form.php:466
+#: builder/divi/modules/class-divi-mini-cart.php:25
+#: builder/divi/modules/class-divi-mini-cart.php:53
 #: builder/elementor/class-wfacp-html-block-elementor.php:424
 #: builder/elementor/widgets/class-elementor-form.php:750
 #: builder/elementor/widgets/class-elementor-form.php:751
 #: builder/elementor/widgets/class-elementor-form.php:1025
 #: builder/elementor/widgets/class-elementor-summary.php:40
 #: builder/elementor/widgets/class-elementor-summary.php:72
-#: builder/oxygen/modules/class-oxy-form.php:201
-#: builder/oxygen/modules/class-oxy-form.php:223
-#: builder/oxygen/modules/class-oxy-form.php:528
+#: builder/oxygen/modules/class-oxy-form.php:203
+#: builder/oxygen/modules/class-oxy-form.php:225
+#: builder/oxygen/modules/class-oxy-form.php:530
 #: builder/oxygen/modules/class-oxy-mini-cart.php:33
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:198
@@ -1267,7 +1261,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-cart.php:52
 #: builder/customizer/templates/layout_9/template.php:1483
 #: builder/customizer/templates/layout_9/template.php:1623
-#: includes/class-wfacp-common.php:3993
+#: includes/class-wfacp-common.php:4115
 msgid "Your Cart"
 msgstr ""
 
@@ -1285,11 +1279,10 @@ msgstr ""
 
 #: builder/customizer/customizer-options/class-section-cart.php:75
 #: builder/customizer/customizer-options/class-section-form.php:99
-#: builder/divi/modules/class-divi-form.php:641
+#: builder/divi/modules/class-divi-form.php:642
 #: builder/elementor/widgets/class-elementor-form.php:995
-#: builder/oxygen/modules/class-oxy-form.php:273
-#: builder/oxygen/modules/class-oxy-form.php:527
-#: modules/conditional-fields/includes/admin/views/settings-page.php:65
+#: builder/oxygen/modules/class-oxy-form.php:275
+#: builder/oxygen/modules/class-oxy-form.php:529
 msgid "Section"
 msgstr ""
 
@@ -1362,11 +1355,11 @@ msgid "Check if you want to show the image"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-cart.php:216
-#: builder/divi/modules/class-divi-form.php:314
+#: builder/divi/modules/class-divi-form.php:315
 #: builder/divi/modules/class-divi-mini-cart.php:31
 #: builder/elementor/widgets/class-elementor-form.php:343
 #: builder/elementor/widgets/class-elementor-summary.php:47
-#: builder/oxygen/modules/class-oxy-form.php:626
+#: builder/oxygen/modules/class-oxy-form.php:628
 #: builder/oxygen/modules/class-oxy-mini-cart.php:42
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:92
@@ -1379,11 +1372,11 @@ msgid "Check if you want Quantity Switcher"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-cart.php:223
-#: builder/divi/modules/class-divi-form.php:315
+#: builder/divi/modules/class-divi-form.php:316
 #: builder/divi/modules/class-divi-mini-cart.php:32
 #: builder/elementor/widgets/class-elementor-form.php:344
 #: builder/elementor/widgets/class-elementor-summary.php:48
-#: builder/oxygen/modules/class-oxy-form.php:627
+#: builder/oxygen/modules/class-oxy-form.php:629
 #: builder/oxygen/modules/class-oxy-mini-cart.php:43
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:97
@@ -1397,7 +1390,7 @@ msgstr ""
 
 #: builder/customizer/customizer-options/class-section-cart.php:230
 #: builder/customizer/customizer-options/class-section-cart.php:577
-#: builder/divi/modules/class-divi-mini-cart.php:44
+#: builder/divi/modules/class-divi-mini-cart.php:41
 #: builder/elementor/widgets/class-elementor-form.php:379
 #: builder/elementor/widgets/class-elementor-summary.php:61
 #: builder/oxygen/modules/class-oxy-mini-cart.php:68
@@ -1538,7 +1531,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-twidget.php:328
 #: builder/customizer/templates/embed_forms_1/template.php:913
 #: builder/elementor/widgets/class-elementor-form.php:1255
-#: builder/oxygen/modules/class-oxy-form.php:861
+#: builder/oxygen/modules/class-oxy-form.php:863
 msgid "Colors"
 msgstr ""
 
@@ -1578,10 +1571,10 @@ msgstr ""
 #: builder/customizer/templates/embed_forms_1/template.php:747
 #: builder/elementor/class-abstract-wfacp-fields.php:358
 #: builder/oxygen/class-abstract-wfacp-fields.php:204
-#: builder/oxygen/modules/class-oxy-form.php:423
-#: builder/oxygen/modules/class-oxy-form.php:460
-#: builder/oxygen/modules/class-oxy-form.php:803
-#: builder/oxygen/modules/class-oxy-form.php:857
+#: builder/oxygen/modules/class-oxy-form.php:425
+#: builder/oxygen/modules/class-oxy-form.php:462
+#: builder/oxygen/modules/class-oxy-form.php:805
+#: builder/oxygen/modules/class-oxy-form.php:859
 msgid "Typography"
 msgstr ""
 
@@ -1618,13 +1611,13 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-customer-care.php:182
 #: builder/customizer/customizer-options/class-section-customer-care.php:194
 #: builder/customizer/templates/embed_forms_1/template.php:713
-#: builder/divi/modules/class-divi-form.php:212
-#: builder/divi/modules/class-divi-form.php:249
-#: builder/divi/modules/class-divi-form.php:385
-#: builder/divi/modules/class-divi-form.php:470
+#: builder/divi/modules/class-divi-form.php:213
+#: builder/divi/modules/class-divi-form.php:250
+#: builder/divi/modules/class-divi-form.php:386
+#: builder/divi/modules/class-divi-form.php:471
 #: builder/elementor/widgets/class-elementor-form.php:775
-#: builder/oxygen/modules/class-oxy-form.php:202
-#: builder/oxygen/modules/class-oxy-form.php:258
+#: builder/oxygen/modules/class-oxy-form.php:204
+#: builder/oxygen/modules/class-oxy-form.php:260
 #: includes/class-wfacp-common-helper.php:1267
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:203
@@ -1708,13 +1701,13 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-twidget.php:334
 #: builder/customizer/templates/layout_9/template.php:837
 #: builder/customizer/templates/layout_9/template.php:1235
-#: builder/divi/modules/class-divi-form.php:428
-#: builder/divi/modules/class-divi-form.php:646
+#: builder/divi/modules/class-divi-form.php:429
+#: builder/divi/modules/class-divi-form.php:647
 #: builder/elementor/widgets/class-elementor-form.php:713
 #: builder/elementor/widgets/class-elementor-form.php:1001
 #: builder/elementor/widgets/class-elementor-summary.php:427
-#: builder/oxygen/modules/class-oxy-form.php:279
-#: builder/oxygen/modules/class-oxy-form.php:483
+#: builder/oxygen/modules/class-oxy-form.php:281
+#: builder/oxygen/modules/class-oxy-form.php:485
 msgid "Background Color"
 msgstr ""
 
@@ -1751,7 +1744,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-testimonial.php:580
 #: builder/customizer/customizer-options/class-section-twidget.php:372
 #: builder/customizer/templates/layout_9/template.php:899
-#: builder/divi/modules/class-divi-form.php:1102
+#: builder/divi/modules/class-divi-form.php:1103
 msgid "Content Color"
 msgstr ""
 
@@ -1804,11 +1797,11 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:1899
 #: builder/customizer/templates/embed_forms_1/template.php:495
 #: builder/oxygen/class-wfacp-html-block-oxy.php:294
-#: builder/oxygen/modules/class-oxy-form.php:427
-#: builder/oxygen/modules/class-oxy-form.php:463
-#: builder/oxygen/modules/class-oxy-form.php:603
-#: builder/oxygen/modules/class-oxy-form.php:784
-#: builder/oxygen/modules/class-oxy-form.php:1175
+#: builder/oxygen/modules/class-oxy-form.php:429
+#: builder/oxygen/modules/class-oxy-form.php:465
+#: builder/oxygen/modules/class-oxy-form.php:605
+#: builder/oxygen/modules/class-oxy-form.php:786
+#: builder/oxygen/modules/class-oxy-form.php:1177
 #: builder/gutenberg/dist/wfacp-block-editor.js:10
 #: builder/gutenberg/src/components/typography/index.js:60
 msgid "Color"
@@ -1839,9 +1832,9 @@ msgid "Field Style"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:514
-#: builder/divi/modules/class-divi-form.php:512
+#: builder/divi/modules/class-divi-form.php:513
 #: builder/elementor/widgets/class-elementor-form.php:812
-#: builder/oxygen/modules/class-oxy-form.php:401
+#: builder/oxygen/modules/class-oxy-form.php:403
 msgid "Label Position"
 msgstr ""
 
@@ -1875,15 +1868,15 @@ msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1171
 #: builder/elementor/widgets/class-elementor-form.php:1027
-#: builder/oxygen/modules/class-oxy-form.php:529
+#: builder/oxygen/modules/class-oxy-form.php:531
 msgid "Sub heading"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1172
 #: builder/elementor/widgets/class-elementor-form.php:1027
 #: builder/gutenberg/class-wfacp-gutenberg.php:585
-#: includes/class-wfacp-common.php:3919
-#: includes/class-wfacp-template.php:2413
+#: includes/class-wfacp-common.php:4041
+#: includes/class-wfacp-template.php:2430
 msgid "All transactions are secure and encrypted."
 msgstr ""
 
@@ -1912,7 +1905,7 @@ msgid "Step "
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1517
-#: includes/class-wfacp-common.php:3998
+#: includes/class-wfacp-common.php:4120
 msgid "NEXT STEP"
 msgstr ""
 
@@ -1926,23 +1919,23 @@ msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1580
 #: builder/customizer/customizer-options/class-section-form.php:1889
-#: builder/divi/modules/class-divi-form.php:234
+#: builder/divi/modules/class-divi-form.php:235
 #: builder/elementor/class-abstract-wfacp-fields.php:634
 #: builder/elementor/class-abstract-wfacp-fields.php:677
 #: builder/elementor/widgets/class-elementor-form.php:571
-#: builder/oxygen/modules/class-oxy-form.php:211
+#: builder/oxygen/modules/class-oxy-form.php:213
 #: includes/class-wfacp-common-helper.php:1425
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:350
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:351
 msgid "Yes"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1581
 #: builder/customizer/customizer-options/class-section-form.php:1890
-#: builder/divi/modules/class-divi-form.php:235
+#: builder/divi/modules/class-divi-form.php:236
 #: builder/elementor/widgets/class-elementor-form.php:572
-#: builder/oxygen/modules/class-oxy-form.php:212
+#: builder/oxygen/modules/class-oxy-form.php:214
 #: includes/class-wfacp-common-helper.php:1429
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:351
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:352
 msgid "No"
 msgstr ""
 
@@ -1951,65 +1944,65 @@ msgid "Select Icons Style"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1590
-#: builder/divi/modules/class-divi-form.php:1421
+#: builder/divi/modules/class-divi-form.php:1422
 #: builder/elementor/widgets/class-elementor-form.php:285
 #: builder/gutenberg/class-wfacp-gutenberg.php:508
-#: builder/oxygen/modules/class-oxy-form.php:1299
+#: builder/oxygen/modules/class-oxy-form.php:1303
 msgid "Arrow 1"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1591
-#: builder/divi/modules/class-divi-form.php:1422
+#: builder/divi/modules/class-divi-form.php:1423
 #: builder/elementor/widgets/class-elementor-form.php:286
 #: builder/gutenberg/class-wfacp-gutenberg.php:509
-#: builder/oxygen/modules/class-oxy-form.php:1300
+#: builder/oxygen/modules/class-oxy-form.php:1304
 msgid "Arrow 2"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1592
-#: builder/divi/modules/class-divi-form.php:1423
+#: builder/divi/modules/class-divi-form.php:1424
 #: builder/elementor/widgets/class-elementor-form.php:287
 #: builder/gutenberg/class-wfacp-gutenberg.php:510
-#: builder/oxygen/modules/class-oxy-form.php:1301
+#: builder/oxygen/modules/class-oxy-form.php:1305
 msgid "Arrow 3"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1593
-#: builder/divi/modules/class-divi-form.php:1424
+#: builder/divi/modules/class-divi-form.php:1425
 #: builder/elementor/widgets/class-elementor-form.php:288
 #: builder/gutenberg/class-wfacp-gutenberg.php:511
-#: builder/oxygen/modules/class-oxy-form.php:1302
+#: builder/oxygen/modules/class-oxy-form.php:1306
 msgid "Checkmark"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1594
-#: builder/divi/modules/class-divi-form.php:1425
+#: builder/divi/modules/class-divi-form.php:1426
 #: builder/elementor/widgets/class-elementor-form.php:289
 #: builder/gutenberg/class-wfacp-gutenberg.php:512
-#: builder/oxygen/modules/class-oxy-form.php:1303
+#: builder/oxygen/modules/class-oxy-form.php:1307
 msgid "Cart 1"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1595
-#: builder/divi/modules/class-divi-form.php:1426
+#: builder/divi/modules/class-divi-form.php:1427
 #: builder/elementor/widgets/class-elementor-form.php:290
 #: builder/gutenberg/class-wfacp-gutenberg.php:513
-#: builder/oxygen/modules/class-oxy-form.php:1304
+#: builder/oxygen/modules/class-oxy-form.php:1308
 msgid "Lock 1"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1596
-#: builder/divi/modules/class-divi-form.php:1427
+#: builder/divi/modules/class-divi-form.php:1428
 #: builder/elementor/widgets/class-elementor-form.php:291
 #: builder/gutenberg/class-wfacp-gutenberg.php:514
-#: builder/oxygen/modules/class-oxy-form.php:1305
+#: builder/oxygen/modules/class-oxy-form.php:1309
 msgid "Lock 2"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1615
-#: builder/divi/modules/class-divi-form.php:273
+#: builder/divi/modules/class-divi-form.php:274
 #: builder/elementor/widgets/class-elementor-form.php:249
-#: builder/oxygen/modules/class-oxy-form.php:564
+#: builder/oxygen/modules/class-oxy-form.php:566
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:429
 msgid "Enable Price"
@@ -2025,7 +2018,7 @@ msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1756
 #: builder/divi/class-abstract-wfacp-fields.php:643
-#: builder/divi/modules/class-divi-form.php:437
+#: builder/divi/modules/class-divi-form.php:438
 #: builder/oxygen/class-abstract-wfacp-fields.php:655
 #: builder/gutenberg/dist/wfacp-block-editor.js:10
 #: builder/gutenberg/src/components/border/index.js:228
@@ -2038,9 +2031,9 @@ msgid "Alignment"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1886
-#: builder/divi/modules/class-divi-form.php:688
+#: builder/divi/modules/class-divi-form.php:689
 #: builder/elementor/widgets/class-elementor-form.php:1197
-#: builder/oxygen/modules/class-oxy-form.php:762
+#: builder/oxygen/modules/class-oxy-form.php:764
 msgid "Sticky on Mobile"
 msgstr ""
 
@@ -2060,20 +2053,20 @@ msgid "Sub Text Color"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:2100
-#: builder/divi/modules/class-divi-form.php:761
-#: builder/oxygen/modules/class-oxy-form.php:833
+#: builder/divi/modules/class-divi-form.php:762
+#: builder/oxygen/modules/class-oxy-form.php:835
 msgid "Additional Text"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:2107
-#: builder/divi/modules/class-divi-form.php:291
+#: builder/divi/modules/class-divi-form.php:292
 #: builder/elementor/widgets/class-elementor-form.php:277
-#: builder/oxygen/modules/class-oxy-form.php:585
+#: builder/oxygen/modules/class-oxy-form.php:587
 msgid "Text Below Place Order Button"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:2108
-#: includes/class-wfacp-common.php:3920
+#: includes/class-wfacp-common.php:4042
 msgid "We Respect Your Privacy & Information"
 msgstr ""
 
@@ -2097,7 +2090,7 @@ msgid "Custom Classes"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:2477
-#: builder/divi/modules/class-divi-form.php:135
+#: builder/divi/modules/class-divi-form.php:136
 msgid "Custom Class"
 msgstr ""
 
@@ -2231,7 +2224,7 @@ msgstr ""
 #: importer/checkout-settings/shoppe.php:73
 #: includes/class-wfacp-common-helper.php:2298
 #: includes/class-wfacp-common-helper.php:2424
-#: includes/class-wfacp-common.php:3962
+#: includes/class-wfacp-common.php:4084
 msgid "Contact Information"
 msgstr ""
 
@@ -2269,7 +2262,7 @@ msgid "Email"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-header.php:196
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:475
+#: modules/conditional-fields/includes/api/class-rest-controller.php:757
 msgid "Phone"
 msgstr ""
 
@@ -2499,9 +2492,9 @@ msgid "Enable if you want to delete the item"
 msgstr ""
 
 #: builder/customizer/customizer-options/class-section-mini-cart-summary.php:90
-#: builder/divi/modules/class-divi-form.php:311
+#: builder/divi/modules/class-divi-form.php:312
 #: builder/elementor/widgets/class-elementor-form.php:340
-#: builder/oxygen/modules/class-oxy-form.php:621
+#: builder/oxygen/modules/class-oxy-form.php:623
 #: builder/oxygen/modules/class-oxy-mini-cart.php:69
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:82
@@ -2790,8 +2783,8 @@ msgid "Disable Top Bar"
 msgstr ""
 
 #: builder/customizer/templates/embed_forms_1/template.php:595
-#: builder/divi/modules/class-divi-form.php:164
-#: builder/oxygen/modules/class-oxy-form.php:169
+#: builder/divi/modules/class-divi-form.php:165
+#: builder/oxygen/modules/class-oxy-form.php:171
 msgid "Select Type"
 msgstr ""
 
@@ -2804,9 +2797,9 @@ msgid "Step Sub-Heading"
 msgstr ""
 
 #: builder/customizer/templates/embed_forms_1/template.php:936
-#: builder/divi/modules/class-divi-form.php:192
+#: builder/divi/modules/class-divi-form.php:193
 #: builder/elementor/widgets/class-elementor-form.php:522
-#: builder/oxygen/modules/class-oxy-form.php:195
+#: builder/oxygen/modules/class-oxy-form.php:197
 msgid "Step"
 msgstr ""
 
@@ -2837,17 +2830,17 @@ msgstr ""
 #: builder/customizer/templates/embed_forms_1/template.php:1491
 #: builder/elementor/widgets/class-elementor-form.php:505
 #: builder/gutenberg/class-wfacp-gutenberg.php:527
-#: builder/oxygen/modules/class-oxy-form.php:181
-#: includes/class-wfacp-common.php:3975
+#: builder/oxygen/modules/class-oxy-form.php:183
+#: includes/class-wfacp-common.php:4097
 msgid "Where to ship it?"
 msgstr ""
 
 #: builder/customizer/templates/embed_forms_1/template.php:1499
 #: builder/elementor/widgets/class-elementor-form.php:513
 #: builder/gutenberg/class-wfacp-gutenberg.php:535
-#: builder/oxygen/modules/class-oxy-form.php:189
+#: builder/oxygen/modules/class-oxy-form.php:191
 #: importer/checkout-settings/embed_forms_2.php:85
-#: includes/class-wfacp-common.php:3970
+#: includes/class-wfacp-common.php:4092
 msgid "Confirm your order"
 msgstr ""
 
@@ -2860,7 +2853,7 @@ msgstr ""
 
 #: builder/customizer/templates/embed_forms_1/template.php:1505
 #: builder/customizer/templates/embed_forms_1/template.php:1519
-#: includes/class-wfacp-common.php:4002
+#: includes/class-wfacp-common.php:4124
 msgid "PRODUCTS"
 msgstr ""
 
@@ -2870,12 +2863,12 @@ msgid "PROCEED TO FINAL STEP →"
 msgstr ""
 
 #: builder/customizer/templates/embed_forms_1/template.php:1514
-#: includes/class-wfacp-common.php:3921
+#: includes/class-wfacp-common.php:4043
 msgid "GET YOUR FREE COPY OF AMAZING BOOK"
 msgstr ""
 
 #: builder/customizer/templates/embed_forms_1/template.php:1515
-#: includes/class-wfacp-common.php:3922
+#: includes/class-wfacp-common.php:4044
 msgid "Shipped in less than 3 days!"
 msgstr ""
 
@@ -2884,7 +2877,7 @@ msgstr ""
 #: builder/customizer/templates/embed_forms_1/template.php:1530
 #: importer/checkout-settings/custom_funnel_form_3.php:10
 #: importer/checkout-settings/embed_forms_2.php:82
-#: includes/class-wfacp-common.php:3999
+#: includes/class-wfacp-common.php:4121
 msgid "INFORMATION"
 msgstr ""
 
@@ -2902,13 +2895,13 @@ msgstr ""
 #: builder/customizer/templates/embed_forms_1/template.php:1653
 #: builder/customizer/templates/layout_9/template.php:1006
 #: builder/divi/class-abstract-wfacp-fields.php:59
-#: builder/divi/modules/class-divi-form.php:154
-#: builder/divi/modules/class-divi-form.php:296
-#: builder/divi/modules/class-divi-mini-cart.php:46
+#: builder/divi/modules/class-divi-form.php:155
+#: builder/divi/modules/class-divi-form.php:297
+#: builder/divi/modules/class-divi-mini-cart.php:43
 #: builder/elementor/widgets/class-elementor-form.php:324
 #: builder/elementor/widgets/class-elementor-summary.php:62
 #: builder/oxygen/class-abstract-wfacp-fields.php:81
-#: builder/oxygen/modules/class-oxy-form.php:594
+#: builder/oxygen/modules/class-oxy-form.php:596
 #: includes/class-wfacp-common-helper.php:1203
 #: includes/class-wfacp-common-helper.php:1503
 #: includes/class-wfacp-common-helper.php:1568
@@ -2926,19 +2919,19 @@ msgstr ""
 
 #: builder/customizer/templates/embed_forms_1/template.php:1660
 #: builder/customizer/templates/layout_9/template.php:1013
-#: builder/divi/modules/class-divi-form.php:305
+#: builder/divi/modules/class-divi-form.php:306
 #: builder/elementor/widgets/class-elementor-form.php:335
 #: builder/gutenberg/class-wfacp-gutenberg.php:594
-#: builder/oxygen/modules/class-oxy-form.php:601
-#: includes/class-wfacp-common.php:3967
+#: builder/oxygen/modules/class-oxy-form.php:603
+#: includes/class-wfacp-common.php:4089
 msgid "Show Order Summary"
 msgstr ""
 
 #: builder/customizer/templates/embed_forms_1/template.php:1681
 #: builder/customizer/templates/layout_9/template.php:1035
-#: builder/divi/modules/class-divi-form.php:306
+#: builder/divi/modules/class-divi-form.php:307
 #: builder/elementor/widgets/class-elementor-form.php:336
-#: builder/oxygen/modules/class-oxy-form.php:615
+#: builder/oxygen/modules/class-oxy-form.php:617
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:66
 msgid "Expanded View Text"
@@ -2946,11 +2939,11 @@ msgstr ""
 
 #: builder/customizer/templates/embed_forms_1/template.php:1682
 #: builder/customizer/templates/layout_9/template.php:1036
-#: builder/divi/modules/class-divi-form.php:306
+#: builder/divi/modules/class-divi-form.php:307
 #: builder/elementor/widgets/class-elementor-form.php:336
 #: builder/gutenberg/class-wfacp-gutenberg.php:595
-#: builder/oxygen/modules/class-oxy-form.php:615
-#: includes/class-wfacp-common.php:3968
+#: builder/oxygen/modules/class-oxy-form.php:617
+#: includes/class-wfacp-common.php:4090
 msgid "Hide Order Summary"
 msgstr ""
 
@@ -2969,7 +2962,7 @@ msgstr ""
 #: includes/class-wfacp-common-helper.php:2375
 #: includes/class-wfacp-common-helper.php:2543
 #: includes/class-wfacp-common-helper.php:2744
-#: includes/class-wfacp-common.php:3987
+#: includes/class-wfacp-common.php:4109
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:151
 msgid "Order Summary"
@@ -3030,8 +3023,8 @@ msgstr ""
 #: importer/checkout-settings/shoppe-step-2.php:165
 #: importer/checkout-settings/shoppe-step-3.php:152
 #: includes/class-wfacp-common-helper.php:288
-#: includes/class-wfacp-common.php:3923
-#: includes/class-wfacp-common.php:3924
+#: includes/class-wfacp-common.php:4045
+#: includes/class-wfacp-common.php:4046
 msgid "WHAT'S INCLUDED IN YOUR PLAN?"
 msgstr ""
 
@@ -3082,9 +3075,6 @@ msgid "Groove"
 msgstr ""
 
 #: builder/divi/class-abstract-wfacp-fields.php:627
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:112
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:146
-#: modules/conditional-fields/includes/admin/views/settings-page.php:66
 msgid "Type"
 msgstr ""
 
@@ -3125,11 +3115,11 @@ msgid "Right"
 msgstr ""
 
 #: builder/divi/class-abstract-wfacp-fields.php:1030
-#: builder/divi/modules/class-divi-form.php:128
+#: builder/divi/modules/class-divi-form.php:129
 #: builder/elementor/widgets/class-elementor-form.php:208
 #: builder/elementor/widgets/class-elementor-form.php:1802
 #: builder/oxygen/class-abstract-wfacp-fields.php:885
-#: builder/oxygen/modules/class-oxy-form.php:378
+#: builder/oxygen/modules/class-oxy-form.php:380
 msgid "Full"
 msgstr ""
 
@@ -3175,7 +3165,7 @@ msgstr ""
 msgid "Strike Through"
 msgstr ""
 
-#: builder/divi/class-wfacp-divi.php:495
+#: builder/divi/class-wfacp-divi.php:494
 msgid "Divi"
 msgstr ""
 
@@ -3214,7 +3204,7 @@ msgid "CSS Class"
 msgstr ""
 
 #: builder/divi/class-wfacp-html-block-divi.php:516
-#: builder/divi/modules/class-divi-mini-cart.php:139
+#: builder/divi/modules/class-divi-mini-cart.php:151
 #: builder/elementor/class-wfacp-html-block-elementor.php:552
 #: builder/elementor/widgets/class-elementor-form.php:398
 #: builder/elementor/widgets/class-elementor-summary.php:144
@@ -3224,7 +3214,7 @@ msgid "Label Typography"
 msgstr ""
 
 #: builder/divi/class-wfacp-html-block-divi.php:522
-#: builder/divi/modules/class-divi-mini-cart.php:144
+#: builder/divi/modules/class-divi-mini-cart.php:156
 #: builder/elementor/class-wfacp-html-block-elementor.php:557
 #: builder/elementor/widgets/class-elementor-form.php:403
 #: builder/elementor/widgets/class-elementor-summary.php:149
@@ -3232,7 +3222,7 @@ msgid "Label Color"
 msgstr ""
 
 #: builder/divi/class-wfacp-html-block-divi.php:538
-#: builder/divi/modules/class-divi-mini-cart.php:161
+#: builder/divi/modules/class-divi-mini-cart.php:174
 #: builder/elementor/class-wfacp-html-block-elementor.php:571
 #: builder/elementor/widgets/class-elementor-form.php:415
 #: builder/elementor/widgets/class-elementor-summary.php:167
@@ -3244,137 +3234,137 @@ msgstr ""
 msgid "Saving Text"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:41
+#: builder/divi/modules/class-divi-form.php:42
 #: builder/elementor/widgets/class-elementor-form.php:1767
 msgid "Field Classes"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:145
-#: builder/divi/modules/class-divi-form.php:353
+#: builder/divi/modules/class-divi-form.php:146
+#: builder/divi/modules/class-divi-form.php:354
 #: builder/elementor/widgets/class-elementor-form.php:462
 #: builder/elementor/widgets/class-elementor-form.php:629
-#: builder/oxygen/modules/class-oxy-form.php:151
+#: builder/oxygen/modules/class-oxy-form.php:153
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:223
 msgid "Steps"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:146
+#: builder/divi/modules/class-divi-form.php:147
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:224
 msgid "Enable Steps"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:148
+#: builder/divi/modules/class-divi-form.php:149
 #: builder/elementor/widgets/class-elementor-form.php:466
-#: builder/oxygen/modules/class-oxy-form.php:154
+#: builder/oxygen/modules/class-oxy-form.php:156
 msgid "Tabs"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:149
+#: builder/divi/modules/class-divi-form.php:150
 #: builder/elementor/widgets/class-elementor-form.php:467
-#: builder/oxygen/modules/class-oxy-form.php:155
+#: builder/oxygen/modules/class-oxy-form.php:157
 msgid "Breadcrumb"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:153
-#: builder/divi/modules/class-divi-form.php:356
+#: builder/divi/modules/class-divi-form.php:154
+#: builder/divi/modules/class-divi-form.php:357
 #: builder/elementor/widgets/class-elementor-form.php:632
 #: includes/class-wfacp-common-helper.php:1447
 msgid "Header"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:230
+#: builder/divi/modules/class-divi-form.php:231
 #: builder/elementor/widgets/class-elementor-form.php:566
 msgid "Cart title"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:231
+#: builder/divi/modules/class-divi-form.php:232
 #: builder/elementor/widgets/class-elementor-form.php:567
-#: builder/oxygen/modules/class-oxy-form.php:208
+#: builder/oxygen/modules/class-oxy-form.php:210
 msgid "Note: Cart settings will work for Global Checkout when user navigates from Product > Cart > Checkout"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:238
-#: builder/oxygen/modules/class-oxy-form.php:215
+#: builder/divi/modules/class-divi-form.php:239
+#: builder/oxygen/modules/class-oxy-form.php:217
 msgid "Add to Breadcrumb"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:257
+#: builder/divi/modules/class-divi-form.php:258
 #: builder/elementor/widgets/class-elementor-form.php:244
 #: builder/oxygen/class-wfacp-html-block-oxy.php:516
-#: builder/oxygen/modules/class-oxy-form.php:548
+#: builder/oxygen/modules/class-oxy-form.php:550
 msgid "Button Text"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:259
+#: builder/divi/modules/class-divi-form.php:260
 #: builder/elementor/widgets/class-elementor-form.php:231
 #: builder/gutenberg/class-wfacp-gutenberg.php:552
-#: builder/oxygen/modules/class-oxy-form.php:550
-#: includes/class-wfacp-common.php:3988
+#: builder/oxygen/modules/class-oxy-form.php:552
+#: includes/class-wfacp-common.php:4110
 msgid "NEXT STEP →"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:284
+#: builder/divi/modules/class-divi-form.php:285
 #: builder/elementor/widgets/class-elementor-form.php:266
-#: builder/oxygen/modules/class-oxy-form.php:575
+#: builder/oxygen/modules/class-oxy-form.php:577
 msgid "Return Link Text"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:285
+#: builder/divi/modules/class-divi-form.php:286
 #: builder/elementor/widgets/class-elementor-form.php:267
 #: builder/gutenberg/class-wfacp-gutenberg.php:569
-#: builder/oxygen/modules/class-oxy-form.php:576
-#: includes/class-wfacp-common.php:3952
-#: public/template-common/next-button.php:53
+#: builder/oxygen/modules/class-oxy-form.php:578
+#: includes/class-wfacp-common.php:4074
+#: public/template-common/next-button.php:57
 msgid "« Return to Cart"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:295
-#: builder/divi/modules/class-divi-form.php:1175
+#: builder/divi/modules/class-divi-form.php:296
+#: builder/divi/modules/class-divi-form.php:1176
 #: builder/elementor/widgets/class-elementor-form.php:309
 #: builder/elementor/widgets/class-elementor-form.php:1721
-#: builder/oxygen/modules/class-oxy-form.php:592
+#: builder/oxygen/modules/class-oxy-form.php:594
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:34
 msgid "Collapsible Order Summary"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:299
-#: builder/divi/modules/class-divi-form.php:1455
+#: builder/divi/modules/class-divi-form.php:300
+#: builder/divi/modules/class-divi-form.php:1456
 #: builder/elementor/widgets/class-elementor-form.php:82
 #: builder/elementor/widgets/class-elementor-form.php:327
 #: builder/oxygen/class-wfacp-html-block-oxy.php:95
-#: builder/oxygen/modules/class-oxy-form.php:1173
+#: builder/oxygen/modules/class-oxy-form.php:1175
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:77
 msgid "Enable Image"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:302
+#: builder/divi/modules/class-divi-form.php:303
 #: builder/elementor/widgets/class-elementor-form.php:325
-#: builder/oxygen/modules/class-oxy-form.php:597
+#: builder/oxygen/modules/class-oxy-form.php:599
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:46
 msgid "Expanded Order Summary"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:305
-#: builder/oxygen/modules/class-oxy-form.php:601
+#: builder/divi/modules/class-divi-form.php:306
+#: builder/oxygen/modules/class-oxy-form.php:603
 msgid "Collapsed View Text "
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:312
+#: builder/divi/modules/class-divi-form.php:313
 #: builder/elementor/widgets/class-elementor-form.php:341
-#: builder/oxygen/modules/class-oxy-form.php:622
+#: builder/oxygen/modules/class-oxy-form.php:624
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:87
 msgid "Collapsible Coupon Field"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:313
-#: builder/divi/modules/class-divi-form.php:1445
-#: builder/divi/modules/class-divi-mini-cart.php:45
+#: builder/divi/modules/class-divi-form.php:314
+#: builder/divi/modules/class-divi-form.php:1446
+#: builder/divi/modules/class-divi-mini-cart.php:42
 #: builder/elementor/widgets/class-elementor-form.php:71
 #: builder/elementor/widgets/class-elementor-form.php:338
 #: builder/elementor/widgets/class-elementor-summary.php:65
@@ -3387,124 +3377,124 @@ msgstr ""
 msgid "Coupon Button Text"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:407
+#: builder/divi/modules/class-divi-form.php:408
 #: builder/elementor/widgets/class-elementor-form.php:685
 msgid "Circle Border"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:416
-#: builder/divi/modules/class-divi-form.php:430
+#: builder/divi/modules/class-divi-form.php:417
+#: builder/divi/modules/class-divi-form.php:431
 #: builder/elementor/widgets/class-elementor-form.php:697
 #: builder/elementor/widgets/class-elementor-form.php:715
-#: builder/oxygen/modules/class-oxy-form.php:724
-#: builder/oxygen/modules/class-oxy-form.php:735
+#: builder/oxygen/modules/class-oxy-form.php:726
+#: builder/oxygen/modules/class-oxy-form.php:737
 msgid "Tab Border Color"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:419
-#: builder/divi/modules/class-divi-form.php:432
+#: builder/divi/modules/class-divi-form.php:420
+#: builder/divi/modules/class-divi-form.php:433
 #: builder/elementor/widgets/class-elementor-form.php:701
 #: builder/elementor/widgets/class-elementor-form.php:717
-#: builder/oxygen/modules/class-oxy-form.php:727
-#: builder/oxygen/modules/class-oxy-form.php:737
+#: builder/oxygen/modules/class-oxy-form.php:729
+#: builder/oxygen/modules/class-oxy-form.php:739
 msgid "Count Border Color"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:423
+#: builder/divi/modules/class-divi-form.php:424
 #: builder/elementor/widgets/class-elementor-form.php:693
-#: builder/oxygen/modules/class-oxy-form.php:720
+#: builder/oxygen/modules/class-oxy-form.php:722
 msgid "Active Step"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:429
-#: builder/divi/modules/class-divi-form.php:1186
+#: builder/divi/modules/class-divi-form.php:430
+#: builder/divi/modules/class-divi-form.php:1187
 #: builder/elementor/widgets/class-elementor-form.php:714
 #: builder/elementor/widgets/class-elementor-form.php:1738
-#: builder/oxygen/modules/class-oxy-form.php:465
-#: builder/oxygen/modules/class-oxy-form.php:611
+#: builder/oxygen/modules/class-oxy-form.php:467
+#: builder/oxygen/modules/class-oxy-form.php:613
 msgid "Text Color"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:435
+#: builder/divi/modules/class-divi-form.php:436
 #: builder/elementor/widgets/class-elementor-form.php:707
-#: builder/oxygen/modules/class-oxy-form.php:731
+#: builder/oxygen/modules/class-oxy-form.php:733
 msgid "Inactive Step"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:507
+#: builder/divi/modules/class-divi-form.php:508
 #: builder/elementor/widgets/class-elementor-form.php:807
-#: builder/oxygen/modules/class-oxy-form.php:396
+#: builder/oxygen/modules/class-oxy-form.php:398
 msgid "Floating"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:508
+#: builder/divi/modules/class-divi-form.php:509
 #: builder/elementor/widgets/class-elementor-form.php:808
-#: builder/oxygen/modules/class-oxy-form.php:397
+#: builder/oxygen/modules/class-oxy-form.php:399
 msgid "Outside"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:509
+#: builder/divi/modules/class-divi-form.php:510
 #: builder/elementor/widgets/class-elementor-form.php:809
-#: builder/oxygen/modules/class-oxy-form.php:398
+#: builder/oxygen/modules/class-oxy-form.php:400
 msgid "Inside"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:561
-#: builder/oxygen/modules/class-oxy-form.php:456
+#: builder/divi/modules/class-divi-form.php:562
+#: builder/oxygen/modules/class-oxy-form.php:458
 msgid "Input"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:729
-#: builder/oxygen/modules/class-oxy-form.php:785
+#: builder/divi/modules/class-divi-form.php:730
+#: builder/oxygen/modules/class-oxy-form.php:787
 msgid "Normal"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:733
+#: builder/divi/modules/class-divi-form.php:734
 #: builder/elementor/widgets/class-elementor-form.php:448
-#: builder/oxygen/modules/class-oxy-form.php:799
+#: builder/oxygen/modules/class-oxy-form.php:801
 msgid "Hover"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:750
-#: builder/oxygen/modules/class-oxy-form.php:811
+#: builder/divi/modules/class-divi-form.php:751
+#: builder/oxygen/modules/class-oxy-form.php:813
 msgid "Return Link"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:1059
+#: builder/divi/modules/class-divi-form.php:1060
 msgid "Form Background Color"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:1081
+#: builder/divi/modules/class-divi-form.php:1082
 msgid "Primary Color"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:1139
+#: builder/divi/modules/class-divi-form.php:1140
 msgid "Link Color"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:1142
+#: builder/divi/modules/class-divi-form.php:1143
 msgid "Link Hover Color"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:1177
-#: builder/oxygen/modules/class-oxy-form.php:612
+#: builder/divi/modules/class-divi-form.php:1178
+#: builder/oxygen/modules/class-oxy-form.php:614
 msgid "Collapsed Background"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:1178
-#: builder/oxygen/modules/class-oxy-form.php:1177
+#: builder/divi/modules/class-divi-form.php:1179
+#: builder/oxygen/modules/class-oxy-form.php:1179
 msgid "Expanded Background"
 msgstr ""
 
-#: builder/divi/modules/class-divi-form.php:1432
+#: builder/divi/modules/class-divi-form.php:1433
 #: builder/elementor/widgets/class-elementor-form.php:296
-#: builder/oxygen/modules/class-oxy-form.php:1310
+#: builder/oxygen/modules/class-oxy-form.php:1314
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:406
 msgid "Enable Icon"
 msgstr ""
 
-#: builder/divi/modules/class-divi-mini-cart.php:48
+#: builder/divi/modules/class-divi-mini-cart.php:45
 #: builder/elementor/widgets/class-elementor-summary.php:63
 #: includes/class-wfacp-common-helper.php:1527
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
@@ -3512,7 +3502,7 @@ msgstr ""
 msgid "Collapsible"
 msgstr ""
 
-#: builder/divi/modules/class-divi-mini-cart.php:182
+#: builder/divi/modules/class-divi-mini-cart.php:195
 msgid "Coupon focus Input Color"
 msgstr ""
 
@@ -3566,9 +3556,6 @@ msgstr ""
 
 #: builder/elementor/widgets/class-elementor-form.php:388
 #: builder/oxygen/class-wfacp-html-block-oxy.php:488
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:111
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:145
-#: modules/conditional-fields/includes/admin/views/settings-page.php:64
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/mini-cart/inspector-control/style.js:302
 msgid "Field"
@@ -3577,7 +3564,7 @@ msgstr ""
 #: builder/elementor/widgets/class-elementor-form.php:417
 #: builder/elementor/widgets/class-elementor-form.php:988
 #: builder/oxygen/class-wfacp-html-block-oxy.php:501
-#: builder/oxygen/modules/class-oxy-form.php:501
+#: builder/oxygen/modules/class-oxy-form.php:503
 msgid "Focus Color"
 msgstr ""
 
@@ -3586,7 +3573,7 @@ msgid "Hover Label"
 msgstr ""
 
 #: builder/elementor/widgets/class-elementor-form.php:472
-#: builder/oxygen/modules/class-oxy-form.php:159
+#: builder/oxygen/modules/class-oxy-form.php:161
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/checkout-form/inspector-control/general.js:227
 msgid "Form Header"
@@ -3594,13 +3581,13 @@ msgstr ""
 
 #: builder/elementor/widgets/class-elementor-form.php:509
 #: builder/gutenberg/class-wfacp-gutenberg.php:531
-#: builder/oxygen/modules/class-oxy-form.php:185
-#: includes/class-wfacp-common.php:3973
+#: builder/oxygen/modules/class-oxy-form.php:187
+#: includes/class-wfacp-common.php:4095
 msgid "Select your product"
 msgstr ""
 
 #: builder/elementor/widgets/class-elementor-form.php:989
-#: builder/oxygen/modules/class-oxy-form.php:491
+#: builder/oxygen/modules/class-oxy-form.php:493
 msgid "Error Validation Color"
 msgstr ""
 
@@ -3612,13 +3599,13 @@ msgstr ""
 
 #: builder/elementor/widgets/class-elementor-form.php:1031
 #: builder/elementor/widgets/class-elementor-form.php:1039
-#: builder/oxygen/modules/class-oxy-form.php:747
+#: builder/oxygen/modules/class-oxy-form.php:749
 msgid "Checkout Button(s)"
 msgstr ""
 
-#: builder/elementor/widgets/class-elementor-form.php:1878
-#: builder/oxygen/modules/class-oxy-form.php:534
-#: builder/oxygen/modules/class-oxy-form.php:1271
+#: builder/elementor/widgets/class-elementor-form.php:1880
+#: builder/oxygen/modules/class-oxy-form.php:536
+#: builder/oxygen/modules/class-oxy-form.php:1275
 msgid "Terms & Conditions"
 msgstr ""
 
@@ -3691,53 +3678,53 @@ msgstr ""
 msgid "Oxygen Classic"
 msgstr ""
 
-#: builder/oxygen/modules/class-oxy-form.php:152
+#: builder/oxygen/modules/class-oxy-form.php:154
 msgid "Enable Steps Desktop"
 msgstr ""
 
-#: builder/oxygen/modules/class-oxy-form.php:160
+#: builder/oxygen/modules/class-oxy-form.php:162
 msgid "Enable Header"
 msgstr ""
 
-#: builder/oxygen/modules/class-oxy-form.php:526
-#: includes/class-wfacp-common.php:3982
+#: builder/oxygen/modules/class-oxy-form.php:528
+#: includes/class-wfacp-common.php:4104
 msgid "Payment Methods"
 msgstr ""
 
-#: builder/oxygen/modules/class-oxy-form.php:599
+#: builder/oxygen/modules/class-oxy-form.php:601
 msgid "Collapsed"
 msgstr ""
 
-#: builder/oxygen/modules/class-oxy-form.php:614
+#: builder/oxygen/modules/class-oxy-form.php:616
 msgid "Expanded"
 msgstr ""
 
-#: builder/oxygen/modules/class-oxy-form.php:624
+#: builder/oxygen/modules/class-oxy-form.php:626
 #: builder/oxygen/modules/class-oxy-mini-cart.php:41
 msgid "Quantity Count"
 msgstr ""
 
-#: builder/oxygen/modules/class-oxy-form.php:702
+#: builder/oxygen/modules/class-oxy-form.php:704
 msgid "Breadcrumb Typography"
 msgstr ""
 
-#: builder/oxygen/modules/class-oxy-form.php:750
+#: builder/oxygen/modules/class-oxy-form.php:752
 msgid "Steps Buttons"
 msgstr ""
 
-#: builder/oxygen/modules/class-oxy-form.php:766
+#: builder/oxygen/modules/class-oxy-form.php:768
 msgid "Buttons Typography"
 msgstr ""
 
-#: builder/oxygen/modules/class-oxy-form.php:808
+#: builder/oxygen/modules/class-oxy-form.php:810
 msgid "Button Border"
 msgstr ""
 
-#: builder/oxygen/modules/class-oxy-form.php:1166
+#: builder/oxygen/modules/class-oxy-form.php:1168
 msgid "Default Link Color"
 msgstr ""
 
-#: builder/oxygen/modules/class-oxy-form.php:1167
+#: builder/oxygen/modules/class-oxy-form.php:1169
 msgid "Default Link Hover Color"
 msgstr ""
 
@@ -3794,15 +3781,15 @@ msgstr ""
 msgid "EU VAT field requires Billing Address field to present in checkout. Please drag Billing Address to place it in form."
 msgstr ""
 
-#: compatibilities/ecrm/class-creative-mail-by-constant-contact.php:40
+#: compatibilities/ecrm/class-creative-mail-by-constant-contact.php:43
 msgid "Creative Mail"
 msgstr ""
 
-#: compatibilities/ecrm/class-mailjet-for-wp.php:34
+#: compatibilities/ecrm/class-mailjet-for-wp.php:38
 msgid "Mailjet for WordPress"
 msgstr ""
 
-#: compatibilities/ecrm/class-wc-ac-hook.php:37
+#: compatibilities/ecrm/class-wc-ac-hook.php:39
 msgid "WC AC Hook"
 msgstr ""
 
@@ -3822,15 +3809,15 @@ msgstr ""
 msgid "FluentCRM"
 msgstr ""
 
-#: compatibilities/fields/class-mailpoet.php:43
+#: compatibilities/fields/class-mailpoet.php:44
 msgid "MailPoet"
 msgstr ""
 
-#: compatibilities/fields/class-omnisend-for-wc.php:39
+#: compatibilities/fields/class-omnisend-for-wc.php:41
 msgid "Omnisend WC"
 msgstr ""
 
-#: compatibilities/fields/class-ry-wc-ecpay.php:40
+#: compatibilities/fields/class-ry-wc-ecpay.php:42
 msgid "RC WC Ecpay"
 msgstr ""
 
@@ -3857,7 +3844,7 @@ msgstr ""
 msgid "Tickera WC"
 msgstr ""
 
-#: compatibilities/fields/class-uncanny-group-of-learn-dash.php:41
+#: compatibilities/fields/class-uncanny-group-of-learn-dash.php:42
 msgid "ULGM Group Name"
 msgstr ""
 
@@ -3874,7 +3861,7 @@ msgstr ""
 msgid "WC Ship Multiple Address"
 msgstr ""
 
-#: compatibilities/fields/class-wc-taxamo.php:41
+#: compatibilities/fields/class-wc-taxamo.php:42
 msgid "WC Taxamo Vat"
 msgstr ""
 
@@ -3882,47 +3869,47 @@ msgstr ""
 msgid "WooCommerce Tipping"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-coderockz-woo-delivery.php:39
+#: compatibilities/fields/class-wfacp-coderockz-woo-delivery.php:43
 msgid "Coderockz Woo Delivery"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-delivery-date-for-wc.php:39
-#: compatibilities/fields/class-wfacp-order-delivery-date-tyche-lite.php:42
-#: compatibilities/fields/class-wfacp-order-delivery-date-tyche.php:44
-#: compatibilities/fields/class-wfacp-wc-delivery.php:95
+#: compatibilities/fields/class-wfacp-delivery-date-for-wc.php:42
+#: compatibilities/fields/class-wfacp-order-delivery-date-tyche-lite.php:44
+#: compatibilities/fields/class-wfacp-order-delivery-date-tyche.php:48
+#: compatibilities/fields/class-wfacp-wc-delivery.php:99
 msgid "Delivery Date"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-econt-delivery-fields.php:26
+#: compatibilities/fields/class-wfacp-econt-delivery-fields.php:27
 msgid "Econt Delivery Field"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-facturare-wc.php:46
+#: compatibilities/fields/class-wfacp-facturare-wc.php:47
 msgid "WooFacturare"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-facturare-wc.php:54
+#: compatibilities/fields/class-wfacp-facturare-wc.php:55
 msgid "WooFacturare Fields"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-fattura-24.php:53
-#: compatibilities/fields/class-wfacp-fattura-24.php:54
+#: compatibilities/fields/class-wfacp-fattura-24.php:56
+#: compatibilities/fields/class-wfacp-fattura-24.php:57
 msgid "Fattura 24"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-FFI-API.php:38
+#: compatibilities/fields/class-wfacp-FFI-API.php:42
 msgid "FFL API"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-mailchimp-for-wc.php:71
+#: compatibilities/fields/class-wfacp-mailchimp-for-wc.php:74
 msgid "MailChimp"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-order-delivery-date-tyche.php:51
+#: compatibilities/fields/class-wfacp-order-delivery-date-tyche.php:55
 msgid "Time Slot"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-order-delivery-date-tyche.php:58
+#: compatibilities/fields/class-wfacp-order-delivery-date-tyche.php:62
 msgid "Pickup Location"
 msgstr ""
 
@@ -3930,41 +3917,41 @@ msgstr ""
 msgid "Szamlazz.hu Tax Number"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-wc-delivery.php:103
+#: compatibilities/fields/class-wfacp-wc-delivery.php:107
 msgid "Delivery Time"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-wc-delivery.php:110
+#: compatibilities/fields/class-wfacp-wc-delivery.php:114
 msgid "Delivery Location"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-wc-italian-add-on.php:75
-#: compatibilities/fields/class-wfacp-wc-italian-add-on.php:76
+#: compatibilities/fields/class-wfacp-wc-italian-add-on.php:79
+#: compatibilities/fields/class-wfacp-wc-italian-add-on.php:80
 msgid "WC Italian Fields"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-wc-sendinblue.php:28
-#: compatibilities/fields/class-wfacp-wc-sendinblue.php:29
+#: compatibilities/fields/class-wfacp-wc-sendinblue.php:31
+#: compatibilities/fields/class-wfacp-wc-sendinblue.php:32
 msgid "Brevo"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-wc-timologia.php:46
+#: compatibilities/fields/class-wfacp-wc-timologia.php:48
 msgid "Invoice"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-wc-timologia.php:47
+#: compatibilities/fields/class-wfacp-wc-timologia.php:49
 msgid "VAT"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-wc-timologia.php:48
+#: compatibilities/fields/class-wfacp-wc-timologia.php:50
 msgid "Tax Office"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-wc-timologia.php:49
+#: compatibilities/fields/class-wfacp-wc-timologia.php:51
 msgid "Profession"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-woo-mailerlite.php:58
+#: compatibilities/fields/class-wfacp-woo-mailerlite.php:61
 msgid "Woo MailerLite"
 msgstr ""
 
@@ -3972,8 +3959,8 @@ msgstr ""
 msgid "Postnl Parcel"
 msgstr ""
 
-#: compatibilities/fields/class-wfacp-woocommerce-ups.php:28
-#: compatibilities/fields/class-wfacp-woocommerce-ups.php:29
+#: compatibilities/fields/class-wfacp-woocommerce-ups.php:32
+#: compatibilities/fields/class-wfacp-woocommerce-ups.php:33
 msgid "Access Point Locations"
 msgstr ""
 
@@ -3985,11 +3972,11 @@ msgstr ""
 msgid "WC Delivery Slots (Iconic)"
 msgstr ""
 
-#: compatibilities/fields/class-woocommerce-zoom-meeting.php:49
+#: compatibilities/fields/class-woocommerce-zoom-meeting.php:51
 msgid "Zoom Meetings"
 msgstr ""
 
-#: compatibilities/fields/class-yth-delivery-date-shipping-manager.php:33
+#: compatibilities/fields/class-yth-delivery-date-shipping-manager.php:37
 msgid "YITH Delivery Date"
 msgstr ""
 
@@ -3998,16 +3985,16 @@ msgid "YTH EU Vat"
 msgstr ""
 
 #: compatibilities/gateways/class-angel-eye-ppcp.php:103
-#: compatibilities/gateways/class-angel-eye.php:362
-#: compatibilities/gateways/class-paypal-express.php:384
+#: compatibilities/gateways/class-angel-eye.php:366
+#: compatibilities/gateways/class-paypal-express.php:378
 msgid "Full Name"
 msgstr ""
 
-#: compatibilities/gateways/class-kco.php:54
+#: compatibilities/gateways/class-kco.php:58
 msgid "<strong> Attention: </strong>You are using Klarna Checkout which completely takes over the checkout. To have best experience with WooFunnels Checkout please activate <a href=\"https://wordpress.org/plugins/klarna-payments-for-woocommerce/\" target=\"_blank\">Klarna Payments</a>."
 msgstr ""
 
-#: compatibilities/library/class-add-address-field.php:45
+#: compatibilities/library/class-add-address-field.php:49
 #: includes/class-wfacp-common-helper.php:2613
 #: includes/class-wfacp-common-helper.php:2621
 #: includes/class-wfacp-common-helper.php:2630
@@ -4025,20 +4012,20 @@ msgstr ""
 msgid "Germanized Pro Multistep Checkout is enabled. This may interrupt the checkout flow. We recommend disabling this feature"
 msgstr ""
 
-#: compatibilities/plugins/class-myparcel-5.php:118
+#: compatibilities/plugins/class-myparcel-5.php:129
 msgid "MyParcel Delivery Options"
 msgstr ""
 
-#: compatibilities/plugins/class-wc-post-nl.php:39
+#: compatibilities/plugins/class-wc-post-nl.php:45
 msgid "PostNl Delivery Options"
 msgstr ""
 
-#: compatibilities/plugins/class-wf-cart-hooper-.php:25
+#: compatibilities/plugins/class-wf-cart-hooper-.php:27
 #: includes/class-wfacp-common-helper.php:1850
 msgid "Default WooCommerce Checkout Page"
 msgstr ""
 
-#: compatibilities/setup-theme/class-brazil-field-2.0.php:301
+#: compatibilities/setup-theme/class-brazil-field-2.0.php:366
 msgid "\"WooCommerce Extra Checkout Fields for Brazil\" is activated. Learn about the right away to configure it with Funnelkit Checkout.<a target=\"_blank\" href=\"//funnelkit.com/docs/aerocheckout/compatibility/woocommerce-extra-checkout-fields-for-Brazil\"> Know more</a>"
 msgstr ""
 
@@ -4046,7 +4033,7 @@ msgstr ""
 msgid "ConvertKit"
 msgstr ""
 
-#: compatibilities/setup-theme/class-smart-coupon.php:49
+#: compatibilities/setup-theme/class-smart-coupon.php:51
 msgid "Smart Coupon Gift"
 msgstr ""
 
@@ -4103,7 +4090,6 @@ msgstr ""
 #: importer/checkout-settings/shoppe.php:44
 #: includes/class-wfacp-common-helper.php:1272
 #: includes/class-wfacp-common-helper.php:2696
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:429
 msgid "Step 1"
 msgstr ""
 
@@ -4215,7 +4201,6 @@ msgstr ""
 #: importer/checkout-settings/shoppe.php:50
 #: includes/class-wfacp-common-helper.php:1273
 #: includes/class-wfacp-common-helper.php:2702
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:430
 msgid "Step 2"
 msgstr ""
 
@@ -4391,7 +4376,7 @@ msgstr ""
 #: importer/checkout-settings/hific.php:50
 #: importer/checkout-settings/optic.php:71
 #: includes/class-wfacp-common-helper.php:2322
-#: includes/class-wfacp-common.php:3959
+#: includes/class-wfacp-common.php:4081
 msgid "Shipping Information"
 msgstr ""
 
@@ -4421,7 +4406,7 @@ msgstr ""
 #: importer/checkout-settings/shopcheckout.php:113
 #: includes/class-wfacp-common-helper.php:2363
 #: includes/class-wfacp-common-helper.php:2534
-#: includes/class-wfacp-common.php:3986
+#: includes/class-wfacp-common.php:4108
 msgid "Your Products"
 msgstr ""
 
@@ -4440,9 +4425,9 @@ msgstr ""
 #: importer/checkout-settings/shopcheckout-step-3.php:211
 #: importer/checkout-settings/shopcheckout-three.php:254
 #: includes/class-wfacp-common-helper.php:2597
-#: includes/class-wfacp-common.php:1684
-#: includes/class-wfacp-common.php:3927
-#: includes/class-wfacp-common.php:3965
+#: includes/class-wfacp-common.php:1694
+#: includes/class-wfacp-common.php:4049
+#: includes/class-wfacp-common.php:4087
 msgid "Use a different shipping address"
 msgstr ""
 
@@ -4457,7 +4442,7 @@ msgstr ""
 #: importer/checkout-settings/salesletter-step-3.php:314
 #: importer/checkout-settings/shopcheckout-multi.php:339
 #: importer/checkout-settings/shopcheckout-step-2.php:299
-#: includes/class-wfacp-common.php:3928
+#: includes/class-wfacp-common.php:4050
 msgid "Use a different Billing address"
 msgstr ""
 
@@ -4465,15 +4450,15 @@ msgstr ""
 #: importer/checkout-settings/classic-step-2.php:298
 #: includes/class-wfacp-common-helper.php:1388
 #: includes/class-wfacp-common-helper.php:2663
-#: includes/class-wfacp-common.php:4007
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:481
+#: includes/class-wfacp-common.php:4129
+#: modules/conditional-fields/includes/api/class-rest-controller.php:763
 msgid "Country"
 msgstr ""
 
 #: importer/checkout-settings/custom_funnel_form_1.php:105
 #: importer/checkout-settings/custom_funnel_form_2.php:135
 #: importer/checkout-settings/custom_funnel_form_3.php:125
-#: includes/class-wfacp-common.php:3985
+#: includes/class-wfacp-common.php:4107
 msgid "Billing Details"
 msgstr ""
 
@@ -4486,7 +4471,7 @@ msgstr ""
 #: importer/checkout-settings/embed_forms_4.php:23
 #: importer/checkout-settings/embed_forms_5.php:24
 #: importer/checkout-settings/embed_forms_6.php:13
-#: includes/class-wfacp-common.php:3926
+#: includes/class-wfacp-common.php:4048
 msgid "* 100% Secure &amp; Safe Payments *"
 msgstr ""
 
@@ -4501,21 +4486,21 @@ msgstr ""
 #: importer/checkout-settings/embed_forms_6.php:10
 #: importer/checkout-settings/shopcheckout-multi.php:24
 #: importer/checkout-settings/shopcheckout-three.php:23
-#: includes/class-wfacp-common.php:4000
+#: includes/class-wfacp-common.php:4122
 msgid "Information"
 msgstr ""
 
 #: importer/checkout-settings/e-learning-step-2.php:47
 #: importer/checkout-settings/e-learning-step-3.php:33
 #: importer/checkout-settings/e-learning.php:51
-#: includes/class-wfacp-common.php:3981
+#: includes/class-wfacp-common.php:4103
 msgid "Your Information"
 msgstr ""
 
 #: importer/checkout-settings/e-learning-step-2.php:97
 #: importer/checkout-settings/e-learning-step-3.php:82
 #: importer/checkout-settings/e-learning.php:103
-#: includes/class-wfacp-common.php:3992
+#: includes/class-wfacp-common.php:4114
 msgid "Your Plans"
 msgstr ""
 
@@ -4526,7 +4511,7 @@ msgid "Your Billing Address"
 msgstr ""
 
 #: importer/checkout-settings/embed_forms_2.php:83
-#: includes/class-wfacp-common.php:3964
+#: includes/class-wfacp-common.php:4086
 msgid "Enter basic details"
 msgstr ""
 
@@ -4538,7 +4523,7 @@ msgstr ""
 #: importer/checkout-settings/magnetic-step-2.php:45
 #: importer/checkout-settings/magnetic-step-3.php:28
 #: importer/checkout-settings/magnetic.php:46
-#: includes/class-wfacp-common.php:3972
+#: includes/class-wfacp-common.php:4094
 msgid "Select Your Plan"
 msgstr ""
 
@@ -4547,7 +4532,7 @@ msgid "One-Step Checkout"
 msgstr ""
 
 #: importer/checkout-settings/razor.php:46
-#: includes/class-wfacp-common.php:3971
+#: includes/class-wfacp-common.php:4093
 msgid "Choose Your Product"
 msgstr ""
 
@@ -4573,7 +4558,7 @@ msgstr ""
 msgid "Continue to shipping →"
 msgstr ""
 
-#: importer/class-wfacp-elementor-importer.php:99
+#: importer/class-wfacp-elementor-importer.php:108
 msgid "Something Went wrong"
 msgstr ""
 
@@ -4591,11 +4576,11 @@ msgstr ""
 msgid "Elementor requires WordPress version %s+. please update the WordPress version to import the template."
 msgstr ""
 
-#: importer/class-wfacp-template-importer.php:222
+#: importer/class-wfacp-template-importer.php:231
 msgid "Server Down"
 msgstr ""
 
-#: importer/class-wfacp-template-importer.php:231
+#: importer/class-wfacp-template-importer.php:240
 msgid "No Template found"
 msgstr ""
 
@@ -4608,71 +4593,75 @@ msgstr ""
 msgid "You Save"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:161
+#: includes/class-wfacp-ajax-controller.php:177
 msgid "Checkout Page not found"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:406
-#: includes/class-wfacp-ajax-controller.php:459
-#: includes/class-wfacp-ajax-controller.php:1285
-#: includes/class-wfacp-ajax-controller.php:1308
+#: includes/class-wfacp-ajax-controller.php:425
+#: includes/class-wfacp-ajax-controller.php:478
+#: includes/class-wfacp-ajax-controller.php:1309
+#: includes/class-wfacp-ajax-controller.php:1339
 #: includes/class-wfacp-common-helper.php:1208
 msgid "Changes saved"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:525
+#: includes/class-wfacp-ajax-controller.php:544
 msgid "Field Added Saved"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:552
+#: includes/class-wfacp-ajax-controller.php:571
 msgid "Field Deleted"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:591
+#: includes/class-wfacp-ajax-controller.php:610
 msgid "Field Updated"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:617
+#: includes/class-wfacp-ajax-controller.php:641
 msgid "Checkout Page status updated"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:645
+#: includes/class-wfacp-ajax-controller.php:669
 msgid "Template imported"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:685
+#: includes/class-wfacp-ajax-controller.php:709
 msgid "Design Saved Successfully"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:1339
+#: includes/class-wfacp-ajax-controller.php:1332
+msgid "Permission denied"
+msgstr ""
+
+#: includes/class-wfacp-ajax-controller.php:1370
 msgid "on Regular Price"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:1340
+#: includes/class-wfacp-ajax-controller.php:1371
 msgid "on Sale Price"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:1361
+#: includes/class-wfacp-ajax-controller.php:1392
 msgid "--"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:1401
+#: includes/class-wfacp-ajax-controller.php:1432
 msgid "No product is associated in the checkout form"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:1586
+#: includes/class-wfacp-ajax-controller.php:1617
 msgid "Copy - "
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:1973
+#: includes/class-wfacp-ajax-controller.php:2008
 msgid "Importing of template failed"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:1990
+#: includes/class-wfacp-ajax-controller.php:2025
 msgid "Importing of template finished"
 msgstr ""
 
-#: includes/class-wfacp-ajax-controller.php:2013
+#: includes/class-wfacp-ajax-controller.php:2048
 msgid "Plugin Successfully Activated"
 msgstr ""
 
@@ -5543,12 +5532,12 @@ msgid "Shipping Method Prices"
 msgstr ""
 
 #: includes/class-wfacp-common-helper.php:2603
-#: includes/class-wfacp-common.php:1694
+#: includes/class-wfacp-common.php:1704
 msgid "Use a different billing address"
 msgstr ""
 
 #: includes/class-wfacp-common-helper.php:2642
-#: includes/class-wfacp-common.php:3929
+#: includes/class-wfacp-common.php:4051
 msgid "Apartment, suite, unit, etc."
 msgstr ""
 
@@ -5612,349 +5601,338 @@ msgstr ""
 msgid "Site has an older version of Divi Builder. Templates are supported for v%s or greater.<br /> Please update."
 msgstr ""
 
-#: includes/class-wfacp-common.php:360
 #: includes/class-wfacp-common.php:361
-#: includes/class-wfacp-common.php:3527
+#: includes/class-wfacp-common.php:362
+#: includes/class-wfacp-common.php:3649
 #: includes/tracking/class-facebook.php:67
 msgid "Checkout"
 msgstr ""
 
-#: includes/class-wfacp-common.php:362
+#: includes/class-wfacp-common.php:363
 msgid "Add Checkout page"
 msgstr ""
 
-#: includes/class-wfacp-common.php:363
+#: includes/class-wfacp-common.php:364
 msgid "Add New Checkout page"
 msgstr ""
 
-#: includes/class-wfacp-common.php:426
+#: includes/class-wfacp-common.php:427
 msgid "FunnelKit Boxed"
 msgstr ""
 
-#: includes/class-wfacp-common.php:427
+#: includes/class-wfacp-common.php:428
 msgid "FunnelKit Canvas For Page Builder"
 msgstr ""
 
-#: includes/class-wfacp-common.php:543
+#: includes/class-wfacp-common.php:544
 msgid "Design"
 msgstr ""
 
-#: includes/class-wfacp-common.php:561
+#: includes/class-wfacp-common.php:562
 msgid "Optimizations"
-msgstr ""
-
-#: includes/class-wfacp-common.php:583
-#, php-format
-msgid "%s Fixed Amount on Regular Price"
 msgstr ""
 
 #: includes/class-wfacp-common.php:584
 #, php-format
-msgid "%s Fixed Amount on Sale Price"
+msgid "%s Fixed Amount on Regular Price"
 msgstr ""
 
 #: includes/class-wfacp-common.php:585
-msgid "% on Regular Price"
+#, php-format
+msgid "%s Fixed Amount on Sale Price"
 msgstr ""
 
 #: includes/class-wfacp-common.php:586
+msgid "% on Regular Price"
+msgstr ""
+
+#: includes/class-wfacp-common.php:587
 msgid "% on Sale Price"
 msgstr ""
 
-#: includes/class-wfacp-common.php:1719
-#: includes/class-wfacp-common.php:3984
+#: includes/class-wfacp-common.php:1729
+#: includes/class-wfacp-common.php:4106
 msgid "Shipping Phone"
 msgstr ""
 
-#: includes/class-wfacp-common.php:2572
-#: includes/class-wfacp-common.php:2574
+#: includes/class-wfacp-common.php:2582
+#: includes/class-wfacp-common.php:2584
 msgid "Copy"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3261
+#: includes/class-wfacp-common.php:3383
 msgid "Unable to execute a shortcode as it contains a form inside."
 msgstr ""
 
-#: includes/class-wfacp-common.php:3281
-#: public/class-wfacp-public.php:2031
-#: public/class-wfacp-public.php:2032
+#: includes/class-wfacp-common.php:3403
 #: public/class-wfacp-public.php:2033
+#: public/class-wfacp-public.php:2034
+#: public/class-wfacp-public.php:2035
 msgid "Day"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3287
-#: public/class-wfacp-public.php:2046
-#: public/class-wfacp-public.php:2047
+#: includes/class-wfacp-common.php:3409
 #: public/class-wfacp-public.php:2048
+#: public/class-wfacp-public.php:2049
+#: public/class-wfacp-public.php:2050
 msgid "Month"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3293
-#: public/class-wfacp-public.php:2061
-#: public/class-wfacp-public.php:2062
+#: includes/class-wfacp-common.php:3415
 #: public/class-wfacp-public.php:2063
+#: public/class-wfacp-public.php:2064
+#: public/class-wfacp-public.php:2065
 msgid "Year"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3548
+#: includes/class-wfacp-common.php:3670
 #: includes/class-wfacp-post-table.php:148
 msgid "Checkout Page"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3916
+#: includes/class-wfacp-common.php:4038
 msgid "All transactions are secure and encrypted. Credit card information is never stored on our servers."
 msgstr ""
 
-#: includes/class-wfacp-common.php:3917
+#: includes/class-wfacp-common.php:4039
 msgid "All transactions are secured and encrypted."
 msgstr ""
 
-#: includes/class-wfacp-common.php:3918
+#: includes/class-wfacp-common.php:4040
 msgid "All transactions are secured and encrypted"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3925
+#: includes/class-wfacp-common.php:4047
 msgid "* 100% Secure & Safe Payments *"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3930
+#: includes/class-wfacp-common.php:4052
 msgid "Proceed To Final Step"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3931
+#: includes/class-wfacp-common.php:4053
 msgid "Proceed To Next Step"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3932
+#: includes/class-wfacp-common.php:4054
 msgid "Enter Customer Information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3933
+#: includes/class-wfacp-common.php:4055
 msgid "Complete Your Order Now"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3934
+#: includes/class-wfacp-common.php:4056
 msgid "Select Shipping Method"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3935
-#: includes/class-wfacp-template.php:2703
+#: includes/class-wfacp-common.php:4057
+#: includes/class-wfacp-template.php:2724
 msgid "Review Order Summary"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3936
+#: includes/class-wfacp-common.php:4058
 msgid "Your Payment Information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3937
+#: includes/class-wfacp-common.php:4059
 msgid "Your payment information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3938
+#: includes/class-wfacp-common.php:4060
 msgid "Your Shipping Address"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3939
+#: includes/class-wfacp-common.php:4061
 msgid "Proceed to Final Step"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3940
+#: includes/class-wfacp-common.php:4062
 msgid "PROCEED TO FINAL STEP"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3941
+#: includes/class-wfacp-common.php:4063
 msgid "Proceed to Next Step"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3942
+#: includes/class-wfacp-common.php:4064
 msgid "PROCEED TO NEXT STEP"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3943
+#: includes/class-wfacp-common.php:4065
 msgid "Contact  Information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3944
+#: includes/class-wfacp-common.php:4066
 msgid "CONTINUE TO SHIPPING"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3945
+#: includes/class-wfacp-common.php:4067
 msgid "CONTINUE TO PAYMENT"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3946
+#: includes/class-wfacp-common.php:4068
 msgid "Return to Information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3947
+#: includes/class-wfacp-common.php:4069
 msgid "Return to Step 1"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3948
+#: includes/class-wfacp-common.php:4070
 msgid "Return to Step 2"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3949
-#: includes/class-wfacp-common.php:3950
+#: includes/class-wfacp-common.php:4071
+#: includes/class-wfacp-common.php:4072
 msgid "Return to Shipping"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3951
+#: includes/class-wfacp-common.php:4073
 msgid "Return to information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3953
+#: includes/class-wfacp-common.php:4075
 msgid "Proceed to shipping"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3954
+#: includes/class-wfacp-common.php:4076
 msgid "Proceed to Shipping"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3955
+#: includes/class-wfacp-common.php:4077
 msgid "PROCEED TO PAYMENT"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3956
+#: includes/class-wfacp-common.php:4078
 msgid "Proceed to payment"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3957
+#: includes/class-wfacp-common.php:4079
 msgid "Proceed to Payment"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3958
+#: includes/class-wfacp-common.php:4080
 msgid "Payment Information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3960
+#: includes/class-wfacp-common.php:4082
 msgid "Select Payment Method"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3961
+#: includes/class-wfacp-common.php:4083
 msgid "Customer Information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3963
+#: includes/class-wfacp-common.php:4085
 msgid "Enter your details"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3966
+#: includes/class-wfacp-common.php:4088
 msgid "Place Your Order Now"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3969
+#: includes/class-wfacp-common.php:4091
 msgid "Confirm Your Order"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3974
+#: includes/class-wfacp-common.php:4096
 msgid "Date Of Birth"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3976
+#: includes/class-wfacp-common.php:4098
 msgid "COMPLETE PURCHASE"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3977
+#: includes/class-wfacp-common.php:4099
 msgid "Payment information"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3978
+#: includes/class-wfacp-common.php:4100
 msgid "PLACE ORDER NOW"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3979
+#: includes/class-wfacp-common.php:4101
 msgid "Place Order Now"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3980
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:137
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:397
-#: modules/conditional-fields/includes/models/class-section-rule.php:76
+#: includes/class-wfacp-common.php:4102
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:398
+#: modules/conditional-fields/includes/api/class-rest-controller.php:618
+#: modules/conditional-fields/includes/models/class-section-rule.php:77
 msgid "Shipping Address"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3983
+#: includes/class-wfacp-common.php:4105
 msgid "Payment Method"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3989
-#: public/template-common/next-button.php:41
+#: includes/class-wfacp-common.php:4111
+#: public/template-common/next-button.php:45
 msgid "Next Step"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3990
+#: includes/class-wfacp-common.php:4112
 msgid "Return to"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3994
+#: includes/class-wfacp-common.php:4116
 msgid "Place order"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3995
+#: includes/class-wfacp-common.php:4117
 msgid "Place Order"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3996
+#: includes/class-wfacp-common.php:4118
 msgid "place order"
 msgstr ""
 
-#: includes/class-wfacp-common.php:3997
+#: includes/class-wfacp-common.php:4119
 msgid "PLACE ORDER"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4001
+#: includes/class-wfacp-common.php:4123
 msgid "Payment method"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4004
+#: includes/class-wfacp-common.php:4126
 msgid "SHIPPING"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4005
+#: includes/class-wfacp-common.php:4127
 msgid "Payment"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4006
+#: includes/class-wfacp-common.php:4128
 msgid "PAYMENT"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4008
+#: includes/class-wfacp-common.php:4130
 msgid "Method"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4009
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:151
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:193
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:198
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:270
-#: modules/conditional-fields/includes/admin/views/settings-page.php:113
+#: includes/class-wfacp-common.php:4131
 msgid "Hide"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4010
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:150
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:192
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:194
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:266
-#: modules/conditional-fields/includes/admin/views/settings-page.php:109
+#: includes/class-wfacp-common.php:4132
 msgid "Show"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4011
+#: includes/class-wfacp-common.php:4133
 msgid "Apply"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4012
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:432
+#: includes/class-wfacp-common.php:4134
 msgid "Shipping"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4013
+#: includes/class-wfacp-common.php:4135
 msgid "Plan"
 msgstr ""
 
-#: includes/class-wfacp-common.php:4014
+#: includes/class-wfacp-common.php:4136
 msgid "PLAN"
 msgstr ""
 
@@ -6023,902 +6001,612 @@ msgstr ""
 msgid "Install Oxygen Builder"
 msgstr ""
 
-#: includes/class-wfacp-template.php:2138
+#: includes/class-wfacp-template.php:2152
 msgid "Payment Gateway"
 msgstr ""
 
-#: includes/class-wfacp-template.php:2139
+#: includes/class-wfacp-template.php:2153
 msgid "Enabled payment methods will display on the frontend."
 msgstr ""
 
-#: modules/conditional-fields/bin/conditional-fields.php:29
-msgid "You do not have permission to run this script."
-msgstr ""
-
-#: modules/conditional-fields/bin/conditional-fields.php:36
-msgid "Missing checkout_id. Use: ?checkout_id=3359"
-msgstr ""
-
-#: modules/conditional-fields/bin/conditional-fields.php:42
-msgid "Invalid checkout ID or post type."
-msgstr ""
-
-#: modules/conditional-fields/bin/conditional-fields.php:47
-msgid "Funnel Builder Checkout plugin must be active."
-msgstr ""
-
-#: modules/conditional-fields/bin/conditional-fields.php:263
-msgid "Layout has no single_step fieldsets."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:71
-msgid "FunnelKit Checkout Field Editor"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:72
-msgid "FunnelKit Checkout Fields"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:87
-msgid "You do not have sufficient permissions to access this page."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:136
-#: modules/conditional-fields/includes/models/class-section-rule.php:75
-msgid "Billing Information"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:138
-#: modules/conditional-fields/includes/models/class-section-rule.php:77
-msgid "Account Details"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:139
-#: modules/conditional-fields/includes/models/class-section-rule.php:78
-msgid "Order Notes"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:140
-#: modules/conditional-fields/includes/models/class-section-rule.php:79
-msgid "Additional Fields"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:428
-msgid "Single Step"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:431
-msgid "Billing"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:434
-msgid "Order"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:451
-msgid "First Name"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:457
-msgid "Last Name"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:463
-msgid "Company Name"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:469
-msgid "Email Address"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:487
-msgid "Street Address"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:493
-msgid "Town / City"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:499
-msgid "State"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-admin-pages.php:505
-msgid "ZIP / Postcode"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:78
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:127
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:201
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:254
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:291
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:329
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:388
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:425
-#: modules/file-upload/includes/class-file-upload.php:620
-#: modules/file-upload/includes/class-file-upload.php:644
-msgid "Permission denied."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:86
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:134
-msgid "Invalid checkout ID."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:218
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:264
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:301
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:345
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:398
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:435
-#: modules/conditional-fields/includes/api/class-rest-controller.php:312
-#: modules/conditional-fields/includes/api/class-rest-controller.php:347
-#: modules/conditional-fields/includes/api/class-rest-controller.php:420
-#: modules/conditional-fields/includes/api/class-rest-controller.php:462
-#: modules/conditional-fields/includes/api/class-rest-controller.php:497
-#: modules/conditional-fields/includes/api/class-rest-controller.php:576
-msgid "Invalid request data."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:224
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:351
-#: modules/conditional-fields/includes/api/class-rest-controller.php:357
-#: modules/conditional-fields/includes/api/class-rest-controller.php:507
-msgid "Invalid rule data."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:236
-#: modules/conditional-fields/includes/api/class-rest-controller.php:390
-msgid "Rules saved successfully."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:239
-#: modules/conditional-fields/includes/api/class-rest-controller.php:399
-msgid "Failed to save rules."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:308
-#: modules/conditional-fields/includes/api/class-rest-controller.php:432
-msgid "Rules deleted successfully."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:310
-#: modules/conditional-fields/includes/api/class-rest-controller.php:441
-msgid "Failed to delete rules."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:367
-#: modules/conditional-fields/includes/api/class-rest-controller.php:544
-msgid "Section rule saved successfully."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:373
-#: modules/conditional-fields/includes/api/class-rest-controller.php:555
-msgid "Failed to save section rule."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:442
-#: modules/conditional-fields/includes/api/class-rest-controller.php:588
-msgid "Section rule deleted successfully."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/class-ajax-handler.php:444
-#: modules/conditional-fields/includes/api/class-rest-controller.php:597
-msgid "Failed to delete section rule."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:21
-msgid "No checkout selected."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:23
-msgid "No sections found for this checkout."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:28
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:51
-msgid "Loading sections..."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:33
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:56
-msgid "Checkout Sections"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:35
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:58
-msgid "Configure conditional rules for entire sections or individual fields within each section."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:48
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:76
-msgid "Section Rule"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:53
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:81
-msgid "Field Rules"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:62
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:91
-msgid "Entire Section"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:66
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:95
-msgid "Individual Fields"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:73
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:103
-msgid "Configure a conditional rule for the entire section. When the section is hidden, all fields within it will be hidden regardless of their individual rules."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:78
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:109
-msgid "No section rule configured."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:81
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:112
-msgid "Add Section Rule"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:86
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:118
-msgid "Rule Summary:"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:92
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:124
-msgid "Edit Rule"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:95
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:169
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:127
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:234
-msgid "Delete Rule"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:105
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:138
-msgid "Configure conditional rules for individual fields within this section."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:113
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:147
-#: modules/conditional-fields/includes/admin/views/settings-page.php:67
-msgid "Rules Status"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:114
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:148
-#: modules/conditional-fields/includes/admin/views/settings-page.php:68
-msgid "Actions"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:120
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:154
-#: modules/conditional-fields/includes/admin/views/settings-page.php:50
-#: modules/conditional-fields/includes/admin/views/settings-page.php:74
-msgid "Loading fields..."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:138
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:176
-msgid "Edit Section Conditional Rule"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:143
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:182
-msgid "Section:"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:149
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:190
-msgid "Section Action:"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:154
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:196
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:204
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:276
-#: modules/conditional-fields/includes/admin/views/settings-page.php:119
-msgid "When:"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:155
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:197
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:208
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:280
-#: modules/conditional-fields/includes/admin/views/settings-page.php:123
-msgid "All condition groups match"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:156
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:198
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:212
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:284
-#: modules/conditional-fields/includes/admin/views/settings-page.php:127
-msgid "Any condition group matches"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:163
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:205
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:224
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:296
-#: modules/conditional-fields/includes/admin/views/settings-page.php:139
-msgid "Add Condition Group (OR)"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:170
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:237
-msgid "Save Section Rule"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:180
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:248
-msgid "Edit Field Conditional Rules"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:185
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:254
-#: modules/conditional-fields/includes/admin/views/settings-page.php:97
-msgid "Field:"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:191
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:262
-#: modules/conditional-fields/includes/admin/views/settings-page.php:105
-msgid "Field Action:"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:211
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:306
-#: modules/conditional-fields/includes/admin/views/settings-page.php:149
-msgid "Delete Rules"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-embedded.php:212
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:309
-#: modules/conditional-fields/includes/admin/views/settings-page.php:152
-msgid "Save Rules"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:15
-#: modules/conditional-fields/includes/admin/views/settings-page.php:15
-msgid "FunnelKit Checkout Conditional Fields"
-msgstr ""
-
-#. translators: %s: link to create checkout
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:23
-#: modules/conditional-fields/includes/admin/views/settings-page.php:23
-#, php-format
-msgid "No checkout pages found. Please %s first."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:24
-#: modules/conditional-fields/includes/admin/views/settings-page.php:24
-msgid "create a checkout page"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:34
-msgid "Select checkout"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page-v2.php:36
-msgid "Select checkout page"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page.php:55
-msgid "Checkout Fields"
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page.php:57
-msgid "Click \"Edit Rules\" to configure conditional logic for any field."
-msgstr ""
-
-#: modules/conditional-fields/includes/admin/views/settings-page.php:91
-msgid "Edit Conditional Rules"
-msgstr ""
-
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:53
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:54
 msgid "Checkout step ID for custom fields."
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:72
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:73
 msgid "Rule slug."
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:77
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:78
 msgid "Search term."
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:96
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:97
 msgid "Checkout step ID."
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:130
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:131
 msgid "Invalid step ID."
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:135
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:136
 msgid "Invalid checkout step."
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:140
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:141
 msgid "Invalid conditions data."
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:148
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:149
 msgid "Conditions saved successfully."
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:193
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:194
 msgid "User Role"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:196
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:215
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:356
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:520
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:575
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:597
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:635
-msgid "is"
-msgstr ""
-
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:197
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:216
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:357
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:521
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:576
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:598
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:636
+msgid "is"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:198
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:358
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:522
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:577
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:637
 msgid "is not"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:209
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:210
 msgid "Logged In"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:210
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:211
 msgid "Logged Out"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:212
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:213
 msgid "User Status"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:224
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:225
 msgid "User"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:241
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:242
 #: builder/gutenberg/dist/wfacp-block-editor.js:1
 #: builder/gutenberg/src/blocks/mini-cart/inspector-control/style.js:438
 msgid "Cart Total"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:244
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:315
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:613
-msgid "is equal to"
-msgstr ""
-
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:245
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:316
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:614
-msgid "is not equal to"
+msgid "is equal to"
 msgstr ""
 
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:246
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:317
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:615
-msgid "is greater than"
+msgid "is not equal to"
 msgstr ""
 
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:247
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:318
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:616
-msgid "is less than"
+msgid "is greater than"
 msgstr ""
 
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:248
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:319
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:617
-msgid "is greater or equal to"
+msgid "is less than"
 msgstr ""
 
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:249
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:320
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:618
+msgid "is greater or equal to"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:250
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:321
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:619
 msgid "is less or equal to"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:261
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:262
 msgid "Cart Items"
-msgstr ""
-
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:264
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:281
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:298
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:337
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:539
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:557
-msgid "matches any of"
 msgstr ""
 
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:265
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:282
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:299
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:338
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:540
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:558
-msgid "matches all of"
+msgid "matches any of"
 msgstr ""
 
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:266
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:283
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:300
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:338
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:541
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:559
+msgid "matches all of"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:267
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:284
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:301
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:339
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:542
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:560
 msgid "matches none of"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:278
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:279
 msgid "Cart Category"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:295
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:296
 msgid "Cart Tag"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:312
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:313
 msgid "Cart Item Count"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:334
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:335
 msgid "Cart Coupons"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:353
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:354
 msgid "Cart is Virtual"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:413
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:414
 msgid "Billing Address"
-msgstr ""
-
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:577
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:639
-msgid "is blank"
 msgstr ""
 
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:578
 #: modules/conditional-fields/includes/api/class-checkout-field-rules.php:640
+msgid "is blank"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:579
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:641
 msgid "is not blank"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:591
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:592
 msgid "Checked"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:592
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:593
 msgid "Unchecked"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:637
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:638
 msgid "contains"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:638
+#: modules/conditional-fields/includes/api/class-checkout-field-rules.php:639
 msgid "does not contain"
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-rest-controller.php:368
-#: modules/conditional-fields/includes/api/class-rest-controller.php:518
+#: modules/conditional-fields/includes/api/class-rest-controller.php:310
+#: modules/conditional-fields/includes/api/class-rest-controller.php:345
+#: modules/conditional-fields/includes/api/class-rest-controller.php:418
+#: modules/conditional-fields/includes/api/class-rest-controller.php:460
+#: modules/conditional-fields/includes/api/class-rest-controller.php:495
+#: modules/conditional-fields/includes/api/class-rest-controller.php:574
+msgid "Invalid request data."
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:355
+#: modules/conditional-fields/includes/api/class-rest-controller.php:505
+msgid "Invalid rule data."
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:366
+#: modules/conditional-fields/includes/api/class-rest-controller.php:516
 msgid "Invalid rule action. Must be \"show\" or \"hide\"."
 msgstr ""
 
-#: modules/conditional-fields/includes/api/class-rest-controller.php:378
-#: modules/conditional-fields/includes/api/class-rest-controller.php:528
+#: modules/conditional-fields/includes/api/class-rest-controller.php:376
+#: modules/conditional-fields/includes/api/class-rest-controller.php:526
 msgid "Rule groups are required."
 msgstr ""
 
-#: modules/conditional-fields/includes/engine/class-user-evaluator.php:161
+#: modules/conditional-fields/includes/api/class-rest-controller.php:388
+msgid "Rules saved successfully."
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:397
+msgid "Failed to save rules."
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:430
+msgid "Rules deleted successfully."
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:439
+msgid "Failed to delete rules."
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:542
+msgid "Section rule saved successfully."
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:553
+msgid "Failed to save section rule."
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:586
+msgid "Section rule deleted successfully."
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:595
+msgid "Failed to delete section rule."
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:617
+#: modules/conditional-fields/includes/models/class-section-rule.php:76
+msgid "Billing Information"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:619
+#: modules/conditional-fields/includes/models/class-section-rule.php:78
+msgid "Account Details"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:620
+#: modules/conditional-fields/includes/models/class-section-rule.php:79
+msgid "Order Notes"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:621
+#: modules/conditional-fields/includes/models/class-section-rule.php:80
+msgid "Additional Fields"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:733
+msgid "First Name"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:739
+msgid "Last Name"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:745
+msgid "Company Name"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:751
+msgid "Email Address"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:769
+msgid "Street Address"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:775
+msgid "Town / City"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:781
+msgid "State"
+msgstr ""
+
+#: modules/conditional-fields/includes/api/class-rest-controller.php:787
+msgid "ZIP / Postcode"
+msgstr ""
+
+#: modules/conditional-fields/includes/engine/class-user-evaluator.php:162
 msgid "Guest (Not Logged In)"
 msgstr ""
 
-#: modules/file-upload/includes/class-admin.php:101
+#: modules/file-upload/includes/class-admin.php:102
 msgid "Maxsize(in MB)"
 msgstr ""
 
-#: modules/file-upload/includes/class-admin.php:102
+#: modules/file-upload/includes/class-admin.php:103
 msgid "Accepted File Types"
 msgstr ""
 
-#: modules/file-upload/includes/class-admin.php:103
+#: modules/file-upload/includes/class-admin.php:104
 msgid "eg: png,jpg,docx,pdf"
 msgstr ""
 
-#: modules/file-upload/includes/class-admin.php:104
+#: modules/file-upload/includes/class-admin.php:105
 msgid "Max Files"
 msgstr ""
 
-#: modules/file-upload/includes/class-admin.php:105
+#: modules/file-upload/includes/class-admin.php:106
 msgid "Custom File Upload Button"
 msgstr ""
 
-#: modules/file-upload/includes/class-admin.php:106
+#: modules/file-upload/includes/class-admin.php:107
 msgid "Order Meta Data"
 msgstr ""
 
-#: modules/file-upload/includes/class-admin.php:107
+#: modules/file-upload/includes/class-admin.php:108
 msgid "User Meta Data"
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:133
+#: modules/file-upload/includes/class-file-upload.php:134
 msgid "File Upload"
 msgstr ""
 
 #. translators: 1: accepted file types, 2: max file size in MB
-#: modules/file-upload/includes/class-file-upload.php:173
+#: modules/file-upload/includes/class-file-upload.php:174
 #, php-format
 msgid "Accepts %1$s - max %2$s MB per file"
 msgstr ""
 
 #. translators: %d: number of allowed files
-#: modules/file-upload/includes/class-file-upload.php:179
+#: modules/file-upload/includes/class-file-upload.php:180
 #, php-format
 msgid "%d file allowed"
 msgid_plural "%d files allowed"
 msgstr[0] ""
 msgstr[1] ""
 
-#: modules/file-upload/includes/class-file-upload.php:230
+#: modules/file-upload/includes/class-file-upload.php:231
 msgid "Click or Drag Files to Upload"
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:253
+#: modules/file-upload/includes/class-file-upload.php:254
 msgid "Choose Files"
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:330
-#: modules/file-upload/includes/class-file-upload.php:390
+#: modules/file-upload/includes/class-file-upload.php:331
+#: modules/file-upload/includes/class-file-upload.php:391
 msgid "No files uploaded"
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:363
+#: modules/file-upload/includes/class-file-upload.php:364
 msgid "Are you sure you want to delete this file?"
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:394
-#: modules/file-upload/includes/class-file-upload.php:399
+#: modules/file-upload/includes/class-file-upload.php:395
+#: modules/file-upload/includes/class-file-upload.php:400
 msgid "Failed to delete file"
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:431
+#: modules/file-upload/includes/class-file-upload.php:432
 msgid "Uploading..."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:432
+#: modules/file-upload/includes/class-file-upload.php:433
 msgid "Upload failed. Please try again."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:433
-#: modules/file-upload/includes/class-file-upload.php:513
-#: modules/file-upload/includes/class-file-upload.php:553
+#: modules/file-upload/includes/class-file-upload.php:434
+#: modules/file-upload/includes/class-file-upload.php:514
+#: modules/file-upload/includes/class-file-upload.php:554
 msgid "Invalid file type."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:434
+#: modules/file-upload/includes/class-file-upload.php:435
 msgid "This file is too large."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:435
+#: modules/file-upload/includes/class-file-upload.php:436
 msgid "Maximum file limit reached."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:436
-#: modules/file-upload/includes/class-file-upload.php:469
-#: modules/file-upload/includes/class-file-upload.php:489
-#: modules/file-upload/includes/class-file-upload.php:543
-#: modules/file-upload/includes/class-file-upload.php:582
+#: modules/file-upload/includes/class-file-upload.php:437
+#: modules/file-upload/includes/class-file-upload.php:470
+#: modules/file-upload/includes/class-file-upload.php:490
+#: modules/file-upload/includes/class-file-upload.php:544
+#: modules/file-upload/includes/class-file-upload.php:583
 msgid "This file could not be read. It may be corrupted. Try a different file."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:437
-msgid "Are you sure you want to remove this file?"
-msgstr ""
-
 #: modules/file-upload/includes/class-file-upload.php:438
-#, php-format
-msgid "Only %1$s files are supported. Try a different file."
+msgid "Are you sure you want to remove this file?"
 msgstr ""
 
 #: modules/file-upload/includes/class-file-upload.php:439
 #, php-format
-msgid "This file is too large (%1$s). Maximum allowed size is %2$s MB."
+msgid "Only %1$s files are supported. Try a different file."
 msgstr ""
 
 #: modules/file-upload/includes/class-file-upload.php:440
 #, php-format
+msgid "This file is too large (%1$s). Maximum allowed size is %2$s MB."
+msgstr ""
+
+#: modules/file-upload/includes/class-file-upload.php:441
+#, php-format
 msgid "You can only upload %s files. Remove one to add another."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:458
-#: modules/file-upload/includes/class-file-upload.php:615
-#: modules/file-upload/includes/class-file-upload.php:706
+#: modules/file-upload/includes/class-file-upload.php:459
+#: modules/file-upload/includes/class-file-upload.php:616
+#: modules/file-upload/includes/class-file-upload.php:707
 msgid "Security check failed."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:463
+#: modules/file-upload/includes/class-file-upload.php:464
 msgid "No file uploaded."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:473
+#: modules/file-upload/includes/class-file-upload.php:474
 msgid "File is too large."
 msgstr ""
 
 #. translators: %d: max file size in MB
-#: modules/file-upload/includes/class-file-upload.php:525
+#: modules/file-upload/includes/class-file-upload.php:526
 #, php-format
 msgid "File size exceeds the maximum allowed (%dMB)."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:570
-#: modules/file-upload/includes/class-file-upload.php:1078
+#: modules/file-upload/includes/class-file-upload.php:571
+#: modules/file-upload/includes/class-file-upload.php:1079
 msgid "Failed to create upload directory."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:629
-#: modules/file-upload/includes/class-file-upload.php:634
-#: modules/file-upload/includes/class-file-upload.php:977
-#: modules/file-upload/includes/class-file-upload.php:982
+#: modules/file-upload/includes/class-file-upload.php:621
+#: modules/file-upload/includes/class-file-upload.php:645
+msgid "Permission denied."
+msgstr ""
+
+#: modules/file-upload/includes/class-file-upload.php:630
+#: modules/file-upload/includes/class-file-upload.php:635
+#: modules/file-upload/includes/class-file-upload.php:978
+#: modules/file-upload/includes/class-file-upload.php:983
 msgid "Invalid request."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:639
+#: modules/file-upload/includes/class-file-upload.php:640
 msgid "Order not found."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:650
+#: modules/file-upload/includes/class-file-upload.php:651
 msgid "No files found."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:681
-#: modules/file-upload/includes/class-file-upload.php:997
-#: modules/file-upload/includes/class-file-upload.php:1001
+#: modules/file-upload/includes/class-file-upload.php:682
+#: modules/file-upload/includes/class-file-upload.php:998
+#: modules/file-upload/includes/class-file-upload.php:1002
 msgid "File not found."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:695
-#: modules/file-upload/includes/class-file-upload.php:749
+#: modules/file-upload/includes/class-file-upload.php:696
+#: modules/file-upload/includes/class-file-upload.php:750
 msgid "File deleted."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:714
-#: modules/file-upload/includes/class-file-upload.php:719
+#: modules/file-upload/includes/class-file-upload.php:715
+#: modules/file-upload/includes/class-file-upload.php:720
 msgid "Invalid file reference."
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:726
+#: modules/file-upload/includes/class-file-upload.php:727
 msgid "You do not have permission to delete this file."
 msgstr ""
 
 #. translators: 1: field label, 2: number of files
-#: modules/file-upload/includes/class-file-upload.php:834
+#: modules/file-upload/includes/class-file-upload.php:835
 #, php-format
 msgid "%1$s: %2$d file(s) uploaded"
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:950
+#: modules/file-upload/includes/class-file-upload.php:951
 msgid "Delete file"
 msgstr ""
 
-#: modules/file-upload/includes/class-file-upload.php:988
+#: modules/file-upload/includes/class-file-upload.php:989
 msgid "Invalid or expired download link."
 msgstr ""
 
-#: modules/login-flow/index.php:96
+#: modules/login-flow/index.php:101
 #, php-format
 msgid "Hey there! It seems you have a %s account. Please Login"
 msgstr ""
 
-#: modules/login-flow/index.php:97
+#: modules/login-flow/index.php:102
 msgid "Login"
 msgstr ""
 
-#: modules/login-flow/index.php:98
+#: modules/login-flow/index.php:103
 msgid "Logging in..."
 msgstr ""
 
-#: modules/login-flow/index.php:99
+#: modules/login-flow/index.php:104
 msgid "Reset password"
 msgstr ""
 
-#: modules/login-flow/index.php:100
+#: modules/login-flow/index.php:105
 msgid "Resetting..."
 msgstr ""
 
-#: modules/login-flow/index.php:101
+#: modules/login-flow/index.php:106
 msgid "Please log in to continue with checkout"
 msgstr ""
 
-#: modules/login-flow/index.php:161
+#: modules/login-flow/index.php:166
 msgid "Session not available"
 msgstr ""
 
-#: modules/login-flow/index.php:179
+#: modules/login-flow/index.php:184
 msgid "Missing required parameters"
 msgstr ""
 
-#: modules/login-flow/index.php:184
+#: modules/login-flow/index.php:189
 msgid "Unauthorized request"
 msgstr ""
 
-#: modules/login-flow/index.php:192
+#: modules/login-flow/index.php:197
 msgid "Invalid email address"
 msgstr ""
 
-#: modules/login-flow/index.php:228
+#: modules/login-flow/index.php:233
 msgid "No customer account found"
 msgstr ""
 
-#: public/class-wfacp-public.php:2191
+#: public/class-wfacp-public.php:2193
 #, php-format
 msgid "Your age must be %d years or greater."
 msgstr ""
 
-#: public/class-wfacp-public.php:2265
+#: public/class-wfacp-public.php:2267
 msgid "Select Day"
 msgstr ""
 
-#: public/class-wfacp-public.php:2273
+#: public/class-wfacp-public.php:2275
 msgid "Select Month"
 msgstr ""
 
-#: public/class-wfacp-public.php:2281
+#: public/class-wfacp-public.php:2283
 msgid "Select Year"
 msgstr ""
 
-#: public/template-common/form-express-checkout.php:150
+#: public/template-common/form-express-checkout.php:160
 msgid "Confirm your PayPal order"
 msgstr ""
 
-#: public/template-common/next-button.php:57
+#: public/template-common/next-button.php:61
 msgid "« Return to "
 msgstr ""
 
-#: public/template-common/order-coupon.php:48
+#: public/template-common/order-coupon.php:52
 msgid "Enter the coupon code below"
 msgstr ""
 
-#: public/template-common/product-switcher/default/product-switcher.php:206
-#: public/template-common/product-switcher/inline/product-switcher.php:210
+#: public/template-common/product-switcher/default/product-switcher.php:211
+#: public/template-common/product-switcher/inline/product-switcher.php:214
 msgid "No products added to this checkout page. <a target=\"_blank\" href=\""
 msgstr ""
 
-#: public/template-common/shipping-options.php:171
+#: public/template-common/shipping-options.php:175
 msgid "Shipping Recurring"
 msgstr ""
 
-#: public/template-common/shipping-options.php:174
+#: public/template-common/shipping-options.php:178
 msgid "Recurring Shipping Method"
 msgstr ""
 
-#: public/template-common/smart_buttons.php:14
+#: public/template-common/smart_buttons.php:18
 msgid "OR"
 msgstr ""
 
-#: public/template-common/smart_buttons.php:15
+#: public/template-common/smart_buttons.php:19
 msgid "Express Checkout"
 msgstr ""
 
-#: templates/login-flow/form-lost-password.php:44
-#: templates/login-flow/form-lost-password.php:45
-#: templates/login-flow/form-lost-password.php:46
+#: templates/login-flow/form-lost-password.php:48
+#: templates/login-flow/form-lost-password.php:49
+#: templates/login-flow/form-lost-password.php:50
 msgid "Back to Login"
 msgstr ""
 

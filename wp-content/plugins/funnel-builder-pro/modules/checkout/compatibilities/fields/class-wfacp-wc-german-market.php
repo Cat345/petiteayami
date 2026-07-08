@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * German Market By MarketPress
@@ -8,35 +12,37 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_German_Market' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_WC_German_Market {
 
-		private $billing_new_fields = [
+		private $billing_new_fields = array(
 			'billing_vat',
-		];
+		);
 
 		public function __construct() {
 			if ( WFACP_Common::is_funnel_builder_3() ) {
-				add_action( 'wffn_rest_checkout_form_actions', [ $this, 'add_field' ] );
+				add_action( 'wffn_rest_checkout_form_actions', array( $this, 'add_field' ) );
 			} else {
-				add_action( 'init', [ $this, 'add_field' ], 20 );
+				add_action( 'init', array( $this, 'add_field' ), 20 );
 			}
 
-			add_action( 'wfacp_checkout_preview_form_start', [ $this, 're_display_payment_section' ] );
-			add_action( 'wfacp_template_class_found', [ $this, 'paypal_payments' ] );
+			add_action( 'wfacp_checkout_preview_form_start', array( $this, 're_display_payment_section' ) );
+			add_action( 'wfacp_template_class_found', array( $this, 'paypal_payments' ) );
 
 			/* prevent third party fields and wrapper*/
 
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
 
-			add_filter( 'wfacp_third_party_billing_fields', [ $this, 'disabled_third_party_billing_fields' ] );
-
+			add_filter( 'wfacp_third_party_billing_fields', array( $this, 'disabled_third_party_billing_fields' ) );
 		}
 
 		public function add_field() {
-			new WFACP_Add_Address_Field( 'vat', array(
-				'label'    => get_option( 'vat_options_label', __( 'EU VAT Identification Number (VATIN)', 'woocommerce-german-market' ) ),
-				'cssready' => [ 'wfacp-col-left-half' ],
-				'required' => false,
-				'priority' => apply_filters( 'wcvat_vat_field_priority', 49 ),
-			) );
+			new WFACP_Add_Address_Field(
+				'vat',
+				array(
+					'label'    => get_option( 'vat_options_label', __( 'EU VAT Identification Number (VATIN)', 'woocommerce-german-market' ) ),
+					'cssready' => array( 'wfacp-col-left-half' ),
+					'required' => false,
+					'priority' => apply_filters( 'wcvat_vat_field_priority', 49 ),
+				)
+			);
 		}
 
 		public function re_display_payment_section() {
@@ -60,7 +66,6 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_German_Market' ) ) {
 
 			return $fields;
 		}
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_WC_German_Market(), 'wfacp-wc-german-market' );

@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'facebookincubator/facebook-for-woocommerce',
-        'pretty_version' => '3.6.3',
-        'version' => '3.6.3.0',
+        'pretty_version' => '3.7.4',
+        'version' => '3.7.4.0',
         'reference' => null,
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
@@ -29,8 +29,8 @@
             'dev_requirement' => false,
         ),
         'facebookincubator/facebook-for-woocommerce' => array(
-            'pretty_version' => '3.6.3',
-            'version' => '3.6.3.0',
+            'pretty_version' => '3.7.4',
+            'version' => '3.7.4.0',
             'reference' => null,
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',

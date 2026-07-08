@@ -16,6 +16,7 @@ class Cart {
 
 		/** Unhook FK Cart Pro v3.10.2 (older FB) action */
 		add_action( 'bwf_normalize_contact_meta_after_save', [ $this, 'remove_action_upsell_insert_stats' ], 5 );
+		
 	}
 
 	/**
@@ -156,6 +157,7 @@ class Cart {
 			$table_name = $wpdb->prefix . 'fk_cart';
 			$data       = [
 				'oid'              => $order->get_id(),
+				'onumber'          => $order->get_order_number(),
 				'addon_viewed'     => ! empty( $meta_values['_fkcart_addon_views'] ) ? $meta_values['_fkcart_addon_views'] : '',
 				'free_gift_viewed' => ! empty( $meta_values['_fkcart_free_gift_views'] ) ? $meta_values['_fkcart_free_gift_views'] : '',
 				'upsells_viewed'   => ! empty( $meta_values['_fkcart_upsell_views'] ) ? $meta_values['_fkcart_upsell_views'] : '',
@@ -164,7 +166,7 @@ class Cart {
 				'date_created'     => current_time( 'mysql' )
 			];
 
-			$wpdb->insert( $table_name, $data, [ '%d', '%s', '%s', '%s', '%s', '%d', '%s' ] );
+			$wpdb->insert( $table_name, $data, [ '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%s' ] );
 			if ( 0 === $wpdb->insert_id ) {
 				return;
 			}
@@ -172,9 +174,15 @@ class Cart {
 			$products = [];
 			$currency = \BWF_WC_Compatibility::get_order_currency( $order );
 			foreach ( $order->get_items() as $item ) {
+				$product_id   = $item->get_product_id();
+				$variation_id = $item->get_variation_id();
+				if ( ! empty( $variation_id ) && $variation_id > 0 ) {
+					$product_id = $variation_id;
+				}
+
 				$product_data = [
 					'oid'        => $order->get_id(),
-					'product_id' => $item['product_id'],
+					'product_id' => $product_id,
 					'price'      => 0,
 					'type'       => 0
 				];
@@ -210,7 +218,94 @@ class Cart {
 
 				$wpdb->query( $wpdb->prepare( "$query ", $values ) );
 			}
+
+			$this->record_viewed_products_as_conversions( $order, $products, $data['upsells_viewed'] );
 		} catch ( \Exception|\Error $e ) {
+		}
+	}
+
+	/**
+	 * Record products that were both viewed and purchased but not added as conversions
+	 *
+	 * @param \WC_Order $order
+	 * @param array $products Already processed products
+	 * @param string $upsells_viewed JSON string of viewed products
+	 */
+	private function record_viewed_products_as_conversions( $order, array $products, string $upsells_viewed ) {
+		global $wpdb;
+		if ( empty( $upsells_viewed ) ) {
+			return;
+		}
+
+		try {
+			$viewed_products = json_decode( $upsells_viewed, true );
+			if ( ! is_array( $viewed_products ) || empty( $viewed_products ) ) {
+				return;
+			}
+
+			// Get viewed product IDs
+			$viewed_product_ids = array_filter( array_map( 'intval', $viewed_products ) );
+			if ( empty( $viewed_product_ids ) ) {
+				return;
+			}
+
+			// Get already processed product IDs
+			$processed_product_ids = array_column( $products, 'product_id' );
+
+			// Find products that were viewed but not yet processed
+			$products_to_process = array_diff( $viewed_product_ids, $processed_product_ids );
+			if ( empty( $products_to_process ) ) {
+				return;
+			}
+			$products_to_process = array_values( $products_to_process );
+
+			// Get order items with parent product IDs
+			$order_items = array_reduce( $order->get_items(), function ( $carry, $item ) {
+				$product_id           = isset( $item['product_id'] ) ? intval( $item['product_id'] ) : 0;
+				$carry[ $product_id ] = [
+					'total' => isset( $item['total'] ) ? floatval( $item['total'] ) : 0,
+					'item'  => $item
+				];
+
+				return $carry;
+			}, [] );
+
+			// Find products which are viewed and purchased
+			$products_to_insert = array_intersect( $products_to_process, array_keys( $order_items ) );
+			if ( empty( $products_to_insert ) ) {
+				return;
+			}
+
+			$currency   = \BWF_WC_Compatibility::get_order_currency( $order );
+			$table_name = $wpdb->prefix . 'fk_cart_products';
+
+			// Prepare bulk insert data
+			$values = array_reduce( $products_to_insert, function ( $carry, $product_id ) use ( $order, $order_items, $currency ) {
+				$price   = max( 0, $order_items[ $product_id ]['total'] );
+				$carry[] = [
+					'oid'        => $order->get_id(),
+					'product_id' => $product_id,
+					'price'      => \BWF_Plugin_Compatibilities::get_fixed_currency_price_reverse( $price, $currency ),
+					'type'       => 1
+				];
+
+				return $carry;
+			}, [] );
+
+			// Insert all records
+			foreach ( $values as $data ) {
+				$wpdb->insert( $table_name, $data, [ '%d', '%d', '%f', '%d' ] );
+
+				// Update the corresponding order item meta to mark as upsell
+				if ( isset( $order_items[ $data['product_id'] ]['item'] ) ) {
+					$item = $order_items[ $data['product_id'] ]['item'];
+					$item->add_meta_data( '_fkcart_upsell', 'yes' );
+					$item->save();
+				}
+			}
+
+		} catch ( \Exception|\Error $e ) {
+			fkcart_log_error( 'Order #' . $order->get_id() . ' - ' . $e->getMessage() );
 		}
 	}
 

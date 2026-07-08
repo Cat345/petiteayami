@@ -1,18 +1,19 @@
 <?php
 if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_DB_Track extends WFOCU_DB_Base {
 
-		const FUNNEL_INIT_ACTION_ID = 1;
-		const FUNNEL_ENDED_ACTION_ID = 8;
-		const OFFER_VIEWED_ACTION_ID = 2;
-		const OFFER_ACCEPTED_ACTION_ID = 4;
-		const OFFER_REJECTED_ACTION_ID = 6;
-		const OFFER_EXPIRED_ACTION_ID = 7;
+		const FUNNEL_INIT_ACTION_ID          = 1;
+		const FUNNEL_ENDED_ACTION_ID         = 8;
+		const OFFER_VIEWED_ACTION_ID         = 2;
+		const OFFER_ACCEPTED_ACTION_ID       = 4;
+		const OFFER_REJECTED_ACTION_ID       = 6;
+		const OFFER_EXPIRED_ACTION_ID        = 7;
 		const OFFER_PAYMENT_FAILED_ACTION_ID = 9;
-		const OFFER_SKIPPED_ACTION_ID = 10;
-		const OFFER_REFUNDED_ACTION_ID = 12;
-		const PRODUCT_VIEWED_ACTION_ID = 3;
-		const PRODUCT_ACCEPTED_ACTION_ID = 5;
+		const OFFER_SKIPPED_ACTION_ID        = 10;
+		const OFFER_REFUNDED_ACTION_ID       = 12;
+		const PRODUCT_VIEWED_ACTION_ID       = 3;
+		const PRODUCT_ACCEPTED_ACTION_ID     = 5;
 		/**
 		 * Primary fields
 		 *
@@ -21,7 +22,7 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 		 * @var array
 		 */
 		protected $primary_fields = array(
-			'sess_id' => array(
+			'sess_id'        => array(
 				'%s',
 				'strip_tags',
 			),
@@ -178,7 +179,6 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 
 			$this->time_to_record = current_time( 'mysql' );
 			/** date( 'Y-m-d H:i:s', ( strtotime( '-14 day', strtotime( current_time( 'mysql' ) ) ) ) );*/
-
 		}
 
 
@@ -187,7 +187,6 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 		 *
 		 * @return \WFOCU_DB_Track
 		 * @since 1.3.5
-		 *
 		 */
 		public static function get_instance() {
 			if ( null === self::$instance ) {
@@ -195,139 +194,153 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 			}
 
 			return self::$instance;
-
 		}
 
 
 		public function funnel_start( $funnel_id, $order_id, $email ) {
 
-			$this->create( array(
-				'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
-				'object_type'    => 'funnel',
-				'object_id'      => $funnel_id,
-				'action_type_id' => $this->get_action_type( 'funnel', 'start' ),
-				'timestamp'      => $this->time_to_record,
-			) );
+			$this->create(
+				array(
+					'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
+					'object_type'    => 'funnel',
+					'object_id'      => $funnel_id,
+					'action_type_id' => $this->get_action_type( 'funnel', 'start' ),
+					'timestamp'      => $this->time_to_record,
+				)
+			);
 		}
 
 		public function offer_viewed( $offer_id, $order_id, $funnel_id, $get_type_of_offer, $get_type_index_of_offer, $email ) {
 
-			$this->create( array(
-				'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
-				'object_type'    => 'offer',
-				'object_id'      => $offer_id,
-				'action_type_id' => $this->get_action_type( 'offer', 'viewed' ),
-				'timestamp'      => $this->time_to_record,
-				'meta'           => array(
-					'_funnel_id'  => $funnel_id,
-					'_offer_type' => $this->get_upsell_type_index( $get_type_of_offer ) . ':' . $get_type_index_of_offer,
-				),
-			) );
-
+			$this->create(
+				array(
+					'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
+					'object_type'    => 'offer',
+					'object_id'      => $offer_id,
+					'action_type_id' => $this->get_action_type( 'offer', 'viewed' ),
+					'timestamp'      => $this->time_to_record,
+					'meta'           => array(
+						'_funnel_id'  => $funnel_id,
+						'_offer_type' => $this->get_upsell_type_index( $get_type_of_offer ) . ':' . $get_type_index_of_offer,
+					),
+				)
+			);
 		}
 
 		public function offer_skipped( $offer_id, $order_id, $funnel_id, $get_type_of_offer, $get_type_index_of_offer, $email, $invalidation_reason ) {
 
-			$this->create( array(
-				'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
-				'object_type'    => 'offer',
-				'object_id'      => $offer_id,
-				'action_type_id' => $this->get_action_type( 'offer', 'skipped' ),
-				'timestamp'      => $this->time_to_record,
-				'meta'           => array(
-					'_funnel_id'           => $funnel_id,
-					'_offer_type'          => $this->get_upsell_type_index( $get_type_of_offer ) . ':' . $get_type_index_of_offer,
-					'_invalidation_reason' => $invalidation_reason,
-				),
-			) );
-
+			$this->create(
+				array(
+					'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
+					'object_type'    => 'offer',
+					'object_id'      => $offer_id,
+					'action_type_id' => $this->get_action_type( 'offer', 'skipped' ),
+					'timestamp'      => $this->time_to_record,
+					'meta'           => array(
+						'_funnel_id'           => $funnel_id,
+						'_offer_type'          => $this->get_upsell_type_index( $get_type_of_offer ) . ':' . $get_type_index_of_offer,
+						'_invalidation_reason' => $invalidation_reason,
+					),
+				)
+			);
 		}
 
 		public function create_session_id( $order_id, $email ) {
-
 		}
 
 
 		public function offer_payment_failed( $args ) {
 
-			$args = wp_parse_args( $args, array(
-				'offer_id'          => '',
-				'product_id'        => '',
-				'product_title'     => '',
-				'value'             => '',
-				'funnel_unique_id'  => '',
-				'offer_product_key' => '',
-				'offer_type'        => '',
-				'offer_index'       => '',
-				'email'             => '',
-			) );
-			$this->create( array(
-				'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
-				'object_type'    => 'offer',
-				'object_id'      => $args['offer_id'],
-				'value'          => $args['value'],
-				'action_type_id' => $this->get_action_type( 'offer', 'payment_failed' ),
-				'timestamp'      => $this->time_to_record,
-				'meta'           => array(
-					'_funnel_id'  => $args['funnel_id'],
-					'_offer_type' => $this->get_upsell_type_index( $args['offer_type'] ) . ':' . $args['offer_index'],
+			$args = wp_parse_args(
+				$args,
+				array(
+					'offer_id'          => '',
+					'product_id'        => '',
+					'product_title'     => '',
+					'value'             => '',
+					'funnel_unique_id'  => '',
+					'offer_product_key' => '',
+					'offer_type'        => '',
+					'offer_index'       => '',
+					'email'             => '',
+				)
+			);
+			$this->create(
+				array(
+					'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
+					'object_type'    => 'offer',
+					'object_id'      => $args['offer_id'],
+					'value'          => $args['value'],
+					'action_type_id' => $this->get_action_type( 'offer', 'payment_failed' ),
+					'timestamp'      => $this->time_to_record,
+					'meta'           => array(
+						'_funnel_id'  => $args['funnel_id'],
+						'_offer_type' => $this->get_upsell_type_index( $args['offer_type'] ) . ':' . $args['offer_index'],
 
-				),
-			) );
-
+					),
+				)
+			);
 		}
 
 		public function product_viewed( $args = array() ) {
 
-			$args = wp_parse_args( $args, array(
-				'offer_id'          => '',
-				'product_id'        => '',
-				'product_title'     => '',
-				'funnel_unique_id'  => '',
-				'offer_product_key' => '',
-				'offer_type'        => '',
-				'offer_index'       => '',
-				'email'             => '',
-			) );
-			$this->create( array(
-				'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
-				'object_type'    => 'product',
-				'object_id'      => $args['product_id'],
-				'action_type_id' => $this->get_action_type( 'product', 'viewed' ),
-				'timestamp'      => $this->time_to_record,
-				'meta'           => array(
-					'_funnel_id'  => $args['funnel_id'],
-					'_offer_id'   => $args['offer_id'],
-					'_offer_type' => $this->get_upsell_type_index( $args['offer_type'] ) . ':' . $args['offer_index'],
+			$args = wp_parse_args(
+				$args,
+				array(
+					'offer_id'          => '',
+					'product_id'        => '',
+					'product_title'     => '',
+					'funnel_unique_id'  => '',
+					'offer_product_key' => '',
+					'offer_type'        => '',
+					'offer_index'       => '',
+					'email'             => '',
+				)
+			);
+			$this->create(
+				array(
+					'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
+					'object_type'    => 'product',
+					'object_id'      => $args['product_id'],
+					'action_type_id' => $this->get_action_type( 'product', 'viewed' ),
+					'timestamp'      => $this->time_to_record,
+					'meta'           => array(
+						'_funnel_id'  => $args['funnel_id'],
+						'_offer_id'   => $args['offer_id'],
+						'_offer_type' => $this->get_upsell_type_index( $args['offer_type'] ) . ':' . $args['offer_index'],
 
-				),
-			) );
-
+					),
+				)
+			);
 		}
 
 		public function offer_rejected( $args = array() ) {
 
-			$args = wp_parse_args( $args, array(
-				'order_id'         => '',
-				'funnel_id'        => '',
-				'offer_id'         => '',
-				'funnel_unique_id' => '',
-				'offer_type'       => '',
-				'offer_index'      => '',
-			) );
-			$this->create( array(
-				'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
-				'object_type'    => 'offer',
-				'object_id'      => $args['offer_id'],
-				'action_type_id' => $this->get_action_type( 'offer', 'rejected' ),
-				'timestamp'      => $this->time_to_record,
-				'meta'           => array(
-					'_funnel_id'  => $args['funnel_id'],
-					'_offer_type' => $this->get_upsell_type_index( $args['offer_type'] ) . ':' . $args['offer_index'],
+			$args = wp_parse_args(
+				$args,
+				array(
+					'order_id'         => '',
+					'funnel_id'        => '',
+					'offer_id'         => '',
+					'funnel_unique_id' => '',
+					'offer_type'       => '',
+					'offer_index'      => '',
+				)
+			);
+			$this->create(
+				array(
+					'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
+					'object_type'    => 'offer',
+					'object_id'      => $args['offer_id'],
+					'action_type_id' => $this->get_action_type( 'offer', 'rejected' ),
+					'timestamp'      => $this->time_to_record,
+					'meta'           => array(
+						'_funnel_id'  => $args['funnel_id'],
+						'_offer_type' => $this->get_upsell_type_index( $args['offer_type'] ) . ':' . $args['offer_index'],
 
-				),
-			) );
-
+					),
+				)
+			);
 		}
 
 		public function add_to_order_meta( $args ) {
@@ -365,76 +378,84 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 
 		public function offer_accepted( $args = array() ) {
 
-			$args             = wp_parse_args( $args, array(
-				'funnel_id'        => '',
-				'offer_id'         => '',
-				'funnel_unique_id' => '',
-				'value'            => '',
-				'offer_type'       => '',
-				'offer_index'      => '',
-				'payment_data'     => '',
-				'transaction_id'   => '',
-				'new_order'        => '',
-			) );
-			$get_event_row_id = $this->create( array(
-				'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
-				'object_type'    => 'offer',
-				'value'          => $args['value'],
-				'object_id'      => $args['offer_id'],
-				'action_type_id' => $this->get_action_type( 'offer', 'accepted' ),
-				'timestamp'      => $this->time_to_record,
-				'meta'           => array(
-					'_funnel_id'       => $args['funnel_id'],
-					'_offer_type'      => $this->get_upsell_type_index( $args['offer_type'] ) . ':' . $args['offer_index'],
-					'_transaction_id'  => $args['transaction_id'],
-					'_new_order'       => $args['new_order'],
-					'_total_charged'   => $args['payment_data']['_total_charged'],
-					'_total_tax'       => $args['payment_data']['_total_tax'],
-					'_total_shipping'  => $args['payment_data']['_total_shipping'],
-					'_total_items'     => $args['payment_data']['_total_items'],
-					'_currency'        => $args['payment_data']['_currency'],
-					'_is_diff_charged' => $args['payment_data']['_is_diff_charged'],
-					'_items_added'     => wp_json_encode( $args['items_added'] ),
+			$args             = wp_parse_args(
+				$args,
+				array(
+					'funnel_id'        => '',
+					'offer_id'         => '',
+					'funnel_unique_id' => '',
+					'value'            => '',
+					'offer_type'       => '',
+					'offer_index'      => '',
+					'payment_data'     => '',
+					'transaction_id'   => '',
+					'new_order'        => '',
+				)
+			);
+			$get_event_row_id = $this->create(
+				array(
+					'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
+					'object_type'    => 'offer',
+					'value'          => $args['value'],
+					'object_id'      => $args['offer_id'],
+					'action_type_id' => $this->get_action_type( 'offer', 'accepted' ),
+					'timestamp'      => $this->time_to_record,
+					'meta'           => array(
+						'_funnel_id'       => $args['funnel_id'],
+						'_offer_type'      => $this->get_upsell_type_index( $args['offer_type'] ) . ':' . $args['offer_index'],
+						'_transaction_id'  => $args['transaction_id'],
+						'_new_order'       => $args['new_order'],
+						'_total_charged'   => $args['payment_data']['_total_charged'],
+						'_total_tax'       => $args['payment_data']['_total_tax'],
+						'_total_shipping'  => $args['payment_data']['_total_shipping'],
+						'_total_items'     => $args['payment_data']['_total_items'],
+						'_currency'        => $args['payment_data']['_currency'],
+						'_is_diff_charged' => $args['payment_data']['_is_diff_charged'],
+						'_items_added'     => wp_json_encode( $args['items_added'] ),
 
-				),
-			) );
+					),
+				)
+			);
 			do_action( 'wfocu_db_event_row_created_' . self::OFFER_ACCEPTED_ACTION_ID, $get_event_row_id );
-
 		}
 
 
 		public function product_accepted( $args = array() ) {
 
-			$args = wp_parse_args( $args, array(
+			$args = wp_parse_args(
+				$args,
+				array(
 
-				'funnel_id'         => '',
-				'offer_id'          => '',
-				'product_id'        => '',
-				'product_title'     => '',
-				'value'             => '',
-				'funnel_unique_id'  => '',
-				'offer_product_key' => '',
-				'offer_type'        => '',
-				'offer_index'       => '',
+					'funnel_id'         => '',
+					'offer_id'          => '',
+					'product_id'        => '',
+					'product_title'     => '',
+					'value'             => '',
+					'funnel_unique_id'  => '',
+					'offer_product_key' => '',
+					'offer_type'        => '',
+					'offer_index'       => '',
 
-			) );
-			$this->create( array(
-				'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
-				'object_type'    => 'product',
-				'value'          => $args['value'],
-				'object_id'      => $args['product_id'],
-				'action_type_id' => $this->get_action_type( 'product', 'accepted' ),
-				'timestamp'      => $this->time_to_record,
-				'meta'           => array(
-					'_funnel_id'  => $args['funnel_id'],
-					'_offer_id'   => $args['offer_id'],
-					'_offer_type' => $this->get_upsell_type_index( $args['offer_type'] ) . ':' . $args['offer_index'],
-					'_qty'        => $args['qty'],
-					'_value'      => $args['raw_value'],
+				)
+			);
+			$this->create(
+				array(
+					'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
+					'object_type'    => 'product',
+					'value'          => $args['value'],
+					'object_id'      => $args['product_id'],
+					'action_type_id' => $this->get_action_type( 'product', 'accepted' ),
+					'timestamp'      => $this->time_to_record,
+					'meta'           => array(
+						'_funnel_id'  => $args['funnel_id'],
+						'_offer_id'   => $args['offer_id'],
+						'_offer_type' => $this->get_upsell_type_index( $args['offer_type'] ) . ':' . $args['offer_index'],
+						'_qty'        => $args['qty'],
+						'_value'      => $args['raw_value'],
 
-				),
-			) );
-
+					),
+				)
+			);
 		}
 
 
@@ -442,69 +463,74 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 
 			if ( isset( $args['next_action'] ) && 'redirect_to_next' === $args['next_action'] ) {
 
+				$args = wp_parse_args(
+					$args,
+					array(
+						'funnel_id'        => '',
+						'offer_id'         => '',
+						'funnel_unique_id' => '',
+						'offer_type'       => '',
+						'offer_index'      => '',
+					)
+				);
+				$this->create(
+					array(
+						'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
+						'order_id'       => $args['order_id'],
+						'useremail'      => $args['email'],
+						'object_type'    => 'offer',
+						'object_id'      => $args['offer_id'],
+						'action_type_id' => $this->get_action_type( 'offer', 'expired' ),
+						'timestamp'      => $this->time_to_record,
+						'meta'           => array(
+							'_funnel_id'  => $args['funnel_id'],
+							'_offer_type' => $this->get_upsell_type_index( $args['offer_type'] ) . ':' . $args['offer_index'],
 
-				$args = wp_parse_args( $args, array(
-					'funnel_id'        => '',
-					'offer_id'         => '',
-					'funnel_unique_id' => '',
-					'offer_type'       => '',
-					'offer_index'      => '',
-				) );
-				$this->create( array(
-					'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
-					'order_id'       => $args['order_id'],
-					'useremail'      => $args['email'],
-					'object_type'    => 'offer',
-					'object_id'      => $args['offer_id'],
-					'action_type_id' => $this->get_action_type( 'offer', 'expired' ),
-					'timestamp'      => $this->time_to_record,
-					'meta'           => array(
-						'_funnel_id'  => $args['funnel_id'],
-						'_offer_type' => $this->get_upsell_type_index( $args['offer_type'] ) . ':' . $args['offer_index'],
-
-					),
-				) );
+						),
+					)
+				);
 			}
 		}
 
 		public function funnel_ended( $funnel_id, $order_id, $email ) {
 
-			$this->create( array(
-				'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
-				'object_type'    => 'funnel',
-				'object_id'      => $funnel_id,
-				'action_type_id' => $this->get_action_type( 'funnel', 'ended' ),
-				'timestamp'      => $this->time_to_record,
-			) );
-
+			$this->create(
+				array(
+					'sess_id'        => WFOCU_Core()->session_db->get_session_id(),
+					'object_type'    => 'funnel',
+					'object_id'      => $funnel_id,
+					'action_type_id' => $this->get_action_type( 'funnel', 'ended' ),
+					'timestamp'      => $this->time_to_record,
+				)
+			);
 		}
 
 		public function offer_refunded( $order_id, $funnel_id, $offer_id, $refund_txn_id, $txn_id, $amount ) {
 
-			$this->create( array(
-				'sess_id'        => WFOCU_Core()->session_db->get_session_id_by_order_id( $order_id ),
-				'object_type'    => 'offer',
-				'object_id'      => $offer_id,
-				'value'          => $amount,
-				'action_type_id' => $this->get_action_type( 'offer', 'refunded' ),
-				'timestamp'      => $this->time_to_record,
-				'meta'           => array(
-					'_funnel_id'     => $funnel_id,
-					'_refund_txn_id' => $refund_txn_id,
-				),
-			) );
-
+			$this->create(
+				array(
+					'sess_id'        => WFOCU_Core()->session_db->get_session_id_by_order_id( $order_id ),
+					'object_type'    => 'offer',
+					'object_id'      => $offer_id,
+					'value'          => $amount,
+					'action_type_id' => $this->get_action_type( 'offer', 'refunded' ),
+					'timestamp'      => $this->time_to_record,
+					'meta'           => array(
+						'_funnel_id'     => $funnel_id,
+						'_refund_txn_id' => $refund_txn_id,
+					),
+				)
+			);
 		}
 
 		/**
 		 * Get tracking data by event name
 		 *
 		 * @param string $event Event name
-		 * @param bool $return_forms Optional. If true, the default, form IDs are returned. If false, event meta data is returned.
+		 * @param bool   $return_forms Optional. If true, the default, form IDs are returned. If false, event meta data is returned.
 		 *
 		 * @return array|null
 		 * @since 1.4.5
-		 *
 		 */
 		public function by_event( $event, $return_forms = true ) {
 			$metas = $this->query_meta( 'event', $event );
@@ -522,7 +548,6 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 			}
 
 			return array();
-
 		}
 
 		/**
@@ -532,38 +557,40 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 		 *
 		 * @return array|null
 		 * @since 1.4.5
-		 *
 		 */
 		protected function form_ids_for_events( $event_ids ) {
 			global $wpdb;
 			$table = $this->get_table_name( false );
 
 			return $wpdb->get_results( $wpdb->prepare( "SELECT `form_id` FROM {$table} WHERE `ID` IN( '%s' )", implode( ',', $event_ids ) ), ARRAY_A ); //phpcs:ignore
-			//db call ok; no-cache ok; unprepared
+			// db call ok; no-cache ok; unprepared
 			// SQL ok.
 		}
 
 		public function get_action_config() {
 
-			$action_config = apply_filters( 'wfocu_db_action_config', array(
-				'funnel'  => array(
-					'start' => 1,
-					'ended' => 8,
-				),
-				'offer'   => array(
-					'viewed'         => 2,
-					'accepted'       => 4,
-					'rejected'       => 6,
-					'expired'        => 7,
-					'payment_failed' => 9,
-					'skipped'        => 10,
-					'refunded'       => 12,
-				),
-				'product' => array(
-					'viewed'   => 3,
-					'accepted' => 5,
-				),
-			) );
+			$action_config = apply_filters(
+				'wfocu_db_action_config',
+				array(
+					'funnel'  => array(
+						'start' => 1,
+						'ended' => 8,
+					),
+					'offer'   => array(
+						'viewed'         => 2,
+						'accepted'       => 4,
+						'rejected'       => 6,
+						'expired'        => 7,
+						'payment_failed' => 9,
+						'skipped'        => 10,
+						'refunded'       => 12,
+					),
+					'product' => array(
+						'viewed'   => 3,
+						'accepted' => 5,
+					),
+				)
+			);
 
 			return $action_config;
 		}
@@ -573,7 +600,6 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 			$action_config = $this->get_action_config();
 
 			return isset( $action_config[ $object_base ][ $action_slug ] ) ? $action_config[ $object_base ][ $action_slug ] : '';
-
 		}
 
 		public function action_nice_name( $action_id ) {
@@ -624,36 +650,36 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 				return;
 			}
 
-			$all_event_ids = WFOCU_Core()->track->query_results( array(
-				'data'         => array(
-					'id' => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'upsells',
+			$all_event_ids = WFOCU_Core()->track->query_results(
+				array(
+					'data'         => array(
+						'id' => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'upsells',
+						),
 					),
-				),
-				'where'        => array(
+					'where'        => array(
 
-					array(
-						'key'      => 'events.sess_id',
-						'value'    => $sess_id,
-						'operator' => '=',
+						array(
+							'key'      => 'events.sess_id',
+							'value'    => $sess_id,
+							'operator' => '=',
+						),
 					),
-				),
-				'query_type'   => 'get_col',
-				'session_join' => true,
-				'debug'        => false,
-			) );
+					'query_type'   => 'get_col',
+					'session_join' => true,
+					'debug'        => false,
+				)
+			);
 
 			if ( count( $all_event_ids ) > 0 ) {
-				$all_event_ids  = array_map( 'absint', $all_event_ids );
-				$placeholders   = implode( ',', array_fill( 0, count( $all_event_ids ), '%d' ) );
-				$wpdb->query( $wpdb->prepare( "DELETE FROM `" . $this->get_table_name( true ) . "` WHERE event_id IN( $placeholders )", $all_event_ids ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$all_event_ids = array_map( 'absint', $all_event_ids );
+				$placeholders  = implode( ',', array_fill( 0, count( $all_event_ids ), '%d' ) );
+				$wpdb->query( $wpdb->prepare( 'DELETE FROM `' . $this->get_table_name( true ) . "` WHERE event_id IN( $placeholders )", $all_event_ids ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			}
 
 			$wpdb->delete( $this->get_table_name(), array( 'sess_id' => $sess_id ) );
-
-
 		}
 
 		/**
@@ -676,19 +702,21 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 		 * Full refunded process for analytics
 		 */
 		public function fully_refunded_process( $order_id ) {
-			$event_id = WFOCU_Core()->track->query_results( array(
-				'data'       => array(),
-				'where_meta' => array(
-					array(
-						'type'       => 'meta',
-						'meta_key'   => '_new_order',
-						'meta_value' => $order_id,
-						'operator'   => '=',
+			$event_id = WFOCU_Core()->track->query_results(
+				array(
+					'data'       => array(),
+					'where_meta' => array(
+						array(
+							'type'       => 'meta',
+							'meta_key'   => '_new_order',
+							'meta_value' => $order_id,
+							'operator'   => '=',
+						),
 					),
-				),
-				'order_by'   => 'events.id DESC',
-				'query_type' => 'get_var',
-			) );
+					'order_by'   => 'events.id DESC',
+					'query_type' => 'get_var',
+				)
+			);
 
 			if ( absint( $event_id ) > 0 ) {
 				$this->update_analytics_after_refund( $event_id, 0, true );
@@ -716,19 +744,21 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 			/**
 			 * Check whether the order in refund process is a new order by upstroke?
 			 */
-			$event_id = WFOCU_Core()->track->query_results( array(
-				'data'       => array(),
-				'where_meta' => array(
-					array(
-						'type'       => 'meta',
-						'meta_key'   => '_new_order',
-						'meta_value' => $order_id,
-						'operator'   => '=',
+			$event_id = WFOCU_Core()->track->query_results(
+				array(
+					'data'       => array(),
+					'where_meta' => array(
+						array(
+							'type'       => 'meta',
+							'meta_key'   => '_new_order',
+							'meta_value' => $order_id,
+							'operator'   => '=',
+						),
 					),
-				),
-				'order_by'   => 'events.id DESC',
-				'query_type' => 'get_var',
-			) );
+					'order_by'   => 'events.id DESC',
+					'query_type' => 'get_var',
+				)
+			);
 
 			/**
 			 * IF not event ID then check if the partial refund is from the upstroke items in batching
@@ -745,27 +775,27 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 					if ( '' !== $_upstroke_purchase ) {
 						$refund_amount += abs( $refund_item->get_total() );
 
-						$inline_event_id = WFOCU_Core()->track->query_results( array(
-							'data'       => array(),
-							'where_meta' => array(
-								array(
-									'type'       => 'meta',
-									'meta_key'   => '_items_added',
-									'meta_value' => '%' . $item->get_id() . '%',
-									'operator'   => 'LIKE',
+						$inline_event_id = WFOCU_Core()->track->query_results(
+							array(
+								'data'       => array(),
+								'where_meta' => array(
+									array(
+										'type'       => 'meta',
+										'meta_key'   => '_items_added',
+										'meta_value' => '%' . $item->get_id() . '%',
+										'operator'   => 'LIKE',
+									),
 								),
-							),
-							'order_by'   => 'events.id DESC',
-							'query_type' => 'get_var',
-						) );
+								'order_by'   => 'events.id DESC',
+								'query_type' => 'get_var',
+							)
+						);
 						/**
 						 * If we get the event ID for the refund attempted then reduce amt from that event
 						 */
 						if ( absint( $inline_event_id ) > 0 && $refund_amount > 0 ) {
 							$this->update_analytics_after_refund( $inline_event_id, $refund_amount );
 						}
-
-
 					}
 				}
 			}
@@ -796,12 +826,17 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 					$sess_refund  = ( $sess_total <= $event->value ) ? 0 : $sess_total - $event->value;
 				}
 
-				$wpdb->update( $wpdb->prefix . "wfocu_event", [ 'value' => $event_refund ], [ 'id' => $event_id, 'object_type' => 'offer' ] );
-				$wpdb->update( $wpdb->prefix . "wfocu_session", [ 'total' => $sess_refund ], [ 'id' => absint( $event->sess_id ) ] );
+				$wpdb->update(
+					$wpdb->prefix . 'wfocu_event',
+					array( 'value' => $event_refund ),
+					array(
+						'id'          => $event_id,
+						'object_type' => 'offer',
+					)
+				);
+				$wpdb->update( $wpdb->prefix . 'wfocu_session', array( 'total' => $sess_refund ), array( 'id' => absint( $event->sess_id ) ) );
 			}
-
 		}
-
 	}
 
 	if ( class_exists( 'WFOCU_Core' ) ) {

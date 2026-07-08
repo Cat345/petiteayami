@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'BWFCRM_Tag' ) && BWFAN_Common::is_pro_3_0() ) {
+	#[\AllowDynamicProperties]
 	class BWFCRM_Tag extends BWFCRM_Term {
 		public function __construct( $data = false ) {
 			parent::__construct( $data, BWFCRM_Term_Type::$TAG );

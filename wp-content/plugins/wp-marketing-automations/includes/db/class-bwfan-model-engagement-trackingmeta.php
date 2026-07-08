@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'BWFAN_Model_Engagement_Trackingmeta' ) && BWFAN_Common::is_pro_3_0() ) {
+	#[\AllowDynamicProperties]
 	class BWFAN_Model_Engagement_Trackingmeta extends BWFAN_Model {
 		static $primary_key = 'ID';
 

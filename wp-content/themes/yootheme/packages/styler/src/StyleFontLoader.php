@@ -176,7 +176,7 @@ class StyleFontLoader
     /**
      * Parses fonts url from source.
      *
-     * @return array<string, array<string, string>>
+     * @return array<string, array<string, string|array<string, string>>>
      */
     public function parseFonts(string $source): array
     {

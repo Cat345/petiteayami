@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Offer_Process' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Offer_Process {
 
 		private static $ins = null;

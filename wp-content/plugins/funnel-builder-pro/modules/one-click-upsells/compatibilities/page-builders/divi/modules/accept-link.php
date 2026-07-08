@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Accept_Link' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Accept_Link extends WFOCU_Divi_HTML_BLOCK {
 		public $slug = 'wfocu_accept_link';
 

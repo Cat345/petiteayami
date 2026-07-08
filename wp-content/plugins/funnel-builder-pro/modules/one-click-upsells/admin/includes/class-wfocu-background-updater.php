@@ -7,8 +7,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'WC_Background_Process', false ) && is_file( dirname( __FILE__ ) . '/abstracts/class-wc-background-process.php' ) ) {
-	include_once dirname( __FILE__ ) . '/abstracts/class-wc-background-process.php';
+if ( ! class_exists( 'WC_Background_Process', false ) && is_file( __DIR__ . '/abstracts/class-wc-background-process.php' ) ) {
+	include_once __DIR__ . '/abstracts/class-wc-background-process.php';
 }
 
 if ( ! class_exists( 'WC_Background_Process', false ) ) {
@@ -19,6 +19,7 @@ if ( ! class_exists( 'WFOCU_Background_Updater' ) ) {
 	 * WFOCU_Background_Updater Class.
 	 * Based on WC_Background_Updater concept
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Background_Updater extends WC_Background_Process {
 
 		/**

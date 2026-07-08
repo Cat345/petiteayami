@@ -67,7 +67,7 @@ $show_at_load = wp_doing_ajax();
                                         </div>
 									<?php } else {
 										?>
-                                        <a href="<?php echo $permalink; ?>" class="fkcart-button fkcart-redirect-product" data-id="<?php esc_html_e( $product_id ); ?>">
+                                        <a href="<?php echo esc_url( $permalink ); ?>" class="fkcart-button fkcart-redirect-product" data-id="<?php esc_html_e( $product_id ); ?>">
 											<?php echo __( 'Select options', 'woocommerce' ); ?>
                                         </a>
 										<?php

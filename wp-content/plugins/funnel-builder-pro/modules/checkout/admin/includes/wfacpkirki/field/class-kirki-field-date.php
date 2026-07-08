@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Date' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Date extends WFACPKirki_Field {
@@ -24,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Date' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-date';
-
 		}
 
 		/**
@@ -40,7 +43,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Date' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'esc_textarea';
-
 		}
 	}
 }

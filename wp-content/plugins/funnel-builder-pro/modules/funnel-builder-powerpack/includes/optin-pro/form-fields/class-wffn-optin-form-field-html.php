@@ -53,7 +53,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Field_HTML' ) ) {
 		public function get_field_output( $field_data ) {
 			$field_data = wp_parse_args( $field_data, $this->get_field_format() );
 			$value      = $this->get_default_value( $field_data );
-			echo htmlspecialchars_decode( $value );
+			echo wp_kses_post( $value );
 		}
 
 		/**

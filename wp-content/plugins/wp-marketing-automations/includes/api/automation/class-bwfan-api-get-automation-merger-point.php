@@ -5,6 +5,7 @@
  *
  * @package WP Marketing Automations
  */
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Automation_Merger_Points extends BWFAN_API_Base {
 	public static $ins;
 

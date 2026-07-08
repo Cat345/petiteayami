@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Eps Überweisung By PSA Gmbh Version: 2.1.2.
@@ -11,20 +15,17 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woocommce_EPS' ) ) {
 	class WFACP_Compatibility_With_Woocommce_EPS {
 
 		public function __construct() {
-			add_filter( 'wfacp_skip_checkout_page_detection', [ $this, 'skip_detection' ] );
+			add_filter( 'wfacp_skip_checkout_page_detection', array( $this, 'skip_detection' ) );
 		}
 
 		public function skip_detection( $status ) {
 
-
 			if ( is_null( WC()->cart ) || is_null( WC()->session ) || WC()->cart->is_empty() ) {
-
 
 				return $status;
 			}
 
 			$current_gateway = WC()->session->get( 'chosen_payment_method', '' );
-
 
 			if ( 'eps' == $current_gateway ) {
 				return true;

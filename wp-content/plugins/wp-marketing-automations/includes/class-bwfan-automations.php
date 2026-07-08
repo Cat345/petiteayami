@@ -47,7 +47,7 @@ class BWFAN_Automations {
 				$query .= $wpdb->prepare( " AND status = %d", intval( $status ) );
 			}
 			if ( ! empty( $search ) ) {
-				$query .= $wpdb->prepare( " AND title LIKE %s", '%' . esc_sql( $search ) . '%' );
+				$query .= $wpdb->prepare( " AND title LIKE %s", '%' . $wpdb->esc_like( $search ) . '%' );
 			}
 			$query         .= $wpdb->prepare( " ORDER BY ID DESC LIMIT %d OFFSET %d", $limit, $offset );
 			$automation_id = $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -119,9 +119,9 @@ class BWFAN_Automations {
 		$post_status .= "'')";
 
 		if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-			$query = $wpdb->prepare( "SELECT p.id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.date_updated_gmt DESC LIMIT $offset,$limit", 'shop_order', '_bwfan_ab_cart_recovered_a_id' );
+			$query = $wpdb->prepare( "SELECT p.id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.date_updated_gmt DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) );
 		} else {
-			$query = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT $offset,$limit", 'shop_order', '_bwfan_ab_cart_recovered_a_id' );
+			$query = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) );
 		}
 		$recovered_carts = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( empty( $recovered_carts ) ) {
@@ -136,12 +136,12 @@ class BWFAN_Automations {
 
 		$found_posts['items'] = $items;
 		if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-			$found_posts['total_record'] = $wpdb->get_var( $wpdb->prepare( "SELECT count(p.id) as total FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.date_updated_gmt DESC LIMIT $offset,$limit", 'shop_order', '_bwfan_ab_cart_recovered_a_id' ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$found_posts['total_record'] = $wpdb->get_var( $wpdb->prepare( "SELECT count(p.id) as total FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.date_updated_gmt DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			return $found_posts;
 		}
 
-		$found_posts['total_record'] = $wpdb->get_var( $wpdb->prepare( "SELECT count(p.ID) as total FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT $offset,$limit", 'shop_order', '_bwfan_ab_cart_recovered_a_id' ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$found_posts['total_record'] = $wpdb->get_var( $wpdb->prepare( "SELECT count(p.ID) as total FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return $found_posts;
 	}
@@ -154,7 +154,8 @@ class BWFAN_Automations {
 		if ( empty( $status ) ) {
 			$status = '0,1,3,4';
 		}
-		$where = " WHERE abandon.status IN ($status)";
+		$status = implode( ',', array_map( 'absint', explode( ',', (string) $status ) ) );
+		$where  = " WHERE abandon.status IN ($status)";
 
 		$query  = "SELECT abandon.email, abandon.checkout_data, abandon.total AS revenue, abandon.currency AS currency, COALESCE(con.id, 0) AS id, COALESCE(con.f_name, '') AS f_name, COALESCE(con.l_name, '') AS l_name,abandon.created_time AS created_on from $abandoned_table AS abandon LEFT JOIN $contact_table AS con ON abandon.email = con.email $where ORDER BY abandon.ID DESC LIMIT 5 OFFSET 0";
 		$result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -193,11 +194,11 @@ class BWFAN_Automations {
 		return [
 			'code'              => ! empty( $currency ) ? $currency : get_option( 'woocommerce_currency' ),
 			'precision'         => wc_get_price_decimals(),
-			'symbol'            => html_entity_decode( $currency_symbol ),
+			'symbol'            => html_entity_decode( $currency_symbol, ENT_QUOTES | ENT_HTML401 ),
 			'symbolPosition'    => get_option( 'woocommerce_currency_pos' ),
 			'decimalSeparator'  => wc_get_price_decimal_separator(),
 			'thousandSeparator' => wc_get_price_thousand_separator(),
-			'priceFormat'       => html_entity_decode( $price_format ),
+			'priceFormat'       => html_entity_decode( $price_format, ENT_QUOTES | ENT_HTML401 ),
 		];
 	}
 
@@ -685,7 +686,7 @@ class BWFAN_Automations {
 
 		/** Unique Keys for Webhook Received Events */
 		if ( isset( $automation_meta['event_meta']['bwfan_unique_key'] ) ) {
-			$automation_meta['event_meta']['bwfan_unique_key'] = md5( uniqid( time(), true ) );
+			$automation_meta['event_meta']['bwfan_unique_key'] = wp_generate_password( 32, false );
 		}
 
 		$post['meta'] = array(
@@ -978,6 +979,12 @@ class BWFAN_Automations {
 			if ( ! empty( $tips ) ) {
 				$import_data['meta']['tips'] = $tips;
 			}
+
+			/** Unique Keys for Webhook Received Events */
+			if ( isset( $import_data['meta']['event_meta']['bwfan_unique_key'] ) ) {
+				$import_data['meta']['event_meta']['bwfan_unique_key'] = md5( uniqid( time(), true ) );
+			}
+
 			$benchmark_data = [];
 			if ( ! empty( $import_data['meta'] ) ) {
 				foreach ( $import_data['meta'] as $key => $auto_meta ) {

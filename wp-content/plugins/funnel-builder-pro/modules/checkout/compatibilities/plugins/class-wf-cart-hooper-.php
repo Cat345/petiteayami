@@ -1,9 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'WFACP_Compatibility_With_WF_Cart_Hooper' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_WF_Cart_Hooper {
 		public function __construct() {
-			add_action( 'admin_head', [ $this, 'action' ], 98 );
+			add_action( 'admin_head', array( $this, 'action' ), 98 );
 		}
 
 		public function action() {
@@ -12,35 +16,32 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WF_Cart_Hooper' ) ) {
 				return;
 			}
 			$this->save_publish_checkout_pages_in_transient( true );
-
 		}
 
 
 		public function save_publish_checkout_pages_in_transient( $force = true, $count = '-1' ) {
 
-
-			$output   = [];
-			$output[] = [
+			$output   = array();
+			$output[] = array(
 				'id'   => '0',
 				'name' => __( 'Default WooCommerce Checkout Page', 'woofunnels-aero-checkout' ),
 				'type' => 'default',
-			];
+			);
 			$data     = WFACP_Common::get_saved_pages();
 			if ( is_array( $data ) && count( $data ) > 0 ) {
 
 				foreach ( $data as $v ) {
-					$output[] = [
+					$output[] = array(
 						'id'   => $v['ID'],
 						'name' => $v['post_title'],
 						'type' => 'wfacp',
-					];
+					);
 				}
 			}
 
-
 			if ( count( $output ) == 0 ) {
 
-				return [];
+				return array();
 			}
 
 			/**
@@ -56,10 +57,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WF_Cart_Hooper' ) ) {
 
 				return $output;
 			}
-
 		}
-
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_With_WF_Cart_Hooper(), 'wfacp-wf-cart-hooper' );

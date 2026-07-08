@@ -96,6 +96,7 @@ abstract class BWFCRM_Base_React_Page {
 		$this->page_data['first_bulk_action_id']  = $first_bulk_action_id;
 		$this->page_data['first_audience_id']     = $first_audience_id;
 		$this->page_data['bwfan_nonce']           = get_option( 'bwfan_unique_secret', '' );
+		$this->page_data['rest_nonce']            = wp_create_nonce( 'wp_rest' );
 		$this->page_data['wp_version']            = get_bloginfo( 'version' );
 		$this->page_data['is_rtl']                = is_rtl();
 		$this->page_data['is_site_rtl']           = BWFAN_Common::is_site_rtl();
@@ -132,11 +133,11 @@ abstract class BWFCRM_Base_React_Page {
 			$this->page_data['currency']        = array(
 				'code'              => $this->page_data['currency'],
 				'precision'         => wc_get_price_decimals(),
-				'symbol'            => html_entity_decode( get_woocommerce_currency_symbol( $this->page_data['currency'] ) ),
+				'symbol'            => html_entity_decode( get_woocommerce_currency_symbol( $this->page_data['currency'] ), ENT_QUOTES | ENT_HTML401 ),
 				'symbolPosition'    => get_option( 'woocommerce_currency_pos' ),
 				'decimalSeparator'  => wc_get_price_decimal_separator(),
 				'thousandSeparator' => wc_get_price_thousand_separator(),
-				'priceFormat'       => html_entity_decode( get_woocommerce_price_format() ),
+				'priceFormat'       => html_entity_decode( get_woocommerce_price_format(), ENT_QUOTES | ENT_HTML401 ),
 			);
 		}
 
@@ -250,7 +251,7 @@ abstract class BWFCRM_Base_React_Page {
 			'contact_filters' => class_exists('BWFCRM_Load_Filters' ),
 		];
 
-		$this->page_data['bwf_review_count'] = 302;
+		$this->page_data['bwf_review_count'] = 330;
 
 		do_action( 'bwfan_admin_view_localize_data', $this );
 	}

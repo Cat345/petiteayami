@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Duplicate_Automation extends BWFAN_API_Base {
 	public static $ins;
 

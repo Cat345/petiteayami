@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Variation_Selector' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Variation_Selector extends WFOCU_Divi_HTML_BLOCK {
 
 		public function __construct() {

@@ -2,6 +2,8 @@
 
 namespace YOOtheme\Image\Driver;
 
+use RuntimeException;
+
 class GdDriver implements DriverInterface
 {
     use DriverHelper;
@@ -30,19 +32,21 @@ class GdDriver implements DriverInterface
                 break;
 
             case 'webp':
-                $image = imagecreatefromwebp($file);
+                // Webp image creation might fail: https://www.php.net/manual/en/function.imagecreatefromwebp.php#126269
+                $image = @imagecreatefromwebp($file);
                 break;
 
             case 'avif':
                 /** @phpstan-ignore function.notFound */
                 $image = imagecreatefromavif($file);
                 break;
-
-            default:
-                $image = false;
         }
 
-        $this->image = $image ? static::normalizeImage($image) : null;
+        if ($image ?? false) {
+            $this->image = static::normalizeImage($image);
+        } else {
+            throw new RuntimeException(sprintf('Failed to create image from file "%s".', $file));
+        }
     }
 
     /**

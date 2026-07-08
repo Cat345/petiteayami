@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Plugin Name: WooCommerce Przelewy24 Payment Gateway by Przelewy24 Sp. z o.o.(v1.0.6)
@@ -10,7 +14,7 @@ if ( ! class_exists( 'WFACP_Przelewy24_Payment_Gateway' ) ) {
 		private $blik_obj = null;
 
 		public function __construct() {
-			add_action( 'wfacp_checkout_after_order_review', [ $this, 'actions' ], 99 );
+			add_action( 'wfacp_checkout_after_order_review', array( $this, 'actions' ), 99 );
 		}
 
 		public function actions() {
@@ -25,9 +29,7 @@ if ( ! class_exists( 'WFACP_Przelewy24_Payment_Gateway' ) ) {
 
 				$this->blik_obj->extend_checkout_page_form();
 			}
-
 		}
-
 	}
 
 	new WFACP_Przelewy24_Payment_Gateway();

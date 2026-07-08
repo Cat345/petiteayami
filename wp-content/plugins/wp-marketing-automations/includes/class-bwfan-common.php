@@ -782,6 +782,16 @@ class BWFAN_Common {
 
 			return $current_language;
 		}
+
+		/** GTranslate */
+		if ( function_exists( 'bwfan_is_gtranslate_active' ) && bwfan_is_gtranslate_active() && class_exists( 'BWFAN_Compatibility_With_GTRANSLATE' ) ) {
+			return BWFAN_Compatibility_With_GTRANSLATE::get_gtranslate_language();
+		}
+
+		/** Linguise */
+		if ( function_exists( 'bwfan_is_linguise_active' ) && bwfan_is_linguise_active() && class_exists( '\Linguise\WordPress\Helper' ) ) {
+			return \Linguise\WordPress\Helper::getLanguage();
+		}
 	}
 
 	/**
@@ -1070,31 +1080,71 @@ class BWFAN_Common {
 	 * Send JSON response and close HTTP connection while keeping PHP process running
 	 * This allows background processing after the client receives the response
 	 *
+	 * NOTE: On hosts without fastcgi_finish_request/litespeed_finish_request, the REST
+	 * fallback registers a rest_pre_serve_request closure that emits $response_data as the
+	 * body and returns true (already-served). This OVERRIDES any WP_REST_Response a REST
+	 * callback might otherwise return. Do not call from a REST endpoint that needs to
+	 * deliver a meaningful response body via the normal pipeline — only from "fire-and-forget"
+	 * worker callbacks where the JSON payload here IS the entire response.
+	 *
 	 * @param array|mixed $response_data Response data to send as JSON
 	 * @param int $status_code HTTP status code (default: 200)
 	 *
-	 * @return void
+	 * @return bool True when the client connection was actually detached (FastCGI/LiteSpeed)
+	 *              and the caller may safely `exit;` after its background work. False when the
+	 *              connection could not be detached (caller should return through the normal
+	 *              REST pipeline so WordPress finishes the request without "headers already sent").
 	 */
 	public static function send_response_and_close_connection( $response_data = [], $status_code = 200 ) {
 		static $already_called = false;
 
 		// Prevent duplicate calls
 		if ( $already_called ) {
-			return;
+			return false;
 		}
 		$already_called = true;
 
 		// Check if headers already sent - function cannot work properly in this case
 		if ( headers_sent( $file, $line ) ) {
-			return;
+			return false;
 		}
 
-		// Prevent script termination if client disconnects
+		// Whether this host exposes a way to detach the client connection while PHP keeps running.
+		$can_finish_request = function_exists( 'fastcgi_finish_request' ) || function_exists( 'litespeed_finish_request' );
+
+		// Keep PHP running if the client disconnects (e.g. the loopback pinger's short timeout fires)
+		// before background work finishes. Must run BEFORE the REST fallback below, which returns
+		// without detaching the connection and would otherwise leave the worker unprotected from abort.
 		ignore_user_abort( true );
 
 		// Close session to release lock (if active)
 		if ( session_status() === PHP_SESSION_ACTIVE ) {
 			session_write_close();
+		}
+
+		/**
+		 * Fallback: in a REST context with no way to detach the connection, committing output
+		 * mid-dispatch (echo + buffer purge) flips headers_sent() true while WP_REST_Server and
+		 * host cache layers still intend to emit headers, producing "headers already sent"
+		 * warnings on every request. Instead, defer body emission to rest_pre_serve_request
+		 * (fires before core sends headers) and report that the connection was NOT closed so the
+		 * caller returns through the normal REST pipeline.
+		 */
+		if ( ! $can_finish_request && defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			add_filter( 'rest_pre_serve_request', function ( $served ) use ( $response_data, $status_code ) {
+				// status_header() is self-guarded against headers_sent(), so this is safe to call unconditionally
+				// and lets a non-200 $status_code override the 200 WP queues from a null dispatch result.
+				status_header( $status_code );
+				if ( ! headers_sent() ) {
+					header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) );
+				}
+				$json = wp_json_encode( $response_data );
+				echo ( false === $json ) ? '{"success":false}' : $json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON response body.
+
+				return true; // Tell WordPress the request is already served.
+			}, 10, 1 );
+
+			return false;
 		}
 
 		// Disable compression BEFORE calculating Content-Length to ensure accurate byte count
@@ -1139,61 +1189,28 @@ class BWFAN_Common {
 		}
 
 		// Send output
-		echo $json_response;
+		echo $json_response; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON response body.
 
 		// Flush output to network
 		flush();
 
-		// Close connection - FastCGI/LiteSpeed provide the cleanest methods
+		// Close connection - FastCGI/LiteSpeed provide the cleanest methods.
+		// Returns true so the caller can `exit;` after background work: this prevents
+		// WP_REST_Server and any host cache layer from calling header() against the
+		// already-committed output (the "headers already sent" log flood).
 		if ( function_exists( 'fastcgi_finish_request' ) ) {
 			fastcgi_finish_request();
-		} elseif ( function_exists( 'litespeed_finish_request' ) ) {
+
+			return true;
+		}
+
+		if ( function_exists( 'litespeed_finish_request' ) ) {
 			litespeed_finish_request();
+
+			return true;
 		}
 
-		// Prevent WordPress REST API core from trying to send headers after we've already sent them
-		// Add filter to tell WordPress we've already served the request
-		add_filter( 'rest_pre_serve_request', function ( $served, $result, $request, $server ) {
-			return true; // Return true means "already served, don't send again"
-		}, 10, 4 );
-
-		// Clear headers in case WordPress still tries to send them
-		add_filter( 'rest_post_dispatch', function ( $response ) {
-			$response->set_headers( [] );
-
-			return $response;
-		} );
-	}
-
-	/**
-	 * Close HTTP connection to client while keeping PHP process running
-	 * This allows background processing after the client receives the response
-	 *
-	 * @return void
-	 * @deprecated Use send_response_and_close_connection() instead
-	 *
-	 */
-	public static function close_http_connection() {
-		// Prevent script termination if client disconnects
-		ignore_user_abort( true );
-
-		// Close session to release lock (if active)
-		if ( session_status() === PHP_SESSION_ACTIVE ) {
-			session_write_close();
-		}
-
-		// Flush all output buffers
-		while ( ob_get_level() > 0 ) {
-			ob_end_flush();
-		}
-		flush();
-
-		// Close connection - FastCGI/LiteSpeed provide the cleanest methods
-		if ( function_exists( 'fastcgi_finish_request' ) ) {
-			fastcgi_finish_request();
-		} elseif ( function_exists( 'litespeed_finish_request' ) ) {
-			litespeed_finish_request();
-		}
+		return false;
 	}
 
 	/**
@@ -1887,15 +1904,17 @@ class BWFAN_Common {
 	 * @param bool $secure Whether the cookie should be served only over https.
 	 * @param bool $httponly Whether the cookie is only accessible over HTTP, not scripting languages like JavaScript. @since 3.6.0.
 	 */
-	public static function set_cookie( $name, $value, $expire = 0, $secure = false, $httponly = false ) {
+	public static function set_cookie( $name, $value, $expire = 0, $secure = null, $httponly = true ) {
 		if ( self::is_cli() || self::is_cron() || self::is_rest() ) {
 			return;
 		}
 		if ( headers_sent() ) {
 			return;
 		}
-		$domain = apply_filters( 'bwfan_cookie_domain', COOKIE_DOMAIN );
-		setcookie( $name, $value, $expire, COOKIEPATH ? COOKIEPATH : '/', $domain, $secure, apply_filters( 'bwfan_cookie_httponly', $httponly, $name, $value, $expire, $secure ) ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
+		$domain   = apply_filters( 'bwfan_cookie_domain', COOKIE_DOMAIN );
+		$secure   = ( null === $secure ) ? is_ssl() : (bool) $secure;
+		$httponly = apply_filters( 'bwfan_cookie_httponly', $httponly, $name, $value, $expire, $secure );
+		setcookie( $name, $value, $expire, COOKIEPATH ? COOKIEPATH : '/', $domain, $secure, $httponly ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
 	}
 
 	/**
@@ -2129,28 +2148,52 @@ class BWFAN_Common {
 	}
 
 	/**
-	 * Check nonce.
+	 * Verify CSRF nonce AND admin capability for an AJAX request.
+	 *
+	 * Why: the old version OR'd nonce with capability, which let a logged-in
+	 * admin's browser be CSRF'd into any handler that called this helper.
+	 * Now both are required (AND), so this is the single authorization gate
+	 * for all admin AJAX handlers that previously did their own cap check.
 	 */
 	public static function check_nonce() {
+		if ( self::is_rest() || wp_is_rest_endpoint() ) {
+			// REST endpoints handle nonces via X-WP-Nonce / app passwords / JWT,
+			// but we still require WP to have resolved an authenticated user here
+			// so an unauthenticated REST route can't bypass the cap check below.
+			if ( is_user_logged_in() ) {
+				$permissions = method_exists( 'BWFAN_Common', 'access_capabilities' ) ? self::access_capabilities() : array( 'manage_options' );
+				foreach ( $permissions as $permission ) {
+					if ( current_user_can( $permission ) ) {
+						return;
+					}
+				}
+			}
+			wp_send_json( array(
+				'msg'    => __( 'Invalid request, security validation failed.', 'wp-marketing-automations' ),
+				'status' => false,
+			) );
+
+		}
         $nonce     = ( isset( $_REQUEST['_wpnonce'] ) ) ? sanitize_text_field( $_REQUEST['_wpnonce'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification
         $bwf_nonce = ( isset( $_REQUEST['bwf_nonce'] ) ) ? sanitize_text_field( $_REQUEST['bwf_nonce'] ) : '';//phpcs:ignore WordPress.Security.NonceVerification
-        if ( wp_verify_nonce( $bwf_nonce, 'bwf_secure_key' ) || wp_verify_nonce( $nonce, 'bwfan-action-admin' ) ) {
-            return;
+        // Some callers (custom addons, internal React components) post the bwfan-action-admin nonce under the key `nonce` instead of `_wpnonce`. Accept both.
+        $alt_nonce = ( isset( $_REQUEST['nonce'] ) ) ? sanitize_text_field( $_REQUEST['nonce'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification
+        if ( ! wp_verify_nonce( $bwf_nonce, 'bwf_secure_key' ) && ! wp_verify_nonce( $nonce, 'bwfan-action-admin' ) && ! wp_verify_nonce( $alt_nonce, 'bwfan-action-admin' ) ) {
+            wp_send_json( array(
+                'msg'    => __( 'Invalid request, security validation failed.', 'wp-marketing-automations' ),
+                'status' => false,
+            ) );
         }
-        /** check if current user has the permission or not */
-        $default_permissions = array( 'manage_options' );
-        $permissions         = method_exists( 'BWFAN_Common', 'access_capabilities' ) ? BWFAN_Common::access_capabilities() : $default_permissions;
+        $permissions = method_exists( 'BWFAN_Common', 'access_capabilities' ) ? self::access_capabilities() : array( 'manage_options' );
         foreach ( $permissions as $permission ) {
             if ( current_user_can( $permission ) ) {
                 return;
             }
         }
-        // This nonce is not valid.
-        $resp = array(
-            'msg'    => __( 'Invalid request, security validation failed.', 'wp-marketing-automations' ),
+        wp_send_json( array(
+            'msg'    => __( 'You are not authorized to perform this action', 'wp-marketing-automations' ),
             'status' => false,
-        );
-        wp_send_json( $resp );
+        ) );
     }
 
 	/**
@@ -2184,8 +2227,19 @@ class BWFAN_Common {
 			'publish',
 			'draft',
 		) : array( 'publish', 'draft' );
-		$product_type  = [ 'product' ];
-		if ( true === $include_variations ) {
+		/**
+		 * Filter the post types searched by the product picker.
+		 *
+		 * Extensions that register course/membership/etc. post types sold via WooCommerce
+		 * can add them to this list so they appear in the Order Created product selector.
+		 *
+		 * @param array  $post_types         Default post types included in the search.
+		 * @param string $term               The search term.
+		 * @param bool   $include_variations Whether product variations are included.
+		 */
+		$product_type = apply_filters( 'bwfan_search_product_post_types', [ 'product' ], $term, $include_variations );
+		$product_type = is_array( $product_type ) && ! empty( $product_type ) ? array_values( array_unique( array_map( 'sanitize_key', $product_type ) ) ) : [ 'product' ];
+		if ( true === $include_variations && ! in_array( 'product_variation', $product_type, true ) ) {
 			$product_type[] = 'product_variation';
 		}
 		$query = $wpdb->prepare( "SELECT DISTINCT posts.ID FROM {$wpdb->posts} AS posts LEFT JOIN {$wpdb->wc_product_meta_lookup} AS wc_product_meta_lookup ON posts.ID = wc_product_meta_lookup.product_id WHERE (posts.post_title LIKE %s OR wc_product_meta_lookup.sku LIKE %s OR posts.ID LIKE %s) AND posts.post_status IN ('" . implode( "','", $post_statuses ) . "') AND posts.post_type IN ('" . implode( "','", $product_type ) . "') ORDER BY posts.post_parent ASC, posts.post_title ASC", $like_term, $like_term, $like_term ); //phpcs:ignore WordPress.DB.PreparedSQL,WordPress.DB.PreparedSQLPlaceholders
@@ -2607,11 +2661,6 @@ class BWFAN_Common {
 			'callback'            => array( __CLASS__, 'update_generated_increment' ),
 			'permission_callback' => '__return_true',
 		) );
-		register_rest_route( 'autonami/v1', '/wc-add-to-cart', array(
-			'methods'             => WP_REST_Server::CREATABLE,
-			'callback'            => array( __CLASS__, 'wc_add_to_cart' ),
-			'permission_callback' => '__return_true',
-		) );
 		/** v2 autonami endpoint */
 		register_rest_route( 'autonami/v2', '/worker', array(
 			'methods'             => WP_REST_Server::CREATABLE,
@@ -2649,7 +2698,7 @@ class BWFAN_Common {
 			'msg'  => '',
 			'time' => time(),
 		);
-		self::send_response_and_close_connection( $resp );
+		$connection_closed = self::send_response_and_close_connection( $resp );
 
 		/** Delete row from automation events */
 		if ( isset( $post_parameters['a_e_id'] ) ) {
@@ -2660,6 +2709,14 @@ class BWFAN_Common {
 		self::capture_async_helper( $post_parameters, false );
 
 		self::event_advanced_logs( "Event endpoint callback completed" );
+
+		/**
+		 * When the connection was actually detached, terminate now so neither WP_REST_Server
+		 * nor any host cache layer emits headers against the already-committed output.
+		 */
+		if ( true === $connection_closed ) {
+			exit;
+		}
 	}
 
 	public static function capture_async_helper( $post_parameters = [], $wp_send_json = true ) {
@@ -2891,6 +2948,17 @@ class BWFAN_Common {
 
 		$v = ( isset( $_SERVER['REQUEST_URI'] ) && strpos( $_SERVER['REQUEST_URI'], 'autonami/v1/worker' ) !== false ) ? 1 : 2;// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 
+		/** Rate-limit re-entry: per-version key so v1 and v2 cooldowns are independent of each other and of WooFunnels' core worker. */
+		if ( self::is_worker_rate_limited( $v ) ) {
+			wp_send_json( array(
+				'msg'  => 'rate_limited',
+				'time' => date_i18n( 'Y-m-d H:i:s' ),
+			), 429 );
+		}
+
+		/** Stamp run start so subsequent calls within the cooldown window get 429. */
+		bwf_options_update( "bwfan_worker_let_v{$v}", time() );
+
 		self::event_advanced_logs( "V{$v} worker callback received" );
 
 		/** Logs */
@@ -2905,7 +2973,7 @@ class BWFAN_Common {
 		$resp         = array();
 		$resp['msg']  = 'success';
 		$resp['time'] = date_i18n( 'Y-m-d H:i:s' );
-		self::send_response_and_close_connection( $resp );
+		$connection_closed = self::send_response_and_close_connection( $resp );
 
 		// Now run worker tasks in background (client already received response)
 		self::worker_as_run();
@@ -2916,6 +2984,14 @@ class BWFAN_Common {
 			if ( isset( $logger_obj ) ) {
 				$logger_obj->log( date_i18n( 'Y-m-d H:i:s' ) . ' - after worker run', 'fka-cron-check-v' . $v, 'autonami' );
 			}
+		}
+
+		/**
+		 * When the connection was actually detached, terminate now so neither WP_REST_Server
+		 * nor any host cache layer emits headers against the already-committed output.
+		 */
+		if ( true === $connection_closed ) {
+			exit;
 		}
 
 		return;
@@ -2940,6 +3016,34 @@ class BWFAN_Common {
 		$result = $as_ins->run();
 
 		self::event_advanced_logs( "Actions processed: {$result}" );
+	}
+
+	/**
+	 * Returns true if the previous autonami worker run for the given version is within the rate-limit window.
+	 * Window is filterable via `bwfan_worker_rate_limit_window` (passed the version as second arg); default 20 seconds.
+	 * A non-positive window disables the limit. Timestamp key is `bwfan_worker_let_v{1|2}` —
+	 * per-version so v1 and v2 cooldowns are independent, and autonami-only so neither cross-blocks
+	 * with WooFunnels' `fk_core_worker_let`.
+	 *
+	 * @param int $version 1 or 2.
+	 *
+	 * @return bool
+	 */
+	public static function is_worker_rate_limited( $version = 2 ) {
+		if ( ! function_exists( 'bwf_options_get' ) ) {
+			return false;
+		}
+		$version  = ( 1 === (int) $version ) ? 1 : 2;
+		$last_run = absint( bwf_options_get( "bwfan_worker_let_v{$version}", '', 0 ) );
+		if ( $last_run <= 0 ) {
+			return false;
+		}
+		$window = (int) apply_filters( 'bwfan_worker_rate_limit_window', 20, $version );
+		if ( $window <= 0 ) {
+			return false;
+		}
+
+		return ( time() - $last_run ) < $window;
 	}
 
 	/**
@@ -3482,171 +3586,8 @@ class BWFAN_Common {
 		}
 	}
 
-	public static function wc_add_to_cart( WP_REST_Request $request ) {
-		self::nocache_headers();
-		$post_parameters = $request->get_body_params();
-		if ( false === is_array( $post_parameters ) || 0 === count( $post_parameters ) ) {
-			return;
-		}
-		if ( ! isset( $post_parameters['id'] ) || ! isset( $post_parameters['coupon_data'] ) || ! isset( $post_parameters['items'] ) || ! isset( $post_parameters['fees'] ) || ! isset( $post_parameters['bwfan_visitor'] ) ) {
-			return;
-		}
-		/**
-		 * Check Unique key security
-		 */
-		$unique_key = get_option( 'bwfan_u_key', false );
-		if ( false === $unique_key || ! isset( $post_parameters['unique_key'] ) || ! hash_equals( $unique_key, $post_parameters['unique_key'] ) ) {
-			return;
-		}
-
-		/** Before abandoned cart when wc add to cart */
-		do_action( 'bwfan_before_abandoned_wc_add_to_cart', $post_parameters );
-
-		$user_id       = $post_parameters['id'];
-		$email         = '';
-		$abandoned_obj = BWFAN_Abandoned_Cart::get_instance();
-		if ( ! empty( $post_parameters['fk_uid'] ) ) {
-			$uid     = $post_parameters['fk_uid'];
-			$contact = new WooFunnels_Contact( '', '', '', '', $uid );
-			$email   = $contact->get_email();
-			$user_id = ! empty( $contact->get_wpid() ) ? $contact->get_wpid() : $user_id;
-		}
-		if ( empty( $email ) && ! empty( $user_id ) ) {
-			$wp_user = get_user_by( 'id', $user_id );
-			if ( $wp_user instanceof WP_User ) {
-				$email = $wp_user->user_email;
-			}
-		}
-		$coupon_data  = $post_parameters['coupon_data'];
-		$items        = $post_parameters['items'];
-		$fees         = $post_parameters['fees'];
-		$cart_details = $abandoned_obj->get_cart_by_key( 'cookie_key', $post_parameters['bwfan_visitor'], '%s' );
-		$cart_details = empty( $cart_details ) && ! empty( $email ) ? $abandoned_obj->get_cart_by_key( 'email', $email, '%s' ) : $cart_details;
-
-		if ( ! empty( $email ) && empty( $cart_details ) ) {
-			self::create_abandoned_cart( array(
-				'user_id'    => $user_id,
-				'email'      => $email,
-				'coupons'    => $coupon_data,
-				'items'      => $items,
-				'fees'       => $fees,
-				'cookie_key' => $post_parameters['bwfan_visitor'] ?? '',
-			) );
-
-			/** After insert abandoned cart when wc add to cart */
-			do_action( 'bwfan_after_insert_abandoned_wc_add_to_cart', $post_parameters );
-
-			return;
-		}
-
-		/** If cart details is not found, then return */
-		if ( empty( $cart_details ) || ! isset( $cart_details['ID'] ) ) {
-			return;
-		}
-
-		$cart_details['coupons'] = $coupon_data;
-		if ( ! empty( $items ) ) {
-			$cart_details['items'] = $items;
-		}
-		$cart_details['fees']  = $fees;
-		$data                  = self::get_abandoned_totals( $cart_details );
-		$data['user_id']       = $user_id;
-		$data['last_modified'] = current_time( 'mysql', 1 );
-		$cart_id               = $cart_details['ID'] ?? 0;
-
-		if ( empty( $cart_id ) ) {
-			return;
-		}
-
-		/** If status lost and others */
-		$cart_status = isset( $cart_details['status'] ) ? intval( $cart_details['status'] ) : 0;
-		if ( in_array( $cart_status, array( 2, 3, 4 ), true ) ) {
-			$data['status']       = 0;
-			$data['created_time'] = current_time( 'mysql', 1 );
-		}
-
-		$where = array(
-			'ID' => $cart_id,
-		);
-
-		BWFAN_Model_Abandonedcarts::update( $data, $where );
-		do_action( 'bwfan_after_update_abandoned_wc_add_to_cart', $post_parameters, $data );
-	}
-
-	private static function create_abandoned_cart( $data ) {
-		if ( empty( $data['items'] ) || ! isset( $data['user_id'] ) ) {
-			return;
-		}
-
-		$customer      = new WC_Customer( $data['user_id'] );
-		$checkout_data = array(
-			'fields' => array(
-				'billing_first_name'  => $customer->get_billing_first_name(),
-				'billing_last_name'   => $customer->get_billing_last_name(),
-				'billing_company'     => $customer->get_billing_company(),
-				'billing_country'     => $customer->get_billing_country(),
-				'billing_address_1'   => $customer->get_billing_address_1(),
-				'billing_address_2'   => $customer->get_billing_address_2(),
-				'billing_city'        => $customer->get_billing_city(),
-				'billing_state'       => $customer->get_billing_state(),
-				'billing_postcode'    => $customer->get_billing_postcode(),
-				'billing_phone'       => $customer->get_billing_phone(),
-				'billing_email'       => $customer->get_billing_email(),
-				'shipping_first_name' => $customer->get_shipping_first_name(),
-				'shipping_last_name'  => $customer->get_shipping_last_name(),
-				'shipping_company'    => $customer->get_shipping_company(),
-				'shipping_country'    => $customer->get_shipping_country(),
-				'shipping_address_1'  => $customer->get_shipping_address_1(),
-				'shipping_address_2'  => $customer->get_shipping_address_2(),
-				'shipping_city'       => $customer->get_shipping_city(),
-				'shipping_state'      => $customer->get_shipping_state(),
-				'shipping_postcode'   => $customer->get_shipping_postcode(),
-			),
-		);
-
-		$data['status']        = 0;
-		$data['created_time']  = current_time( 'mysql', 1 );
-		$data['last_modified'] = current_time( 'mysql', 1 );
-		$data['token']         = self::create_token( 32 );
-		$data['checkout_data'] = wp_json_encode( $checkout_data );
-		$data['currency']      = get_woocommerce_currency();
-		$data                  = self::get_abandoned_totals( $data );
-
-		BWFAN_Model_Abandonedcarts::insert( $data );
-	}
-
 	public static function create_token( $length = 25 ) {
 		return wp_generate_password( $length, false );
-	}
-
-	private static function get_abandoned_totals( $data ) {
-		$coupon_data = maybe_unserialize( $data['coupons'] ?? [] );
-		$coupon_data = is_array( $coupon_data ) ? $coupon_data : [];
-
-		$items = maybe_unserialize( $data['items'] ?? [] );
-		$items = is_array( $items ) ? $items : [];
-
-		$fees = maybe_unserialize( $data['fees'] ?? [] );
-		$fees = is_array( $fees ) ? $fees : [];
-
-		$calculated_total = 0;
-		foreach ( $items as $item ) {
-			$line_subtotal_tax = isset( $item['line_subtotal_tax'] ) ? floatval( $item['line_subtotal_tax'] ) : 0;
-			$line_subtotal     = isset( $item['line_subtotal'] ) ? floatval( $item['line_subtotal'] ) : 0;
-			$calculated_total  += $line_subtotal + $line_subtotal_tax;
-		}
-		foreach ( $coupon_data as $coupon ) {
-			$calculated_total -= $coupon['discount_incl_tax'];
-		}
-		foreach ( $fees as $fee ) {
-			$calculated_total += ( $fee->total + $fee->tax );
-		}
-
-		$calculated_total   = wc_format_decimal( $calculated_total, wc_get_price_decimals() );
-		$data['total']      = $calculated_total;
-		$data['total_base'] = BWF_Plugin_Compatibilities::get_fixed_currency_price_reverse( $calculated_total, get_woocommerce_currency() );
-
-		return $data;
 	}
 
 	/**
@@ -3787,15 +3728,20 @@ class BWFAN_Common {
 	 * @param $status
 	 */
 	public static function update_abandoned_rows( $ids, $status ) {
+		if ( ! is_array( $ids ) || count( $ids ) === 0 ) {
+			return;
+		}
+
 		global $wpdb;
 		$ids                    = array_map( 'absint', $ids );
 		$status                 = absint( $status );
 		$automationCount        = count( $ids );
 		$stringPlaceholders     = array_fill( 0, $automationCount, '%d' );
 		$placeholdersautomation = implode( ', ', $stringPlaceholders );
-		$sql_query              = $wpdb->prepare( "Update {table_name} Set status = %d WHERE ID IN ($placeholdersautomation)", array_merge( array( $status ), $ids ) );// phpcs:ignore WordPress.DB.PreparedSQL
+		$params                 = array_merge( array( $status ), $ids );
+		$sql_query              = $wpdb->prepare( "Update {table_name} Set status = %d WHERE ID IN ($placeholdersautomation)", ...$params );// phpcs:ignore WordPress.DB.PreparedSQL
 
-		BWFAN_Model_Abandonedcarts::get_results( $sql_query );
+		BWFAN_Model_Abandonedcarts::query_with_retry( $sql_query, 'update_abandoned_rows' );
 	}
 
 	/**
@@ -3831,19 +3777,39 @@ class BWFAN_Common {
 
 			return;
 		}
+
 		$global_settings = self::get_global_settings();
 		if ( empty( $global_settings['bwfan_ab_enable'] ) ) {
 			return;
 		}
 
-		/** Maybe run */
-		if ( false === BWFAN_Model_Abandonedcarts::maybe_run( $global_settings['bwfan_ab_init_wait_time'] ) ) {
+		/**
+		 * Best-effort reentrancy guard against redundant work and double-processing:
+		 * `get_eligible_abandoned_rows()` SELECTs by status without claiming rows up front,
+		 * so two concurrent workers would otherwise process the same carts twice (duplicate
+		 * automations, duplicate recovery emails). Deadlock retry at the model layer recovers
+		 * from row-level contention but does not prevent that duplicate work.
+		 *
+		 * Not a distributed mutex: get_transient + set_transient are not atomic, and the 120s
+		 * TTL self-heals if processing crashes or exceeds the window.
+		 */
+		if ( false !== get_transient( 'bwfan_ab_cart_processing' ) ) {
 			return;
 		}
+		set_transient( 'bwfan_ab_cart_processing', 1, 120 );
 
-		$all_sources = BWFAN_Load_Sources::get_all_sources_obj();
-		$all_sources['wc']['ab_cart_abandoned']->load_hooks();
-		$all_sources['wc']['ab_cart_abandoned']->get_eligible_abandoned_rows();
+		try {
+			/** Maybe run */
+			if ( false === BWFAN_Model_Abandonedcarts::maybe_run( $global_settings['bwfan_ab_init_wait_time'] ) ) {
+				return;
+			}
+
+			$all_sources = BWFAN_Load_Sources::get_all_sources_obj();
+			$all_sources['wc']['ab_cart_abandoned']->load_hooks();
+			$all_sources['wc']['ab_cart_abandoned']->get_eligible_abandoned_rows();
+		} finally {
+			delete_transient( 'bwfan_ab_cart_processing' );
+		}
 	}
 
 	/**
@@ -5003,7 +4969,7 @@ class BWFAN_Common {
 		$id_query = '';
 
 		if ( ! empty( $ids ) ) {
-			$id_query = " AND ID IN(" . implode( ',', $ids ) . ") ";
+			$id_query = " AND ID IN(" . implode( ',', array_map( 'absint', $ids ) ) . ") ";
 		}
 
 		$where = $wpdb->prepare( "AND v = %d ", $version );
@@ -5994,6 +5960,41 @@ class BWFAN_Common {
 								),
 							)
 						), $ab_email_consent_message_fields, array(
+							array(
+								'id'            => 'bwfan_ab_capture_ip_address',
+								'label'         => __( 'Capture IP Address', 'wp-marketing-automations' ),
+								'type'          => 'checkbox',
+								'checkboxlabel' => __( 'Store the visitor\'s IP address with abandoned cart data for fraud and bot analysis', 'wp-marketing-automations' ),
+								'class'         => 'bwfan_ab_capture_ip_address',
+								'required'      => false,
+								'toggler'       => array(
+									'fields'   => array(
+										array(
+											'id'    => 'bwfan_ab_enable',
+											'value' => true,
+										),
+									),
+									'relation' => 'OR',
+								),
+							),
+							array(
+								'id'            => 'bwfan_ab_capture_device',
+								'label'         => __( 'Capture Device', 'wp-marketing-automations' ),
+								'type'          => 'checkbox',
+								'checkboxlabel' => __( 'Store the visitor\'s device, browser and language with abandoned cart data', 'wp-marketing-automations' ),
+								'class'         => 'bwfan_ab_capture_device',
+								'required'      => false,
+								'toggler'       => array(
+									'fields'   => array(
+										array(
+											'id'    => 'bwfan_ab_enable',
+											'value' => true,
+										),
+									),
+									'relation' => 'OR',
+								),
+							)
+						), array(
 							array(
 								'id'          => 'bwfan_ab_tag_selector',
 								'label'       => __( 'Add Tag', 'wp-marketing-automations' ),
@@ -6996,11 +6997,87 @@ class BWFAN_Common {
 		$plugin_sha = sha1( plugin_basename( 'wp-marketing-automations-pro/wp-marketing-automations-pro.php' ) );
 		if ( ! $onlyKey && $plugin_sha !== BWFAN_PRO_ENCODE ) {
 			return [
-				'error_msg' => __( 'It appears that the original plugin folder has been renamed. Please restore the folder to its original name or reinstall the plugin to activate the license.', 'wp-marketing-automations' )
+				'error_msg' => wp_kses_post( __( 'We have detected that plugin directory has been renamed. Please restore the directory to its original name or download the latest files from', 'wp-marketing-automations' ) ) . ' <a href="' . esc_url( BWFAN_Common::get_fk_site_links( 'account' ) ) . '">' . esc_html__( 'your account', 'wp-marketing-automations' ) . '</a> ' . wp_kses_post( __( 'or', 'wp-marketing-automations' ) ) . ' <a href="' . esc_url( BWFAN_Common::get_fk_site_links( 'support' ) ) . '">' . esc_html__( 'contact support', 'wp-marketing-automations' ) . '</a> ' . wp_kses_post( __( 'for assistance.', 'wp-marketing-automations' ) )
 			];
 		}
 
 		return false;
+	}
+
+	/**
+	 * Whether the Pro plugin folder has been renamed in a way that blocks license activation.
+	 *
+	 * Detection is server/DB independent: it compares the canonical folder hash against the
+	 * live BWFAN_PRO_ENCODE. The "already activated under the live hash" guard prevents false
+	 * positives for legacy installs that were activated under a non-canonical folder slug.
+	 *
+	 * @since 3.8.2
+	 *
+	 * @return bool True when Pro is active, the live folder hash differs from the canonical
+	 *              hash, and no activated license exists under the live hash; false otherwise.
+	 */
+	public static function is_pro_folder_renamed() {
+		if ( false === bwfan_is_autonami_pro_active() || ! defined( 'BWFAN_PRO_ENCODE' ) ) {
+			return false;
+		}
+
+		$canonical_sha = sha1( plugin_basename( 'wp-marketing-automations-pro/wp-marketing-automations-pro.php' ) );
+		/* Folder is canonical (hash matches) — license can activate normally, nothing to warn about. */
+		if ( hash_equals( $canonical_sha, BWFAN_PRO_ENCODE ) ) {
+			return false;
+		}
+
+		$bwf_licenses = get_option( 'woofunnels_plugins_info', false );
+		if ( is_multisite() ) {
+			$active_plugins = get_site_option( 'active_sitewide_plugins', array() );
+			if ( is_array( $active_plugins ) && ( in_array( BWFAN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( BWFAN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) && ! is_main_site() ) {
+				$bwf_licenses = get_blog_option( get_network()->site_id, 'woofunnels_plugins_info', [] );
+			}
+		}
+
+		/* Legacy non-canonical install that activated under its own hash — license works, do not warn. */
+		if ( is_array( $bwf_licenses ) && ! empty( $bwf_licenses[ BWFAN_PRO_ENCODE ]['activated'] ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Whether the Connectors plugin folder has been renamed in a way that blocks license activation.
+	 *
+	 * Mirrors {@see self::is_pro_folder_renamed()} for the autonami-connectors plugin: compares
+	 * the canonical folder hash against the live WFCO_AUTONAMI_CONNECTORS_ENCODE and exempts
+	 * legacy installs already activated under the live hash.
+	 *
+	 * @since 3.8.2
+	 *
+	 * @return bool True when Connectors is active, the live folder hash differs from canonical,
+	 *              and no activated license exists under the live hash; false otherwise.
+	 */
+	public static function is_connector_folder_renamed() {
+		if ( false === class_exists( 'BWFAN_Basic_Connector_Support' ) || ! defined( 'WFCO_AUTONAMI_CONNECTORS_ENCODE' ) ) {
+			return false;
+		}
+
+		$canonical_sha = sha1( plugin_basename( 'wp-marketing-automations-connectors/wp-marketing-automations-connectors.php' ) );
+		if ( hash_equals( $canonical_sha, WFCO_AUTONAMI_CONNECTORS_ENCODE ) ) {
+			return false;
+		}
+
+		$bwf_licenses = get_option( 'woofunnels_plugins_info', false );
+		if ( is_multisite() ) {
+			$active_plugins = get_site_option( 'active_sitewide_plugins', array() );
+			if ( is_array( $active_plugins ) && ( in_array( BWFAN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( BWFAN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) && ! is_main_site() ) {
+				$bwf_licenses = get_blog_option( get_network()->site_id, 'woofunnels_plugins_info', [] );
+			}
+		}
+
+		if ( is_array( $bwf_licenses ) && ! empty( $bwf_licenses[ WFCO_AUTONAMI_CONNECTORS_ENCODE ]['activated'] ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -9378,6 +9455,47 @@ class BWFAN_Common {
 		return bwf_has_action_scheduled( $hook );
 	}
 
+	/**
+	 * Build a Reply-To email header.
+	 *
+	 * Returns the standard RFC 5322 bare `Reply-To: <email>` header, which every
+	 * standards-compliant SMTP provider accepts. Default behaviour is unchanged.
+	 *
+	 * The final header line is passed through the `bwfan_reply_to_header` filter so a
+	 * site can override it for SMTP plugins that need a different format — e.g. Authority
+	 * Mailer rejects a nameless Reply-To with Code 29 ("Reply-To name or email address is
+	 * missing"), and such a site can return `Reply-To: Name <email>` from the filter. The
+	 * filter receives the email, the reply-to name (if any) and a fallback name (typically
+	 * the From name) so the callback can build whatever it needs.
+	 *
+	 * @param string $reply_to_email Reply-To email address.
+	 * @param string $reply_to_name  Reply-To display name (optional).
+	 * @param string $fallback_name  Fallback name, typically the From name.
+	 *
+	 * @return string Reply-To header line, or empty string when no email is provided.
+	 */
+	public static function build_reply_to_header( $reply_to_email, $reply_to_name = '', $fallback_name = '' ) {
+		$reply_to_email = trim( (string) $reply_to_email );
+		if ( empty( $reply_to_email ) ) {
+			return '';
+		}
+
+		/**
+		 * Filter the Reply-To header line before it is added to the email headers.
+		 *
+		 * Default is the standard bare `Reply-To: <email>`. Return a custom value such as
+		 * `Reply-To: Name <email>` for SMTP plugins that require a display name on Reply-To
+		 * (e.g. Authority Mailer, Code 29). When attaching a name that may contain specials
+		 * (comma, <, @, ...), wrap it in double quotes in the callback to keep the header valid.
+		 *
+		 * @param string $header         The Reply-To header line. Default 'Reply-To: <email>'.
+		 * @param string $reply_to_email Reply-To email address.
+		 * @param string $reply_to_name  Reply-To display name, if any (may be empty).
+		 * @param string $fallback_name  Fallback name, typically the From name.
+		 */
+		return apply_filters( 'bwfan_reply_to_header', 'Reply-To: ' . $reply_to_email, $reply_to_email, $reply_to_name, $fallback_name );
+	}
+
 	/** send test email from autonami screen */
 	public static function send_test_email( $args, $is_crm = false ) {
 		if ( empty( $args ) || empty( $args['body'] ) ) {
@@ -9493,7 +9611,7 @@ class BWFAN_Common {
 				$header[] = 'From: ' . $from_name . ' <' . $from_email . '>';
 			}
 			if ( ! empty( $reply_to_email ) ) {
-				$header[] = 'Reply-To: ' . $reply_to_email;
+				$header[] = self::build_reply_to_header( $reply_to_email, '', $from_name );
 			}
 			$header[] = 'Content-type:text/html;charset=UTF-8';
 
@@ -9672,6 +9790,42 @@ class BWFAN_Common {
 		$string = str_replace( 'http://http://', 'http://', $string );
 
 		return $string;
+	}
+
+	/**
+	 * Validate that a link is a well-formed http(s) URL.
+	 *
+	 * Use this for links that are stored for tracking or used as redirect targets
+	 * (not fetched server-side). Unlike wp_http_validate_url() — which is an SSRF
+	 * guard for outbound wp_remote_*() requests — this does NOT resolve DNS or
+	 * reject private/loopback IPs. That matters because an admin's own-domain link
+	 * legitimately resolves to 127.0.0.1 on hosts that loop their domain back to
+	 * themselves, which makes wp_http_validate_url() wrongly reject valid links.
+	 *
+	 * It keeps the only protection relevant here: a strict http/https protocol
+	 * whitelist (via esc_url_raw / wp_kses_bad_protocol) that blocks javascript:,
+	 * data:, etc., plus a required host.
+	 *
+	 * @param string $url
+	 *
+	 * @return bool
+	 */
+	public static function bwfan_is_valid_link( $url ) {
+		if ( ! is_string( $url ) || '' === trim( $url ) ) {
+			return false;
+		}
+
+		/** Reject disallowed protocols (javascript:, data:, …) without DNS/SSRF checks. */
+		if ( '' === esc_url_raw( $url ) ) {
+			return false;
+		}
+
+		$parsed = wp_parse_url( $url );
+		if ( empty( $parsed['scheme'] ) || empty( $parsed['host'] ) ) {
+			return false;
+		}
+
+		return in_array( strtolower( $parsed['scheme'] ), array( 'http', 'https' ), true );
 	}
 
 	public static function get_completed_contacts( $aid, $sid, $type = '', $offset = 0, $limit = 25, $path = '' ) {
@@ -10093,8 +10247,8 @@ class BWFAN_Common {
 	 * @return void
 	 */
 	public static function bwfan_store_automation_completed_ids() {
-		$max_count = get_option( 'bwfan_max_automation_completed', 0 );
-		$processed = get_option( 'bwfan_automation_completed_processed', 0 );
+		$max_count = absint( get_option( 'bwfan_max_automation_completed', 0 ) );
+		$processed = absint( get_option( 'bwfan_automation_completed_processed', 0 ) );
 
 		global $wpdb;
 		$query       = " SELECT `cid`, GROUP_CONCAT(`aid`) AS `aid` FROM `{$wpdb->prefix}bwfan_automation_complete_contact` WHERE `ID` <= {$max_count} GROUP BY `cid` ORDER BY `cid` ASC LIMIT {$processed},20";
@@ -10163,8 +10317,8 @@ class BWFAN_Common {
 	 * @return void
 	 */
 	public static function bwfan_store_automation_active_ids() {
-		$max_count = get_option( 'bwfan_max_active_automation', 0 );
-		$processed = get_option( 'bwfan_active_automation_processed', 0 );
+		$max_count = absint( get_option( 'bwfan_max_active_automation', 0 ) );
+		$processed = absint( get_option( 'bwfan_active_automation_processed', 0 ) );
 
 		global $wpdb;
 		$query       = "SELECT `cid`, GROUP_CONCAT(`aid`) AS `aid` FROM `{$wpdb->prefix}bwfan_automation_contact` WHERE `ID` <= {$max_count} GROUP BY `cid` ORDER BY `cid` ASC LIMIT {$processed},20";
@@ -10809,6 +10963,11 @@ class BWFAN_Common {
 	}
 
 	public static function ping_woofunnels_worker() {
+		/** Allow site owners to suppress the WooFunnels-core worker loopback/self-request. */
+		if ( true === apply_filters( 'bwfan_stop_ping_woofunnels_worker', false ) ) {
+			return;
+		}
+
 		$url  = rest_url( '/woofunnels/v1/worker' ) . '?' . time();
 		$args = array(
 			'method'    => 'GET',
@@ -10867,7 +11026,7 @@ class BWFAN_Common {
 		if ( 'formatted-currency' === strval( $formatting ) ) {
 			$currency        = ! empty( $order ) && ! is_null( $order->get_currency() ) ? $order->get_currency() : get_option( 'woocommerce_currency' );
 			$currency_symbol = get_woocommerce_currency_symbol( $currency );
-			$currency_format = html_entity_decode( $currency_symbol );
+			$currency_format = html_entity_decode( $currency_symbol, ENT_QUOTES | ENT_HTML401 );
 		}
 
 		return array( 'raw' => $raw, 'currency' => $currency_format );
@@ -11102,6 +11261,65 @@ class BWFAN_Common {
 	}
 
 	/**
+	 * product_cat term IDs for automation/order "category of product" matching.
+	 * Order line items often reference a {@see WC_Product_Variation}; `product_cat` is stored on
+	 * the parent, so `WC_Product::get_category_ids()` can be empty. Fall back to the parent.
+	 *
+	 * @param WC_Product|null $product Line product from `WC_Order_Item_Product::get_product()`.
+	 * @return int[] Term IDs (list may be empty).
+	 */
+	public static function get_wc_product_category_ids_for_order_line( $product ) {
+		if ( ! $product instanceof WC_Product ) {
+			return array();
+		}
+		$ids = $product->get_category_ids();
+		if ( ! empty( $ids ) && is_array( $ids ) ) {
+			return $ids;
+		}
+		if ( self::is_variation( $product ) ) {
+			$parent_id = $product->get_parent_id();
+			if ( $parent_id ) {
+				$parent = wc_get_product( $parent_id );
+				if ( $parent instanceof WC_Product ) {
+					$ids = $parent->get_category_ids();
+					return ( ! empty( $ids ) && is_array( $ids ) ) ? $ids : array();
+				}
+			}
+		}
+
+		return array();
+	}
+
+	/**
+	 * product_tag term IDs for a line product. Variations often have no tags; the parent variable product holds `product_tag`.
+	 * Same parent merge pattern as {@see get_wc_product_category_ids_for_order_line()}.
+	 *
+	 * @param WC_Product|null $product Line product from `WC_Order_Item_Product::get_product()`.
+	 * @return int[] Term IDs (list may be empty).
+	 */
+	public static function get_wc_product_tag_ids_for_order_line( $product ) {
+		if ( ! $product instanceof WC_Product ) {
+			return array();
+		}
+		$ids = $product->get_tag_ids();
+		if ( ! empty( $ids ) && is_array( $ids ) ) {
+			return $ids;
+		}
+		if ( self::is_variation( $product ) ) {
+			$parent_id = $product->get_parent_id();
+			if ( $parent_id ) {
+				$parent = wc_get_product( $parent_id );
+				if ( $parent instanceof WC_Product ) {
+					$ids = $parent->get_tag_ids();
+					return ( ! empty( $ids ) && is_array( $ids ) ) ? $ids : array();
+				}
+			}
+		}
+
+		return array();
+	}
+
+	/**
 	 * Validate create new order settings
 	 *
 	 * @param $data
@@ -11148,7 +11366,7 @@ class BWFAN_Common {
 					continue;
 				}
 
-				$product_categories = $product->get_category_ids();
+				$product_categories = self::get_wc_product_category_ids_for_order_line( $product );
 				if ( is_array( $product_categories ) && ! empty( $product_categories ) ) {
 					$order_product_categories = array_merge( $order_product_categories, $product_categories );
 				}
@@ -11427,7 +11645,7 @@ class BWFAN_Common {
 			return [];
 		}
 
-		$orders_ids = implode( ',', $orders_ids );
+		$orders_ids = implode( ',', array_map( 'absint', $orders_ids ) );
 
 		if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 			$query  = $wpdb->prepare( "SELECT `id` AS refund_id, `parent_order_id` AS order_id FROM {$wpdb->prefix}wc_orders  WHERE type = %s AND status = %s AND `parent_order_id` IN ($orders_ids) ORDER BY id DESC LIMIT 1", 'shop_order_refund', 'wc-completed' );// phpcs:ignore WordPress.DB.PreparedSQL,  WordPress.DB.PreparedSQLPlaceholders
@@ -11574,7 +11792,13 @@ class BWFAN_Common {
 	 * @return array|mixed|string|string[]
 	 */
 	public static function get_formatted_value_for_dbquery( $value ) {
-		return ( false !== strpos( $value, "'" ) ) ? str_replace( "'", "\'", $value ) : $value;
+		/**
+		 * Retained for backward compatibility — older Pro/add-on builds may still call this.
+		 * Hardened to use esc_sql() instead of a naive single-quote str_replace(), which was
+		 * backslash-escape bypassable. Returns a value safe to embed inside a quoted SQL
+		 * string literal (handles both strings and arrays).
+		 */
+		return esc_sql( $value );
 	}
 
 	/**
@@ -11912,16 +12136,18 @@ class BWFAN_Common {
 
 	/**
 	 * Get FK Automation links
+	 * 
+	 * @param string $type Specific link type to retrieve. If empty, returns all links. Supported types: 'upgrade', 'offer', 'autonami', 'support', 'docs', 'nxtgenbuilder', 'migratefromv1', 'whatsnew', 'publicapi', 'sublium'.
 	 *
-	 * @return array
+	 * @return array|string 
 	 */
-	public static function get_fk_site_links() {
+	public static function get_fk_site_links( $type = '' ) {
 		$default_args = [
 			'utm_source'   => 'WordPress',
 			'utm_campaign' => 'FKA+Lite+Plugin'
 		];
 
-		return [
+		$links = [
 			'upgrade'       => apply_filters( 'bwfan_upgrade_link_append_utm_args', add_query_arg( $default_args, 'https://funnelkit.com/exclusive-offer/' ) ),
 			'offer'         => apply_filters( 'bwfan_offer_link_append_utm_args', add_query_arg( $default_args, 'https://funnelkit.com/exclusive-offer/' ) ),
 			'autonami'      => apply_filters( 'bwfan_fka_sales_link_append_utm_args', add_query_arg( $default_args, 'https://funnelkit.com/wordpress-marketing-automation-autonami/' ) ),
@@ -11932,7 +12158,14 @@ class BWFAN_Common {
 			'whatsnew'      => apply_filters( 'bwfan_fka_whatsnew_link_append_utm_args', add_query_arg( $default_args, 'https://funnelkit.com/whats-new/' ) ),
 			'publicapi'     => apply_filters( 'bwfan_fka_public_api_link_append_utm_args', add_query_arg( $default_args, 'https://developers.funnelkit.com/#introduction' ) ),
 			'sublium'       => apply_filters( 'bwfan_fka_sublium_link_append_utm_args', add_query_arg( $default_args, 'https://sublium.com/' ) ),
+			'account'       => apply_filters( 'bwfan_fka_account_link_append_utm_args', add_query_arg( $default_args, 'https://myaccount.funnelkit.com/?utm_source=WordPress&utm_campaign=FKA+Lite+Plugin&utm_medium=Settings+License+Login' ) ),
 		];
+
+		if ( ! empty( $type ) ) {
+			return ! empty( $links[ $type ] ) ? $links[ $type ] : '';
+		}
+
+		return $links;
 	}
 
 	/**
@@ -12940,7 +13173,7 @@ class BWFAN_Common {
 			$lang = $lang && is_string( $lang ) ? $lang : '';
 		} else {
 			$meta_key = '';
-			if ( class_exists( 'woocommerce_wpml' ) ) {
+			if ( class_exists( 'woocommerce_wpml' ) || defined( 'ICL_SITEPRESS_VERSION' ) ) {
 				$meta_key = 'wpml_language';
 			} elseif ( bwfan_is_translatepress_active() ) {
 				$meta_key = 'trp_language';
@@ -12950,6 +13183,14 @@ class BWFAN_Common {
 				$meta_key = 'linguise_language';
 			}
 			$lang = $meta_key ? $order->get_meta( $meta_key ) : '';
+		}
+
+		if ( empty( $lang ) && defined( 'ICL_SITEPRESS_VERSION' ) ) {
+			// Belt-and-suspenders: only resolves when shop_order is registered with WPML's translation system (typically via WCML).
+			$language_details = apply_filters( 'wpml_post_language_details', null, $order->get_id() );
+			if ( ! empty( $language_details ) && ! is_wp_error( $language_details ) && ! empty( $language_details['language_code'] ) ) {
+				$lang = $language_details['language_code'];
+			}
 		}
 
 		return apply_filters( 'bwfan_order_language', $lang, $order );
@@ -13059,10 +13300,18 @@ class BWFAN_Common {
 	 * Check if async http call timeout is high and status of the call is not 200
 	 *
 	 * @param $force
+	 * @param $last_run
 	 *
 	 * @return array|int[]|mixed
 	 */
-	public static function validate_core_worker( $force = false ) {
+	public static function validate_core_worker( $force = false, $last_run = 0 ) {
+
+		/** Check if the worker has run recently */
+		$last_run = empty( $last_run ) ? bwf_options_get( 'fk_core_worker_let' ) : $last_run;
+		if ( $last_run > 0 ) {
+			return ['response_code' => '' ];
+		}
+
 		$transient_val = get_transient( 'bwfan_core_worker_async' );
 		if ( false === $force && false !== $transient_val ) {
 			return $transient_val;
@@ -13087,7 +13336,14 @@ class BWFAN_Common {
 
 		/** Check for response code in case of firewall */
 		$status_code = wp_remote_retrieve_response_code( $request );
-		if ( ! empty( $status_code ) && $status_code !== 200 ) {
+
+		/** Check for rate_limited error */
+		if ( 429 === $status_code ) {
+			$body        = json_decode( wp_remote_retrieve_body( $request ), true );
+			$status_code = ( is_array( $body ) && isset( $body['msg'] ) ) ? $body['msg'] : $status_code;
+		}
+
+		if ( ! empty( $status_code ) && $status_code !== 200 && $status_code !== 'rate_limited' ) {
 			$data['response_code'] = $status_code;
 			set_transient( 'bwfan_core_worker_async', $data, 6 * HOUR_IN_SECONDS );
 
@@ -13534,6 +13790,19 @@ class BWFAN_Common {
 	 * @return void
 	 */
 	public static function run_v2_worker_tasks( $request = '' ) {
+		self::nocache_headers();
+
+		/** Rate-limit the worker endpoint. v2 GET has no unique-key gate, so this is the only re-entry guard. Shares the v2 cooldown with v2 POST. */
+		if ( self::is_worker_rate_limited( 2 ) ) {
+			wp_send_json( array(
+				'msg'  => 'rate_limited',
+				'time' => date_i18n( 'Y-m-d H:i:s' ),
+			), 429 );
+		}
+
+		/** Stamp run start so subsequent calls within the cooldown window get 429. */
+		bwf_options_update( 'bwfan_worker_let_v2', time() );
+
 		self::event_advanced_logs( "V2 worker callback received" );
 
 		/** Logs */
@@ -13550,7 +13819,7 @@ class BWFAN_Common {
 			'time'      => date_i18n( 'Y-m-d H:i:s' ),
 			'datastore' => get_class( ActionScheduler_Store::instance() ),
 		];
-		self::send_response_and_close_connection( $resp );
+		$connection_closed = self::send_response_and_close_connection( $resp );
 
 		// Now run worker tasks in background (client already received response)
 		self::worker_as_run();
@@ -13561,6 +13830,17 @@ class BWFAN_Common {
 			if ( isset( $logger_obj ) ) {
 				$logger_obj->log( date_i18n( 'Y-m-d H:i:s' ) . ' - after worker run', 'fka-cron-check-v2', 'autonami' );
 			}
+		}
+
+		/**
+		 * When the connection was actually detached, terminate now so neither WP_REST_Server
+		 * nor any host cache layer emits headers against the already-committed output.
+		 * Gated on REST_REQUEST because this function's signature ($request = '') permits
+		 * non-REST callers (cron/CLI/do_action); exiting unconditionally there would kill
+		 * the parent process mid-flow and leave Action Scheduler claims unreleased.
+		 */
+		if ( true === $connection_closed && defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			exit;
 		}
 	}
 
@@ -14357,5 +14637,259 @@ class BWFAN_Common {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * Get the real client IP address.
+	 * Trusts CF-Connecting-IP only when CF-RAY is also present (Cloudflare always sends both).
+	 *
+	 * @return string
+	 */
+	public static function get_client_ip() {
+		if ( ! empty( $_SERVER['HTTP_CF_RAY'] ) && ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
+			return sanitize_text_field( $_SERVER['HTTP_CF_CONNECTING_IP'] );
+		}
+
+		return sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '' );
+	}
+
+	/**
+	 * Detect which code path is creating the abandoned cart.
+	 *
+	 * @return string
+	 */
+	public static function detect_cart_entry_point() {
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			$route = $_SERVER['REQUEST_URI'] ?? '';
+			if ( false !== strpos( $route, 'wc/store' ) ) {
+				return 'store_api';
+			}
+
+			return 'rest_other';
+		}
+		if ( wp_doing_ajax() ) {
+			return 'wc_ajax';
+		}
+
+		return 'unknown';
+	}
+
+	/**
+	 * Collect visitor fingerprint for forensic analysis.
+	 * Field set is gated by the GDPR Consent settings:
+	 *   - bwfan_ab_capture_ip_address controls IP / IP-country / forwarded-for / Cloudflare scores
+	 *   - bwfan_ab_capture_device controls user-agent, browser hints and language signals
+	 * Returns an empty array when both settings are off; callers must skip writing in that case.
+	 *
+	 * @param string|null $entry_point Optional caller-supplied label (e.g. 'wc_add_to_cart').
+	 *                                 Falls back to detect_cart_entry_point() when omitted.
+	 *
+	 * @return array
+	 */
+	public static function get_visitor_fingerprint( $entry_point = null ) {
+		$settings       = self::get_global_settings();
+		$capture_ip     = ! empty( $settings['bwfan_ab_capture_ip_address'] );
+		$capture_device = ! empty( $settings['bwfan_ab_capture_device'] );
+
+		if ( ! $capture_ip && ! $capture_device ) {
+			return array();
+		}
+
+		$data = array(
+			'entry_point'    => ! empty( $entry_point ) ? sanitize_key( $entry_point ) : self::detect_cart_entry_point(),
+			'tracked_at'     => current_time( 'mysql', 1 ),
+			'request_method' => sanitize_text_field( $_SERVER['REQUEST_METHOD'] ?? '' ),
+		);
+
+		if ( $capture_ip ) {
+			$data['ip']              = self::get_client_ip();
+			$data['ip_country']      = sanitize_text_field( $_SERVER['HTTP_CF_IPCOUNTRY'] ?? '' );
+			$data['forwarded_for']   = sanitize_text_field( $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '' );
+			$data['cf_bot_score']    = sanitize_text_field( $_SERVER['HTTP_CF_BOT_SCORE'] ?? '' );
+			$data['cf_threat_score'] = sanitize_text_field( $_SERVER['HTTP_CF_THREAT_SCORE'] ?? '' );
+		}
+
+		if ( $capture_device ) {
+			$data['user_agent']      = sanitize_text_field( $_SERVER['HTTP_USER_AGENT'] ?? '' );
+			$data['accept_encoding'] = sanitize_text_field( $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '' );
+			$data['accept_language'] = sanitize_text_field( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '' );
+			$data['ch_ua']           = sanitize_text_field( $_SERVER['HTTP_SEC_CH_UA'] ?? '' );
+			$data['ch_ua_mobile']    = sanitize_text_field( $_SERVER['HTTP_SEC_CH_UA_MOBILE'] ?? '' );
+			$data['ch_ua_platform']  = sanitize_text_field( $_SERVER['HTTP_SEC_CH_UA_PLATFORM'] ?? '' );
+			$data['sec_fetch_mode']  = sanitize_text_field( $_SERVER['HTTP_SEC_FETCH_MODE'] ?? '' );
+			$data['sec_fetch_dest']  = sanitize_text_field( $_SERVER['HTTP_SEC_FETCH_DEST'] ?? '' );
+			$data['sec_fetch_site']  = sanitize_text_field( $_SERVER['HTTP_SEC_FETCH_SITE'] ?? '' );
+			$data['referer']         = sanitize_text_field( $_SERVER['HTTP_REFERER'] ?? '' );
+			$data['origin']          = sanitize_text_field( $_SERVER['HTTP_ORIGIN'] ?? '' );
+			$data['content_type']    = sanitize_text_field( $_SERVER['CONTENT_TYPE'] ?? '' );
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Parse a User-Agent string into device and browser info.
+	 *
+	 * @param string $ua Raw User-Agent string.
+	 *
+	 * @return array { 'device' => string, 'browser' => string }
+	 */
+	public static function parse_user_agent( $ua ) {
+		$result = [ 'device' => '', 'browser' => '' ];
+		if ( empty( $ua ) ) {
+			return $result;
+		}
+
+		/**
+		 * Device / OS — extract from the parenthesized section.
+		 */
+		if ( preg_match( '/\(([^)]+)\)/', $ua, $m ) ) {
+			$raw = $m[1];
+
+			if ( false !== strpos( $raw, 'Android' ) ) {
+				// "Linux; Android 14; Pixel 8" → "Android 14 - Pixel 8"
+				if ( preg_match( '/Android\s*([\d.]+)/', $raw, $v ) ) {
+					$device = 'Android ' . $v[1];
+					// Device model comes after the version and semicolon
+					$parts = explode( ';', $raw );
+					if ( count( $parts ) >= 3 ) {
+						$model  = trim( end( $parts ) );
+						$model  = str_replace( ' Build', '', $model );
+						$device .= ' - ' . $model;
+					}
+					$result['device'] = $device;
+				}
+			} elseif ( false !== strpos( $raw, 'iPhone' ) ) {
+				// "iPhone; CPU iPhone OS 17_0 like Mac OS X" → "iPhone iOS 17.0"
+				if ( preg_match( '/iPhone OS ([\d_]+)/', $raw, $v ) ) {
+					$result['device'] = 'iPhone iOS ' . str_replace( '_', '.', $v[1] );
+				} else {
+					$result['device'] = 'iPhone';
+				}
+			} elseif ( false !== strpos( $raw, 'iPad' ) ) {
+				if ( preg_match( '/CPU OS ([\d_]+)/', $raw, $v ) ) {
+					$result['device'] = 'iPad iOS ' . str_replace( '_', '.', $v[1] );
+				} else {
+					$result['device'] = 'iPad';
+				}
+			} elseif ( false !== strpos( $raw, 'Windows NT' ) ) {
+				// "Windows NT 10.0; Win64; x64" → "Windows 10"
+				$win_map = [
+					'10.0' => '10/11',
+					'6.3'  => '8.1',
+					'6.2'  => '8',
+					'6.1'  => '7',
+				];
+				if ( preg_match( '/Windows NT ([\d.]+)/', $raw, $v ) ) {
+					$ver              = $win_map[ $v[1] ] ?? $v[1];
+					$result['device'] = 'Windows ' . $ver;
+				}
+			} elseif ( false !== strpos( $raw, 'Mac OS X' ) || false !== strpos( $raw, 'Macintosh' ) ) {
+				// "Macintosh; Intel Mac OS X 10_15_7" → "Mac OS X 10.15.7"
+				if ( preg_match( '/Mac OS X ([\d_]+)/', $raw, $v ) ) {
+					$result['device'] = 'Mac OS X ' . str_replace( '_', '.', $v[1] );
+				} else {
+					$result['device'] = 'Mac';
+				}
+			} elseif ( false !== strpos( $raw, 'Linux' ) ) {
+				// "X11; Linux x86_64" → "Linux x86_64"
+				if ( preg_match( '/Linux\s*(\S+)?/', $raw, $v ) ) {
+					$result['device'] = 'Linux' . ( ! empty( $v[1] ) ? ' ' . $v[1] : '' );
+				}
+			} elseif ( false !== strpos( $raw, 'CrOS' ) ) {
+				$result['device'] = 'Chrome OS';
+			}
+		}
+
+		/**
+		 * Browser — match tokens in priority order (most specific first).
+		 */
+		$browsers = [
+			'EdgA/'            => 'Edge',
+			'Edg/'             => 'Edge',
+			'OPR/'             => 'Opera',
+			'Opera/'           => 'Opera',
+			'SamsungBrowser/'  => 'Samsung Browser',
+			'UCBrowser/'       => 'UC Browser',
+			'FxiOS/'           => 'Firefox',
+			'CriOS/'           => 'Chrome',
+			'Firefox/'         => 'Firefox',
+		];
+
+		$found_browser = false;
+		foreach ( $browsers as $token => $name ) {
+			if ( false !== strpos( $ua, $token ) ) {
+				$version = '';
+				if ( preg_match( '/' . preg_quote( $token, '/' ) . '([\d.]+)/', $ua, $v ) ) {
+					// Major version only
+					$version = strtok( $v[1], '.' );
+				}
+				$result['browser'] = $name . ( ! empty( $version ) ? ' ' . $version : '' );
+				$found_browser     = true;
+				break;
+			}
+		}
+
+		if ( ! $found_browser ) {
+			// Chrome must be checked after Edge/Opera since those UAs also contain "Chrome/"
+			if ( false !== strpos( $ua, 'Chrome/' ) ) {
+				if ( preg_match( '/Chrome\/([\d.]+)/', $ua, $v ) ) {
+					$result['browser'] = 'Chrome ' . strtok( $v[1], '.' );
+				}
+			} elseif ( false !== strpos( $ua, 'Safari/' ) && false !== strpos( $ua, 'Version/' ) ) {
+				// Safari: "Version/17.0 Safari/605.1.15" → "Safari 17"
+				if ( preg_match( '/Version\/([\d.]+)/', $ua, $v ) ) {
+					$result['browser'] = 'Safari ' . strtok( $v[1], '.' );
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	public static function add_visitor_info_to_others( $fingerprint ) {
+		if ( empty( $fingerprint ) || ! is_array( $fingerprint ) ) {
+			return [];
+		}
+
+		/** Parse user_agent into device + browser */
+		$parsed = self::parse_user_agent( $fingerprint['user_agent'] ?? '' );
+
+		/** Device — prefer Client Hints when available, fall back to parsed UA */
+		$device = '';
+		if ( ! empty( $fingerprint['ch_ua_platform'] ) ) {
+			$device = trim( $fingerprint['ch_ua_platform'], '\\"' );
+		}
+		if ( empty( $device ) && ! empty( $parsed['device'] ) ) {
+			$device = $parsed['device'];
+		}
+
+		$labels = [
+			'ip'         => __( 'IP Address', 'wp-marketing-automations' ),
+			'ip_country' => __( 'IP Country', 'wp-marketing-automations' ),
+		];
+
+		$visitor_info = [];
+		foreach ( $labels as $key => $label ) {
+			if ( ! empty( $fingerprint[ $key ] ) ) {
+				$visitor_info[ $label ] = stripslashes_deep( $fingerprint[ $key ] );
+			}
+		}
+
+		if ( ! empty( $device ) ) {
+			$visitor_info[ __( 'Device', 'wp-marketing-automations' ) ] = $device;
+		}
+
+		if ( ! empty( $parsed['browser'] ) ) {
+			$visitor_info[ __( 'Browser', 'wp-marketing-automations' ) ] = $parsed['browser'];
+		}
+
+		if ( ! empty( $fingerprint['accept_language'] ) ) {
+			/** Show just the primary language, e.g. "en-US" from "en-US,en;q=0.9" */
+			$lang = strtok( $fingerprint['accept_language'], ',' );
+			$visitor_info[ __( 'Language', 'wp-marketing-automations' ) ] = $lang;
+		}
+
+		return $visitor_info;
 	}
 }

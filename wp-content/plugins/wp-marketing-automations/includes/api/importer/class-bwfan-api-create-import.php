@@ -2,6 +2,7 @@
 
 use BWFAN\Importers\Importer;
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Create_Import extends BWFAN_API_Base {
 	public static $ins;
 

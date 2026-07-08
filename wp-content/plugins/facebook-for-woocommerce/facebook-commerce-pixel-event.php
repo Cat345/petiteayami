@@ -9,6 +9,7 @@
  */
 
 use WooCommerce\Facebook\Events\Event;
+use WooCommerce\Facebook\Events\FacebookSignalsState;
 
 /**
  * Class WC_Facebookcommerce_Pixel
@@ -242,6 +243,9 @@ class WC_Facebookcommerce_Pixel {
 			$params = $params['custom_data'];
 		}
 
+		// user_data is for CAPI only and must not appear in cacheable pixel output.
+		unset( $params['user_data'] );
+
 		// Apply build_params() to add version info and apply filters.
 		$params = self::build_params( $params, $event_name );
 
@@ -306,9 +310,8 @@ class WC_Facebookcommerce_Pixel {
 		return apply_filters(
 			'facebook_woocommerce_pixel_init',
 			sprintf(
-				"fbq('init', '%s', %s, %s);\n",
+				"fbq('init', '%s', {}, %s);\n",
 				esc_js( self::get_pixel_id() ),
-				wp_json_encode( $this->user_info, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ),
 				wp_json_encode( array( 'agent' => $agent_string ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
 			)
 		);
@@ -346,10 +349,22 @@ class WC_Facebookcommerce_Pixel {
 			<!-- WooCommerce Facebook Integration Begin -->
 			<script <?php echo self::get_script_attributes(); ?>>
 
-				<?php echo $this->get_pixel_init_code(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<?php echo self::get_facebook_signals_js(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+
+				FacebookSignals.init({
+					held: false,
+					ajaxUrl: <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>,
+					action: 'facebook_release_signals',
+					pixelId: <?php echo wp_json_encode( self::get_pixel_id() ); ?>,
+					attribution: {}
+				});
+				FacebookSignals.initPixel(
+					<?php echo wp_json_encode( self::get_pixel_id() ); ?>,
+					<?php echo wp_json_encode( $this->user_info, JSON_FORCE_OBJECT ); ?>,
+					<?php echo wp_json_encode( array( 'agent' => Event::get_platform_identifier() ), JSON_FORCE_OBJECT ); ?>
+				);
 
 				document.addEventListener( 'DOMContentLoaded', function() {
-					// Insert placeholder for events injected when a product is added to the cart through AJAX.
 					document.body.insertAdjacentHTML( 'beforeend', '<div class=\"wc-facebook-pixel-event-placeholder\"></div>' );
 				}, false );
 
@@ -393,6 +408,343 @@ class WC_Facebookcommerce_Pixel {
 			<?php
 
 			return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the inline FacebookSignals JS API definition.
+	 *
+	 * @since 3.6.0
+	 *
+	 * @return string JavaScript code defining window.FacebookSignals.
+	 */
+	private static function get_facebook_signals_js() {
+		// phpcs:disable
+		return <<<'JS'
+window.FacebookSignals = window.FacebookSignals || {
+	_held: false,
+	_releasing: false,
+	_pixelInitialized: false,
+	_pixelId: null,
+	_pixelUserInfo: {},
+	_pixelOptions: {},
+	_pendingPixelEvents: [],
+	_queue: [],
+	_config: {},
+	_attribution: {},
+	_seenEventIds: {},
+	_fbclid: (function() {
+		try {
+			var m = window.location.search.match(/[?&]fbclid=([^&]*)/);
+			return m ? decodeURIComponent(m[1]) : null;
+		} catch(e) { return null; }
+	})(),
+
+	init: function(config) {
+		config = config || {};
+		this._config = config;
+		this._attribution = config.attribution || {};
+
+		var cookieState = this._getCookie('wc_facebook_signals_state');
+		this._held = cookieState ? cookieState === 'held' : !!config.held;
+
+		this._fbclid = this._fbclid || null;
+
+		if (typeof fbq === 'function') {
+			fbq('consent', this._held ? 'revoke' : 'grant');
+		}
+
+		try {
+			var raw = window.sessionStorage.getItem('wc_facebook_signals_seen_event_ids');
+			this._seenEventIds = raw ? JSON.parse(raw) : {};
+		} catch (e) {
+			this._seenEventIds = this._seenEventIds || {};
+		}
+	},
+
+	initPixel: function(pixelId, userInfo, options) {
+		this._pixelId = pixelId;
+		this._pixelUserInfo = userInfo && typeof userInfo === 'object' && !Array.isArray(userInfo) ? userInfo : {};
+		this._pixelOptions = options || {};
+		if (!this._held) {
+			this._runPixelInit();
+		}
+	},
+
+	_runPixelInit: function() {
+		if (this._pixelInitialized || !this._pixelId || typeof fbq !== 'function') return;
+		fbq('init', this._pixelId, this._pixelUserInfo, this._pixelOptions);
+		this._pixelInitialized = true;
+		this._flushPendingPixelEvents();
+	},
+
+	_flushPendingPixelEvents: function() {
+		var pending = this._pendingPixelEvents;
+		this._pendingPixelEvents = [];
+		for (var i = 0; i < pending.length; i++) {
+			var ev = pending[i];
+			this._firePixelEvent(ev.name, ev.params, ev.method, ev.eventId);
+		}
+	},
+
+	_fireOrQueuePixelEvent: function(name, params, method, eventId) {
+		if (!this._pixelInitialized) {
+			this._pendingPixelEvents.push({
+				name: name, params: params || {}, method: method || 'track', eventId: eventId || null
+			});
+			return;
+		}
+		this._firePixelEvent(name, params || {}, method || 'track', eventId || null);
+	},
+
+	_firePixelEvent: function(name, params, method, eventId) {
+		method = method || 'track';
+		if (eventId) {
+			fbq(method, name, params || {}, { eventID: eventId });
+		} else {
+			fbq(method, name, params || {});
+		}
+	},
+
+	queueEvent: function(eventData) {
+		if (!eventData || !eventData.event_name) return;
+
+		var originalId = eventData.event_id || null;
+		if (originalId && this._seenEventIds[originalId]) return;
+
+		if (!this._held) {
+			this._fireOrQueuePixelEvent(eventData.event_name, eventData.custom_data || {}, eventData.method || 'track', originalId);
+			return;
+		}
+
+		eventData = this._cloneEventData(eventData);
+		eventData.event_id = this._generateEventId();
+		eventData.event_time = eventData.event_time || Math.floor(Date.now() / 1000);
+		this._queue.push(eventData);
+
+		var idToMark = originalId || eventData.event_id;
+		if (idToMark) {
+			this._seenEventIds[idToMark] = 1;
+			try {
+				window.sessionStorage.setItem(
+					'wc_facebook_signals_seen_event_ids',
+					JSON.stringify(this._seenEventIds)
+				);
+			} catch (e) {}
+		}
+	},
+
+	trackEvent: function(name, params, userData, method, eventId) {
+		method = method || 'track';
+		eventId = eventId || (params && params.eventID) || null;
+
+		if (this._held) {
+			this.queueEvent({
+				event_name: name,
+				custom_data: params || {},
+				event_id: eventId,
+				event_time: Math.floor(Date.now() / 1000),
+				method: method
+			});
+		} else {
+			this._fireOrQueuePixelEvent(name, params || {}, method, eventId);
+		}
+	},
+
+	release: function() {
+		var self = this;
+		if (!self._held || self._releasing || !self._config.ajaxUrl) {
+			return Promise.resolve({ success: true, data: { sent_count: 0 } });
+		}
+
+		self._releasing = true;
+		var attribution = self._collectAttribution();
+
+		var payload = JSON.stringify({
+			events: self._queue,
+			attribution: {
+				fbp: attribution.fbp || null,
+				fbc: attribution.fbc || null
+			},
+			fbclid: self._fbclid || null
+		});
+
+		var url = self._config.ajaxUrl +
+			(self._config.ajaxUrl.indexOf('?') === -1 ? '?' : '&') +
+			'action=' + encodeURIComponent(self._config.action);
+
+		return new Promise(function(resolve, reject) {
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', url, true);
+			xhr.setRequestHeader('Content-Type', 'application/json');
+			xhr.onload = function() {
+				if (xhr.status >= 200 && xhr.status < 300) {
+					try {
+						var resp = JSON.parse(xhr.responseText);
+						self._handleReleaseResponse(resp.data || {}, attribution);
+						resolve(resp);
+					} catch(e) { self._releasing = false; reject(e); }
+				} else {
+					self._releasing = false;
+					reject(new Error('Signal release AJAX failed: ' + xhr.status));
+				}
+			};
+			xhr.onerror = function() { self._releasing = false; reject(new Error('Network error')); };
+			xhr.send(payload);
+		});
+	},
+
+	_handleReleaseResponse: function(data, attribution) {
+		this._syncAttributionCookies(data || {}, attribution);
+
+		// Override cached user_info with fresh data from the release response.
+		if (data.user_info && typeof data.user_info === 'object' && !Array.isArray(data.user_info)) {
+			this._pixelUserInfo = data.user_info;
+		}
+
+		this._held = false;
+		this._releasing = false;
+
+		fbq('consent', 'grant');
+		this._runPixelInit();
+
+		var queue = this._queue;
+		for (var i = 0; i < queue.length; i++) {
+			var ev = queue[i];
+			this._fireOrQueuePixelEvent(ev.event_name, ev.custom_data || {}, ev.method || 'track', ev.event_id || null);
+		}
+
+		this._queue = [];
+	},
+
+	_collectAttribution: function() {
+		var clientParams = {};
+		if (typeof clientParamBuilder !== 'undefined') {
+			try {
+				clientParams = clientParamBuilder.processAndCollectParams(this._getAttributionUrl()) || {};
+			} catch (e) {}
+		}
+
+		var fbp = this._getCookie('_fbp') || clientParams._fbp || (typeof clientParamBuilder !== 'undefined' ? clientParamBuilder.getFbp() : null);
+		var fbc = this._getCookie('_fbc') || clientParams._fbc || (typeof clientParamBuilder !== 'undefined' ? clientParamBuilder.getFbc() : null);
+
+		if (!fbc && this._fbclid) {
+			fbc = 'fb.1.' + Date.now() + '.' + this._fbclid;
+		}
+
+		return { fbp: fbp || null, fbc: fbc || null };
+	},
+
+	_syncAttributionCookies: function(data, attribution) {
+		var fbp = data.fbp || (attribution && attribution.fbp) || null;
+		var fbc = data.fbc || (attribution && attribution.fbc) || null;
+
+		if (fbp) {
+			this._setAttributionCookie('_fbp', fbp, data.fbp_domain || null);
+		}
+		if (fbc) {
+			this._setAttributionCookie('_fbc', fbc, data.fbc_domain || null);
+		}
+	},
+
+	_setAttributionCookie: function(name, value, domain) {
+		if (!value) return;
+		var domainAttr = domain ? ';domain=' + domain : '';
+		document.cookie = name + '=' + encodeURIComponent(value) + ';path=/;max-age=7776000' + domainAttr + ';SameSite=Lax';
+	},
+
+	_getCookie: function(name) {
+		var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]*)'));
+		if (!match) return null;
+		try { return decodeURIComponent(match[1]); } catch(e) { return null; }
+	},
+
+	_cloneEventData: function(eventData) {
+		var clone = {};
+		for (var key in eventData) {
+			if (Object.prototype.hasOwnProperty.call(eventData, key)) {
+				clone[key] = eventData[key];
+			}
+		}
+		return clone;
+	},
+
+	_generateEventId: function() {
+		if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+			return window.crypto.randomUUID();
+		}
+		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+			var r = Math.random() * 16 | 0;
+			return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+		});
+	},
+
+	_getAttributionUrl: function() {
+		if (!this._fbclid) return window.location.href;
+		try {
+			var url = new URL(window.location.href);
+			if (!url.searchParams.get('fbclid')) {
+				url.searchParams.set('fbclid', this._fbclid);
+			}
+			return url.toString();
+		} catch (e) {
+			return window.location.href;
+		}
+	}
+};
+JS;
+		// phpcs:enable
+	}
+
+
+	/**
+	 * Gets JS code that queues an event via FacebookSignals while signals are held.
+	 *
+	 * Captures PII at event-generation time so it's included when events are replayed.
+	 *
+	 * @since 3.6.0
+	 *
+	 * @param string $event_name The event name.
+	 * @param array  $params     Event parameters including custom_data, user_data, event_id.
+	 * @param string $method     Signals method name (e.g. track, trackCustom).
+	 * @return string JavaScript code.
+	 */
+	public function get_queued_event_code( $event_name, $params, $method = 'track' ) {
+		$this->last_event = $event_name;
+
+		$event_id   = isset( $params['event_id'] ) ? $params['event_id'] : null;
+		$queue_data = ! empty( $event_id ) ? FacebookSignalsState::get_queued_event( $event_id ) : null;
+
+		if ( ! is_array( $queue_data ) ) {
+			$custom_data = isset( $params['custom_data'] ) ? $params['custom_data'] : $params;
+			unset( $custom_data['user_data'], $custom_data['event_name'], $custom_data['event_id'] );
+
+			$queue_data = array(
+				'event_name'  => $event_name,
+				'custom_data' => $custom_data,
+				'event_id'    => $event_id,
+				'event_time'  => time(),
+			);
+		}
+
+		if ( empty( $queue_data['event_name'] ) ) {
+			$queue_data['event_name'] = $event_name;
+		}
+
+		$queue_data['method'] = $method;
+
+		// Do not render per-visitor user_data into cacheable HTML.
+		// The release endpoint resolves attribution from the releasing request.
+		unset( $queue_data['user_data'] );
+		if ( isset( $queue_data['custom_data'] ) && is_array( $queue_data['custom_data'] ) ) {
+			unset( $queue_data['custom_data']['user_data'] );
+		}
+
+		return sprintf(
+			"/* %s Facebook Integration Event Queueing */\nFacebookSignals.queueEvent(%s);",
+			\WC_Facebookcommerce_Utils::get_integration_name(),
+			wp_json_encode( $queue_data )
+		);
 	}
 
 
@@ -453,7 +805,13 @@ class WC_Facebookcommerce_Pixel {
 		?>
 			<!-- Facebook Pixel Event Code -->
 			<script <?php echo self::get_script_attributes(); ?>>
-			<?php echo $this->get_event_code( $event_name, $params, $method ); ?>
+			<?php
+			if ( FacebookSignalsState::is_held() ) {
+				echo $this->get_queued_event_code( $event_name, $params, $method ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			} else {
+				echo $this->get_event_code( $event_name, $params, $method ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+			?>
 			</script>
 			<!-- End Facebook Pixel Event Code -->
 			<?php
@@ -479,8 +837,20 @@ class WC_Facebookcommerce_Pixel {
 	 * phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 	 */
 	public function inject_event( $event_name, $params, $method = 'track' ) {
-		// Note: We will be adding a consent mechanism that checks user consent
-		// before inject_event() is called.
+		// When signals are held, queue events in the browser instead of firing them.
+		if ( FacebookSignalsState::is_held() ) {
+			$code = $this->get_queued_event_code( $event_name, $params, $method );
+			if ( WC_Facebookcommerce_Utils::is_woocommerce_integration() ) {
+				WC_Facebookcommerce_Utils::enqueue_inline_js( $code );
+			} else {
+				printf(
+					'<!-- Facebook Pixel Event Code --><script %s>%s</script><!-- End Facebook Pixel Event Code -->',
+					self::get_script_attributes(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					$code // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				);
+			}
+			return;
+		}
 		if ( WC_Facebookcommerce_Utils::is_woocommerce_integration() ) {
 			// Check rollout switch for isolated pixel execution.
 			// When enabled, pixel events are output via external JS file (wp_localize_script)
@@ -497,7 +867,7 @@ class WC_Facebookcommerce_Pixel {
 			if ( $is_isolated_pixel_execution_enabled ) {
 				// Isolated execution: Use external JS via wp_localize_script.
 				// Set last_event here since we don't call get_event_code() in this path.
-				$this->last_event = $event_name;
+				$this->last_event                                      = $event_name;
 				[ 'params' => $event_params, 'event_id' => $event_id ] = self::prepare_event_params( $params, $event_name );
 
 				if ( $is_deferred ) {
@@ -540,8 +910,27 @@ class WC_Facebookcommerce_Pixel {
 		 */
 	public function get_conditional_event_script( $event_name, $params, $listener, $jsonified_pii ) {
 
-		$code             = self::build_event( $event_name, $params, 'track' );
 		$this->last_event = $event_name;
+
+		// When signals are held, use FacebookSignals.trackEvent() to queue the event.
+		if ( FacebookSignalsState::is_held() ) {
+			ob_start();
+			?>
+			<!-- Facebook Pixel Event Code -->
+			<script <?php echo self::get_script_attributes(); ?>>
+				document.addEventListener( '<?php echo esc_js( $listener ); ?>', function (event) {
+					FacebookSignals.trackEvent(
+						<?php echo wp_json_encode( $event_name ); ?>,
+						<?php echo wp_json_encode( $params ); ?>
+					);
+				}, false );
+			</script>
+			<!-- End Facebook Pixel Event Code -->
+			<?php
+			return ob_get_clean();
+		}
+
+		$code = self::build_event( $event_name, $params, 'track' );
 
 		/**
 		 * TODO: use the settings stored by {@see \WC_Facebookcommerce_Integration}.
@@ -605,6 +994,24 @@ class WC_Facebookcommerce_Pixel {
 		 */
 	public function get_conditional_one_time_event_script( $event_name, $params, $listened_event ) {
 
+		// When signals are held, queue via FacebookSignals.trackEvent().
+		if ( FacebookSignalsState::is_held() ) {
+			$this->last_event = $event_name;
+			ob_start();
+			?>
+			<!-- Facebook Pixel Event Code -->
+			<script <?php echo self::get_script_attributes(); ?>>
+				function handle<?php echo $event_name; ?>Event() {
+					FacebookSignals.trackEvent(<?php echo wp_json_encode( $event_name ); ?>, <?php echo wp_json_encode( $params ); ?>);
+					jQuery( document.body ).off( '<?php echo esc_js( $listened_event ); ?>', handle<?php echo $event_name; ?>Event );
+				}
+				jQuery( document.body ).one( '<?php echo esc_js( $listened_event ); ?>', handle<?php echo $event_name; ?>Event );
+			</script>
+			<!-- End Facebook Pixel Event Code -->
+			<?php
+			return ob_get_clean();
+		}
+
 		$code = $this->get_event_code( $event_name, $params );
 
 		ob_start();
@@ -641,33 +1048,60 @@ class WC_Facebookcommerce_Pixel {
 		// Reuse shared param preparation logic.
 		[ 'params' => $event_params, 'event_id' => $event_id ] = self::prepare_event_params( $params, $event_name );
 
+		$encoded_params = wp_json_encode( $event_params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT );
+
 		if ( ! empty( $event_id ) ) {
-			$event = sprintf(
+			// When an event_id is present, guard against duplicate fires caused by
+			// repeated snippet execution (e.g. AJAX fragment re-execution) so each
+			// event fires once, and route through the Signals Gateway when available.
+			$encoded_event_id = wp_json_encode( $event_id );
+			$event            = sprintf(
 				"/* %s Facebook Integration Event Tracking */\n" .
 				"fbq('set', 'agent', '%s', '%s');\n" .
-				"fbq('%s', '%s', %s, %s);",
+				"window.wcFacebookPixelFiredEvents = window.wcFacebookPixelFiredEvents || {};\n" .
+				"if (!window.wcFacebookPixelFiredEvents[%s]) {\n" .
+				"window.wcFacebookPixelFiredEvents[%s] = true;\n" .
+				"if (window.FacebookSignals && typeof window.FacebookSignals.trackEvent === 'function') {\n" .
+				"\twindow.FacebookSignals.trackEvent('%s', %s, null, '%s', %s);\n" .
+				"} else {\n" .
+				"\tfbq('%s', '%s', %s, %s);\n" .
+				"}\n" .
+				'}',
 				WC_Facebookcommerce_Utils::get_integration_name(),
 				Event::get_platform_identifier(),
 				self::get_pixel_id(),
+				$encoded_event_id,
+				$encoded_event_id,
+				esc_js( $event_name ),
+				$encoded_params,
+				esc_js( $method ),
+				$encoded_event_id,
 				esc_js( $method ),
 				esc_js( $event_name ),
-				wp_json_encode( $event_params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ),
+				$encoded_params,
 				wp_json_encode( array( 'eventID' => $event_id ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
 			);
-
 		} else {
-
-				$event = sprintf(
-					"/* %s Facebook Integration Event Tracking */\n" .
-					"fbq('set', 'agent', '%s', '%s');\n" .
-					"fbq('%s', '%s', %s);",
-					WC_Facebookcommerce_Utils::get_integration_name(),
-					Event::get_platform_identifier(),
-					self::get_pixel_id(),
-					esc_js( $method ),
-					esc_js( $event_name ),
-					wp_json_encode( $event_params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
-				);
+			// No event_id to deduplicate on; route through the Signals Gateway when
+			// available, otherwise fall back to a plain fbq fire.
+			$event = sprintf(
+				"/* %s Facebook Integration Event Tracking */\n" .
+				"fbq('set', 'agent', '%s', '%s');\n" .
+				"if (window.FacebookSignals && typeof window.FacebookSignals.trackEvent === 'function') {\n" .
+				"\twindow.FacebookSignals.trackEvent('%s', %s, null, '%s', null);\n" .
+				"} else {\n" .
+				"\tfbq('%s', '%s', %s);\n" .
+				'}',
+				WC_Facebookcommerce_Utils::get_integration_name(),
+				Event::get_platform_identifier(),
+				self::get_pixel_id(),
+				esc_js( $event_name ),
+				$encoded_params,
+				esc_js( $method ),
+				esc_js( $method ),
+				esc_js( $event_name ),
+				$encoded_params
+			);
 		}
 
 		return $event;

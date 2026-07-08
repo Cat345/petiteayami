@@ -5,6 +5,7 @@
  * Loads all the compatibilities files we have to provide compatibility with each plugin
  */
 if ( ! class_exists( 'WFFN_Plugin_Compatibilities' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Plugin_Compatibilities {
 
 		public static $plugin_compatibilities = array();

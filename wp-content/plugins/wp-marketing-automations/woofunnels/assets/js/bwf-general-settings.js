@@ -1128,7 +1128,7 @@
 
                     $this.find('.bwf-tab-title').removeClass('bwf-active');
 
-                    $this.find('.bwf-tab-title[data-tab=' + tabindex + ']').addClass('bwf-active');
+                    $this.find('.bwf-tab-title[data-tab="' + tabindex + '"]').addClass('bwf-active');
 
                     $($this).find('.bwf_forms_wrap .vue-form-generator fieldset').removeClass('bwf-activeTab');
                     $($this).find('.bwf_forms_wrap .vue-form-generator fieldset').hide();

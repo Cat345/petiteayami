@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfocu_Input_Funnel_Products' ) ) {
+	#[\AllowDynamicProperties]
 	class wfocu_Input_Funnel_Products {
 		public function __construct() {
 			// vars
@@ -8,7 +9,7 @@ if ( ! class_exists( 'wfocu_Input_Funnel_Products' ) ) {
 			$this->defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 		}
 
@@ -16,6 +17,5 @@ if ( ! class_exists( 'wfocu_Input_Funnel_Products' ) ) {
 
 			esc_html_e( 'Run this funnel only if any of funnel product is not present in primary offer. ', 'woofunnels-upstroke-one-click-upsell' );
 		}
-
 	}
 }

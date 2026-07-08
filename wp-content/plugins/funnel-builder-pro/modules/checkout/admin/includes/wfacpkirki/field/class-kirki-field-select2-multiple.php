@@ -14,6 +14,10 @@
  * In older versions of WFACPKirki there was a separate 'select2' field.
  * This exists here just for compatibility purposes.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Select2_Multiple' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Select2_Multiple extends WFACPKirki_Field_Select {
@@ -26,7 +30,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Select2_Multiple' ) ) {
 		protected function set_multiple() {
 
 			$this->multiple = 999;
-
 		}
 	}
 }

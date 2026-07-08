@@ -6,6 +6,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
  * Class WFFN_Public
  */
 if ( ! class_exists( 'WFFN_Public' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Public {
 
 		private static $ins         = null;
@@ -75,7 +76,7 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 				$custom_js     = isset( $custom_script['custom_js'] ) ? $custom_script['custom_js'] : '';
 
 				if ( ! empty( $custom_js ) ) {
-					echo html_entity_decode( $custom_js ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo html_entity_decode( $custom_js, ENT_QUOTES | ENT_HTML401 ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 			}
 		}
@@ -273,7 +274,7 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 
 
 		public function setup_funnel_ajax() {
-			$get_data = isset( $_POST['data'] ) ? wffn_clean( wp_unslash( $_POST['data'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint for frontend funnel setup
+			$get_data = isset( $_POST['data'] ) ? wffn_clean( wp_unslash( $_POST['data'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint; nonce not applicable on cacheable pages
 			$result   = ( array( 'success' => false ) );
 			if ( ! empty( $get_data ) ) {
 				try {
@@ -300,7 +301,7 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 		 * This function allows individual step classes to take care of their specific step viewed
 		 */
 		public function frontend_analytics() {
-			$get_data = isset( $_POST['data'] ) ? wffn_clean( wp_unslash( $_POST['data'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint for frontend analytics
+			$get_data = isset( $_POST['data'] ) ? wffn_clean( wp_unslash( $_POST['data'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint; nonce not applicable on cacheable pages
 			$result   = $this->send_frontend_analytics( $get_data );
 			if ( is_array( $result ) ) {
 				$result['funnel_setup'] = false;
@@ -366,7 +367,7 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 		 * This function allows individual step classes to take care of their specific step viewed
 		 */
 		public function tracking_events() {
-			$get_data = isset( $_POST ) ? wffn_clean( wp_unslash( $_POST ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint for tracking events
+			$get_data = isset( $_POST ) ? wffn_clean( wp_unslash( $_POST ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint; nonce not applicable on cacheable pages
 			$this->send_tracking_events( $get_data );
 		}
 

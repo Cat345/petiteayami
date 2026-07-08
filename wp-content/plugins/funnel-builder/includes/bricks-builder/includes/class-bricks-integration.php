@@ -6,6 +6,7 @@ use WFACP_Common;
 use WFFN_Thank_You_WC_Pages;
 
 if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
+	#[\AllowDynamicProperties]
 	final class Bricks_Integration {
 		/**
 		 * Indicates whether the integration is registered or not.
@@ -135,6 +136,8 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 				return;
 			}
 
+			add_action( 'wp', array( $this, 'early_register_elements' ), PHP_INT_MIN );
+
 			add_action( 'wp', array( $this, 'wp_register_elements' ), 8 );
 
 			add_action( 'wp_ajax_bricks_save_post', array( $this, 'wp_register_elements' ), - 1 );
@@ -218,6 +221,50 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 			return $bricks_global_settings;
 		}
 
+
+		/**
+		 * Conditionally registers FunnelKit's Bricks elements as early as possible on `wp`.
+		 *
+		 * Bricks 2.0 builds and statically caches its per-element permission list very early on the
+		 * `wp` hook (Builder_Permissions::$sections is populated from the currently registered
+		 * Bricks\Elements::$elements). If our elements are not registered by then, their
+		 * edit_element_* keys are absent from the cached permission list and administrators get the
+		 * intermittent "your builder capability doesn't allow you to access these settings" error in
+		 * the builder. The original wp@8 pass is too late and gates on Bricks\Database::$page_data,
+		 * which is not populated until wp@10 — so the post-type gate could resolve against post_id 0.
+		 *
+		 * We therefore run on `wp` at PHP_INT_MIN — the first `wp` callback, before the permission
+		 * cache locks — but still GATED on the post type. The queried object is already resolved when
+		 * `wp` fires, and the Bricks builder loads at the funnel post's own permalink, so the queried
+		 * object IS the checkout / thank-you / optin post in the builder (where the permission error
+		 * occurs). Registration is idempotent via self::$load_elements, so the heavier wp@8
+		 * wp_register_elements() pass (which also sets up the checkout template and handles the
+		 * default-checkout override on the front end) still runs unchanged.
+		 *
+		 * @return void
+		 */
+		public function early_register_elements() {
+			if ( ! class_exists( 'Bricks\Element' ) ) {
+				return;
+			}
+
+			$post_type = get_post_type( get_queried_object_id() );
+			if ( empty( $post_type ) ) {
+				return;
+			}
+
+			if ( class_exists( 'WFACP_Common' ) && WFACP_Common::get_post_type_slug() === $post_type ) {
+				$this->register_elements( 'checkout' );
+			}
+
+			if ( ! is_null( WFFN_Core()->thank_you_pages ) && WFFN_Core()->thank_you_pages->get_post_type_slug() === $post_type ) {
+				$this->register_elements( 'thankyou-pages' );
+			}
+
+			if ( WFOPP_Core()->optin_pages->get_post_type_slug() === $post_type ) {
+				$this->register_elements( 'optin-pages' );
+			}
+		}
 
 		/**
 		 * Registers elements based on the post type.
@@ -415,7 +462,7 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 		 * @return array The modified array of internationalization strings.
 		 */
 		public function i18n_strings( $i18n ) {
-			$i18n['funnelkit'] = esc_html__( 'FunnelKit' );
+			$i18n['funnelkit'] = esc_html__( 'FunnelKit' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch , WordPress.WP.I18n.MissingArgDomain
 
 			return $i18n;
 		}

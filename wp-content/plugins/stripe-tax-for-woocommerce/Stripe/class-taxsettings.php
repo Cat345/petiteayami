@@ -15,6 +15,7 @@ use Stripe\StripeTaxForWooCommerce\SDK\lib\Exception\ApiErrorException;
 use Stripe\StripeTaxForWooCommerce\SDK\lib\Service\Tax\SettingsService;
 use Exception;
 use Stripe\StripeTaxForWooCommerce\SDK\lib\Tax\Settings;
+use Stripe\StripeTaxForWooCommerce\SDK\lib\Util\Util;
 use Stripe\StripeTaxForWooCommerce\Stripe\Exception\CountryStateException;
 use Stripe\StripeTaxForWooCommerce\Stripe\Exception\CountrySupportException;
 use Stripe\StripeTaxForWooCommerce\Stripe\Exception\TaxBehaviorException;
@@ -25,6 +26,9 @@ use Stripe\StripeTaxForWooCommerce\WooCommerce\ErrorRenderer;
  */
 class TaxSettings {
 	use StripeClientTrait;
+
+	const CACHE_TTL_SECONDS      = 86400; // 24 hours.
+	const CACHE_TRANSIENT_PREFIX = 'stripe_tax_settings_';
 
 	/**
 	 * Stripe API key
@@ -123,9 +127,65 @@ class TaxSettings {
 		if ( array_key_exists( $this->api_key, static::$settings ) && ( ! $force_api_call ) ) {
 			return static::$settings[ $this->api_key ];
 		}
+
+		if ( ! $force_api_call ) {
+			$cached_settings = $this->get_from_persistent_cache();
+			if ( ! is_null( $cached_settings ) ) {
+				static::$settings[ $this->api_key ] = $cached_settings;
+
+				return static::$settings[ $this->api_key ];
+			}
+		}
+
 		static::$settings[ $this->api_key ] = $this->get_from_api_call();
+		$this->set_to_persistent_cache( static::$settings[ $this->api_key ] );
 
 		return static::$settings[ $this->api_key ];
+	}
+
+	/**
+	 * Get persistent cache key for tax settings.
+	 *
+	 * @return string
+	 */
+	protected function get_persistent_cache_key(): string {
+		return self::CACHE_TRANSIENT_PREFIX . md5( $this->api_key );
+	}
+
+	/**
+	 * Read tax settings from persistent cache.
+	 *
+	 * @return object|null
+	 */
+	protected function get_from_persistent_cache() {
+		$cache = get_transient( $this->get_persistent_cache_key() );
+
+		if ( false === $cache || ! is_array( $cache ) ) {
+			return null;
+		}
+
+		return Util::convertToStripeObject( $cache, array() );
+	}
+
+	/**
+	 * Save tax settings to persistent cache.
+	 *
+	 * @param object $settings Tax settings object.
+	 * @return void
+	 */
+	protected function set_to_persistent_cache( $settings ): void {
+		$payload = json_decode( wp_json_encode( $settings ), true );
+		set_transient( $this->get_persistent_cache_key(), $payload, self::CACHE_TTL_SECONDS );
+	}
+
+	/**
+	 * Clear all caches for current API key.
+	 *
+	 * @return void
+	 */
+	protected function clear_cache(): void {
+		unset( static::$settings[ $this->api_key ] );
+		delete_transient( $this->get_persistent_cache_key() );
 	}
 
 	/**
@@ -140,6 +200,7 @@ class TaxSettings {
 	 */
 	public function set_settings( object $tax_settings, bool $no_api_call = false ): void {
 		static::$settings[ $this->api_key ] = $tax_settings;
+		$this->set_to_persistent_cache( $tax_settings );
 		if ( $no_api_call ) {
 			return;
 		}
@@ -159,6 +220,7 @@ class TaxSettings {
 			if ( ! $is_set_settings_success ) {
 				StripeTaxPluginHelper::set_stripe_settings_update_error_flag();
 			}
+			$this->clear_cache();
 			$this->get_settings( true );
 		}
 	}

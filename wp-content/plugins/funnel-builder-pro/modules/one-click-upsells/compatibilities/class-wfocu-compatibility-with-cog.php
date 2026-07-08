@@ -1,10 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 /**
  * Providing compatibility with cost of goods plugin
  *
  * Class WFOCU_Compatibility_With_WC_COG
  */
 if ( ! class_exists( 'WFOCU_Compatibility_With_WC_COG' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_WC_COG {
 
 		public function __construct() {
@@ -30,7 +33,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WC_COG' ) ) {
 			if ( $order_id ) {
 				wc_cog()->set_order_cost_meta( $order_id );
 			}
-
 		}
 	}
 

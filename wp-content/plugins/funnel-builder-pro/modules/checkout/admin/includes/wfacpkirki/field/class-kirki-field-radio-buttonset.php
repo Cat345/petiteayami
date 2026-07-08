@@ -12,7 +12,12 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Radio_Buttonset' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Field_Radio_Buttonset extends WFACPKirki_Field_Radio {
 
 		/**
@@ -23,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Radio_Buttonset' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-radio-buttonset';
-
 		}
 	}
 }

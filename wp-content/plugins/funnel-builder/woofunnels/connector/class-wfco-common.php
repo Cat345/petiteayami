@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFCO_Common' ) ) {
 	#[AllowDynamicProperties]
 	class WFCO_Common {
@@ -35,7 +38,7 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 					last_sync datetime NOT NULL default '0000-00-00 00:00:00',
 					slug varchar(255) default NULL,
 					status tinyint(1) not null default 0 COMMENT '1 - Active 2 - Inactive',
-					PRIMARY KEY  (ID),		  
+					PRIMARY KEY  (ID),
 					KEY slug (slug($max_index_length)),
 					KEY status (status)
 				) {table_collate};",
@@ -73,13 +76,13 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 			if ( 'get' === $method_type ) {
 				$httpPostRequest = self::http()->get( $api_url, array(
 					'body'      => $data,
-					'sslverify' => false,
+					'sslverify' => true,
 					'timeout'   => 30,
 				) );
 			} else {
 				$httpPostRequest = self::http()->post( $api_url, array(
 					'body'      => $data,
-					'sslverify' => false,
+					'sslverify' => true,
 					'timeout'   => 30,
 				) );
 			}
@@ -162,7 +165,7 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 			$value = null;
 			foreach ( $all_meta as $value1 ) {
 				if ( ! is_null( $primary_id ) ) {
-					if ( $value1[ $primary_key_name ] == $primary_id ) {
+					if ( $value1[ $primary_key_name ] === $primary_id ) {
 						if ( $meta_key === $value1['meta_key'] ) {
 							$value = maybe_unserialize( $value1[ $meta_key ] );
 							break;
@@ -186,7 +189,8 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 		 */
 		public static function update_connector_data( $new_data = array(), $connector_id = 0 ) {
 			global $wpdb;
-			$data = array();
+			$data  = array();
+			$where = array();
 
 			$data['last_sync'] = current_time( 'mysql', 1 );
 			$where['ID']       = $connector_id;
@@ -208,12 +212,12 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 		public static function is_load_admin_assets( $screen_type = 'all' ) {
 			$screen = get_current_screen();
 			if ( 'all' === $screen_type ) {
-				if ( filter_input( INPUT_GET, 'page' ) === 'autonami' ) {
+				if ( filter_input( INPUT_GET, 'page', FILTER_DEFAULT ) === 'autonami' ) { // phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
 
 					return true;
 				}
 			} elseif ( 'all' === $screen_type || 'settings' === $screen_type ) {
-				if ( filter_input( INPUT_GET, 'page' ) === 'autonami' && filter_input( INPUT_GET, 'tab' ) === 'settings' ) {
+				if ( filter_input( INPUT_GET, 'page', FILTER_DEFAULT ) === 'autonami' && filter_input( INPUT_GET, 'tab', FILTER_DEFAULT ) === 'settings' ) { // phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
 					return true;
 				}
 			}
@@ -232,7 +236,7 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 
 		public static function pr( $arr ) {
 			echo '<pre>';
-			print_r( $arr );
+			print_r( $arr ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			echo '</pre>';
 		}
 
@@ -245,14 +249,14 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 
 		/**
 		 * Custom sanitize title method to avoid conflicts with WordPress hooks on sanitize_title
-		 * 
+		 *
 		 * @param string $title The title to sanitize
 		 * @return string The sanitized title
 		 */
 		private static function custom_sanitize_title( $title ) {
 			$title = remove_accents( $title );
 			$title = sanitize_title_with_dashes( $title );
-			
+
 			return $title;
 		}
 
@@ -268,7 +272,7 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 			/**$pattern = "/.*\{(.*)\}/";*/
 			if ( is_serialized( $val ) ) {
 				$val = trim( $val );
-				$ret = maybe_unserialize( $val );
+				$ret = bwf_safe_unserialize( $val ); // allowed_classes=false: avoid object injection (FK-021)
 				if ( is_array( $ret ) ) {
 					foreach ( $ret as &$r ) {
 						$r = self::unserialize_recursive( $r );
@@ -301,8 +305,10 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 		}
 
 		public static function get_current_trigger() {
-			if ( 'autonami' === filter_input( INPUT_GET, 'page', FILTER_UNSAFE_RAW ) && filter_input( INPUT_GET, 'status', FILTER_UNSAFE_RAW ) ) {
-				return filter_input( INPUT_GET, 'status', FILTER_UNSAFE_RAW );
+			$page   = bwf_clean( wp_unslash( filter_input( INPUT_GET, 'page', FILTER_DEFAULT ) ?? '' ) ); // phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
+			$status = bwf_clean( wp_unslash( filter_input( INPUT_GET, 'status', FILTER_DEFAULT ) ?? '' ) ); // phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
+			if ( 'autonami' === $page && ! empty( $status ) ) {
+				return $status;
 			}
 
 			return 'all';
@@ -397,12 +403,14 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 		 */
 		public static function wc_timezone_string() {
 			// if site timezone string exists, return it
-			if ( $timezone = get_option( 'timezone_string' ) ) {
+			$timezone = get_option( 'timezone_string' ); // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.Found
+			if ( $timezone ) {
 				return $timezone;
 			}
 
 			// get UTC offset, if it isn't set then return UTC
-			if ( 0 === ( $utc_offset = get_option( 'gmt_offset', 0 ) ) ) {
+			$utc_offset = get_option( 'gmt_offset', 0 ); // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.Found
+			if ( 0 === (int) $utc_offset ) {
 				return 'UTC';
 			}
 
@@ -591,7 +599,7 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 			$charactersLength = strlen( $characters );
 			$randomString     = '';
 			for ( $i = 0; $i < $length; $i ++ ) {
-				$randomString .= $characters[ rand( 0, $charactersLength - 1 ) ];
+				$randomString .= $characters[ wp_rand( 0, $charactersLength - 1 ) ];
 			}
 
 			return $randomString;

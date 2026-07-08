@@ -4,6 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
+#[\AllowDynamicProperties]
 class BWFCRM_Dashboard extends BWFCRM_Base_React_Page {
 	private static $ins = null;
 	public $page_data = [];

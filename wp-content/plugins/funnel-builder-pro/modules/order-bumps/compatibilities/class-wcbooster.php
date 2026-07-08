@@ -7,11 +7,12 @@ if ( ! class_exists( 'WFOB_Compatibility_With_Active_WCJ' ) ) {
 	 * Booster For Woocommerce by booster.io
 	 * Class WFOB_Compatibility_With_Active_WCJ
 	 */
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_Active_WCJ {
 
 		public function __construct() {
 
-			add_filter( 'wfob_product_raw_data', [ $this, 'product_raw_data' ], 10, 2 );
+			add_filter( 'wfob_product_raw_data', array( $this, 'product_raw_data' ), 10, 2 );
 		}
 
 

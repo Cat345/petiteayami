@@ -5,6 +5,7 @@
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class BWFAN_Api_Get_Products extends BWFAN_API_Base {
 
 	public static $ins;
@@ -70,8 +71,8 @@ class BWFAN_Api_Get_Products extends BWFAN_API_Base {
 		/** if isset search param then get the tag by name **/
 		$search          = $this->get_sanitized_arg( 'search', 'text_field' );
 		$type            = $this->get_sanitized_arg( 'type', 'text_field' );
-		$limit           = $this->get_sanitized_arg( 'limit', 'text_field' );
-		$page            = $this->get_sanitized_arg( 'page', 'text_field' );
+		$limit           = $this->get_sanitized_arg( 'limit', 'absint' );
+		$page            = $this->get_sanitized_arg( 'page', 'absint' );
 		$stock_status    = $this->get_sanitized_arg( 'stock_status', 'text_field' );
 		$category_in     = $this->args['category_in'] ?? [];
 		$category_not_in = $this->args['category_not_in'] ?? [];
@@ -455,7 +456,7 @@ class BWFAN_Api_Get_Products extends BWFAN_API_Base {
 				'image'             => wp_get_attachment_image_url( get_post_thumbnail_id( $product->get_id() ), 'single-post-thumbnail' ),
 				'price_html'        => $product->get_price_html(),
 				'stock_status'      => $product->is_in_stock(),
-				'currency_prefix'   => html_entity_decode( $currency )
+				'currency_prefix'   => html_entity_decode( $currency, ENT_QUOTES | ENT_HTML401 )
 			];
 		}
 

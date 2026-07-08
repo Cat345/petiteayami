@@ -6,6 +6,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
  * Class WFFN_Session
  */
 if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Session_Handler {
 
 		private static $ins = null;
@@ -141,7 +142,6 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 
 			} else {
 				return isset( $this->_data[ $group ][ $key ] ) ? maybe_unserialize( $this->_data[ $group ][ $key ] ) : $default;
-
 			}
 		}
 
@@ -212,7 +212,7 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 			 */
 			$wffn_front_api = false;
 			if ( ! empty( $_SERVER['REQUEST_URI'] ) ) {
-				$wffn_front_api = strpos( $_SERVER['REQUEST_URI'], 'wffn/front' ) !== false;//phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$wffn_front_api = strpos( wp_unslash( $_SERVER['REQUEST_URI'] ), 'wffn/front' ) !== false; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			}
 
 			if ( ! $wffn_front_api && ( self::is_cli() || self::is_cron() || self::is_rest() ) ) {

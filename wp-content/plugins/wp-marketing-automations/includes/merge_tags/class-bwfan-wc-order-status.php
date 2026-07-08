@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+#[\AllowDynamicProperties]
 class BWFAN_WC_Order_Status extends BWFAN_Merge_Tag {
 
 	private static $instance = null;
@@ -44,7 +49,7 @@ class BWFAN_WC_Order_Status extends BWFAN_Merge_Tag {
 			$order_status = 'wc-' . $order_status;
 		}
 		$all_status   = wc_get_order_statuses();
-		$order_status = $all_status[ $order_status ];
+		$order_status = $all_status[ $order_status ] ?? $order_status;
 
 		return $this->parse_shortcode_output( $order_status, $attr );
 	}

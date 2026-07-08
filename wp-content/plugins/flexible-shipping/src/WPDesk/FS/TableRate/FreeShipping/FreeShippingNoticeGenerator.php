@@ -170,8 +170,7 @@ class FreeShippingNoticeGenerator implements Hookable {
 	 * @return string
 	 */
 	protected function get_notice_text_message( string $amount, string $message ): string {
-		// Translators: amount with currency or number of items.
-		$message = sprintf(
+		$message = $this->format_notice_text(
 			empty( $message ) ? __( 'You only need %1$s more to get free shipping!', 'flexible-shipping' ) : wpdesk__( $message, 'flexible-shipping' ),
 			$amount
 		);
@@ -179,6 +178,24 @@ class FreeShippingNoticeGenerator implements Hookable {
 		$text_message = apply_filters( 'flexible_shipping_free_shipping_notice_text_message', $message, $amount );
 
 		return is_string( $text_message ) ? $text_message : '';
+	}
+
+	/**
+	 * @param string $message LFFS notice text.
+	 * @param string $amount  Amount with currency or number of items.
+	 *
+	 * @return string
+	 */
+	private function format_notice_text( string $message, string $amount ): string {
+		try {
+			return sprintf( $message, $amount );
+		} catch ( \Throwable $e ) {
+			try {
+				return sprintf( __( 'You only need %1$s more to get free shipping!', 'flexible-shipping' ), $amount );
+			} catch ( \Throwable $e ) {
+				return 'You only need ' . $amount . ' more to get free shipping!';
+			}
+		}
 	}
 
 	/**
@@ -228,7 +245,7 @@ class FreeShippingNoticeGenerator implements Hookable {
 		 *
 		 * @return array
 		 */
-		$excluded_methods = apply_filters( 'flexible_shipping_free_shipping_notice_excluded_methods', [ 'local_pickup' ] );
+		$excluded_methods = apply_filters( 'flexible_shipping_free_shipping_notice_excluded_methods', [ 'local_pickup', 'pickup_location' ] );
 
 		$excluded_methods = is_array( $excluded_methods ) ? $excluded_methods : [];
 

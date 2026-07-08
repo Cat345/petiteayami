@@ -9,10 +9,11 @@ if ( ! class_exists( 'WFOCU_Template_Group' ) ) {
 	return;
 }
 if ( ! class_exists( 'WFOCU_Template_Group_Bricks' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Template_Group_Bricks extends WFOCU_Template_Group {
 		public $allow_empty_template = true;
-		public $prefix = 'bricks';
-		public $listing_index = 7;
+		public $prefix               = 'bricks';
+		public $listing_index        = 7;
 
 		public function get_nice_name() {
 			return __( 'Bricks' );
@@ -26,9 +27,12 @@ if ( ! class_exists( 'WFOCU_Template_Group_Bricks' ) ) {
 			$template = array_merge( $this->get_remote_templates(), $this->local_templates() );
 
 			foreach ( $template as $temp_key => $temp_val ) {
-				$temp_val = wp_parse_args( $temp_val, array(
-					'path' => WFOCU_BRICKS_INTEGRATION_DIR . 'class-wfocu-template-bricks.php',
-				) );
+				$temp_val = wp_parse_args(
+					$temp_val,
+					array(
+						'path' => WFOCU_BRICKS_INTEGRATION_DIR . 'class-wfocu-template-bricks.php',
+					)
+				);
 
 				WFOCU_Core()->template_loader->register_template( $temp_key, $temp_val );
 			}
@@ -43,16 +47,22 @@ if ( ! class_exists( 'WFOCU_Template_Group_Bricks' ) ) {
 		}
 
 		public function get_edit_link() {
-			return add_query_arg( array(
-				'post'   => '{{offer_id}}',
-				'action' => 'elementor',
-			), admin_url( 'post.php' ) );
+			return add_query_arg(
+				array(
+					'post'   => '{{offer_id}}',
+					'action' => 'elementor',
+				),
+				admin_url( 'post.php' )
+			);
 		}
 
 		public function get_preview_link() {
-			return add_query_arg( array(
-				'p' => '{{offer_id}}',
-			), site_url() );
+			return add_query_arg(
+				array(
+					'p' => '{{offer_id}}',
+				),
+				site_url()
+			);
 		}
 
 
@@ -73,10 +83,12 @@ if ( ! class_exists( 'WFOCU_Template_Group_Bricks' ) ) {
 				return $get_template_json['error'];
 			}
 
-			wp_update_post( array(
-				'ID'           => $offer,
-				'post_content' => '',
-			) );
+			wp_update_post(
+				array(
+					'ID'           => $offer,
+					'post_content' => '',
+				)
+			);
 
 			if ( ! is_array( $get_template_json ) && is_string( $get_template_json ) ) {
 				try {
@@ -127,10 +139,12 @@ if ( ! class_exists( 'WFOCU_Template_Group_Bricks' ) ) {
 			if ( defined( 'BRICKS_VERSION' ) ) {
 				update_post_meta( $offer, '_bricks_version', BRICKS_VERSION );
 			}
-			wp_update_post( array(
-				'ID'           => $offer,
-				'post_content' => '',
-			) );
+			wp_update_post(
+				array(
+					'ID'           => $offer,
+					'post_content' => '',
+				)
+			);
 
 			return true;
 		}

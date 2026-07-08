@@ -242,26 +242,24 @@ class HtmlElement implements HtmlElementInterface
     {
         static $tags;
 
-        if (is_null($tags)) {
-            $tags = array_flip([
-                'area',
-                'base',
-                'br',
-                'col',
-                'embed',
-                'hr',
-                'img',
-                'input',
-                'keygen',
-                'link',
-                'menuitem',
-                'meta',
-                'param',
-                'source',
-                'track',
-                'wbr',
-            ]);
-        }
+        $tags ??= array_flip([
+            'area',
+            'base',
+            'br',
+            'col',
+            'embed',
+            'hr',
+            'img',
+            'input',
+            'keygen',
+            'link',
+            'menuitem',
+            'meta',
+            'param',
+            'source',
+            'track',
+            'wbr',
+        ]);
 
         return isset($tags[strtolower($name)]);
     }

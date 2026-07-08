@@ -4,11 +4,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 if ( ! class_exists( 'WFOB_Compatibility_With_WC_variation_btn' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_WC_variation_btn {
 		public function __construct() {
 
 			/* checkout page */
-			add_action( 'wp', [ $this, 'dequeue_js' ] );
+			add_action( 'wp', array( $this, 'dequeue_js' ) );
 		}
 
 		public function dequeue_js() {

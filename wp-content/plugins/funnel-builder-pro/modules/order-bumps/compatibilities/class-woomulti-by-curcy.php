@@ -3,22 +3,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 if ( ! class_exists( 'WFOB_Compatibility_With_WooMulti_Curcy' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_WooMulti_Curcy {
 		private $woo_multi_currency_data = null;
 
 		public function __construct() {
-			add_action( 'woocommerce_calculate_totals', [ $this, 'remove_actions' ] );
-			add_filter( 'wfob_product_raw_data', [ $this, 'product_raw_data' ], 10, 3 );
-			add_filter( 'wfob_product_switcher_price_data', [ $this, 'change_price' ], 21, 3 );
-			add_filter( 'wfob_discount_amount_data', [ $this, 'wfob_discount_amount_data' ], 10, 2 );
-			add_filter( 'wfob_show_product_price', [ $this, 'stop_printing_price' ], 10, 2 );
-			add_filter( 'wfob_show_product_price_placeholder', [ $this, 'display_price' ], 12, 4 );
+			add_action( 'woocommerce_calculate_totals', array( $this, 'remove_actions' ) );
+			add_filter( 'wfob_product_raw_data', array( $this, 'product_raw_data' ), 10, 3 );
+			add_filter( 'wfob_product_switcher_price_data', array( $this, 'change_price' ), 21, 3 );
+			add_filter( 'wfob_discount_amount_data', array( $this, 'wfob_discount_amount_data' ), 10, 2 );
+			add_filter( 'wfob_show_product_price', array( $this, 'stop_printing_price' ), 10, 2 );
+			add_filter( 'wfob_show_product_price_placeholder', array( $this, 'display_price' ), 12, 4 );
 		}
 
 		public function remove_actions() {
 			if ( class_exists( 'WOOMULTI_CURRENCY_Plugin_Woofunnels_Order_Bump' ) ) {
 				$instance = WFOB_Common::remove_actions( 'wfob_show_product_price', 'WOOMULTI_CURRENCY_Plugin_Woofunnels_Order_Bump', 'wfob_show_product_price' );
-				
+
 			}
 			if ( class_exists( 'WOOMULTI_CURRENCY_F_Plugin_Woofunnels_Order_Bump' ) ) {
 				WFOB_Common::remove_actions( 'wfob_show_product_price', 'WOOMULTI_CURRENCY_F_Plugin_Woofunnels_Order_Bump', 'wfob_show_product_price' );
@@ -63,7 +64,6 @@ if ( ! class_exists( 'WFOB_Compatibility_With_WooMulti_Curcy' ) ) {
 					if ( isset( $raw_data['sale_price'] ) && ! empty( $raw_data['sale_price'] ) ) {
 						$raw_data['sale_price'] = wmc_get_price( $raw_data['sale_price'], $current_currency );
 					}
-
 				}
 
 				if ( ! $fixed_price ) {
@@ -77,7 +77,6 @@ if ( ! class_exists( 'WFOB_Compatibility_With_WooMulti_Curcy' ) ) {
 				}
 				$raw_data['regular_price'] = $regular_price_wmcp[ $current_currency ];
 				if ( $raw_data['regular_price'] > 0 ) {
-
 
 					$sale_price = ! is_null( $sale_price_wmcp ) && isset( $sale_price_wmcp[ $current_currency ] ) ? $sale_price_wmcp[ $current_currency ] : 0;
 
@@ -154,7 +153,7 @@ if ( ! class_exists( 'WFOB_Compatibility_With_WooMulti_Curcy' ) ) {
 		 */
 		public function stop_printing_price( $status, $pro ) {
 			if ( in_array( $pro->get_type(), WFOB_Common::get_subscription_product_type() ) ) {
-				remove_filter( 'wfob_show_product_price_placeholder', [ WFOB_Compatibility_Subscription::getInstance(), 'display_price' ] );
+				remove_filter( 'wfob_show_product_price_placeholder', array( WFOB_Compatibility_Subscription::getInstance(), 'display_price' ) );
 				$status = false;
 			}
 
@@ -183,13 +182,10 @@ if ( ! class_exists( 'WFOB_Compatibility_With_WooMulti_Curcy' ) ) {
 				} else {
 					$price_html = WFOB_Common::get_subscription_price( $pro, $price_data );
 				}
-
-
 			}
 
 			return $price_html;
 		}
-
 	}
 
 	new WFOB_Compatibility_With_WooMulti_Curcy();

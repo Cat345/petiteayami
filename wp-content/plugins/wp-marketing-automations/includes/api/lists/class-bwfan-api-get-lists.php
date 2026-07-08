@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Lists extends BWFAN_API_Base {
 
 	public static $ins;
@@ -30,8 +31,8 @@ class BWFAN_API_Get_Lists extends BWFAN_API_Base {
 
 		$search   = $this->get_sanitized_arg( 'search', 'text_field' );
 		$list_ids = empty( $this->args['ids'] ) ? array() : explode( ',', $this->args['ids'] );
-		$limit    = ! empty( $this->get_sanitized_arg( 'limit', 'text_field' ) ) ? $this->get_sanitized_arg( 'limit', 'text_field' ) : 0;
-		$offset   = ! empty( $this->get_sanitized_arg( 'offset', 'text_field' ) ) ? $this->get_sanitized_arg( 'offset', 'text_field' ) : 0;
+		$limit    = ! empty( $this->get_sanitized_arg( 'limit', 'absint' ) ) ? $this->get_sanitized_arg( 'limit', 'absint' ) : 0;
+		$offset   = ! empty( $this->get_sanitized_arg( 'offset', 'absint' ) ) ? $this->get_sanitized_arg( 'offset', 'absint' ) : 0;
 
 		$list_data = BWFCRM_Lists::get_lists( $list_ids, $search, $offset, $limit, ARRAY_A );
 

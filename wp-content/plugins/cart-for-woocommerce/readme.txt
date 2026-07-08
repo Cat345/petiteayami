@@ -2,9 +2,9 @@
 Contributors: xlplugins, amans2k
 Tags: WooCommerce Cart, Side Cart, Modern Cart, Floating Cart, WooCommerce Checkout
 Requires at least: 5.0
-Tested up to: 6.8.2
+Tested up to: 7.0.0
 Requires PHP: 7.0
-Stable tag: 1.9.1
+Stable tag: 1.9.1.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -217,6 +217,24 @@ You can display coupon codes on the FunnelKit side cart or even auto-apply the c
 
 
 == Change log ==
+= 1.9.1.2 =
+* Fixed: Issue with add to cart failing for variations with encoded attributes value. (#1158)
+* Fixed: Undefined wc_cart_fragments object javascript errors in case of third party plugin/themes using it. (#1155)
+* Fixed: Mysql tables are not getting created correctly on these versions MySQL 8.0.16+/MariaDB 10.5+. (#1151)
+
+= 1.9.1.1 =
+* Compatible upto WooCommerce 10.8.0
+* Compatible upto WordPress 7.0.0
+* Added: Filter hook `fkcart_you_saved_prices` added to allow modifying `regular_price` and `sale_price` used in the "You Saved" calculation. (#1047)
+* Added: Compatibility added with 'WooCommerce Wholesale Order Form' plugin by Rymera Web Co. (#869)
+* Improved: Performance improved for cart ajax in case of empty cart and bot requests. (#1047)
+* Improved: Rewards progress bar styling improvements. (#880)
+* Improved: Rewards title input changed from a single-line text field to a textarea for easier editing. (#867)
+* Improved: Better compatibility for 3rd-party Ajax add to cart requests. (#882)
+
+
+= 1.9.1 =
+* Added: Compatibility with WooCommerce version 10.5.0. (#6872)
 
 = 1.9.1 =
 * Added: Compatibility with the 'WPC Variations Radio Buttons' plugin. Disallow quick-edit product selections in the side cart. (#858)

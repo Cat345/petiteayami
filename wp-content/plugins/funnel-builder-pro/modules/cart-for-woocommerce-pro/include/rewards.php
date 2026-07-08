@@ -2,6 +2,10 @@
 
 namespace FKCart\Pro;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use FKCart\Compatibilities\Compatibility;
 use FKCart\Includes\Data as Data;
 use FKCart\Includes\Front;
@@ -11,6 +15,7 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 	class Rewards {
 		private static $instance = null;
 		private $meta_data = [];
+		private $is_internal_gift_removal = false;
 
 		private function __construct() {
 			$data = Data::get_db_settings();
@@ -26,8 +31,14 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 			add_action( 'fkcart_variable_product_after_update', [ $this, 'update_reward' ], 99 );
 
 			add_filter( 'woocommerce_cart_item_remove_link', [ $this, 'do_not_allow_delete_free_gift' ], 10, 2 );
-			add_filter( 'wfacp_enable_delete_item', [ $this, 'aero_disabled_delete_icon' ], 10, 2 );
+			// Priority 200 so this runs AFTER WFACP core's check_for_free_product (priority 100)
+			add_filter( 'wfacp_enable_delete_item', [ $this, 'aero_disabled_delete_icon' ], 200, 2 );
 			add_filter( 'wfacp_mini_cart_enable_delete_item', [ $this, 'aero_disabled_delete_icon' ], 10, 2 );
+			add_filter( 'fkcart_item_hide_delete_icon', [ $this, 'allow_delete_free_gift_in_template' ], 11, 2 );
+
+			add_action( 'woocommerce_remove_cart_item', [ $this, 'record_removed_free_gift' ], 10, 2 );
+			add_action( 'woocommerce_cart_emptied', [ $this, 'clear_user_removed_free_gifts' ] );
+			add_action( 'woocommerce_checkout_order_processed', [ $this, 'clear_user_removed_free_gifts' ] );
 
 			add_filter( 'pre_option_woocommerce_shipping_cost_requires_address', [ $this, 'disable_hide_shipping_method_until_address' ] );
 			add_action( 'woocommerce_removed_coupon', [ $this, 'stored_removed_coupon' ] );
@@ -128,6 +139,9 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 		 * @return mixed|string
 		 */
 		public function do_not_allow_delete_free_gift( $link, $cart_item_key ) {
+			if ( self::is_free_gift_removal_allowed() ) {
+				return $link;
+			}
 			$cart_item = WC()->cart->get_cart_item( $cart_item_key );
 			if ( isset( $cart_item['_fkcart_free_gift'] ) ) {
 				return '';
@@ -153,14 +167,22 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 
 			$data = Data::get_db_settings();
 
-			$enabled_rewards = ! empty( $data['reward'] ) && in_array( 'freegift', array_column( $data['reward'], 'type' ), true );
+			$active_rewards = [];
+			if ( ! empty( $data['reward'] ) && is_array( $data['reward'] ) ) {
+				$active_rewards = array_filter( $data['reward'], function ( $reward ) {
+					return ! isset( $reward['enabled'] ) || true === $reward['enabled'] || 'true' === $reward['enabled'];
+				} );
+			}
+			$enabled_rewards = ! empty( $active_rewards ) && in_array( 'freegift', array_column( $active_rewards, 'type' ), true );
 			if ( false === $enabled_rewards && is_array( $free_items ) && count( $free_items ) > 0 ) {
 				foreach ( $free_items as $cart_item_key => $cart_item_v ) {
 					if ( empty( $cart_item_key ) ) {
 						continue;
 					}
 
+					$this->is_internal_gift_removal = true;
 					WC()->cart->remove_cart_item( $cart_item_key );
+					$this->is_internal_gift_removal = false;
 				}
 			}
 
@@ -280,6 +302,22 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 			$contents                = WC()->cart->get_cart_contents();
 			$temp_gift_variation_add = []; // For storing Free Gift Variation data
 
+			/**
+			 * Honor user-removed free gifts: if the admin allows free-gift removal
+			 * and the shopper has explicitly removed a gift earlier in the session,
+			 * exclude it from the add list and ensure it stays in the remove list.
+			 */
+			if ( self::is_free_gift_removal_allowed() ) {
+				$user_removed = self::get_user_removed_free_gifts();
+				if ( ! empty( $user_removed ) ) {
+					$gift_add = array_values( array_filter( $gift_add, function ( $id ) use ( $user_removed ) {
+						return ! isset( $user_removed[ absint( $id ) ] );
+					} ) );
+
+					$gift_remove = array_merge( $gift_remove, array_map( 'absint', array_keys( $user_removed ) ) );
+				}
+			}
+
 			// If no gifts to add, remove all free gifts from cart
 
 			$this->remove_all_free_gifts( $contents, $gift_add );
@@ -318,7 +356,9 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 				if ( in_array( $cart_item['product_id'], $gift_add ) || in_array( $cart_item['variation_id'], $gift_add ) ) {
 					continue;
 				}
-				$status = WC()->cart->remove_cart_item( $cart_item_key );
+				$this->is_internal_gift_removal = true;
+				$status                         = WC()->cart->remove_cart_item( $cart_item_key );
+				$this->is_internal_gift_removal = false;
 				if ( false !== $status ) {
 					unset( WC()->cart->removed_cart_contents[ $cart_item_key ] );
 				}
@@ -356,7 +396,9 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 						];
 					}
 
-					$status = WC()->cart->remove_cart_item( $cart_item_key );
+					$this->is_internal_gift_removal = true;
+					$status                         = WC()->cart->remove_cart_item( $cart_item_key );
+					$this->is_internal_gift_removal = false;
 					if ( false !== $status ) {
 						unset( WC()->cart->removed_cart_contents[ $cart_item_key ] );
 					}
@@ -431,7 +473,10 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 					$product_id   = $product->get_id();
 					$variation_id = 0;
 				}
+				remove_action( 'woocommerce_add_to_cart', [ \FKCart\Includes\Front::get_instance(), 'add_to_cart_trigger' ], -10 );
 				$status = WC()->cart->add_to_cart( $product_id, 1, $variation_id, $variation_attributes, $cart_item_data );
+				add_action( 'woocommerce_add_to_cart', [ \FKCart\Includes\Front::get_instance(), 'add_to_cart_trigger' ], -10 );
+
 				if ( false !== $status && class_exists( '\WFOB_Public' ) ) {
 					\WFOB_Public::get_instance()->re_run_rules_after_bump_removed();
 				}
@@ -493,6 +538,12 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 			$rewards_new = $rewards;
 
 			foreach ( $rewards as $r => $reward ) {
+				/** Skip disabled reward rules */
+				if ( isset( $reward['enabled'] ) && ( false === $reward['enabled'] || 'false' === $reward['enabled'] ) ) {
+					unset( $rewards_new[ $r ] );
+					continue;
+				}
+
 				if ( 'freeshipping' === $reward['type'] ) {
 					if ( false == $raw_data && ( ! $wc_shipping_enable || empty( $shipping_data ) || ! isset( $shipping_data['method_id'] ) ) ) {
 						unset( $rewards_new[ $r ] );
@@ -671,6 +722,15 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 				return false;
 			}
 
+			/** Filter out disabled rewards before checking for free shipping type */
+			$rewards = array_filter( $rewards, function ( $reward ) {
+				return ! ( isset( $reward['enabled'] ) && ( false === $reward['enabled'] || 'false' === $reward['enabled'] ) );
+			} );
+
+			if ( empty( $rewards ) ) {
+				return false;
+			}
+
 			$reward_types = array_column( $rewards, 'type' );
 
 			return in_array( 'freeshipping', $reward_types, true );
@@ -784,10 +844,118 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 		 */
 		public function aero_disabled_delete_icon( $status, $cart_item ) {
 			if ( isset( $cart_item['_fkcart_free_gift'] ) ) {
-				$status = false;
+				// Free gifts are zero-price, so WFACP core's check_for_free_product (priority 100)
+				// force-disables their delete icon. This filter runs at priority 200, so for free
+				// gifts we authoritatively set the icon based on the admin "allow gift removal"
+				// setting — true to show it (overriding core), false to keep it hidden.
+				return self::is_free_gift_removal_allowed();
 			}
 
 			return $status;
+		}
+
+		/**
+		 * Whether admin has enabled customer-side removal of free gifts.
+		 *
+		 * @return bool
+		 */
+		public static function is_free_gift_removal_allowed() {
+			return (bool) apply_filters( 'fkcart_allow_remove_free_gift', (bool) Data::get_value( 'allow_remove_free_gift' ) );
+		}
+
+		/**
+		 * Override the Lite cart template flag so the remove icon renders for free
+		 * gifts when the admin has opted-in to allow removal.
+		 *
+		 * @param bool  $hide      Whether to hide the delete icon for this cart item.
+		 * @param array $cart_item WooCommerce cart item.
+		 *
+		 * @return bool
+		 */
+		public function allow_delete_free_gift_in_template( $hide, $cart_item ) {
+			if ( ! self::is_free_gift_removal_allowed() ) {
+				return $hide;
+			}
+			if ( isset( $cart_item['_fkcart_free_gift'] ) ) {
+				return false;
+			}
+
+			return $hide;
+		}
+
+		/**
+		 * Record a user-removed free gift so it is not re-added on subsequent
+		 * total recalculations / fragment refreshes during the session.
+		 *
+		 * Only records removals that originate from the public cart remove AJAX
+		 * endpoint, never from internal reward reprocessing.
+		 *
+		 * @param string   $cart_item_key Cart item key being removed.
+		 * @param \WC_Cart $cart          Cart instance.
+		 *
+		 * @return void
+		 */
+		public function record_removed_free_gift( $cart_item_key, $cart ) {
+			if ( ! self::is_free_gift_removal_allowed() ) {
+				return;
+			}
+			if ( is_null( WC()->session ) || ! ( $cart instanceof \WC_Cart ) ) {
+				return;
+			}
+
+			/** Skip removals initiated by the reward system itself. */
+			if ( true === $this->is_internal_gift_removal ) {
+				return;
+			}
+
+			$cart_item_key = sanitize_text_field( (string) $cart_item_key );
+			if ( '' === $cart_item_key || ! isset( $cart->cart_contents[ $cart_item_key ] ) ) {
+				return;
+			}
+
+			$item = $cart->cart_contents[ $cart_item_key ];
+			if ( ! isset( $item['_fkcart_free_gift'] ) ) {
+				return;
+			}
+
+			$removed      = self::get_user_removed_free_gifts();
+			$product_id   = isset( $item['product_id'] ) ? absint( $item['product_id'] ) : 0;
+			$variation_id = isset( $item['variation_id'] ) ? absint( $item['variation_id'] ) : 0;
+
+			if ( $product_id > 0 ) {
+				$removed[ $product_id ] = true;
+			}
+			if ( $variation_id > 0 ) {
+				$removed[ $variation_id ] = true;
+			}
+
+			WC()->session->set( '_fkcart_user_removed_free_gifts', $removed );
+		}
+
+		/**
+		 * Clear the user-removed free gift session list (cart emptied / order placed).
+		 *
+		 * @return void
+		 */
+		public function clear_user_removed_free_gifts() {
+			if ( is_null( WC()->session ) ) {
+				return;
+			}
+			WC()->session->__unset( '_fkcart_user_removed_free_gifts' );
+		}
+
+		/**
+		 * Get the user-removed free gift IDs from session, keyed by product/variation ID.
+		 *
+		 * @return array<int, bool>
+		 */
+		public static function get_user_removed_free_gifts() {
+			if ( is_null( WC()->session ) ) {
+				return [];
+			}
+			$removed = WC()->session->get( '_fkcart_user_removed_free_gifts', [] );
+
+			return is_array( $removed ) ? $removed : [];
 		}
 
 		/**
@@ -976,10 +1144,35 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 			$billing_state    = WC()->customer->get_billing_state();// set geolocate data if
 			$billing_city     = WC()->customer->get_billing_city();
 			$billing_postcode = WC()->customer->get_billing_postcode();
-			// do not set incomplete geolocate data for shipping rewards.
-			if ( empty( $billing_country ) || empty( $billing_state ) || empty( $billing_city ) || empty( $billing_postcode ) ) {
+
+			if ( empty( $billing_country ) || empty( $billing_state ) ) {
 				return $geolocation;
 			}
+
+			/**
+			 * Whether to merge billing into geolocation for rewards/shipping zone lookup after country + state pass.
+			 * Default true. Return false to skip merge (e.g. require non-empty city and postcode).
+			 *
+			 * @param bool         $use_billing   Whether to apply billing to $geolocation.
+			 * @param array        $billing       Keys: country, state, city, postcode.
+			 * @param array        $geolocation   Incoming geolocation before merge.
+			 * @param \WC_Customer $customer      Customer object.
+			 */
+			if ( ! apply_filters(
+				'fkcart_pass_customer_geo_use_billing',
+				true,
+				array(
+					'country'  => $billing_country,
+					'state'    => $billing_state,
+					'city'     => $billing_city,
+					'postcode' => $billing_postcode,
+				),
+				$geolocation,
+				WC()->customer
+			) ) {
+				return $geolocation;
+			}
+
 			$geolocation['country']  = $billing_country;
 			$geolocation['state']    = $billing_state;
 			$geolocation['city']     = $billing_city;

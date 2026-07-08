@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * WooCommerce wFirma By WP Desk
@@ -8,17 +12,16 @@
 if ( ! class_exists( 'WFACP_Compatibility_wfirma_wc' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_wfirma_wc {
-		private $billing_new_fields = [
+		private $billing_new_fields = array(
 			'billing_nip',
-		];
+		);
 
 		public function __construct() {
-
 
 			/* Register Add field */
 
 			if ( WFACP_Common::is_funnel_builder_3() ) {
-				add_action( 'wffn_rest_checkout_form_actions', [ $this, 'setup_fields_billing' ] );
+				add_action( 'wffn_rest_checkout_form_actions', array( $this, 'setup_fields_billing' ) );
 			} else {
 				$this->setup_fields_billing();
 			}
@@ -26,20 +29,22 @@ if ( ! class_exists( 'WFACP_Compatibility_wfirma_wc' ) ) {
 			/* prevent third party fields and wrapper*/
 
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
-			add_filter( 'wfacp_third_party_billing_fields', [ $this, 'disabled_third_party_billing_fields' ] );
-
+			add_filter( 'wfacp_third_party_billing_fields', array( $this, 'disabled_third_party_billing_fields' ) );
 		}
 
 		public function setup_fields_billing() {
-			new WFACP_Add_Address_Field( 'nip', array(
-				'type'        => 'text',
-				'label'       => __( 'NIP', 'woocommerce-wfirma' ),
-				'placeholder' => __( 'NIP', 'woocommerce-wfirma' ),
-				'cssready'    => [ 'wfacp-col-full' ],
-				'class'       => array( 'form-row-third first', 'wfacp-col-full' ),
-				'required'    => false,
-				'priority'    => 60,
-			) );
+			new WFACP_Add_Address_Field(
+				'nip',
+				array(
+					'type'        => 'text',
+					'label'       => __( 'NIP', 'woocommerce-wfirma' ),
+					'placeholder' => __( 'NIP', 'woocommerce-wfirma' ),
+					'cssready'    => array( 'wfacp-col-full' ),
+					'class'       => array( 'form-row-third first', 'wfacp-col-full' ),
+					'required'    => false,
+					'priority'    => 60,
+				)
+			);
 		}
 
 		public function disabled_third_party_billing_fields( $fields ) {

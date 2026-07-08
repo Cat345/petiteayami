@@ -1,16 +1,17 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'WFOB_Add_New_Position' ) ) {
+	#[\AllowDynamicProperties]
 	final class WFOB_Add_New_Position {
 
-		private $data = [
+		private $data          = array(
 			'position_id'   => '',
 			'hook'          => '',
 			'position_name' => '',
-			'hook_priority' => ''
-		];
-		private $position_id = '';
-		private $hook = '';
+			'hook_priority' => '',
+		);
+		private $position_id   = '';
+		private $hook          = '';
 		private $position_name = '';
 		private $hook_priority = 21;
 
@@ -20,9 +21,8 @@ if ( ! class_exists( 'WFOB_Add_New_Position' ) ) {
 				if ( false === $this->validate() ) {
 					return;
 				}
-				add_filter( 'wfob_bump_positions', [ $this, 'add_new_place' ] );
+				add_filter( 'wfob_bump_positions', array( $this, 'add_new_place' ) );
 			}
-
 		}
 
 
@@ -46,16 +46,15 @@ if ( ! class_exists( 'WFOB_Add_New_Position' ) ) {
 
 		public function add_new_place( $positions ) {
 
-			$positions[ $this->position_id ] = [
+			$positions[ $this->position_id ] = array(
 				'name'     => $this->position_name,
 				'hook'     => $this->hook,
 				'priority' => $this->hook_priority,
-				'id'       => $this->position_id
-			];
+				'id'       => $this->position_id,
+			);
 
 			return $positions;
 		}
-
 	}
 
 }

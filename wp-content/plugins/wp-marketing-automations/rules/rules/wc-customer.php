@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Is_First_Order extends BWFAN_Rule_Base {
 
 	public $supports = array( 'order' );
@@ -112,6 +113,7 @@ class BWFAN_Rule_Is_First_Order extends BWFAN_Rule_Base {
 	}
 }
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Is_Guest extends BWFAN_Rule_Base {
 	public $supports = array( 'order' );
 
@@ -210,6 +212,7 @@ class BWFAN_Rule_Is_Guest extends BWFAN_Rule_Base {
 	}
 }
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Customer_User extends BWFAN_Dynamic_Option_Base {
 	public $supports = array( 'order' );
 
@@ -336,6 +339,7 @@ class BWFAN_Rule_Customer_User extends BWFAN_Dynamic_Option_Base {
 	}
 }
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Customer_Role extends BWFAN_Rule_Base {
 
 	public $supports = array( 'order' );

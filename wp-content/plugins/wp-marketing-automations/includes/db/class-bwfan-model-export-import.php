@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Model_Export_Import extends BWFAN_Model {
 	/**
 	 * Status

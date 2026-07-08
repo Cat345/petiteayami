@@ -11,6 +11,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Stripe\StripeTaxForWooCommerce\Stripe\Tax_Calculation\Calculator;
 use Stripe\StripeTaxForWooCommerce\Utils\Amount_Utility;
+use Stripe\StripeTaxForWooCommerce\Utils\Assertion;
 use Stripe\StripeTaxForWooCommerce\StripeTax_Options;
 
 use WC_Cart;
@@ -55,6 +56,8 @@ abstract class Cart_Controller {
 			$reference = Cart_Input::build_item_reference_by_type( $cart_item, 'line_item' );
 
 			$tax_calculation_line = $tax_calculation_result->get_line_item_by_reference( $reference );
+
+			Assertion::assert( $tax_calculation_line, __FILE__, 'Missing cart item from Stripe API response', $cart_item );
 
 			if ( ! $tax_calculation_line ) {
 				continue;
@@ -101,6 +104,8 @@ abstract class Cart_Controller {
 
 			$tax_calculation_line = $tax_calculation_result->get_line_item_by_reference( $reference );
 
+			Assertion::assert( $tax_calculation_line, __FILE__, 'Missing cart item from Stripe API response', $fee );
+
 			if ( ! $tax_calculation_line ) {
 				continue;
 			}
@@ -120,12 +125,23 @@ abstract class Cart_Controller {
 			}
 		}
 
+		$raw_total = $cart->get_total( 'edit' );
+
 		$cart->set_discount_total( Amount_Utility::round( $discount_total ) );
 		$cart->set_discount_tax( Amount_Utility::round( $discount_tax ) );
 
-		$cart->set_total( $tax_calculation_result->amount_total );
-		$cart->set_total_tax( $tax_calculation_result->tax_amount_inclusive + $tax_calculation_result->tax_amount_exclusive );
+		$total_tax = $tax_calculation_result->tax_amount_inclusive + $tax_calculation_result->tax_amount_exclusive;
+		$cart->set_total_tax( $total_tax );
 
+		$calculated_total = (float) $tax_calculation_result->amount_total;
+
+		if ( Cart_Input::TAX_BEHAVIOR_INCLUSIVE === $tax_behavior ) {
+			$diff = abs( $calculated_total - (float) $raw_total );
+			Assertion::assert( $diff < 0.05, __FILE__, 'Totals dont match in inclusive mode, diff = ' . $diff, $cart );
+			$cart->set_total( $raw_total );
+		} else {
+			$cart->set_total( $raw_total + $total_tax );
+		}
 		$cart->set_shipping_tax( $shipping_tax );
 		$cart->set_shipping_taxes( $shipping_taxes );
 		$cart->set_shipping_total( $shipping_total );

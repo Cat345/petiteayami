@@ -12,7 +12,12 @@
 /**
  * Controls.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Controls' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Controls {
 
 		/**

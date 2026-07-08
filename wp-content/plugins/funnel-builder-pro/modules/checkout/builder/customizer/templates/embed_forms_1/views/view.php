@@ -13,7 +13,7 @@ $checkout          = WC()->checkout();
 $wp_head_included = did_action( 'wp_head' ) > 0 ? true : false;
 
 if ( false == $wp_head_included && ( true == $is_customizer || true == $is_wfacp_checkout ) ) {
-	include( $instance->wfacp_get_header() );
+	include $instance->wfacp_get_header();
 }
 
 do_action( 'wfacpef_before_form' );
@@ -31,24 +31,24 @@ if ( $formData['wfacp_form']['layout']['step_form_max_width'] < 550 ) {
 }
 
 /** Removing no index meta tag */
-remove_action( 'wfacp_header_print_in_head', [ $instance, 'no_follow_no_index' ] );
+remove_action( 'wfacp_header_print_in_head', array( $instance, 'no_follow_no_index' ) );
 do_action( 'wfacp_header_print_in_head' );
 
 ?>
 <!--main panel wrapper open -->
 <div id="wfacp-e-form">
-    <div class="wrapper wfacp-main-container wfacp_form_steps_wrap <?php echo $wrap_width_cls ?>">
-        <div class="wfacp-wrapper-decoration">
-            <!-- container wrapper open -->
-            <div class="wfacp-panel-wrapper">
-                <div class="wfacp-container wfacp-contenter-inner-wrapper clearfix">
+	<div class="wrapper wfacp-main-container wfacp_form_steps_wrap <?php echo $wrap_width_cls; ?>">
+		<div class="wfacp-wrapper-decoration">
+			<!-- container wrapper open -->
+			<div class="wfacp-panel-wrapper">
+				<div class="wfacp-container wfacp-contenter-inner-wrapper clearfix">
 
 
-                    <!--wfacp-form panel -->
-                    <div class="wfacp-form wfacp_form clearfix">
+					<!--wfacp-form panel -->
+					<div class="wfacp-form wfacp_form clearfix">
 
 
-                        <div class="wfacp-comm-wrapper clearfix">
+						<div class="wfacp-comm-wrapper clearfix">
 							<?php
 							$number_of_steps = $instance->get_step_count();
 
@@ -63,20 +63,20 @@ do_action( 'wfacp_header_print_in_head' );
 
 							if ( ( is_array( $step_form_data ) && count( $step_form_data ) > 0 ) && $tab_active === true ) {
 								?>
-                                <div class="wfacp-payment-title wfacp-hg-by-box wfacp_embed_step_<?php echo $number_of_steps; ?>">
-                                    <div class="wfacp-payment-tab-wrapper clearfix">
+								<div class="wfacp-payment-title wfacp-hg-by-box wfacp_embed_step_<?php echo $number_of_steps; ?>">
+									<div class="wfacp-payment-tab-wrapper clearfix">
 										<?php
 										$count          = 1;
 										$count_of_steps = sizeof( $step_form_data );
-										$steps          = [ 'single_step', 'two_step', 'third_step' ];
+										$steps          = array( 'single_step', 'two_step', 'third_step' );
 
 
-										$addfull_width = "full_width_cls";
+										$addfull_width = 'full_width_cls';
 										if ( $count_of_steps == 2 ) {
-											$addfull_width = "wfacpef_two_step";
+											$addfull_width = 'wfacpef_two_step';
 										}
 										if ( $count_of_steps == 3 ) {
-											$addfull_width = "wfacpef_third_step";
+											$addfull_width = 'wfacpef_third_step';
 										}
 
 										foreach ( $step_form_data as $key => $value ) {
@@ -105,19 +105,19 @@ do_action( 'wfacp_header_print_in_head' );
 
 
 											?>
-                                            <div class="wfacp-payment-tab-list <?php echo $activeClass . ' ' . $page_class . " " . $addfull_width; ?>  wfacp-tab<?php echo $count; ?>" step="<?php echo $steps_count_here; ?>">
-                                                <div class="wfacp-order2StepNumber"><?php echo $count; ?></div>
-                                                <div class="wfacp-order2StepHeaderText">
-                                                    <div class="wfacp-order2StepTitle wfacp-order2StepTitleS1 wfacp_tcolor"><?php echo $value[ 'name_' . $key ]; ?></div>
-                                                    <div class="wfacp-order2StepSubTitle wfacp-order2StepSubTitleS1 wfacp_tcolor"><?php echo $value[ 'headline_' . $key ]; ?></div>
-                                                </div>
-                                            </div>
+											<div class="wfacp-payment-tab-list <?php echo $activeClass . ' ' . $page_class . ' ' . $addfull_width; ?>  wfacp-tab<?php echo $count; ?>" step="<?php echo $steps_count_here; ?>">
+												<div class="wfacp-order2StepNumber"><?php echo $count; ?></div>
+												<div class="wfacp-order2StepHeaderText">
+													<div class="wfacp-order2StepTitle wfacp-order2StepTitleS1 wfacp_tcolor"><?php echo esc_html( $value[ 'name_' . $key ] ); ?></div>
+													<div class="wfacp-order2StepSubTitle wfacp-order2StepSubTitleS1 wfacp_tcolor"><?php echo esc_html( $value[ 'headline_' . $key ] ); ?></div>
+												</div>
+											</div>
 											<?php
-											$count ++;
+											++$count;
 										}
 										?>
-                                    </div>
-                                </div>
+									</div>
+								</div>
 								<?php
 							}
 							?>
@@ -134,25 +134,23 @@ do_action( 'wfacp_header_print_in_head' );
 
 							?>
 
-                            <div class="wfacp-inner-form-detail-wrap wfacp_step_count_<?php echo $number_of_steps; ?>">
-								<?php include( $instance->wfacp_get_form() ); ?>
-                            </div>
+							<div class="wfacp-inner-form-detail-wrap wfacp_step_count_<?php echo $number_of_steps; ?>">
+								<?php require $instance->wfacp_get_form(); ?>
+							</div>
 
-                        </div>
-                    </div>
-                    <!-- wfacp-form panel close-->
-                </div>
-            </div>
-        </div>
-    </div>
+						</div>
+					</div>
+					<!-- wfacp-form panel close-->
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 
 <?php
-if ( false == $wp_head_included && ( true == $is_customizer || true == $is_wfacp_checkout )  ) {
-	include( $instance->wfacp_get_footer() );
+if ( false == $wp_head_included && ( true == $is_customizer || true == $is_wfacp_checkout ) ) {
+	include $instance->wfacp_get_footer();
 }
 
 ?>
-
-

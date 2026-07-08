@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Automation_License extends BWFAN_API_Base {
 	public static $ins;
 
@@ -57,6 +58,15 @@ class BWFAN_API_Automation_License extends BWFAN_API_Base {
 		if ( false === class_exists( 'BWFAN_Pro_WooFunnels_Support' ) ) {
 			return $return;
 		}
+
+		/** Activation cannot succeed when the Pro folder slug differs from the canonical name — the remote license record is keyed by canonical basename. */
+		if ( 'activate' === $action && true === BWFAN_Common::is_pro_folder_renamed() ) {
+			return [
+				'code' => 400,
+				'msg'  => wp_kses_post( __( 'We have detected that plugin directory has been renamed. Please restore the directory to its original name or download the latest files from', 'wp-marketing-automations' ) ) . ' <a class="bwf-a-no-underline bwf-normal-a-t" href="' . esc_url( BWFAN_Common::get_fk_site_links( 'account' ) ) . '">' . esc_html__( 'your account', 'wp-marketing-automations' ) . '</a> ' . wp_kses_post( __( 'or', 'wp-marketing-automations' ) ) . ' <a class="bwf-a-no-underline bwf-normal-a-t" href="' . esc_url( BWFAN_Common::get_fk_site_links( 'support' ) ) . '">' . esc_html__( 'contact support', 'wp-marketing-automations' ) . '</a> ' . wp_kses_post( __( 'for assistance.', 'wp-marketing-automations' ) ),
+			];
+		}
+
 		$ins  = BWFAN_Pro_WooFunnels_Support::get_instance();
 		$resp = $this->process_license_call( $ins, $key, $action );
 
@@ -69,6 +79,15 @@ class BWFAN_API_Automation_License extends BWFAN_API_Base {
 		if ( false === class_exists( 'BWFAN_Basic_Connector_Support' ) ) {
 			return $return;
 		}
+
+		/** Activation cannot succeed when the Connectors folder slug differs from the canonical name — the remote license record is keyed by canonical basename. */
+		if ( 'activate' === $action && true === BWFAN_Common::is_connector_folder_renamed() ) {
+			return [
+				'code' => 400,
+				'msg'  => wp_kses_post( __( 'We have detected that plugin directory has been renamed. Please restore the directory to its original name or download the latest files from', 'wp-marketing-automations' ) ) . ' <a class="bwf-a-no-underline bwf-normal-a-t" href="' . esc_url( BWFAN_Common::get_fk_site_links( 'account' ) ) . '">' . esc_html__( 'your account', 'wp-marketing-automations' ) . '</a> ' . wp_kses_post( __( 'or', 'wp-marketing-automations' ) ) . ' <a class="bwf-a-no-underline bwf-normal-a-t" href="' . esc_url( BWFAN_Common::get_fk_site_links( 'support' ) ) . '">' . esc_html__( 'contact support', 'wp-marketing-automations' ) . '</a> ' . wp_kses_post( __( 'for assistance.', 'wp-marketing-automations' ) ),
+			];
+		}
+
 		$ins  = BWFAN_Basic_Connector_Support::get_instance();
 		$resp = $this->process_license_call( $ins, $key, $action );
 

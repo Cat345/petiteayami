@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'BWFAN_DEV_Remove_Contact_Fields_Duplicate_Records' ) ) {
+	#[\AllowDynamicProperties]
 	final class BWFAN_DEV_Remove_Contact_Fields_Duplicate_Records {
 		private static $ins = null;
 

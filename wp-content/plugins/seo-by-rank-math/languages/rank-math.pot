@@ -2,17 +2,17 @@
 # This file is distributed under the GPL-3.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Rank Math SEO 1.0.268\n"
+"Project-Id-Version: Rank Math SEO 1.0.273\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/seo-by-rank-math\n"
 "Last-Translator: Rank Math <support@rankmath.com>\n"
 "Language-Team: Rank Math <support@rankmath.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-04-15T04:03:49+00:00\n"
+"POT-Creation-Date: 2026-06-30T05:31:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: rank-math\n"
+"X-Domain: seo-by-rank-math\n"
 
 #. Plugin Name of the plugin
 #. Author of the plugin
@@ -41,6 +41,225 @@ msgid "Please enter a valid email address."
 msgstr ""
 
 msgid "Please enter a valid URL."
+msgstr ""
+
+msgid "Create AI Visibility brand"
+msgstr ""
+
+msgid "Creates a new brand for AI Visibility monitoring, triggering an initial analysis automatically."
+msgstr ""
+
+msgid "Brand name."
+msgstr ""
+
+msgid "Brand website URL."
+msgstr ""
+
+msgid "Short description of the brand or product."
+msgstr ""
+
+msgid "ISO 3166-1 alpha-2 country code (e.g. \"US\", \"HU\"). Defaults to no country filter."
+msgstr ""
+
+msgid "Get AI Visibility brand insights"
+msgstr ""
+
+msgid "Returns the full analysis results for a single brand — AI Visibility score, rank, sentiment, mention and citation counts, per-competitor breakdown, and per-query results including the raw AI model responses."
+msgstr ""
+
+msgid "Brand UUID. Obtain from get-ai-visibility-overview."
+msgstr ""
+
+msgid "Get AI Visibility brand queries"
+msgstr ""
+
+msgid "Returns the list of search queries being monitored for a brand, including which are currently enabled and which were auto-generated as baselines."
+msgstr ""
+
+msgid "Brand UUID. Obtain from get-ai-visibility-overview or get-ai-visibility-brand-insights."
+msgstr ""
+
+msgid "Get AI Visibility overview"
+msgstr ""
+
+msgid "Returns the site-level AI Visibility summary and the full list of tracked brands with their current scores, ranks, sentiment, and analysis status."
+msgstr ""
+
+msgid "Pass true to bypass the 12-hour dashboard cache and return a stale-flagged response. Use the REST endpoint to trigger a fresh upstream fetch."
+msgstr ""
+
+msgid "Filter brands by name or URL (case-insensitive substring match)."
+msgstr ""
+
+msgid "AI Visibility"
+msgstr ""
+
+msgid "Abilities to retrieve AI brand visibility data tracked by Rank Math."
+msgstr ""
+
+msgid "Get link report"
+msgstr ""
+
+msgid "Returns a site-wide link health report: total internal and external links, post counts with no internal or external links, and — on Rank Math PRO — broken links, redirects, nofollow counts, and HTTP status distribution from the Link Genius audit."
+msgstr ""
+
+msgid "Get post links"
+msgstr ""
+
+msgid "Returns a paginated list of internal and external links stored for a given post, including the URL, link type, and target post details for internal links."
+msgstr ""
+
+msgid "ID of the post whose links to retrieve."
+msgstr ""
+
+msgid "Upgrade to Rank Math PRO to unlock broken link detection, redirect chain analysis, and HTTP status distribution from the Link Genius audit."
+msgstr ""
+
+msgid "Link Genius"
+msgstr ""
+
+msgid "Abilities to retrieve and analyse internal and external link data for posts."
+msgstr ""
+
+msgid "Get post SEO metadata"
+msgstr ""
+
+msgid "Returns the full SEO metadata for a post: title, description, focus keyword, robots settings, canonical URL, Open Graph and Twitter overrides, and the current SEO score."
+msgstr ""
+
+msgid "The ID of the post to retrieve SEO metadata for."
+msgstr ""
+
+msgid "Post SEO"
+msgstr ""
+
+msgid "Abilities to read and manage per-post SEO metadata."
+msgstr ""
+
+msgid "Get post schema"
+msgstr ""
+
+msgid "Returns the schema markup attached to a post and the schema types available on this install. Use this after rank-math/get-post-seo-meta to check what schema is already set and what types are supported before making a recommendation. If the schema type you want to recommend is not in available_types.types and upgrade_message is present, show upgrade_message verbatim to the user and do not suggest adding the schema type directly."
+msgstr ""
+
+msgid "The ID of the post to retrieve schema markup for."
+msgstr ""
+
+msgid "When true (default), includes the schema types available on this install. Always pass true when evaluating which schema to add."
+msgstr ""
+
+msgid "Invalid post ID."
+msgstr ""
+
+msgid "This schema type requires Rank Math PRO. Upgrade at rankmath.com/pro to unlock Movie, Dataset, Fact Check, and custom schema types."
+msgstr ""
+
+msgid "Schema"
+msgstr ""
+
+msgid "Abilities to read and manage schema markup attached to posts."
+msgstr ""
+
+msgid "The provided URL is not valid."
+msgstr ""
+
+#. translators: %s: URL to the Rank Math PRO upgrade page
+msgid "Competitor URL analysis requires Rank Math PRO. Upgrade at %s"
+msgstr ""
+
+msgid "Audit site SEO"
+msgstr ""
+
+msgid "Runs Rank Math's site-wide SEO audit and returns a structured score plus per-test findings with fix hints. Combines local checks with the remote rankmath.com API tests."
+msgstr ""
+
+msgid "Re-run the audit. Defaults to true (always fresh when called by an AI host)."
+msgstr ""
+
+msgid "Optional URL to audit. Defaults to this site's home URL. When provided, only remote API tests run (local checks are site-wide)."
+msgstr ""
+
+#. translators: %s: test ID
+msgid "No automatic fix is available for test \"%s\". Use the fix_text guidance to resolve it manually."
+msgstr ""
+
+msgid "Site visibility set to public. Search engines can now index your site."
+msgstr ""
+
+msgid "Permalink structure is already set to /%postname%/."
+msgstr ""
+
+msgid "Permalink structure set to /%postname%/ and rewrite rules flushed."
+msgstr ""
+
+msgid "A \"value\" input is required to set the site tagline. Provide a short, unique description of your site."
+msgstr ""
+
+msgid "The provided tagline is the default WordPress value. Please supply a unique tagline."
+msgstr ""
+
+#. translators: %s: tagline value
+msgid "Site tagline updated to: \"%s\"."
+msgstr ""
+
+msgid "Sitemap module enabled. Your XML sitemap is now active."
+msgstr ""
+
+msgid "Schema / rich snippet module enabled."
+msgstr ""
+
+msgid "Global robots setting updated to allow indexing. Run a fresh audit to confirm the remote API test passes."
+msgstr ""
+
+msgid "OpenGraph output is always enabled in Rank Math. If this test is failing, the remote audit API may need a fallback Open Graph image. Set one at Rank Math → Titles & Meta → Global Meta → Open Graph Thumbnail."
+msgstr ""
+
+msgid "Robots.txt content is already configured in Rank Math settings."
+msgstr ""
+
+msgid "Default robots.txt content written to Rank Math settings."
+msgstr ""
+
+msgid "No indexable post types are configured in Rank Math."
+msgstr ""
+
+msgid "All published posts already have a focus keyword set."
+msgstr ""
+
+#. translators: 1: count updated, 2: total found
+msgid "Set focus keywords on %1$d posts (derived from post titles)."
+msgstr ""
+
+#. translators: %d: post_limit
+msgid "Results were limited to %d posts — run again to continue."
+msgstr ""
+
+msgid "All posts with focus keywords already include them in their titles."
+msgstr ""
+
+#. translators: %d: count updated
+msgid "Updated focus keywords on %d posts to match their titles."
+msgstr ""
+
+msgid "Fix site SEO"
+msgstr ""
+
+msgid "Applies an automatic fix for a single failing Rank Math SEO test. Pass the test_id from an audit-site-seo finding. Some fixes require additional input (e.g. value for site_description). Bulk fixes accept an optional post_limit."
+msgstr ""
+
+msgid "The SEO test identifier to fix (from audit-site-seo findings)."
+msgstr ""
+
+msgid "Required for site_description: the new tagline to set."
+msgstr ""
+
+msgid "For bulk post fixes (focus_keywords, post_titles): max posts to update in one call. Default 100."
+msgstr ""
+
+msgid "SEO Analysis"
+msgstr ""
+
+msgid "Abilities to audit and fix site-wide SEO issues."
 msgstr ""
 
 msgid "Rank Math Dashboard"
@@ -1141,6 +1360,9 @@ msgstr ""
 msgid "Page not found"
 msgstr ""
 
+msgid "Post not found."
+msgstr ""
+
 msgid "Play icon"
 msgstr ""
 
@@ -1594,10 +1816,10 @@ msgstr ""
 msgid "Oops! Too many requests in a short time. Please try again after some time."
 msgstr ""
 
-msgid "You've used up all available credits for this domain."
+msgid "You've reached the monthly usage limit for this feature on your domain."
 msgstr ""
 
-msgid "You've used up all available credits from the connected account."
+msgid "You've reached the monthly usage limit for this feature."
 msgstr ""
 
 msgid "Please revise the entered values in the fields as they are not secure. Make the required adjustments and try again."
@@ -1688,9 +1910,6 @@ msgstr ""
 msgid "Counts the total number of internal, external links, to and from links inside your posts. You can also see the same count in the Posts List Page."
 msgstr ""
 
-msgid "Link Genius"
-msgstr ""
-
 msgid "An advanced internal linking tool that analyzes your posts, tracks link data, highlights opportunities, and offers detailed report."
 msgstr ""
 
@@ -1742,6 +1961,9 @@ msgid "Podcast"
 msgstr ""
 
 msgid "Make your podcasts discoverable via Google Podcasts, Apple Podcasts, and similar services with Podcast RSS feed and Schema Markup generated by Rank Math."
+msgstr ""
+
+msgid "Track your brand's AI search visibility. Monitor brand mentions, citations, & sentiment, and discover opportunities to grow your AI visibility."
 msgstr ""
 
 msgid "Role Manager"
@@ -1848,7 +2070,7 @@ msgstr ""
 msgid "Unlimited personal websites"
 msgstr ""
 
-msgid "Free 15 Content AI Credits"
+msgid "Free 15-Day Content AI Trial"
 msgstr ""
 
 msgid "Track 500 Keywords"
@@ -2026,6 +2248,56 @@ msgid "Ignore Query Parameters"
 msgstr ""
 
 msgid "Turn ON to ignore all query parameters (the part after a question mark in a URL) when logging 404 errors."
+msgstr ""
+
+msgid "New!"
+msgstr ""
+
+#. Translators: placeholder is the new label.
+msgid "AI Visibility %s"
+msgstr ""
+
+msgid "Rank Math account not connected. Please connect your account and try again."
+msgstr ""
+
+#. translators: %d: HTTP status code returned by the backend.
+msgid "AI Visibility API returned an unexpected status: %d"
+msgstr ""
+
+msgid "AI Visibility API returned an invalid response."
+msgstr ""
+
+msgid "Brand UUID."
+msgstr ""
+
+msgid "Force a refresh from the AI Visibility API."
+msgstr ""
+
+msgid "Filter brands by name or URL."
+msgstr ""
+
+msgid "Brand website URL or domain."
+msgstr ""
+
+msgid "ISO 3166-1 alpha-2 country code (e.g. \"US\", \"HU\")."
+msgstr ""
+
+msgid "Query UUID."
+msgstr ""
+
+msgid "Whether the query is enabled for analysis."
+msgstr ""
+
+msgid "No fields to update."
+msgstr ""
+
+msgid "Could not start the checkout session. Please try again."
+msgstr ""
+
+msgid "Your AI Visibility trial has been activated."
+msgstr ""
+
+msgid "We could not activate your trial. Please try again."
 msgstr ""
 
 msgid "Data fetching cancelled."
@@ -2469,7 +2741,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. Translators: placeholder is the number of modified posts.
-msgid "SEO meta successfully updated in %d posts. The process was stopped as you have used all the credits on your site."
+msgid "SEO meta successfully updated in %d posts. The process was stopped as you have reached the monthly limit for this feature."
 msgstr ""
 
 msgid "Bulk image alt generation started. It might take few minutes to complete the process."
@@ -2485,7 +2757,7 @@ msgid "Bulk image alt generation failed."
 msgstr ""
 
 #. Translators: placeholder is the number of modified posts.
-msgid "Image alt attributes successfully updated in %d posts. The process was stopped as you have used all the credits on your site."
+msgid "Image alt attributes successfully updated in %d posts. The process was stopped as you have reached the monthly limit for this feature."
 msgstr ""
 
 msgid "AI Tools"
@@ -2531,6 +2803,9 @@ msgid "The parameters used to generate the AI output."
 msgstr ""
 
 msgid "Credit usage details returned by the API."
+msgstr ""
+
+msgid "Per-tool usage data returned by the API."
 msgstr ""
 
 msgid "Indicates if the request to delete the output was for the Chat endpoint."
@@ -3326,13 +3601,6 @@ msgstr ""
 msgid "Use the %1$s button to verify that the key is accessible for search engines. Clicking on it should open the key file in your browser and show the API key."
 msgstr ""
 
-msgid "New!"
-msgstr ""
-
-#. Translators: placeholder is the new label.
-msgid "Link Genius %s"
-msgstr ""
-
 msgid "You do not have permission to access this resource."
 msgstr ""
 
@@ -3349,6 +3617,9 @@ msgid "Filter by orphan status (orphan, linked)."
 msgstr ""
 
 msgid "Filter by SEO score range (great, good, bad, no-score)."
+msgstr ""
+
+msgid "Filter by post ID."
 msgstr ""
 
 msgid "Order by field."
@@ -3966,9 +4237,6 @@ msgstr ""
 msgid "Heading H6"
 msgstr ""
 
-msgid "Schema"
-msgstr ""
-
 msgid "No schema found."
 msgstr ""
 
@@ -4213,10 +4481,6 @@ msgid "Analyze this Page"
 msgstr ""
 
 msgid "SEO Analysis for this page"
-msgstr ""
-
-#. translators: API error
-msgid "<strong>API Error:</strong> %s"
 msgstr ""
 
 msgid "Rank Math auto-update option is enabled on your site."
@@ -5355,13 +5619,13 @@ msgstr ""
 msgid "Sorry, you are not allowed to create/update schema."
 msgstr ""
 
+msgid "Sorry, you are not allowed to edit homepage SEO settings."
+msgstr ""
+
 msgid "Sorry, you are not allowed to edit this post type."
 msgstr ""
 
 msgid "Sorry, you are not allowed to edit this post."
-msgstr ""
-
-msgid "Invalid post ID."
 msgstr ""
 
 msgid "Sorry, you are not allowed to edit this term."
@@ -6487,171 +6751,6 @@ msgstr ""
 msgid "You are using the Product Schema for this Product"
 msgstr ""
 
-msgid "FAQ Options"
-msgstr ""
-
-msgid "List Style"
-msgstr ""
-
-msgid "Title Wrapper"
-msgstr ""
-
-msgid "H2"
-msgstr ""
-
-msgid "H3"
-msgstr ""
-
-msgid "H4"
-msgstr ""
-
-msgid "H5"
-msgstr ""
-
-msgid "H6"
-msgstr ""
-
-msgid "P"
-msgstr ""
-
-msgid "DIV"
-msgstr ""
-
-msgid "Image Size"
-msgstr ""
-
-msgid "Styling Options"
-msgstr ""
-
-msgid "Title Wrapper CSS Class(es)"
-msgstr ""
-
-msgid "Content Wrapper CSS Class(es)"
-msgstr ""
-
-msgid "List CSS Class(es)"
-msgstr ""
-
-msgid "Add Image"
-msgstr ""
-
-msgid "Question…"
-msgstr ""
-
-msgid "Hide Question"
-msgstr ""
-
-msgid "Delete Question"
-msgstr ""
-
-msgid "Enter the answer to the question"
-msgstr ""
-
-msgid "Add New FAQ"
-msgstr ""
-
-msgid "More Info"
-msgstr ""
-
-msgid "Enter a step title"
-msgstr ""
-
-msgid "Hide Step"
-msgstr ""
-
-msgid "Delete Step"
-msgstr ""
-
-msgid "Add Step Image"
-msgstr ""
-
-msgid "Enter a step description"
-msgstr ""
-
-msgid "HowTo Options"
-msgstr ""
-
-msgid "Main Image Size"
-msgstr ""
-
-msgid "Step Title Wrapper CSS Class(es)"
-msgstr ""
-
-msgid "Step Content Wrapper CSS Class(es)"
-msgstr ""
-
-msgid "Step List CSS Class(es)"
-msgstr ""
-
-msgid "Add Final Image"
-msgstr ""
-
-msgid "Enter a main description"
-msgstr ""
-
-msgid "Total time:"
-msgstr ""
-
-msgid "DD"
-msgstr ""
-
-msgid "HH"
-msgstr ""
-
-msgid "MM"
-msgstr ""
-
-msgid "Optional, use first field to describe the duration."
-msgstr ""
-
-msgid "Add New Step"
-msgstr ""
-
-msgid "FAQ"
-msgstr ""
-
-msgid "Frequently Asked Questions"
-msgstr ""
-
-msgid "SEO"
-msgstr ""
-
-msgid "Structured Data"
-msgstr ""
-
-msgid "Yoast"
-msgstr ""
-
-msgid "Block"
-msgstr ""
-
-msgid "Markup"
-msgstr ""
-
-msgid "Rich Snippet"
-msgstr ""
-
-msgid "FAQ by Rank Math"
-msgstr ""
-
-msgid "Easily add Schema-ready, SEO-friendly, Frequently Asked Questions to your content."
-msgstr ""
-
-msgid "HowTo"
-msgstr ""
-
-msgid "HowTo by Rank Math"
-msgstr ""
-
-msgid "Easily add Schema-ready, SEO-friendly, HowTo block to your content."
-msgstr ""
-
-msgid "Schema by Rank Math"
-msgstr ""
-
-msgid "Add the Schema generated by Rank Math anywhere on your page using this Block."
-msgstr ""
-
 msgid "Lock Modified Date"
 msgstr ""
 
@@ -7039,9 +7138,6 @@ msgstr ""
 msgid "Change how some of the links open and operate on your website."
 msgstr ""
 
-msgid "Use the following code in your theme template files to display breadcrumbs. "
-msgstr ""
-
 msgid "Learn More "
 msgstr ""
 
@@ -7105,13 +7201,16 @@ msgstr ""
 msgid "Easily create redirects without fiddling with tedious code."
 msgstr ""
 
-msgid "%s credits left this month. "
+msgid "Get more credits "
 msgstr ""
 
-msgid "Get more credits %s"
+msgid "Credits will renew on"
 msgstr ""
 
-msgid "Credits will renew on %1$s or you can upgrade to get more credits %2$s."
+msgid "check usage"
+msgstr ""
+
+msgid "or you can upgrade to get more credits"
 msgstr ""
 
 msgid "Get sophisticated AI suggestions for related Keywords, Questions & Links to include in the SEO meta & Content Area."
@@ -7397,6 +7496,9 @@ msgid "This page will not appear in search results. You can disable noindex in t
 msgstr ""
 
 msgid "Replace Image"
+msgstr ""
+
+msgid "Add Image"
 msgstr ""
 
 msgid "Remove Image"
@@ -7900,7 +8002,7 @@ msgstr ""
 msgid "Import finished. Click on the button below to continue the Setup Wizard."
 msgstr ""
 
-msgid "Import started..."
+msgid "Import started…"
 msgstr ""
 
 msgid "Importing: "
@@ -8126,6 +8228,573 @@ msgid "Save (Lock Modified Date)"
 msgstr ""
 
 msgid "Update (Lock Modified Date)"
+msgstr ""
+
+msgid "Failed to load dashboard data."
+msgstr ""
+
+msgid "Failed to create brand."
+msgstr ""
+
+msgid "Failed to update brand."
+msgstr ""
+
+msgid "Failed to disable brand."
+msgstr ""
+
+msgid "Failed to enable brand."
+msgstr ""
+
+msgid "Confirm"
+msgstr ""
+
+msgid "Enabling…"
+msgstr ""
+
+msgid "Disabling…"
+msgstr ""
+
+msgid "Transcript"
+msgstr ""
+
+msgid "Query:"
+msgstr ""
+
+msgid "Response:"
+msgstr ""
+
+msgid "Copied!"
+msgstr ""
+
+msgid "Copy Raw Text"
+msgstr ""
+
+msgid "Original Query"
+msgstr ""
+
+msgid "Model Response"
+msgstr ""
+
+msgid "Extracted Signals"
+msgstr ""
+
+msgid "Copy JSON"
+msgstr ""
+
+msgid "Success"
+msgstr ""
+
+msgid "Partial"
+msgstr ""
+
+msgid "Transcript preview"
+msgstr ""
+
+msgid "Select a query to preview its transcript."
+msgstr ""
+
+msgid "All queries"
+msgstr ""
+
+msgid "Filter by date"
+msgstr ""
+
+msgid "No entries match the current filters."
+msgstr ""
+
+msgid "← Back"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Last analysis failed. It will be retried automatically."
+msgstr ""
+
+msgid "Running"
+msgstr ""
+
+msgid "Analysis in progress — data will appear in approximately 10 minutes."
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Weekly"
+msgstr ""
+
+msgid "Monthly (Coming Soon)"
+msgstr ""
+
+msgid "Daily (Coming Soon)"
+msgstr ""
+
+msgid "Coming Soon"
+msgstr ""
+
+msgid "Select country (optional)"
+msgstr ""
+
+msgid "Edit Brand or Product"
+msgstr ""
+
+msgid "Add Brand or Product"
+msgstr ""
+
+msgid "Share the basics so we can start tracking this brand or a product."
+msgstr ""
+
+msgid "Brand / Product Name"
+msgstr ""
+
+msgid "Enter your brand or product name"
+msgstr ""
+
+msgid "Brand / Product URL"
+msgstr ""
+
+msgid "How would you describe your brand/product?"
+msgstr ""
+
+msgid "Describe what your brand/product does, who it's for, and what makes it unique. This helps AI models identify and accurately represent you."
+msgstr ""
+
+msgid "Target Country (Optional)"
+msgstr ""
+
+msgid "Frequency of analyses"
+msgstr ""
+
+msgid "AI Platforms"
+msgstr ""
+
+msgid "Brand name is required."
+msgstr ""
+
+msgid "Please enter a valid URL (must start with https://)."
+msgstr ""
+
+msgid "Website URL is required."
+msgstr ""
+
+msgid "Description is required."
+msgstr ""
+
+msgid "Adding…"
+msgstr ""
+
+msgid "Track how often AI mentions your brand"
+msgstr ""
+
+msgid "Monitor sentiment across AI search results"
+msgstr ""
+
+msgid "See which pages AI models cite as sources"
+msgstr ""
+
+msgid "Benchmark your AI visibility against competitors"
+msgstr ""
+
+msgid "Spot opportunities to grow your AI-driven traffic"
+msgstr ""
+
+msgid "Upgrade to Unlock AI Visibility"
+msgstr ""
+
+msgid "Your competitors are already tracking their AI presence. You should be too."
+msgstr ""
+
+msgid "Upgrade to unlock AI Visibility module and see where your brand appears across ChatGPT, and other AI platforms, and take action before you fall further behind."
+msgstr ""
+
+msgid "Start 15-Day Free Trial"
+msgstr ""
+
+msgid "30-Day Money-Back Guarantee"
+msgstr ""
+
+msgid "Something went wrong while activating your trial. Please try again."
+msgstr ""
+
+msgid "Authenticating credentials…"
+msgstr ""
+
+msgid "Provisioning AI tracking workspace…"
+msgstr ""
+
+msgid "Connecting to AI search models…"
+msgstr ""
+
+msgid "Activate Your AI Visibility Trial"
+msgstr ""
+
+msgid "Start your free trial and see exactly where AI mentions your brand. Your %d-day trial gives you full access to track, analyze, and grow your presence, before your competitors do."
+msgstr ""
+
+msgid "Your trial begins immediately. Auto-renews on %s unless cancelled."
+msgstr ""
+
+msgid "Retry Activation"
+msgstr ""
+
+msgid "Activating Your AI Visibility Trial…"
+msgstr ""
+
+msgid "We're setting up your workspace and connecting AI models. This will take just a moment."
+msgstr ""
+
+msgid "Welcome to AI Visibility"
+msgstr ""
+
+msgid "Your 15-day free trial is now active. We've sent a confirmation email with your trial details and next steps."
+msgstr ""
+
+msgid "Quick Start Guide"
+msgstr ""
+
+msgid "Play Quick Start Guide"
+msgstr ""
+
+msgid "Contact Support"
+msgstr ""
+
+msgid "Go to Dashboard"
+msgstr ""
+
+msgid "Try Again"
+msgstr ""
+
+msgid "Upgrade your Content AI plan"
+msgstr ""
+
+msgid "You've reached the maximum number of brands available on your plan. Contact support if you need a higher limit."
+msgstr ""
+
+msgid "You've reached the brand limit for your current %s plan."
+msgstr ""
+
+msgid "Upgrade Your Plan"
+msgstr ""
+
+msgid "All plans include a 30-day money-back guarantee."
+msgstr ""
+
+msgid "I'll do this later"
+msgstr ""
+
+msgid "+ Add Brand / Product"
+msgstr ""
+
+msgid "Search name or URL"
+msgstr ""
+
+msgid "AI Visibility Score"
+msgstr ""
+
+msgid "Avg Rank"
+msgstr ""
+
+msgid "Avg sentiment"
+msgstr ""
+
+msgid "Mentions"
+msgstr ""
+
+msgid "Citations"
+msgstr ""
+
+msgid "Last analyzed"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Brand detail"
+msgstr ""
+
+msgid "Export Report"
+msgstr ""
+
+msgid "Edit Brand"
+msgstr ""
+
+msgid "Open brand URL"
+msgstr ""
+
+msgid "Last analysis:"
+msgstr ""
+
+msgid "AI Visibility Score for this brand across AI platforms."
+msgstr ""
+
+msgid "Recent Mentions"
+msgstr ""
+
+msgid "Total brand mentions across AI-generated content."
+msgstr ""
+
+msgid "Avg Sentiments"
+msgstr ""
+
+msgid "Average sentiment score across all AI mentions of this brand."
+msgstr ""
+
+msgid "Top Competitor"
+msgstr ""
+
+msgid "The competitor brand with the highest share of voice in AI mentions."
+msgstr ""
+
+msgid "Regenerating…"
+msgstr ""
+
+msgid "Regenerate baseline queries"
+msgstr ""
+
+msgid "No queries yet"
+msgstr ""
+
+msgid "Regenerate baseline queries to start tracking how AI answers questions about this brand."
+msgstr ""
+
+msgid "Query text"
+msgstr ""
+
+msgid "Last updated"
+msgstr ""
+
+msgid "Regenerate queries?"
+msgstr ""
+
+msgid "This will replace all existing baseline queries with new AI-generated ones. Continue?"
+msgstr ""
+
+msgid "Regenerate"
+msgstr ""
+
+msgid "No competitors detected yet"
+msgstr ""
+
+msgid "Competitors are automatically identified during analysis runs."
+msgstr ""
+
+msgid "Competitor"
+msgstr ""
+
+msgid "No transcripts found"
+msgstr ""
+
+msgid "Transcripts will appear here once the first analysis completes."
+msgstr ""
+
+msgid "Queries"
+msgstr ""
+
+msgid "Competitors"
+msgstr ""
+
+msgid "Raw data / Transcripts"
+msgstr ""
+
+msgid "Failed to load brand."
+msgstr ""
+
+msgid "Failed to load insights."
+msgstr ""
+
+msgid "Failed to save brand."
+msgstr ""
+
+msgid "Brand not found."
+msgstr ""
+
+msgid "← Back to Dashboard"
+msgstr ""
+
+msgid "Activate brand?"
+msgstr ""
+
+msgid "Deactivate brand?"
+msgstr ""
+
+msgid "Resume tracking \"%s\"? Analysis will run on the next scheduled cycle."
+msgstr ""
+
+msgid "Stop tracking \"%s\"? You can re-enable it later."
+msgstr ""
+
+msgid "Brand added! The first analysis is running — data will appear in approximately 10 minutes."
+msgstr ""
+
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+msgid "Action failed. Please try again."
+msgstr ""
+
+msgid "Global AI Visibility Score"
+msgstr ""
+
+msgid "Average rank score across all tracked brands."
+msgstr ""
+
+msgid "Analyses in last 24h"
+msgstr ""
+
+msgid "Total analysis runs completed in the past 24 hours."
+msgstr ""
+
+msgid "Avg mentions per brand"
+msgstr ""
+
+msgid "Average number of AI-generated mentions across all tracked brands."
+msgstr ""
+
+msgid "No brands or products tracked yet"
+msgstr ""
+
+msgid "Add a brand or a specific product to see how you rank against competitors. Monitor your AI visibility, discover where you stand, and uncover opportunities to grow."
+msgstr ""
+
+msgid "+ Add Your First Brand"
+msgstr ""
+
+msgid "All Statuses"
+msgstr ""
+
+msgid "Done"
+msgstr ""
+
+msgid "All Brands"
+msgstr ""
+
+msgid "Search runs"
+msgstr ""
+
+msgid "Clear filters"
+msgstr ""
+
+msgid "From date"
+msgstr ""
+
+msgid "To date"
+msgstr ""
+
+msgid "Action"
+msgstr ""
+
+msgid "View Run Detail"
+msgstr ""
+
+msgid "Failed to load run detail."
+msgstr ""
+
+msgid "Analysis Run Detail"
+msgstr ""
+
+msgid "Target Brand"
+msgstr ""
+
+msgid "The brand this analysis run is for."
+msgstr ""
+
+msgid "Duration & Timing"
+msgstr ""
+
+msgid "Total duration of all queries in this run, and the date it was started."
+msgstr ""
+
+msgid "Sentiment"
+msgstr ""
+
+msgid "No queries found"
+msgstr ""
+
+msgid "No queries were recorded for this analysis run."
+msgstr ""
+
+msgid "Sentiment unavailable - this brand was not detected in the AI response for this query."
+msgstr ""
+
+msgid "Sentiment data is not available for this query."
+msgstr ""
+
+msgid "View Transcript"
+msgstr ""
+
+msgid "Analyses & Transcripts"
+msgstr ""
+
+msgid "Global view of all runs with per-query detail."
+msgstr ""
+
+msgid "Failed to generate report."
+msgstr ""
+
+msgid "Reports & Export"
+msgstr ""
+
+msgid "Export daily aggregates for a brand."
+msgstr ""
+
+msgid "Filters"
+msgstr ""
+
+msgid "Select brand and format."
+msgstr ""
+
+msgid "BRAND"
+msgstr ""
+
+msgid "Generating…"
+msgstr ""
+
+msgid "Generate preview"
+msgstr ""
+
+msgid "Select a brand, then click \"Generate preview\"."
+msgstr ""
+
+msgid "Download JSON"
+msgstr ""
+
+msgid "The overall AI Visibility Score for the selected brand and date range, calculated based on the volume of mentions, sentiment, and other factors."
+msgstr ""
+
+msgid "Avg Sentiment"
+msgstr ""
+
+msgid "The average sentiment score across all AI mentions for the selected brand and date range. Calculated by analyzing the sentiment of each mention and averaging the scores."
+msgstr ""
+
+msgid "Total Mentions"
+msgstr ""
+
+msgid "The total number of AI-generated mentions of the selected brand within the specified date range."
+msgstr ""
+
+msgid "Total Citations"
+msgstr ""
+
+msgid "The total number of AI-generated mentions that include a link to the selected brand’s website within the specified date range."
+msgstr ""
+
+msgid "Top competitors"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Connect your account to start tracking your brand's AI visibility."
+msgstr ""
+
+msgid "Need help? View tutorial →"
+msgstr ""
+
+msgid "Takes less than 30 seconds to get started"
+msgstr ""
+
+msgid "Account Connection Required"
 msgstr ""
 
 msgid "Content AI score"
@@ -8392,9 +9061,6 @@ msgstr ""
 msgid "Pass"
 msgstr ""
 
-msgid "Error"
-msgstr ""
-
 msgid "Get Advanced Index Stats Directly from Google database."
 msgstr ""
 
@@ -8467,9 +9133,6 @@ msgstr ""
 msgid "Rank Tracker"
 msgstr ""
 
-msgid "Last updated"
-msgstr ""
-
 msgid "The statistics that appear in the Rank Math Analytics module won’t match with the data from the Google Search Console as we only track posts and keywords that rank in the top 100 positions in the selected timeframe. We do this to help make decision-making easier and for faster data processing since this is the data you really need to prioritize your SEO efforts on."
 msgstr ""
 
@@ -8479,277 +9142,151 @@ msgstr ""
 msgid "Generate Alt"
 msgstr ""
 
-msgid "Generating…"
-msgstr ""
-
 msgid "Generate Alt with AI"
 msgstr ""
 
-msgid "Blog Post Idea"
+msgid "1 request will be used (%d remaining)"
 msgstr ""
 
-msgid "Get fresh ideas for engaging blog posts that resonate with your niche and audience, ensuring captivating content."
+msgid "1 request will be used"
 msgstr ""
 
-msgid "Describe Your Industry/Niche"
+msgid "Back"
 msgstr ""
 
-msgid "e.g. Technology blog that covers latest gadgets, tech news, and reviews"
+msgid "Not available in your plan. "
 msgstr ""
 
-msgid "Blog Post Outline"
+msgid "You've used %1$d of %2$d research requests this month."
 msgstr ""
 
-msgid "Structure blog posts with a clear flow, guiding readers effortlessly for better understanding and engagement."
+msgid "Upgrade to buy more credits from "
 msgstr ""
 
-msgid "Blog Post Introduction"
+msgid "Content AI Pricing."
 msgstr ""
 
-msgid "Craft attractive intros that captivate readers' interest, compelling them to explore further into your blog."
+msgid "here."
 msgstr ""
 
-msgid "Blog Post Conclusion"
+msgid "Suggested length 2-3 Words"
 msgstr ""
 
-msgid "End your blog posts with impactful summaries, reinforcing key takeaways and leaving a lasting impression."
+msgid "To learn how to use it"
 msgstr ""
 
-msgid "Create eye-catching headlines for articles and blogs, grabbing readers' attention and boosting engagement."
+msgid "Click here"
 msgstr ""
 
-msgid "Topic Research"
+msgid "Research"
 msgstr ""
 
-msgid "Dive deep into comprehensive reports on specific topics, uncovering trends, history, and industry players."
+msgid "Score:"
 msgstr ""
 
-msgid "Optimize headlines for enhanced visibility, organic traffic, and a stronger online presence."
+msgid "100"
 msgstr ""
 
-msgid "Craft concise and persuasive summaries that captivate readers and search engines, improving click-through rates."
+msgid "Use"
 msgstr ""
 
-msgid "Paragraph"
+msgid "to"
 msgstr ""
 
-msgid "Generate well-structured and informative paragraphs, seamlessly blending into your content for better readability."
+msgid "Copied"
 msgstr ""
 
-msgid "Paragraph Rewriter"
+msgid "Ad Competition:"
 msgstr ""
 
-msgid "Refine paragraphs while preserving meaning, ensuring originality, and enhancing clarity."
+msgid "CPC:"
 msgstr ""
 
-msgid "Sentence Expander"
+msgid "Volume:"
 msgstr ""
 
-msgid "Transform incomplete sentences into polished expressions, adding depth and clarity to your writing."
+msgid "Click to copy keyword"
 msgstr ""
 
-msgid "Text Summarizer"
+msgid "Use Keyword in"
 msgstr ""
 
-msgid "Condense complex texts into concise summaries, highlighting crucial points and essential information."
+msgid "Headings"
 msgstr ""
 
-msgid "Fix Grammar"
+msgid "Know more about Keywords."
 msgstr ""
 
-msgid "Utilize AI-powered grammar correction to polish your written content, eliminating errors and improving clarity."
+msgid "Click on any keyword to copy it."
 msgstr ""
 
-msgid "Text"
+msgid "Please use only one or two keywords from here."
 msgstr ""
 
-msgid "Enter the text to fix grammar"
+msgid "There are no recommended Keywords for this researched keyword."
 msgstr ""
 
-msgid "Analogy"
+msgid "Related Keywords"
 msgstr ""
 
-msgid "Enhance clarity by rephrasing text using alternative words, providing a fresh perspective without altering meaning."
+msgid "There are no recommended Questions for this researched keyword."
 msgstr ""
 
-msgid "Product Description"
+msgid "Related Questions"
 msgstr ""
 
-msgid "Craft compelling descriptions that effectively showcase the unique benefits and features of your product."
+msgid "Know more about Questions."
 msgstr ""
 
-msgid "Product Pros & Cons"
+msgid "Copy this data as a FAQ Block."
 msgstr ""
 
-msgid "Present balanced overviews outlining the advantages and limitations, aiding informed decisions."
+msgid "Click on any question to copy it."
 msgstr ""
 
-msgid "Product Review"
+msgid "There are no recommended Links for this researched keyword."
 msgstr ""
 
-msgid "Provide detailed evaluations covering strengths, weaknesses, and practical recommendations."
+msgid "Related External Links"
 msgstr ""
 
-msgid "Address common queries with comprehensive answers, offering valuable information and guidance."
+msgid "Know more about Links."
 msgstr ""
 
-msgid "Comment Reply"
+msgid "Use some of these external links in the content area. It is recommended to add"
 msgstr ""
 
-msgid "Engage your audience with thoughtful and engaging responses, fostering meaningful interactions."
+msgid "about or mention Schema."
 msgstr ""
 
-msgid "Personal Bio"
+msgid "Questions"
 msgstr ""
 
-msgid "Create professional and captivating biographies highlighting accomplishments, expertise, and personality."
+msgid "Fetching Search Results"
 msgstr ""
 
-msgid "Company Bio"
+msgid "Analysing Your Competitors"
 msgstr ""
 
-msgid "Craft informative overviews of your company's history, values, mission, and team, building credibility."
+msgid "Crunching the Numbers"
 msgstr ""
 
-msgid "Job Description"
+msgid "Cooking a Personalized SEO Plan"
 msgstr ""
 
-msgid "Create enticing and comprehensive descriptions outlining requirements, responsibilities, and opportunities."
+msgid "Final Touches to the SEO Recommendations"
 msgstr ""
 
-msgid "Testimonial"
+msgid "Content AI Knowledge Base."
 msgstr ""
 
-msgid "Develop persuasive testimonials sharing positive experiences, endorsing your product, service, or brand."
+msgid "Sorry, the request has failed. If the issue persists, please contact our Support for assistance."
 msgstr ""
 
-msgid "Product or Service"
+msgid "AI Fix was applied only considering the beginning of the content, as the full content is too large to be processed by the AI."
 msgstr ""
 
-msgid "Facebook Post"
-msgstr ""
-
-msgid "Create intriguing and shareable content for Facebook, captivating your audience and boosting engagement."
-msgstr ""
-
-msgid "Facebook Comment Reply"
-msgstr ""
-
-msgid "Generate relevant responses to Facebook comments, build relationships & encourage interaction."
-msgstr ""
-
-msgid "Reply brief"
-msgstr ""
-
-msgid "Post brief"
-msgstr ""
-
-msgid "Create engaging tweets, boost interaction, and foster connections with your followers."
-msgstr ""
-
-msgid "Tweet Reply"
-msgstr ""
-
-msgid "Generate optimized replies for tweets to promote engagement and strengthen connections."
-msgstr ""
-
-msgid "Instagram Caption"
-msgstr ""
-
-msgid "Craft catchy captions for Instagram posts to increase engagement and grab attention."
-msgstr ""
-
-msgid "Create effective emails for promotions, announcements, and follow-ups to achieve marketing goals."
-msgstr ""
-
-msgid "Email Reply"
-msgstr ""
-
-msgid "Craft courteous email replies to promote interaction and strengthen relationships."
-msgstr ""
-
-msgid "AIDA"
-msgstr ""
-
-msgid "Write persuasive text using the Attention-Interest-Desire-Action formula to drive action."
-msgstr ""
-
-msgid "IDCA"
-msgstr ""
-
-msgid "Create compelling messages using the Identify-Develop-Communicate-Ask strategy to resonate."
-msgstr ""
-
-msgid "PAS"
-msgstr ""
-
-msgid "Address customer problems with the Problem-Agitate-Solution technique to fulfill needs."
-msgstr ""
-
-msgid "HERO"
-msgstr ""
-
-msgid "Craft captivating headlines using the HERO formula to engage, reveal, and offer value."
-msgstr ""
-
-msgid "SPIN"
-msgstr ""
-
-msgid "Describe customer problems, highlight implications, and offer solutions using the SPIN method."
-msgstr ""
-
-msgid "BAB"
-msgstr ""
-
-msgid "Create a compelling Before-After-Bridge narrative to demonstrate product or service value."
-msgstr ""
-
-msgid "YouTube Video Script"
-msgstr ""
-
-msgid "Develop engaging video scripts for YouTube to inform, entertain, and align."
-msgstr ""
-
-msgid "YouTube Video Description"
-msgstr ""
-
-msgid "Generate informative and engaging video descriptions for YouTube."
-msgstr ""
-
-msgid "Podcast Episode Outline"
-msgstr ""
-
-msgid "Create detailed outlines for podcast episodes, including topics and takeaways."
-msgstr ""
-
-msgid "Create detailed and easy-to-follow recipes with ingredients, instructions, and nutrition."
-msgstr ""
-
-msgid "Freeform Writing"
-msgstr ""
-
-msgid "Generate text based on prompts or topics, allowing for imaginative or technical writing."
-msgstr ""
-
-msgid "What do you want to write?"
-msgstr ""
-
-msgid "AI Command"
-msgstr ""
-
-msgid "Ask AI anything and receive relevant and informative responses for questions or requests."
-msgstr ""
-
-msgid "SEO Meta"
-msgstr ""
-
-msgid "Optimize headlines and descriptions to improve visibility on search engines."
-msgstr ""
-
-msgid "Open Graph"
-msgstr ""
-
-msgid "Boost content visibility on social media with topic-specific meta tags for easy discovery."
+msgid "Error: The request payload is too large!"
 msgstr ""
 
 msgid "Topic Brief"
@@ -8959,6 +9496,9 @@ msgstr ""
 msgid "Enter the original email"
 msgstr ""
 
+msgid "Product Description"
+msgstr ""
+
 msgid "Introduce your product here. Provide a detailed description of its features and benefits, highlighting what sets it apart from competitors and why it's the perfect solution for your target audience."
 msgstr ""
 
@@ -9025,16 +9565,313 @@ msgstr ""
 msgid "Enter the document title"
 msgstr ""
 
-msgid "Sorry, the request has failed. If the issue persists, please contact our Support for assistance."
+msgid "Generate with AI"
+msgstr ""
+
+msgid "%1$sNote:%2$s Your input is processed using AI. Please review and edit before publishing."
+msgstr ""
+
+msgid "Not available in your plan."
+msgstr ""
+
+msgid "uses"
+msgstr ""
+
+msgid "You've sent %d messages this month. Your plan includes Unlimited usage."
+msgstr ""
+
+msgid "You've used %d requests this month. Your plan includes Unlimited usage."
+msgstr ""
+
+msgid "You've used %1$d of %2$d %3$s this month."
+msgstr ""
+
+msgid "{{link}}Click here{{/link}} to learn how to use it."
+msgstr ""
+
+msgid "Generate"
+msgstr ""
+
+msgid "write requests"
+msgstr ""
+
+msgid "Blog Post Wizard"
+msgstr ""
+
+msgid "Create a complete blog post in one go. Just fill in some details and Content AI will create a complete blog post for you."
+msgstr ""
+
+msgid "Blog Post Idea"
+msgstr ""
+
+msgid "Get fresh ideas for engaging blog posts that resonate with your niche and audience, ensuring captivating content."
+msgstr ""
+
+msgid "Describe Your Industry/Niche"
+msgstr ""
+
+msgid "e.g. Technology blog that covers latest gadgets, tech news, and reviews"
+msgstr ""
+
+msgid "Blog Post Outline"
+msgstr ""
+
+msgid "Structure blog posts with a clear flow, guiding readers effortlessly for better understanding and engagement."
+msgstr ""
+
+msgid "Blog Post Introduction"
+msgstr ""
+
+msgid "Craft attractive intros that captivate readers' interest, compelling them to explore further into your blog."
+msgstr ""
+
+msgid "Blog Post Conclusion"
+msgstr ""
+
+msgid "End your blog posts with impactful summaries, reinforcing key takeaways and leaving a lasting impression."
+msgstr ""
+
+msgid "Create eye-catching headlines for articles and blogs, grabbing readers' attention and boosting engagement."
+msgstr ""
+
+msgid "Topic Research"
+msgstr ""
+
+msgid "Dive deep into comprehensive reports on specific topics, uncovering trends, history, and industry players."
+msgstr ""
+
+msgid "Optimize headlines for enhanced visibility, organic traffic, and a stronger online presence."
+msgstr ""
+
+msgid "Craft concise and persuasive summaries that captivate readers and search engines, improving click-through rates."
+msgstr ""
+
+msgid "Paragraph"
+msgstr ""
+
+msgid "Generate well-structured and informative paragraphs, seamlessly blending into your content for better readability."
+msgstr ""
+
+msgid "Paragraph Rewriter"
+msgstr ""
+
+msgid "Refine paragraphs while preserving meaning, ensuring originality, and enhancing clarity."
+msgstr ""
+
+msgid "Sentence Expander"
+msgstr ""
+
+msgid "Transform incomplete sentences into polished expressions, adding depth and clarity to your writing."
+msgstr ""
+
+msgid "Text Summarizer"
+msgstr ""
+
+msgid "Condense complex texts into concise summaries, highlighting crucial points and essential information."
+msgstr ""
+
+msgid "Fix Grammar"
+msgstr ""
+
+msgid "Utilize AI-powered grammar correction to polish your written content, eliminating errors and improving clarity."
+msgstr ""
+
+msgid "Text"
+msgstr ""
+
+msgid "Enter the text to fix grammar"
+msgstr ""
+
+msgid "Analogy"
+msgstr ""
+
+msgid "Enhance clarity by rephrasing text using alternative words, providing a fresh perspective without altering meaning."
+msgstr ""
+
+msgid "Craft compelling descriptions that effectively showcase the unique benefits and features of your product."
+msgstr ""
+
+msgid "Product Pros & Cons"
+msgstr ""
+
+msgid "Present balanced overviews outlining the advantages and limitations, aiding informed decisions."
+msgstr ""
+
+msgid "Product Review"
+msgstr ""
+
+msgid "Provide detailed evaluations covering strengths, weaknesses, and practical recommendations."
+msgstr ""
+
+msgid "Frequently Asked Questions"
+msgstr ""
+
+msgid "Address common queries with comprehensive answers, offering valuable information and guidance."
+msgstr ""
+
+msgid "Comment Reply"
+msgstr ""
+
+msgid "Engage your audience with thoughtful and engaging responses, fostering meaningful interactions."
+msgstr ""
+
+msgid "Personal Bio"
+msgstr ""
+
+msgid "Create professional and captivating biographies highlighting accomplishments, expertise, and personality."
+msgstr ""
+
+msgid "Company Bio"
+msgstr ""
+
+msgid "Craft informative overviews of your company's history, values, mission, and team, building credibility."
+msgstr ""
+
+msgid "Job Description"
+msgstr ""
+
+msgid "Create enticing and comprehensive descriptions outlining requirements, responsibilities, and opportunities."
+msgstr ""
+
+msgid "Testimonial"
+msgstr ""
+
+msgid "Develop persuasive testimonials sharing positive experiences, endorsing your product, service, or brand."
+msgstr ""
+
+msgid "Product or Service"
+msgstr ""
+
+msgid "Facebook Post"
+msgstr ""
+
+msgid "Create intriguing and shareable content for Facebook, captivating your audience and boosting engagement."
+msgstr ""
+
+msgid "Facebook Comment Reply"
+msgstr ""
+
+msgid "Generate relevant responses to Facebook comments, build relationships & encourage interaction."
+msgstr ""
+
+msgid "Reply brief"
+msgstr ""
+
+msgid "Post brief"
+msgstr ""
+
+msgid "Create engaging tweets, boost interaction, and foster connections with your followers."
+msgstr ""
+
+msgid "Tweet Reply"
+msgstr ""
+
+msgid "Generate optimized replies for tweets to promote engagement and strengthen connections."
+msgstr ""
+
+msgid "Instagram Caption"
+msgstr ""
+
+msgid "Craft catchy captions for Instagram posts to increase engagement and grab attention."
+msgstr ""
+
+msgid "Create effective emails for promotions, announcements, and follow-ups to achieve marketing goals."
+msgstr ""
+
+msgid "Email Reply"
+msgstr ""
+
+msgid "Craft courteous email replies to promote interaction and strengthen relationships."
+msgstr ""
+
+msgid "AIDA"
+msgstr ""
+
+msgid "Write persuasive text using the Attention-Interest-Desire-Action formula to drive action."
+msgstr ""
+
+msgid "IDCA"
+msgstr ""
+
+msgid "Create compelling messages using the Identify-Develop-Communicate-Ask strategy to resonate."
+msgstr ""
+
+msgid "PAS"
+msgstr ""
+
+msgid "Address customer problems with the Problem-Agitate-Solution technique to fulfill needs."
+msgstr ""
+
+msgid "HERO"
+msgstr ""
+
+msgid "Craft captivating headlines using the HERO formula to engage, reveal, and offer value."
+msgstr ""
+
+msgid "SPIN"
+msgstr ""
+
+msgid "Describe customer problems, highlight implications, and offer solutions using the SPIN method."
+msgstr ""
+
+msgid "BAB"
+msgstr ""
+
+msgid "Create a compelling Before-After-Bridge narrative to demonstrate product or service value."
+msgstr ""
+
+msgid "YouTube Video Script"
+msgstr ""
+
+msgid "Develop engaging video scripts for YouTube to inform, entertain, and align."
+msgstr ""
+
+msgid "YouTube Video Description"
+msgstr ""
+
+msgid "Generate informative and engaging video descriptions for YouTube."
+msgstr ""
+
+msgid "Podcast Episode Outline"
+msgstr ""
+
+msgid "Create detailed outlines for podcast episodes, including topics and takeaways."
+msgstr ""
+
+msgid "Create detailed and easy-to-follow recipes with ingredients, instructions, and nutrition."
+msgstr ""
+
+msgid "Freeform Writing"
+msgstr ""
+
+msgid "Generate text based on prompts or topics, allowing for imaginative or technical writing."
+msgstr ""
+
+msgid "What do you want to write?"
+msgstr ""
+
+msgid "AI Command"
+msgstr ""
+
+msgid "Ask AI anything and receive relevant and informative responses for questions or requests."
+msgstr ""
+
+msgid "SEO Meta"
+msgstr ""
+
+msgid "Optimize headlines and descriptions to improve visibility on search engines."
+msgstr ""
+
+msgid "Open Graph"
+msgstr ""
+
+msgid "Boost content visibility on social media with topic-specific meta tags for easy discovery."
 msgstr ""
 
 msgid "Words: %d"
 msgstr ""
 
 msgid "Copy"
-msgstr ""
-
-msgid "Copied!"
 msgstr ""
 
 msgid "Insert"
@@ -9046,28 +9883,34 @@ msgstr ""
 msgid "Click Here"
 msgstr ""
 
-msgid "1 Word Output = 1 Credit"
+msgid "Outputs"
 msgstr ""
 
-msgid "We are sorry but this feature is only available to Rank Math PRO/Business/Agency Users. Unlock this feature and many more by getting a Rank Math plan."
+msgid "Generate More"
 msgstr ""
 
-msgid "Bulk Edit SEO Tags"
+msgid "Skip"
 msgstr ""
 
-msgid "Advanced Google Analytics 4 Integration"
+msgid "Write Post"
+msgstr ""
+
+msgid "Next Step"
+msgstr ""
+
+msgid "Create New Post"
+msgstr ""
+
+msgid "Post Outline"
+msgstr ""
+
+msgid "Steps"
 msgstr ""
 
 msgid "Required fields."
 msgstr ""
 
-msgid "Outputs"
-msgstr ""
-
-msgid "Generate"
-msgstr ""
-
-msgid "Generate More"
+msgid "%s requests"
 msgstr ""
 
 msgid "Output"
@@ -9079,10 +9922,7 @@ msgstr ""
 msgid "%s to access all the Content AI tools"
 msgstr ""
 
-msgid "Click here"
-msgstr ""
-
-msgid "Thank you for choosing Rank Math! {{strong}}Enjoy 750 Credits monthly for life{{/strong}} as a token of our appreciation! 🎁"
+msgid "SEO"
 msgstr ""
 
 msgid "Marketing & Sales"
@@ -9094,19 +9934,7 @@ msgstr ""
 msgid "Misc"
 msgstr ""
 
-msgid "Use"
-msgstr ""
-
-msgid "Regenerate"
-msgstr ""
-
-msgid "Write More"
-msgstr ""
-
-msgid "Dismiss"
-msgstr ""
-
-msgid "{{link}}Click here{{/link}} to learn how to use it."
+msgid "Multistep Wizard"
 msgstr ""
 
 msgid "Recent"
@@ -9116,9 +9944,6 @@ msgid "Custom +"
 msgstr ""
 
 msgid "Prompts Library"
-msgstr ""
-
-msgid "Updating..."
 msgstr ""
 
 msgid "Update Library"
@@ -9137,6 +9962,9 @@ msgid "Prompt Text"
 msgstr ""
 
 msgid "Use [brackets] to insert placeholders."
+msgstr ""
+
+msgid "Prompt with this name already exists"
 msgstr ""
 
 msgid "Save Prompt"
@@ -9184,19 +10012,19 @@ msgstr ""
 msgid "Send"
 msgstr ""
 
+msgid "messages"
+msgstr ""
+
+msgid "Write"
+msgstr ""
+
 msgid "Copy as Text"
 msgstr ""
 
 msgid "Copy as Blocks"
 msgstr ""
 
-msgid "Create New Post"
-msgstr ""
-
 msgid "Expand Sidebar"
-msgstr ""
-
-msgid "Write"
 msgstr ""
 
 msgid "Collapse Sidebar"
@@ -9211,208 +10039,49 @@ msgstr ""
 msgid "No AI History found."
 msgstr ""
 
-msgid "Run as Command"
+msgid "Keyword Research"
 msgstr ""
 
-msgid "Improve"
+msgid "Image Alt Text"
 msgstr ""
 
-msgid "Summarize"
+msgid "Chat (RankBot)"
 msgstr ""
 
-msgid "Write Analogy"
+msgid "Bulk SEO Meta"
 msgstr ""
 
-msgid "Content AI Commands"
+msgid "Fix with AI"
 msgstr ""
 
-msgid "Shorten with AI"
+msgid "Write More"
 msgstr ""
 
-msgid "Image URL is missing."
+msgid "Could not fetch usage data. Please try again."
 msgstr ""
 
-msgid "50 Content AI credits will be used to generate the Alt"
+msgid "AI Usage"
 msgstr ""
 
-msgid "Generate With AI"
+msgid "Refreshing…"
 msgstr ""
 
-msgid "Generate Answer with Content AI"
+msgid "Refresh"
 msgstr ""
 
-msgid "Click or Press Enter"
+msgid "If you don't see the latest usage data, click Refresh to sync it from your account."
 msgstr ""
 
-msgid "Type / to choose a block or // to use Content AI"
+msgid "Features"
 msgstr ""
 
-msgid "Back"
+msgid "Usage this Month"
 msgstr ""
 
-msgid "Upgrade to buy more credits from "
+msgid "Unlimited"
 msgstr ""
 
-msgid "Content AI Pricing."
-msgstr ""
-
-msgid "here."
-msgstr ""
-
-msgid "Suggested length 2-3 Words"
-msgstr ""
-
-msgid "To learn how to use it"
-msgstr ""
-
-msgid "Refresh will use 500 Credit."
-msgstr ""
-
-msgid "500 credits will be used."
-msgstr ""
-
-msgid "Research"
-msgstr ""
-
-msgid "Score:"
-msgstr ""
-
-msgid "100"
-msgstr ""
-
-msgid "to"
-msgstr ""
-
-msgid "Copied"
-msgstr ""
-
-msgid "Ad Competition:"
-msgstr ""
-
-msgid "CPC:"
-msgstr ""
-
-msgid "Volume:"
-msgstr ""
-
-msgid "Click to copy keyword"
-msgstr ""
-
-msgid "Use Keyword in"
-msgstr ""
-
-msgid "Headings"
-msgstr ""
-
-msgid "Know more about Keywords."
-msgstr ""
-
-msgid "Click on any keyword to copy it."
-msgstr ""
-
-msgid "Please use only one or two keywords from here."
-msgstr ""
-
-msgid "There are no recommended Keywords for this researched keyword."
-msgstr ""
-
-msgid "Related Keywords"
-msgstr ""
-
-msgid "There are no recommended Questions for this researched keyword."
-msgstr ""
-
-msgid "Related Questions"
-msgstr ""
-
-msgid "Know more about Questions."
-msgstr ""
-
-msgid "Copy this data as a FAQ Block."
-msgstr ""
-
-msgid "Click on any question to copy it."
-msgstr ""
-
-msgid "There are no recommended Links for this researched keyword."
-msgstr ""
-
-msgid "Related External Links"
-msgstr ""
-
-msgid "Know more about Links."
-msgstr ""
-
-msgid "Use some of these external links in the content area. It is recommended to add"
-msgstr ""
-
-msgid "about or mention Schema."
-msgstr ""
-
-msgid "Questions"
-msgstr ""
-
-msgid "Fetching Search Results"
-msgstr ""
-
-msgid "Analysing Your Competitors"
-msgstr ""
-
-msgid "Crunching the Numbers"
-msgstr ""
-
-msgid "Cooking a Personalized SEO Plan"
-msgstr ""
-
-msgid "Final Touches to the SEO Recommendations"
-msgstr ""
-
-msgid "Content AI Knowledge Base."
-msgstr ""
-
-msgid "AI Fix was applied only considering the beginning of the content, as the full content is too large to be processed by the AI."
-msgstr ""
-
-msgid "Error: The request payload is too large!"
-msgstr ""
-
-msgid "Generate with AI"
-msgstr ""
-
-msgid "%1$sNote:%2$s Your input is processed using AI. Please review and edit before publishing."
-msgstr ""
-
-msgid "Blog Post Wizard"
-msgstr ""
-
-msgid "Create a complete blog post in one go. Just fill in some details and Content AI will create a complete blog post for you."
-msgstr ""
-
-msgid "Skip"
-msgstr ""
-
-msgid "Write Post"
-msgstr ""
-
-msgid "Next Step"
-msgstr ""
-
-msgid "Post Outline"
-msgstr ""
-
-msgid "Steps"
-msgstr ""
-
-msgid "Multistep Wizard"
-msgstr ""
-
-msgid "Prompt with this name already exists"
-msgstr ""
-
-msgid "Credits"
-msgstr ""
-
-msgid "Know more about credits."
+msgid "Usage"
 msgstr ""
 
 msgid "Content is %1$s words long. Consider using at least %2$s words."
@@ -9454,7 +10123,43 @@ msgstr ""
 msgid "Undo"
 msgstr ""
 
-msgid "Fix with AI"
+msgid "Shorten with AI"
+msgstr ""
+
+msgid "⛔️ Monthly Limit Reached!"
+msgstr ""
+
+msgid "You've reached the monthly limit for this feature. To continue enjoying seamless content creation, simply click the button below to upgrade your plan and get more usage."
+msgstr ""
+
+msgid "Run as Command"
+msgstr ""
+
+msgid "Improve"
+msgstr ""
+
+msgid "Summarize"
+msgstr ""
+
+msgid "Write Analogy"
+msgstr ""
+
+msgid "Content AI Commands"
+msgstr ""
+
+msgid "Image URL is missing."
+msgstr ""
+
+msgid "50 Content AI credits will be used to generate the Alt"
+msgstr ""
+
+msgid "Generate With AI"
+msgstr ""
+
+msgid "Generate Answer with Content AI"
+msgstr ""
+
+msgid "Type / to choose a block or // to use Content AI"
 msgstr ""
 
 msgid "Improve your content with a personal Content AI."
@@ -9476,6 +10181,12 @@ msgid "Choose your plan"
 msgstr ""
 
 msgid "Start using Content AI by connecting your RankMath account."
+msgstr ""
+
+msgid "Dismiss"
+msgstr ""
+
+msgid "Click or Press Enter"
 msgstr ""
 
 msgid "View internal links from this post"
@@ -9535,9 +10246,6 @@ msgstr ""
 msgid "Link Type"
 msgstr ""
 
-msgid "Success"
-msgstr ""
-
 msgid "Broken"
 msgstr ""
 
@@ -9592,346 +10300,16 @@ msgstr ""
 msgid "Update Capabilities"
 msgstr ""
 
-msgid "Author Name"
-msgstr ""
-
-msgid "Image URL"
-msgstr ""
-
-msgid "Rating"
-msgstr ""
-
-msgid "Rating score"
-msgstr ""
-
-msgid "Rating Minimum"
-msgstr ""
-
-msgid "Rating minimum score"
-msgstr ""
-
-msgid "Rating Maximum"
-msgstr ""
-
-msgid "Rating maximum score"
-msgstr ""
-
-msgid "Review"
-msgstr ""
-
-msgid "Either a specific edition of the written work, or the volume of the work"
-msgstr ""
-
-msgid "The title of the tome. Use for the title of the tome if it differs from the book. *Optional when tome has the same title as the book"
-msgstr ""
-
-msgid "The edition of the book"
-msgstr ""
-
-msgid "The ISBN of the print book"
-msgstr ""
-
-msgid "URL specific to this edition if one exists"
-msgstr ""
-
-msgid "Date of first publication of this tome"
-msgstr ""
-
-msgid "Book Format"
-msgstr ""
-
-msgid "Course Schedule"
-msgstr ""
-
-msgid "Suggested pacing in repeatFrequency units (8601 duration format). For example, PT5H monthly means 5 hours per month. Use courseWorkload for total length."
-msgstr ""
-
-msgid "The numerical value for how long the course lasts for, in repeatFrequency units. For example, if the repeatFrequency is monthly and the repeatCount is 4, the course lasts for 4 months."
-msgstr ""
-
-msgid "The duration and repeatCount properties are relative to this field. "
-msgstr ""
-
 msgid "Select Repeat Frequency"
 msgstr ""
 
 msgid "Daily"
 msgstr ""
 
-msgid "Weekly"
-msgstr ""
-
 msgid "Monthly"
 msgstr ""
 
 msgid "Yearly"
-msgstr ""
-
-msgid "The start date for the course, in 8601 date format (YYYY-MM-DD), if applicable."
-msgstr ""
-
-msgid "The end date for the course, in 8601 date format (YYYY-MM-DD), if applicable."
-msgstr ""
-
-msgid "Course Instance"
-msgstr ""
-
-msgid "The medium through which the course will be delivered."
-msgstr ""
-
-msgid "Total time to watch all videos and complete all assignments and exams for the course. Use the 8601 format. Example: PT22H"
-msgstr ""
-
-msgid "Offers"
-msgstr ""
-
-msgid "Category"
-msgstr ""
-
-msgid "Offer availability"
-msgstr ""
-
-msgid "Price Valid From"
-msgstr ""
-
-msgid "The date when the item becomes valid."
-msgstr ""
-
-msgid "The date after which the price will no longer be available"
-msgstr ""
-
-msgid "Inventory Level"
-msgstr ""
-
-msgid "The URL of the online event, where people can join. This property is required if your event is happening online"
-msgstr ""
-
-msgid "Country"
-msgstr ""
-
-msgid "The venue name."
-msgstr ""
-
-msgid "Website URL of the venue"
-msgstr ""
-
-msgid "Performer Information"
-msgstr ""
-
-msgid "Website or Social Link"
-msgstr ""
-
-msgid "Salary (Recommended)"
-msgstr ""
-
-msgid "Insert amount, e.g. 50.00, or a salary range, e.g. 40.00-50.00"
-msgstr ""
-
-msgid "Payroll (Recommended)"
-msgstr ""
-
-msgid "Salary amount is for"
-msgstr ""
-
-msgid "ISO 4217 Currency code. Example: EUR"
-msgstr ""
-
-msgid "Hiring Organization"
-msgstr ""
-
-msgid "The name of the company. Leave empty to use your own company information."
-msgstr ""
-
-msgid "Organization URL (Recommended)"
-msgstr ""
-
-msgid "The URL of the organization offering the job position. Leave empty to use your own company information"
-msgstr ""
-
-msgid "Organization Logo (Recommended)"
-msgstr ""
-
-msgid "Logo URL of the organization offering the job position. Leave empty to use your own company information"
-msgstr ""
-
-msgid "Brand Name"
-msgstr ""
-
-msgid "The number of calories in the recipe. Optional."
-msgstr ""
-
-msgid "A recipe video Name"
-msgstr ""
-
-msgid "A recipe video Description"
-msgstr ""
-
-msgid "Video URL"
-msgstr ""
-
-msgid "A video URL. Optional."
-msgstr ""
-
-msgid "Content URL"
-msgstr ""
-
-msgid "A URL pointing to the actual video media file"
-msgstr ""
-
-msgid "A recipe video thumbnail URL"
-msgstr ""
-
-msgid "ISO 8601 duration format. Example: PT1H30M"
-msgstr ""
-
-msgid "Video Upload Date"
-msgstr ""
-
-msgid "Instruction name of the recipe."
-msgstr ""
-
-msgid "Instruction Texts"
-msgstr ""
-
-msgid "Timings"
-msgstr ""
-
-msgid "Open Days"
-msgstr ""
-
-msgid "Google does not allow Person as the Publisher for articles. Organization will be used instead."
-msgstr ""
-
-msgid "Article Section"
-msgstr ""
-
-msgid "Review Location"
-msgstr ""
-
-msgid "The review or rating must be displayed on the page to comply with Google's Schema guidelines."
-msgstr ""
-
-msgid "You can either use this shortcode or Schema Block in the block editor to print the schema data in the content in order to meet the Google's guidelines. Read more about it <a href=https://developers.google.com/search/docs/guides/sd-policies#content target=_blank>here</a>."
-msgstr ""
-
-msgid "Editions"
-msgstr ""
-
-msgid "The pricing category of the course. Example: Free, Partially Free, Subscription, Paid"
-msgstr ""
-
-msgid "The numerical price of the course, if applicable."
-msgstr ""
-
-msgid "The currency of the price of the course, in ISO 4217 currency format (3 letter code), if applicable."
-msgstr ""
-
-msgid "Type of the event"
-msgstr ""
-
-msgid "Current status of the event (optional)"
-msgstr ""
-
-msgid "Indicates whether the event occurs online, offline at a physical location, or a mix of both online and offline."
-msgstr ""
-
-msgid "Date and time of the event"
-msgstr ""
-
-msgid "End date and time of the event"
-msgstr ""
-
-msgid "The original date on which employer posted the job. You can leave it empty to use the post publication date as job posted date"
-msgstr ""
-
-msgid "The date when the job posting will expire. If a job posting never expires, or you do not know when the job will expire, do not include this property"
-msgstr ""
-
-msgid "If checked, post status will be changed to Draft and its URL will return a 404 error, as required by the Rich Result guidelines"
-msgstr ""
-
-msgid "Employment Type (Recommended)"
-msgstr ""
-
-msgid "Type of employment. You can choose more than one value"
-msgstr ""
-
-msgid "Posting ID (Recommended)"
-msgstr ""
-
-msgid "The hiring organization's unique identifier for the job."
-msgstr ""
-
-msgid "Music Type"
-msgstr ""
-
-msgid "Job title"
-msgstr ""
-
-msgid "The job title of the person (for example, Financial Manager)."
-msgstr ""
-
-msgid "Product name"
-msgstr ""
-
-msgid "Gtin"
-msgstr ""
-
-msgid "MPN"
-msgstr ""
-
-msgid "Type of dish, for example appetizer, or dessert."
-msgstr ""
-
-msgid "The cuisine of the recipe (for example, French or Ethiopian)."
-msgstr ""
-
-msgid "Other terms for your recipe such as the season, the holiday, or other descriptors. Separate multiple entries with commas."
-msgstr ""
-
-msgid "Quantity produced by the recipe, for example 4 servings"
-msgstr ""
-
-msgid "Recipe ingredients, add one item per line"
-msgstr ""
-
-msgid "Instruction Type"
-msgstr ""
-
-msgid "URL pointing to the menu of the restaurant."
-msgstr ""
-
-msgid "The type of service being offered, e.g. veterans' benefits, emergency relief, etc."
-msgstr ""
-
-msgid "Software"
-msgstr ""
-
-msgid "For example, Windows 7, OSX 10.6, Android 1.6"
-msgstr ""
-
-msgid "For example, Game, Multimedia"
-msgstr ""
-
-msgid "Upload Date"
-msgstr ""
-
-msgid "Embed URL"
-msgstr ""
-
-msgid "A URL pointing to the embeddable player for the video. Example: <code>https://www.youtube.com/embed/VIDEOID</code>"
-msgstr ""
-
-msgid "A URL pointing to the actual video media file like MP4, MOV, etc. Please leave it empty if you don't know the URL."
-msgstr ""
-
-msgid "ISO 8601 duration format. Example: 1H30M"
-msgstr ""
-
-msgid "Video Thumbnail"
-msgstr ""
-
-msgid "A video thumbnail URL"
 msgstr ""
 
 msgid "Podcast Episode"
@@ -9944,6 +10322,12 @@ msgid "Fact Check"
 msgstr ""
 
 msgid "Movie"
+msgstr ""
+
+msgid "FAQ"
+msgstr ""
+
+msgid "HowTo"
 msgstr ""
 
 msgid "Delete?"
@@ -10021,6 +10405,9 @@ msgstr ""
 msgid "Schema Builder"
 msgstr ""
 
+msgid "More Info"
+msgstr ""
+
 msgid "Pro"
 msgstr ""
 
@@ -10058,6 +10445,120 @@ msgid "Configure Schema Markup for your pages. Search engines, use structured da
 msgstr ""
 
 msgid "Select Schema"
+msgstr ""
+
+msgid "FAQ Options"
+msgstr ""
+
+msgid "List Style"
+msgstr ""
+
+msgid "Title Wrapper"
+msgstr ""
+
+msgid "H2"
+msgstr ""
+
+msgid "H3"
+msgstr ""
+
+msgid "H4"
+msgstr ""
+
+msgid "H5"
+msgstr ""
+
+msgid "H6"
+msgstr ""
+
+msgid "P"
+msgstr ""
+
+msgid "DIV"
+msgstr ""
+
+msgid "Image Size"
+msgstr ""
+
+msgid "Styling Options"
+msgstr ""
+
+msgid "Title Wrapper CSS Class(es)"
+msgstr ""
+
+msgid "Content Wrapper CSS Class(es)"
+msgstr ""
+
+msgid "List CSS Class(es)"
+msgstr ""
+
+msgid "Question…"
+msgstr ""
+
+msgid "Hide Question"
+msgstr ""
+
+msgid "Delete Question"
+msgstr ""
+
+msgid "Enter the answer to the question"
+msgstr ""
+
+msgid "Add New FAQ"
+msgstr ""
+
+msgid "Enter a step title"
+msgstr ""
+
+msgid "Hide Step"
+msgstr ""
+
+msgid "Delete Step"
+msgstr ""
+
+msgid "Add Step Image"
+msgstr ""
+
+msgid "Enter a step description"
+msgstr ""
+
+msgid "HowTo Options"
+msgstr ""
+
+msgid "Main Image Size"
+msgstr ""
+
+msgid "Step Title Wrapper CSS Class(es)"
+msgstr ""
+
+msgid "Step Content Wrapper CSS Class(es)"
+msgstr ""
+
+msgid "Step List CSS Class(es)"
+msgstr ""
+
+msgid "Add Final Image"
+msgstr ""
+
+msgid "Enter a main description"
+msgstr ""
+
+msgid "Total time:"
+msgstr ""
+
+msgid "DD"
+msgstr ""
+
+msgid "HH"
+msgstr ""
+
+msgid "MM"
+msgstr ""
+
+msgid "Optional, use first field to describe the duration."
+msgstr ""
+
+msgid "Add New Step"
 msgstr ""
 
 msgid "Heading text"

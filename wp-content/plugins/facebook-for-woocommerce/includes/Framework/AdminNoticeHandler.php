@@ -242,6 +242,8 @@ class AdminNoticeHandler {
 		ob_start();
 		?>
 
+		( function( $ ) {
+
 		// Log dismissed notices
 		$( '.js-wc-plugin-framework-admin-notice' ).on( 'click.wp-dismiss-notice', '.notice-dismiss', function( e ) {
 
@@ -283,6 +285,8 @@ class AdminNoticeHandler {
 
 		// move any delayed notices up into position .show();
 		$( '.js-wc-plugin-framework-admin-notice:hidden' ).insertAfter( '.js-wc-<?php echo esc_js( $plugin_slug ); ?>-admin-notice-placeholder' ).show();
+
+		} )( jQuery );
 		<?php
 		$javascript = ob_get_clean();
 
@@ -379,8 +383,9 @@ class AdminNoticeHandler {
 	 * @since 3.0.0
 	 */
 	public function handle_dismiss_notice() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_REQUEST['messageid'] ) ) {
-			$this->dismiss_notice( wc_clean( wp_unslash( $_REQUEST['messageid'] ) ) );
+			$this->dismiss_notice( wc_clean( wp_unslash( $_REQUEST['messageid'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 	}
 

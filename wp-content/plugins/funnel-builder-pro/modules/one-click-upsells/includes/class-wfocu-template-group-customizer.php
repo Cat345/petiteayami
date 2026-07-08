@@ -3,16 +3,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 if ( ! class_exists( 'WFOCU_Template_Group_Customizer' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Template_Group_Customizer extends WFOCU_Template_Group {
 		public $listing_index = 5;
 
 		public function get_templates() {
-			return apply_filters( 'wfocu_templates_group_customizer', [ 'sp-classic', 'sp-vsl' ] );
+			return apply_filters( 'wfocu_templates_group_customizer', array( 'sp-classic', 'sp-vsl' ) );
 		}
 
 
 		public function is_visible() {
-
 		}
 
 		public function get_nice_name() {
@@ -27,14 +27,14 @@ if ( ! class_exists( 'WFOCU_Template_Group_Customizer' ) ) {
 					'name'        => __( 'Product Upsell', 'woofunnels-upstroke-one-click-upsell' ),
 					'thumbnail'   => 'https://woofunnels.s3.amazonaws.com/templates/upsell/product-upsell-style-1.jpg',
 					'preview_url' => 'https://templates.buildwoofunnels.com/template-preview/?bwf_id=13876&type=upsell',
-					"prevslug"    => "product-upsell-customizer"
+					'prevslug'    => 'product-upsell-customizer',
 				),
 				'sp-vsl'     => array(
 					'path'        => WFOCU_TEMPLATE_DIR . '/sp-vsl/template.php',
 					'name'        => __( 'VSL Upsell', 'woofunnels-upstroke-one-click-upsell' ),
 					'thumbnail'   => 'https://woofunnels.s3.amazonaws.com/templates/upsell/vsl-upsell-elementor.jpg',
 					'preview_url' => 'https://templates.buildwoofunnels.com/template-preview/?bwf_id=13877&type=upsell',
-					"prevslug"    => "vsl-upsell-customizer"
+					'prevslug'    => 'vsl-upsell-customizer',
 				),
 			);
 
@@ -46,12 +46,15 @@ if ( ! class_exists( 'WFOCU_Template_Group_Customizer' ) ) {
 		}
 
 		public function get_preview_link() {
-			return add_query_arg( [
-				'p'               => '{{offer_id}}',
-				'wfocu_customize' => 'loaded',
-				'offer_id'        => '{{offer_id}}',
-				'funnel_id'       => '{{funnel_id}}',
-			], site_url() );
+			return add_query_arg(
+				array(
+					'p'               => '{{offer_id}}',
+					'wfocu_customize' => 'loaded',
+					'offer_id'        => '{{offer_id}}',
+					'funnel_id'       => '{{funnel_id}}',
+				),
+				site_url()
+			);
 		}
 
 		public function set_up_template() {
@@ -72,7 +75,7 @@ if ( ! class_exists( 'WFOCU_Template_Group_Customizer' ) ) {
 		 * So we need to check in local templates and registered templates ( for multiple product cases) to server respective template.php
 		 *
 		 * @param string $template
-		 * @param array $offer_data
+		 * @param array  $offer_data
 		 *
 		 * @return false|mixed
 		 */
@@ -90,7 +93,6 @@ if ( ! class_exists( 'WFOCU_Template_Group_Customizer' ) ) {
 			if ( array_key_exists( $template, $get_registred_templates ) ) {
 				return $get_registred_templates[ $template ]['path'];
 			}
-
 		}
 
 		public function maybe_get_template( $template = '' ) { //phpcs:ignore
@@ -123,5 +125,5 @@ if ( ! class_exists( 'WFOCU_Template_Group_Customizer' ) ) {
 		}
 	}
 
-	WFOCU_Core()->template_loader->register_group( new WFOCU_Template_Group_Customizer, 'customizer' );
+	WFOCU_Core()->template_loader->register_group( new WFOCU_Template_Group_Customizer(), 'customizer' );
 }

@@ -8,6 +8,7 @@ if ( ! class_exists( 'WFACP_Econt_Delivery_Fields' ) ) {
 	 * Econt Express Delivery Fields for FunnelKit Checkout
 	 * Adds Econt delivery field placeholder to checkout fields so Econt can render its UI.
 	 */
+	#[\AllowDynamicProperties]
 	class WFACP_Econt_Delivery_Fields {
 
 		public function __construct() {

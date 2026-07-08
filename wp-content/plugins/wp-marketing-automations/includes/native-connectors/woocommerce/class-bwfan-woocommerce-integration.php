@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 final class BWFAN_WC_Integration extends BWFAN_Integration {
 
 	private static $instance = null;

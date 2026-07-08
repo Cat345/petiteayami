@@ -12,7 +12,12 @@
 /**
  * Adds the image control.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Control_Cropped_Image' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Cropped_Image extends WP_Customize_Cropped_Image_Control {
 
 		/**

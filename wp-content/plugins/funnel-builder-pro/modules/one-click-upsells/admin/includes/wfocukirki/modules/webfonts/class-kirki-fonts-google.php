@@ -14,6 +14,7 @@ if ( ! class_exists( 'WFOCUKirki_Fonts_Google' ) ) {
 	/**
 	 * Manages the way Google Fonts are enqueued.
 	 */
+	#[\AllowDynamicProperties]
 	final class WFOCUKirki_Fonts_Google {
 
 		/**
@@ -237,7 +238,7 @@ if ( ! class_exists( 'WFOCUKirki_Fonts_Google' ) ) {
 		 * @since 3.0.17
 		 */
 		public function get_googlefonts_json() {
-			include wp_normalize_path( dirname( __FILE__ ) . '/webfonts.json' );
+			include wp_normalize_path( __DIR__ . '/webfonts.json' );
 			wp_die();
 		}
 

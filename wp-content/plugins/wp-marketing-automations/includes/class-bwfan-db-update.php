@@ -261,7 +261,7 @@ class BWFAN_DB_Update {
 
 		do {
 			$last_order_id = bwf_options_get( 'last_index_order' );
-			$last_order    = intval( $last_order_id ) > 0 ? " AND p.`id` > $last_order_id " : "";
+			$last_order    = intval( $last_order_id ) > 0 ? " AND p.`id` > " . intval( $last_order_id ) . " " : "";
 
 			if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 				$query = "SELECT p.id AS id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = 'shop_order' AND p.status NOT IN ('$post_statuses') AND m.meta_key = '_bwfan_ab_cart_recovered_a_id' $last_order ORDER BY p.`id` ASC LIMIT 10";
@@ -359,7 +359,7 @@ class BWFAN_DB_Update {
 
 			/** Fetch rows from conversion table  */
 			if ( 'conversion' === $data_type ) {
-				$last_id = intval( $last_processed_id ) > 0 ? " AND `ID` > $last_processed_id " : "";
+				$last_id = intval( $last_processed_id ) > 0 ? " AND `ID` > " . intval( $last_processed_id ) . " " : "";
 				$query   = "SELECT `ID`, `wctotal` AS total, `wcid` FROM `{$wpdb->prefix}bwfan_conversions` WHERE 1=1 $last_id ORDER BY `ID` ASC LIMIT 0,30";
 
 				$result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -399,7 +399,7 @@ class BWFAN_DB_Update {
 			}
 
 			/** No conversion rows are left, fetch rows from cart table */
-			$last_id = intval( $last_processed_id ) > 0 ? " AND `ID` > $last_processed_id " : "";
+			$last_id = intval( $last_processed_id ) > 0 ? " AND `ID` > " . intval( $last_processed_id ) . " " : "";
 			$query   = "SELECT `ID`, `total`, `currency` FROM `{$wpdb->prefix}bwfan_abandonedcarts` WHERE 1=1 $last_id ORDER BY `ID` ASC LIMIT 0,30";
 
 			$result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching

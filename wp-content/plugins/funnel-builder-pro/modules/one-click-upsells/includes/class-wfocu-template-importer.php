@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Template_Importer' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Template_Importer {
 
 		private static $ins = null;
@@ -9,7 +10,7 @@ if ( ! class_exists( 'WFOCU_Template_Importer' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -21,7 +22,7 @@ if ( ! class_exists( 'WFOCU_Template_Importer' ) ) {
 			$canvas_template = WFOCU_Common::get_canvas_template();
 			$page_template   = get_post_meta( $offer, '_wp_page_template', true );
 
-			if ( in_array( $template_group, [ 'custom', 'custom_page' ], true ) ) {
+			if ( in_array( $template_group, array( 'custom', 'custom_page' ), true ) ) {
 				if ( $box_template !== $page_template ) {
 					update_post_meta( $offer, '_wp_page_template', $box_template );
 				}
@@ -43,7 +44,6 @@ if ( ! class_exists( 'WFOCU_Template_Importer' ) ) {
 
 			return $group_instance->update_template( $template, $offer, $offer_settings );
 		}
-
 	}
 
 

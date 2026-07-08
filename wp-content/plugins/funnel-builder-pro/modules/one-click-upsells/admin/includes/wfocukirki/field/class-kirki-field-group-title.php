@@ -13,6 +13,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Group_Title' ) ) {
 	 * Prior to version 0.8 there was a separate 'group-title' field.
 	 * This exists here just for backwards-compatibility purposes.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Group_Title extends WFOCUKirki_Field_Custom {
 	}
 }

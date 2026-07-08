@@ -3,6 +3,7 @@
 
 if ( ! class_exists( 'BWFAN_Model_Link_Metrics' ) ) {
 
+	#[\AllowDynamicProperties]
 	class BWFAN_Model_Link_Metrics extends BWFAN_Model {
 
 		public static function get_link_metrics( $link_id, $cid ) {

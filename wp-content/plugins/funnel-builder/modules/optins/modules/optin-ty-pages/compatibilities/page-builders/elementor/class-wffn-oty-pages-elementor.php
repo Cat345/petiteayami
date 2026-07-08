@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
  * Class WFFN_OTY_Pages_Elementor
  */
 if ( ! class_exists( 'WFFN_OTY_Pages_Elementor' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_OTY_Pages_Elementor {
 
 		private static $ins             = null;

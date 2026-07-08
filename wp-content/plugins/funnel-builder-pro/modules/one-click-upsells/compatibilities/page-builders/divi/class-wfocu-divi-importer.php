@@ -9,36 +9,52 @@ if ( ! class_exists( 'ET_Core_Portability' ) ) {
 	include_once ET_BUILDER_PLUGIN_DIR . '/core/components/Portability.php';
 }
 if ( ! class_exists( 'WFOCU_Divi_Importer' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Divi_Importer extends ET_Core_Portability {
 
 		public function __construct() {
-			//Dont Need To call Parent Constructor because of some time other divi addon created fatal error Like Monarch Plugin.
-			add_action( 'wfocu_template_removed', [ $this, 'delete_divi_data' ] );
+			// Dont Need To call Parent Constructor because of some time other divi addon created fatal error Like Monarch Plugin.
+			add_action( 'wfocu_template_removed', array( $this, 'delete_divi_data' ) );
 		}
 
 		public function single_template_import( $post_id, $content, $offer_settings = array() ) {
-			wp_update_post( [ 'ID' => $post_id, 'post_content' => '' ] );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '',
+				)
+			);
 
 			$this->prevent_failure();
 			self::$_doing_import = true;
-			$timestamp           = $this->get_timestamp();
 
 			if ( ! is_array( $content ) && is_string( $content ) ) {
 				try {
 					$content = json_decode( $content, true );
-				} catch ( Exception $error ) {
+				} catch ( \Throwable $error ) {
 					return false;
 				}
 			}
 
+			if ( ! is_array( $content ) || empty( $content['data'] ) ) {
+				return false;
+			}
 
 			$data = $content['data'];
-			// Pass the post content and let js save the post.
+			$data = reset( $data );
 
-			$data    = reset( $data );
+			require_once WFOCU_PLUGIN_DIR . '/includes/class-wfocu-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			if ( WFOCU_Content_Validator::contains_php_code( $data ) ) {
+				return false;
+			}
+
 			$success = true;
-			$result  = wp_update_post( [ 'ID' => $post_id, 'post_content' => $data ] );
-
+			$result  = wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => $data,
+				)
+			);
 
 			if ( $result instanceof WP_Error ) {
 				$success = false;
@@ -50,14 +66,13 @@ if ( ! class_exists( 'WFOCU_Divi_Importer' ) ) {
 		/**
 		 * Serialize images in chunks.
 		 *
-		 * @param array $images
-		 * @param string $method Method applied on images.
-		 * @param string $id Unique ID to use for temporary files.
+		 * @param array   $images
+		 * @param string  $method Method applied on images.
+		 * @param string  $id Unique ID to use for temporary files.
 		 * @param integer $chunk
 		 *
 		 * @return array
 		 * @since 4.0
-		 *
 		 */
 		protected function chunk_images( $images, $method, $id, $chunk = 0 ) {
 			$images_per_chunk = 100;
@@ -69,7 +84,6 @@ if ( ! class_exists( 'WFOCU_Divi_Importer' ) ) {
 			 * @param bool $paginate_images Default `true`.
 			 *
 			 * @since 3.0.99
-			 *
 			 */
 			$paginate_images = apply_filters( 'et_core_portability_paginate_images', true );
 
@@ -104,10 +118,14 @@ if ( ! class_exists( 'WFOCU_Divi_Importer' ) ) {
 		}
 
 		public function delete_divi_data( $post_id ) {
-			wp_update_post( [ 'ID' => $post_id, 'post_content' => '' ] );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '',
+				)
+			);
 			delete_post_meta( $post_id, 'et_enqueued_post_fonts' );
 		}
-
 	}
 
 }

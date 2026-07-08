@@ -1,3 +1,3 @@
-/*! YOOtheme Pro v5.0.29 | https://yootheme.com */
+/*! YOOtheme Pro v5.0.36 | https://yootheme.com */
 
 const{on:c,isTag:u,$$:a,attr:i,css:v,$:s,removeClass:l}=window.UIkit.util,r=".js-consent-overlay",d="data-video-consent",f=`[${d}]`;function g(t){var o;for(const e of a(`[${d}="${t}"]`)){(o=s(r,e))==null||o.remove();const n=s("[data-toggle]",e);n?(i(n,"uk-toggle",n.dataset.toggle),i(n,"data-toggle",null),l(n,"uk-disabled"),l(s(".uk-hidden",n),"uk-hidden")):(i(s("img",e),"hidden",""),i(s("iframe",e),"hidden",null))}}c(document,"yootheme:consent.video",({detail:t})=>g(t)),c(document,"click",f,t=>{if(!u(t.target,"button"))return;const o=t.current.dataset.videoConsent,{consent:e}=window.yootheme;e?(e.setConsent(o,"allow"),e.loadScriptTags(),e.saveState()):g(o)}),c(document,"DOMContentLoaded",()=>{const{consent:t}=window.yootheme;if(t)for(const o of a(`[${d}]`)){const e=i(o,d);e&&!t.hasConsent(e)&&v(s(r,o),"visibility","")}});

@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 final class BWFAN_WC_Product_Purchased extends BWFAN_Event {
 	private static $instance = null;
 
@@ -465,7 +466,7 @@ final class BWFAN_WC_Product_Purchased extends BWFAN_Event {
 	 * @return bool
 	 */
 	public function validate_event_order_items( $automation_data, $product_selected, $item ) {
-		if ( ! $item instanceof WC_Order_Item ) {
+		if ( ! $item instanceof WC_Order_Item_Product ) {
 			return false;
 		}
 
@@ -484,9 +485,9 @@ final class BWFAN_WC_Product_Purchased extends BWFAN_Event {
 			}
 
 			$category_ids = array_column( $get_selected_categories, 'id' );
-			$product      = wc_get_product( $item->get_product_id() );
+			$product      = $item->get_product();
 			if ( $product instanceof WC_Product ) {
-				$product_categories = $product->get_category_ids();
+				$product_categories = BWFAN_Common::get_wc_product_category_ids_for_order_line( $product );
 				return ! empty( array_intersect( $category_ids, $product_categories ) );
 			}
 
@@ -566,6 +567,7 @@ final class BWFAN_WC_Product_Purchased extends BWFAN_Event {
 		$product_selected     = empty( $get_selected_product ) ? [] : array_column( $get_selected_product, 'id' );
 
 		$insert_id = 0;
+		$enrolled  = false;
 		$items     = $order->get_items();
 		foreach ( $items as $item_id => $item ) {
 			if ( ! $item instanceof WC_Order_Item ) {
@@ -614,11 +616,27 @@ final class BWFAN_WC_Product_Purchased extends BWFAN_Event {
 				BWFAN_Common::log_test_data( 'Automation ID ' . $data['aid'] . ' already exists with same data for contact ' . $data['cid'] . '. Event - ' . $data['event'], 'contact-duplicate-automation', true );
 				BWFAN_Common::log_test_data( $global_data, 'contact-duplicate-automation', true );
 
+				/** Contact is genuinely already in the automation - field update below still applies. */
+				$enrolled = true;
 				continue;
 			}
 
-			BWFAN_Model_Automation_Contact::insert( $data );
+			$inserted  = BWFAN_Model_Automation_Contact::insert( $data );
 			$insert_id = BWFAN_Model_Automation_Contact::insert_id();
+
+			/** Insert failed (e.g. deadlock-retry exhausted under concurrent checkout load) - skip this item instead of acting on a non-existent row */
+			if ( false === $inserted || empty( $insert_id ) ) {
+				BWFAN_Common::log_test_data( 'BWFAN: Failed to queue automation contact for automation ID ' . $automation_id . ' contact ' . $data['cid'] . '. Event - ' . $data['event'], 'fka-db-deadlock', true );
+
+				continue;
+			}
+
+			$enrolled = true;
+		}
+
+		/** Only touch contact fields / mark run if something actually enrolled (or was already enrolled). */
+		if ( false === $enrolled ) {
+			return $insert_id;
 		}
 
 		/** Update automation active and entered contact fields */

@@ -71,9 +71,6 @@ class MethodLogoCheckoutBlocksAssets implements Hookable {
 				],
 				'logo_url_key'            => RateCalculator::METHOD_LOGO_URL,
 				'logo_alt_key'            => RateCalculator::METHOD_LOGO_ALT,
-				'description_key'         => RateCalculator::DESCRIPTION,
-				'description_encoded_key' => RateCalculator::DESCRIPTION_BASE64ENCODED,
-				'description_class'       => 'shipping-method-description flexible-shipping-method-description-block',
 				'wrapper_class'           => 'flexible-shipping-method-logo-block',
 			]
 		);

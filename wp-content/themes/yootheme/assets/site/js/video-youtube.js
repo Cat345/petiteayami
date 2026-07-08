@@ -1,3 +1,3 @@
-/*! YOOtheme Pro v5.0.29 | https://yootheme.com */
+/*! YOOtheme Pro v5.0.36 | https://yootheme.com */
 
 const{trigger:e}=window.UIkit.util;e(document,"yootheme:consent.video","preferences.youtube");

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WooFunnels_Process' ) ) {
 	/**
 	 * Basic process class that detect request and pass to respective class
@@ -22,7 +25,6 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 			add_action( 'admin_head', array( $this, 'register_in_update_plugin_message' ) );
 
 			add_action( 'fk_fb_every_day', array( 'WooFunnels_License_Controller', 'license_check' ) );
-			add_action( 'wp_ajax_nopriv_fk_init_license_request', array( 'WooFunnels_License_Controller', 'license_check_api_call_init' ) );
 			add_action( 'funnelkit_license_update', array( $this, 'maybe_clear_plugin_update_transients' ) );
 			add_action( 'funnelkit_delete_transients', array( $this, 'maybe_clear_plugin_update_transients' ) );
 			add_action( 'admin_init', array( $this, 'maybe_set_options_auto_loading_false' ) );
@@ -66,7 +68,7 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 				if ( $optin_choice === 'yes' ) {
 					WooFunnels_optIn_Manager::Allow_optin();
 					if ( isset( $_GET['ref'] ) ) {
-						WooFunnels_optIn_Manager::update_optIn_referer( filter_input( INPUT_GET, 'ref', FILTER_UNSAFE_RAW ) );
+						WooFunnels_optIn_Manager::update_optIn_referer( wp_validate_redirect( wp_sanitize_redirect( filter_input( INPUT_GET, 'ref', FILTER_DEFAULT ) ?? '' ) ) ); // phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
 					}
 				} else {
 					WooFunnels_optIn_Manager::block_optin();
@@ -77,7 +79,8 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 
 			// Initiating the license instance to handle submissions  (submission can redirect page two that can cause "header already sent" issue to be arised)
 			// Initiating this to over come that issue
-			if ( isset( $_GET['page'] ) && 'woofunnels' === sanitize_text_field( wp_unslash( $_GET['page'] ) ) && isset( $_GET['tab'] ) && 'support' === sanitize_text_field( wp_unslash( $_GET['tab'] ) ) && isset( $_POST['woofunnels_submit_support'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
+			if ( isset( $_GET['page'] ) && 'woofunnels' === sanitize_text_field( wp_unslash( $_GET['page'] ) ) && isset( $_GET['tab'] ) && 'support' === sanitize_text_field( wp_unslash( $_GET['tab'] ) ) && isset( $_POST['woofunnels_submit_support'] ) ) {
+				check_admin_referer( 'woofunnels_support_form' );
 				$instance_support = WooFunnels_Support::get_instance();
 
 				if ( filter_input( INPUT_POST, 'choose_addon', true ) === '' || filter_input( INPUT_POST, 'comments', true ) === '' ) {
@@ -110,7 +113,7 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 							</a>
 							<p>
 								<?php
-								_e( sprintf( 'Attention: There is an update available of <strong>%s</strong> plugin. &nbsp;<a href="%s" class="">Go to updates</a>', implode( ', ', $plugin_names ), admin_url( 'plugins.php?s=funnelkit&plugin_status=all' ) ), 'woofunnels' ); // phpcs:ignore WordPress.Security.EscapeOutput, WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment, WordPress.WP.I18n.NonSingularStringLiteralText
+								_e( sprintf( 'Attention: There is an update available of <strong>%s</strong> plugin. &nbsp;<a href="%s" class="">Go to updates</a>', implode( ', ', array_map( 'esc_html', $plugin_names ) ), esc_url( admin_url( 'plugins.php?s=funnelkit&plugin_status=all' ) ) ), 'woofunnels' ); // phpcs:ignore WordPress.Security.EscapeOutput, WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment, WordPress.WP.I18n.NonSingularStringLiteralText
 								?>
 							</p>
 						</div>
@@ -182,7 +185,7 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 			$current_version = $args['Version'];
 			$upgrade_notice  = $this->get_upgrade_notice( $response->new_version, $changelog_path, $current_version );
 
-			echo apply_filters( 'woofunnels_in_plugin_update_message', $upgrade_notice ? '</br>' . wp_kses_post( $upgrade_notice ) : '', $args['plugin'] ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wp_kses_post( apply_filters( 'woofunnels_in_plugin_update_message', $upgrade_notice ? '</br>' . wp_kses_post( $upgrade_notice ) : '', $args['plugin'] ) );
 
 			echo '<style>span.woofunnels_plugin_upgrade_notice::before {
     content: ' . '"\f463";

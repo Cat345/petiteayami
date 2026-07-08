@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Select control.
  */
 if ( ! class_exists( 'WFACPKirki_Control_FontAwesome' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_FontAwesome extends WFACPKirki_Control_Base {
 
 		/**
@@ -58,11 +59,11 @@ if ( ! class_exists( 'WFACPKirki_Control_FontAwesome' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <label>
-                <# if ( data.label ) { #><span class="customize-control-title">{{{data.label }}}</span><# } #>
-                <# if ( data.description ) { #><span class="description customize-control-description">{{{data.description }}}</span><# } #>
-                <select {{{ data.inputAttrs }}} {{{ data.link }}}></select>
-            </label>
+			<label>
+				<# if ( data.label ) { #><span class="customize-control-title">{{{data.label }}}</span><# } #>
+				<# if ( data.description ) { #><span class="description customize-control-description">{{{data.description }}}</span><# } #>
+				<select {{{ data.inputAttrs }}} {{{ data.link }}}></select>
+			</label>
 			<?php
 		}
 	}

@@ -13,7 +13,7 @@ class RequestType
     /**
      * @return ObjectConfig
      */
-    public static function config()
+    public static function config(): array
     {
         return [
             'fields' => [
@@ -88,58 +88,37 @@ class RequestType
         ];
     }
 
-    /**
-     * @return string
-     */
-    public static function resolveUrl(Request $request)
+    public static function resolveUrl(Request $request): string
     {
         return (string) $request->getUri();
     }
 
-    /**
-     * @return string
-     */
-    public static function resolveMethod(Request $request)
+    public static function resolveMethod(Request $request): string
     {
         return $request->getMethod();
     }
 
-    /**
-     * @return string
-     */
-    public static function resolveScheme(Request $request)
+    public static function resolveScheme(Request $request): string
     {
         return $request->getUri()->getScheme();
     }
 
-    /**
-     * @return string
-     */
-    public static function resolveHost(Request $request)
+    public static function resolveHost(Request $request): string
     {
         return $request->getUri()->getHost();
     }
 
-    /**
-     * @return ?int
-     */
-    public static function resolvePort(Request $request)
+    public static function resolvePort(Request $request): ?int
     {
         return $request->getUri()->getPort();
     }
 
-    /**
-     * @return string
-     */
-    public static function resolvePath(Request $request)
+    public static function resolvePath(Request $request): string
     {
         return $request->getUri()->getPath();
     }
 
-    /**
-     * @return string
-     */
-    public static function resolveQuery(Request $request)
+    public static function resolveQuery(Request $request): string
     {
         return $request->getUri()->getQuery();
     }

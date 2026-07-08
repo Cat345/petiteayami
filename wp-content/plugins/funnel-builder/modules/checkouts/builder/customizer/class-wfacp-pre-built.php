@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_Pre_Built extends WFACP_Template_Common {
 		protected $sidebar_layout_order          = array();
 		protected $mobile_layout_order           = array();

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'BWF_Facebook_Sdk' ) ) {
 	#[AllowDynamicProperties]
 	class BWF_Facebook_Sdk {
@@ -87,7 +90,7 @@ if ( ! class_exists( 'BWF_Facebook_Sdk' ) ) {
 
 			$post                = wp_remote_post( $this->get_api_url(), [
 				'timeout'   => 2,
-				'sslverify' => false,
+				'sslverify' => true,
 				'body'      => $this->body,
 				'headers'   => $headers
 			] );
@@ -136,7 +139,7 @@ if ( ! class_exists( 'BWF_Facebook_Sdk' ) ) {
 		 * @return string
 		 */
 		public static function hash( $data ) {
-			if ( $data == null || self::isHashed( $data ) ) {
+			if ( null === $data || self::isHashed( $data ) ) {
 				return $data;
 			}
 

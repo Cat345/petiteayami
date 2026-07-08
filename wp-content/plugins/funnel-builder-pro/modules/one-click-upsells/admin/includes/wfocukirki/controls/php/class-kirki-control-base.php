@@ -14,6 +14,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Base' ) ) {
 	/**
 	 * A base for controls.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Base extends WP_Customize_Control {
 
 		/**
@@ -93,7 +94,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Base' ) ) {
 		public function enqueue() {
 
 			// Build the suffix for the script.
-			$suffix = '';
+			$suffix  = '';
 			$suffix .= ( ! defined( 'SCRIPT_DEBUG' ) || true !== SCRIPT_DEBUG ) ? '.min' : '';
 
 			// The WFOCUKirki plugin URL.
@@ -109,16 +110,24 @@ if ( ! class_exists( 'WFOCUKirki_Control_Base' ) ) {
 			wp_enqueue_style( 'wfocukirki-selectWoo', trailingslashit( WFOCUKirki::$url ) . 'assets/vendor/selectWoo/kirki.css', null );
 
 			// Enqueue the script.
-			wp_enqueue_script( 'wfocukirki-script', "{$wfocukirki_url}controls/js/script{$suffix}.js", array(
+			wp_enqueue_script(
+				'wfocukirki-script',
+				"{$wfocukirki_url}controls/js/script{$suffix}.js",
+				array(
 					'jquery',
 					'customize-base',
 					'wp-color-picker-alpha',
 					'selectWoo',
 					'jquery-ui-button',
 					'jquery-ui-datepicker',
-				), WFOCU_KIRKI_VERSION );
+				),
+				WFOCU_KIRKI_VERSION
+			);
 
-			wp_localize_script( 'wfocukirki-script', 'wfocukirkiL10n', array(
+			wp_localize_script(
+				'wfocukirki-script',
+				'wfocukirkiL10n',
+				array(
 					'isScriptDebug'        => ( defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG ),
 					'noFileSelected'       => esc_attr__( 'No File Selected', 'wfocukirki' ),
 					'remove'               => esc_attr__( 'Remove', 'wfocukirki' ),
@@ -128,7 +137,8 @@ if ( ! class_exists( 'WFOCUKirki_Control_Base' ) ) {
 					'googleFonts'          => esc_attr__( 'Google Fonts', 'wfocukirki' ),
 					'defaultCSSValues'     => esc_attr__( 'CSS Defaults', 'wfocukirki' ),
 					'defaultBrowserFamily' => esc_attr__( 'Default Browser Font-Family', 'wfocukirki' ),
-				) );
+				)
+			);
 
 			$suffix = str_replace( '.min', '', $suffix );
 			// Enqueue the style.

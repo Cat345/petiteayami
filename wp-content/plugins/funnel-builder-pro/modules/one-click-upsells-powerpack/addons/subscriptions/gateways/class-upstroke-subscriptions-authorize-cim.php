@@ -1,8 +1,10 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 /**
  * Author PhpStorm.
  */
 if ( ! class_exists( 'UpStroke_Subscriptions_Authorize_Net_CIM' ) ) {
+	#[\AllowDynamicProperties]
 	class UpStroke_Subscriptions_Authorize_Net_CIM extends WFOCU_Gateway_Integration_Authorize_Net_CIM {
 
 		public function __construct() {
@@ -16,7 +18,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions_Authorize_Net_CIM' ) ) {
 		 *
 		 * @param WC_Subscription $subscription
 		 * @param $key
-		 * @param WC_Order $order
+		 * @param WC_Order        $order
 		 */
 		public function save_to_subscription( $subscription, $key, $order ) {
 
@@ -41,7 +43,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_Authorize_Net_CIM' ) ) {
 				$this->get_wc_gateway()->add_transaction_data( $this->get_wc_gateway()->get_order( $order ) );
 
 			}
-
 		}
 
 		public function set_keys_to_copy( $meta_keys ) {
@@ -50,7 +51,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_Authorize_Net_CIM' ) ) {
 
 			return $meta_keys;
 		}
-
 	}
 
 	if ( class_exists( 'WC_Subscriptions' ) ) {

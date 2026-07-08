@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Update_Automation extends BWFAN_API_Base {
 	public static $ins;
 
@@ -70,7 +71,7 @@ class BWFAN_API_Update_Automation extends BWFAN_API_Base {
 		/** Check for unique key */
 		if ( isset( $arg_data['need_unique_key'] ) && is_bool( $arg_data['need_unique_key'] ) && $arg_data['need_unique_key'] == true ) {
 			$meta['event_meta'] = [
-				'bwfan_unique_key' => md5( uniqid( time(), true ) )
+				'bwfan_unique_key' => wp_generate_password( 32, false )
 			];
 		}
 

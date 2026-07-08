@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 final class BWFAN_WC_Comment_Post extends BWFAN_Event {
 	private static $instance = null;
 	public $comment_id = null;

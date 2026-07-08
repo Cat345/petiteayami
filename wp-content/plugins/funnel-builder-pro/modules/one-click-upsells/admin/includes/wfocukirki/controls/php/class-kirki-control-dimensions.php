@@ -18,6 +18,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Dimensions' ) ) {
 	 * Dimensions control.
 	 * multiple fields with CSS units validation.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Dimensions extends WFOCUKirki_Control_Base {
 
 		/**
@@ -75,31 +76,31 @@ if ( ! class_exists( 'WFOCUKirki_Control_Dimensions' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <label>
-                <# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
-                <# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
-                <div class="wrapper">
-                    <div class="control">
-                        <# for ( choiceKey in data.default ) { #>
-                        <div class="{{ choiceKey }}">
-                            <h5>
-                                <# if ( ! _.isUndefined( data.choices.labels ) && ! _.isUndefined( data.choices.labels[ choiceKey ] ) ) { #>
-                                {{ data.choices.labels[ choiceKey ] }}
-                                <# } else if ( ! _.isUndefined( data.l10n[ choiceKey ] ) ) { #>
-                                {{ data.l10n[ choiceKey ] }}
-                                <# } else { #>
-                                {{ choiceKey }}
-                                <# } #>
-                            </h5>
-                            <div class="{{ choiceKey }} input-wrapper">
-                                <# var val = ( ! _.isUndefined( data.value ) && ! _.isUndefined( data.value[ choiceKey ] ) ) ? data.value[ choiceKey ].toString().replace( '%%', '%' ) : ''; #>
-                                <input {{{ data.inputAttrs }}} type="text" data-choice="{{ choiceKey }}" value="{{ val }}"/>
-                            </div>
-                        </div>
-                        <# } #>
-                    </div>
-                </div>
-            </label>
+			<label>
+				<# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
+				<# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
+				<div class="wrapper">
+					<div class="control">
+						<# for ( choiceKey in data.default ) { #>
+						<div class="{{ choiceKey }}">
+							<h5>
+								<# if ( ! _.isUndefined( data.choices.labels ) && ! _.isUndefined( data.choices.labels[ choiceKey ] ) ) { #>
+								{{ data.choices.labels[ choiceKey ] }}
+								<# } else if ( ! _.isUndefined( data.l10n[ choiceKey ] ) ) { #>
+								{{ data.l10n[ choiceKey ] }}
+								<# } else { #>
+								{{ choiceKey }}
+								<# } #>
+							</h5>
+							<div class="{{ choiceKey }} input-wrapper">
+								<# var val = ( ! _.isUndefined( data.value ) && ! _.isUndefined( data.value[ choiceKey ] ) ) ? data.value[ choiceKey ].toString().replace( '%%', '%' ) : ''; #>
+								<input {{{ data.inputAttrs }}} type="text" data-choice="{{ choiceKey }}" value="{{ val }}"/>
+							</div>
+						</div>
+						<# } #>
+					</div>
+				</div>
+			</label>
 			<?php
 		}
 

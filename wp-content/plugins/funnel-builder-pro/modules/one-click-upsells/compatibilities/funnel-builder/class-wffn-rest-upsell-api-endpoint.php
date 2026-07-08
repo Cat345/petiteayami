@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_REST_UPSELL_API_EndPoint extends WFFN_REST_Controller {
 
 		private static $ins  = null;
@@ -1179,6 +1180,7 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 					$offer_values->skip_exist                   = ( ! empty( $settings->skip_exist ) && true === wc_string_to_bool( $settings->skip_exist ) ) ? (array) 'true' : array();
 					$offer_values->skip_purchased               = ( ! empty( $settings->skip_purchased ) && true === wc_string_to_bool( $settings->skip_purchased ) ) ? (array) 'true' : array();
 					$offer_values->allow_one_time_purchase      = ( ! empty( $settings->allow_one_time_purchase ) && true === wc_string_to_bool( $settings->allow_one_time_purchase ) ) ? (array) 'true' : array();
+					$offer_values->ship_dynamic                 = ( ! empty( $settings->ship_dynamic ) && true === wc_string_to_bool( $settings->ship_dynamic ) ) ? (array) 'true' : array();
 
 					$offer->ship_dynamic = ! empty( $settings->ship_dynamic ) ? $settings->ship_dynamic : false;
 					$offer->InitialValue = $offer_values;

@@ -6,6 +6,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
  */
 if ( ! class_exists( 'WFOB_Contacts_Analytics' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFOB_Contacts_Analytics extends WFFN_REST_Controller {
 
 		/**
@@ -41,16 +42,21 @@ if ( ! class_exists( 'WFOB_Contacts_Analytics' ) ) {
 		 */
 		public function get_top_bumps( $start_date, $end_date, $limit_str = '' ) {
 			global $wpdb;
-			$where_condition      = 'WHERE bmp.converted = 1';
-			$view_where_condition = '';
-
 			if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
-				$where_condition      = "WHERE date >= '$start_date' AND date < '$end_date' AND bmp.converted = 1";
-				$view_where_condition = "WHERE date >= '$start_date' AND date < '$end_date'";
+				$data = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT v.bid as id, IFNULL(s.revenue, 0) as revenue, IFNULL(s.`conversion`, 0) as `conversion`, p.post_title as title, p.post_type as post_type, v.view_count as views FROM (SELECT bid, COUNT(id) as view_count FROM `{$wpdb->prefix}wfob_stats` WHERE date >= %s AND date < %s GROUP BY bid) as v LEFT JOIN {$wpdb->prefix}posts as p ON p.id = v.bid LEFT JOIN (SELECT bid, sum(total) as revenue, COUNT(id) as `conversion` FROM `{$wpdb->prefix}wfob_stats` as bmp WHERE date >= %s AND date < %s AND bmp.converted = 1 GROUP BY bid) as s ON s.bid = v.bid ORDER BY revenue DESC",
+						$start_date,
+						$end_date,
+						$start_date,
+						$end_date
+					)
+				);
+			} else {
+				$data = $wpdb->get_results(
+					"SELECT v.bid as id, IFNULL(s.revenue, 0) as revenue, IFNULL(s.`conversion`, 0) as `conversion`, p.post_title as title, p.post_type as post_type, v.view_count as views FROM (SELECT bid, COUNT(id) as view_count FROM `{$wpdb->prefix}wfob_stats` GROUP BY bid) as v LEFT JOIN {$wpdb->prefix}posts as p ON p.id = v.bid LEFT JOIN (SELECT bid, sum(total) as revenue, COUNT(id) as `conversion` FROM `{$wpdb->prefix}wfob_stats` as bmp WHERE bmp.converted = 1 GROUP BY bid) as s ON s.bid = v.bid ORDER BY revenue DESC"
+				);
 			}
-
-			$query    = 'SELECT v.bid as id,IFNULL(s.revenue, 0) as revenue, IFNULL(s.conversion, 0) as conversion,p.post_title as title,p.post_type as post_type,v.view_count as views FROM (SELECT bid, COUNT(id) as view_count FROM `' . $wpdb->prefix . "wfob_stats` $view_where_condition GROUP BY bid) as v LEFT JOIN " . $wpdb->prefix . 'posts as p ON p.id = v.bid LEFT JOIN (SELECT bid, sum(total) as revenue, COUNT(id) as conversion FROM `' . $wpdb->prefix . "wfob_stats` as bmp $where_condition GROUP BY bid) as s ON s.bid = v.bid ORDER BY revenue DESC " . $limit_str;
-			$data     = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
 				return $db_error;
@@ -85,12 +91,16 @@ if ( ! class_exists( 'WFOB_Contacts_Analytics' ) ) {
 		 */
 		public function get_all_contacts_records( $funnel_id, $cid ) {
 			global $wpdb;
-			$item_data = array();
-			$funnel_id = ! empty( $funnel_id ) ? absint( $funnel_id ) : $funnel_id;
-			$cid       = ! empty( $cid ) ? absint( $cid ) : $cid;
-			$query     = "SELECT bump.oid as order_id, bump.bid as 'object_id', bump.iid as 'item_ids', bump.total as 'total_revenue',p.post_title as 'object_name', bump.converted as 'is_converted',DATE_FORMAT(bump.date, '%Y-%m-%dT%TZ') as 'date','bump' as 'type' FROM " . $wpdb->prefix . 'wfob_stats' . ' AS bump LEFT JOIN ' . $wpdb->prefix . 'posts' . " as p ON bump.bid  = p.id  WHERE bump.converted = 1 AND bump.fid=$funnel_id AND bump.cid=$cid order by bump.date asc";
-
-			$order_data = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+			$item_data  = array();
+			$funnel_id  = ! empty( $funnel_id ) ? absint( $funnel_id ) : $funnel_id;
+			$cid        = ! empty( $cid ) ? absint( $cid ) : $cid;
+			$order_data = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT bump.oid as order_id, bump.bid as 'object_id', bump.iid as 'item_ids', bump.total as 'total_revenue', p.post_title as 'object_name', bump.converted as 'is_converted', DATE_FORMAT(bump.date, '%%Y-%%m-%%dT%%TZ') as 'date', 'bump' as 'type' FROM {$wpdb->prefix}wfob_stats AS bump LEFT JOIN {$wpdb->prefix}posts as p ON bump.bid = p.id WHERE bump.converted = 1 AND bump.fid=%d AND bump.cid=%d order by bump.date asc",
+					$funnel_id,
+					$cid
+				)
+			);
 			$db_error   = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
 				return $db_error;
@@ -116,9 +126,14 @@ if ( ! class_exists( 'WFOB_Contacts_Analytics' ) ) {
 				/**
 				 * get order item product name and quantity by items ids
 				 */
-				$item_query = "SELECT oi.order_item_id as 'item_id', oi.order_item_name as 'product_name', oim.meta_value as 'qty' FROM " . $wpdb->prefix . 'woocommerce_order_items as oi LEFT JOIN ' . $wpdb->prefix . 'woocommerce_order_itemmeta as oim ON oi.order_item_id = oim.order_item_id WHERE oi.order_item_id IN (' . esc_sql( implode( ',', $all_item_ids ) ) . ") AND oi.order_item_type = 'line_item' AND oim.meta_key = '_qty' GROUP BY oi.order_item_id";
-				$item_data  = $wpdb->get_results( $item_query ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$db_error   = WFFN_Common::maybe_wpdb_error( $wpdb );
+				$item_ids  = array_map( 'absint', $all_item_ids );
+				$item_data = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT oi.order_item_id as 'item_id', oi.order_item_name as 'product_name', oim.meta_value as 'qty' FROM {$wpdb->prefix}woocommerce_order_items as oi LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta as oim ON oi.order_item_id = oim.order_item_id WHERE oi.order_item_id IN ( " . implode( ', ', array_fill( 0, count( $item_ids ), '%d' ) ) . " ) AND oi.order_item_type = 'line_item' AND oim.meta_key = '_qty' GROUP BY oi.order_item_id",
+						$item_ids
+					)
+				);
+				$db_error  = WFFN_Common::maybe_wpdb_error( $wpdb );
 				if ( true === $db_error['db_error'] ) {
 					return $db_error;
 				}
@@ -159,17 +174,14 @@ if ( ! class_exists( 'WFOB_Contacts_Analytics' ) ) {
 				return array();
 			}
 
-			$placeholders = implode( ',', array_fill( 0, count( $order_ids_array ), '%d' ) );
-			$query_args   = array_merge( $order_ids_array, array( $cid ) );
+			$query_args = array_merge( $order_ids_array, array( $cid ) );
 
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$query = $wpdb->prepare(
-				"SELECT bump.fid as fid, bump.oid as order_id, bump.bid as 'object_id', CAST(bump.total AS DECIMAL(10,2)) as 'total_revenue', p.post_title as 'object_name', bump.converted as 'is_converted', DATE_FORMAT(bump.date, '%%Y-%%m-%%d %%T') as 'date', 'bump' as 'type' FROM " . $wpdb->prefix . 'wfob_stats AS bump LEFT JOIN ' . $wpdb->prefix . "posts as p ON bump.bid = p.id WHERE bump.converted = 1 AND bump.oid IN ($placeholders) AND bump.cid = %d ORDER BY bump.date ASC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is generated from array_fill with %d placeholders
-				...$query_args
+			$data     = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT bump.fid as fid, bump.oid as order_id, bump.bid as 'object_id', CAST(bump.total AS DECIMAL(10,2)) as 'total_revenue', p.post_title as 'object_name', bump.converted as 'is_converted', DATE_FORMAT(bump.date, '%%Y-%%m-%%d %%T') as 'date', 'bump' as 'type' FROM {$wpdb->prefix}wfob_stats AS bump LEFT JOIN {$wpdb->prefix}posts as p ON bump.bid = p.id WHERE bump.converted = 1 AND bump.oid IN ( " . implode( ', ', array_fill( 0, count( $order_ids_array ), '%d' ) ) . ' ) AND bump.cid = %d ORDER BY bump.date ASC',
+					...$query_args
+				)
 			);
-			// phpcs:enable
-
-			$data     = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
 				return $db_error;
@@ -181,8 +193,13 @@ if ( ! class_exists( 'WFOB_Contacts_Analytics' ) ) {
 		public function get_bumps_by_order_id( $order_id ) {
 			global $wpdb;
 
-			$query    = $wpdb->prepare( "SELECT bump.bid as 'id', p.post_title as 'bump_name', '' as 'bump_products', CASE WHEN bump.converted = 1 THEN 'Yes' ELSE 'No' END as 'bump_converted', bump.oid as 'bump_order_id', CAST(bump.total AS DECIMAL(10,2)) as 'bump_total' FROM " . $wpdb->prefix . 'wfob_stats' . ' AS bump LEFT JOIN ' . $wpdb->prefix . 'posts' . ' as p ON bump.bid = p.id WHERE bump.oid = %d order by bump.date asc', $order_id );
-			$data     = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above
+			$data     = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT bump.bid as 'id', p.post_title as 'bump_name', '' as 'bump_products', CASE WHEN bump.converted = 1 THEN 'Yes' ELSE 'No' END as 'bump_converted', bump.oid as 'bump_order_id', CAST(bump.total AS DECIMAL(10,2)) as 'bump_total' FROM {$wpdb->prefix}wfob_stats AS bump LEFT JOIN {$wpdb->prefix}posts as p ON bump.bid = p.id WHERE bump.oid = %d order by bump.date asc",
+					$order_id
+				),
+				ARRAY_A
+			);
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
 				return $db_error;
@@ -190,7 +207,6 @@ if ( ! class_exists( 'WFOB_Contacts_Analytics' ) ) {
 
 			return $data;
 		}
-
 
 		/**
 		 * @param $cid
@@ -201,12 +217,12 @@ if ( ! class_exists( 'WFOB_Contacts_Analytics' ) ) {
 			global $wpdb;
 			$cid = ! empty( $cid ) ? absint( $cid ) : $cid;
 
-			$query = $wpdb->prepare(
-				"SELECT bump.oid as order_id, bump.bid as 'object_id', CAST(bump.total AS DECIMAL(10,2)) as 'total_revenue', p.post_title as 'object_name', bump.converted as 'is_converted', DATE_FORMAT(bump.date, '%%Y-%%m-%%dT%%TZ') as 'date', 'bump' as 'type' FROM " . $wpdb->prefix . 'wfob_stats AS bump LEFT JOIN ' . $wpdb->prefix . 'posts as p ON bump.bid = p.id WHERE bump.converted = 1 AND bump.cid = %d ORDER BY bump.date ASC',
-				$cid
+			$data     = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT bump.oid as order_id, bump.bid as 'object_id', CAST(bump.total AS DECIMAL(10,2)) as 'total_revenue', p.post_title as 'object_name', bump.converted as 'is_converted', DATE_FORMAT(bump.date, '%%Y-%%m-%%dT%%TZ') as 'date', 'bump' as 'type' FROM {$wpdb->prefix}wfob_stats AS bump LEFT JOIN {$wpdb->prefix}posts as p ON bump.bid = p.id WHERE bump.converted = 1 AND bump.cid = %d ORDER BY bump.date ASC",
+					$cid
+				)
 			);
-
-			$data     = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
 				return $db_error;
@@ -221,73 +237,6 @@ if ( ! class_exists( 'WFOB_Contacts_Analytics' ) ) {
 			} elseif ( ! empty( $data[0] ) ) {
 				$data[0]->product_name = '';
 				$data[0]->product_qty  = '';
-			}
-
-			return $data;
-		}
-
-
-		/**
-		 * @param $limit
-		 * @param string $order
-		 * @param string $order_by
-		 *
-		 * @return string
-		 */
-		public function get_timeline_data_query( $limit, $order = 'DESC', $order_by = 'date' ) {
-			global $wpdb;
-
-			// Whitelist allowed ORDER BY columns to prevent SQL injection
-			$allowed_order_by = array( 'date', 'id', 'fid', 'cid', 'order_id', 'total_revenue' );
-			$order_by         = in_array( $order_by, $allowed_order_by, true ) ? $order_by : 'date';
-
-			// Whitelist ORDER direction
-			$order = strtoupper( $order );
-			$order = in_array( $order, array( 'ASC', 'DESC' ), true ) ? $order : 'DESC';
-
-			// Sanitize LIMIT - ensure it's a positive integer
-			$limit_clause = '';
-			if ( '' !== $limit && is_numeric( $limit ) ) {
-				$limit_clause = ' LIMIT ' . absint( $limit );
-			}
-
-			return "SELECT bump.bid as id, bump.fid as 'fid', bump.cid as 'cid', bump.oid as 'order_id', CAST(bump.total AS DECIMAL(10,2)) as 'total_revenue', 'bump' as 'type', posts.post_title as 'post_title', bump.date as date FROM " . $wpdb->prefix . 'wfob_stats AS bump LEFT JOIN ' . $wpdb->prefix . 'posts AS posts ON bump.bid=posts.ID WHERE bump.converted = 1 ORDER BY ' . $order_by . ' ' . $order . $limit_clause;
-		}
-
-		/**
-		 * @param $limit
-		 * @param $date_query
-		 *
-		 * @return array|false[]|object|stdClass[]|null
-		 */
-		public function get_top_funnels( $limit = '', $date_query = '' ) {
-			global $wpdb;
-
-			// Sanitize LIMIT - ensure it's a positive integer
-			$limit_clause = '';
-			if ( '' !== $limit && is_numeric( $limit ) ) {
-				$limit_clause = ' LIMIT ' . absint( $limit );
-			}
-
-			// Security: Only allow safe date query patterns
-			// Expected format: "{{COLUMN}} >= 'YYYY-MM-DD' AND {{COLUMN}} < 'YYYY-MM-DD'"
-			$date_query = str_replace( '{{COLUMN}}', 'bump.date', $date_query );
-
-			if ( ! empty( $date_query ) && ! preg_match( '/^bump\.date\s*[<>=]+\s*\'[\d\-\s:]+\'(\s+AND\s+bump\.date\s*[<>=]+\s*\'[\d\-\s:]+\')*$/i', $date_query ) ) {
-				$date_query = '1=1'; // Fallback to safe condition if pattern doesn't match
-			}
-
-			$date_condition = ! empty( $date_query ) ? $date_query : '1=1';
-
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $date_condition and $limit_clause are safely validated/sanitized above
-			$query = 'SELECT funnel.id as fid, funnel.title as title, stats.total as total FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel
-			JOIN ( SELECT fid, SUM( CAST(total AS DECIMAL(10,2)) ) as total FROM ' . $wpdb->prefix . 'wfob_stats as bump
-			WHERE fid != 0 AND converted = 1 AND ' . $date_condition . ' GROUP BY fid ) as stats ON funnel.id = stats.fid WHERE 1 = 1 GROUP BY funnel.id ORDER BY total DESC' . $limit_clause; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- date_condition is validated with regex pattern, limit_clause is sanitized with absint
-
-			$data     = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query uses validated date_condition and sanitized limit_clause
-			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
-			if ( true === $db_error['db_error'] ) {
-				return $db_error;
 			}
 
 			return $data;

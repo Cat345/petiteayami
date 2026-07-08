@@ -1,6 +1,11 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 if ( ! class_exists( 'BWFAN_Contact_Address' ) && BWFAN_Common::is_pro_3_0() ) {
+	#[\AllowDynamicProperties]
 	class BWFAN_Contact_Address extends BWFAN_Merge_Tag {
 
 		private static $instance = null;

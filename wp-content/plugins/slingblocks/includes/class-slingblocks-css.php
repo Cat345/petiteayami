@@ -121,7 +121,7 @@ if ( ! class_exists( 'SLINGBLOCKS_CSS' ) ) {
 			if ( '' !== $this->_selector ) {
 				$this->add_selector_rules_to_output();
 			}
-			$this->_selector = $selector;
+			$this->_selector = preg_replace( '/[{};<]/', '', (string) $selector );
 
 			return $this;
 		}
@@ -229,7 +229,9 @@ if ( ! class_exists( 'SLINGBLOCKS_CSS' ) ) {
 		public function add_rule( $property, $value, $prefix = null ) {
 			$format = is_null( $prefix ) ? '%1$s:%2$s;' : '%3$s%1$s:%2$s;';
 			if ( $value && ! empty( $value ) || 0 === $value || '0' === $value ) {
-				$this->_css .= sprintf( $format, $property, $value, $prefix );
+				$safe = preg_replace( '/[{};]/', '', (string) $value );
+				$safe = preg_replace( '#</?(?:style|script)\b[^>]*>?#i', '', $safe );
+				$this->_css .= sprintf( $format, $property, $safe, $prefix );
 			}
 
 			return $this;
@@ -578,7 +580,7 @@ if ( ! class_exists( 'SLINGBLOCKS_CSS' ) ) {
 							break;
 
 						case 'image' :
-							$image_url = $bg['url'] ?? '';
+							$image_url = isset( $bg['url'] ) ? esc_url( $bg['url'] ) : '';
 							if ( $image_url ) {
 								if ( $gradient ) {
 									$this->add_rule( "background-$key", sprintf( "url('%s'), %s", $image_url, $gradient ) );
@@ -870,6 +872,8 @@ if ( ! class_exists( 'SLINGBLOCKS_CSS' ) ) {
 			if ( empty( $replace_selector ) || empty( $custom_css ) ) {
 				return $this;
 			}
+			$custom_css     = preg_replace( '#</?(?:style|script)\b[^>]*>?#i', '', (string) $custom_css );
+			$custom_css     = str_replace( array( '<!--', '-->', '<![CDATA[', ']]>' ), '', $custom_css );
 			$this->_output .= $this->minify_css( preg_replace( '/selector/i', $replace_selector, $custom_css ) );
 
 			return $this;

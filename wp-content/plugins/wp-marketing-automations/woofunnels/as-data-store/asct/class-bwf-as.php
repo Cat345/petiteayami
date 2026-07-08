@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'BWF_AS' ) ) {
 	#[AllowDynamicProperties]
 	class BWF_AS {

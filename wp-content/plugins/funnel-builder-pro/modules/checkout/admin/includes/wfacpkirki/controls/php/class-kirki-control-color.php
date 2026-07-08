@@ -19,6 +19,7 @@ if ( ! class_exists( 'WFACPKirki_Control_Color' ) ) {
 	 *
 	 * @see https://github.com/23r9i0/wp-color-picker-alpha
 	 */
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Color extends WFACPKirki_Control_Base {
 
 		/**

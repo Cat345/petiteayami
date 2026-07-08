@@ -11,6 +11,7 @@
  * Based on WP_Background_Process concept
  */
 if ( ! class_exists( 'WFFN_Background_Process' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Background_Process extends WP_Background_Process {
 
 
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFFN_Background_Process' ) ) {
 			// Uses unique prefix per blog so each blog has separate queue.
 			$this->prefix = 'wffn_' . get_current_blog_id();
 			parent::__construct();
-
 		}
 
 		/**
@@ -188,6 +188,7 @@ if ( ! class_exists( 'WFFN_Background_Process' ) ) {
 
 		/**
 		 * Overriding parent protected function publically to use outside this class
+		 *
 		 * @return bool
 		 */
 		public function is_process_running() {

@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Order delivery date By Woocommerce Delivery
@@ -9,27 +13,27 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Delivery' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_WC_Delivery {
 
-		private $deliveryDatePosition = null;
-		private $deliveryTimePosition = null;
+		private $deliveryDatePosition     = null;
+		private $deliveryTimePosition     = null;
 		private $deliveryLocationPosition = null;
-		private $options = null;
-		private $field_keys = [
+		private $options                  = null;
+		private $field_keys               = array(
 			'woocommerce_delivery_date_field',
 			'woocommerce_delivery_time_field',
-			'woocommerce_delivery_location_field'
-		];
+			'woocommerce_delivery_location_field',
+		);
 
 		public function __construct() {
 			/* Register Add field */
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'actions' ] );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'actions' ) );
 			add_filter( 'wfacp_html_fields_deliveryDatePosition', '__return_false' );
 			add_filter( 'wfacp_html_fields_deliveryTimePosition', '__return_false' );
 			add_filter( 'wfacp_html_fields_deliveryLocationPosition', '__return_false' );
 
-			add_action( 'process_wfacp_html', [ $this, 'call_fields_hook' ], 999, 3 );
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 99, 2 );
-			add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
+			add_action( 'process_wfacp_html', array( $this, 'call_fields_hook' ), 999, 3 );
+			add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 99, 2 );
+			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
 
 			/* prevent third party fields and wrapper*/
 
@@ -87,28 +91,28 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Delivery' ) ) {
 
 		public function add_field( $fields ) {
 			if ( $this->is_enable() ) {
-				$fields['deliveryDatePosition'] = [
+				$fields['deliveryDatePosition'] = array(
 					'type'       => 'wfacp_html',
-					'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'deliveryDatePosition' ],
+					'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'deliveryDatePosition' ),
 					'id'         => 'oddt',
 					'field_type' => 'deliveryDatePosition',
 					'label'      => __( 'Delivery Date', 'woofunnels-aero-checkout' ),
-				];
+				);
 
-				$fields['deliveryTimePosition']     = [
+				$fields['deliveryTimePosition']     = array(
 					'type'       => 'wfacp_html',
-					'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'deliveryTimePosition' ],
+					'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'deliveryTimePosition' ),
 					'id'         => 'oddt',
 					'field_type' => 'deliveryTimePosition',
 					'label'      => __( 'Delivery Time', 'woofunnels-aero-checkout' ),
-				];
-				$fields['deliveryLocationPosition'] = [
+				);
+				$fields['deliveryLocationPosition'] = array(
 					'type'       => 'wfacp_html',
-					'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'deliveryLocationPosition' ],
+					'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'deliveryLocationPosition' ),
 					'id'         => 'deliveryLocationPosition',
 					'field_type' => 'deliveryLocationPosition',
 					'label'      => __( 'Delivery Location', 'woofunnels-aero-checkout' ),
-				];
+				);
 			}
 
 			return $fields;
@@ -116,9 +120,9 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Delivery' ) ) {
 
 		public function add_default_wfacp_styling( $args, $key ) {
 			if ( in_array( $key, $this->field_keys ) ) {
-				$args['input_class'] = array_merge( $args['input_class'], [ 'wfacp-form-control' ] );
-				$args['label_class'] = array_merge( $args['label_class'], [ 'wfacp-form-control-label' ] );
-				$args['class']       = array_merge( $args['class'], [ 'wfacp-col-full', 'wfacp-form-control-wrapper' ] );
+				$args['input_class'] = array_merge( $args['input_class'], array( 'wfacp-form-control' ) );
+				$args['label_class'] = array_merge( $args['label_class'], array( 'wfacp-form-control-label' ) );
+				$args['class']       = array_merge( $args['class'], array( 'wfacp-col-full', 'wfacp-form-control-wrapper' ) );
 			}
 
 			return $args;
@@ -126,11 +130,11 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Delivery' ) ) {
 
 		public function internal_css() {
 			?>
-            <style>
-                .woocommerce-delivery-date-container {
-                    clear: both;
-                }
-            </style>
+			<style>
+				.woocommerce-delivery-date-container {
+					clear: both;
+				}
+			</style>
 			<?php
 		}
 	}

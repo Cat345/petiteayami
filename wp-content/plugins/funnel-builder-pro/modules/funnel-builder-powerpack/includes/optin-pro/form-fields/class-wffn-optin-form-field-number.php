@@ -1,14 +1,15 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFFN_Optin_Form_Field_Number' ) ) {
 	/**
 	 * This class will control all Optin Number mapping functionality on optin submission.
 	 * Class WFFN_Optin_Form_Field_Number
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_Optin_Form_Field_Number extends WFFN_Optin_Form_Field {
 
-		private static $ins = null;
-		public static $slug = 'number';
+		private static $ins     = null;
+		public static $slug     = 'number';
 		public $is_custom_field = true;
 
 		public $index = 50;
@@ -25,7 +26,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Field_Number' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -64,11 +65,15 @@ if ( ! class_exists( 'WFFN_Optin_Form_Field_Number' ) ) {
 			?>
 			<div class="bwfac_form_sec bwfac_form_field_number <?php echo esc_attr( $width ); ?>">
 				<?php if ( ! empty( $label ) ) { ?>
-					<label for="wfop_id_<?php echo esc_attr( $name ) . '_' . esc_attr( $hash ); ?>"><?php echo esc_html( $label );
-						echo ( $required ) ? '<span>*</span>' : ''; ?> </label>
+					<label for="wfop_id_<?php echo esc_attr( $name ) . '_' . esc_attr( $hash ); ?>">
+					<?php
+					echo esc_html( $label );
+						echo ( $required ) ? '<span>*</span>' : '';
+					?>
+						</label>
 				<?php } ?>
 				<div class="wfop_input_cont">
-					<input id="wfop_id_<?php echo esc_attr( $name ) . '_' . esc_attr( $hash ); ?>" value="<?php echo esc_attr( $value ); ?>" class="<?php echo esc_attr( $class ) ?>" type="number" name="<?php echo esc_attr( $name ) ?>" placeholder="<?php echo esc_attr( $placeholder ); ?>">
+					<input id="wfop_id_<?php echo esc_attr( $name ) . '_' . esc_attr( $hash ); ?>" value="<?php echo esc_attr( $value ); ?>" class="<?php echo esc_attr( $class ); ?>" type="number" name="<?php echo esc_attr( $name ); ?>" placeholder="<?php echo esc_attr( $placeholder ); ?>">
 				</div>
 			</div>
 			<?php
@@ -87,7 +92,6 @@ if ( ! class_exists( 'WFFN_Optin_Form_Field_Number' ) ) {
 				'default'     => '',
 			);
 		}
-
 	}
 
 	if ( class_exists( 'WFOPP_Core' ) ) {

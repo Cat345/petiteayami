@@ -1,6 +1,7 @@
 <?php
 if ( ! class_exists( 'wfocu_Input_Html_Always' ) ) {
 
+	#[\AllowDynamicProperties]
 	class wfocu_Input_Html_Always {
 		public function __construct() {
 			// vars
@@ -9,13 +10,12 @@ if ( ! class_exists( 'wfocu_Input_Html_Always' ) ) {
 			$this->defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 		}
 
 		public function render( $field, $value = null ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
 			echo '';
 		}
-
 	}
 }

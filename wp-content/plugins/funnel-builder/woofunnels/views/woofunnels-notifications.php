@@ -24,13 +24,13 @@ if ( ! is_array( $notifications_list ) || count( $notifications_list ) === 0 ) {
                 <div class="<?php echo esc_attr( implode( ' ', $combined_class ) ); ?>" wf-noti-key="wf-<?php echo esc_attr( $key ); ?>" wf-noti-group="<?php echo esc_attr( $nkey ); ?>">
                     <div class="wf_overlay_active "></div>
 					<?php
-					echo '<div class="wf_notification_html"><p>' . $value['html'] . '</p></div>'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '<div class="wf_notification_html"><p>' . wp_kses_post( $value['html'] ) . '</p></div>';
 
 
 					if ( isset( $value['buttons'] ) && ( is_array( $value['buttons'] ) && count( $value['buttons'] ) > 0 ) ) {
 
 						printf( '<div class="wf_notification_btn_wrap">' );
-						foreach ( $value['buttons'] as $btn_key => $btn_val ) {
+						foreach ( $value['buttons'] as $btn_key => $btn_val ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 
 							$btn_class = [];
 							if ( isset( $btn_val['class'] ) && ! empty( $btn_val['class'] ) ) {

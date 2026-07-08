@@ -43,6 +43,9 @@ add_action('after_setup_theme', function () {
     // Disable support for block widgets
     remove_theme_support('widgets-block-editor');
 
+    // https://developer.wordpress.org/block-editor/how-to-guides/themes/theme-support/#responsive-embedded-content
+    add_theme_support('responsive-embeds');
+
     // Load theme translations
     load_theme_textdomain('yootheme', get_template_directory() . '/language');
 });

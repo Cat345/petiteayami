@@ -15,6 +15,7 @@ if ( ! class_exists( 'WFOCUKirki_Modules_CSS_Vars' ) ) {
 	 *
 	 * @since 3.0.28
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Modules_CSS_Vars {
 
 		/**

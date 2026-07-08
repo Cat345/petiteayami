@@ -199,9 +199,7 @@ return [
             $node->props['grid_parallax'] = $node->props['grid_parallax_y'] ?? '';
         }
 
-        if (!isset($node->props['show_hover_image'])) {
-            $node->props['show_hover_image'] = $node->props['show_image2'] ?? '';
-        }
+        $node->props['show_hover_image'] ??= $node->props['show_image2'] ?? '';
 
         if (
             !isset($node->props['image_box_decoration']) &&

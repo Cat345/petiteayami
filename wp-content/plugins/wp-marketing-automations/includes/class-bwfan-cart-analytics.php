@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Cart_Analytics {
 
 	private static $ins = null;
@@ -25,6 +26,8 @@ class BWFAN_Cart_Analytics {
 	}
 
 	public static function get_captured_cart( $start_date = '', $end_date = '', $interval = '', $is_interval = '' ) {
+		$start_date = preg_replace( '/[^0-9 :-]/', '', (string) $start_date );
+		$end_date   = preg_replace( '/[^0-9 :-]/', '', (string) $end_date );
 		global $wpdb;
 		$table          = $wpdb->prefix . 'bwfan_abandonedcarts';
 		$date_col       = "created_time";
@@ -44,7 +47,7 @@ class BWFAN_Cart_Analytics {
 			if ( strpos( $start_date, ' ' ) === false ) {
 				$start_date = $start_date . " 00:00:00";
 			}
-			$start_date_query = " AND `" . $date_col . "` >= '" . $start_date . "'";
+			$start_date_query = $wpdb->prepare( " AND `" . $date_col . "` >= %s", $start_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		$end_date_query = '';
@@ -52,7 +55,7 @@ class BWFAN_Cart_Analytics {
 			if ( strpos( $end_date, ' ' ) === false ) {
 				$end_date = $end_date . " 23:59:59";
 			}
-			$end_date_query = " AND `" . $date_col . "` <= '" . $end_date . "'";
+			$end_date_query = $wpdb->prepare( " AND `" . $date_col . "` <= %s", $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		$base_query = "SELECT SUM(total_base) as `sum`, COUNT(ID) as `count` " . $interval_query . " FROM `" . $table . "` WHERE 1=1 $start_date_query $end_date_query $group_by ORDER BY $order_by ASC";
@@ -61,6 +64,8 @@ class BWFAN_Cart_Analytics {
 	}
 
 	public static function get_lost_cart( $start_date, $end_date, $interval, $is_interval ) {
+		$start_date = preg_replace( '/[^0-9 :-]/', '', (string) $start_date );
+		$end_date   = preg_replace( '/[^0-9 :-]/', '', (string) $end_date );
 		global $wpdb;
 
 		$table          = $wpdb->prefix . 'bwfan_abandonedcarts';
@@ -77,7 +82,8 @@ class BWFAN_Cart_Analytics {
 			$order_by       = ' time_interval ';
 		}
 
-		$base_query = "SELECT  SUM(total_base) as sum, COUNT(ID) as count " . $interval_query . "  FROM " . $table . " WHERE 1=1 AND status = 2  AND " . $date_col . " >= '" . $start_date . "' AND " . $date_col . " <= '" . $end_date . "'" . $group_by . " ORDER BY " . $order_by . " ASC";
+		$date_cond  = $wpdb->prepare( " AND " . $date_col . " >= %s AND " . $date_col . " <= %s", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$base_query = "SELECT  SUM(total_base) as sum, COUNT(ID) as count " . $interval_query . "  FROM " . $table . " WHERE 1=1 AND status = 2 " . $date_cond . $group_by . " ORDER BY " . $order_by . " ASC";
 
 		return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
@@ -98,6 +104,8 @@ class BWFAN_Cart_Analytics {
 	}
 
 	public static function get_recovered_cart( $start_date = '', $end_date = '', $interval = '', $is_interval = '' ) {
+		$start_date = preg_replace( '/[^0-9 :-]/', '', (string) $start_date );
+		$end_date   = preg_replace( '/[^0-9 :-]/', '', (string) $end_date );
 		global $wpdb;
 
 		$post_statuses = apply_filters( 'bwfan_recovered_cart_excluded_statuses', array( 'wc-pending', 'wc-failed', 'wc-cancelled', 'wc-refunded', 'trash', 'draft' ) );
@@ -133,7 +141,7 @@ class BWFAN_Cart_Analytics {
 			if ( strpos( $end_date, ' ' ) === false ) {
 				$end_date = $end_date . " 23:59:59";
 			}
-			$where = "AND p.post_date >= '{$start_date}' AND p.post_date <='{$end_date}'";
+			$where = $wpdb->prepare( "AND p.post_date >= %s AND p.post_date <= %s", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 		$where .= " AND m2.meta_value > 0";
 
@@ -143,6 +151,8 @@ class BWFAN_Cart_Analytics {
 	}
 
 	public static function hpos_get_recovered_cart( $start_date, $end_date, $interval, $is_interval, $post_status ) {
+		$start_date = preg_replace( '/[^0-9 :-]/', '', (string) $start_date );
+		$end_date   = preg_replace( '/[^0-9 :-]/', '', (string) $end_date );
 		global $wpdb;
 		$date_col       = "p.date_created_gmt";
 		$interval_query = '';
@@ -167,7 +177,7 @@ class BWFAN_Cart_Analytics {
 		}
 		$end_date = BWFAN_Common::get_utc_date_from_store_date( $end_date );
 
-		$where = "AND p.date_created_gmt >= '{$start_date}' AND p.date_created_gmt <='{$end_date}'";
+		$where = $wpdb->prepare( "AND p.date_created_gmt >= %s AND p.date_created_gmt <= %s", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$where .= " AND m2.meta_value > 0";
 
 		$query = " SELECT COUNT(p.id) as count, sum(m.meta_value) as sum " . $interval_query . " FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id LEFT JOIN {$wpdb->prefix}wc_orders_meta as m2 ON p.id = m2.order_id WHERE p.type = 'shop_order' AND p.status NOT IN $post_status AND m.meta_key = '_bwfan_order_total_base' AND m2.meta_key = '_bwfan_ab_cart_recovered_a_id' $where " . $group_by . " ORDER BY " . $order_by . " ASC";
@@ -228,6 +238,8 @@ class BWFAN_Cart_Analytics {
 	 * @return array
 	 */
 	public static function get_total_cart_generated( $start_date, $end_date, $interval, $is_interval ) {
+		$start_date = preg_replace( '/[^0-9 :-]/', '', (string) $start_date );
+		$end_date   = preg_replace( '/[^0-9 :-]/', '', (string) $end_date );
 		global $wpdb;
 		$table          = $wpdb->prefix . 'wfco_report_views';
 		$date_col       = "date";
@@ -243,7 +255,8 @@ class BWFAN_Cart_Analytics {
 			$order_by       = ' time_interval ';
 		}
 
-		$base_query = "SELECT  SUM(no_of_sessions) as total_session " . $interval_query . "  FROM `" . $table . "` WHERE 1=1 AND `" . $date_col . "` >= '" . $start_date . "' AND `" . $date_col . "` <= '" . $end_date . "' and type = 1 and object_id = 0 " . $group_by . " ORDER BY " . $order_by . " ASC";
+		$date_cond  = $wpdb->prepare( " AND `" . $date_col . "` >= %s AND `" . $date_col . "` <= %s", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$base_query = "SELECT  SUM(no_of_sessions) as total_session " . $interval_query . "  FROM `" . $table . "` WHERE 1=1 " . $date_cond . " and type = 1 and object_id = 0 " . $group_by . " ORDER BY " . $order_by . " ASC";
 
 		return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
@@ -254,6 +267,8 @@ class BWFAN_Cart_Analytics {
 	 * @return array
 	 */
 	public static function get_total_orders_placed( $start_date, $end_date, $interval, $is_interval ) {
+		$start_date = preg_replace( '/[^0-9 :-]/', '', (string) $start_date );
+		$end_date   = preg_replace( '/[^0-9 :-]/', '', (string) $end_date );
 		global $wpdb;
 
 		$post_statuses = apply_filters( 'bwfan_recovered_cart_excluded_statuses', array( 'wc-pending', 'wc-failed', 'wc-cancelled' ) );
@@ -289,12 +304,15 @@ class BWFAN_Cart_Analytics {
 			$order_by       = ' time_interval ';
 		}
 
-		$base_query = "SELECT COUNT(p.ID) as order_placed_count" . $interval_query . " FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE 1=1 AND p.post_type = 'shop_order' AND p.post_status NOT IN $post_status AND " . $date_col . " >= '" . $start_date . "' AND " . $date_col . " <= '" . $end_date . "' AND m.meta_key = '_bwfan_order_total_base' " . $group_by . " ORDER BY " . $order_by . " ASC";
+		$date_cond  = $wpdb->prepare( " AND " . $date_col . " >= %s AND " . $date_col . " <= %s", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$base_query = "SELECT COUNT(p.ID) as order_placed_count" . $interval_query . " FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE 1=1 AND p.post_type = 'shop_order' AND p.post_status NOT IN $post_status " . $date_cond . " AND m.meta_key = '_bwfan_order_total_base' " . $group_by . " ORDER BY " . $order_by . " ASC";
 
 		return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	public static function hpos_get_total_orders_placed( $start_date, $end_date, $interval, $is_interval, $post_status ) {
+		$start_date = preg_replace( '/[^0-9 :-]/', '', (string) $start_date );
+		$end_date   = preg_replace( '/[^0-9 :-]/', '', (string) $end_date );
 		global $wpdb;
 		$date_col       = "p.date_created_gmt";
 		$interval_query = '';
@@ -309,7 +327,8 @@ class BWFAN_Cart_Analytics {
 			$order_by       = ' time_interval ';
 		}
 
-		$base_query = "SELECT COUNT(p.id) as order_placed_count" . $interval_query . " FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE 1=1 AND p.type = 'shop_order' AND p.status NOT IN $post_status AND " . $date_col . " >= '" . $start_date . "' AND " . $date_col . " <= '" . $end_date . "' AND m.meta_key = '_bwfan_order_total_base' " . $group_by . " ORDER BY " . $order_by . " ASC";
+		$date_cond  = $wpdb->prepare( " AND " . $date_col . " >= %s AND " . $date_col . " <= %s", $start_date, $end_date ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$base_query = "SELECT COUNT(p.id) as order_placed_count" . $interval_query . " FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE 1=1 AND p.type = 'shop_order' AND p.status NOT IN $post_status " . $date_cond . " AND m.meta_key = '_bwfan_order_total_base' " . $group_by . " ORDER BY " . $order_by . " ASC";
 		$orders     = $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return empty( $orders ) ? [] : $orders;

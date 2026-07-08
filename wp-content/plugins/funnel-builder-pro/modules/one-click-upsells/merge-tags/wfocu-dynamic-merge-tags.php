@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Dynamic_Merge_Tags {
 
 		public static $threshold_to_date  = 30;

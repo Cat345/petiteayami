@@ -21,6 +21,7 @@ if ( ! class_exists( 'WFOCUKirki_Color' ) ) {
 	/**
 	 * Helper class for color manipulation.
 	 */
+	#[\AllowDynamicProperties]
 	final class WFOCUKirki_Color extends ariColor {
 
 		/**

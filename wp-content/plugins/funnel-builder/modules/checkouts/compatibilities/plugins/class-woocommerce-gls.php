@@ -16,6 +16,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woocommerce_GLS' ) ) {
 	 * Provides compatibility with GLS WooCommerce plugin by handling script conflicts
 	 * and ensuring proper integration with AeroCheckout templates.
 	 */
+	#[\AllowDynamicProperties]
 	class WFACP_Compatibility_With_Woocommerce_GLS {
 
 		/**

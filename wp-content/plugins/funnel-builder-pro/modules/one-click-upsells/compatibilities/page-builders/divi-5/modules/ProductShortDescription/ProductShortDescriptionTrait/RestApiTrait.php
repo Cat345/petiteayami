@@ -142,7 +142,7 @@ trait RestApiTrait {
 							'post_type'      => 'wfocu_offer',
 							'name'           => $offer_slug,
 							'posts_per_page' => 1,
-							'post_status'    => 'any',
+							'post_status'    => 'publish',
 						)
 					);
 

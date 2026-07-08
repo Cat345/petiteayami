@@ -17,6 +17,7 @@ if ( ! class_exists( '\FKCart\Includes\Front' ) ) {
 		private $drawer_displayed = false;
 		public $active_free_shipping = false;
 		public $default_wc_location = '';
+		private $cached_items = null;
 
 		/**
 		 * Class constructor
@@ -110,7 +111,9 @@ if ( ! class_exists( '\FKCart\Includes\Front' ) ) {
 			/**
 			 * @todo Need to Remove below code in Future version by Jun 2024
 			 */
-			if ( Data::is_smart_button_enabled() && defined( 'FKWCS_VERSION' ) && version_compare( '1.4.1', FKWCS_VERSION, '<=' ) ) {
+			$smart_buttons_active = Data::is_smart_button_enabled();
+
+			if ( $smart_buttons_active ) {
 				wp_enqueue_script( 'wc-cart-fragments' );
 			}
 		}
@@ -287,6 +290,11 @@ if ( ! class_exists( '\FKCart\Includes\Front' ) ) {
 		 * @return array
 		 */
 		public function get_items() {
+			/** Return cached result to avoid duplicate calculate_totals() within the same request */
+			if ( null !== $this->cached_items ) {
+				return $this->cached_items;
+			}
+
 			$items = [];
 			add_filter( 'woocommerce_is_attribute_in_product_name', '__return_false' ); //Do not append attributes with title
 
@@ -296,15 +304,21 @@ if ( ! class_exists( '\FKCart\Includes\Front' ) ) {
 				$items[]  = $this->get_dummy_preview_item( $products[1] );
 				$items[]  = $this->get_dummy_preview_item( $products[2] );
 
+				$this->cached_items = $items;
+
 				return $items;
 			}
 
-			WC()->cart->calculate_totals();
+			if ( ! is_null( WC()->cart ) && ! WC()->cart->is_empty() ) {
+				WC()->cart->calculate_totals();
+			}
 			do_action( 'fkcart_get_cart_item' );
 			$cart_contents = WC()->cart->get_cart_contents();
 			foreach ( $cart_contents as $cart_item_key => $cart_item ) {
 				$items[ $cart_item_key ] = $this->get_cart_items( $cart_item_key, $cart_item );
 			}
+
+			$this->cached_items = $items;
 
 			return $items;
 		}
@@ -650,10 +664,12 @@ if ( ! class_exists( '\FKCart\Includes\Front' ) ) {
 		 *
 		 * @return array|string
 		 */
-		function you_saved_price( $product, $qty = 1 ) {
+		function you_saved_price( $product, $cart_item ) {
 			if ( ! $product instanceof \WC_Product ) {
 				return '';
 			}
+
+			$qty = $cart_item['cart_item']['quantity'];
 			$percentage       = '';
 			$amount           = 0;
 			$tax_display_mode = get_option( 'woocommerce_tax_display_shop' );
@@ -666,7 +682,14 @@ if ( ! class_exists( '\FKCart\Includes\Front' ) ) {
 
 			$product_price = apply_filters( 'fkcart_wc_product_price', $product_price, $product );
 
+			$you_saved_prices = apply_filters( 'fkcart_you_saved_prices', ['regular_price' => $product_regular_price, 'sale_price' => $product_price], $cart_item['cart_item'] );
 
+			if(empty($you_saved_prices)){
+				return '';
+			}
+
+			$product_regular_price = $you_saved_prices['regular_price'];
+			$product_price = $you_saved_prices['sale_price'];
 			if ( $product_regular_price > 0 && ! empty( $product_price ) && $product_price != $product_regular_price ) {
 				$amount     = ( $product_regular_price - $product_price );
 				$percentage = ( $amount * 100 ) / $product_regular_price;
@@ -860,12 +883,12 @@ if ( ! class_exists( '\FKCart\Includes\Front' ) ) {
 		 */
 		public function append_ajax_parameter( $query ) {
 			if ( isset( $_GET['currency'] ) ) {
-				$query['currency'] = $_GET['currency'];
+				$query['currency'] = sanitize_text_field( $_GET['currency'] );
 			}
 
 			/** WPML Query parameter setting enabled */
 			if ( isset( $_GET['lang'] ) ) {
-				$query['lang'] = $_GET['lang'];
+				$query['lang'] = sanitize_text_field( $_GET['lang'] );
 			}
 
 			/** Polylang */

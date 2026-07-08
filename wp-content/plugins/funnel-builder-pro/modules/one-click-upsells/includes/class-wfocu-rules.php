@@ -3,15 +3,16 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 	/**
 	 * @author XLPlugins
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Rules {
-		private static $ins = null;
-		public $is_executing_rule = false;
-		public $environments = array();
-		public $excluded_rules = array();
+		private static $ins               = null;
+		public $is_executing_rule         = false;
+		public $environments              = array();
+		public $excluded_rules            = array();
 		public $excluded_rules_categories = array();
-		public $processed = array();
-		public $record = array();
-		public $skipped = array();
+		public $processed                 = array();
+		public $record                    = array();
+		public $skipped                   = array();
 
 		public function __construct() {
 
@@ -20,12 +21,11 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 			add_action( 'wfocu_before_rules', array( $this, 'reset_skipped' ) );
 			add_action( 'wfocu_builder_menu', array( $this, 'add_rule_tab' ) );
 			add_action( 'wfocu_dashboard_page_rules', array( $this, 'render_rules' ) );
-
 		}
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -37,7 +37,7 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 		 * Iterate over the setof rules set against each offer and validates for the rules set
 		 * Now this function also powered in a way that it can hold some rule for the next environment to run on
 		 *
-		 * @param int $content_id id of the funnel
+		 * @param int    $content_id id of the funnel
 		 * @param string $environment environment this function called on
 		 *
 		 * @return bool|mixed|void
@@ -46,7 +46,7 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 
 			$this->is_executing_rule = true;
 			$this->set_environment_var( 'funnel_id', $content_id );
-			//allowing rules to get manipulated using external logic
+			// allowing rules to get manipulated using external logic
 			$external_rules = apply_filters( 'wfocu_before_rules', true, $content_id, $environment );
 			if ( ! $external_rules ) {
 
@@ -116,7 +116,6 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 				return;
 			}
 			$this->environments[ $key ] = $value;
-
 		}
 
 		protected function _validate_rule_block( $groups_category, $type, $environment ) {
@@ -128,7 +127,7 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 					$group_skipped = array();
 					foreach ( $group as $rule ) {
 
-						//just skipping the rule if excluded, so that it wont play any role in final judgement
+						// just skipping the rule if excluded, so that it wont play any role in final judgement
 						if ( in_array( $rule['rule_type'], $this->excluded_rules, true ) ) {
 
 							continue;
@@ -140,8 +139,8 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 							if ( $rule_object->supports( $environment ) ) {
 								$match = $rule_object->is_match( $rule, $environment );
 
-								//assigning values to the array.
-								//on false, as this is single group (bind by AND), one false would be enough to declare whole result as false so breaking on that point
+								// assigning values to the array.
+								// on false, as this is single group (bind by AND), one false would be enough to declare whole result as false so breaking on that point
 								if ( false === $match ) {
 									$iteration_results[ $group_id ] = 0;
 									break;
@@ -155,7 +154,7 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 						}
 					}
 
-					//checking if current group iteration combine returns true, if its true, no need to iterate other groups
+					// checking if current group iteration combine returns true, if its true, no need to iterate other groups
 					if ( isset( $iteration_results[ $group_id ] ) && $iteration_results[ $group_id ] === 1 ) {
 
 						/**
@@ -168,10 +167,10 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 					}
 				}
 
-				//checking count of all the groups iteration
+				// checking count of all the groups iteration
 				if ( count( $iteration_results ) > 0 ) {
 
-					//checking for the any true in the groups
+					// checking for the any true in the groups
 					if ( array_sum( $iteration_results ) > 0 ) {
 						$display = true;
 					} else {
@@ -179,11 +178,11 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 					}
 				} else {
 
-					//handling the case where all the rules got skipped
+					// handling the case where all the rules got skipped
 					$display = true;
 				}
 			} else {
-				$display = true; //Always display the content if no rules have been configured.
+				$display = true; // Always display the content if no rules have been configured.
 			}
 
 			return $display;
@@ -196,7 +195,6 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 		 *
 		 * @return wfocu_Rule_Base or superclass of wfocu_Rule_Base
 		 * @global array $woocommerce_wfocu_rule_rules
-		 *
 		 */
 		public function woocommerce_wfocu_rule_get_rule_object( $rule_type ) {
 			global $woocommerce_wfocu_rule_rules;
@@ -205,7 +203,7 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 			}
 			$class = 'wfocu_rule_' . $rule_type;
 			if ( class_exists( $class ) ) {
-				$woocommerce_wfocu_rule_rules[ $rule_type ] = new $class;
+				$woocommerce_wfocu_rule_rules[ $rule_type ] = new $class();
 
 				return $woocommerce_wfocu_rule_rules[ $rule_type ];
 			} else {
@@ -268,7 +266,7 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 
 		public function load_rules_classes() {
 
-			//Include our default rule classes
+			// Include our default rule classes
 			include_once plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'rules/rules/base.php';
 			include_once plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'rules/rules/general.php';
 			include_once plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'rules/rules/date-time.php';
@@ -279,7 +277,7 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 			include_once plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'rules/rules/bwf-customer.php';
 			include_once plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'rules/rules/bwfcrm-tag.php';
 			if ( is_admin() || defined( 'DOING_AJAX' ) ) {
-				//Include the admin interface builder
+				// Include the admin interface builder
 				include_once plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'rules/class-wfocu-input-builder.php';
 				include_once plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'rules/inputs/html-funnel-products.php';
 				include_once plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'rules/inputs/html-funnel-onetime.php';
@@ -306,7 +304,6 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 				include_once plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'rules/inputs/item-text-match.php';
 			}
 			do_action( 'wfocu_load_rule_files' );
-
 		}
 
 
@@ -316,7 +313,7 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 					'general_always' => __( 'No Rules', 'woofunnels-upstroke-one-click-upsell' ),
 				),
 				__( 'Order', 'woofunnels-upstroke-one-click-upsell' )         => array(
-					'order_total' => __( 'Total', 'woofunnels-upstroke-one-click-upsell' ),
+					'order_total'             => __( 'Total', 'woofunnels-upstroke-one-click-upsell' ),
 
 					'order_item_count'        => __( 'Item Count', 'woofunnels-upstroke-one-click-upsell' ),
 					'order_item_type'         => __( 'Item Type', 'woofunnels-upstroke-one-click-upsell' ),
@@ -329,8 +326,8 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 					'order_item_text_match'   => __( 'Order Item - Text Match', 'woofunnels-upstroke-one-click-upsell' ),
 				),
 				__( 'Customer', 'woofunnels-upstroke-one-click-upsell' )      => array(
-					'is_first_order' => __( 'Customer - Is First Order', 'woofunnels-upstroke-one-click-upsell' ),
-					'is_guest'       => __( 'Customer - Is Guest', 'woofunnels-upstroke-one-click-upsell' ),
+					'is_first_order'              => __( 'Customer - Is First Order', 'woofunnels-upstroke-one-click-upsell' ),
+					'is_guest'                    => __( 'Customer - Is Guest', 'woofunnels-upstroke-one-click-upsell' ),
 
 					'customer_user'               => __( 'Customer - User Name', 'woofunnels-upstroke-one-click-upsell' ),
 					'customer_role'               => __( 'Customer - User Role', 'woofunnels-upstroke-one-click-upsell' ),
@@ -352,33 +349,36 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 				),
 			);
 			if ( class_exists( 'BWFCRM_Tag' ) ) {
-				$types[ __( 'FunnelKit Automations', 'woofunnels-upstroke-one-click-upsell' ) ] = [
+				$types[ __( 'FunnelKit Automations', 'woofunnels-upstroke-one-click-upsell' ) ] = array(
 					'automation_tag' => __( 'Contact Tags', 'woofunnels-upstroke-one-click-upsell' ),
 
-				];
+				);
 			}
 			if ( class_exists( 'WFACP_Core' ) ) {
 
-				$types[ __( 'Checkout', 'woofunnels-order-bump' ) ] = [
+				$types[ __( 'Checkout', 'woofunnels-order-bump' ) ] = array(
 					'wfacp_page' => __( 'FunnelKit Checkout pages', 'woofunnels-order-bump' ),
 
-				];
+				);
 			}
 
 			return $types;
 		}
 
 		public function rule_types_product( $types ) {
-			$types = apply_filters( 'wfocu_rule_type_product_args', array(
-				__( 'Default', 'woofunnels-upstroke-one-click-upsell' ) => array(
-					'general_always_2' => __( 'No Rules', 'woofunnels-upstroke-one-click-upsell' ),
-				),
-				__( 'Order', 'woofunnels-upstroke-one-click-upsell' )   => array(
-					'order_item'     => __( 'Products   ', 'woofunnels-upstroke-one-click-upsell' ),
-					'order_category' => __( 'Product Category', 'woofunnels-upstroke-one-click-upsell' ),
-					'order_term'     => __( 'Product Tag', 'woofunnels-upstroke-one-click-upsell' ),
-				),
-			) );
+			$types = apply_filters(
+				'wfocu_rule_type_product_args',
+				array(
+					__( 'Default', 'woofunnels-upstroke-one-click-upsell' ) => array(
+						'general_always_2' => __( 'No Rules', 'woofunnels-upstroke-one-click-upsell' ),
+					),
+					__( 'Order', 'woofunnels-upstroke-one-click-upsell' )   => array(
+						'order_item'     => __( 'Products   ', 'woofunnels-upstroke-one-click-upsell' ),
+						'order_category' => __( 'Product Category', 'woofunnels-upstroke-one-click-upsell' ),
+						'order_term'     => __( 'Product Tag', 'woofunnels-upstroke-one-click-upsell' ),
+					),
+				)
+			);
 
 			return $types;
 		}
@@ -401,7 +401,7 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 
 			$control_id = get_post_meta( $funnel_id, '_bwf_ab_variation_of', true );
 			if ( $control_id > 0 ) {
-				include_once( $this->rule_views_path() . '/rules-blocked.php' );  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+				include_once $this->rule_views_path() . '/rules-blocked.php';  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 
 				return;
 			}
@@ -409,12 +409,11 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 				global $wfocu_is_rules_saved;
 				$wfocu_is_rules_saved = get_post_meta( $funnel_id, '_wfocu_is_rules_saved', true );
 			}
-			include_once( $this->rule_views_path() . '/rules-head.php' );  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-			include_once( $this->rule_views_path() . '/rules-product.php' );  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-			include_once( $this->rule_views_path() . '/rules-basic.php' );  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-			include_once( $this->rule_views_path() . '/rules-footer.php' );  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-			include_once( $this->rule_views_path() . '/rules-create.php' );  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-
+			include_once $this->rule_views_path() . '/rules-head.php';  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+			include_once $this->rule_views_path() . '/rules-product.php';  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+			include_once $this->rule_views_path() . '/rules-basic.php';  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+			include_once $this->rule_views_path() . '/rules-footer.php';  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+			include_once $this->rule_views_path() . '/rules-create.php';  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 		}
 
 		public function rule_views_path() {
@@ -434,8 +433,6 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 		protected function _push_to_skipped( $rule ) {
 			array_push( $this->skipped, $rule );
 		}
-
-
 	}
 
 	if ( class_exists( 'WFOCU_Rules' ) ) {

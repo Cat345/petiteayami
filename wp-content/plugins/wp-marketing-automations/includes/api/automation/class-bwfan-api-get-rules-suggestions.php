@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Rule_Search_Suggestion extends BWFAN_API_Base {
 	public static $ins;
 
@@ -26,9 +27,16 @@ class BWFAN_API_Get_Rule_Search_Suggestion extends BWFAN_API_Base {
 
 		// removed get_sanitized_arg function because that was merging two or more substrings and making one
 		// for example : cart abandonment. with get_sanitized_arg, it is becoming cartabandonment, which making issue in search
-		$search = $this->args['search'] ? $this->args['search'] : '';
+		$search = $this->args['search'] ?? '';
+		$extra  = isset( $this->args['extra'] ) ? json_decode( $this->args['extra'], true ) : [];
+		if ( ! is_array( $extra ) ) {
+			$extra = [];
+		}
+		if ( isset( $extra['type'] ) ) {
+			$extra['type'] = sanitize_key( $extra['type'] );
+		}
 
-		$result = BWFAN_Core()->rules->get_rule_search_suggestions( $search, $rule );
+		$result = BWFAN_Core()->rules->get_rule_search_suggestions( $search, $rule, $extra );
 
 		return $this->success_response( $result );
 	}

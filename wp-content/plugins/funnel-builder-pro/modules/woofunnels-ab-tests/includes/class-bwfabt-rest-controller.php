@@ -100,6 +100,10 @@ if ( ! class_exists( 'BWFABT_REST_Controller' ) ) {
 		public function get_total_intervals( $start_date, $end_date, $interval, $table, $table_col ) {
 			global $wpdb;
 
+			// $table and $table_col are SQL identifiers (cannot be bound); strip anything but word chars to neutralise injection.
+			$table     = preg_replace( '/[^A-Za-z0-9_]/', '', $table );
+			$table_col = preg_replace( '/[^A-Za-z0-9_]/', '', $table_col );
+
 			$get_interval   = $this->get_interval_format_query( $interval, $table_col );
 			$interval_query = $get_interval['interval_query'];
 			$interval_group = $get_interval['interval_group'];

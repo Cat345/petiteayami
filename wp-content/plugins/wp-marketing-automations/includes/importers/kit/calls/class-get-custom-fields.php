@@ -5,6 +5,7 @@ namespace BWFAN\Importers\Kit\Calls;
 /**
  * Get all custom fields from Kit
  */
+#[\AllowDynamicProperties]
 class Get_Custom_Fields extends Call {
 	protected $required_fields = array( 'api_key' );
 

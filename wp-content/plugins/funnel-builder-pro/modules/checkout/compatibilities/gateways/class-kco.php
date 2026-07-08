@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Klarna Checkout BY Klarna Krokedril
@@ -10,9 +14,9 @@ if ( ! class_exists( 'WFACP_Compatibility_Klarna_checkout' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_Klarna_checkout {
 		public function __construct() {
-			add_filter( 'wfacp_skip_checkout_page_detection', [ $this, 'disable_checkout_page_if_klarna_checkout_set' ], 100 );
-			add_action( 'woocommerce_checkout_update_order_review', [ $this, 'remove_kco_event' ], 100 );
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'remove_klarna_checkout_redirection' ] );
+			add_filter( 'wfacp_skip_checkout_page_detection', array( $this, 'disable_checkout_page_if_klarna_checkout_set' ), 100 );
+			add_action( 'woocommerce_checkout_update_order_review', array( $this, 'remove_kco_event' ), 100 );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'remove_klarna_checkout_redirection' ) );
 			add_action( 'in_admin_header', array( $this, 'klarna_checkout_installed' ), 15 );
 		}
 
@@ -48,13 +52,13 @@ if ( ! class_exists( 'WFACP_Compatibility_Klarna_checkout' ) ) {
 
 		public function klarna_checkout_installed() {
 			?>
-            <div class="error" style="margin-top:74px">
-                <p>
+			<div class="error" style="margin-top:74px">
+				<p>
 					<?php
 					_e( '<strong> Attention: </strong>You are using Klarna Checkout which completely takes over the checkout. To have best experience with WooFunnels Checkout please activate <a href="https://wordpress.org/plugins/klarna-payments-for-woocommerce/" target="_blank">Klarna Payments</a>.', 'woofunnels-aero-checkout' );
 					?>
-                </p>
-            </div>
+				</p>
+			</div>
 			<?php
 		}
 	}

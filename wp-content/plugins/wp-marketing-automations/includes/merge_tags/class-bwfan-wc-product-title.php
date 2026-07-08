@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+#[\AllowDynamicProperties]
 class BWFAN_WC_Product_Title extends BWFAN_Merge_Tag {
 
 	private static $instance = null;
@@ -32,7 +37,8 @@ class BWFAN_WC_Product_Title extends BWFAN_Merge_Tag {
 		}
 
 		$this->initialize_product_details();
-		$product_title = BWFAN_Merge_Tag_Loader::get_data( 'product_details' )->post_title;
+		$product_details = BWFAN_Merge_Tag_Loader::get_data( 'product_details' );
+		$product_title   = ( is_object( $product_details ) && isset( $product_details->post_title ) ) ? $product_details->post_title : '';
 
 		return $this->parse_shortcode_output( $product_title, $attr );
 	}

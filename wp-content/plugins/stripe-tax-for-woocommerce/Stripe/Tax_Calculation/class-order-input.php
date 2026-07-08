@@ -35,7 +35,9 @@ class Order_Input extends Input {
 	 */
 	public static function from_order( WC_Order $order, $tax_location_override, $customer_user_id_override = null ) {
 		if ( $customer_user_id_override ) {
-			$taxability_override = self::get_user_taxability_override_by_id( $customer_user_id_override );
+			$customer = new WC_Customer( $customer_user_id_override );
+
+			$taxability_override = self::get_customer_taxability_override( $customer );
 		} else {
 			$customer_id = $order->get_customer_id();
 			$customer    = new WC_Customer( $customer_id );
@@ -46,10 +48,6 @@ class Order_Input extends Input {
 		$order_status = $order->get_status();
 
 		$tax_behavior = $order->get_prices_include_tax() ? self::TAX_BEHAVIOR_INCLUSIVE : self::TAX_BEHAVIOR_EXCLUSIVE;
-
-		if ( self::TAX_BEHAVIOR_INCLUSIVE === $tax_behavior ) {
-			self::add_item_taxes_to_totals( $order );
-		}
 
 		$order_id = $order->get_id();
 
@@ -70,15 +68,16 @@ class Order_Input extends Input {
 		if ( is_array( $items ) && count( $items ) > 0 ) {
 			$shipping_item         = reset( $items );
 			$shipping_tax_behavior = $shipping_item->get_meta( '__stripe_tax_behavior' );
-		}
 
-		if ( ! $shipping_tax_behavior && $shipping_item ) {
-			$comp_meta = $shipping_item->get_meta( '_stripe_not_subtotal_include_tax' );
+			if ( self::TAX_BEHAVIOR_INCLUSIVE === $shipping_tax_behavior ) {
+				$stripe_checkout_total_tax_inclusive = $shipping_item->get_meta( '_stripe_tax_checkout_total_tax_inclusive' );
 
-			if ( $comp_meta && 'yes' === $comp_meta ) {
-				$shipping_tax_behavior = self::TAX_BEHAVIOR_EXCLUSIVE;
+				if ( '' !== $stripe_checkout_total_tax_inclusive ) {
+					$shipping_cost_amount = Amount_Utility::to_cents( 0 + (float) $stripe_checkout_total_tax_inclusive, $currency );
+				}
 			}
 		}
+
 		if ( ! $shipping_tax_behavior ) {
 			$shipping_tax_behavior = self::TAX_BEHAVIOR_INCLUSIVE === $tax_behavior && StripeTax_Options::item_allow_price_tax_inclusive( 'shipping' ) ? self::TAX_BEHAVIOR_INCLUSIVE : self::TAX_BEHAVIOR_EXCLUSIVE;
 		}
@@ -108,43 +107,58 @@ class Order_Input extends Input {
 		$input_lines = array();
 		foreach ( $items as $item ) {
 			/**
-			 *
-			 * Current order item.
+			 * Current order item from line item or fee collection.
 			 *
 			 * @var \WC_Order_Item_Product|\WC_Order_Item_Fee $item
 			 */
-			$tax_status = $item->get_tax_status();
+			$total             = null;
+			$subtotal          = null;
+			$item_tax_behavior = $item->get_meta( '__stripe_tax_behavior' );
+			$type              = $item->get_type();
 
-			$type     = $item->get_type();
+			if ( '' === $item_tax_behavior ) {
+				$item_tax_behavior = self::TAX_BEHAVIOR_INCLUSIVE === $tax_behavior && StripeTax_Options::item_allow_price_tax_inclusive( $type )
+					? self::TAX_BEHAVIOR_INCLUSIVE
+					: self::TAX_BEHAVIOR_EXCLUSIVE;
+			}
+
 			$tax_code = static::get_item_tax_code( $item, $type );
 
 			$reference = self::build_item_reference_by_type( $item );
 
+			if ( self::TAX_BEHAVIOR_INCLUSIVE === $item_tax_behavior ) {
+				$stripe_checkout_total_tax_inclusive = $item->get_meta( '_stripe_tax_checkout_total_tax_inclusive' );
+
+				if ( '' !== $stripe_checkout_total_tax_inclusive ) {
+					$total = 0 + (float) $stripe_checkout_total_tax_inclusive;
+				}
+
+				$stripe_checkout_subtotal_tax_inclusive = $item->get_meta( '_stripe_tax_checkout_subtotal_tax_inclusive' );
+
+				if ( '' !== $stripe_checkout_subtotal_tax_inclusive ) {
+					$subtotal = 0 + (float) $stripe_checkout_subtotal_tax_inclusive;
+				}
+			}
+
 			switch ( $type ) {
 				case 'fee':
-					$total    = $item->get_total();
-					$subtotal = $item->get_amount();
+					if ( is_null( $total ) ) {
+						$total    = $item->get_total();
+						$subtotal = $item->get_amount();
+					}
+
 					$quantity = 1;
 
 					break;
 
 				default:
-					$total    = $item->get_total();
-					$subtotal = $item->get_subtotal();
+					if ( is_null( $total ) ) {
+						$total    = $item->get_total();
+						$subtotal = $item->get_subtotal();
+					}
+
 					$quantity = $item->get_quantity();
 					break;
-			}
-
-			$item_tax_behavior = $item->get_meta( '__stripe_tax_behavior' );
-
-			if ( ! $item_tax_behavior ) {
-				$comp_meta = $item->get_meta( '_stripe_not_subtotal_include_tax' );
-
-				if ( $comp_meta && 'yes' === $comp_meta ) {
-					$item_tax_behavior = self::TAX_BEHAVIOR_EXCLUSIVE;
-				} else {
-					$item_tax_behavior = self::TAX_BEHAVIOR_INCLUSIVE === $tax_behavior && StripeTax_Options::item_allow_price_tax_inclusive( $type ) ? self::TAX_BEHAVIOR_INCLUSIVE : self::TAX_BEHAVIOR_EXCLUSIVE;
-				}
 			}
 
 			$input_line2 = new Input_Line_Item(
@@ -161,6 +175,7 @@ class Order_Input extends Input {
 		// @phpstan-ignore-next-line
 		return new static( $currency, $customer_details, $input_lines, $shipping_cost, $tax_behavior );
 	}
+
 
 	/**
 	 * Calculates and returns an order shipping cost amount by taxability.
@@ -208,16 +223,13 @@ class Order_Input extends Input {
 			$order_tax_location = $order->get_taxable_location( $tax_location_override );
 		}
 
-		$id       = $order->get_customer_id();
-		$customer = new WC_Customer( $order->get_customer_id() );
-
 		$tax_location = self::get_customer_tax_location( $order, isset( $order_tax_location ) ? $order_tax_location : null );
 
 		return $tax_location;
 	}
 
 	/**
-	 * Resets an order totals and taxes.
+	 * Resets item taxes to totals for items on orders created with prices include taxes.
 	 *
 	 * @param object $order The order.
 	 */
@@ -225,107 +237,27 @@ class Order_Input extends Input {
 		$items = $order->get_items( array( 'line_item', 'fee', 'shipping' ) );
 
 		foreach ( $items as $item ) {
-			/**
-			*
-			* Current order item.
-			 *
-			 * @var \WC_Order_Item_Product|\WC_Order_Item_Fee|\WC_Order_Item_Shipping $item
-			*/
-			$tax_excluded_from_subtotal_meta = $item->get_meta( static::TAX_EXCLUDED_META_NAME );
+			$item_type = $item->get_type();
 
-			if ( 'yes' === $tax_excluded_from_subtotal_meta ) {
-				$subtotal = $item->get_meta( '__stripe_tax_price_inclusive_tax' );
-
-				if ( '' !== $subtotal ) {
-					$subtotal = (float) $subtotal * $item->get_quantity();
-				} elseif ( method_exists( $item, 'get_subtotal' ) ) {
-					$subtotal = $item->get_subtotal();
+			if ( 'shipping' === $item_type ) {
+				// In inclusive-price orders shipping total is already tax-inclusive; only clear tax data.
+				if ( is_callable( array( $item, 'set_taxes' ) ) ) {
+					$item->set_taxes( array( 'total' => array() ) );
 				}
-
-				if ( method_exists( $item, 'set_subtotal' ) ) {
-					$item->set_subtotal( $subtotal );
-					$item->set_subtotal_tax( 0 );
-				}
-
-				$item->set_total( $subtotal );
-				$item->set_taxes( array() );
-
-				if ( ! ( $item instanceof WC_Order_Item_Shipping ) ) {
+			} elseif ( 'fee' === $item_type ) {
+				// Fees keep tax in total and clear fee tax data through the public API.
+				$item->set_total( $item->get_total() + $item->get_total_tax() );
+				if ( is_callable( array( $item, 'set_total_tax' ) ) ) {
 					$item->set_total_tax( 0 );
+				} elseif ( is_callable( array( $item, 'set_taxes' ) ) ) {
+					$item->set_taxes( array( 'total' => array() ) );
 				}
-
-				$item->update_meta_data( static::TAX_EXCLUDED_META_NAME, 'no' );
-				$item->save();
+			} else {
+				// Product line items use subtotal/subtotal_tax.
+				$item->set_subtotal( $item->get_subtotal() + $item->get_subtotal_tax() );
+				$item->set_subtotal_tax( 0 );
 			}
-		}
-
-		$order->save();
-	}
-	/**
-	 * For order with price including taxes, restores order line item subtotals by adding each line taxes
-	 *
-	 * @param object $order The order.
-	 */
-	public static function add_item_taxes_to_totals( $order ) {
-		$items = $order->get_items( array( 'line_item', 'fee', 'shipping' ) );
-
-		foreach ( $items as $item ) {
-			/**
-			 *
-			 * Current order item.
-			 *
-			 * @var \WC_Order_Item_Product|\WC_Order_Item_Fee|\WC_Order_Item_Shipping $item
-			 */
-			$tax_excluded_from_subtotal_meta = $item->get_meta( static::TAX_EXCLUDED_META_NAME );
-
-			if ( 'yes' === $tax_excluded_from_subtotal_meta ) {
-				$item_type = $item->get_type();
-
-				if ( 'fee' === $item_type && ! static::is_fee_item_taxable( $item ) ) {
-					$item->update_meta_data( static::TAX_EXCLUDED_META_NAME, '' );
-					continue;
-				}
-				$subtotal = null;
-
-				$stripe_tax_price_inclusive_tax = $item->get_meta( '__stripe_tax_price_inclusive_tax' );
-
-				if ( '' !== $stripe_tax_price_inclusive_tax ) {
-					$subtotal = (float) $stripe_tax_price_inclusive_tax * $item->get_quantity();
-				}
-
-				if ( is_null( $subtotal ) ) {
-					if ( $item instanceof WC_Order_Item_Fee ) {
-						$subtotal     = $item->get_amount();
-						$subtotal_tax = 0;
-
-						// @phpstan-ignore-next-line
-						$subtotal += $subtotal_tax;
-					} elseif ( method_exists( $item, 'get_subtotal' ) ) {
-						$subtotal     = $item->get_subtotal();
-						$subtotal_tax = $item->get_subtotal_tax();
-
-						$subtotal += $subtotal_tax;
-					}
-				}
-
-				if ( method_exists( $item, 'set_subtotal' ) ) {
-					$item->set_subtotal( $subtotal );
-					$item->set_subtotal_tax( 0 );
-				}
-
-				$total     = $item->get_total();
-				$total_tax = $item->get_total_tax();
-				// @phpstan-ignore-next-line
-				$item->set_total( $total + $total_tax );
-				$item->set_taxes( array() );
-
-				if ( ! ( $item instanceof WC_Order_Item_Shipping ) ) {
-					$item->set_total_tax( 0 );
-				}
-
-				$item->update_meta_data( static::TAX_EXCLUDED_META_NAME, 'no' );
-				$item->save();
-			}
+			$item->save();
 		}
 
 		$order->save();
@@ -337,65 +269,15 @@ class Order_Input extends Input {
 	 * @param object $order Order.
 	 */
 	public static function remove_item_taxes_from_totals( $order ) {
-		$order_id = $order->get_id();
-
-		$tax_calculation = isset( Calculator::$calculations[ $order_id ]['result'] ) ? Calculator::$calculations[ $order_id ]['result'] : null;
-
-		if ( ! $tax_calculation ) {
-			return;
-		}
-
-		$items = $order->get_items( array( 'line_item', 'fee', 'shipping' ) );
-
-		foreach ( $items as $item ) {
-			/**
-			 *
-			 * Current order item.
-			 *
-			 * @var \WC_Order_Item_Product|\WC_Order_Item_Fee|\WC_Order_Item_Shipping $item
-			 */
-			$tax_excluded_from_subtotal_meta = $item->get_meta( static::TAX_EXCLUDED_META_NAME );
-			if ( $item instanceof WC_Order_Item_Shipping ) {
-				continue;
-			}
-			if ( 'no' === $tax_excluded_from_subtotal_meta ) {
-				$total        = $item->get_total();
-				$subtotal     = null;
-				$subtotal_tax = 0;
-				if ( $total > 0 && method_exists( $item, 'set_subtotal' ) ) {
-					$subtotal = $item->get_subtotal();
-
-					$subtotal_tax = $item->get_meta( '__stripe_tax_item_subtotal_tax' );
-
-					$item->set_subtotal( $subtotal - $subtotal_tax );
-					$item->set_subtotal_tax( $subtotal_tax );
-				}
-
-				if ( $total > 0 ) {
-					if ( ! is_null( $subtotal ) && $total !== $subtotal ) {
-						$total_tax = $subtotal_tax * $total / $subtotal;
-					} else {
-						$total_tax = $item->get_total_tax();
-					}
-
-					$item->set_total_tax( $total_tax );
-					$item->set_total( $total - $total_tax );
-				}
-
-				$item->update_meta_data( static::TAX_EXCLUDED_META_NAME, 'yes' );
-				$item->save();
-			}
-		}
-
-		$order->save();
 	}
 
 	/**
 	 * Build and returns an item reference based on its type
 	 *
 	 * @param object $item Order line item.
+	 * @param bool   $is_refund Whether the reference is built for a refund context.
 	 */
-	public static function build_item_reference_by_type( $item ) {
+	public static function build_item_reference_by_type( $item, $is_refund = false ) {
 		$cart_item_reference = $item->get_meta( static::CART_ITEM_REFERENCE_META_NAME );
 
 		if ( '' !== $cart_item_reference ) {
@@ -449,7 +331,7 @@ class Order_Input extends Input {
 				return 'shipping_cost';
 		}
 
-		$reference = static::build_item_reference( $item_type, $item_id, $item_variation_id, $item_name, $item_variation_attributes, $order_item_id );
+		$reference = static::build_item_reference( $item_type, $item_id, $item_variation_id, $item_name, $item_variation_attributes, $is_refund ? null : $order_item_id );
 
 		return $reference;
 	}
@@ -464,11 +346,7 @@ class Order_Input extends Input {
 		$tax_code = Product_Tax_Code_Repo::get_tax_code_by_type_and_id( $type, 'fee' === $type ? $item->get_name() : $item->get_product_id() );
 
 		if ( 'fee' === $type ) {
-			$wc_tax_status = $item->get_tax_status();
-			$wc_tax_class  = $item->get_tax_class();
-			$wc_is_taxable = 'taxable' === $wc_tax_status && '0' !== $wc_tax_class;
-
-			if ( ! $wc_is_taxable ) {
+			if ( ! static::is_fee_item_taxable( $item ) ) {
 				$tax_code = Options::DEFAULT_OPTION_NON_TAXABLE_FEE_TAX_CODE;
 			}
 		}
@@ -477,13 +355,18 @@ class Order_Input extends Input {
 	}
 
 	/**
-	 * Checks if a fee item is taxable or not
+	 * Checks if a fee item is taxable or not.
+	 *
+	 * Uses explicit (string) cast on tax_class to avoid PHP type-juggling:
+	 * WC_Order_Item_Fee can return integer 0 from pending changes,
+	 * and '0' !== 0 is TRUE in strict comparison, causing non-taxable
+	 * fees to be incorrectly treated as taxable.
 	 *
 	 * @param object $item The fee item.
 	 */
 	protected static function is_fee_item_taxable( $item ) {
 		$wc_tax_status = $item->get_tax_status();
-		$wc_tax_class  = $item->get_tax_class();
+		$wc_tax_class  = (string) $item->get_tax_class();
 		$wc_is_taxable = 'taxable' === $wc_tax_status && '0' !== $wc_tax_class;
 
 		return $wc_is_taxable;

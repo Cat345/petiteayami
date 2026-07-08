@@ -57,7 +57,7 @@ class BuilderWidget extends WP_Widget
      *
      * @param array<string, mixed> $instance
      */
-    public function form($instance)
+    public function form($instance): string
     {
         $settings = array_merge($this->widget_options['settings'], $instance);
         $content = $settings['content']

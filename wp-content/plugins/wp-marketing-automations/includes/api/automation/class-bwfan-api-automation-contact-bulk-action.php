@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Automation_Contact_Bulk_Action extends BWFAN_API_Base {
 	public static $ins;
 

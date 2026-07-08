@@ -4,6 +4,7 @@ if ( ! class_exists( 'WFOCU_Plugin_Compatibilities' ) ) {
 	 * Class WFOCU_Plugin_Compatibilities
 	 * Loads all the compatibilities files we have to provide compatibility with each plugin
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Plugin_Compatibilities {
 
 		public static $plugin_compatibilities = array();
@@ -34,7 +35,7 @@ if ( ! class_exists( 'WFOCU_Plugin_Compatibilities' ) ) {
 				'class-wfocu-compatibility-with-breakdance.php' => defined( 'BREAKDANCE_WOO_DIR' ),
 				'class-wfocu-compatibility-with-wp-grid-builder-multilingual.php' => defined( 'ICL_SITEPRESS_VERSION' ) && class_exists( 'WP_Grid_Builder_Multilingual\Includes\Translate' ),
 				'class-wfocu-compatibility-with-pys.php'   => class_exists( 'PixelYourSite\EventsManager' ),
-				'class-wfocu-cloudflare-turnstile-compatibility.php'           => function_exists('cfturnstile_settings_redirect'),
+				'class-wfocu-cloudflare-turnstile-compatibility.php' => function_exists( 'cfturnstile_settings_redirect' ),
 
 			);
 			self::add_files( $paths );

@@ -76,7 +76,11 @@ class ImageController
 
         $file = Event::emit('image.resolve|filter', $params['src']);
 
-        $image = ImageDriver::fromFile($file);
+        try {
+            $image = ImageDriver::fromFile($file);
+        } catch (\RuntimeException $e) {
+            return $response->withRedirect(Url::to($file));
+        }
 
         if (!$image) {
             throw new Exception(404, "Image '{$params['src']}' not found");

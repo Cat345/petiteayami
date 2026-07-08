@@ -822,7 +822,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				wp_enqueue_style( 'wffn-flex-admin', $this->get_admin_url() . '/assets/css/admin.css', array(), WFFN_VERSION_DEV );
 
 				if ( WFFN_Core()->admin->is_wffn_flex_page() ) {
-					$this->load_react_app( 'main-20260423144444' ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
+					$this->load_react_app( 'main-20260701122529' ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
 					if ( isset( $_GET['page'] ) && $_GET['page'] === 'bwf' && method_exists( 'BWF_Admin_General_Settings', 'get_localized_bwf_data' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						wp_localize_script( 'wffn-contact-admin', 'bwfAdminGen', BWF_Admin_General_Settings::get_instance()->get_localized_bwf_data() );
 
@@ -921,11 +921,11 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				$contact_page_data['currency']     = array(
 					'code'              => $currency,
 					'precision'         => wc_get_price_decimals(),
-					'symbol'            => html_entity_decode( get_woocommerce_currency_symbol( $currency ) ),
+					'symbol'            => html_entity_decode( get_woocommerce_currency_symbol( $currency ), ENT_QUOTES | ENT_HTML401 ),
 					'symbolPosition'    => get_option( 'woocommerce_currency_pos' ),
 					'decimalSeparator'  => wc_get_price_decimal_separator(),
 					'thousandSeparator' => wc_get_price_thousand_separator(),
-					'priceFormat'       => html_entity_decode( get_woocommerce_price_format() ),
+					'priceFormat'       => html_entity_decode( get_woocommerce_price_format(), ENT_QUOTES | ENT_HTML401 ),
 				);
 				$contact_page_data['is_wc_active'] = true;
 			}
@@ -1377,7 +1377,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				}
 				$sql_query .= '{table_name_meta} ON ( {table_name}.id = {table_name_meta}.bwf_funnel_id ';
 				if ( $args['meta']['compare'] === 'NOT_EXISTS' ) {
-					$sql_query .= 'AND {table_name_meta}.meta_key = \'' . esc_sql( $args['meta']['key'] ) . '\'';
+					$sql_query .= $wpdb->prepare( 'AND {table_name_meta}.meta_key = %s', $args['meta']['key'] );
 				}
 				$sql_query .= ')';
 
@@ -1387,8 +1387,11 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			 * Sort list with meta key.
 			 */
 			if ( ! empty( $args['order_by_meta'] ) ) {
-				$sql_query .= " LEFT JOIN {table_name_meta} as order_by_meta
-                ON ( {table_name}.id = order_by_meta.bwf_funnel_id AND order_by_meta.meta_key = '" . esc_sql( $args['order_by_meta']['key'] ) . "' )";
+				$sql_query .= $wpdb->prepare(
+					' LEFT JOIN {table_name_meta} as order_by_meta
+                ON ( {table_name}.id = order_by_meta.bwf_funnel_id AND order_by_meta.meta_key = %s )',
+					$args['order_by_meta']['key']
+				);
 			}
 			if ( ! empty( $args['categories'] ) && is_array( $args['categories'] ) ) {
 				$sql_query .= ' INNER JOIN {table_name_meta} AS cat_meta ON ( {table_name}.id = cat_meta.bwf_funnel_id AND cat_meta.meta_key = "wffn_funnel_category" )';
@@ -1411,7 +1414,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 			if ( ! empty( $status ) && 'all' !== $status ) {
 				$status     = ( 'live' === $status ) ? 1 : 0;
-				$sql_query .= ' AND `status` = ' . "'$status'";
+				$sql_query .= $wpdb->prepare( ' AND `status` = %d', $status );
 			}
 
 			if ( ! empty( $search_str ) ) {
@@ -1426,20 +1429,20 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 					}
 				} else {
-					$sql_query .= ' AND ( {table_name_meta}.meta_key = \'' . esc_sql( $args['meta']['key'] ) . '\' AND {table_name_meta}.meta_value = \'' . esc_sql( $args['meta']['value'] ) . '\' )';
+					$sql_query .= $wpdb->prepare( ' AND ( {table_name_meta}.meta_key = %s AND {table_name_meta}.meta_value = %s )', $args['meta']['key'], $args['meta']['value'] );
 				}
 			}
 
 			if ( ! empty( $args['order_by_meta'] ) ) {
 				$sql_query .= ' ORDER BY
                     CASE WHEN order_by_meta.meta_value IS NULL THEN 1 ELSE 0 END,
-                    order_by_meta.meta_value ' . esc_sql( $args['order_by_meta']['order'] );
+                    order_by_meta.meta_value ' . ( isset( $args['order_by_meta']['order'] ) && 'ASC' === strtoupper( $args['order_by_meta']['order'] ) ? 'ASC' : 'DESC' );
 			} else {
 				$sql_query .= ' ORDER BY {table_name}.id DESC';
 			}
 
 			if ( false === $is_total_query_required ) {
-				$sql_query .= ' LIMIT ' . esc_sql( $args['offset'] ) . ', ' . $limit;
+				$sql_query .= ' LIMIT ' . absint( $args['offset'] ) . ', ' . $limit;
 			} else {
 				$found_funnels = WFFN_Core()->get_dB()->get_results( 'SELECT count({table_name}.id) as count ' . $sql_query );
 				$sql_query    .= ' LIMIT ' . 0 . ', ' . $limit;
@@ -1554,10 +1557,16 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				return array();
 			}
 
-			$step_ids = array_keys( $this->step_against_fid );
+			$step_ids = array_map( 'absint', array_keys( $this->step_against_fid ) );
 
 			global $wpdb;
-			$results     = $wpdb->get_results( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}posts WHERE 1=1 AND post_status != %s and id IN (" . implode( ',', $step_ids ) . ')', 'publish' ), ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$results     = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->prefix}posts WHERE 1=1 AND post_status != %s and id IN ( " . implode( ', ', array_fill( 0, count( $step_ids ), '%d' ) ) . ' )',
+					array_merge( array( 'publish' ), $step_ids )
+				),
+				ARRAY_A
+			);
 			$draft_count = array();
 			foreach ( $results as $result ) {
 				$step_id   = $result['ID'];
@@ -1923,7 +1932,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 				if ( empty( $post_type ) && ! empty( $page_id ) ) {
 					$t_post = get_post( $page_id );
-					if ( in_array( $t_post->post_type, array( WFFN_Core()->landing_pages->get_post_type_slug(), WFOPP_Core()->optin_pages->get_post_type_slug() ), true ) ) {
+					if ( $t_post instanceof \WP_Post && in_array( $t_post->post_type, array( WFFN_Core()->landing_pages->get_post_type_slug(), WFOPP_Core()->optin_pages->get_post_type_slug() ), true ) ) {
 						$query->set( 'post_type', get_post_type( $page_id ) );
 					}
 				}
@@ -2065,7 +2074,8 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 						'expired'                 => ( isset( $license['_data']['expired'] ) && true === wffn_string_to_bool( $license['_data']['expired'] ) ) ? 1 : 0,
 					);
 					if ( $license['plugin'] === 'FunnelKit Funnel Builder Pro' || $license['plugin'] === 'FunnelKit Funnel Builder Basic' ) {
-						$has_fb_pro = true;
+						$has_fb_pro     = true;
+						$data['module'] = 'f';
 						array_unshift( $fields, $data );
 					} else {
 						$fields[] = $data;

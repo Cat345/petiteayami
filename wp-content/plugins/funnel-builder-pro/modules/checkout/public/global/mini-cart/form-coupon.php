@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
@@ -21,8 +25,8 @@ $apply_coupon_button_text = apply_filters( 'wfacp_sidebar_apply_coupon_button_te
 
 ?>
 <div class="wfacp_woocommerce_form_coupon wfacp_template_9_coupon">
-    <div class="wfacp-coupon-section wfacp_custom_row_wrap clearfix">
-        <div class="wfacp-coupon-page">
+	<div class="wfacp-coupon-section wfacp_custom_row_wrap clearfix">
+		<div class="wfacp-coupon-page">
 			<?php
 			if ( true === $enable_coupon_collapsible ) {
 				wc_print_notice( apply_filters( 'woocommerce_checkout_coupon_message', '<a class="wfacp_main_showcoupon">' . __( 'Have a coupon?', 'woocommerce' ) . ' ' . __( 'Click here to enter your code', 'woocommerce' ) . '</a>' ), 'notice' );
@@ -34,27 +38,27 @@ $apply_coupon_button_text = apply_filters( 'wfacp_sidebar_apply_coupon_button_te
 
 
 			?>
-            <form class="wfacp_layout_shopcheckout checkout_coupon woocommerce-form-coupon <?php echo $classBlock; ?>"
-                  method="post" style="<?php echo true == $enable_coupon_collapsible ? 'display:none' : '' ?>">
-                <div class="wfacp-row wfacp_coupon_row">
-                    <p class="form-row form-row-first wfacp-form-control-wrapper wfacp-col-left-half wfacp-input-form">
+			<form class="wfacp_layout_shopcheckout checkout_coupon woocommerce-form-coupon <?php echo $classBlock; ?>"
+					method="post" style="<?php echo true == $enable_coupon_collapsible ? 'display:none' : ''; ?>">
+				<div class="wfacp-row wfacp_coupon_row">
+					<p class="form-row form-row-first wfacp-form-control-wrapper wfacp-col-left-half wfacp-input-form">
 
-                        <label for="coupon_code_mini_cart" class="wfacp-form-control-label wfacp-coupon-label"><?php echo $wfacp_sidebar_coupon_text; ?></label>
-                        <input type="text" name="coupon_code" class="input-text wfacp-form-control wfacp_coupon_input wfacp_coupon_field_input" placeholder="<?php echo $wfacp_sidebar_coupon_text; ?>"
-                               id="coupon_code_mini_cart" value=""/>
-                    </p>
-                    <p class="form-row form-row-last <?php echo $coupon_cls; ?>">
-                        <button type="submit" class="button wfacp-coupon-btn wfacp_coupon_button" name="apply_coupon" disabled="disabled" value="<?php echo $apply_coupon_button_text; ?>">
+						<label for="coupon_code_mini_cart" class="wfacp-form-control-label wfacp-coupon-label"><?php echo $wfacp_sidebar_coupon_text; ?></label>
+						<input type="text" name="coupon_code" class="input-text wfacp-form-control wfacp_coupon_input wfacp_coupon_field_input" placeholder="<?php echo $wfacp_sidebar_coupon_text; ?>"
+								id="coupon_code_mini_cart" value=""/>
+					</p>
+					<p class="form-row form-row-last <?php echo $coupon_cls; ?>">
+						<button type="submit" class="button wfacp-coupon-btn wfacp_coupon_button" name="apply_coupon" disabled="disabled" value="<?php echo $apply_coupon_button_text; ?>">
 							<?php echo $apply_coupon_button_text; ?>
-                        </button>
-                    </p>
-                    <div class="clear"></div>
-                </div>
-                <div class="wfacp-row wfacp_ele_sec">
-                    <div class="wfacp_coupon_msg"><div class="woocommerce-message"></div></div>
-                    <div class="wfacp_coupon_notices"></div>
-                </div>
-            </form>
-        </div>
-    </div>
+						</button>
+					</p>
+					<div class="clear"></div>
+				</div>
+				<div class="wfacp-row wfacp_ele_sec">
+					<div class="wfacp_coupon_msg"><div class="woocommerce-message"></div></div>
+					<div class="wfacp_coupon_notices"></div>
+				</div>
+			</form>
+		</div>
+	</div>
 </div>

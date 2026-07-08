@@ -62,7 +62,7 @@ class UpdateTransform
      *
      * @return $this
      */
-    public function addGlobals(array $globals)
+    public function addGlobals(array $globals): self
     {
         $this->globals[] = $globals;
 

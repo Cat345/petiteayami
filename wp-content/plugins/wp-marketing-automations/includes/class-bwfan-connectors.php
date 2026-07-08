@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package Autonami
  * @author XlPlugins
  */
+#[\AllowDynamicProperties]
 class BWFAN_Connectors {
 	private static $ins = null;
 

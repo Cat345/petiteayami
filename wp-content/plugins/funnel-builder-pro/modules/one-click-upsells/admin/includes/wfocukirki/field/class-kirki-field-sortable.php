@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Sortable' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Sortable extends WFOCUKirki_Field {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Sortable' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-sortable';
-
 		}
 
 		/**
@@ -33,7 +33,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Sortable' ) ) {
 		protected function set_sanitize_callback() {
 
 			$this->sanitize_callback = array( $this, 'sanitize' );
-
 		}
 
 		/**
@@ -60,7 +59,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Sortable' ) ) {
 			}
 
 			return $sanitized_value;
-
 		}
 	}
 }

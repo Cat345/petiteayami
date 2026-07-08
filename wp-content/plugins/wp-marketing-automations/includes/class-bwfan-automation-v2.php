@@ -462,7 +462,7 @@ class BWFAN_Automation_V2 {
 
 			/** Set automation step data to react UI */
 			foreach ( $steps as $step ) {
-				if ( ! in_array( $step['id'], array( 'start', 'end' ) ) && isset( $step['stepId'] ) && intval( $step['stepId'] ) > 0 && isset( $this->automation_steps[ $step['stepId'] ] ) ) {
+				if ( isset( $step['id'] ) && ! in_array( $step['id'], array( 'start', 'end' ), true ) && isset( $step['stepId'] ) && intval( $step['stepId'] ) > 0 && isset( $this->automation_steps[ $step['stepId'] ] ) ) {
 					$data = $this->automation_steps[ $step['stepId'] ];
 
 					/** Unset the steps id from orphan array */
@@ -887,24 +887,25 @@ class BWFAN_Automation_V2 {
 		$link_data      = [];
 		$filtered_links = [];
 		foreach ( $links as $link ) {
-			if ( empty( $link ) ) {
+			if ( empty( $link ) || ! isset( $link['source'], $link['target'] ) ) {
 				continue;
 			}
-			$source = $link['source'] != 'start' ? $automationSteps[ $link['source'] ]['stepId'] : $link['source'];
-			$target = $link['target'] != 'end' ? $automationSteps[ $link['target'] ]['stepId'] : $link['target'];
+			$source = 'start' !== $link['source'] ? ( isset( $automationSteps[ $link['source'] ]['stepId'] ) ? $automationSteps[ $link['source'] ]['stepId'] : '' ) : $link['source'];
+			$target = 'end' !== $link['target'] ? ( isset( $automationSteps[ $link['target'] ]['stepId'] ) ? $automationSteps[ $link['target'] ]['stepId'] : '' ) : $link['target'];
 			if ( empty( $source ) || empty( $target ) || ( ! isset( $automationSteps[ $link['source'] ] ) && ! isset( $automationSteps[ $link['target'] ] ) ) ) {
 				continue;
 			}
-			if ( $automationSteps[ $link['target'] ]['type'] == 'yesNoNode' ) {
+			$target_type = isset( $automationSteps[ $link['target'] ]['type'] ) ? $automationSteps[ $link['target'] ]['type'] : '';
+			if ( 'yesNoNode' === $target_type ) {
 				$index                          = strpos( $target, 'yes' ) !== false ? 'yes' : 'no';
 				$link_data[ $source ][ $index ] = array(
 					'next' => $target,
-					'type' => $automationSteps[ $link['target'] ]['type'],
+					'type' => $target_type,
 				);
 			} else {
 				$link_data[ $source ][] = array(
 					'next' => $target,
-					'type' => $automationSteps[ $link['target'] ]['type'],
+					'type' => $target_type,
 				);
 			}
 			$filtered_links[] = $link;

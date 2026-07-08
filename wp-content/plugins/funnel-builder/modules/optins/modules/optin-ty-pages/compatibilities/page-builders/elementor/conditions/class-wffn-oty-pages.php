@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 if ( ! class_exists( '\ElementorPro\Modules\ThemeBuilder\Conditions\WFFN_OTY_Pages' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_OTY_Pages extends Post {
 
 		public function get_label() {
@@ -17,7 +18,5 @@ if ( ! class_exists( '\ElementorPro\Modules\ThemeBuilder\Conditions\WFFN_OTY_Pag
 
 		public function register_sub_conditions() {
 		}
-
-
 	}
 }

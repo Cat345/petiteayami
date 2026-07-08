@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Toggle' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Toggle extends WFOCUKirki_Field_Checkbox {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Toggle' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-toggle';
-
 		}
 	}
 }

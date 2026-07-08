@@ -11,6 +11,7 @@ use FunnelKit\Bricks\Elements\Element;
 use WFACP_Common;
 
 if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
+	#[\AllowDynamicProperties]
 	class Form extends Element {
 		public $category = 'funnelkit';
 		public $name     = 'wfacp-form';

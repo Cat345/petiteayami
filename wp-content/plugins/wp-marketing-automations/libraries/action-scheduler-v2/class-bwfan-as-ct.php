@@ -168,7 +168,10 @@ class BWFAN_AS_V2 {
 		global $wpdb;
 
 		for ( $attempt = 0; $attempt <= $max_retries; $attempt++ ) {
-			$result = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			/** Suppress wpdb's native error logging; deadlocks are handled here. last_error stays populated for detection below. */
+			$suppress = $wpdb->suppress_errors( true );
+			$result   = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->suppress_errors( $suppress );
 
 			if ( false !== $result ) {
 				return $result;
@@ -176,12 +179,16 @@ class BWFAN_AS_V2 {
 
 			/** Check if the error is a deadlock */
 			if ( false === strpos( $wpdb->last_error, 'Deadlock found' ) ) {
-				/** Not a deadlock error, don't retry */
+				/** Not a deadlock error, don't retry. Re-surface it since wpdb's native logging was suppressed, unless an outer context already suppressed errors. */
+				if ( ! $suppress && '' !== $wpdb->last_error ) {
+					$wpdb->print_error( $wpdb->last_error ); //phpcs:ignore
+				}
+
 				return false;
 			}
 
 			if ( $attempt < $max_retries ) {
-				error_log( 'BWFAN: Deadlock detected, retry attempt ' . ( $attempt + 1 ) . ' of ' . $max_retries ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				BWFAN_Common::log_test_data( 'BWFAN: Deadlock detected, retry attempt ' . ( $attempt + 1 ) . ' of ' . $max_retries, 'fka-db-deadlock', true );
 				/** Brief pause before retry with exponential backoff */
 				usleep( ( $attempt + 1 ) * 100000 );
 			}

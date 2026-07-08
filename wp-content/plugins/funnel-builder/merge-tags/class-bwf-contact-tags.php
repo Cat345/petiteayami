@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'BWF_Contact_Tags' ) ) {
+	#[\AllowDynamicProperties]
 	class BWF_Contact_Tags {
 
 		/**

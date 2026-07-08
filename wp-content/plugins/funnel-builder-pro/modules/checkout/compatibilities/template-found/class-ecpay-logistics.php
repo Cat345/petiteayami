@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * ECPay Logistics for WooCommerce
@@ -8,12 +12,12 @@ if ( ! class_exists( 'WFACP_Ecpay_Logistics_WC' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Ecpay_Logistics_WC {
 		public function __construct() {
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'setup' ] );
-			add_action( 'wfacp_before_process_checkout_template_loader', [ $this, 'setup' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'setup' ) );
+			add_action( 'wfacp_before_process_checkout_template_loader', array( $this, 'setup' ) );
 		}
 
 		public function setup() {
-			add_action( 'woocommerce_review_order_before_shipping', [ $this, 'remove_action' ] );
+			add_action( 'woocommerce_review_order_before_shipping', array( $this, 'remove_action' ) );
 		}
 
 		public function remove_action() {
@@ -24,7 +28,6 @@ if ( ! class_exists( 'WFACP_Ecpay_Logistics_WC' ) ) {
 				}
 			}
 		}
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Ecpay_Logistics_WC(), 'ecpay-wc' );

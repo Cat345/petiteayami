@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_WFACPKirki_Generic' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_WFACPKirki_Generic extends WFACPKirki_Field {
@@ -24,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_WFACPKirki_Generic' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-generic';
-
 		}
 
 
@@ -41,7 +44,6 @@ if ( ! class_exists( 'WFACPKirki_Field_WFACPKirki_Generic' ) ) {
 			if ( ! isset( $this->choices['element'] ) ) {
 				$this->choices['element'] = 'input';
 			}
-
 		}
 
 		/**
@@ -57,7 +59,6 @@ if ( ! class_exists( 'WFACPKirki_Field_WFACPKirki_Generic' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'wp_kses_post';
-
 		}
 	}
 }

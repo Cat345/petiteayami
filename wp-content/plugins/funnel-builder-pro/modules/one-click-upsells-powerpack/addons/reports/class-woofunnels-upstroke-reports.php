@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class WFOCU_Admin_Reports
@@ -7,6 +7,7 @@ defined( 'ABSPATH' ) || exit; //Exit if accessed directly
 if ( ! class_exists( 'WFOCU_Admin_Reports' ) ) {
 
 
+	#[\AllowDynamicProperties]
 	class WFOCU_Admin_Reports {
 
 
@@ -55,12 +56,11 @@ if ( ! class_exists( 'WFOCU_Admin_Reports' ) ) {
 			// Add any necessary scripts
 			add_action( 'admin_enqueue_scripts', __CLASS__ . '::woofunnels_upstroke_reports_scripts' );
 
-			//Providing only accepted products array when product is being searched for funnel reporting
+			// Providing only accepted products array when product is being searched for funnel reporting
 			add_action( 'wp_ajax_wfocu_accepted_product_search', array( $this, 'wfocu_accepted_product_search' ), 10, 2 );
 
 			// Add any actions we need based on the screen
 			add_action( 'current_screen', __CLASS__ . '::conditional_upstroke_reports_includes' );
-
 		}
 
 		/**
@@ -111,7 +111,7 @@ if ( ! class_exists( 'WFOCU_Admin_Reports' ) ) {
 			if ( empty( self::$funnel_id ) || self::$funnel_id < 1 ) {
 				WC_Admin_Reports::get_report( 'upsells_by_funnel' );
 			} else {
-				include_once dirname( __FILE__ ) . '/reports/class-wfocu-upsells-by-offer.php';
+				include_once __DIR__ . '/reports/class-wfocu-upsells-by-offer.php';
 				$report = new WC_Report_Upsells_By_Offer( self::$funnel_id );
 				$report->output_report();
 			}
@@ -129,13 +129,17 @@ if ( ! class_exists( 'WFOCU_Admin_Reports' ) ) {
 		 */
 		public static function initialize_woofunnels_upstroke_reports_path( $reporting_path, $name, $class ) {
 
-			if ( in_array( strtolower( $class ), array(
-				'wc_report_upsells_by_date',
-				'wc_report_upsells_by_product',
-				'wc_report_upsells_by_customer',
-				'wc_report_upsells_by_funnel',
-			), true ) ) {
-				$reporting_path = dirname( __FILE__ ) . '/reports/class-wfocu-' . $name . '.php';
+			if ( in_array(
+				strtolower( $class ),
+				array(
+					'wc_report_upsells_by_date',
+					'wc_report_upsells_by_product',
+					'wc_report_upsells_by_customer',
+					'wc_report_upsells_by_funnel',
+				),
+				true
+			) ) {
+				$reporting_path = __DIR__ . '/reports/class-wfocu-' . $name . '.php';
 			}
 
 			return $reporting_path;
@@ -154,29 +158,50 @@ if ( ! class_exists( 'WFOCU_Admin_Reports' ) ) {
 			$wc_screen_id = sanitize_title( __( 'WooCommerce', 'woofunnels-upstroke-power-pack' ) );
 
 			// Reports Upsells Pages
-			if ( in_array( $screen->id, apply_filters( 'woocommerce_reports_screen_ids', array(
-					$wc_screen_id . '_page_wc-reports',
-					'toplevel_page_wc-reports',
-					'dashboard',
-				) ), true ) && ( 'upsells' === filter_input( INPUT_GET, 'tab', FILTER_UNSAFE_RAW ) ) ) {
+			if ( in_array(
+				$screen->id,
+				apply_filters(
+					'woocommerce_reports_screen_ids',
+					array(
+						$wc_screen_id . '_page_wc-reports',
+						'toplevel_page_wc-reports',
+						'dashboard',
+					)
+				),
+				true
+			) && ( 'upsells' === filter_input( INPUT_GET, 'tab', FILTER_UNSAFE_RAW ) ) ) {
 
 				// Add currency localisation params for axis label
-				wp_localize_script( 'wfocu-upstroke-reports', 'wfocu_upstroke_reports', array(
-					'currency_format_num_decimals' => wc_get_price_decimals(),
-					'currency_format_symbol'       => get_woocommerce_currency_symbol(),
-					'currency_format_decimal_sep'  => esc_js( wc_get_price_decimal_separator() ),
-					'currency_format_thousand_sep' => esc_js( wc_get_price_thousand_separator() ),
-					'currency_format'              => esc_js( str_replace( array( '%1$s', '%2$s' ), array( '%s', '%v' ), get_woocommerce_price_format() ) ), // For accounting JS
-				) );
+				wp_localize_script(
+					'wfocu-upstroke-reports',
+					'wfocu_upstroke_reports',
+					array(
+						'currency_format_num_decimals' => wc_get_price_decimals(),
+						'currency_format_symbol'       => get_woocommerce_currency_symbol(),
+						'currency_format_decimal_sep'  => esc_js( wc_get_price_decimal_separator() ),
+						'currency_format_thousand_sep' => esc_js( wc_get_price_thousand_separator() ),
+						'currency_format'              => esc_js( str_replace( array( '%1$s', '%2$s' ), array( '%s', '%v' ), get_woocommerce_price_format() ) ), // For accounting JS
+					)
+				);
 
-				wp_enqueue_script( 'flot-order', plugin_dir_url( __FILE__ ) . 'assets/js/jquery.flot.orderBars' . $suffix . '.js', array(
-					'jquery',
-					'flot',
-				), WF_UPSTROKE_POWERPACK_VERSION );
-				wp_enqueue_script( 'flot-axis-labels', plugin_dir_url( __FILE__ ) . 'assets/js/jquery.flot.axislabels' . $suffix . '.js', array(
-					'jquery',
-					'flot',
-				), WF_UPSTROKE_POWERPACK_VERSION );
+				wp_enqueue_script(
+					'flot-order',
+					plugin_dir_url( __FILE__ ) . 'assets/js/jquery.flot.orderBars' . $suffix . '.js',
+					array(
+						'jquery',
+						'flot',
+					),
+					WF_UPSTROKE_POWERPACK_VERSION
+				);
+				wp_enqueue_script(
+					'flot-axis-labels',
+					plugin_dir_url( __FILE__ ) . 'assets/js/jquery.flot.axislabels' . $suffix . '.js',
+					array(
+						'jquery',
+						'flot',
+					),
+					WF_UPSTROKE_POWERPACK_VERSION
+				);
 			}
 			if ( 'shop_order' === get_current_screen()->post_type ) {
 				wp_enqueue_style( 'wfocu-timeline-style', plugin_dir_url( __FILE__ ) . 'assets/css/wfocu-timeline' . $suffix . '.css', array(), WF_UPSTROKE_POWERPACK_VERSION );
@@ -222,7 +247,14 @@ if ( ! class_exists( 'WFOCU_Admin_Reports' ) ) {
 		 * @return array of products to be appeared in search
 		 */
 		public function wfocu_accepted_product_search( $term = false, $return = false ) {
-			$term = ( ( empty( $term ) && isset( $_GET['term'] ) ) ? stripslashes( wc_clean( $_GET['term'] ) ) : wc_clean( $term ) );
+			if ( $term === false ) {
+				check_ajax_referer( 'wcfou_accepted_product_search', 'security' );
+				if ( ! current_user_can( 'view_woocommerce_reports' ) ) {
+					wp_send_json( array() );
+				}
+			}
+
+			$term = ( ( empty( $term ) && isset( $_GET['term'] ) ) ? stripslashes( wc_clean( $_GET['term'] ) ) : wc_clean( $term ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 			if ( empty( $term ) ) {
 				wp_die();
@@ -237,17 +269,22 @@ if ( ! class_exists( 'WFOCU_Admin_Reports' ) ) {
 			/**
 			 * Products types that are allowed in the offers
 			 */
-			$allowed_types   = apply_filters( 'wfocu_offer_product_types', array(
-				'simple',
-				'variable',
-				'variation',
-			) );
+			$allowed_types   = apply_filters(
+				'wfocu_offer_product_types',
+				array(
+					'simple',
+					'variable',
+					'variation',
+				)
+			);
 			$product_objects = array_filter( array_map( 'wc_get_product', $ids ), 'wc_products_array_filter_editable' );
-			$product_objects = array_filter( $product_objects, function ( $arr ) use ( $allowed_types ) {
+			$product_objects = array_filter(
+				$product_objects,
+				function ( $arr ) use ( $allowed_types ) {
 
-				return $arr && is_a( $arr, 'WC_Product' ) && in_array( $arr->get_type(), $allowed_types, true );
-
-			} );
+					return $arr && is_a( $arr, 'WC_Product' ) && in_array( $arr->get_type(), $allowed_types, true );
+				}
+			);
 			$products        = array();
 			foreach ( $product_objects as $product_object ) {
 				$products[] = array(
@@ -256,24 +293,26 @@ if ( ! class_exists( 'WFOCU_Admin_Reports' ) ) {
 				);
 			}
 
-			$all_offer_products = WFOCU_Core()->track->query_results( array(
-				'data'       => array(
-					'object_id' => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'product_id',
+			$all_offer_products = WFOCU_Core()->track->query_results(
+				array(
+					'data'       => array(
+						'object_id' => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'product_id',
+						),
 					),
-				),
-				'where'      => array(
-					array(
-						'key'      => 'events.action_type_id',
-						'value'    => 5,
-						'operator' => '=',
+					'where'      => array(
+						array(
+							'key'      => 'events.action_type_id',
+							'value'    => 5,
+							'operator' => '=',
+						),
 					),
-				),
-				'query_type' => 'get_results',
-				'group_by'   => 'events.object_id',
-			) );
+					'query_type' => 'get_results',
+					'group_by'   => 'events.object_id',
+				)
+			);
 			$accepted_products  = wp_list_pluck( $all_offer_products, 'product_id' );
 			$final_result       = array();
 
@@ -308,4 +347,3 @@ if ( ! class_exists( 'WFOCU_Admin_Reports' ) ) {
 if ( class_exists( 'WFOCU_Admin_Reports' ) ) {
 	new WFOCU_Admin_Reports();
 }
-

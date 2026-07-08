@@ -5,6 +5,7 @@ namespace BWFAN\Importers\Kit\Calls;
 /**
  * Get all subscribers from Kit
  */
+#[\AllowDynamicProperties]
 class Get_Subscriber_tags extends Call {
 	protected $required_fields = array( 'api_key', 'subscriber_id' );
 

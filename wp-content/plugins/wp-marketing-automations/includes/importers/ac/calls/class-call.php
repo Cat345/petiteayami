@@ -10,6 +10,7 @@ use BWF_CO;
  * This class extends the WFCO_Call class and represents a call object.
  * It provides methods to retrieve the instance, get the endpoint URL, and set required fields.
  */
+#[\AllowDynamicProperties]
 class Call extends WFCO_Call {
 	/**
 	 * The required fields for the Call class.

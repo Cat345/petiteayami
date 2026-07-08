@@ -8,6 +8,10 @@
  * @license     http://opensource.org/licenses/https://opensource.org/licenses/MIT
  * @since       2.2.7
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Code' ) ) {
 	/**
 	 * Field overrides.
@@ -115,7 +119,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Code' ) ) {
 			// It is the responsibility of the theme/plugin that registers this field
 			// to properly apply any necessary filtering.
 			$this->sanitize_callback = array( 'WFACPKirki_Sanitize_Values', 'unfiltered' );
-
 		}
 	}
 }

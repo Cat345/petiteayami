@@ -5,6 +5,7 @@ use WPMailSMTP\Options;
 /**
  * Class BWFAN_API_Plugin_Status
  */
+#[\AllowDynamicProperties]
 class BWFAN_API_Plugin_Status extends BWFAN_API_Base {
 	public static $ins;
 

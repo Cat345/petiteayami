@@ -13,6 +13,7 @@ if ( ! class_exists( 'WFOP_Template_Group_Divi5' ) ) {
 	 * Class WFOP_Template_Group_Divi5
 	 * Template group for Divi 5 optin pages
 	 */
+	#[\AllowDynamicProperties]
 	class WFOP_Template_Group_Divi5 {
 		public $allow_empty_template = true;
 		public $prefix               = 'divi-5';

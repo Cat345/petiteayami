@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * WooCommerce - Social Login
@@ -8,16 +12,16 @@ if ( ! class_exists( 'WFACP_Compatibility_Woo_Social_login' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_Woo_Social_login {
 		public function __construct() {
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'action' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'action' ) );
 		}
 
 		public function action() {
 			global $woo_slg_options;
 			if ( class_exists( 'WOO_Slg_Public' ) && ! is_null( $woo_slg_options ) ) {
 				if ( $woo_slg_options['woo_slg_social_btn_position'] == 'top' ) {
-					add_action( 'woocommerce_before_checkout_form', [ $this, 'print_social_login' ], 9 );
+					add_action( 'woocommerce_before_checkout_form', array( $this, 'print_social_login' ), 9 );
 				} else {
-					add_action( 'woocommerce_before_checkout_form', [ $this, 'print_social_login' ], 11 );
+					add_action( 'woocommerce_before_checkout_form', array( $this, 'print_social_login' ), 11 );
 				}
 			}
 		}

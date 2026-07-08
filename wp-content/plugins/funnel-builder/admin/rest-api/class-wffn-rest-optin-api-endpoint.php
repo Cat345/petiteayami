@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_REST_OPTIN_API_EndPoint extends WFFN_REST_Controller {
 
 		private static $ins  = null;
@@ -763,14 +764,14 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 			if ( isset( $values['lms_course'] ) && true === wffn_string_to_bool( $values['lms_course'] ) ) {
 				$learndash_course = ! empty( $values['assign_ld_course']['id'] ) ? array(
 					'id'   => $values['assign_ld_course']['id'],
-					'name' => html_entity_decode( get_the_title( $values['assign_ld_course']['id'] ) ),
+					'name' => html_entity_decode( get_the_title( $values['assign_ld_course']['id'] ), ENT_QUOTES | ENT_HTML401 ),
 				) : '';
 			}
 
 			if ( isset( $values['lifterlms_course'] ) && true === wffn_string_to_bool( $values['lifterlms_course'] ) ) {
 				$lifterlms_course = ! empty( $values['assign_lifter_course']['id'] ) ? array(
 					'id'   => $values['assign_lifter_course']['id'],
-					'name' => html_entity_decode( get_the_title( $values['assign_lifter_course']['id'] ) ),
+					'name' => html_entity_decode( get_the_title( $values['assign_lifter_course']['id'] ), ENT_QUOTES | ENT_HTML401 ),
 				) : '';
 			}
 

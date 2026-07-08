@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFCO_Model' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFCO_Model {
@@ -73,14 +76,15 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 
 			$sql = 'SELECT COUNT(*) FROM ' . self::_table();
 			if ( ! is_null( $dependency ) ) {
+				$col_value = isset( $dependency['col_value'] ) ? $dependency['col_value'] : '';
 
 				$sql .= ' INNER JOIN ' . $dependency['dependency_table'];
 				$sql .= ' on ' . self::_table() . '.' . $dependency['dependent_col'];
 				$sql .= ' =' . $dependency['dependency_table'] . '.' . $dependency['dependency_col'];
-				$sql .= ' WHERE ' . $dependency['dependency_table'] . '.' . $dependency['col_name'];
-				$sql .= ' =' . $dependency['col_value'];
+				$sql .= $wpdb->prepare( ' WHERE ' . $dependency['dependency_table'] . '.' . $dependency['col_name'] . ' = %s', $col_value ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				if ( isset( $dependency['connector_id'] ) ) {
-					$sql .= ' AND ' . $dependency['connector_table'] . '.' . $dependency['connector_col'] . '=' . $dependency['connector_id'];
+					$connector_id = absint( $dependency['connector_id'] );
+					$sql         .= $wpdb->prepare( ' AND ' . $dependency['connector_table'] . '.' . $dependency['connector_col'] . ' = %d', $connector_id ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				}
 			}
 
@@ -97,15 +101,17 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 				return array();
 			}
 
-			$query   = $wpdb->prepare( "SELECT * FROM {$table_name} WHERE `{$where_key}` = %s", $where_value ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE `{$where_key}` = %s", $where_value ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table_name from self::_table() (trusted); $where_key whitelisted above; $where_value bound via %s.
 
 			return $results;
 		}
 
-		static function get_results( $query ) {
+		static function get_results( $query, $params = [] ) {
 			global $wpdb;
-			$query   = str_replace( '{table_name}', self::_table(), $query );
+			$query = str_replace( '{table_name}', self::_table(), $query );
+			if ( ! empty( $params ) ) {
+				$query = $wpdb->prepare( $query, ...$params ); //phpcs:ignore WordPress.DB.PreparedSQL
+			}
 			$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
 			return $results;

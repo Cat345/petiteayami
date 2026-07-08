@@ -5,9 +5,10 @@
  * */
 if ( ! class_exists( 'WFOCU_Compatibility_With_Wc_Seq' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Wc_Seq {
 		public function __construct() {
-			add_filter( 'wfocu_order_copy_meta_keys', [ $this, 'maybe_update_order_meta' ], 10, 2 );
+			add_filter( 'wfocu_order_copy_meta_keys', array( $this, 'maybe_update_order_meta' ), 10, 2 );
 		}
 
 		public function is_enable() {
@@ -47,12 +48,8 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Wc_Seq' ) ) {
 			$obj->set_sequential_order_number( $order->get_id() );
 
 			return $meta;
-
 		}
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_Wc_Seq(), 'wc_Seq' );
 }
-
-
-

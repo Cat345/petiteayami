@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Custom' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Custom extends WFACPKirki_Field {
@@ -24,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Custom' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-custom';
-
 		}
 
 		/**
@@ -42,7 +45,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Custom' ) ) {
 			// Custom fields don't actually save any value.
 			// just use __return_true.
 			$this->sanitize_callback = '__return_true';
-
 		}
 	}
 }

@@ -9,6 +9,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Brazillian_Gateway' ) ) {
 	 * PropulsePay payment gateway for WooCommerce
 	 * https://skillsup.in/
 	 */
+	#[\AllowDynamicProperties]
 	class WFACP_Compatibility_With_Brazillian_Gateway {
 
 
@@ -17,7 +18,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Brazillian_Gateway' ) ) {
 			add_action(
 				'wp_enqueue_scripts',
 				function () {
-					if ( is_checkout() && function_exists( 'WFACP_Core' ) && WFACP_Core()->public->is_checkout_override() ) {
+					if ( is_checkout() && function_exists( 'WFACP_Core' ) ) {
 						wp_add_inline_script( 'wc_mercadopago_custom_checkout', "(function(){if(typeof MPCustomCheckoutHandler==='undefined')return;MPCustomCheckoutHandler.prototype.setupFormConfiguration=async function(){try{var e=await this.getFormConfig();if(e&&e.element){if(e.element.id==='wfacp_checkout_form')e.formId='wfacp_checkout_form';e.element.id=e.formId;this.syncFormIds(e.formId)}}catch(t){console.error('Failed to configure checkout form:',t)}}})();", 'after' );
 					}
 				},

@@ -13,5 +13,6 @@ namespace Pelago\Emogrifier\HtmlProcessor;
  *
  * @author Oliver Klee <github@oliverklee.de>
  */
+#[\AllowDynamicProperties]
 class HtmlNormalizer extends AbstractHtmlProcessor {
 }

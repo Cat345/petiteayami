@@ -1,5 +1,5 @@
 <?php //phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
 /**
@@ -7,10 +7,11 @@ defined( 'ABSPATH' ) || exit; //Exit if accessed directly
  * Class WFFN_Substep_WC_Order_Bump
  */
 if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Substep_WC_Order_Bump extends WFFN_Substep {
 
 		private static $ins = null;
-		public $slug = 'wc_order_bump';
+		public $slug        = 'wc_order_bump';
 
 		/**
 		 * WFFN_Substep_WC_Order_Bump constructor.
@@ -19,8 +20,8 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 			parent::__construct();
 			add_filter( 'wfob_bumps_from_external_base', array( $this, 'filter_bumps' ), 10, 2 );
 			add_filter( 'wfob_add_control_meta_query', array( $this, 'exclude_from_query' ), 10, 1 );
-			add_filter( 'maybe_setup_funnel_for_breadcrumb', [ $this, 'maybe_funnel_breadcrumb' ] );
-			add_filter( 'woocommerce_checkout_update_order_meta', [ $this, 'woocommerce_checkout_update_order_meta' ] );
+			add_filter( 'maybe_setup_funnel_for_breadcrumb', array( $this, 'maybe_funnel_breadcrumb' ) );
+			add_filter( 'woocommerce_checkout_update_order_meta', array( $this, 'woocommerce_checkout_update_order_meta' ) );
 		}
 
 		/**
@@ -28,7 +29,7 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -84,16 +85,16 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 				}
 			}
 			if ( absint( $funnel_id ) > 0 ) {
-				$args['meta_query'] = [
-					[
+				$args['meta_query'] = array(
+					array(
 						'key'   => '_bwf_in_funnel',
 						'value' => $funnel_id,
-					]
-				];
+					),
+				);
 			}
 			$q                    = new WP_Query( $args );
-			$bump_inside_funnels  = [];
-			$bump_outside_funnels = [];
+			$bump_inside_funnels  = array();
+			$bump_outside_funnels = array();
 			if ( $q->found_posts > 0 ) {
 				foreach ( $q->posts as $bump_post ) {
 					$data          = array(
@@ -104,7 +105,11 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 					$funnel        = new WFFN_Funnel( $bwf_funnel_id );
 					if ( ! empty( $bwf_funnel_id ) && ! empty( $funnel->get_title() ) ) {
 						if ( ! isset( $bump_inside_funnels[ $bwf_funnel_id ] ) ) {
-							$bump_inside_funnels[ $bwf_funnel_id ] = [ 'name' => $funnel->get_title(), 'id' => $bwf_funnel_id, "steps" => [] ];
+							$bump_inside_funnels[ $bwf_funnel_id ] = array(
+								'name'  => $funnel->get_title(),
+								'id'    => $bwf_funnel_id,
+								'steps' => array(),
+							);
 						}
 						$bump_inside_funnels[ $bwf_funnel_id ]['steps'][] = $data;
 					} else {
@@ -114,7 +119,13 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 			}
 
 			if ( ! empty( $bump_outside_funnels ) ) {
-				$bump_outside_funnels = [ [ 'name' => __( 'Others', 'woofunnels-order-bump' ), 'id' => '0', 'steps' => $bump_outside_funnels ] ];
+				$bump_outside_funnels = array(
+					array(
+						'name'  => __( 'Others', 'woofunnels-order-bump' ),
+						'id'    => '0',
+						'steps' => $bump_outside_funnels,
+					),
+				);
 			}
 
 			return array_merge( $bump_inside_funnels, $bump_outside_funnels );
@@ -127,9 +138,9 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 		 * @return array
 		 */
 		public function filter_bumps( $decided_bumps, $posted_data ) {
-			$current_step = [];
+			$current_step = array();
 			if ( did_action( 'wfacp_checkout_page_found' ) && empty( $posted_data ) ) {
-				$posted_data = ! is_array( $posted_data ) ? [] : $posted_data;
+				$posted_data                   = ! is_array( $posted_data ) ? array() : $posted_data;
 				$posted_data['_wfacp_post_id'] = WFACP_Common::get_id();
 			}
 			/**
@@ -142,13 +153,13 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 
 				$state = $this->get_current_app_state();
 
-				if ( in_array( $state, [ 'pro_without_license', 'license_expired' ], true ) ) {
+				if ( in_array( $state, array( 'pro_without_license', 'license_expired' ), true ) ) {
 
 					if ( empty( WC()->session->get( 'license_expired_bump_rejected' ) ) ) {
 						WC()->session->set( 'license_expired_bump_rejected', 'yes' );
 					}
 
-					return [];
+					return array();
 				}
 			}
 
@@ -187,7 +198,6 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 				if ( wffn_is_valid_funnel( $funnel ) && true === $funnel->is_funnel_has_native_checkout() ) {
 					return array_map( 'get_post', $this->maybe_substeps_global( $funnel->get_id() ) );
 				}
-
 
 				return $decided_bumps;
 			}
@@ -246,11 +256,13 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 				if ( $duplicate_id > 0 ) {
 
 					$substep_id = WFOB_Common::make_duplicate( $duplicate_id );
-					wp_update_post( array(
-						'ID'          => $substep_id,
-						'post_title'  => $title,
-						'post_status' => 'publish',
-					) );
+					wp_update_post(
+						array(
+							'ID'          => $substep_id,
+							'post_title'  => $title,
+							'post_status' => 'publish',
+						)
+					);
 				} else {
 					$substep_id = wp_insert_post( $post );
 				}
@@ -298,11 +310,13 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 			if ( $duplicate_id > 0 ) {
 
 				$substep_id = WFOB_Common::make_duplicate( $duplicate_id );
-				wp_update_post( array(
-					'ID'          => $substep_id,
-					'post_title'  => $title,
-					'post_status' => 'publish',
-				) );
+				wp_update_post(
+					array(
+						'ID'          => $substep_id,
+						'post_title'  => $title,
+						'post_status' => 'publish',
+					)
+				);
 			} else {
 				$substep_id = wp_insert_post( $post );
 			}
@@ -351,12 +365,17 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 		 *
 		 * @return mixed
 		 */
-		public function duplicate_single_substep( $funnel_id, $step_id, $duplicate_step_id, $subtype, $substep_id, $substep_key = 0, $duplicated_substeps = [] ) {
+		public function duplicate_single_substep( $funnel_id, $step_id, $duplicate_step_id, $subtype, $substep_id, $substep_key = 0, $duplicated_substeps = array() ) {
 			$duplicate_substep_id = WFOB_Common::make_duplicate( $substep_id );
 
 			if ( $duplicate_substep_id > 0 ) {
 				$post_status = get_post_status( $substep_id );
-				wp_update_post( [ 'ID' => $duplicate_substep_id, 'post_status' => $post_status ] );
+				wp_update_post(
+					array(
+						'ID'          => $duplicate_substep_id,
+						'post_status' => $post_status,
+					)
+				);
 			}
 
 			$duplicated_substeps[ $subtype ][ $substep_key ] = array();
@@ -379,12 +398,17 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 		 *
 		 * @return mixed
 		 */
-		public function duplicate_store_checkout_substep( $funnel_id, $duplicate_substep_id, $subtype, $substep_id, $substep_key = 0, $duplicated_substeps = [] ) {
+		public function duplicate_store_checkout_substep( $funnel_id, $duplicate_substep_id, $subtype, $substep_id, $substep_key = 0, $duplicated_substeps = array() ) {
 			$duplicate_substep_id = WFOB_Common::make_duplicate( $substep_id );
 
 			if ( $duplicate_substep_id > 0 ) {
 				$post_status = get_post_status( $substep_id );
-				wp_update_post( [ 'ID' => $duplicate_substep_id, 'post_status' => $post_status ] );
+				wp_update_post(
+					array(
+						'ID'          => $duplicate_substep_id,
+						'post_status' => $post_status,
+					)
+				);
 			}
 
 			$duplicated_substeps[ $subtype ][ $substep_key ] = array();
@@ -405,13 +429,12 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 		public function populate_substeps_data_properties( $substep_arr ) {
 			$substeps = array();
 
-
 			foreach ( is_array( $substep_arr ) ? $substep_arr : array() as $substep_id ) {
 				$substep_data                         = array();
 				$substep_data['id']                   = $substep_id;
 				$substep_data['tags']                 = $this->get_substep_entity_tags( $substep_id );
 				$substep_data['_data']                = new stdClass();
-				$bump_products                        = class_exists( 'WFOB_Common' ) ? WFOB_Common::get_bump_products( $substep_id ) : [];
+				$bump_products                        = class_exists( 'WFOB_Common' ) ? WFOB_Common::get_bump_products( $substep_id ) : array();
 				$substep_data['_data']->title         = $this->get_entity_title( $substep_id );
 				$substep_data['_data']->edit          = $this->get_entity_edit_link( $substep_id );
 				$substep_data['_data']->view          = $this->get_entity_view_link( $substep_id );
@@ -431,11 +454,18 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 		public function get_entity_edit_link( $step_id ) {
 			$link = parent::get_entity_edit_link( $step_id );
 			if ( $step_id > 0 && get_post( $step_id ) instanceof WP_Post ) {
-				$link = esc_url( BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( array(
-					'page'    => 'wfob',
-					'section' => 'products',
-					'wfob_id' => $step_id,
-				), admin_url( 'admin.php' ) ) ) );
+				$link = esc_url(
+					BWF_Admin_Breadcrumbs::maybe_add_refs(
+						add_query_arg(
+							array(
+								'page'    => 'wfob',
+								'section' => 'products',
+								'wfob_id' => $step_id,
+							),
+							admin_url( 'admin.php' )
+						)
+					)
+				);
 			}
 
 			return $link;
@@ -447,7 +477,7 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 		}
 
 		public function _process_import( $substep ) {
-			$iport_id = WFOB_Core()->import->import_from_json_data( [ $substep ] );
+			$iport_id = WFOB_Core()->import->import_from_json_data( array( $substep ) );
 
 			return $iport_id[0];
 		}
@@ -478,7 +508,7 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 				$flags['has_rules'] = array(
 					'label'       => __( 'Has Rules', 'woofunnels-order-bump' ),
 					'label_class' => 'bwf-st-c-badge-green',
-					'edit'        => function_exists( 'wffn_rest_api_helpers' ) ? wffn_rest_api_helpers()->get_entity_url( 'bump', 'rules', $substep_id ) : ''
+					'edit'        => function_exists( 'wffn_rest_api_helpers' ) ? wffn_rest_api_helpers()->get_entity_url( 'bump', 'rules', $substep_id ) : '',
 				);
 			}
 
@@ -486,7 +516,7 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 				$flags['no_product'] = array(
 					'label'       => __( 'No Products', 'woofunnels-order-bump' ),
 					'label_class' => 'bwf-st-c-badge-red',
-					'edit'        => function_exists( 'wffn_rest_api_helpers' ) ? wffn_rest_api_helpers()->get_entity_url( 'bump', 'product', $substep_id ) : ''
+					'edit'        => function_exists( 'wffn_rest_api_helpers' ) ? wffn_rest_api_helpers()->get_entity_url( 'bump', 'product', $substep_id ) : '',
 				);
 			}
 
@@ -513,22 +543,24 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 		public function maybe_substeps_global( $funnel ) {
 			$substeps = WFFN_Common::get_store_checkout_global_substeps( $funnel );
 			if ( empty( $substeps ) ) {
-				return [];
+				return array();
 			}
 
-			return array_filter( $substeps[ $this->slug ], function ( $k ) {
-				if ( $this->is_disabled( $this->get_entity_status( $k ) ) ) {   //phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UndefinedVariable
-					return false;
-				}
+			return array_filter(
+				$substeps[ $this->slug ],
+				function ( $k ) {
+					if ( $this->is_disabled( $this->get_entity_status( $k ) ) ) {   //phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UndefinedVariable
+						return false;
+					}
 
-				return $k;
-			} );
+					return $k;
+				}
+			);
 		}
 
 
 		public function get_current_app_state() {
 			$license_config = WFFN_Core()->admin->get_license_config( true );
-
 
 			if ( isset( $license_config['f']['ed'] ) && $license_config['f']['ed'] ) {
 				$ed = $license_config['f']['ed'];
@@ -572,11 +604,14 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 				$orderbump_skipped = __( 'Order Bump Skipped', 'woofunnels-order-bump' );
 				$svg_icon          = WFOB_PLUGIN_URL . '/admin/assets/img/icon_error.svg';
 				$contact_support   = 'https://funnelkit.com/support/';
-				$reason_base       = __( '<div style="display:flex;align-items:center;margin-bottom:4px;gap:4px;padding-left:20px !important;background: url(' . esc_url( $svg_icon ) . ') no-repeat left !important;">
+				$reason_base       = __(
+					'<div style="display:flex;align-items:center;margin-bottom:4px;gap:4px;padding-left:20px !important;background: url(' . esc_url( $svg_icon ) . ') no-repeat left !important;">
     <strong style="font-size:13px;">%s</strong>
 </div><strong>%s</strong>: %s
 <div style="margin:8px 0px;">%s</div>
-<div><a target="_blank" href="%s">%s</a></div>', 'woofunnels-order-bump' );
+<div><a target="_blank" href="%s">%s</a></div>',
+					'woofunnels-order-bump'
+				);
 
 				$note = sprintf( $reason_base, $orderbump_skipped, __( 'Order Bump License Has Expired', 'woofunnels-order-bump' ), __( 'Please renew your license to continue using premium features without interruption.', 'woofunnels-order-bump' ), '', $contact_support, __( 'Go to Contact Support', 'woofunnels-order-bump' ) );
 

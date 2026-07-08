@@ -24,6 +24,7 @@ if ( ! class_exists( 'BWFAN_Tracking_Collector' ) && class_exists( 'BWFAN_Usage_
 	 * Class BWFAN_Tracking_Collector
 	 * @deprecated Use BWFAN_Usage_Collector instead
 	 */
+	#[\AllowDynamicProperties]
 	class BWFAN_Tracking_Collector extends BWFAN_Usage_Collector {
 
 		/**

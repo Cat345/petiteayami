@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Status_Woofunnels_Endpoints extends BWFAN_API_Base {
 	public static $ins;
 

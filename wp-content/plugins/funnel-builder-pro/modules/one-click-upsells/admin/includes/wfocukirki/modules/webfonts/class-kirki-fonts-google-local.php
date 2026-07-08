@@ -23,6 +23,7 @@ if ( ! class_exists( 'WFOCUKirki_Fonts_Google_Local' ) ) {
 	 *
 	 * @since 3.0.28
 	 */
+	#[\AllowDynamicProperties]
 	final class WFOCUKirki_Fonts_Google_Local {
 
 		/**
@@ -161,18 +162,18 @@ if ( ! class_exists( 'WFOCUKirki_Fonts_Google_Local' ) ) {
 
 			// Get the font-style.
 			$font_style = ( ! is_null( $variant ) && false !== strpos( $variant, 'italic' ) ) ? 'italic' : 'normal';
-			$font_face  .= "font-style:{$font_style};";
+			$font_face .= "font-style:{$font_style};";
 
 			// Get the font-weight.
 			$font_weight = '400';
 			$font_weight = str_replace( 'italic', '', $variant );
 			$font_weight = ( ! $font_weight || 'regular' === $font_weight ) ? '400' : $font_weight;
-			$font_face   .= "font-weight:{$font_weight};";
+			$font_face  .= "font-weight:{$font_weight};";
 
 			// Get the font-names.
 			$font_name_0 = $this->get_local_font_name( $variant, false );
 			$font_name_1 = $this->get_local_font_name( $variant, true );
-			$font_face   .= "src:local('{$font_name_0}'),";
+			$font_face  .= "src:local('{$font_name_0}'),";
 			if ( $font_name_0 !== $font_name_1 ) {
 				$font_face .= "local('{$font_name_1}'),";
 			}
@@ -187,7 +188,7 @@ if ( ! class_exists( 'WFOCUKirki_Fonts_Google_Local' ) ) {
 			// Get the font-format.
 			$font_format = ( ! is_null( $font_url ) && strpos( $font_url, '.woff2' ) ) ? 'woff2' : 'truetype';
 			$font_format = ( ! is_null( $font_url ) && strpos( $font_url, '.woff' ) && ! strpos( $font_url, '.woff2' ) ) ? 'woff' : $font_format;
-			$font_face   .= "url({$font_url}) format('{$font_format}');}";
+			$font_face  .= "url({$font_url}) format('{$font_format}');}";
 
 			return $font_face;
 		}
@@ -232,7 +233,7 @@ if ( ! class_exists( 'WFOCUKirki_Fonts_Google_Local' ) ) {
 		 * @access public
 		 *
 		 * @param string $variant The variant.
-		 * @param bool $compact Whether we want the compact formatting or not.
+		 * @param bool   $compact Whether we want the compact formatting or not.
 		 *
 		 * @return string
 		 * @since 3.0.28
@@ -411,7 +412,7 @@ if ( ! class_exists( 'WFOCUKirki_Fonts_Google_Local' ) ) {
 		 */
 		private function get_fonts() {
 			ob_start();
-			include wp_normalize_path( dirname( __FILE__ ) . '/webfont-files.json' );
+			include wp_normalize_path( __DIR__ . '/webfont-files.json' );
 			$json = ob_get_clean();
 
 			return json_decode( $json, true );

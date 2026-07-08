@@ -30,7 +30,6 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 				add_action( 'init', array( $this, 'is_wfacp_checkout_page' ), 1 );
 				add_action( 'init', array( $this, 'maybe_setup_page' ), 20 );
 			}
-			add_action( 'wfacp_loaded', array( $this, 'add_default_template' ), 20 );
 			$this->public_include();
 			add_filter( 'template_redirect', array( $this, 'setup_preview' ), 99 );
 			add_filter( 'template_include', array( $this, 'assign_template' ), 95 );
@@ -39,7 +38,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 
 		public function add_default_template( $force = false ) {
 
-			if ( true === $force || ( ( ( isset( $_REQUEST['page'] ) && 'wfacp' === sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) ) || ( isset( $_REQUEST['action'] ) && 'wfacp_import_template' === sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) ) ) && isset( $_REQUEST['wfacp_id'] ) && $_REQUEST['wfacp_id'] > 0 ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Admin page detection for template loading
+			if ( true === $force ) {
 				do_action( 'wfacp_register_template_types', $this );
 				$designs = apply_filters( 'wfacp_register_templates', array(), $this );
 
@@ -803,7 +802,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 		private function get_last_revision_page_template( $id ) {
 
 			global $wpdb;
-			$data     = $wpdb->get_results( $wpdb->prepare( "select ID from {$wpdb->posts} where post_parent=%d ORDER BY ID DESC LIMIT 1", $id ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Using $wpdb->prepare with direct string query
+			$data     = $wpdb->get_results( $wpdb->prepare( "select ID from {$wpdb->posts} where post_parent=%d ORDER BY ID DESC LIMIT 1", $id ), ARRAY_A );
 			$template = '';
 			if ( ! empty( $data ) ) {
 				$revision_id = $data[0]['ID'];

@@ -261,10 +261,9 @@ if ( isset( $css['hl_pblock_accept_btn_shadow'] ) && ! empty( $css['hl_pblock_ac
 }
 $font_css = '';
 if ( isset($this->internal_css) && isset( $this->internal_css->site_font_family_fs ) && ! empty( $this->internal_css->site_font_family_fs ) && 'default' !==  $this->internal_css->site_font_family_fs ) {
-	exit;
-	$font_url = 'https://fonts.googleapis.com/css?family=' . $this->internal_css->site_font_family_fs;
-	echo "<link href='" . $font_url . "' rel=stylesheet>";
-	$font_css = 'body, body p, h1, h2, h3, h4, h5, h6, .wfocu-progressbar-style1 .wfocu-pstep, .wfocu-progressbar-style2 .wfocu-current-step-text, .wfocu-progressbar-style2 .wfocu-current-step-text{font-family:"' . $this->selected_font_family . '"}';
+	$font_url = 'https://fonts.googleapis.com/css?family=' . rawurlencode( $this->internal_css->site_font_family_fs );
+	echo "<link href='" . esc_url( $font_url ) . "' rel='stylesheet'>";
+	$font_css = 'body, body p, h1, h2, h3, h4, h5, h6, .wfocu-progressbar-style1 .wfocu-pstep, .wfocu-progressbar-style2 .wfocu-current-step-text, .wfocu-progressbar-style2 .wfocu-current-step-text{font-family:"' . esc_attr( $this->selected_font_family ) . '"}';
 }
 echo "<style>\n";
 echo $font_css;

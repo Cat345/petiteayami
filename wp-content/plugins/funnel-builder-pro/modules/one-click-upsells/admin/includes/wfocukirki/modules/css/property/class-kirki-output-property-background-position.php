@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Output_Property_Background_Position' ) ) {
 	/**
 	 * Output overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Output_Property_Background_Position extends WFOCUKirki_Output_Property {
 
 		/**

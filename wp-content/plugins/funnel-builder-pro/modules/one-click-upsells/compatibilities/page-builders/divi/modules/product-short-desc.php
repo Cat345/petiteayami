@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Product_Short_Desc' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Product_Short_Desc extends WFOCU_Divi_HTML_BLOCK {
 
 		public function __construct() {
@@ -9,7 +10,7 @@ if ( ! class_exists( 'WFOCU_Product_Short_Desc' ) ) {
 
 		public function setup_data() {
 
-			$key    = "wfocu_product_short_desc";
+			$key    = 'wfocu_product_short_desc';
 			$tab_id = $this->add_tab( __( 'Offer Product Description', 'woofunnels-upstroke-one-click-upsell' ), 5 );
 			$this->add_select( $tab_id, 'selected_product', __( 'Product', 'woofunnels-upstroke-one-click-upsell' ), self::$product_options, key( self::$product_options ) );
 
@@ -22,7 +23,7 @@ if ( ! class_exists( 'WFOCU_Product_Short_Desc' ) ) {
 			$this->add_background_color( $color_id, $key . '_title_bg_color', '%%order_class%% .wfocu-widget-container', 'transparent', __( 'Background Color', 'woofunnels-upstroke-one-click-upsell' ) );
 
 			$border_id    = $this->add_tab( __( 'Border', 'woofunnels-upstroke-one-click-upsell' ), 2 );
-			$default_args = [
+			$default_args = array(
 				'border_type'          => 'none',
 				'border_width_top'     => '1',
 				'border_width_bottom'  => '1',
@@ -33,16 +34,23 @@ if ( ! class_exists( 'WFOCU_Product_Short_Desc' ) ) {
 				'border_radius_left'   => '0',
 				'border_radius_right'  => '0',
 				'border_color'         => '#dddddd',
-			];
+			);
 
-			$this->add_border( $border_id, $key . '_border', '%%order_class%% .wfocu-widget-container', [], $default_args );
-			$this->add_box_shadow( $border_id, $key . '_box_shadow', '%%order_class%% .wfocu-widget-container', [ 'enable' => 'off', 'vertical' => 0, 'color' => '#00B211' ] );
+			$this->add_border( $border_id, $key . '_border', '%%order_class%% .wfocu-widget-container', array(), $default_args );
+			$this->add_box_shadow(
+				$border_id,
+				$key . '_box_shadow',
+				'%%order_class%% .wfocu-widget-container',
+				array(
+					'enable'   => 'off',
+					'vertical' => 0,
+					'color'    => '#00B211',
+				)
+			);
 
 			$spacing_id = $this->add_tab( __( 'Spacing', 'woofunnels-upstroke-one-click-upsell' ), 2 );
 			$this->add_margin( $spacing_id, $key . '_text_margin', '%%order_class%% .wfocu-widget-container' );
 			$this->add_padding( $spacing_id, $key . '_text_padding', '%%order_class%% .wfocu-widget-container' );
-
-
 		}
 
 		public function html( $attrs, $content = null, $render_slug = '' ) {
@@ -78,14 +86,12 @@ if ( ! class_exists( 'WFOCU_Product_Short_Desc' ) ) {
 				return;
 			}
 			?>
-            <div class="wfocu-widget-container">
+			<div class="wfocu-widget-container">
 				<?php echo $short_description; // WPCS: XSS ok. ?>
-            </div>
+			</div>
 			<?php
 			return ob_get_clean();
 		}
-
-
 	}
 
 	return new WFOCU_Product_Short_Desc();

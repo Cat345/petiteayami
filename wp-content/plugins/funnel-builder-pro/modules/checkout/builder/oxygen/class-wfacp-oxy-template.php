@@ -659,7 +659,7 @@ if ( ! class_exists( 'WFACP_Oxy_Template' ) ) {
 
 						$active  = apply_filters( 'wfacp_layout_9_active_progress_bar', $active, $step );
 						$p_class = 'wfacp_step_' . $key . ' wfacp_bred ' . $bread_visited . ' ' . $active . ' ' . $step;
-						echo "<li class='" . esc_attr( $p_class ) . "' step='" . esc_attr( $step ) . "' ><a href='javascript:void(0)' class='wfacp_step_text_have' data-text='" . esc_attr( sanitize_title( $value ) ) . "'>wp_kses_post($value)</a> </li>";//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo "<li class='" . esc_attr( $p_class ) . "' step='" . esc_attr( $step ) . "' ><a href='javascript:void(0)' class='wfacp_step_text_have' data-text='" . esc_attr( sanitize_title( $value ) ) . "'>" . esc_html( $value ) . '</a> </li>';
 					}
 					do_action( 'wfacp_after_breadcrumb' );
 					echo '</ul></div></div></div>';
@@ -852,7 +852,7 @@ if ( ! class_exists( 'WFACP_Oxy_Template' ) ) {
 
 			if ( isset( $this->stepsData['progress_bar'] ) ) {
 				if ( isset( $this->form_data['select_type'] ) && 'progress_bar' === $this->form_data['select_type'] ) {
-					echo $this->stepsData['progress_bar'];//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo $this->stepsData['progress_bar']; // Safe: step values escaped at render time
 				}
 			}
 		}

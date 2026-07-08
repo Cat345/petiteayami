@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Switch control (modified checkbox).
  */
 if ( ! class_exists( 'WFACPKirki_Control_Switch' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Switch extends WFACPKirki_Control_Base {
 
 		/**
@@ -40,26 +41,26 @@ if ( ! class_exists( 'WFACPKirki_Control_Switch' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <div class="switch<# if ( data.choices['round'] ) { #> round<# } #>">
+			<div class="switch<# if ( data.choices['round'] ) { #> round<# } #>">
 			<span class="customize-control-title">
 				{{{ data.label }}}
 			</span>
-                <# if ( data.description ) { #>
-                <span class="description customize-control-description">{{{ data.description }}}</span>
-                <# } #>
-                <input class="screen-reader-text" {{{ data.inputAttrs }}} name="switch_{{ data.id }}" id="switch_{{ data.id }}" type="checkbox" value="{{ data.value }}" {{{ data.link }}}<# if ( '1' ==
-                data.value ) { #> checked<# } #> />
-                <label class="switch-label" for="switch_{{ data.id }}">
+				<# if ( data.description ) { #>
+				<span class="description customize-control-description">{{{ data.description }}}</span>
+				<# } #>
+				<input class="screen-reader-text" {{{ data.inputAttrs }}} name="switch_{{ data.id }}" id="switch_{{ data.id }}" type="checkbox" value="{{ data.value }}" {{{ data.link }}}<# if ( '1' ==
+				data.value ) { #> checked<# } #> />
+				<label class="switch-label" for="switch_{{ data.id }}">
 				<span class="switch-on">
 					<# data.choices.on = data.choices.on || '<?php esc_attr_e( 'On', 'wfacpkirki' ); ?>' #>
 					{{ data.choices.on }}
 				</span>
-                    <span class="switch-off">
+					<span class="switch-off">
 					<# data.choices.off = data.choices.off || '<?php esc_attr_e( 'Off', 'wfacpkirki' ); ?>' #>
 					{{ data.choices.off }}
 				</span>
-                </label>
-            </div>
+				</label>
+			</div>
 			<?php
 		}
 	}

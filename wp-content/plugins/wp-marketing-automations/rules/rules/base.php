@@ -3,6 +3,7 @@
 /**
  * Base class for a Conditional_Content rule.
  */
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Base {
 
 	public $supports = array();

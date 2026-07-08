@@ -147,6 +147,12 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 */
 	private $debug_tools;
 
+	/** @var WooCommerce\Facebook\Signals */
+	private $signals;
+
+	/** @var WooCommerce\Facebook\Events\ReleaseSignalsAjax */
+	private $release_signals_ajax;
+
 	/**
 	 * Constructs the plugin.
 	 *
@@ -207,22 +213,25 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 
 			$this->heartbeat = new Heartbeat( WC()->queue() );
 			$this->heartbeat->init();
-			$this->feed_manager                     = new WooCommerce\Facebook\Feed\FeedManager();
-			$this->checkout                         = new WooCommerce\Facebook\Checkout();
-			$this->product_feed                     = new WooCommerce\Facebook\Products\Feed();
-			$this->language_override_feed           = new WooCommerce\Facebook\Feed\Localization\LanguageOverrideFeed();
-			$this->products_stock_handler           = new WooCommerce\Facebook\Products\Stock();
-			$this->products_sync_handler            = new WooCommerce\Facebook\Products\Sync();
-			$this->sync_background_handler          = new WooCommerce\Facebook\Products\Sync\Background();
-			$this->configuration_detection          = new WooCommerce\Facebook\Feed\FeedConfigurationDetection();
-			$this->product_sets_sync_handler        = new WooCommerce\Facebook\ProductSets\ProductSetSync();
-			$this->commerce_handler                 = new WooCommerce\Facebook\Commerce();
-			$this->fb_categories                    = new WooCommerce\Facebook\Products\FBCategories();
-			$this->external_version_update          = new WooCommerce\Facebook\ExternalVersionUpdate\Update();
-			$this->fbcollection_handler             = new WooCommerce\Facebook\CollectionPage();
+			$this->feed_manager              = new WooCommerce\Facebook\Feed\FeedManager();
+			$this->checkout                  = new WooCommerce\Facebook\Checkout();
+			$this->product_feed              = new WooCommerce\Facebook\Products\Feed();
+			$this->language_override_feed    = new WooCommerce\Facebook\Feed\Localization\LanguageOverrideFeed();
+			$this->products_stock_handler    = new WooCommerce\Facebook\Products\Stock();
+			$this->products_sync_handler     = new WooCommerce\Facebook\Products\Sync();
+			$this->sync_background_handler   = new WooCommerce\Facebook\Products\Sync\Background();
+			$this->configuration_detection   = new WooCommerce\Facebook\Feed\FeedConfigurationDetection();
+			$this->product_sets_sync_handler = new WooCommerce\Facebook\ProductSets\ProductSetSync();
+			$this->commerce_handler          = new WooCommerce\Facebook\Commerce();
+			$this->fb_categories             = new WooCommerce\Facebook\Products\FBCategories();
+			$this->external_version_update   = new WooCommerce\Facebook\ExternalVersionUpdate\Update();
+			$this->fbcollection_handler      = new WooCommerce\Facebook\CollectionPage();
 			if ( wp_doing_ajax() ) {
 				$this->ajax = new WooCommerce\Facebook\AJAX();
 			}
+
+			$this->signals              = new WooCommerce\Facebook\Signals();
+			$this->release_signals_ajax = new WooCommerce\Facebook\Events\ReleaseSignalsAjax();
 
 			// Load integrations.
 			new WooCommerce\Facebook\WPMLInjector();
@@ -244,9 +253,9 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 			$this->whatsapp_connection_handler = new WooCommerce\Facebook\Handlers\WhatsAppConnection( $this );
 			new WooCommerce\Facebook\Handlers\WhatsAppExtension();
 			new WooCommerce\Facebook\Handlers\MetaExtension();
-			$this->webhook_handler          = new WooCommerce\Facebook\Handlers\WebHook();
-			$this->tracker                  = new WooCommerce\Facebook\Utilities\Tracker();
-			$this->rollout_switches         = new WooCommerce\Facebook\RolloutSwitches( $this );
+			$this->webhook_handler  = new WooCommerce\Facebook\Handlers\WebHook();
+			$this->tracker          = new WooCommerce\Facebook\Utilities\Tracker();
+			$this->rollout_switches = new WooCommerce\Facebook\RolloutSwitches( $this );
 
 			// Init jobs
 			$this->job_manager = new WooCommerce\Facebook\Jobs\JobManager();
@@ -264,6 +273,8 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 				}
 				$this->wa_admin_settings     = new WooCommerce\Facebook\Admin\WhatsApp_Integration_Settings( $this );
 				$this->plugin_render_handler = new \WooCommerce\Facebook\Handlers\PluginRender( $this );
+
+				add_action( 'admin_notices', array( $this, 'add_connection_invalid_notice' ) );
 			}
 		}
 	}
@@ -525,6 +536,17 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	}
 
 	/**
+	 * Gets the signals handler.
+	 *
+	 * @since 3.6.0
+	 *
+	 * @return WooCommerce\Facebook\Signals
+	 */
+	public function get_signals_handler() {
+		return $this->signals;
+	}
+
+	/**
 	 * Gets the connection handler.
 	 *
 	 * @since 2.0.0
@@ -740,7 +762,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 */
 	public function is_plugin_settings() {
 		$page_value = Helper::get_requested_value( 'page' );
-		return is_admin() && in_array( $page_value, [ WooCommerce\Facebook\Admin\Settings::PAGE_ID, WooCommerce\Facebook\Admin\WhatsApp_Integration_Settings::PAGE_ID ] );
+		return is_admin() && in_array( $page_value, [ WooCommerce\Facebook\Admin\Settings::PAGE_ID, WooCommerce\Facebook\Admin\WhatsApp_Integration_Settings::PAGE_ID ], true );
 	}
 
 	/** Utility methods *******************************************************************************************/
@@ -853,11 +875,52 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	}
 
 	/**
-	 * Determines if the enhanced onboarding (iframe) should be used.
+	/**
+	 * Displays an admin notice when the Facebook connection is invalid.
 	 *
-	 * @return bool
+	 * Hooked on admin_notices so it fires regardless of whether the enhanced
+	 * or non-enhanced settings path is active.
 	 */
+	public function add_connection_invalid_notice() {
+		if ( ! get_transient( 'wc_facebook_connection_invalid' ) ) {
+			return;
+		}
+
+		// Only show on the Plugins page and the Facebook settings page.
+		$screen = get_current_screen();
+		$allowed_screens = array( 'plugins', 'marketing_page_wc-facebook', 'woocommerce_page_wc-facebook' );
+		if ( ! $screen || ! in_array( $screen->id, $allowed_screens, true ) ) {
+			return;
+		}
+
+		$message = sprintf(
+			/* translators: %1$s - <strong>, %2$s - </strong>, %3$s - <a> reconnect link, %4$s - </a>, %5$s - <a> support link, %6$s - </a> */
+			__( '%1$sMeta for WooCommerce connection error.%2$s Your access token is no longer valid. This may happen if the system user was unconfirmed, the password was changed, or the app was deauthorized. Please %3$sreconnect your store%4$s to restore functionality, or %5$scontact support%6$s for help.', 'facebook-for-woocommerce' ),
+			'<strong>',
+			'</strong>',
+			'<a href="' . esc_url( $this->get_settings_url() ) . '">',
+			'</a>',
+			'<a href="' . esc_url( $this->get_support_url() ) . '" target="_blank">',
+			'</a>'
+		);
+
+		$this->get_admin_notice_handler()->add_admin_notice(
+			$message,
+			'wc_facebook_connection_invalid',
+			array(
+				'notice_class' => 'error',
+				'dismissible'  => false,
+			)
+		);
+	}
+
 	public function use_enhanced_onboarding(): bool {
+		// If the connection is invalid, force enhanced onboarding so the Shops
+		// tab renders the splash iframe for reconnection.
+		if ( get_transient( 'wc_facebook_connection_invalid' ) ) {
+			return true;
+		}
+
 		$connection_handler              = $this->get_connection_handler();
 		$commerce_partner_integration_id = $connection_handler->get_commerce_partner_integration_id();
 

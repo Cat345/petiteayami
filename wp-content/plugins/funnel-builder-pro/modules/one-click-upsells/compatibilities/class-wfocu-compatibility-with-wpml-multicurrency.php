@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Compatibility_With_WPML_MultiCurrency' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_WPML_MultiCurrency {
 
 		public function __construct() {
@@ -14,9 +15,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WPML_MultiCurrency' ) ) {
 				return true;
 			}
 
-
 			return false;
-
 		}
 
 
@@ -66,11 +65,8 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WPML_MultiCurrency' ) ) {
 
 			return $wpml_url_converter->convert_url( $link );
 		}
-
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_WPML_MultiCurrency(), 'woowpmlmulticurrency' );
 
 }
-

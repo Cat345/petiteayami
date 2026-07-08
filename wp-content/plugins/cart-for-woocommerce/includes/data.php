@@ -387,7 +387,7 @@ if ( ! class_exists( '\FKCart\Includes\Data' ) ) {
 				if( 'special_addon_image_size' === $key && empty( $settings[ $key ] ) ) {
 					return 48; // Default size for special addon image
 				}
-				return maybe_unserialize( $settings[ $key ] );
+				return $settings[ $key ];
 			}
 
 			return '';

@@ -103,19 +103,15 @@ if (true) {
 (function ($) {
   window.wfop_prepare_divi_css = function (data, utils, props) {
     var main_output = [];
-
     for (var m in data.margin_padding) {
       (function (key, selector) {
         var spacing = props[key];
-
         if (spacing != null && spacing !== '' && spacing.split("|")) {
           var element_here = key.indexOf("_padding");
           var ele = "padding";
-
           if (element_here === -1) {
             ele = "margin";
           }
-
           spacing = props[key].split("|");
           var enable_edited = props[key + "_last_edited"];
           var key_tablet = props[key + "_tablet"];
@@ -125,7 +121,6 @@ if (true) {
             'selector': selector,
             'declaration': ele + "-top: ".concat(spacing[0], "  !important; ") + ele + "-right: ".concat(spacing[1], " !important; ") + ele + "-bottom: ".concat(spacing[2], "  !important; ") + ele + "-left: ".concat(spacing[3], "  !important;")
           });
-
           if (key_tablet && enable_responsive_active && key_tablet && '' !== key_tablet) {
             var spacing_tablet = key_tablet.split("|");
             main_output.push({
@@ -134,7 +129,6 @@ if (true) {
               'device': 'tablet'
             });
           }
-
           if (key_phone && enable_responsive_active && key_phone && '' !== key_phone) {
             var spacing_phone = key_phone.split("|");
             main_output.push({
@@ -146,7 +140,6 @@ if (true) {
         }
       })(m, data.margin_padding[m]);
     }
-
     for (var n in data.normal_data) {
       (function (key, selector, css_prop) {
         main_output.push({
@@ -154,7 +147,6 @@ if (true) {
           'declaration': "".concat(css_prop, ":").concat(props[key]) + '!important'
         });
         var device_enable = props[key + "_last_edited"] && props[key + "_last_edited"].startsWith('on');
-
         if (device_enable === true) {
           main_output.push({
             'selector': selector,
@@ -169,7 +161,6 @@ if (true) {
         }
       })(n, data.normal_data[n]['selector'], data.normal_data[n]['property']);
     }
-
     for (var t in data.typography_data) {
       (function (key, selector) {
         var property = data.typography[key];
@@ -179,10 +170,8 @@ if (true) {
         });
       })(t, data.typography_data[t]);
     }
-
     for (var border_key in data.border_data) {
       var selector = data.border_data[border_key];
-
       (function (border_key, selector) {
         var border_type = props[border_key + '_border_type'];
         var width_top = props[border_key + '_border_width_top'];
@@ -194,7 +183,6 @@ if (true) {
         var radius_bottom_right = props[border_key + '_border_radius_bottom'];
         var radius_bottom_left = props[border_key + '_border_radius_left'];
         var radius_top_right = props[border_key + '_border_radius_right'];
-
         if ('none' === border_type) {
           main_output.push({
             'selector': selector,
@@ -248,10 +236,8 @@ if (true) {
         }
       })(border_key, selector);
     }
-
     for (var shadow_key in data.box_shadow) {
       var _selector = data.box_shadow[shadow_key];
-
       (function (border_key, selector) {
         var enabled = props[border_key + '_shadow_enable'];
         var type = props[border_key + '_shadow_type'];
@@ -260,7 +246,6 @@ if (true) {
         var blur = props[border_key + '_shadow_blur'];
         var spread = props[border_key + '_shadow_spread'];
         var color = props[border_key + '_shadow_color'];
-
         if ('on' == enabled) {
           main_output.push({
             'selector': selector,
@@ -274,20 +259,16 @@ if (true) {
         }
       })(shadow_key, _selector);
     }
-
     return main_output;
   };
-
   $(document.body).on('keypress', '.wfop_divi_border textarea', function (e) {
     // IE
     var keynum;
-
     if (window.event) {
       keynum = e.keyCode;
     } else if (e.which) {
       keynum = e.which;
     }
-
     if (keynum === 13) {
       return false;
     }
@@ -295,11 +276,11 @@ if (true) {
   $(document.body).on('click', '.et-fb-form__toggle-title, .select-option-item,.et-core-control-toggle', function () {
     var el = $(this);
     setTimeout(function (el) {
-      var parent_d = el.closest('.et-fb-form__toggle'); // console.log("parent_d",parent_d);
+      var parent_d = el.closest('.et-fb-form__toggle');
+      // console.log("parent_d",parent_d);
       // if (parent_d.length === 0) {
       //     return;
       // }
-
       var border_top = $('.wfop_border_width_top');
       border_top.each(function () {
         $(this).closest('.et-fb-form__group').addClass('wfop_divi_border wfop_divi_border_width_start wfop_border_width_top');
@@ -319,11 +300,9 @@ if (true) {
       var siblings = parent_d.children('.et-fb-form__group');
       siblings.each(function () {
         var heading = $(this).find('.wfop_heading_divi_builder');
-
         if (heading.length > 0) {
           heading.remove();
           var text = $(this).find('.et-fb-form__label-text');
-
           if (text.length > 0) {
             $(this).find('.et-fb-form__label').replaceWith("<h3 class='wfop_c_heading'>" + text.text() + "</h3>");
           }
@@ -470,48 +449,31 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
 
-// EXTERNAL MODULE: /home/user/public_html/localwc/wp-content/plugins/funnel-builder/node_modules/react/index.js
+// EXTERNAL MODULE: /Users/apple/Local Sites/localwc/app/public/wp-content/plugins/funnel-builder/node_modules/react/index.js
 var react = __webpack_require__(0);
 var react_default = /*#__PURE__*/__webpack_require__.n(react);
 
 // CONCATENATED MODULE: ./abs-component.js
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _possibleConstructorReturn(t, e) { if (e && ("object" == _typeof(e) || "function" == typeof e)) return e; if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined"); return _assertThisInitialized(t); }
+function _assertThisInitialized(e) { if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); return e; }
+function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
+function _getPrototypeOf(t) { return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (t) { return t.__proto__ || Object.getPrototypeOf(t); }, _getPrototypeOf(t); }
+function _inherits(t, e) { if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function"); t.prototype = Object.create(e && e.prototype, { constructor: { value: t, writable: !0, configurable: !0 } }), Object.defineProperty(t, "prototype", { writable: !1 }), e && _setPrototypeOf(t, e); }
+function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 
 var abs_component_WFOP_Component = /*#__PURE__*/function (_React$Component) {
-  _inherits(WFOP_Component, _React$Component);
-
-  var _super = _createSuper(WFOP_Component);
-
   function WFOP_Component() {
     var _this;
-
     _classCallCheck(this, WFOP_Component);
-
-    _this = _super.call(this);
+    _this = _callSuper(this, WFOP_Component);
     _this.timeout = null;
     _this.ajax = false;
     _this.c_slug = '';
@@ -520,29 +482,25 @@ var abs_component_WFOP_Component = /*#__PURE__*/function (_React$Component) {
     };
     return _this;
   }
-
-  _createClass(WFOP_Component, [{
+  _inherits(WFOP_Component, _React$Component);
+  return _createClass(WFOP_Component, [{
     key: "componentDidMount",
     value: function componentDidMount() {
       if (true != this.ajax) {
         return;
       }
-
       this.send_json();
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps, prevState, snapshot) {
       var _this2 = this;
-
       if (true != this.ajax) {
         return;
       }
-
       if (JSON.stringify(this.props) === JSON.stringify(prevProps)) {
         return;
       }
-
       clearTimeout(this.timeout);
       this.timeout = setTimeout(function () {
         _this2.send_json();
@@ -552,23 +510,21 @@ var abs_component_WFOP_Component = /*#__PURE__*/function (_React$Component) {
     key: "send_json",
     value: function send_json() {
       var _this3 = this;
-
       var settings = JSON.stringify(this.props);
       settings = JSON.parse(settings);
       settings.action = this.c_slug;
       settings.post_id = et_pb_custom.page_id;
       settings.et_load_builder_modules = '1';
+      settings._ajax_nonce = window.wfop_divi_data ? window.wfop_divi_data.nonce : '';
       var request = {
         url: et_pb_custom.ajaxurl,
         method: 'POST',
         data: settings,
         success: function success(rsp, jqxhr, status) {
           rsp = rsp.replace(/\\/g, "");
-
           _this3.setState({
             formData: rsp
           });
-
           _this3.ajaxSuccess(rsp, jqxhr, status);
         },
         complete: function complete(rsp, jqxhr, status) {},
@@ -594,98 +550,66 @@ var abs_component_WFOP_Component = /*#__PURE__*/function (_React$Component) {
     value: function css(props) {
       var utils = window.ET_Builder.API.Utils;
       var wfop_divi_style = [];
-
       if (window.hasOwnProperty(this.c_slug + '_fields')) {
         wfop_divi_style = window[this.c_slug + '_fields'](utils, props);
       }
-
       return wfop_divi_style;
     }
   }]);
-
-  return WFOP_Component;
 }(react_default.a.Component);
-
 _defineProperty(abs_component_WFOP_Component, "style_data", []);
-
 /* harmony default export */ var abs_component = (abs_component_WFOP_Component);
 // CONCATENATED MODULE: ./optin-form.js
-function optin_form_typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { optin_form_typeof = function _typeof(obj) { return typeof obj; }; } else { optin_form_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return optin_form_typeof(obj); }
-
-function optin_form_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function optin_form_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function optin_form_createClass(Constructor, protoProps, staticProps) { if (protoProps) optin_form_defineProperties(Constructor.prototype, protoProps); if (staticProps) optin_form_defineProperties(Constructor, staticProps); return Constructor; }
-
-function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
-
-function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = optin_form_getPrototypeOf(object); if (object === null) break; } return object; }
-
-function optin_form_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) optin_form_setPrototypeOf(subClass, superClass); }
-
-function optin_form_setPrototypeOf(o, p) { optin_form_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return optin_form_setPrototypeOf(o, p); }
-
-function optin_form_createSuper(Derived) { var hasNativeReflectConstruct = optin_form_isNativeReflectConstruct(); return function _createSuperInternal() { var Super = optin_form_getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = optin_form_getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return optin_form_possibleConstructorReturn(this, result); }; }
-
-function optin_form_possibleConstructorReturn(self, call) { if (call && (optin_form_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return optin_form_assertThisInitialized(self); }
-
-function optin_form_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function optin_form_isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-
-function optin_form_getPrototypeOf(o) { optin_form_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return optin_form_getPrototypeOf(o); }
-
-function optin_form_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
+function optin_form_typeof(o) { "@babel/helpers - typeof"; return optin_form_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, optin_form_typeof(o); }
+function optin_form_classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function optin_form_defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, optin_form_toPropertyKey(o.key), o); } }
+function optin_form_createClass(e, r, t) { return r && optin_form_defineProperties(e.prototype, r), t && optin_form_defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function optin_form_callSuper(t, o, e) { return o = optin_form_getPrototypeOf(o), optin_form_possibleConstructorReturn(t, optin_form_isNativeReflectConstruct() ? Reflect.construct(o, e || [], optin_form_getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function optin_form_possibleConstructorReturn(t, e) { if (e && ("object" == optin_form_typeof(e) || "function" == typeof e)) return e; if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined"); return optin_form_assertThisInitialized(t); }
+function optin_form_assertThisInitialized(e) { if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); return e; }
+function optin_form_isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (optin_form_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
+function _superPropGet(t, o, e, r) { var p = _get(optin_form_getPrototypeOf(1 & r ? t.prototype : t), o, e); return 2 & r && "function" == typeof p ? function (t) { return p.apply(e, t); } : p; }
+function _get() { return _get = "undefined" != typeof Reflect && Reflect.get ? Reflect.get.bind() : function (e, t, r) { var p = _superPropBase(e, t); if (p) { var n = Object.getOwnPropertyDescriptor(p, t); return n.get ? n.get.call(arguments.length < 3 ? e : r) : n.value; } }, _get.apply(null, arguments); }
+function _superPropBase(t, o) { for (; !{}.hasOwnProperty.call(t, o) && null !== (t = optin_form_getPrototypeOf(t));); return t; }
+function optin_form_getPrototypeOf(t) { return optin_form_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (t) { return t.__proto__ || Object.getPrototypeOf(t); }, optin_form_getPrototypeOf(t); }
+function optin_form_inherits(t, e) { if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function"); t.prototype = Object.create(e && e.prototype, { constructor: { value: t, writable: !0, configurable: !0 } }), Object.defineProperty(t, "prototype", { writable: !1 }), e && optin_form_setPrototypeOf(t, e); }
+function optin_form_setPrototypeOf(t, e) { return optin_form_setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, optin_form_setPrototypeOf(t, e); }
+function optin_form_defineProperty(e, r, t) { return (r = optin_form_toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function optin_form_toPropertyKey(t) { var i = optin_form_toPrimitive(t, "string"); return "symbol" == optin_form_typeof(i) ? i : i + ""; }
+function optin_form_toPrimitive(t, r) { if ("object" != optin_form_typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != optin_form_typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 
 var WFOP_Optin_Form = /*#__PURE__*/function (_WFOP_Component) {
-  optin_form_inherits(WFOP_Optin_Form, _WFOP_Component);
-
-  var _super = optin_form_createSuper(WFOP_Optin_Form);
-
   function WFOP_Optin_Form() {
     var _this;
-
     optin_form_classCallCheck(this, WFOP_Optin_Form);
-
-    _this = _super.call(this);
+    _this = optin_form_callSuper(this, WFOP_Optin_Form);
     _this.ajax = true;
     _this.c_slug = 'et_wfop_optin_form';
     return _this;
   }
-
-  optin_form_createClass(WFOP_Optin_Form, [{
+  optin_form_inherits(WFOP_Optin_Form, _WFOP_Component);
+  return optin_form_createClass(WFOP_Optin_Form, [{
     key: "render",
     value: function render() {
       jQuery(document).trigger('wffn_reload_phone_field');
-      return _get(optin_form_getPrototypeOf(WFOP_Optin_Form.prototype), "render", this).call(this);
+      return _superPropGet(WFOP_Optin_Form, "render", this, 3)([]);
     }
   }], [{
     key: "css",
     value: function css(props) {
       var utils = window.ET_Builder.API.Utils;
       var wfop_divi_style = [];
-
       if (window.hasOwnProperty(WFOP_Optin_Form.slug + '_fields')) {
         wfop_divi_style = window[WFOP_Optin_Form.slug + '_fields'](utils, props);
       }
-
       return [wfop_divi_style];
     }
   }]);
-
-  return WFOP_Optin_Form;
 }(abs_component);
-
 optin_form_defineProperty(WFOP_Optin_Form, "slug", 'et_wfop_optin_form');
-
 /* harmony default export */ var optin_form = (WFOP_Optin_Form);
 // CONCATENATED MODULE: ./main.js
 __webpack_require__(1);
-
-
 
 (function ($) {
   $(window).on('et_builder_api_ready', function (event, API) {

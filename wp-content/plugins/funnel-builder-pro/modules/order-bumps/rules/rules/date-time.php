@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Rule_Day' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Day extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -59,10 +60,10 @@ if ( ! class_exists( 'wfob_Rule_Day' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Date' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Date extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -132,11 +133,11 @@ if ( ! class_exists( 'wfob_Rule_Date' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Time' ) ) {
 
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Time extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -166,7 +167,7 @@ if ( ! class_exists( 'wfob_Rule_Time' ) ) {
 
 			if ( isset( $rule_data['condition'] ) && isset( $rule_data['operator'] ) && $rule_data['condition'] ) {
 
-				$parsetime = explode( ":", $rule_data['condition'] );
+				$parsetime = explode( ':', $rule_data['condition'] );
 				if ( is_array( $parsetime ) && count( $parsetime ) !== 2 ) {
 					return $this->return_is_match( $result, $rule_data );
 				}
@@ -214,8 +215,6 @@ if ( ! class_exists( 'wfob_Rule_Time' ) ) {
 			}
 
 			return $this->return_is_match( $result, $rule_data );
-
 		}
-
 	}
 }

@@ -35,6 +35,7 @@ namespace Pelago\Emogrifier;
  *
  * @author Jake Hotson <jake.github@qzdesign.co.uk>
  */
+#[\AllowDynamicProperties]
 class CssConcatenator {
 	/**
 	 * Array of media rules in order.  Each element is an object with the following properties:
@@ -48,15 +49,15 @@ class CssConcatenator {
 	 *
 	 * @var \stdClass[]
 	 */
-	private $mediaRules = [];
+	private $mediaRules = array();
 
 	/**
 	 * Appends a declaration block to the CSS.
 	 *
 	 * @param string[] $selectors Array of selectors for the rule, e.g. ["ul", "ol", "p:first-child"].
-	 * @param string $declarationsBlock The property declarations, e.g. "margin-top: 0.5em; padding: 0".
-	 * @param string $media The media query for the rule, e.g. "@media screen and (max-width:639px)",
-	 *                      or an empty string if none.
+	 * @param string   $declarationsBlock The property declarations, e.g. "margin-top: 0.5em; padding: 0".
+	 * @param string   $media The media query for the rule, e.g. "@media screen and (max-width:639px)",
+	 *                        or an empty string if none.
 	 */
 	public function append( array $selectors, $declarationsBlock, $media = '' ) {
 		$selectorsAsKeys = \array_flip( $selectors );
@@ -82,7 +83,7 @@ class CssConcatenator {
 	 * @return string
 	 */
 	public function getCss() {
-		return \implode( '', \array_map( [ $this, 'getMediaRuleCss' ], $this->mediaRules ) );
+		return \implode( '', \array_map( array( $this, 'getMediaRuleCss' ), $this->mediaRules ) );
 	}
 
 	/**
@@ -97,10 +98,10 @@ class CssConcatenator {
 			return $lastMediaRule;
 		}
 
-		$newMediaRule       = (object) [
+		$newMediaRule       = (object) array(
 			'media'      => $media,
-			'ruleBlocks' => [],
-		];
+			'ruleBlocks' => array(),
+		);
 		$this->mediaRules[] = $newMediaRule;
 
 		return $newMediaRule;
@@ -125,7 +126,7 @@ class CssConcatenator {
 	 * @return string CSS for the media rule.
 	 */
 	private static function getMediaRuleCss( \stdClass $mediaRule ) {
-		$css = \implode( '', \array_map( [ static::class, 'getRuleBlockCss' ], $mediaRule->ruleBlocks ) );
+		$css = \implode( '', \array_map( array( static::class, 'getRuleBlockCss' ), $mediaRule->ruleBlocks ) );
 		if ( $mediaRule->media !== '' ) {
 			$css = $mediaRule->media . '{' . $css . '}';
 		}

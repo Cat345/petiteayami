@@ -77,7 +77,7 @@ class Configuration extends Repository implements Config
     /**
      * @inheritdoc
      */
-    public function addFilter(string $name, callable $filter)
+    public function addFilter(string $name, callable $filter): self
     {
         $this->filter->add($name, $filter);
 
@@ -87,7 +87,7 @@ class Configuration extends Repository implements Config
     /**
      * @inheritdoc
      */
-    public function addFile(string $index, string $file, bool $replace = true)
+    public function addFile(string $index, string $file, bool $replace = true): self
     {
         return $this->add($index, $this->loadFile($file), $replace);
     }

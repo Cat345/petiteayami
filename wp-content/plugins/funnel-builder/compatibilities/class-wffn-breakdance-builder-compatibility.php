@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFFN_Compatibility_With_BreakDance_Builder
  */
 if ( ! class_exists( 'WFFN_Compatibility_With_BreakDance_Builder' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_BreakDance_Builder {
 
 		public function __construct() {
@@ -30,7 +31,9 @@ if ( ! class_exists( 'WFFN_Compatibility_With_BreakDance_Builder' ) ) {
 		 */
 		public function add_break_dance_class( $body_class ) {
 			global $post;
-			if ( ! is_null( $post ) && in_array( $post->post_type, array(
+			if ( ! is_null( $post ) && in_array(
+				$post->post_type,
+				array(
 					'wfacp_checkout',
 					'wfocu_offer',
 					'wffn_landing',
@@ -38,7 +41,9 @@ if ( ! class_exists( 'WFFN_Compatibility_With_BreakDance_Builder' ) ) {
 					'wffn_optin',
 					'wffn_oty',
 
-				), true ) ) {
+				),
+				true
+			) ) {
 
 				if ( is_array( $body_class ) && count( $body_class ) > 0 ) {
 					if ( ! in_array( 'breakdance', $body_class, true ) ) {
@@ -49,9 +54,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_BreakDance_Builder' ) ) {
 
 			return $body_class;
 		}
-
 	}
 
 	WFFN_Plugin_Compatibilities::register( new WFFN_Compatibility_With_BreakDance_Builder(), 'bd_builder' );
 }
-

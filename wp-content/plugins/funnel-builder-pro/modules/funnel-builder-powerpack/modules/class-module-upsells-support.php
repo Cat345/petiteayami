@@ -13,6 +13,14 @@ if (! class_exists( 'WFFN_Pro_Upsells_Support' ) ) {
 		public function __construct() {
 		}
 
+		public static function is_admin_enabled() {
+			if ( self::is_module_exists() ) {
+				return true;
+			}
+			$modules = get_option( '_bwf_individual_modules', [] );
+			return (bool) apply_filters( 'wffn_show_menu_upsell', isset( $modules['upsells'] ) && 'yes' === $modules['upsells'] );
+		}
+
 		/**
 		 * @return WFFN_Pro_Upsells_Support|null
 		 */
@@ -38,25 +46,12 @@ if (! class_exists( 'WFFN_Pro_Upsells_Support' ) ) {
 			add_filter( 'wfocu_override_wizard', function () {
 				return true;
 			} );
-			add_action( 'admin_head', function () {
-
-				global $submenu, $woofunnels_menu_slug;
-				foreach ( $submenu as $key => $men ) {
-					if ( $woofunnels_menu_slug !== $key ) {
-						continue;
-					}
-
-					$modules       = get_option( '_bwf_individual_modules', [] );
-					$upsell_exists = apply_filters( 'wffn_show_menu_upsell', ( isset( $modules['upsells'] ) && 'yes' === $modules['upsells'] ) );
-
-					foreach ( $men as $k => $d ) {
-						if ( 'admin.php?page=upstroke' === $d[2] && ! $upsell_exists ) {
-							unset( $submenu[ $key ][ $k ] );
-						}
-					}
+			add_action( 'admin_menu', function () {
+				if ( self::is_admin_enabled() ) {
+					return;
 				}
-
-			} );
+				remove_submenu_page( 'woofunnels', 'upstroke' );
+			}, 999999 );
 
 			add_action( 'plugins_loaded', function () {
 				if ( function_exists( 'WFOCU_Core' ) ) {

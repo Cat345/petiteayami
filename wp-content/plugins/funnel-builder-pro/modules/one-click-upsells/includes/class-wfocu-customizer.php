@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'WFOCU_Customizer' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Customizer {
 
 		private static $ins = null;

@@ -1,18 +1,19 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 if ( ! class_exists( 'WFFN_Data' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Data extends WFFN_Session_Handler {
 
-		private static $ins = null;
-		protected $cache = array();
-		private $page_id = false;
-		private $page_link = false;
-		private $order_id = false;
-		private $order = false;
-		private $page_layout = false;
+		private static $ins       = null;
+		protected $cache          = array();
+		private $page_id          = false;
+		private $page_link        = false;
+		private $order_id         = false;
+		private $order            = false;
+		private $page_layout      = false;
 		private $page_layout_info = false;
-		private $options = null;
+		private $options          = null;
 
 		public function __construct() {
 			add_action( 'wffn_global_settings', array( $this, 'sanitize_scripts' ), 10 );
@@ -21,7 +22,6 @@ if ( ! class_exists( 'WFFN_Data' ) ) {
 			 * As we have extended the class 'WFOCU_Session_Handler', We have to create a construct over there and not using native register method.
 			 */
 			parent::__construct();
-
 		}
 
 		/**
@@ -29,7 +29,7 @@ if ( ! class_exists( 'WFFN_Data' ) ) {
 		 */
 		public static function get_instance() {
 			if ( self::$ins === null ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -94,7 +94,6 @@ if ( ! class_exists( 'WFFN_Data' ) ) {
 			}
 
 			return ( $get_next_id === 0 ) ? false : get_permalink( $get_next_id );
-
 		}
 
 
@@ -104,7 +103,6 @@ if ( ! class_exists( 'WFFN_Data' ) ) {
 		public function get_session_funnel() {
 
 			return $this->get( 'funnel', false );
-
 		}
 
 		/**
@@ -125,7 +123,6 @@ if ( ! class_exists( 'WFFN_Data' ) ) {
 
 			return false;
 		}
-
 	}
 
 	if ( class_exists( 'WFFN_Core' ) ) {

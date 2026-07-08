@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Execute_Automation_Tasks extends BWFAN_API_Base {
 	public static $ins;
 

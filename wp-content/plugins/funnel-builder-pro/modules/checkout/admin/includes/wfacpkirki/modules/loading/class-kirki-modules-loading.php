@@ -12,7 +12,12 @@
 /**
  * Modifies the loading overlay.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Modules_Loading' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Modules_Loading {
 
 		/**
@@ -72,7 +77,6 @@ if ( ! class_exists( 'WFACPKirki_Modules_Loading' ) ) {
 			add_action( 'wp_footer', array( $this, 'add_loader_to_footer' ) );
 			add_action( 'wp_head', array( $this, 'add_loader_styles_to_header' ), 99 );
 			$this->remove_default_loading_styles();
-
 		}
 
 		/**
@@ -82,9 +86,9 @@ if ( ! class_exists( 'WFACPKirki_Modules_Loading' ) ) {
 		 */
 		public function add_loader_to_footer() {
 			?>
-            <div class="wfacpkirki-customizer-loading-wrapper">
-                <span class="wfacpkirki-customizer-loading"></span>
-            </div>
+			<div class="wfacpkirki-customizer-loading-wrapper">
+				<span class="wfacpkirki-customizer-loading"></span>
+			</div>
 			<?php
 		}
 
@@ -95,75 +99,75 @@ if ( ! class_exists( 'WFACPKirki_Modules_Loading' ) ) {
 		 */
 		public function add_loader_styles_to_header() {
 			?>
-            <style>
-                body.wp-customizer-unloading {
-                    opacity: 1;
-                    cursor: progress !important;
-                    -webkit-transition: none;
-                    transition: none;
-                }
+			<style>
+				body.wp-customizer-unloading {
+					opacity: 1;
+					cursor: progress !important;
+					-webkit-transition: none;
+					transition: none;
+				}
 
-                body.wp-customizer-unloading * {
-                    pointer-events: none !important;
-                }
+				body.wp-customizer-unloading * {
+					pointer-events: none !important;
+				}
 
-                .wfacpkirki-customizer-loading-wrapper {
-                    width: 100%;
-                    height: 100%;
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    background: rgba(255, 255, 255, 0.83);
-                    z-index: 999999;
-                    display: none;
-                    opacity: 0;
-                    -webkit-transition: opacity 0.5s;
-                    transition: opacity 0.5s;
-                    background-image: url("<?php echo esc_url_raw( WFACPKirki::$url ); ?>/assets/images/kirki-logo.svg");
-                    background-repeat: no-repeat;
-                    background-position: center center;
-                }
+				.wfacpkirki-customizer-loading-wrapper {
+					width: 100%;
+					height: 100%;
+					position: fixed;
+					top: 0;
+					left: 0;
+					background: rgba(255, 255, 255, 0.83);
+					z-index: 999999;
+					display: none;
+					opacity: 0;
+					-webkit-transition: opacity 0.5s;
+					transition: opacity 0.5s;
+					background-image: url("<?php echo esc_url_raw( WFACPKirki::$url ); ?>/assets/images/kirki-logo.svg");
+					background-repeat: no-repeat;
+					background-position: center center;
+				}
 
-                body.wp-customizer-unloading .wfacpkirki-customizer-loading-wrapper {
-                    display: block;
-                    opacity: 1;
-                }
+				body.wp-customizer-unloading .wfacpkirki-customizer-loading-wrapper {
+					display: block;
+					opacity: 1;
+				}
 
-                .wfacpkirki-customizer-loading-wrapper .wfacpkirki-customizer-loading {
-                    position: absolute;
-                    width: 60px;
-                    height: 60px;
-                    top: 50%;
-                    left: 50%;
-                    margin: -30px;
-                    background-color: rgba(0, 0, 0, .83);
-                    border-radius: 100%;
-                    -webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
-                    animation: sk-scaleout 1.0s infinite ease-in-out;
-                }
+				.wfacpkirki-customizer-loading-wrapper .wfacpkirki-customizer-loading {
+					position: absolute;
+					width: 60px;
+					height: 60px;
+					top: 50%;
+					left: 50%;
+					margin: -30px;
+					background-color: rgba(0, 0, 0, .83);
+					border-radius: 100%;
+					-webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
+					animation: sk-scaleout 1.0s infinite ease-in-out;
+				}
 
-                @-webkit-keyframes sk-scaleout {
-                    0% {
-                        -webkit-transform: scale(0)
-                    }
-                    100% {
-                        -webkit-transform: scale(1.0);
-                        opacity: 0;
-                    }
-                }
+				@-webkit-keyframes sk-scaleout {
+					0% {
+						-webkit-transform: scale(0)
+					}
+					100% {
+						-webkit-transform: scale(1.0);
+						opacity: 0;
+					}
+				}
 
-                @keyframes sk-scaleout {
-                    0% {
-                        -webkit-transform: scale(0);
-                        transform: scale(0);
-                    }
-                    100% {
-                        -webkit-transform: scale(1.0);
-                        transform: scale(1.0);
-                        opacity: 0;
-                    }
-                }
-            </style>
+				@keyframes sk-scaleout {
+					0% {
+						-webkit-transform: scale(0);
+						transform: scale(0);
+					}
+					100% {
+						-webkit-transform: scale(1.0);
+						transform: scale(1.0);
+						opacity: 0;
+					}
+				}
+			</style>
 			<?php
 		}
 

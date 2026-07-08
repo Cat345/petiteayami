@@ -4,6 +4,7 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 	 * Handles the operations and usage of gateways in the one click upsell
 	 * Class WFOCU_Gateways
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Gateways {
 
 		private static $ins = null;

@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Product_Image' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Product_Image extends WFOCU_Divi_HTML_BLOCK {
 
 		public function __construct() {

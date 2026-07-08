@@ -10,6 +10,7 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 	/**
 	 * Class BWFCRM_Contact
 	 */
+	#[\AllowDynamicProperties]
 	class BWFCRM_Contact {
 
 		/** @var WooFunnels_Contact $contact */
@@ -308,7 +309,7 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			);
 
 			if ( isset( $contact_array['country'] ) && ! empty( $contact_array['country'] ) && function_exists( 'WC' ) && isset( WC()->countries ) ) {
-				$contact_array['country_formatted'] = isset( WC()->countries->get_countries()[ $contact_array['country'] ] ) ? html_entity_decode( WC()->countries->get_countries()[ $contact_array['country'] ] ) : '';
+				$contact_array['country_formatted'] = isset( WC()->countries->get_countries()[ $contact_array['country'] ] ) ? html_entity_decode( WC()->countries->get_countries()[ $contact_array['country'] ], ENT_QUOTES | ENT_HTML401 ) : '';
 			}
 
 			if ( false === $slim_data ) {
@@ -1561,6 +1562,8 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 		}
 
 		public function get_orders( $offset = 0, $limit = - 1 ) {
+			$offset      = absint( $offset );
+			$limit       = intval( $limit );
 			$limit_query = '';
 			if ( $limit > 0 ) {
 				$limit_query = " LIMIT $offset, $limit";
@@ -2078,7 +2081,7 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$headers[] = 'Content-type:text/html;charset=UTF-8';
 
 			if ( ! empty( $reply_to_email ) ) {
-				$headers[] = 'Reply-To:  ' . $reply_to_email;
+				$headers[] = BWFAN_Common::build_reply_to_header( $reply_to_email, '', $from_name );
 			}
 
 			/** Set unsubscribe link in header */

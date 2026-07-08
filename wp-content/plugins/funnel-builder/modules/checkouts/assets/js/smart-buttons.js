@@ -40,6 +40,8 @@ if (typeof wfacp_frontend === 'undefined') {
             this.smart_button_id = '#wfacp_smart_buttons';
             this.loading_gif = 'wfacp-dynamic-checkout-loading';
             this.button_displayed = false;
+            this._showHideTimer = null;
+            this._amazonTimer = null;
             this.available_buttons = {};
             this.wcEvents();
 
@@ -85,16 +87,19 @@ if (typeof wfacp_frontend === 'undefined') {
             window.addEventListener('unload', (e) => {
                 this.showShimmer()
             });
-            $(document.body).on('updated_checkout', this.handleCheckout.bind(this));
-            $(document.body).on('fkwcs_generate_smart_buttons', this.fkwcs_smart_buttons_shown.bind(this));
+            $(document.body).on('updated_checkout', () => {
+                this.handleCheckout();
+            });
+            $(document.body).on('fkwcs_generate_smart_buttons', (e, ...args) => {
+                this.fkwcs_smart_buttons_shown();
+            });
 			// For old stripe express checkout
-			$(document.body).on('fkwcs_smart_buttons_showed', this.fkwcs_smart_buttons_shown.bind(this));
-			$(document.body).on('fkwcs_google_ready_pay',this.fkwcs_smart_buttons_shown.bind(this));
-
-
-            $(document.body).on('fkwcs_new_express_no_smart_buttons_generated', this.fkwcs_smart_buttons_shown.bind(this, true));
-            $(document.body).on('fkwcs_new_express_smart_buttons_showed', this.fkwcs_smart_buttons_shown.bind(this, true));
-            $(document.body).on('fkwcs_new_express_smart_buttons_catch', this.fkwcs_smart_buttons_shown.bind(this, true));
+			$(document.body).on('fkwcs_smart_buttons_showed', (e, ...args) => {
+                this.fkwcs_smart_buttons_shown();
+            });
+			$(document.body).on('fkwcs_google_ready_pay', (e, ...args) => {
+                this.fkwcs_smart_buttons_shown();
+            });
 			this.checkButtons();
 			$(document.body).trigger('wfacp_smart_buttons_dom_loaded');
         }
@@ -104,10 +109,6 @@ if (typeof wfacp_frontend === 'undefined') {
         }
 
         updateWrapperClass(update_count = false) {
-            if (false === this.fkwcs_smart_buttons_ready()) {
-                console.log('Funnel Kit Smart Buttons not ready updateWrapperClass');
-                // return;
-            }
 
 
             let btn_counts = Object.keys(this.available_buttons).length;
@@ -154,7 +155,13 @@ if (typeof wfacp_frontend === 'undefined') {
                 hideTimeout = this.isMobilePhone() ? 500 : 100;
             }
 
-            setTimeout(() => {
+            // Cancel any in-flight visibility timer so overlapping updated_checkout
+            // events do not stack timers and toggle the wrapper repeatedly.
+            if (null !== this._showHideTimer) {
+                clearTimeout(this._showHideTimer);
+            }
+
+            this._showHideTimer = setTimeout(() => {
                 if (true === this.button_displayed) {
                     /**
                      * Handle for Funnelkit Stripe
@@ -218,8 +225,10 @@ if (typeof wfacp_frontend === 'undefined') {
                 const observer = new MutationObserver((mutationsList) => {
                     for (let mutation of mutationsList) {
                         if (mutation.type === 'childList') {
+                            observer.disconnect();
                             this.showButton(parent);
                             this.showButtonOnMobile();
+                            return;
                         }
                     }
                 });
@@ -235,7 +244,7 @@ if (typeof wfacp_frontend === 'undefined') {
         }
 
         showButtonOnMobile() {
-            if (this.isMobilePhone()) {
+            if (this.isMobilePhone() && Object.keys(this.available_buttons).length > 0) {
                 this.showButtons();
             }
         }
@@ -297,7 +306,11 @@ if (typeof wfacp_frontend === 'undefined') {
             }
 
 
-            setTimeout(() => {
+            if (null !== this._amazonTimer) {
+                clearTimeout(this._amazonTimer);
+            }
+
+            this._amazonTimer = setTimeout(() => {
                 let element = document.getElementById('pay_with_amazon');
                 if (null === element) {
                     return;
@@ -308,7 +321,9 @@ if (typeof wfacp_frontend === 'undefined') {
                     $('#pay_with_amazon').css('opacity', '1');
                 }
                 this.findButtonElements('#wfacp_smart_button_amazon_pay #pay_with_amazon');
-                smart_buttons_wrapper.removeClass('wfacp_amazon_blocked');
+                if (null !== smart_buttons_wrapper) {
+                    smart_buttons_wrapper.removeClass('wfacp_amazon_blocked');
+                }
             }, 500);
 
 

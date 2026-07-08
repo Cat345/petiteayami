@@ -3,6 +3,7 @@
 
 if ( ! class_exists( 'BWF_Model_Contact_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 
+	#[\AllowDynamicProperties]
 	class BWF_Model_Contact_Fields {
 
 		static $primary_key = 'ID';
@@ -82,7 +83,7 @@ if ( ! class_exists( 'BWF_Model_Contact_Fields' ) && BWFAN_Common::is_pro_3_0() 
 			global $wpdb;
 			$table  = self::_table();
 			$column = "f{$field_id}";
-			$query  = "SHOW COLUMNS FROM {$table} LIKE '" . esc_sql( $column ) . "'";
+			$query  = $wpdb->prepare( "SHOW COLUMNS FROM {$table} LIKE %s", $column );
 
 			return $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}

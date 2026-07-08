@@ -9,6 +9,7 @@ use WP_Error;
  *
  * This class represents an AffiliateWP importer for the CRM system.
  */
+#[\AllowDynamicProperties]
 class AFFWP_Importer extends Importer {
 	const LIMIT = 25;
 

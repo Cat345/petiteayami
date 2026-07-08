@@ -18,6 +18,7 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Webfonts' ) ) {
 	/**
 	 * Adds script for tooltips.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Modules_Webfonts {
 
 		/**
@@ -47,12 +48,11 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Webfonts' ) ) {
 		 */
 		protected function __construct() {
 
-			include_once wp_normalize_path( dirname( __FILE__ ) . '/class-kirki-fonts.php' );
-			include_once wp_normalize_path( dirname( __FILE__ ) . '/class-kirki-fonts-google.php' );
-			include_once wp_normalize_path( dirname( __FILE__ ) . '/class-kirki-fonts-google-local.php' );
+			include_once wp_normalize_path( __DIR__ . '/class-kirki-fonts.php' );
+			include_once wp_normalize_path( __DIR__ . '/class-kirki-fonts-google.php' );
+			include_once wp_normalize_path( __DIR__ . '/class-kirki-fonts-google-local.php' );
 
 			add_action( 'wp_loaded', array( $this, 'run' ) );
-
 		}
 
 		/**
@@ -97,7 +97,6 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Webfonts' ) ) {
 				new $classname( $config_id, $this, $this->fonts_google );
 			}
 			new WFOCUKirki_Modules_Webfonts_Local( $this, $this->fonts_google );
-
 		}
 
 		/**

@@ -1,19 +1,26 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFOCU_Exporter' ) ) {
 	/**
 	 * Class WFOCU_Exporter
 	 * Handles All the methods about page builder activities
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Exporter {
 
-		private static $ins = null;
-		private $funnel = null;
+		private static $ins        = null;
+		private $funnel            = null;
 		private $installed_plugins = null;
 
 		public function __construct() {
-			add_action( 'admin_init', [ $this, 'maybe_export' ] );
-			add_action( 'admin_init', [ $this, 'maybe_export_single' ] );
+			$is_admin_enabled = ! class_exists( 'WFFN_Pro_Upsells_Support' )
+				|| ! method_exists( 'WFFN_Pro_Upsells_Support', 'is_admin_enabled' )
+				|| WFFN_Pro_Upsells_Support::is_admin_enabled();
+			if ( ! $is_admin_enabled ) {
+				return;
+			}
+			add_action( 'admin_init', array( $this, 'maybe_export' ) );
+			add_action( 'admin_init', array( $this, 'maybe_export_single' ) );
 		}
 
 		/**
@@ -21,7 +28,7 @@ if ( ! class_exists( 'WFOCU_Exporter' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -51,7 +58,7 @@ if ( ! class_exists( 'WFOCU_Exporter' ) ) {
 			}
 
 			$funnels           = WFOCU_Common::get_post_table_data();
-			$funnels_to_export = [];
+			$funnels_to_export = array();
 			foreach ( $funnels['items'] as $key => $funnel ) {
 				$funnels_to_export[ $key ] = $this->export_a_funnel( $funnel['id'] );
 			}
@@ -89,7 +96,7 @@ if ( ! class_exists( 'WFOCU_Exporter' ) ) {
 				return;
 			}
 
-			$funnels_to_export    = [];
+			$funnels_to_export    = array();
 			$funnels_to_export[0] = $this->export_a_funnel( $posted_data['id'] );
 
 			$funnels_to_export = apply_filters( 'wfocu_export_data', $funnels_to_export );
@@ -106,7 +113,11 @@ if ( ! class_exists( 'WFOCU_Exporter' ) ) {
 		public function export_a_funnel( $funnel_id ) {
 			$data_funnels = WFOCU_Core()->funnels->get_funnel_offers_admin( $funnel_id, false );
 			$funnel_post  = get_post( $funnel_id );
-			$funnel_data  = [ 'steps' => array(), 'title' => $funnel_post->post_title, 'description' => $funnel_post->post_content ];
+			$funnel_data  = array(
+				'steps'       => array(),
+				'title'       => $funnel_post->post_title,
+				'description' => $funnel_post->post_content,
+			);
 
 			/**
 			 * Loop over every offer
@@ -134,12 +145,11 @@ if ( ! class_exists( 'WFOCU_Exporter' ) ) {
 							} else {
 								$new_all_meta[ $meta_key ] = $value[0];
 							}
-
 						}
 					}
 
 					$customize_key = WFOCU_SLUG . '_c_' . $step['id'];
-					$template_data = get_option( $customize_key, [] );
+					$template_data = get_option( $customize_key, array() );
 
 					if ( is_array( $template_data ) && count( $template_data ) > 0 ) {
 						$template_data_keys = array_keys( $template_data );
@@ -154,7 +164,6 @@ if ( ! class_exists( 'WFOCU_Exporter' ) ) {
 									}
 								}
 							}
-
 						}
 					}
 

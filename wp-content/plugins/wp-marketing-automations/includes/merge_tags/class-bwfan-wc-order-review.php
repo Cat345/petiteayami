@@ -1,10 +1,15 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Bwfan Wc Order Review
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class BWFAN_WC_Order_Review extends Merge_Tag_Abstract_Product_Display {
 
 	private static $instance = null;

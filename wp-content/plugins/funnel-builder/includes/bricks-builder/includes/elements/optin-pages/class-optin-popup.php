@@ -9,11 +9,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 use WFFN_Optin_Form_Controller_Custom_Form;
 
 if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
+	#[\AllowDynamicProperties]
 	class Optin_Popup extends Optin_Form {
 		public $category = 'funnelkit';
-		public $name = 'wffn-optin-popup';
-		public $icon = 'ti-layout-cta-left';
-		public $scripts = array( 'triggerPhoneFieldReload', 'triggerPopupsReload' );
+		public $name     = 'wffn-optin-popup';
+		public $icon     = 'ti-layout-cta-left';
+		public $scripts  = array( 'triggerPhoneFieldReload', 'triggerPopupsReload' );
 
 		/**
 		 * Retrieves the label for the Optin Popup element.
@@ -832,7 +833,6 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 		 *
 		 * @return void
 		 * @since 1.0.0
-		 *
 		 */
 		public function render() {
 			$settings = $this->settings;
@@ -851,8 +851,8 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 				$button_args['icon_html'] = '<span class="bwf_icon ' . esc_attr( $icon_position ) . '">' . $icon . '</span>';
 			}
 
-			$wrapper_class = 'bricks-form-fields-wrapper';
-			$show_labels   = isset( $settings['show_labels'] ) ? $settings['show_labels'] : false;
+			$wrapper_class  = 'bricks-form-fields-wrapper';
+			$show_labels    = isset( $settings['show_labels'] ) ? $settings['show_labels'] : false;
 			$wrapper_class .= $show_labels ? '' : ' wfop_hide_label';
 
 			$optinPageId    = WFOPP_Core()->optin_pages->get_optin_id();
@@ -869,32 +869,32 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 			$settings['popup_bar_animation'] = isset( $settings['popup_bar_animation'] ) && $settings['popup_bar_animation'] ? 'yes' : 'no';
 			$settings['button_border_size']  = 0;
 			?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 				<?php
 				$custom_form = WFOPP_Core()->form_controllers->get_integration_object( 'form' );
 				if ( $custom_form instanceof WFFN_Optin_Form_Controller_Custom_Form ) {
 					?>
-                    <div class="wfop_popup_wrapper wfop_pb_widget_wrap">
+					<div class="wfop_popup_wrapper wfop_pb_widget_wrap">
 						<?php
 						$custom_form->wffn_get_button_html( $button_args );
 						$show_class = '';
 						?>
-                        <div class="bwf_pp_overlay <?php echo esc_attr( $show_class ); ?> bwf_pp_effect_<?php echo esc_attr( $settings['popup_open_animation'] ); ?>">
-                            <div class="bwf_pp_wrap">
-                                <a class="bwf_pp_close" href="javascript:void(0);">&times;</a>
-                                <div class="bwf_pp_cont">
+						<div class="bwf_pp_overlay <?php echo esc_attr( $show_class ); ?> bwf_pp_effect_<?php echo esc_attr( $settings['popup_open_animation'] ); ?>">
+							<div class="bwf_pp_wrap">
+								<a class="bwf_pp_close" href="javascript:void(0);">&times;</a>
+								<div class="bwf_pp_cont">
 									<?php
 									$settings = wp_parse_args( $settings, WFOPP_Core()->optin_pages->form_builder->form_customization_settings_default() );
 									$custom_form->_output_form( $wrapper_class, $optin_fields, $optinPageId, $optin_settings, 'popover', $settings );
 									?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+								</div>
+							</div>
+						</div>
+					</div>
 					<?php
 				}
 				?>
-            </div>
+			</div>
 
 			<?php
 		}

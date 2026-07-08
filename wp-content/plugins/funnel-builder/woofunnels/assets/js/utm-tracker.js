@@ -6,7 +6,7 @@ var wffnUtm_terms = wffnUtm.cookieKeys, wffnCookieManage = {
         var c = "expires=" + r.toUTCString();
         var basehost = ';domain=.' + wffnGetHost(document.location.hostname);
 
-        document.cookie = e + "=" + o + ";" + c + basehost + ";path=/";
+         document.cookie = e + "=" + o + ";" + c + basehost + ";path=/";
     }, getCookie: function (e) {
         for (var o = e + "=", t = document.cookie.split(";"), r = 0; r < t.length; r++) {
             for (var c = t[r]; " " == c.charAt(0);) c = c.substring(1);

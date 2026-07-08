@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Import_Automation_Recipe extends BWFAN_API_Base {
 
 	public static $ins;

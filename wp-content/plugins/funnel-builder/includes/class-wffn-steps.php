@@ -1,11 +1,12 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Handles the operations and usage of steps in funnel
  * Class WFFN_Steps
  */
 if ( ! class_exists( 'WFFN_Steps' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Steps {
 
 		/**
@@ -20,12 +21,13 @@ if ( ! class_exists( 'WFFN_Steps' ) ) {
 
 		/**
 		 * Step classes prefix
+		 *
 		 * @var string
 		 */
 		public $class_prefix = 'WFFN_Step_';
 
 		const STEP_GROUP_SALES = 'sales';
-		const STEP_GROUP_WC = 'wc';
+		const STEP_GROUP_WC    = 'wc';
 
 		/**
 		 * WFFN_Steps constructor.
@@ -40,7 +42,7 @@ if ( ! class_exists( 'WFFN_Steps' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -91,12 +93,11 @@ if ( ! class_exists( 'WFFN_Steps' ) ) {
 
 		/**
 		 * Includes steps files
-		 *
 		 */
 		public function load_steps() {
 			// load all the trigger files automatically
 			foreach ( glob( plugin_dir_path( WFFN_PLUGIN_FILE ) . 'steps/*/class-*.php' ) as $steps_file_name ) {
-				require_once( $steps_file_name ); //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+				require_once $steps_file_name; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 			}
 		}
 
@@ -112,4 +113,3 @@ if ( ! class_exists( 'WFFN_Steps' ) ) {
 		WFFN_Core::register( 'steps', 'WFFN_Steps' );
 	}
 }
-

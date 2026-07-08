@@ -3,6 +3,7 @@
 /**
  * Helper class to render input field types.
  */
+#[\AllowDynamicProperties]
 class bwfan_Input_Builder {
 
 	/**

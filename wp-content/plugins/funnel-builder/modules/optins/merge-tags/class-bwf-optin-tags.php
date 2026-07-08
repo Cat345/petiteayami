@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
+	#[\AllowDynamicProperties]
 	class BWF_Optin_Tags {
 
 		/**

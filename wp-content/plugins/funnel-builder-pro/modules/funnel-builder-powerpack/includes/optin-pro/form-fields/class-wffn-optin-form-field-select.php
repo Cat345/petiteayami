@@ -1,16 +1,17 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFFN_Optin_Form_Field_Select' ) ) {
 	/**
 	 * This class will control all Optin Text mapping functionality on optin submission.
 	 * Class WFFN_Optin_Form_Field_Text
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_Optin_Form_Field_Select extends WFFN_Optin_Form_Field {
 
-		private static $ins = null;
-		public static $slug = 'select';
+		private static $ins     = null;
+		public static $slug     = 'select';
 		public $is_custom_field = true;
-		public $index = 70;
+		public $index           = 70;
 
 		/**
 		 * WFFN_Optin_Form_Field_Text constructor.
@@ -24,7 +25,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Field_Select' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -64,25 +65,31 @@ if ( ! class_exists( 'WFFN_Optin_Form_Field_Select' ) ) {
 			$d_value     = trim( $this->get_default_value( $field_data ) );
 			$class       = $this->get_input_class( $field_data );
 			?>
-            <div class="bwfac_form_sec bwfac_form_field_dropdown <?php echo esc_attr( $width ); ?>">
+			<div class="bwfac_form_sec bwfac_form_field_dropdown <?php echo esc_attr( $width ); ?>">
 				<?php if ( ! empty( $label ) ) { ?>
-                    <label for="wfop_id_<?php echo esc_attr( $name ) . '_' . esc_attr( $hash ); ?>"><?php echo esc_html( $label );
-						echo ( $required ) ? '<span>*</span>' : ''; ?> </label>
+					<label for="wfop_id_<?php echo esc_attr( $name ) . '_' . esc_attr( $hash ); ?>">
+					<?php
+					echo esc_html( $label );
+						echo ( $required ) ? '<span>*</span>' : '';
+					?>
+						</label>
 				<?php } ?>
-                <div class="wfop_input_cont">
-                    <select id="wfop_id_<?php echo esc_attr( $name ) . '_' . esc_attr( $hash ); ?>" class="<?php echo esc_attr( $class ); ?>" name="<?php echo esc_attr( $name ); ?>">
+				<div class="wfop_input_cont">
+					<select id="wfop_id_<?php echo esc_attr( $name ) . '_' . esc_attr( $hash ); ?>" class="<?php echo esc_attr( $class ); ?>" name="<?php echo esc_attr( $name ); ?>">
 						<?php if ( '' !== $placeholder ) { ?>
-                            <option class="bwfac_op_place_invalid" value=""><?php echo esc_attr( $placeholder ); ?></option>
+							<option class="bwfac_op_place_invalid" value=""><?php echo esc_attr( $placeholder ); ?></option>
 						<?php } ?>
 
-						<?php foreach ( $options as $key => $value ) {
+						<?php
+						foreach ( $options as $key => $value ) {
 							?>
-                            <option <?php selected( $d_value, trim( $value ), true ); ?> value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $value ); ?></option>
+							<option <?php selected( $d_value, trim( $value ), true ); ?> value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $value ); ?></option>
 							<?php
-						} ?>
-                    </select>
-                </div>
-            </div>
+						}
+						?>
+					</select>
+				</div>
+			</div>
 			<?php
 		}
 
@@ -103,58 +110,58 @@ if ( ! class_exists( 'WFFN_Optin_Form_Field_Select' ) ) {
 
 		public function get_field_editor_html( $mode = 'new' ) {
 			?>
-            <div class="wfop_<?php echo esc_attr( $mode ); ?>_fields_wrap" data-type="<?php echo esc_attr( $this::get_slug() ); ?>">
-                <div class="wffn_row_billing">
-                    <div class="wffn_billing_left">
-                        <label><?php esc_html_e( 'Label', 'funnel-builder-powerpack' ); ?></label>
-                    </div>
-                    <div class="wffn_billing_right">
-                        <input type="text" onkeyup="window.wfop_design.fieldEdited('<?php echo esc_attr( $mode ) ?>',this.value, 'label','<# print(data.index); #>')" value="<# print(data.field.label); #>" class="form-control wffn_label">
-                    </div>
-                </div>
-                <div class="wffn_row_billing">
-                    <div class="wffn_billing_left">
-                        <label for=""><?php esc_html_e( 'Required', 'funnel-builder-powerpack' ); ?></label>
-                    </div>
-                    <div class="wffn_billing_right">
-                        <input onchange="window.wfop_design.fieldEdited('<?php echo esc_attr( $mode ) ?>',this.checked, 'required','<# print(data.index); #>')" type="checkbox" <#
-                        print(data.curr.isChecked(data.field.required)); #> class="form-control wffn_required">
-                    </div>
-                </div>
+			<div class="wfop_<?php echo esc_attr( $mode ); ?>_fields_wrap" data-type="<?php echo esc_attr( $this::get_slug() ); ?>">
+				<div class="wffn_row_billing">
+					<div class="wffn_billing_left">
+						<label><?php esc_html_e( 'Label', 'funnel-builder-powerpack' ); ?></label>
+					</div>
+					<div class="wffn_billing_right">
+						<input type="text" onkeyup="window.wfop_design.fieldEdited('<?php echo esc_attr( $mode ); ?>',this.value, 'label','<# print(data.index); #>')" value="<# print(data.field.label); #>" class="form-control wffn_label">
+					</div>
+				</div>
+				<div class="wffn_row_billing">
+					<div class="wffn_billing_left">
+						<label for=""><?php esc_html_e( 'Required', 'funnel-builder-powerpack' ); ?></label>
+					</div>
+					<div class="wffn_billing_right">
+						<input onchange="window.wfop_design.fieldEdited('<?php echo esc_attr( $mode ); ?>',this.checked, 'required','<# print(data.index); #>')" type="checkbox" <#
+						print(data.curr.isChecked(data.field.required)); #> class="form-control wffn_required">
+					</div>
+				</div>
 
-                <div class="wffn_row_billing">
-                    <div class="wffn_billing_left">
-                        <label for=""><?php esc_html_e( 'Default', 'funnel-builder-powerpack' ); ?></label>
-                    </div>
-                    <div class="wffn_billing_right">
-                        <input onkeyup="window.wfop_design.fieldEdited('<?php echo esc_attr( $mode ) ?>',this.value, 'default','<# print(data.index); #>')" type="text" value="<# print(data.field.default); #>" class="form-control">
-                    </div>
-                </div>
-                <div class="wffn_row_billing">
-                    <div class="wffn_billing_left">
-                        <label><?php esc_html_e( 'Width', 'funnel-builder-powerpack' ); ?></label>
-                    </div>
-                    <div class="wffn_billing_right">
-                        <select onchange="window.wfop_design.fieldEdited('<?php echo esc_attr( $mode ); ?>',this.value, 'width','<# print(data.index); #>')">
-                            <option
-                            <# print(data.curr.isSelected(data.field.width,'wffn-sm-100')); #> value='wffn-sm-100'>100%</option>
-                            <option
-                            <# print(data.curr.isSelected(data.field.width,'wffn-sm-50')); #> value='wffn-sm-50'>50%</option>
-                            <option
-                            <# print(data.curr.isSelected(data.field.width,'wffn-sm-33')); #> value='wffn-sm-33'>33%</option>
-                        </select>
-                    </div>
-                </div>
+				<div class="wffn_row_billing">
+					<div class="wffn_billing_left">
+						<label for=""><?php esc_html_e( 'Default', 'funnel-builder-powerpack' ); ?></label>
+					</div>
+					<div class="wffn_billing_right">
+						<input onkeyup="window.wfop_design.fieldEdited('<?php echo esc_attr( $mode ); ?>',this.value, 'default','<# print(data.index); #>')" type="text" value="<# print(data.field.default); #>" class="form-control">
+					</div>
+				</div>
+				<div class="wffn_row_billing">
+					<div class="wffn_billing_left">
+						<label><?php esc_html_e( 'Width', 'funnel-builder-powerpack' ); ?></label>
+					</div>
+					<div class="wffn_billing_right">
+						<select onchange="window.wfop_design.fieldEdited('<?php echo esc_attr( $mode ); ?>',this.value, 'width','<# print(data.index); #>')">
+							<option
+							<# print(data.curr.isSelected(data.field.width,'wffn-sm-100')); #> value='wffn-sm-100'>100%</option>
+							<option
+							<# print(data.curr.isSelected(data.field.width,'wffn-sm-50')); #> value='wffn-sm-50'>50%</option>
+							<option
+							<# print(data.curr.isSelected(data.field.width,'wffn-sm-33')); #> value='wffn-sm-33'>33%</option>
+						</select>
+					</div>
+				</div>
 
-                <div class="wffn_row_billing">
-                    <div class="wffn_billing_left">
-                        <label for=""><?php esc_html_e( 'Options', 'funnel-builder-powerpack' ); ?></label>
-                    </div>
-                    <div class="wffn_billing_right">
-                        <textarea placeholder="<?php echo esc_html__( 'Enter options comma separated. Example: apple,grapes', 'funnel-builder-powerpack' ); ?>" onkeyup="window.wfop_design.fieldEdited('<?php echo esc_attr( $mode ); ?>',this.value, 'options','<# print(data.index); #>')"><# print(data.field.options); #></textarea>
-                    </div>
-                </div>
-            </div>
+				<div class="wffn_row_billing">
+					<div class="wffn_billing_left">
+						<label for=""><?php esc_html_e( 'Options', 'funnel-builder-powerpack' ); ?></label>
+					</div>
+					<div class="wffn_billing_right">
+						<textarea placeholder="<?php echo esc_html__( 'Enter options comma separated. Example: apple,grapes', 'funnel-builder-powerpack' ); ?>" onkeyup="window.wfop_design.fieldEdited('<?php echo esc_attr( $mode ); ?>',this.value, 'options','<# print(data.index); #>')"><# print(data.field.options); #></textarea>
+					</div>
+				</div>
+			</div>
 			<?php
 		}
 	}

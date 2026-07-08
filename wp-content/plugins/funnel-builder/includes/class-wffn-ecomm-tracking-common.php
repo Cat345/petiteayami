@@ -3,6 +3,7 @@
  * Class WFFN_Ecom_Tracking_Common
  */
 if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Ecomm_Tracking_Common {
 		public $api_events             = array();
 		public $gtag_rendered          = false;

@@ -1,14 +1,14 @@
 <?php
 if ( ! class_exists( 'WFOCU_Compatibility_With_XLWCTY' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_XLWCTY {
 
 
-		const LITE_MIN_VAR = '2.9.5';
-		const PRO_MIN_VAR = '1.11.0';
+		const LITE_MIN_VAR          = '2.9.5';
+		const PRO_MIN_VAR           = '1.11.0';
 		public $order_id_in_process = null;
 
 		public function __construct() {
-
 
 			if ( true === function_exists( 'XLWCTY_Core' ) ) {
 
@@ -22,7 +22,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_XLWCTY' ) ) {
 				 */
 				add_action( 'xlwcty_woocommerce_order_details_after_order_table', array( $this, 'wfocu_maybe_show_additional_order' ), 10, 1 );
 				add_action( 'woocommerce_order_details_after_order_table', array( $this, 'wfocu_maybe_show_additional_order' ), 10, 1 );
-
 
 				add_filter( 'xlwcty_before_rules', array( $this, 'capture_order_id_for_which_nextmove_validating_rules' ), 10, 3 );
 				add_filter( 'xlwcty_before_rules_validation', array( $this, 'capture_order_id_nextmove_lite_validating_rules' ), 10, 4 );
@@ -75,7 +74,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_XLWCTY' ) ) {
 			 */
 			$funnel_id = WFOCU_Common::get_order_meta( wc_get_order( $primary_id ), '_wfocu_funnel_id' );
 
-
 			if ( empty( $funnel_id ) ) {
 				return;
 			}
@@ -93,32 +91,34 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_XLWCTY' ) ) {
 			/**
 			 * Try to get if any upstroke order is created for this order as parent
 			 */
-			$results = WFOCU_Core()->track->query_results( array(
-				'data'         => array(),
-				'where'        => array(
-					array(
-						'key'      => 'session.order_id',
-						'value'    => WFOCU_WC_Compatibility::get_order_id( $order_object ),
-						'operator' => '=',
+			$results = WFOCU_Core()->track->query_results(
+				array(
+					'data'         => array(),
+					'where'        => array(
+						array(
+							'key'      => 'session.order_id',
+							'value'    => WFOCU_WC_Compatibility::get_order_id( $order_object ),
+							'operator' => '=',
+						),
+						array(
+							'key'      => 'events.action_type_id',
+							'value'    => 4,
+							'operator' => '=',
+						),
 					),
-					array(
-						'key'      => 'events.action_type_id',
-						'value'    => 4,
-						'operator' => '=',
+					'where_meta'   => array(
+						array(
+							'type'       => 'meta',
+							'meta_key'   => '_new_order',
+							'meta_value' => '',
+							'operator'   => '!=',
+						),
 					),
-				),
-				'where_meta'   => array(
-					array(
-						'type'       => 'meta',
-						'meta_key'   => '_new_order',
-						'meta_value' => '',
-						'operator'   => '!=',
-					),
-				),
-				'session_join' => true,
-				'order_by'     => 'events.id DESC',
-				'query_type'   => 'get_results',
-			) );
+					'session_join' => true,
+					'order_by'     => 'events.id DESC',
+					'query_type'   => 'get_results',
+				)
+			);
 
 			if ( is_wp_error( $results ) || ( is_array( $results ) && empty( $results ) ) ) {
 
@@ -127,7 +127,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_XLWCTY' ) ) {
 				 */
 				$get_meta = $order_object->get_meta( '_wfocu_sibling_order', false );
 				if ( ( is_array( $get_meta ) && ! empty( $get_meta ) ) ) {
-					$results = [];
+					$results = array();
 					foreach ( $get_meta as $meta ) {
 						$single = new stdClass();
 						if ( $meta->get_data()['value'] instanceof WC_Order ) {
@@ -151,7 +151,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_XLWCTY' ) ) {
 			}
 
 			XLWCTY_Core()->data->load_order( $sustain_id );
-
 		}
 
 
@@ -196,11 +195,9 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_XLWCTY' ) ) {
 			}
 
 			return $result;
-
 		}
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_XLWCTY(), 'xlwcty' );
 
 }
-

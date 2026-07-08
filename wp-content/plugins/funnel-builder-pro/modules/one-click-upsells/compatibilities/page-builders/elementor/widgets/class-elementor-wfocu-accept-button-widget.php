@@ -11,6 +11,7 @@ if ( ! class_exists( 'Elementor_WFOCU_Accept_Button_Widget' ) ) {
 	/**
 	 * Class Elementor_WFOCU_Accept_Button_Widget
 	 */
+	#[\AllowDynamicProperties]
 	class Elementor_WFOCU_Accept_Button_Widget extends \Elementor\Widget_Button {
 
 		/**

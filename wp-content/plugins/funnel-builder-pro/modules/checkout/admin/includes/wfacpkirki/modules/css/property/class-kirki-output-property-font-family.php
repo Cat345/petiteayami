@@ -12,7 +12,12 @@
 /**
  * Output overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Output_Property_Font_Family' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Output_Property_Font_Family extends WFACPKirki_Output_Property {
 
 		/**

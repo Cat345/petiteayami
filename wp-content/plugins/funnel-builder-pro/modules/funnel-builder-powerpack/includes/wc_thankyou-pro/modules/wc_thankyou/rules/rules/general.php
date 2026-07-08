@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFTY_Rule_General_Always' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_General_Always extends WFTY_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -22,11 +23,11 @@ if ( ! class_exists( 'WFTY_Rule_General_Always' ) ) {
 		public function is_match( $rule_data, $env = 'cart' ) {
 			return true;
 		}
-
 	}
 
 }
 if ( ! class_exists( 'WFTY_Rule_General_Always_2' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_General_Always_2 extends WFTY_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -49,6 +50,5 @@ if ( ! class_exists( 'WFTY_Rule_General_Always_2' ) ) {
 		public function is_match( $rule_data, $env = 'cart' ) {
 			return true;
 		}
-
 	}
 }

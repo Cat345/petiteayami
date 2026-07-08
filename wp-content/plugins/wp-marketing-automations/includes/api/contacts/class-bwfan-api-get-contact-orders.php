@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Contact_Orders extends BWFAN_API_Base {
 	public static $ins;
 
@@ -47,8 +48,8 @@ class BWFAN_API_Get_Contact_Orders extends BWFAN_API_Base {
 			return $this->error_response( sprintf( __( 'No contact found with given id #%1$d', 'wp-marketing-automations' ), $contact_id ) );
 		}
 
-		$limit     = $this->get_sanitized_arg( 'limit', 'text_field' );
-		$offset    = $this->get_sanitized_arg( 'offset', 'text_field' );
+		$limit     = $this->get_sanitized_arg( 'limit', 'absint' );
+		$offset    = $this->get_sanitized_arg( 'offset', 'absint' );
 		$limit     = ! empty( $limit ) ? $limit : 10;
 		$offset    = ! empty( $offset ) ? $offset : 0;
 		$order_ids = $contact->get_orders( $offset, $limit );
@@ -93,7 +94,7 @@ class BWFAN_API_Get_Contact_Orders extends BWFAN_API_Base {
 			$conv_order['products'] = $product_data['products'];
 
 			/** Get Products Categories name */
-			if ( empty( $product_data['cat_ids'] ) ) {
+			if ( ! empty( $product_data['cat_ids'] ) ) {
 				$categories = array_map( function ( $term_id ) {
 					$cat = get_term( absint( $term_id ) );
 
@@ -178,11 +179,11 @@ class BWFAN_API_Get_Contact_Orders extends BWFAN_API_Base {
 		return [
 			'code'              => $currency,
 			'precision'         => wc_get_price_decimals(),
-			'symbol'            => html_entity_decode( $currency_symbol ),
+			'symbol'            => html_entity_decode( $currency_symbol, ENT_QUOTES | ENT_HTML401 ),
 			'symbolPosition'    => get_option( 'woocommerce_currency_pos' ),
 			'decimalSeparator'  => wc_get_price_decimal_separator(),
 			'thousandSeparator' => wc_get_price_thousand_separator(),
-			'priceFormat'       => html_entity_decode( get_woocommerce_price_format() ),
+			'priceFormat'       => html_entity_decode( get_woocommerce_price_format(), ENT_QUOTES | ENT_HTML401 ),
 		];
 	}
 
@@ -261,11 +262,14 @@ class BWFAN_API_Get_Contact_Orders extends BWFAN_API_Base {
 			$subtotal           += $sub_total;
 			$i ++;
 
-			/** Fetch tags and categories */
-			$item_data       = $item->get_data();
-			$wc_product      = intval( $item_data['product_id'] ) ? wc_get_product( $item_data['product_id'] ) : '';
-			$tag_ids         = $wc_product instanceof WC_Product ? $wc_product->get_tag_ids() : [];
-			$cat_ids         = $wc_product instanceof WC_Product ? $wc_product->get_category_ids() : [];
+			/** Fetch tags and categories: line item get_product() with parent terms merged for variations. */
+			$wc_product = $item->get_product();
+			$tag_ids    = array();
+			$cat_ids    = array();
+			if ( $wc_product instanceof WC_Product ) {
+				$tag_ids = BWFAN_Common::get_wc_product_tag_ids_for_order_line( $wc_product );
+				$cat_ids = BWFAN_Common::get_wc_product_category_ids_for_order_line( $wc_product );
+			}
 			$data['tag_ids'] = array_merge( $data['tag_ids'], $tag_ids );
 			$data['cat_ids'] = array_merge( $data['cat_ids'], $cat_ids );
 		}

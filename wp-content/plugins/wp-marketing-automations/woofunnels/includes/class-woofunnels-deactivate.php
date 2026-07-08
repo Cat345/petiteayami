@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WooFunnels_Deactivate' ) ) {
 	/**
 	 * Contains the logic for deactivation popups

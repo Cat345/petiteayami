@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Textarea' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Textarea extends WFOCUKirki_Field_WFOCUKirki_Generic {
 
 		/**

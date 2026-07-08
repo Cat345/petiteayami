@@ -1,6 +1,7 @@
 <?php
 if ( ! class_exists( 'wfocu_Input_Customer_Rule_Unavailable' ) ) {
 
+	#[\AllowDynamicProperties]
 	class wfocu_Input_Customer_Rule_Unavailable {
 		public function __construct() {
 			// vars
@@ -9,7 +10,7 @@ if ( ! class_exists( 'wfocu_Input_Customer_Rule_Unavailable' ) ) {
 			$this->defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 		}
 
@@ -22,6 +23,5 @@ if ( ! class_exists( 'wfocu_Input_Customer_Rule_Unavailable' ) ) {
 				esc_html_e( 'This rule needs indexing of past orders. Go to <a target="_blank" href="' . esc_url( admin_url( 'admin.php?page=woofunnels&tab=tools' ) ) . '">Tools > Index Orders</a> and click \'Start\' to index orders', 'woofunnels-upstroke-one-click-upsell' );
 			}
 		}
-
 	}
 }

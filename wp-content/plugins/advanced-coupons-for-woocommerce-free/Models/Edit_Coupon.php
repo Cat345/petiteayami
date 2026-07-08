@@ -152,7 +152,7 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
         $wc_coupon_submenus = array_filter(
             $submenu['woocommerce'],
             function ( $s ) {
-            return strpos( $s[2], Plugin_Constants::COUPON_CAT_TAXONOMY ) !== false;
+            return str_contains( $s[2], Plugin_Constants::COUPON_CAT_TAXONOMY );
             }
         );
 
@@ -1314,7 +1314,7 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
 
         $default_term = get_term_by( 'name', $default_cat_name, Plugin_Constants::COUPON_CAT_TAXONOMY );
 
-        update_option( Plugin_Constants::DEFAULT_COUPON_CATEGORY, $default_term->term_id );
+        update_option( Plugin_Constants::DEFAULT_COUPON_CATEGORY, $default_term->term_id, false );
 
         $query = new \WP_Query(
             array(

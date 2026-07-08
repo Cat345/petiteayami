@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Contact Form 7 - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-02-09 17:37:19+0000\n"
+"PO-Revision-Date: 2026-05-19 07:52:07+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -15,6 +15,15 @@ msgstr ""
 #: modules/really-simple-captcha.php:36
 msgid "<strong>Warning:</strong> The <a href=\"%s\">Really Simple CAPTCHA</a> plugin is not active."
 msgstr "<strong>Внимание:</strong> Плагин <a href=\"%s\">Really Simple CAPTCHA</a> не активен."
+
+#. translators: %s: URL to support page about integration with external APIs
+#: admin/admin.php:586
+msgid "You can expand the possibilities of your contact forms by integrating them with external services. For details, see <a href=\"%s\">Integration with external APIs</a>."
+msgstr "Вы можете расширить возможности своих контактных форм, интегрировав их с внешними услугами. Подробности см. на сайте <a href=\"%s\"> Интеграция с внешними API </a>."
+
+#: admin/includes/editor.php:396
+msgid "Exclude a line from output if all of its mail-tags are blank"
+msgstr "Исключить строку из вывода, если все ее mail-tags пусты"
 
 #. translators: 1: URL to support page about Cloudflare Turnstile, 2: Stripe
 #: admin/includes/welcome-panel.php:139

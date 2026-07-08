@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Accept_Button' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Accept_Button extends WFOCU_Divi_HTML_BLOCK {
 
 		public function __construct() {
@@ -153,23 +154,23 @@ if ( ! class_exists( 'WFOCU_Accept_Button' ) ) {
 
 					if ( 'left' == $this->props['icon_align'] && '' !== $this->props['icon'] ) {
 						?>
-						<span class='wfocu-button-icon et-pb-icon'><?php echo html_entity_decode( et_pb_process_font_icon( $this->props['icon'] ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+						<span class='wfocu-button-icon et-pb-icon'><?php echo html_entity_decode( et_pb_process_font_icon( $this->props['icon'] ), ENT_QUOTES | ENT_HTML401 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 						<?php
 					}
 					?>
-					<span class="wfocu-button-text"><?php echo do_shortcode( html_entity_decode( $this->props['text'] ) ); ?></span>
+					<span class="wfocu-button-text"><?php echo do_shortcode( html_entity_decode( $this->props['text'], ENT_QUOTES | ENT_HTML401 ) ); ?></span>
 
 						<?php
 						if ( 'right' == $this->props['icon_align'] && '' !== $this->props['icon'] ) {
 							?>
-							<span class='wfocu-button-icon et-pb-icon'><?php echo html_entity_decode( et_pb_process_font_icon( $this->props['icon'] ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+							<span class='wfocu-button-icon et-pb-icon'><?php echo html_entity_decode( et_pb_process_font_icon( $this->props['icon'] ), ENT_QUOTES | ENT_HTML401 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 							<?php
 						}
 						?>
 				</span>
 
 
-					<span style='display:block' class='wfocu-button-subtitle'><?php echo do_shortcode( html_entity_decode( $this->props['subtitle'] ) ); ?></span>
+					<span style='display:block' class='wfocu-button-subtitle'><?php echo do_shortcode( html_entity_decode( $this->props['subtitle'], ENT_QUOTES | ENT_HTML401 ) ); ?></span>
 				</a>
 			</div>
 			<?php

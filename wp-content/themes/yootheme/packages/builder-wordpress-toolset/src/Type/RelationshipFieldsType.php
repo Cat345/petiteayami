@@ -101,7 +101,7 @@ class RelationshipFieldsType
      * @param array<string, mixed> $args
      * @return array<mixed>
      */
-    public static function resolveManyToMany($post, $args)
+    public static function resolveManyToMany($post, $args): array
     {
         $isParent = $args['isParent'];
 

@@ -14,6 +14,10 @@
 /**
  * Manages the way Google Fonts are enqueued.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Fonts_Google' ) ) {
 	#[AllowDynamicProperties]
 	final class WFACPKirki_Fonts_Google {
@@ -239,7 +243,7 @@ if ( ! class_exists( 'WFACPKirki_Fonts_Google' ) ) {
 		 * @since 3.0.17
 		 */
 		public function get_googlefonts_json() {
-			include wp_normalize_path( dirname( __FILE__ ) . '/webfonts.json' );
+			include wp_normalize_path( __DIR__ . '/webfonts.json' );
 			wp_die();
 		}
 

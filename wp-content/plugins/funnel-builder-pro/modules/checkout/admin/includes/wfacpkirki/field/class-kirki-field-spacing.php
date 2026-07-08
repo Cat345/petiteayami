@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Spacing' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Spacing extends WFACPKirki_Field_Dimensions {
@@ -40,7 +44,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Spacing' ) ) {
 			);
 
 			$this->choices = wp_parse_args( $this->choices, $default_args );
-
 		}
 	}
 }

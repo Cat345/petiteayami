@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Adds styles to the customizer.
  */
 if ( ! class_exists( 'WFACPKirki_Modules_Preset' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Modules_Preset {
 
 		/**

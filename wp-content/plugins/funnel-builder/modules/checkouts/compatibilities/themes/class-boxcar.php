@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WFACP_Compatibility_With_Boxcar' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFACP_Compatibility_With_Boxcar {
 
 		public function __construct() {

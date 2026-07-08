@@ -5,8 +5,6 @@ $display_buy_block_variation = $data['show_variation'];
 
 $template_ins = $this->get_template_ins();
 
-$style = WFOCU_Common::get_option( 'wfocu_buy_block_buy_block_style' );
-
 $accept_btn_text = WFOCU_Common::get_option( 'wfocu_buy_block_buy_block_accept_btn_text1' );
 $accept_btn_text = WFOCU_Common::maybe_parse_product_tags( $accept_btn_text, $product_key, $product );
 
@@ -42,11 +40,9 @@ $template_ins->internal_css['style_2_skip_btn_t_color']        = $skip_btn_text_
 $template_ins->internal_css['style_2_skip_btn_t_color_hover']  = $skip_btn_text_color_hover;
 $template_ins->internal_css['style_2_skip_btn_shadow']         = $skip_btn_bottom_shadow;
 
-$accept_btn_icon      = WFOCU_Common::get_option( 'wfocu_buy_block_buy_block_accept_btn_icon' );
-$accept_btn_icon_path = ( ! empty( $accept_btn_icon ) ) ? $accept_btn_icon : '';
+$accept_btn_icon = WFOCU_Common::get_option( 'wfocu_buy_block_buy_block_accept_btn_icon' );
 
-$skip_btn_icon      = WFOCU_Common::get_option( 'wfocu_buy_block_buy_block_skip_btn_icon' );
-$skip_btn_icon_path = ( ! empty( $skip_btn_icon ) ) ? $skip_btn_icon : '';
+$skip_btn_icon = WFOCU_Common::get_option( 'wfocu_buy_block_buy_block_skip_btn_icon' );
 
 $show_accept_btn_icon = WFOCU_Common::get_option( 'wfocu_buy_block_buy_block_show_accept_btn_icon' );
 
@@ -113,34 +109,34 @@ do_action('wfocu_add_custom_html_above_accept_button', $product->id, $product_ke
 
             <div class="wfocu-two-buttons-area wfocu-btns-area wfocu-clearfix">
                 <div class="wfocu-btn-cover wfocu-clearfix">
-                    <a href="javascript:void(0);" data-key="<?php echo $product_key; ?>" class="wfocu_skip_offer wfocu-button wfocu-skip-button <?php echo $buy_block_btn_type . ' ' . $skip_btn_icon_class; ?> <?php echo $btn_effect; ?>">
+                    <a href="javascript:void(0);" data-key="<?php echo esc_attr( $product_key ); ?>" class="wfocu_skip_offer wfocu-button wfocu-skip-button <?php echo esc_attr( $buy_block_btn_type . ' ' . $skip_btn_icon_class ); ?> <?php echo esc_attr( $btn_effect ); ?>">
 				<span class="wfocu-btn-text-cover wfocu-clearfix">
 				<?php if ( true === $show_skip_btn_icon ) { ?>
                     <span class="wfocu-btn-icon wfocu-icon-left ">
-					<i class="wfocu-icon dashicons <?php echo $skip_btn_icon; ?>"></i>
+					<i class="wfocu-icon dashicons <?php echo esc_attr( $skip_btn_icon ); ?>"></i>
 				</span>
 				<?php } ?>
-					<span class="wfocu-text"><?php echo $skip_btn_text; ?></span>
+					<span class="wfocu-text"><?php echo esc_html( $skip_btn_text ); ?></span>
 				</span>
                     </a>
                 </div>
                 <div class="wfocu-btn-cover wfocu-clearfix">
-                    <a href="javascript:void(0);" data-key="<?php echo $product_key; ?>" class="<?php echo implode( ' ', $upsell_btn_classes ); ?>" <?php $this->add_attributes_to_buy_button(); ?>>
+                    <a href="javascript:void(0);" data-key="<?php echo esc_attr( $product_key ); ?>" class="<?php echo esc_attr( implode( ' ', $upsell_btn_classes ) ); ?>" <?php $this->add_attributes_to_buy_button(); ?>>
 				<span class="wfocu-btn-text-cover wfocu-clearfix">
-				
+
 				<?php if ( true === $show_accept_btn_icon ) { ?>
                     <span class="wfocu-btn-icon wfocu-icon-left ">
-					<i class="wfocu-icon dashicons <?php echo $accept_btn_icon; ?>"></i>
+					<i class="wfocu-icon dashicons <?php echo esc_attr( $accept_btn_icon ); ?>"></i>
 				</span>
 				<?php } ?>
-					<span class="wfocu-text"><?php echo $accept_btn_text; ?></span>
+					<span class="wfocu-text"><?php echo esc_html( $accept_btn_text ); ?></span>
 				</span>
                     </a>
                 </div>
             </div>
 
 			<?php
-			echo $click_trigger_text ? '<div class="wfocu-click-trigger-text wfocu-text-center">' . $click_trigger_text . '</div>' : '';
+			echo $click_trigger_text ? '<div class="wfocu-click-trigger-text wfocu-text-center">' . wp_kses_post( $click_trigger_text ) . '</div>' : '';
 
 			if ( true === $display_payment_icons ) {
 				WFOCU_Core()->template_loader->get_template_part( 'payment-cards', array() );

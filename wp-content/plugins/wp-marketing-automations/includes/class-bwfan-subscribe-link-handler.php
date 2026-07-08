@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Subscribe_Link_Handler {
 
 	private static $ins = null;
@@ -59,7 +60,7 @@ class BWFAN_Subscribe_Link_Handler {
 			$automation_id = filter_input( INPUT_GET, 'automation-id' );
 			$link = BWFAN_Common::validate_target_link( $link,'', [[  'oid'=>intval($automation_id), 'type'=>1 ]] );
 			$link = BWFAN_Common::append_extra_url_arguments( $link );
-			if ( false !== wp_http_validate_url( $link ) ) {
+			if ( false !== BWFAN_Common::bwfan_is_valid_link( $link ) ) {
 				$url = BWFAN_Email_Conversations::validate_link( $link );
 			}
 		}

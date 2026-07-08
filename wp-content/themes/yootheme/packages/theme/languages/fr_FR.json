@@ -13,6 +13,7 @@
     "\"%name%\" already exists in the library, it will be overwritten when saving.": "\"%name%\" existe déjà dans la bibliothèque, il sera écrasé lors de l'enregistrement.",
     "(ID %id%)": "(ID %id%)",
     "%element% Element": "Element %element%",
+    "%email% is already a list member.": "%email% fait déjà partie de la liste.",
     "%label% - %group%": "%label% - %group%",
     "%label% Location": "%label% Location",
     "%label% Position": "Position %label%",

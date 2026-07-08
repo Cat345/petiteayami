@@ -1,10 +1,15 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Class BWFAN_WC_Cart_Shipping_Last_Name
  *
  * Merge tag outputs cart shipping last name
  */
+#[\AllowDynamicProperties]
 class BWFAN_WC_Cart_Shipping_Last_Name extends Cart_Merge_Tag {
 
 	private static $instance = null;

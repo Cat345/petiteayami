@@ -475,13 +475,13 @@ class BWFAN_Rules_Loader extends BWFAN_Rules {
 		);
 	}
 
-	public function get_rule_search_suggestions( $term = '', $rule = 'cart_category' ) {
+	public function get_rule_search_suggestions( $term = '', $rule = 'cart_category', $extra = [] ) {
 		// Load all the rules classes
 		$this->load_rules_classes();
 
 		$rule = $this->woocommerce_bwfan_rule_get_rule_object( $rule );
 
-		return $rule->get_options( $term );
+		return $rule->get_options( $term, $extra );
 	}
 
 	/**

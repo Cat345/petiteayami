@@ -1,6 +1,7 @@
 <?php
 if ( ! class_exists( 'wfocu_Input_Html_Rule_Is_First_Order' ) ) {
 
+	#[\AllowDynamicProperties]
 	class wfocu_Input_Html_Rule_Is_First_Order {
 		public function __construct() {
 			// vars
@@ -9,7 +10,7 @@ if ( ! class_exists( 'wfocu_Input_Html_Rule_Is_First_Order' ) ) {
 			$this->defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 		}
 
@@ -17,6 +18,5 @@ if ( ! class_exists( 'wfocu_Input_Html_Rule_Is_First_Order' ) ) {
 
 			esc_html_e( 'This Funnel will initiate on very first order for the customer.', 'woofunnels-upstroke-one-click-upsell' );
 		}
-
 	}
 }

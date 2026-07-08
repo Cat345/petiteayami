@@ -1,9 +1,14 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 /**
  * order Refund amount.
  *
  */
 
+#[\AllowDynamicProperties]
 class BWFAN_WC_Order_Refund_Amount extends BWFAN_Merge_Tag {
 
 	private static $instance = null;

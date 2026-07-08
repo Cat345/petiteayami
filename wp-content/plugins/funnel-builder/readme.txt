@@ -1,10 +1,10 @@
 === FunnelKit - Funnel Builder for WooCommerce Checkout ===
-Contributors: amans2k, xlplugins, teamwoofunnels
+Contributors: teamfunnelkit, xlplugins
 Tags: Funnel Builder, WooCommerce Checkout, Sales Funnels, One Click Upsells
 Requires at least: 5.4.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.15.0.2
+Stable tag: 3.15.0.9
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -378,6 +378,38 @@ If you face any difficulties with FunnelKit, feel free to contact our [Support T
 4. Start creating Funnels.
 
 == Change log ==
+
+= 3.15.0.9 (June 30, 2026) =
+* Improved: Checkout: Improved compatibility with WooCommerce PayPal Payments. (#8885)
+* Improved: Funnel: Improved compatibility with Bricks Builder. (#9174)
+* Improved: Checkout: Streamlined the admin experience by removing the legacy checkout builder interface. (#9188)
+* Improved: Funnel: Analytics database queries improved for Mariadb 12.3.2 version. (#9199)
+* Fixed: Checkout: Resolved flickering of express checkout smart buttons for a smoother checkout experience. (#9168)
+* Fixed: Checkout: Resolved an issue where custom CSS is not rendering due to mismatch with white spaces. (#9203)
+
+= 3.15.0.8 =
+* Improved: Enhanced overall stability and reliability across the plugin.
+* Improved: Funnel: Compatibility with divi5 related to Thankyou page CSS. (#9161)
+
+= 3.15.0.7 =
+* Fixed: Funnel: Admin UI canvas mode was not showing funnel steps.
+
+= 3.15.0.6 =
+* Improved: Compatibility with PHP version 8.4.x. (#9140)
+* Improved: Funnel: Conversion analytics to handle edge cases of retrying orders with no funnel ID multiple times. (#9044)
+* Improved: Funnel: Hardened the security of the plugin. (#9036)
+* Fixed: Checkout: PHP warnings when store checkout template is used as subscription change-payment method page. (#8854)
+
+= 3.15.0.5 =
+* Improved: Checkout: Compatibility with MercadoPago Gateway improved. (#8783)
+
+= 3.15.0.4 =
+* Improved: Checkout: Compatibility with CookieYes plugin improved to fix the PHP warning. (#8932)
+
+= 3.15.0.3 =
+* Improved: Funnel: Compatibility with WooCommerce 10.8.0. (#8877)
+* Security Fix: Hardened the security of the plugin. (#8906)
+* Improved: Checkout: Express checkout buttons loading behavior improved with FK Stripe. (#8749)
 
 = 3.15.0.2 =
 * Fixed: Critical security patch for SQL queries related to views for Optin/Sales pages. (#8826)

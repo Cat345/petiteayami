@@ -1,12 +1,16 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFOB_Compatibility_With_Discount_Rule_fly_Cart' ) ) {
 	/**
 	 * Discount Rules Core Plugin by Fly Cart.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_Discount_Rule_fly_Cart {
 
 		public function __construct() {
-			add_filter( 'wfob_product_switcher_price_data', [ $this, 'wfob_product_switcher_price_data' ], 20, 3 );
+			add_filter( 'wfob_product_switcher_price_data', array( $this, 'wfob_product_switcher_price_data' ), 20, 3 );
 		}
 
 		/**
@@ -30,7 +34,6 @@ if ( ! class_exists( 'WFOB_Compatibility_With_Discount_Rule_fly_Cart' ) ) {
 
 			return $price_data;
 		}
-
 	}
 
 	new WFOB_Compatibility_With_Discount_Rule_fly_Cart();

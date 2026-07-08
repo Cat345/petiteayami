@@ -32,7 +32,7 @@ if ( class_exists( 'WFFN_Header' ) ) {
         <div class="wfob_clear_10"></div>
         <?php if ( ! class_exists( 'WFFN_Header' ) ) echo '<div class="wfob_clear_30"></div><div class="wfob_clear_30"></div>' ?>
         <div class="wfob_head_bar">
-            <div class="wfob_bar_head"><?php _e( 'OrderBumps', 'woofunnels-order-bump' ); ?></div>
+            <div class="wfob_bar_head"><?php esc_html_e( 'OrderBumps', 'woofunnels-order-bump' ); ?></div>
            <?php if ( ! class_exists( 'WFFN_Header' ) ) : ?>
                 <a href="javascript:void(0)" class="page-title-action button button-large button-primary" data-izimodal-open="#modal-add-bump" data-iziModal-title="Create New Offer" data-izimodal-transitionin="fadeInDown"><?php echo __( 'Add New', 'woofunnels-order-bump' ); ?></a>
                 <a href="<?php echo admin_url( 'admin.php?page=wfob&section=import' ); ?>" class="page-title-action button button-large"><?php echo __( 'Import', 'woofunnels-order-bump' ); ?></a>&ensp;
@@ -45,7 +45,7 @@ if ( class_exists( 'WFFN_Header' ) ) {
                     <div class="wfob_page_left_wrap">
                         <form method="GET">
                             <input type="hidden" name="page" value="wfob"/>
-                            <input type="hidden" name="status" value="<?php echo( isset( $_GET['status'] ) ? $_GET['status'] : '' ); ?>"/>
+                            <input type="hidden" name="status" value="<?php echo esc_attr( isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>"/>
 							<?php
 							$table = new WFOB_Post_Table();
 							$table->render_trigger_nav();

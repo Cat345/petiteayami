@@ -13,7 +13,6 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 
 		use Instance;
 
-
 		/**
 		 * Constructor
 		 */
@@ -42,7 +41,6 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 
 			$fragments['.fkcart-modal-container'] = fkcart_get_active_skin_html();
 			$fragments['.fkcart-mini-toggler']    = fkcart_mini_cart_html();
-
 
 			return $fragments;
 		}
@@ -105,16 +103,14 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 		 * @throws \Exception
 		 */
 		public function add_cart_item() {
+			$product_id   = isset( $_POST['fkcart_product_id'] ) ? sanitize_text_field( wp_unslash( $_POST['fkcart_product_id'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint, accessible to anonymous users
+			$variation_id = isset( $_POST['fkcart_variation_id'] ) ? sanitize_text_field( wp_unslash( $_POST['fkcart_variation_id'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint
+			$quantity     = isset( $_POST['fkcart_quantity'] ) ? sanitize_text_field( wp_unslash( $_POST['fkcart_quantity'] ) ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint
+			$attributes   = isset( $_POST['attributes'] ) ? wp_unslash( $_POST['attributes'] ) : []; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Public WC AJAX endpoint
 
-			$product_id   = isset( $_POST['fkcart_product_id'] ) ? sanitize_text_field( $_POST['fkcart_product_id'] ) : '';
-			$variation_id = isset( $_POST['fkcart_variation_id'] ) ? sanitize_text_field( $_POST['fkcart_variation_id'] ) : '';
-			$quantity     = isset( $_POST['fkcart_quantity'] ) ? sanitize_text_field( $_POST['fkcart_quantity'] ) : 1;
-			$attributes   = isset( $_POST['attributes'] ) ? ( $_POST['attributes'] ) : [];
+			$cart_item_key = isset( $_POST['fkcart-cart-key'] ) ? sanitize_text_field( wp_unslash( $_POST['fkcart-cart-key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint
 
-			$cart_item_key = isset( $_POST['fkcart-cart-key'] ) ? sanitize_text_field( $_POST['fkcart-cart-key'] ) : '';
-
-			$fkcart_spl_product_id = isset( $_POST['fkcart_spl_product_id'] ) ? sanitize_text_field( $_POST['fkcart_spl_product_id'] ) : '';
-
+			$fkcart_spl_product_id = isset( $_POST['fkcart_spl_product_id'] ) ? sanitize_text_field( wp_unslash( $_POST['fkcart_spl_product_id'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint
 
 			if ( ! empty( $cart_item_key ) ) {
 				$this->update_variable_item_attributes();
@@ -124,7 +120,7 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 
 			$variation_id = ! is_null( $variation_id ) ? $variation_id : 0;
 
-			$fkcart_single_product_add_to_cart = isset( $_POST['fkcart_single_product_add_to_cart'] );
+			$fkcart_single_product_add_to_cart = isset( $_POST['fkcart_single_product_add_to_cart'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint
 
 			if ( empty( $product_id ) || empty( $quantity ) || ! is_numeric( $product_id ) || ! is_numeric( $quantity ) ) {
 				$this->error_response();
@@ -149,10 +145,9 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 
 			$passed_validation = apply_filters( 'woocommerce_add_to_cart_validation', true, $variation_id > 0 ? $variation_id : $product_id, $quantity );
 
-			if ( false == $passed_validation ) {
+			if ( false === $passed_validation ) {
 				$message = apply_filters( 'woocommerce_cart_redirect_after_error', get_permalink( $product_id ), $product_id );
 				$this->error_response( $message );
-
 			}
 			/**
 			 * Update the Special Add on custom fields
@@ -166,10 +161,10 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 				}
 			}
 
-
 			$cart_item_key = WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $attributes, $cart_item_data );
 			if ( $cart_item_key ) {
-				$message = sprintf( __( '"%s" has been added to the cart.', 'cart-for-woocommerce' ), $product->get_name() );
+				/* translators: %s: product name */
+			$message = sprintf( __( '"%s" has been added to the cart.', 'cart-for-woocommerce' ), $product->get_name() );
 				do_action( 'fkcart_after_add_to_cart', $cart_item_key, $product_id, $quantity, $variation_id, $attributes, $cart_item_data );
 				do_action( 'woocommerce_ajax_added_to_cart', $product_id );
 
@@ -177,9 +172,9 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 				WC()->session->set( '_fkcart_spl_addon_product_cart_key', $cart_item_key );
 			} else {
 				$error   = true;
+				/* translators: %s: product name */
 				$message = sprintf( __( 'Unable to add "%s" to the cart', 'cart-for-woocommerce' ), $product->get_name() );
 			}
-
 
 			if ( true === $error ) {
 				$this->error_response( $message );
@@ -194,12 +189,11 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 		 * @throws \Exception
 		 */
 		public function update_variable_item_attributes() {
-			$product_id    = isset( $_POST['fkcart_product_id'] ) ? sanitize_text_field( $_POST['fkcart_product_id'] ) : '';
-			$variation_id  = isset( $_POST['fkcart_variation_id'] ) ? sanitize_text_field( $_POST['fkcart_variation_id'] ) : '';
-			$quantity      = isset( $_POST['fkcart_quantity'] ) ? sanitize_text_field( $_POST['fkcart_quantity'] ) : 1;
-			$attributes    = isset( $_POST['attributes'] ) ? ( $_POST['attributes'] ) : [];
-			$cart_item_key = isset( $_POST['fkcart-cart-key'] ) ? sanitize_text_field( $_POST['fkcart-cart-key'] ) : '';
-
+			$product_id    = isset( $_POST['fkcart_product_id'] ) ? sanitize_text_field( wp_unslash( $_POST['fkcart_product_id'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint, accessible to anonymous users
+			$variation_id  = isset( $_POST['fkcart_variation_id'] ) ? sanitize_text_field( wp_unslash( $_POST['fkcart_variation_id'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint
+			$quantity      = isset( $_POST['fkcart_quantity'] ) ? sanitize_text_field( wp_unslash( $_POST['fkcart_quantity'] ) ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint
+			$attributes    = isset( $_POST['attributes'] ) ? wp_unslash( $_POST['attributes'] ) : []; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Public WC AJAX endpoint
+			$cart_item_key = isset( $_POST['fkcart-cart-key'] ) ? sanitize_text_field( wp_unslash( $_POST['fkcart-cart-key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint
 
 			if ( empty( $product_id ) || empty( $quantity ) || ! is_numeric( $product_id ) || ! is_numeric( $quantity ) ) {
 				$this->error_response();
@@ -214,19 +208,16 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 			$cart_item_data = [];
 			if ( ! empty( $cart_item_key ) ) {
 				$cart_item = WC()->cart->get_cart_item( $cart_item_key );
-
 				if ( isset( $cart_item['_fkcart_free_gift'] ) ) {
 					$cart_item_data = [ '_fkcart_free_gift' => 1 ];
 				}
 			}
 
-			$fkcart_spl_product_id = isset( $_POST['fkcart_spl_product_id'] ) ? sanitize_text_field( $_POST['fkcart_spl_product_id'] ) : '';
-
+			$fkcart_spl_product_id = isset( $_POST['fkcart_spl_product_id'] ) ? sanitize_text_field( wp_unslash( $_POST['fkcart_spl_product_id'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint
 			if ( ! empty( $fkcart_spl_product_id ) ) {
 				$cart_item_data['_fkcart_spl_addon']            = true;
 				$cart_item_data['_fkcart_spl_addon_product_id'] = $product_id;
 			}
-
 
 			$error = false;
 
@@ -257,8 +248,8 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 		 * @return void
 		 */
 		public function update_cart_item() {
-
-			$cart_key = isset( $_POST['cart_key'] ) ? sanitize_text_field( $_POST['cart_key'] ) : '';
+			$cart_key   = isset( $_POST['cart_key'] ) ? sanitize_text_field( wp_unslash( $_POST['cart_key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint, accessible to anonymous users
+			$fkpay_data = isset( $_POST['sublium_data'] ) ? wc_clean( wp_unslash( $_POST['sublium_data'] ) ) : []; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint
 			if ( empty( $cart_key ) ) {
 				$this->error_response();
 			}
@@ -272,7 +263,6 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 				$this->error_response( __( 'Cart item not found', 'cart-for-woocommerce' ) );
 			}
 
-
 			$cart_item = $cart_items[ $cart_key ];
 			$product   = $cart_item['data'];
 			/** @var $product \WC_Product; */
@@ -280,11 +270,11 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 			/** Prevent internal redirection during the ajax call */
 			add_filter( 'wp_redirect', '__return_false', 100 );
 
-			$quantity = isset( $_POST['quantity'] ) ? sanitize_text_field( $_POST['quantity'] ) : '';
+			$quantity = isset( $_POST['quantity'] ) ? sanitize_text_field( wp_unslash( $_POST['quantity'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint
 			$quantity = empty( $quantity ) ? 0 : floatval( $quantity );
 
 			/** If 0 qty set */
-			if ( 0 == $quantity || $quantity < 0 ) {
+			if ( 0 === $quantity || $quantity < 0 ) {
 
 				WC()->cart->remove_cart_item( $cart_key );
 
@@ -294,12 +284,12 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 					return isset( $cart_item['_fkcart_spl_addon_product_id'] );
 				} );
 
-
 				if ( count( $free_items ) > 0 && count( $free_items ) === $cart_count ) {
 					WC()->cart->empty_cart();
 				}
 
-				$message = sprintf( __( '%s has been removed from your cart.', 'woocommerce' ), $product->get_name() );
+				/* translators: %s: product name */
+				$message = sprintf( __( '%s has been removed from your cart.', 'woocommerce' ), $product->get_name() ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Intentionally reusing WC's translated string
 				$this->send_success( $message );
 			}
 
@@ -307,14 +297,32 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 				$stock_quantity         = $product->get_stock_quantity();
 				$products_qty_in_cart   = WC()->cart->get_cart_item_quantities();
 				$stock_quantity_in_cart = $products_qty_in_cart[ $product->get_stock_managed_by_id() ];
-				$message                = sprintf( __( 'You cannot add that amount to the cart &mdash; we have %1$s in stock and you already have %2$s in your cart.', 'woocommerce' ), wc_format_stock_quantity_for_display( $stock_quantity, $product ), wc_format_stock_quantity_for_display( $stock_quantity_in_cart, $product ) );
+				/* translators: %1$s: available stock quantity, %2$s: quantity already in cart */
+				$message                = sprintf( __( 'You cannot add that amount to the cart &mdash; we have %1$s in stock and you already have %2$s in your cart.', 'woocommerce' ), wc_format_stock_quantity_for_display( $stock_quantity, $product ), wc_format_stock_quantity_for_display( $stock_quantity_in_cart, $product ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Intentionally reusing WC's translated string
 				$this->error_response( $message );
 			}
 
+			if ( ! empty( $fkpay_data ) && $cart_key === $fkpay_data['cart_key'] ) {
+				$_cart_item = WC()->cart->get_cart_item( $cart_key );
+
+				if ( isset( $fkpay_data['plan_id'] ) && $fkpay_data['plan_id'] > 0 ) {
+					$_cart_item['sublium_wcs_plan'] = $fkpay_data['plan_id'];
+					$_cart_item['data']->update_meta_data( 'sublium_wcs_plan', $fkpay_data['plan_id'] );
+				} else {
+					if(isset($_cart_item['sublium_wcs_plan'])) {
+						unset( $_cart_item['sublium_wcs_plan'] );
+						$_cart_item['data']->delete_meta_data( 'sublium_wcs_plan');
+					}
+				}
+
+				WC()->cart->cart_contents[ $cart_key ] = $_cart_item;
+			}
+
+
 			$status = WC()->cart->set_quantity( $cart_key, $quantity );
 			if ( $status ) {
-
-				$message = sprintf( __( '"%s" has been updated.', 'cart-for-woocommerce' ), $product->get_name() );
+				/* translators: %s: product name */
+			$message = sprintf( __( '"%s" has been updated.', 'cart-for-woocommerce' ), $product->get_name() );
 				$this->send_success( $message );
 			}
 
@@ -324,11 +332,12 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 			$held_stock     = wc_get_held_stock_quantity( $product, $current_session_order_id );
 			$required_stock = $product_qty_in_cart[ $product->get_stock_managed_by_id() ];
 			if ( $product->get_stock_quantity() < ( $held_stock + $required_stock ) ) {
-				$message = sprintf( __( 'Sorry, we do not have enough "%1$s" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused.', 'woocommerce' ), $product->get_name(), wc_format_stock_quantity_for_display( $product->get_stock_quantity() - $held_stock, $product ) );
+				/* translators: %1$s: product name, %2$s: available stock quantity */
+				$message = sprintf( __( 'Sorry, we do not have enough "%1$s" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused.', 'woocommerce' ), $product->get_name(), wc_format_stock_quantity_for_display( $product->get_stock_quantity() - $held_stock, $product ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Intentionally reusing WC's translated string
 				$this->error_response( $message );
 			}
 
-
+			/* translators: %s: product name */
 			$message = sprintf( __( 'Some error occurred in updating the "%s"', 'cart-for-woocommerce' ), $product->get_name() );
 			$this->error_response( $message );
 		}
@@ -339,8 +348,7 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 		 * @return void
 		 */
 		public function remove_cart_item() {
-
-			$cart_key = isset( $_POST['cart_key'] ) ? sanitize_text_field( $_POST['cart_key'] ) : '';
+			$cart_key = isset( $_POST['cart_key'] ) ? sanitize_text_field( wp_unslash( $_POST['cart_key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint, accessible to anonymous users
 			if ( empty( $cart_key ) ) {
 				$this->error_response( __( 'Cart item not found', 'cart-for-woocommerce' ) );
 			}
@@ -357,10 +365,8 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 			$product      = $cart_item['data'];
 			$product_name = $product->get_name();
 
-
 			/** Removing cart item */
 			WC()->cart->remove_cart_item( $cart_key );
-
 
 			/* Make cart empty when all Special Addon available inside the cart*/
 			$cart_count = WC()->cart->get_cart_contents_count();
@@ -372,6 +378,7 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 				WC()->cart->empty_cart();
 			}
 
+			/* translators: %s: product name */
 			$message = sprintf( __( '"%s" is removed', 'cart-for-woocommerce' ), $product_name );
 			$this->send_success( $message );
 		}
@@ -382,16 +389,15 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 		 * @return void
 		 */
 		public function apply_coupon() {
-
 			if ( is_null( WC()->cart ) ) {
 				$this->error_response( __( 'Cart not defined', 'cart-for-woocommerce' ) );
 			}
 
 			wc_clear_notices();
 
-			$coupon_code = isset( $_POST['discount_code'] ) ? sanitize_text_field( $_POST['discount_code'] ) : '';
+			$coupon_code = isset( $_POST['discount_code'] ) ? sanitize_text_field( wp_unslash( $_POST['discount_code'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint, accessible to anonymous users
 			if ( ! empty( $coupon_code ) ) {
-				WC()->cart->add_discount( wc_format_coupon_code( $coupon_code ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				WC()->cart->add_discount( wc_format_coupon_code( $coupon_code ) );
 			} else {
 				$this->error_response( \WC_Coupon::get_generic_coupon_error( \WC_Coupon::E_WC_COUPON_PLEASE_ENTER ) );
 			}
@@ -401,7 +407,7 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 			ob_start();
 			wc_print_notices();
 			$messages = ob_get_clean();
-			$messages = strip_tags( $messages, '<span>' );
+			$messages = strip_tags( $messages, '<span>' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- Intentionally preserving <span> tags for WC notice formatting
 
 			if ( count( $error ) > 0 ) {
 				$this->error_response( $messages );
@@ -416,8 +422,7 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 		 * @return void
 		 */
 		public function remove_coupon() {
-
-			$coupon_code = isset( $_POST['discount_code'] ) ? sanitize_text_field( $_POST['discount_code'] ) : '';
+			$coupon_code = isset( $_POST['discount_code'] ) ? sanitize_text_field( wp_unslash( $_POST['discount_code'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint, accessible to anonymous users
 			if ( is_null( WC()->cart ) ) {
 				$this->error_response( __( 'Cart not defined', 'cart-for-woocommerce' ) );
 			}
@@ -432,9 +437,9 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 			ob_start();
 			wc_print_notices();
 			$messages = ob_get_clean();
-			$messages = strip_tags( $messages );
+			$messages = wp_strip_all_tags( $messages );
 			if ( count( $error ) > 0 ) {
-				$this->error_response( strip_tags( $messages ) );
+				$this->error_response( wp_strip_all_tags( $messages ) );
 			}
 
 			$this->send_success( $messages );
@@ -446,10 +451,8 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 		 * @return void
 		 */
 		public function item_quick_view() {
-
-			$cart_key   = isset( $_POST['cart_key'] ) ? sanitize_text_field( $_POST['cart_key'] ) : '';
-			$product_id = isset( $_POST['product_id'] ) ? sanitize_text_field( $_POST['product_id'] ) : '';
-
+			$cart_key   = isset( $_POST['cart_key'] ) ? sanitize_text_field( wp_unslash( $_POST['cart_key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint, accessible to anonymous users
+			$product_id = isset( $_POST['product_id'] ) ? sanitize_text_field( wp_unslash( $_POST['product_id'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public WC AJAX endpoint
 
 			$variation_id = '';
 			if ( ! empty( $cart_key ) ) {
@@ -493,16 +496,36 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 		 * @return void
 		 */
 		public function fragments( $message = '' ) {
+			/**
+			 * Early bail-out for requests without a WooCommerce session or from bots.
+			 *
+			 * 1. No session cookie + not logged in → cart is provably empty.
+			 * 2. Known bot user-agent → cart rendering is wasted even if cookies exist.
+			 *
+			 * This avoids the full WC cart bootstrap, template rendering, and
+			 * upsell pipeline for requests that can never produce meaningful output.
+			 */
+			if ( did_action( 'wc_ajax_fkcart_get_slide_cart' ) > 0 && ! is_user_logged_in() && ( ! $this->has_wc_session_cookie() || $this->is_bot_request() ) ) {
+				wp_send_json( [
+					'fragments'                => $this->get_empty_cart_fragments(),
+					'ajax_nonce'               => '',
+					'fkcart_re_run_slide_cart' => 'no',
+					'cart_hash'                => '',
+					'code'                     => 200,
+					'status'                   => true,
+					'message'                  => $message,
+				] );
+			}
+
 			wc_maybe_define_constant( 'WOOCOMMERCE_CART', true );
 			$this->set_cookie();
 
-
 			$need_re_run_slide_cart = DATA::need_re_run_get_slide_cart_ajax() && ( did_action( 'wc_ajax_fkcart_add_item' ) > 0 || did_action( 'wc_ajax_fkcart_update_item' ) > 0 || did_action( 'wc_ajax_fkcart_remove_item' ) > 0 );
 			$fragments              = [];
-			if ( ! $need_re_run_slide_cart ) {
-				$fragments['.fkcart-modal-container'] = fkcart_get_active_skin_html();
-				$fragments['.fkcart-mini-toggler']    = fkcart_mini_cart_html();
-			}
+
+			$fragments['.fkcart-modal-container'] = fkcart_get_active_skin_html();
+			$fragments['.fkcart-mini-toggler']    = fkcart_mini_cart_html();
+
 			$instance                  = \FKCart\Includes\Front::get_instance();
 			$fragments['fkcart_qty']   = $instance->get_cart_content_count();
 			$fragments['fkcart_total'] = urlencode( $instance->get_subtotal() );
@@ -621,17 +644,109 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 		}
 
 		/**
+		 * Check if a WooCommerce session cookie exists in the current request.
+		 *
+		 * WC sets `wp_woocommerce_session_*` only when the cart has items.
+		 * Absence of this cookie means the visitor has an empty cart, so
+		 * heavyweight cart rendering can be skipped entirely.
+		 *
+		 * @return bool
+		 */
+		protected function has_wc_session_cookie() {
+			if ( empty( $_COOKIE ) || ! is_array( $_COOKIE ) ) {
+				return false;
+			}
+
+			foreach ( $_COOKIE as $name => $value ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- only checking key prefix, not using value
+				if ( strpos( $name, 'wp_woocommerce_session_' ) === 0 ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/**
+		 * Check if the current request is from a known bot/crawler.
+		 *
+		 * Used as a secondary defense after the session cookie check.
+		 * The bot list is filterable via `fkcart_bot_user_agents` so site
+		 * owners can extend it.
+		 *
+		 * @return bool
+		 */
+		protected function is_bot_request() {
+			$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+			if ( empty( $user_agent ) ) {
+				return true; // No UA is suspicious — treat as bot
+			}
+
+			$default_bots = [
+				'Googlebot',
+				'bingbot',
+				'Slurp',
+				'DuckDuckBot',
+				'Baiduspider',
+				'YandexBot',
+				'facebookexternalhit',
+				'Facebot',
+				'Twitterbot',
+				'LinkedInBot',
+				'Pinterestbot',
+				'AhrefsBot',
+				'SemrushBot',
+				'MJ12bot',
+				'DotBot',
+				'PetalBot',
+				'Applebot',
+				'ia_archiver',
+				'Sogou',
+				'rogerbot',
+			];
+
+			$bot_patterns = apply_filters( 'fkcart_bot_user_agents', $default_bots );
+			if ( ! is_array( $bot_patterns ) ) {
+				$bot_patterns = $default_bots;
+			}
+
+			foreach ( $bot_patterns as $bot ) {
+				if ( is_string( $bot ) && '' !== $bot && stripos( $user_agent, $bot ) !== false ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/**
+		 * Build empty-cart fragments using the active skin template.
+		 *
+		 * Delegates to the same template functions used by the normal fragments()
+		 * path. WC()->cart is always initialized in WC AJAX context (even for
+		 * no-session visitors) and is_empty() returns true, so every template
+		 * naturally renders the zero-state UI without any WC cart calculations.
+		 *
+		 * @return array Keyed by CSS selector, values are HTML strings.
+		 */
+		protected function get_empty_cart_fragments() {
+			$instance = Front::get_instance();
+
+			return [
+				'.fkcart-modal-container' => fkcart_get_active_skin_html(),
+				'.fkcart-mini-toggler'    => fkcart_mini_cart_html(),
+				'fkcart_qty'              => $instance->get_cart_content_count(),
+				'fkcart_total'            => urlencode( $instance->get_subtotal() ),
+			];
+		}
+
+		/**
 		 * Special Product Add on
 		 */
 		public function special_product_addon( $data = [] ) {
-
 			if ( ! class_exists( '\FKCart\Pro\Special_Add_On' ) ) {
-
-				$messages = __( 'Funnelkit Pro Needed', 'woocommerce' );
-
+				$messages = __( 'Funnelkit Pro Needed', 'cart-for-woocommerce' );
 				$this->error_response( $messages );
 			}
-
 
 			try {
 				$response = \FKCart\Pro\Special_Add_On::special_product_addon( $data );
@@ -639,9 +754,6 @@ if ( ! class_exists( '\FKCart\Includes\Ajax' ) ) {
 			} catch ( \Exception $e ) {
 				$this->error_response( $e->getMessage() );
 			}
-
-
 		}
 	}
-
 }

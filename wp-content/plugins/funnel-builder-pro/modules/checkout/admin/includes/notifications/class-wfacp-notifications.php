@@ -2,9 +2,10 @@
 
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'WFACP_Notification' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_Notification {
-		protected $active_cache_plugins = [];
-		private static $instance = null;
+		protected $active_cache_plugins = array();
+		private static $instance        = null;
 
 		/**
 		 * Array values
@@ -23,217 +24,217 @@ if ( ! class_exists( 'WFACP_Notification' ) ) {
 		 *
 		 * @var array
 		 */
-		protected $default_plugins_list = [
-			'w3-total-cache'  => [
+		protected $default_plugins_list = array(
+			'w3-total-cache'  => array(
 				'type'    => 'wf_warning',
-				'buttons' => [
-					'setting' => [
+				'buttons' => array(
+					'setting' => array(
 						'name' => 'Go To Settings',
-					],
-				],
-			],
-			'wp-cache'        => [
+					),
+				),
+			),
+			'wp-cache'        => array(
 				'type'    => 'wf_warning',
-				'class'   => [ 'custom_w3_total_cache_wrap' ],
-				'buttons' => [
-					'setting' => [
+				'class'   => array( 'custom_w3_total_cache_wrap' ),
+				'buttons' => array(
+					'setting' => array(
 						'name' => 'Go To Settings',
-					],
-				],
-			],
-			'wpFastestCache'  => [
+					),
+				),
+			),
+			'wpFastestCache'  => array(
 				'type'    => 'wf_warning',
-				'buttons' => [
-					'setting' => [
-						'name' => 'Go To Settings',
-
-
-					],
-				],
-			],
-			'wp-rocket'       => [
-				'type'    => 'wf_warning',
-				'buttons' => [
-					'setting' => [
+				'buttons' => array(
+					'setting' => array(
 						'name' => 'Go To Settings',
 
 
-					],
-				],
-			],
-			'comet-cache'     => [
+					),
+				),
+			),
+			'wp-rocket'       => array(
 				'type'    => 'wf_warning',
-				'buttons' => [
-					'setting' => [
+				'buttons' => array(
+					'setting' => array(
 						'name' => 'Go To Settings',
 
 
-					],
-				],
-
-			],
-			'litespeed-cache' => [
+					),
+				),
+			),
+			'comet-cache'     => array(
 				'type'    => 'wf_warning',
-				'buttons' => [
-					'setting' => [
+				'buttons' => array(
+					'setting' => array(
 						'name' => 'Go To Settings',
 
 
-					],
-				],
-			],
-			'plugin'          => [
+					),
+				),
+
+			),
+			'litespeed-cache' => array(
 				'type'    => 'wf_warning',
-				'buttons' => [
-					'setting' => [
+				'buttons' => array(
+					'setting' => array(
 						'name' => 'Go To Settings',
 
 
-					],
-
-				],
-			],
-			'cachify'         => [
+					),
+				),
+			),
+			'plugin'          => array(
 				'type'    => 'wf_warning',
-				'buttons' => [
-					'setting' => [
+				'buttons' => array(
+					'setting' => array(
 						'name' => 'Go To Settings',
-					],
-				],
-			],
-			'simple-cache'    => [
+
+
+					),
+
+				),
+			),
+			'cachify'         => array(
 				'type'    => 'wf_warning',
-				'buttons' => [
-					'setting' => [
+				'buttons' => array(
+					'setting' => array(
 						'name' => 'Go To Settings',
-					],
-				],
-			],
-			'wp-hummingbird'  => [
+					),
+				),
+			),
+			'simple-cache'    => array(
 				'type'    => 'wf_warning',
-				'buttons' => [
-					'setting' => [
+				'buttons' => array(
+					'setting' => array(
 						'name' => 'Go To Settings',
-					],
-				],
+					),
+				),
+			),
+			'wp-hummingbird'  => array(
+				'type'    => 'wf_warning',
+				'buttons' => array(
+					'setting' => array(
+						'name' => 'Go To Settings',
+					),
+				),
 
 
-			],
-		];
+			),
+		);
 
-		protected $plugins_settings_url = [
+		protected $plugins_settings_url = array(
 
-			'w3-total-cache'  => [
+			'w3-total-cache'  => array(
 				'name'              => 'W3 Total Cache',
 				'page_file'         => 'admin.php',
 				'file_name'         => 'w3-total-cache/w3-total-cache.php',
 				'documentation_url' => 'https://funnelkit.com/docs/aerocheckout/caching/w3-total-cache/',
-				'page_arguments'    => [
+				'page_arguments'    => array(
 					'page' => 'w3tc_pgcache',
-				],
-			],
-			'wp-cache'        => [
+				),
+			),
+			'wp-cache'        => array(
 				'name'              => 'WP Super Cache',
 				'page_file'         => 'options-general.php',
 				'file_name'         => 'wp-super-cache/wp-cache.php',
 				'documentation_url' => 'https://funnelkit.com/docs/aerocheckout/caching/wp-super-cache/',
-				'page_arguments'    => [
+				'page_arguments'    => array(
 					'page' => 'wpsupercache',
 					'tab'  => 'settings',
-				],
-			],
-			'wpFastestCache'  => [
+				),
+			),
+			'wpFastestCache'  => array(
 				'name'              => 'WP Fastest Cache',
 				'page_file'         => 'admin.php',
 				'file_name'         => 'wp-fastest-cache/wpFastestCache.php',
 				'documentation_url' => 'https://funnelkit.com/docs/aerocheckout/caching/wp-fastest-cache/',
-				'page_arguments'    => [
+				'page_arguments'    => array(
 					'page' => 'wpfastestcacheoptions',
-				],
+				),
 
-			],
-			'wp-rocket'       => [
+			),
+			'wp-rocket'       => array(
 				'name'              => 'WP Rocket Cache',
 				'page_file'         => 'options-general.php',
 				'file_name'         => 'wp-rocket/wp-rocket.php',
 				'documentation_url' => 'https://funnelkit.com/docs/aerocheckout/caching/wp-rocket/',
-				'page_arguments'    => [
+				'page_arguments'    => array(
 					'page' => 'wprocket',
-				],
+				),
 
-			],
-			'comet-cache'     => [
+			),
+			'comet-cache'     => array(
 				'name'              => 'Comet Cache',
 				'page_file'         => 'admin.php',
 				'file_name'         => 'comet-cache/comet-cache.php',
 				'documentation_url' => 'https://funnelkit.com/docs/aerocheckout/caching/comet-cache/',
-				'page_arguments'    => [
+				'page_arguments'    => array(
 					'page' => 'comet_cache',
-				],
+				),
 
 
-			],
-			'litespeed-cache' => [
+			),
+			'litespeed-cache' => array(
 				'name'              => 'LiteSpeed Cache',
 				'page_file'         => 'admin.php',
 				'file_name'         => 'litespeed-cache/litespeed-cache.php',
 				'documentation_url' => 'https://funnelkit.com/docs/aerocheckout/caching/litespeed-cache/',
-				'page_arguments'    => [
+				'page_arguments'    => array(
 					'page' => 'lscache-settings',
-				],
+				),
 
-			],
-			'plugin'          => [
+			),
+			'plugin'          => array(
 				'name'              => 'Hyper Cache',
 				'page_file'         => 'options-general.php',
 				'file_name'         => 'hyper-cache/plugin.php',
 				'documentation_url' => 'https://funnelkit.com/docs/aerocheckout/caching/hyper-cache/',
-				'page_arguments'    => [
+				'page_arguments'    => array(
 					'page' => 'hyper-cache/options.php',
-				],
+				),
 
-			],
-			'cachify'         => [
+			),
+			'cachify'         => array(
 				'name'              => 'Cachify Cache',
 				'page_file'         => 'options-general.php',
 				'file_name'         => 'cachify/cachify.php',
 				'documentation_url' => 'https://funnelkit.com/docs/aerocheckout/caching/cachify/',
-				'page_arguments'    => [
+				'page_arguments'    => array(
 					'page' => 'cachify',
-				],
+				),
 
-			],
-			'simple-cache'    => [
+			),
+			'simple-cache'    => array(
 				'name'              => 'Simple Cache',
 				'page_file'         => 'options-general.php',
 				'file_name'         => 'simple-cache/simple-cache.php',
 				'documentation_url' => 'https://funnelkit.com/docs/aerocheckout/caching/simple-cache/',
-				'page_arguments'    => [
+				'page_arguments'    => array(
 					'page' => 'simple-cache',
-				],
-			],
-			'wp-hummingbird'  => [
+				),
+			),
+			'wp-hummingbird'  => array(
 				'name'              => 'WP Hummingbird Cache',
 				'page_file'         => 'admin.php',
 				'file_name'         => 'hummingbird-performance/wp-hummingbird.php',
 				'documentation_url' => 'https://funnelkit.com/docs/aerocheckout/caching/hummingbird-page-speed-optimization/',
-				'page_arguments'    => [
+				'page_arguments'    => array(
 					'page' => 'wphb-caching',
 					'view' => 'page_cache',
-				],
+				),
 
 
-			],
+			),
 
-		];
+		);
 
 		protected function __construct() {
-			add_action( 'admin_init', [ $this, 'active_plugins_list' ] );
+			add_action( 'admin_init', array( $this, 'active_plugins_list' ) );
 		}
 
 		public function active_plugins_list() {
 			$active_plugins       = $this->get_active_plugins();
-			$active_cache_plugins = [];
+			$active_cache_plugins = array();
 
 			if ( is_array( $active_plugins ) && count( $active_plugins ) > 0 ) {
 
@@ -251,10 +252,10 @@ if ( ! class_exists( 'WFACP_Notification' ) ) {
 			$current_ver     = str_replace( '.', '_', $current_version );
 			$version_key     = 'wfacp_version_' . $current_ver;
 
-			$versionArr[ $version_key ] = [
+			$versionArr[ $version_key ] = array(
 				'html' => $versionMsg,
 				'type' => 'wf_warning',
-			];
+			);
 			$versionStatus              = WooFunnels_Notifications::get_instance()->get_notification( $version_key, 'wfacp' );
 
 			if ( isset( $versionStatus['error'] ) && $versionStatus['error'] == $version_key . ' Key or Notification group may be Not Available.' ) {
@@ -280,7 +281,7 @@ if ( ! class_exists( 'WFACP_Notification' ) ) {
 				if ( is_array( $active_notices_display ) && count( $active_notices_display ) > 0 && in_array( $key, $active_notices_display ) ) {
 					continue;
 				}
-				$custom_arr        = [];
+				$custom_arr        = array();
 				$documentation_url = '#';
 				$setting_url       = $this->get_settings_page_url( $this->plugins_settings_url[ $key ]['page_file'], '', $this->plugins_settings_url[ $key ]['page_arguments'] );
 				if ( isset( $this->plugins_settings_url[ $key ]['documentation_url'] ) && $this->plugins_settings_url[ $key ]['documentation_url'] != '' ) {
@@ -310,17 +311,16 @@ if ( ! class_exists( 'WFACP_Notification' ) ) {
 					$wf_notice_type = $value['type'];
 				}
 
-				$custom_arr[ $key ] = [
+				$custom_arr[ $key ] = array(
 					'html'    => $html,
 					'type'    => $wf_notice_type,
 					'class'   => $wrapperClass,
 					'buttons' => $value['buttons'],
-				];
+				);
 				if ( is_array( $custom_arr ) && count( $custom_arr ) > 0 ) {
 					WooFunnels_Notifications::get_instance()->register_notification( $custom_arr, 'wfacp' );
 				}
 			}
-
 		}
 
 		public function get_cache_text() {
@@ -329,7 +329,7 @@ if ( ! class_exists( 'WFACP_Notification' ) ) {
 		}
 
 
-		public function get_settings_page_url( $file_url = '', $scheme = 'admin', $arguments = [] ) {
+		public function get_settings_page_url( $file_url = '', $scheme = 'admin', $arguments = array() ) {
 
 			if ( is_array( $arguments ) && count( $arguments ) > 0 && $file_url != '' ) {
 				$url = add_query_arg( $arguments, admin_url( $file_url ) );
@@ -339,7 +339,6 @@ if ( ! class_exists( 'WFACP_Notification' ) ) {
 			}
 
 			return $url;
-
 		}
 
 
@@ -348,7 +347,7 @@ if ( ! class_exists( 'WFACP_Notification' ) ) {
 		}
 
 		public function get_active_plugins() {
-			$plugins_list = get_option( 'active_plugins', [] );
+			$plugins_list = get_option( 'active_plugins', array() );
 
 			return $plugins_list;
 		}
@@ -364,7 +363,6 @@ if ( ! class_exists( 'WFACP_Notification' ) ) {
 
 			return self::$instance;
 		}
-
 	}
 
 	WFACP_Notification::get_instance();

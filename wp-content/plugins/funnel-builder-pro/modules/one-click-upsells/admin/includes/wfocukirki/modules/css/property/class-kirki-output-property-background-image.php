@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Output_Property_Background_Image' ) ) {
 	/**
 	 * Output overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Output_Property_Background_Image extends WFOCUKirki_Output_Property {
 
 		/**
@@ -27,13 +28,22 @@ if ( ! class_exists( 'WFOCUKirki_Output_Property_Background_Image' ) ) {
 			if ( empty( $this->value ) ) {
 				return;
 			}
-			if ( false === strpos( $this->value, 'gradient' ) && false === strpos( $this->value, 'url(' ) ) {
-
-
-				if ( preg_match( '/^\d+$/', $this->value ) ) {
-					$this->value = 'url("' . set_url_scheme( wp_get_attachment_url( $this->value ) ) . '")';
+			if ( false === strpos( $this->value, 'gradient' ) ) {
+				if ( false === strpos( $this->value, 'url(' ) ) {
+					if ( preg_match( '/^\d+$/', $this->value ) ) {
+						$this->value = 'url("' . esc_url_raw( set_url_scheme( wp_get_attachment_url( $this->value ) ) ) . '")';
+					} else {
+						$this->value = 'url("' . esc_url_raw( set_url_scheme( $this->value ) ) . '")';
+					}
 				} else {
-					$this->value = 'url("' . set_url_scheme( $this->value ) . '")';
+					// Value already contains url() — sanitize the URL inside it.
+					$this->value = preg_replace_callback(
+						'/url\s*\(\s*["\']?(.*?)["\']?\s*\)/i',
+						function ( $m ) {
+							return 'url("' . esc_url_raw( $m[1] ) . '")';
+						},
+						$this->value
+					);
 				}
 			}
 		}

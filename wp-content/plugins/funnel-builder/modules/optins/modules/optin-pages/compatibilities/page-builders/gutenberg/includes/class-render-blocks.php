@@ -181,7 +181,7 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 							</div>
 						<?php } ?>
 						<div class="bwf_pp_opt_head"><?php echo esc_html( $settings['heading'] ); ?></div>
-                        <div class="bwf_pp_opt_sub_head"><?php echo $settings['subHeading'];// phpcs:ignore ?></div>
+						<div class="bwf_pp_opt_sub_head"><?php echo wp_kses_post( $settings['subHeading'] ); ?></div>
 						<?php echo $content; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						<div class="bwf_pp_footer"><?php echo esc_html( $settings['textAfter'] ); ?></div>
 					</div>

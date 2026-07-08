@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Rule_General_Always' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_General_Always extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -22,10 +23,10 @@ if ( ! class_exists( 'wfob_Rule_General_Always' ) ) {
 		public function is_match( $rule_data ) {
 			return true;
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_General_All_Pages' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_General_All_Pages extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -47,10 +48,10 @@ if ( ! class_exists( 'wfob_Rule_General_All_Pages' ) ) {
 		public function is_match( $rule_data ) {
 			return is_singular( 'product' );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_General_All_Product_Cats' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_General_All_Product_Cats extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -72,6 +73,5 @@ if ( ! class_exists( 'wfob_Rule_General_All_Product_Cats' ) ) {
 		public function is_match( $rule_data ) {
 			return is_tax( 'product_cat' );
 		}
-
 	}
 }

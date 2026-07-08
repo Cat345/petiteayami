@@ -1,5 +1,18 @@
 *** Meta for WooCommerce Changelog ***
 
+= 3.7.4 - 2026-06-22 =
+* Add - Move WhatsApp to a standalone top-level admin menu with a scheme-aware icon by @ceciliazeng-wa in #3947
+* Fix - Prevent duplicate AddToCart Pixel fires from repeated AJAX fragment execution by @cshing-meta in #3939
+
+= 3.7.0 - 2026-05-05 =
+* Add - Add Signal state controls for Pixel and CAPI by @iodic in #3914
+* Fix - Add origin validation to postMessage handlers in onboarding scripts by @devbodaghe in #3913
+* Fix - Fixed the contributors, removed Meta and added Facebook by @vahidkay-meta in #3905
+* Dev - Upgrading the dependencies, and removing the unnecessary ones to improve the release process by @vahidkay-meta in #3891
+* Fix - Add opt-in non-blocking mode for Pixel event API requests by @vahidkay-meta in #3892
+* Tweak - Tweak - Improve Set Stable Tag by white-listing only release/*/publish branches by @vahidkay-meta in #3904
+* Fix - Bump webpack from 5.99.9 to 5.105.0 by @app/dependabot in #3849
+
 = 3.6.3 - 2026-04-10 =
 * Fix - Fix minimatch vulnerability (CVE-2026-27903) by @vahidkay-meta in #3897
 * Fix - Added checks and safeguards. by @vahidkay-meta in #3887
@@ -7,6 +20,13 @@
 * Dev - Bump tar-fs from 3.1.0 to 3.1.2 by @mrharel in #3896
 * Add - Add WooCommerce Blocks Store API support for AddToCart Pixel events by @cshing-meta in #3888
 * Dev - Dev/break down e2e tests and automate supported version bumpup by @vahidkay-meta in #3876
+
+= 3.6.2 - 2026-03-26 =
+* Dev - minor security fixes and updates
+
+= 3.6.1 - 2026-03-24 =
+* Dev - minor security fixes and updates
+
 
 = 3.6.0 - 2026-03-10 =
 * Add - [WhatsApp Utility WooCommerce] Remove Rollout switch WhatsApp rich order status by @ashutoshbondre in #3884
@@ -27,7 +47,6 @@
 * Dev - Dev - break down e2e tests and automate supported version bumpup by @vahidkay-meta in #3856
 * Fix - Fix Google Product Category dropdowns not rendering on product pages by @rafael-curran in #3866
 * Add - [Rebranding]Update all references of Facebook for WooCommerce to Meta for WooCommerce by @sharunaanandraj in #3865
-
 = 3.5.17 - 2026-02-17 =
 * Fix - Fix - Removed the prefix from retailer id. by @vahidkay-meta in #3858
 * Add - [WooCommernce] [Rich Order] Add rich-order payload gating and simplify per-item amount for events. by @ashutoshbondre in #3848

@@ -122,29 +122,35 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 		 */
 		public function get_contacts( $args ) {
 			global $wpdb;
-			$query = array();
 
-			$query['select'] = 'SELECT * ';
-
-			$query['from'] = "FROM {$this->contact_tbl} AS contact";
-
-			$query['where'] = ' WHERE 1=1 ';
+			$where  = ' WHERE 1=1 ';
+			$limit  = '';
+			$params = array();
 
 			if ( ! empty( $args['min_creation_date'] ) ) {
-				$query['where'] .= "AND contact.creation_date >= '" . gmdate( 'Y-m-d H:i:s', $args['min_creation_date'] ) . "'"; //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+				$where    .= ' AND contact.creation_date >= %s';
+				$params[]  = gmdate( 'Y-m-d H:i:s', $args['min_creation_date'] ); //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 			}
 
 			if ( ! empty( $args['max_creation_date'] ) ) {
-				$query['where'] .= "AND contact.creation_date < '" . gmdate( 'Y-m-d H:i:s', $args['max_creation_date'] ) . "'"; //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+				$where    .= ' AND contact.creation_date < %s';
+				$params[]  = gmdate( 'Y-m-d H:i:s', $args['max_creation_date'] ); //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 			}
 
-			if ( - 1 !== $args['contact_limit'] ) {
-				$query['limit'] = "LIMIT {$args['contact_limit']}";
+			if ( - 1 !== $args['contact_limit'] && ! empty( absint( $args['contact_limit'] ) ) ) {
+				$limit    = ' LIMIT %d';
+				$params[] = absint( $args['contact_limit'] );
 			}
 
-			$query = implode( ' ', $query );
+			if ( ! empty( $params ) ) {
+				$sql = "SELECT * FROM {$this->contact_tbl} AS contact" . $where . $limit;
 
-			return $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				// $sql is assembled from static clause fragments; the only interpolated identifier is
+				// $this->contact_tbl ($wpdb->prefix + literal). All dynamic values are bound via $params.
+				return $wpdb->get_results( $wpdb->prepare( $sql, $params ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			}
+
+			return $wpdb->get_results( "SELECT * FROM {$this->contact_tbl} AS contact WHERE 1=1" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
 
 		protected function get_set_cached_response( $sql, $get = 'row' ) {
@@ -293,7 +299,7 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 		 */
 		public function meta_id_exists( $contact_id, $meta_key ) {
 			global $wpdb;
-			$sql     = "SELECT `meta_id` FROM `$this->contact_meta_tbl` WHERE `contact_id` = '$contact_id' AND `meta_key` = '$meta_key'";
+			$sql     = $wpdb->prepare( "SELECT `meta_id` FROM `$this->contact_meta_tbl` WHERE `contact_id` = %d AND `meta_key` = %s", $contact_id, $meta_key ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$meta_id = $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			return ( ! empty( $meta_id ) && $meta_id > 0 ) ? true : false;
@@ -439,52 +445,50 @@ if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
 		 */
 		public function get_customers( $args ) {
 			global $wpdb;
-			$query = array();
 
-			$query['select'] = 'SELECT * ';
+			$where  = ' WHERE 1=1 ';
+			$limit  = '';
+			$params = array();
 
-			$query['from'] = "FROM {$this->customer_tbl} AS customer";
+			// Order count/value clauses are always applied; every value is bound (%d/%f).
+			$where    .= ' AND customer.total_order_count >= %d AND customer.total_order_count < %d';
+			$params[]  = absint( $args['min_order_count'] );
+			$params[]  = absint( $args['max_order_count'] );
 
-			$query['where'] = '';
-
-			$query['where'] = ' WHERE 1=1 ';
-
-			$query['where'] .= '
-                AND     customer.total_order_count >= ' . $args['min_order_count'] . '
-                AND     customer.total_order_count < ' . $args['max_order_count'] . '
-                AND     customer.total_order_value >= ' . $args['min_order_value'] . '
-                AND     customer.total_order_value < ' . $args['max_order_value'] . '
-            ';
+			$where    .= ' AND customer.total_order_value >= %f AND customer.total_order_value < %f';
+			$params[]  = floatval( $args['min_order_value'] );
+			$params[]  = floatval( $args['max_order_value'] );
 
 			if ( ! empty( $args['min_last_order_date'] ) ) {
-				$query['where'] .= "
-				AND 	customer.l_order_date >= '" . gmdate( 'Y-m-d H:i:s', $args['min_last_order_date'] ) . "'
-			";
+				$where    .= ' AND customer.l_order_date >= %s';
+				$params[]  = gmdate( 'Y-m-d H:i:s', $args['min_last_order_date'] ); //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 			}
 
 			if ( ! empty( $args['max_last_order_date'] ) ) {
-				$query['where'] .= "
-				AND 	customer.l_order_date < '" . gmdate( 'Y-m-d H:i:s', $args['max_last_order_date'] ) . "'
-			";
+				$where    .= ' AND customer.l_order_date < %s';
+				$params[]  = gmdate( 'Y-m-d H:i:s', $args['max_last_order_date'] ); //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 			}
 
 			if ( ! empty( $args['min_creation_date'] ) ) {
-				$query['where'] .= "
-				AND 	customer.creation_date >= '" . gmdate( 'Y-m-d H:i:s', $args['min_creation_date'] ) . "'";
+				$where    .= ' AND customer.creation_date >= %s';
+				$params[]  = gmdate( 'Y-m-d H:i:s', $args['min_creation_date'] ); //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 			}
 
 			if ( ! empty( $args['max_creation_date'] ) ) {
-				$query['where'] .= "
-				AND 	customer.creation_date < '" . gmdate( 'Y-m-d H:i:s', $args['max_creation_date'] ) . "'";
+				$where    .= ' AND customer.creation_date < %s';
+				$params[]  = gmdate( 'Y-m-d H:i:s', $args['max_creation_date'] ); //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 			}
 
-			if ( - 1 !== $args['customer_limit'] ) {
-				$query['limit'] = "LIMIT {$args['customer_limit']}";
+			if ( - 1 !== $args['customer_limit'] && ! empty( absint( $args['customer_limit'] ) ) ) {
+				$limit    = ' LIMIT %d';
+				$params[] = absint( $args['customer_limit'] );
 			}
 
-			$query = implode( ' ', $query );
+			// $sql is assembled from static clause fragments; the only interpolated identifier is
+			// $this->customer_tbl ($wpdb->prefix + literal). All dynamic values are bound via $params.
+			$sql = "SELECT * FROM {$this->customer_tbl} AS customer" . $where . $limit;
 
-			$customers = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$customers = $wpdb->get_results( $wpdb->prepare( $sql, $params ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 			return $customers;
 		}

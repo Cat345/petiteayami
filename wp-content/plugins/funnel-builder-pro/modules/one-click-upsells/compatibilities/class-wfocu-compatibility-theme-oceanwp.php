@@ -8,10 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Customizer -> fix color field issue
  */
 if ( ! class_exists( 'WFOCU_Compatibility_With_Theme_OceanWP' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Theme_OceanWP {
 
 		public function __construct() {
-			add_action( 'after_setup_theme', [ $this, 'actions' ], 99 );
+			add_action( 'after_setup_theme', array( $this, 'actions' ), 99 );
 		}
 
 		public function is_enable() {
@@ -35,9 +36,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Theme_OceanWP' ) ) {
 				WFOCU_Common::remove_actions( 'customize_controls_print_footer_scripts', 'OceanWP_Customizer', 'customize_panel_init' );
 			}
 		}
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_Theme_OceanWP(), 'oceanewp_theme' );
 }
-

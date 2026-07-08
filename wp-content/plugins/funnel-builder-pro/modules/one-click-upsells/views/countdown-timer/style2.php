@@ -29,13 +29,13 @@ if ( is_array( $time_in_mins ) && count( $time_in_mins ) > 0 ) {
 }
 ?>
 <div class="wfocu-countdown-timer-wrap">
-    <div class="wfocu-countdown-timer wfocu-timer wfocu-countdown-highlight <?php echo $show_labels; ?>" data-is-hrs="<?php echo $show_hrs; ?>" data-hrs="<?php echo $ct_label_hrs; ?>" data-mins="<?php echo $ct_label_mins; ?>" data-secs="<?php echo $ct_label_secs; ?>" data-zero-action="<?php echo $ct_action_on_zero; ?>" data-offer-id="<?php echo $current_offer_id; ?>">
+    <div class="wfocu-countdown-timer wfocu-timer wfocu-countdown-highlight <?php echo esc_attr( $show_labels ); ?>" data-is-hrs="<?php echo esc_attr( $show_hrs ); ?>" data-hrs="<?php echo esc_attr( $ct_label_hrs ); ?>" data-mins="<?php echo esc_attr( $ct_label_mins ); ?>" data-secs="<?php echo esc_attr( $ct_label_secs ); ?>" data-zero-action="<?php echo esc_attr( $ct_action_on_zero ); ?>" data-offer-id="<?php echo absint( $current_offer_id ); ?>">
 		<?php if ( ! empty( $text_above_timer ) ) { ?>
             <div class="wfocu-countdown-timer-text">
-				<?php echo $text_above_timer; ?>
+				<?php echo wp_kses_post( $text_above_timer ); ?>
             </div>
 		<?php } ?>
-        <div class="wfocu-timer-wrap" data-time-left="<?php echo $time_in_secs; ?>" data-timer-skin="highlight">
+        <div class="wfocu-timer-wrap" data-time-left="<?php echo absint( $time_in_secs ); ?>" data-timer-skin="highlight">
         </div>
     </div>
 </div>

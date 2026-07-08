@@ -15,6 +15,7 @@ if ( ! class_exists( 'WFFN_Feature_Performance' ) ) {
 	/**
 	 * Class WFFN_Feature_Performance
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_Feature_Performance {
 
 		/**

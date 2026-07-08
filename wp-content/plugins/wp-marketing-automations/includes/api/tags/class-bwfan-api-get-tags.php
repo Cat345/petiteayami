@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Api_Get_Tags extends BWFAN_API_Base {
 
 	public static $ins;
@@ -39,8 +40,8 @@ class BWFAN_Api_Get_Tags extends BWFAN_API_Base {
 		/** if isset search param then get the tag by name **/
 		$search  = $this->get_sanitized_arg( 'search', 'text_field' );
 		$tag_ids = empty( $this->args['ids'] ) ? array() : explode( ',', $this->args['ids'] );
-		$limit   = $this->get_sanitized_arg( 'limit', 'text_field' );
-		$offset  = $this->get_sanitized_arg( 'offset', 'text_field' );
+		$limit   = $this->get_sanitized_arg( 'limit', 'absint' );
+		$offset  = $this->get_sanitized_arg( 'offset', 'absint' );
 
 		$tag_data = BWFCRM_Tag::get_tags( $tag_ids, $search, $offset, $limit, ARRAY_A );
 		if ( ! is_array( $tag_data ) ) {

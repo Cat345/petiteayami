@@ -408,7 +408,7 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 
 	}
 
-	if ( class_exists( 'WFFN_Core' ) ) {
+	if ( class_exists( 'WFFN_Core' ) && is_object( WFFN_Core()->steps ) && method_exists( WFFN_Core()->steps, 'register' ) ) {
 		WFFN_Core()->steps->register( WFFN_Step_Optin::get_instance() );
 	}
 }

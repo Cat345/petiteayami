@@ -14,12 +14,16 @@ use Exception;
 use Stripe\StripeTaxForWooCommerce\SDK\lib\Collection;
 use Stripe\StripeTaxForWooCommerce\SDK\lib\Exception\ApiErrorException;
 use Stripe\StripeTaxForWooCommerce\SDK\lib\Service\Tax\RegistrationService;
+use Stripe\StripeTaxForWooCommerce\SDK\lib\Util\Util;
 
 /**
  * Tax registrations service
  */
 class TaxRegistrations {
 	use StripeClientTrait;
+
+	const CACHE_TTL_SECONDS      = 86400; // 24 hours.
+	const CACHE_TRANSIENT_PREFIX = 'stripe_tax_registrations_';
 
 	/**
 	 * Tax registrations array
@@ -63,8 +67,19 @@ class TaxRegistrations {
 	 * @see https://stripe.com/docs/api/tax/registrations/all
 	 */
 	public function get_registrations( bool $force = false, bool $include_scheduled = false ) {
-		if ( array_key_exists( $this->api_key, self::$tax_registrations ) && ( ! $force ) ) {
-			return self::$tax_registrations[ $this->api_key ];
+		$cache_key = $this->get_cache_key( $include_scheduled );
+
+		if ( array_key_exists( $cache_key, self::$tax_registrations ) && ( ! $force ) ) {
+			return self::$tax_registrations[ $cache_key ];
+		}
+
+		if ( ! $force ) {
+			$cached_registrations = $this->get_from_persistent_cache( $include_scheduled );
+			if ( ! is_null( $cached_registrations ) ) {
+				self::$tax_registrations[ $cache_key ] = $cached_registrations;
+
+				return self::$tax_registrations[ $cache_key ];
+			}
 		}
 
 		$active_registrations = $this->get_registrations_by_status();
@@ -74,9 +89,70 @@ class TaxRegistrations {
 			$all_registrations = $active_registrations;
 		}
 
-		self::$tax_registrations[ $this->api_key ] = $all_registrations;
+		self::$tax_registrations[ $cache_key ] = $all_registrations;
+		$this->set_to_persistent_cache( $all_registrations, $include_scheduled );
 
-		return self::$tax_registrations[ $this->api_key ];
+		return self::$tax_registrations[ $cache_key ];
+	}
+
+	/**
+	 * Get in-memory cache key for tax registrations.
+	 *
+	 * @param bool $include_scheduled Include scheduled tax registrations in the response.
+	 * @return string
+	 */
+	protected function get_cache_key( bool $include_scheduled ): string {
+		return $this->api_key . '|' . ( $include_scheduled ? '1' : '0' );
+	}
+
+	/**
+	 * Get persistent cache key for tax registrations.
+	 *
+	 * @param bool $include_scheduled Include scheduled tax registrations in the response.
+	 * @return string
+	 */
+	protected function get_persistent_cache_key( bool $include_scheduled ): string {
+		return self::CACHE_TRANSIENT_PREFIX . md5( $this->api_key ) . '_' . ( $include_scheduled ? '1' : '0' );
+	}
+
+	/**
+	 * Read tax registrations from persistent cache.
+	 *
+	 * @param bool $include_scheduled Include scheduled tax registrations in the response.
+	 * @return object|null
+	 */
+	protected function get_from_persistent_cache( bool $include_scheduled ) {
+		$cache = get_transient( $this->get_persistent_cache_key( $include_scheduled ) );
+
+		if ( false === $cache || ! is_array( $cache ) ) {
+			return null;
+		}
+
+		return Util::convertToStripeObject( $cache, array() );
+	}
+
+	/**
+	 * Save tax registrations to persistent cache.
+	 *
+	 * @param object $registrations Tax registrations object.
+	 * @param bool   $include_scheduled Include scheduled tax registrations in the response.
+	 * @return void
+	 */
+	protected function set_to_persistent_cache( $registrations, bool $include_scheduled ): void {
+		$payload = json_decode( wp_json_encode( $registrations ), true );
+		set_transient( $this->get_persistent_cache_key( $include_scheduled ), $payload, self::CACHE_TTL_SECONDS );
+	}
+
+	/**
+	 * Clear all tax registrations caches for current API key.
+	 *
+	 * @return void
+	 */
+	protected function clear_cache(): void {
+		unset( self::$tax_registrations[ $this->get_cache_key( false ) ] );
+		unset( self::$tax_registrations[ $this->get_cache_key( true ) ] );
+		delete_transient( $this->get_persistent_cache_key( false ) );
+		delete_transient( $this->get_persistent_cache_key( true ) );
 	}
 
 	/**
@@ -139,9 +215,7 @@ class TaxRegistrations {
 		$stripe_client             = $this->get_stripe_client( $this->api_key );
 		$tax_registrations_service = new RegistrationService( $stripe_client );
 		$tax_registrations_service->create( $request );
-		if ( array_key_exists( $this->api_key, self::$tax_registrations ) ) {
-			unset( self::$tax_registrations[ $this->api_key ] );
-		}
+		$this->clear_cache();
 	}
 
 	/**
@@ -162,6 +236,7 @@ class TaxRegistrations {
 		} catch ( \Throwable $exception ) {
 			\WC_Admin_Settings::add_error( __( 'Some wrong, try again later.', 'stripe-tax-for-woocommerce' ) );
 		}
+		$this->clear_cache();
 		$this->get_registrations( true );
 	}
 

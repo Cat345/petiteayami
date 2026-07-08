@@ -3,6 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 if ( ! class_exists( 'WFOCU_Elementor_Tag_Title' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Elementor_Tag_Title extends \Elementor\Core\DynamicTags\Tag {
 
 		/**
@@ -13,7 +14,6 @@ if ( ! class_exists( 'WFOCU_Elementor_Tag_Title' ) ) {
 		 * @return string
 		 * @since 2.0.0
 		 * @access public
-		 *
 		 */
 		public function get_name() {
 			return 'wfocu-elementor-tag-title';
@@ -27,7 +27,6 @@ if ( ! class_exists( 'WFOCU_Elementor_Tag_Title' ) ) {
 		 * @return string
 		 * @since 2.0.0
 		 * @access public
-		 *
 		 */
 		public function get_title() {
 			return __( 'Product Title', 'elementor-pro' );
@@ -41,7 +40,6 @@ if ( ! class_exists( 'WFOCU_Elementor_Tag_Title' ) ) {
 		 * @return string
 		 * @since 2.0.0
 		 * @access public
-		 *
 		 */
 		public function get_group() {
 			return 'upstroke';
@@ -55,10 +53,9 @@ if ( ! class_exists( 'WFOCU_Elementor_Tag_Title' ) ) {
 		 * @return array
 		 * @since 2.0.0
 		 * @access public
-		 *
 		 */
 		public function get_categories() {
-			return [ \Elementor\Modules\DynamicTags\Module::TEXT_CATEGORY ];
+			return array( \Elementor\Modules\DynamicTags\Module::TEXT_CATEGORY );
 		}
 
 		/**
@@ -69,7 +66,6 @@ if ( ! class_exists( 'WFOCU_Elementor_Tag_Title' ) ) {
 		 * @return void
 		 * @since 2.0.0
 		 * @access protected
-		 *
 		 */
 		protected function register_controls() {
 
@@ -87,19 +83,25 @@ if ( ! class_exists( 'WFOCU_Elementor_Tag_Title' ) ) {
 					$product_options[ $key ] = $product->data->get_name();
 				}
 
-				$this->add_control( 'selected_product', [
-					'label'        => __( 'Product', 'woofunnels-upstroke-one-click-upsell' ),
-					'type'         => \Elementor\Controls_Manager::SELECT,
-					'default'      => key( $product_options ),
-					'options'      => $product_options,
-					'prefix_class' => 'elementor-button-',
-				] );
+				$this->add_control(
+					'selected_product',
+					array(
+						'label'        => __( 'Product', 'woofunnels-upstroke-one-click-upsell' ),
+						'type'         => \Elementor\Controls_Manager::SELECT,
+						'default'      => key( $product_options ),
+						'options'      => $product_options,
+						'prefix_class' => 'elementor-button-',
+					)
+				);
 			} else {
-				$this->add_control( 'selected_product', [
-					'label'   => __( 'product', 'woofunnels-upstroke-one-click-upsell' ),
-					'type'    => \Elementor\Controls_Manager::HIDDEN,
-					'default' => key( (array) $products ),
-				] );
+				$this->add_control(
+					'selected_product',
+					array(
+						'label'   => __( 'product', 'woofunnels-upstroke-one-click-upsell' ),
+						'type'    => \Elementor\Controls_Manager::HIDDEN,
+						'default' => key( (array) $products ),
+					)
+				);
 			}
 		}
 
@@ -111,7 +113,6 @@ if ( ! class_exists( 'WFOCU_Elementor_Tag_Title' ) ) {
 		 * @return void
 		 * @since 2.0.0
 		 * @access public
-		 *
 		 */
 		public function render() {
 			$key = $this->get_settings( 'selected_product' );

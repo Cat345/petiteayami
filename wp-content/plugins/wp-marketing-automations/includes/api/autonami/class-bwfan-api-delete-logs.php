@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Delete_Logs extends BWFAN_API_Base {
 	public static $ins;
 

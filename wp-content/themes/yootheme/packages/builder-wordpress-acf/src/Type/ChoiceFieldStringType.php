@@ -12,7 +12,7 @@ class ChoiceFieldStringType
     /**
      * @return ObjectConfig
      */
-    public static function config()
+    public static function config(): array
     {
         $field = [
             'type' => 'String',

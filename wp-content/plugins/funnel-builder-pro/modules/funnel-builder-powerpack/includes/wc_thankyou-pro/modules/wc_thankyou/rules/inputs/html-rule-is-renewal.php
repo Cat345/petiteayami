@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfty_Input_Html_Rule_Is_Renewal' ) ) {
+	#[\AllowDynamicProperties]
 	class wfty_Input_Html_Rule_Is_Renewal {
 		public function __construct() {
 			// vars
@@ -8,7 +9,7 @@ if ( ! class_exists( 'wfty_Input_Html_Rule_Is_Renewal' ) ) {
 			$this->defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 		}
 
@@ -16,6 +17,5 @@ if ( ! class_exists( 'wfty_Input_Html_Rule_Is_Renewal' ) ) {
 
 			_e( 'This Thank You Page will show on orders that are renewals.', 'funnel-builder-powerpack' );
 		}
-
 	}
 }

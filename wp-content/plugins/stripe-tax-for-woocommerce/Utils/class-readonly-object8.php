@@ -32,7 +32,7 @@ abstract class Readonly_Object implements ArrayAccess, Iterator, Countable, Json
 	/**
 	 * Creates a readonly object
 	 *
-	 * @param string $values Array of readonly values.
+	 * @param string|array $values Array of readonly values.
 	 */
 	public function __construct( $values = array() ) {
 		$this->internal_array = (array) $values;
@@ -136,7 +136,7 @@ abstract class Readonly_Object implements ArrayAccess, Iterator, Countable, Json
 	 * @param mixed  $value Value.
 	 */
 	public function __set( $offset, $value ) {
-		return $this->offsetSet( $offset, $value );
+		$this->offsetSet( $offset, $value );
 	}
 
 	/**
@@ -162,7 +162,7 @@ abstract class Readonly_Object implements ArrayAccess, Iterator, Countable, Json
 		$array_copy = array();
 
 		foreach ( $property_names as $offset ) {
-			$array_copy[ $offset ] = static::copy_value( $this[ $offset ] );
+			$array_copy[ $offset ] = self::copy_value( $this[ $offset ] );
 		}
 
 		return $array_copy;
@@ -178,7 +178,7 @@ abstract class Readonly_Object implements ArrayAccess, Iterator, Countable, Json
 			$array_copy = array();
 
 			foreach ( $value as $key => $value_item ) {
-				$array_copy[ $key ] = static::copy_value( $value_item );
+				$array_copy[ $key ] = self::copy_value( $value_item );
 			}
 
 			return $array_copy;

@@ -15,6 +15,7 @@ if ( ! class_exists( 'WooFunnels_Usage_Collector_Abstract' ) ) {
 	/**
 	 * Abstract Class WooFunnels_Usage_Collector_Abstract
 	 */
+	#[\AllowDynamicProperties]
 	abstract class WooFunnels_Usage_Collector_Abstract {
 
 		/**

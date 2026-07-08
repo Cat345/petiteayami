@@ -60,7 +60,7 @@ class OptInPage implements Hookable
         $logo = $shop->get_shop_logo_file();
         $logo_url = plugin_dir_url(__FILE__) . '../../../assets/images/' . $logo;
         $renderer = new SimplePhpRenderer(new DirResolver(__DIR__ . '/views'));
-        $renderer->output_render('tracker-connect', ['logo_url' => apply_filters('wpdesk/tracker/logo_url', $logo_url, $this->plugin_slug), 'shop_name' => $shop->get_shop_name(), 'username' => $username, 'allow_url' => $allow_url, 'skip_url' => $skip_url, 'terms_url' => $terms_url]);
+        $renderer->output_render('tracker-connect', ['logo_url' => apply_filters_ref_array('wpdesk/tracker/logo_url', [$logo_url, $this->plugin_slug]), 'shop_name' => $shop->get_shop_name(), 'username' => $username, 'allow_url' => $allow_url, 'skip_url' => $skip_url, 'terms_url' => $terms_url]);
     }
     /**
      * @deprecated Use OptInPage::output()

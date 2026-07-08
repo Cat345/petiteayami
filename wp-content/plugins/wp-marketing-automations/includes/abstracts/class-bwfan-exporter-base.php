@@ -5,6 +5,7 @@ namespace BWFAN\Exporter;
 /**
  * Calls base class
  */
+#[\AllowDynamicProperties]
 abstract class Base {
 
 	/** Handle exporter response type */

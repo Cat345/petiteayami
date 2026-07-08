@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Model_Automation_Complete_Contact extends BWFAN_Model {
 	static $primary_key = 'ID';
 
@@ -7,7 +8,7 @@ class BWFAN_Model_Automation_Complete_Contact extends BWFAN_Model {
 		global $wpdb;
 		$table_name = self::_table();
 
-		$query = "SELECT cc.ID,cc.trail as tid, cc.cid, cc.aid, cc.c_date AS c_time, c.email, c.f_name, c.l_name, c.contact_no FROM $table_name as cc JOIN {$wpdb->prefix}bwf_contact AS c ON cc.cid = c.ID WHERE 1 = 1 AND cc.aid = $aid ORDER BY cc.c_date DESC LIMIT $limit OFFSET $offset";
+		$query = $wpdb->prepare( "SELECT cc.ID,cc.trail as tid, cc.cid, cc.aid, cc.c_date AS c_time, c.email, c.f_name, c.l_name, c.contact_no FROM {$table_name} as cc JOIN {$wpdb->prefix}bwf_contact AS c ON cc.cid = c.ID WHERE 1 = 1 AND cc.aid = %d ORDER BY cc.c_date DESC LIMIT %d OFFSET %d", absint( $aid ), absint( $limit ), absint( $offset ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$contacts = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
@@ -62,11 +63,11 @@ class BWFAN_Model_Automation_Complete_Contact extends BWFAN_Model {
 	public static function get_contacts_journey( $aid, $search = '', $limit = 10, $offset = 0, $contact_with_count = false, $more_data = false, $type = '', $cid = 0 ) {
 		$where = '';
 		if ( ! empty( $aid ) ) {
-			$where .= " AND cc.aid = $aid ";
+			$where .= " AND cc.aid = " . absint( $aid ) . " ";
 		}
 
 		if ( ! empty( $cid ) ) {
-			$where .= " AND cc.cid = $cid ";
+			$where .= " AND cc.cid = " . absint( $cid ) . " ";
 		}
 
 		$contacts = self::get_contacts( $where, $search, $limit, $offset, $more_data, $type );
@@ -83,9 +84,10 @@ class BWFAN_Model_Automation_Complete_Contact extends BWFAN_Model {
 	public static function get_contacts( $where, $search, $limit, $offset, $more_data = false, $status = '', $only_total = false ) {
 		global $wpdb;
 		$table_name = self::_table();
-		$limit      = " LIMIT $limit OFFSET $offset";
+		$limit      = " LIMIT " . absint( $limit ) . " OFFSET " . absint( $offset );
 		if ( ! empty( $search ) ) {
-			$where .= " AND ( c.f_name LIKE '%$search%' OR c.l_name LIKE '%$search%' OR c.email LIKE '%$search%' )";
+			$like   = '%' . $wpdb->esc_like( $search ) . '%';
+			$where .= $wpdb->prepare( " AND ( c.f_name LIKE %s OR c.l_name LIKE %s OR c.email LIKE %s )", $like, $like, $like );
 		}
 		if ( true === $only_total ) {
 			$query = "SELECT  COUNT(cc.ID) FROM $table_name as cc JOIN {$wpdb->prefix}bwf_contact AS c ON cc.cid = c.ID WHERE 1=1 $where ";
@@ -168,15 +170,18 @@ class BWFAN_Model_Automation_Complete_Contact extends BWFAN_Model {
 		global $wpdb;
 		$table_name = self::_table();
 
-		$where = "aid = %d";
 		if ( is_array( $aid ) ) {
-			$where = "aid IN ('" . implode( "','", array_map( 'esc_sql', $aid ) ) . "')";
-			$aid   = [];
+			$aid = array_filter( array_map( 'intval', $aid ) );
+			if ( empty( $aid ) ) {
+				return 0;
+			}
+			$placeholders = implode( ',', array_fill( 0, count( $aid ), '%d' ) );
+			$query        = $wpdb->prepare( "DELETE FROM $table_name WHERE `aid` IN ( $placeholders )", $aid );
+		} else {
+			$query = $wpdb->prepare( "DELETE FROM $table_name WHERE `aid` = %d", intval( $aid ) );
 		}
 
-		$query = " DELETE FROM $table_name WHERE $where";
-
-		return $wpdb->query( $wpdb->prepare( $query, $aid ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	/**Get status */
@@ -256,7 +261,7 @@ class BWFAN_Model_Automation_Complete_Contact extends BWFAN_Model {
 			$order_by       = ' time_interval ';
 		}
 
-		$base_query = "SELECT  count(ID) as contact_counts" . $interval_query . "  FROM `" . $table . "` WHERE 1=1 AND aid = $aid AND`" . $date_col . "` >= '" . $start_date . "' AND `" . $date_col . "` <= '" . $end_date . "' AND aid = $aid " . $group_by . " ORDER BY " . $order_by . " ASC";
+		$base_query = "SELECT  count(ID) as contact_counts" . $interval_query . "  FROM `" . $table . "` WHERE 1=1 AND aid = " . absint( $aid ) . " AND " . $wpdb->prepare( "`$date_col` >= %s AND `$date_col` <= %s", $start_date, $end_date ) . " AND aid = " . absint( $aid ) . " " . $group_by . " ORDER BY " . $order_by . " ASC";
 
 		return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}

@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Controls' ) ) {
 	/**
 	 * Controls.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Controls {
 
 		/**

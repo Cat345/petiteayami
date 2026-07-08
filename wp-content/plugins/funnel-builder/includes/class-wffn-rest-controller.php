@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * * @extends WP_REST_Controller
  */
 if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_REST_Controller extends WP_REST_Controller {
 
 		public static $_instance = null;
@@ -98,13 +99,21 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 		public function get_total_intervals( $start_date, $end_date, $interval, $table, $table_col ) {
 			global $wpdb;
 
+			// $table and $table_col are SQL identifiers and cannot be parameterised — strip everything that is not identifier-safe.
+			$table     = preg_replace( '/[^a-zA-Z0-9_]/', '', (string) $table );
+			$table_col = preg_replace( '/[^a-zA-Z0-9_.]/', '', (string) $table_col );
+
 			$get_interval   = $this->get_interval_format_query( $interval, $table_col );
 			$interval_query = $get_interval['interval_query'];
 			$interval_group = $get_interval['interval_group'];
 
-			$query = 'SELECT MIN(' . $table_col . ') AS start_date, MAX(' . $table_col . ') as end_date, ' . ltrim( $interval_query, ',' ) . '  FROM `' . $table . "` WHERE 1=1 AND $table_col >= '" . $start_date . "' AND `" . $table_col . "` < '" . $end_date . "' GROUP BY " . $interval_group . ' ASC';
+			// Dates are values — bind them. Kept as a separate prepared fragment because $interval_query carries
+			// DATE_FORMAT specifiers (%Y, %m, ...) that must not be routed through $wpdb->prepare().
+			$date_condition = $wpdb->prepare( " AND $table_col >= %s AND $table_col < %s ", $start_date, $end_date ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table_col is a sanitised identifier (may be a qualified table.column, so it is left unquoted rather than backtick-wrapped); both dates bound via %s.
 
-			$intervals = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$query = 'SELECT MIN(' . $table_col . ') AS start_date, MAX(' . $table_col . ') as end_date, ' . ltrim( $interval_query, ',' ) . '  FROM `' . $table . '` WHERE 1=1 ' . $date_condition . ' GROUP BY ' . $interval_group . ' ASC';
+
+			$intervals = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- identifiers sanitised above, dates bound in $date_condition, interval fragment built from the sanitised column; PHPCS cannot verify the assembled string.
 
 			return ( is_array( $intervals ) && count( $intervals ) > 0 ) ? $intervals : array();
 		}

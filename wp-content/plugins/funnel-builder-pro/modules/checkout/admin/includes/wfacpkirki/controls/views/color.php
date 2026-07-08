@@ -8,6 +8,10 @@
  * @license     http://opensource.org/licenses/https://opensource.org/licenses/MIT
  * @since       3.0.17
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <#

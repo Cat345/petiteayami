@@ -22,7 +22,7 @@ use WooCommerce\PayPalCommerce\Button\Helper\Context;
 use WooCommerce\PayPalCommerce\SavePaymentMethods\Endpoint\CreatePaymentToken;
 use WooCommerce\PayPalCommerce\SavePaymentMethods\Endpoint\CreatePaymentTokenForGuest;
 use WooCommerce\PayPalCommerce\SavePaymentMethods\Endpoint\CreateSetupToken;
-use WooCommerce\PayPalCommerce\Vaulting\WooCommercePaymentTokens;
+use WooCommerce\PayPalCommerce\WcPaymentTokens\WooCommercePaymentTokens;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ServiceModule;
@@ -141,20 +141,11 @@ class SavePaymentMethodsModule implements ServiceModule, ExecutableModule
                         return;
                     }
                     update_user_meta($wc_order->get_customer_id(), '_ppcp_target_customer_id', $customer_id);
-                    $wc_payment_tokens = $c->get('vaulting.wc-payment-tokens');
+                    $wc_payment_tokens = $c->get('wc-payment-tokens.wc-payment-tokens');
                     assert($wc_payment_tokens instanceof WooCommercePaymentTokens);
                     try {
                         if ($wc_order->get_payment_method() === CreditCardGateway::ID) {
-                            $token = new \WC_Payment_Token_CC();
-                            $token->set_token($token_id);
-                            $token->set_user_id($wc_order->get_customer_id());
-                            $token->set_gateway_id(CreditCardGateway::ID);
-                            $token->set_last4($payment_source->properties()->last_digits ?? '');
-                            $expiry = explode('-', $payment_source->properties()->expiry ?? '');
-                            $token->set_expiry_year($expiry[0] ?? '');
-                            $token->set_expiry_month($expiry[1] ?? '');
-                            $token->set_card_type($payment_source->properties()->brand ?? '');
-                            $token->save();
+                            $wc_payment_tokens->create_payment_token_card($wc_order->get_customer_id(), (object) array('id' => $token_id, 'payment_source' => (object) array('card' => $payment_source->properties())));
                         }
                         if ($wc_order->get_payment_method() === PayPalGateway::ID) {
                             switch ($payment_source->name()) {
@@ -163,6 +154,9 @@ class SavePaymentMethodsModule implements ServiceModule, ExecutableModule
                                     break;
                                 case 'apple_pay':
                                     $wc_payment_tokens->create_payment_token_applepay($wc_order->get_customer_id(), $token_id);
+                                    break;
+                                case 'card':
+                                    $wc_payment_tokens->create_payment_token_card($wc_order->get_customer_id(), (object) array('id' => $token_id, 'payment_source' => (object) array('card' => $payment_source->properties())));
                                     break;
                                 case 'paypal':
                                 default:
@@ -202,7 +196,16 @@ class SavePaymentMethodsModule implements ServiceModule, ExecutableModule
                     // phpcs:ignore WordPress.Security.NonceVerification
                     $change_payment_method = wc_clean(wp_unslash($_GET['change_payment_method'] ?? ''));
                     $is_subscription_change_payment_method_page = $context->is_subscription_change_payment_method_page();
-                    wp_localize_script('ppcp-add-payment-method', 'ppcp_add_payment_method', array('client_id' => $c->get('button.client_id'), 'merchant_id' => $c->get('api.merchant_id'), 'id_token' => $id_token, 'payment_methods_page' => wc_get_account_endpoint_url('payment-methods'), 'view_subscriptions_page' => wc_get_account_endpoint_url('view-subscription'), 'is_subscription_change_payment_page' => $is_subscription_change_payment_method_page, 'subscription_id_to_change_payment' => $is_subscription_change_payment_method_page ? (int) $change_payment_method : 0, 'error_message' => __('Could not save payment method.', 'woocommerce-paypal-payments'), 'verification_method' => $verification_method, 'user' => array('is_logged' => is_user_logged_in()), 'ajax' => array('create_setup_token' => array('endpoint' => \WC_AJAX::get_endpoint(CreateSetupToken::ENDPOINT), 'nonce' => wp_create_nonce(CreateSetupToken::nonce())), 'create_payment_token' => array('endpoint' => \WC_AJAX::get_endpoint(CreatePaymentToken::ENDPOINT), 'nonce' => wp_create_nonce(CreatePaymentToken::nonce())), 'subscription_change_payment_method' => array('endpoint' => \WC_AJAX::get_endpoint(SubscriptionChangePaymentMethod::ENDPOINT), 'nonce' => wp_create_nonce(SubscriptionChangePaymentMethod::nonce()))), 'labels' => array('error' => array('generic' => __('Something went wrong. Please try again or choose another payment source.', 'woocommerce-paypal-payments')))));
+                    $add_payment_method_data = array('client_id' => $c->get('button.client_id'), 'merchant_id' => $c->get('api.merchant_id'), 'id_token' => $id_token, 'payment_methods_page' => wc_get_account_endpoint_url('payment-methods'), 'view_subscriptions_page' => wc_get_account_endpoint_url('view-subscription'), 'is_subscription_change_payment_page' => $is_subscription_change_payment_method_page, 'subscription_id_to_change_payment' => $is_subscription_change_payment_method_page ? (int) $change_payment_method : 0, 'error_message' => __('Could not save payment method.', 'woocommerce-paypal-payments'), 'verification_method' => $verification_method, 'script_attributes' => (object) array(), 'user' => array('is_logged' => is_user_logged_in()), 'ajax' => array('create_setup_token' => array('endpoint' => \WC_AJAX::get_endpoint(CreateSetupToken::ENDPOINT), 'nonce' => wp_create_nonce(CreateSetupToken::nonce())), 'create_payment_token' => array('endpoint' => \WC_AJAX::get_endpoint(CreatePaymentToken::ENDPOINT), 'nonce' => wp_create_nonce(CreatePaymentToken::nonce())), 'subscription_change_payment_method' => array('endpoint' => \WC_AJAX::get_endpoint(SubscriptionChangePaymentMethod::ENDPOINT), 'nonce' => wp_create_nonce(SubscriptionChangePaymentMethod::nonce()))), 'labels' => array('error' => array('generic' => __('Something went wrong. Please try again or choose another payment source.', 'woocommerce-paypal-payments'))));
+                    /**
+                     * Filters the data localized for the Add Payment Method / Subscription
+                     * Change Payment Method pages. Mirrors the equivalent filter for the
+                     * checkout (`woocommerce_paypal_payments_localized_script_data`) so
+                     * stage overrides (e.g. `script_attributes.sdkBaseUrl`) can be applied
+                     * without touching the module.
+                     */
+                    $add_payment_method_data = apply_filters('woocommerce_paypal_payments_add_payment_method_localized_script_data', $add_payment_method_data);
+                    wp_localize_script('ppcp-add-payment-method', 'ppcp_add_payment_method', $add_payment_method_data);
                 } catch (RuntimeException $exception) {
                     $logger = $c->get('woocommerce.logger.woocommerce');
                     assert($logger instanceof LoggerInterface);

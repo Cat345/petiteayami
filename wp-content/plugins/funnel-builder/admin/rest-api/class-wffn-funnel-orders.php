@@ -6,6 +6,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
  * Class WFFN_Funnel_Contacts
  */
 if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Funnel_Orders extends WFFN_REST_Controller {
 		private static $ins         = null;
 		protected $namespace        = 'funnelkit-app';
@@ -365,7 +366,7 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 		public function get_single_order_info( $request ) {
 			$response = array(
 				'status'  => false,
-				'message' => __( 'Invalid order' ),
+				'message' => __( 'Invalid order', 'funnel-builder' ),
 				'records' => 0,
 			);
 			$order_id = $request['id'] ?? 0;
@@ -425,24 +426,44 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			return rest_ensure_response( $response );
 		}
 
+		/**
+		 * Build a prepared "<column> IN (...)" fragment from a funnel filter value.
+		 *
+		 * Funnel ids arrive either as a comma-separated string (from prepare_filters())
+		 * or as an array. Every id is cast to an integer and bound through prepare(), so
+		 * the value can never break out of the IN() list.
+		 *
+		 * @param string       $column Trusted, hard-coded column identifier (e.g. 'tracking.funnel_id').
+		 * @param string|array $raw    Funnel ids.
+		 *
+		 * @return string Prepared SQL fragment, or '' when there are no valid ids.
+		 */
+		private function prepare_funnel_in_clause( $column, $raw ) {
+			global $wpdb;
+			$ids = is_array( $raw ) ? $raw : explode( ',', (string) $raw );
+			$ids = array_values( array_filter( array_map( 'absint', $ids ) ) );
+			if ( empty( $ids ) ) {
+				return '';
+			}
+			return $wpdb->prepare( "({$column} IN ( " . implode( ', ', array_fill( 0, count( $ids ), '%d' ) ) . ' ))', $ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $column is a trusted hard-coded identifier; ids bound via %d placeholders built with array_fill().
+		}
+
 		public function get_conversion_orders_from_aero( $args = array(), $limit_str = '' ) {
 			global $wpdb;
 			$filters     = $this->search_filters;
 			$where_query = array( '1=1' );
 
 			if ( isset( $filters['funnels'] ) && isset( $filters['funnels']['data'] ) && ! empty( $filters['funnels']['data'] ) ) {
-				$funnel_data   = esc_sql( $filters['funnels']['data'] );
-				$where_query[] = "(aero_stats.fid IN ({$funnel_data}))";
-
+				$funnel_clause = $this->prepare_funnel_in_clause( 'aero_stats.fid', $filters['funnels']['data'] );
+				$where_query[] = ( '' !== $funnel_clause ) ? $funnel_clause : "(aero_stats.fid!= '0')";
 			} elseif ( $args['funnel_id'] > 0 ) {
-				$funnel_id     = esc_sql( $args['funnel_id'] );
-				$where_query[] = "(aero_stats.fid= '{$funnel_id}')";
+				$where_query[] = $this->prepare_funnel_in_clause( 'aero_stats.fid', array( $args['funnel_id'] ) );
 			} else {
 				$where_query[] = "(aero_stats.fid!= '0')";
 			}
 
 			if ( isset( $filters['period'] ) ) {
-				$where_query[] = $wpdb->prepare( ' (aero_stats.date BETWEEN %s AND %s ', $filters['period']['data']['after'], $filters['period']['data']['before'] );
+				$where_query[] = $wpdb->prepare( ' (aero_stats.date BETWEEN %s AND %s) ', $filters['period']['data']['after'], $filters['period']['data']['before'] );
 			}
 
 			if ( isset( $this->search_filters['total_order_value'] ) ) {
@@ -461,7 +482,7 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 
 			if ( ! empty( $search_filter ) ) {
 				$search_filter = '%' . $search_filter . '%';
-				$where_query[] = $wpdb->prepare( " (CONCAT(cust.f_name,' ',cust.l_name) like %s OR cust.email like %s OR aero_stats.order_id like %s ", $search_filter, $search_filter, $search_filter );
+				$where_query[] = $wpdb->prepare( " (CONCAT(cust.f_name,' ',cust.l_name) like %s OR cust.email like %s OR aero_stats.order_id like %s) ", $search_filter, $search_filter, $search_filter );
 			}
 
 			$conv_filter = apply_filters( 'wffn_filter_data_conversion_query', array(), 'order', $where_query, $filters );
@@ -476,23 +497,24 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			}
 
 			$where_query = implode( ' AND ', $where_query );
-			$limit_str   = ! empty( $limit_str ) ? esc_sql( $limit_str ) : '';
+			$limit_str   = ! empty( $limit_str ) ? $limit_str : ''; // $limit_str is built from absint()'d offset/limit upstream.
 
 			$output_data = array();
 
 			if ( $args['total_count'] ) {
-				$count_query                = "SELECT count( DISTINCT aero_stats.order_id ) as total_count FROM  `{$wpdb->prefix}wfacp_stats` as aero_stats JOIN `{$wpdb->prefix}wc_order_stats` as orders ON aero_stats.order_id = orders.order_id JOIN {$wpdb->prefix}bwf_contact as cust ON cust.id = aero_stats.cid " . $conv_join . " WHERE {$where_query}";
-				$count_results              = $wpdb->get_results( $count_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$count_query = "SELECT count( DISTINCT aero_stats.order_id ) as total_count FROM  `{$wpdb->prefix}wfacp_stats` as aero_stats JOIN `{$wpdb->prefix}wc_order_stats` as orders ON aero_stats.order_id = orders.order_id JOIN {$wpdb->prefix}bwf_contact as cust ON cust.id = aero_stats.cid " . $conv_join . " WHERE {$where_query}";
+				// $count_query assembled from $wpdb->prepare() fragments (funnel IN-list, period, search) + whitelisted operator + absint LIMIT; remaining raw parts are trusted hook SQL. PHPCS cannot verify the assembled string.
+				$count_results              = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$output_data['total_count'] = $count_results[0]['total_count'] ?? 0;
 			}
 
 			$order_stats_query = 'SELECT aero_stats.order_id,aero_stats.wfacp_id,aero_stats.fid,aero_stats.cid,cust.f_name,cust.l_name, cust.email, cust.contact_no as phone,orders.total_sales, aero_stats.date ' . $case_string . " FROM  `{$wpdb->prefix}wfacp_stats` as aero_stats JOIN `{$wpdb->prefix}wc_order_stats` as orders ON aero_stats.order_id = orders.order_id JOIN {$wpdb->prefix}bwf_contact as cust ON cust.id = aero_stats.cid " . $conv_join . " WHERE {$where_query} ORDER BY aero_stats.date DESC {$limit_str}";
-			$results           = $wpdb->get_results( $order_stats_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// $order_stats_query assembled from $wpdb->prepare() fragments (funnel IN-list, period, search) + whitelisted operator + absint LIMIT; $case_string/$conv_join are trusted hook SQL. PHPCS cannot verify the assembled string.
+			$results = $wpdb->get_results( $order_stats_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 			$output_data['data'] = $this->add_funnel_title( $results );
 
 			return $output_data;
-
 		}
 
 		public function get_conversion_orders( $args = array(), $limit_str = '', $return_data = false ) {
@@ -501,10 +523,10 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			$where_query = array( 'tracking.type=2' );
 
 			if ( isset( $filters['funnels'] ) && isset( $filters['funnels']['data'] ) && ! empty( $filters['funnels']['data'] ) ) {
-				$where_query[] = '(tracking.funnel_id IN (' . esc_sql( $filters['funnels']['data'] ) . '))';
-
+				$funnel_clause = $this->prepare_funnel_in_clause( 'tracking.funnel_id', $filters['funnels']['data'] );
+				$where_query[] = ( '' !== $funnel_clause ) ? $funnel_clause : '(tracking.funnel_id!= 0)';
 			} elseif ( $args['funnel_id'] > 0 ) {
-				$where_query[] = "(tracking.funnel_id= '" . esc_sql( $args['funnel_id'] ) . "')";
+				$where_query[] = $this->prepare_funnel_in_clause( 'tracking.funnel_id', array( $args['funnel_id'] ) );
 			} else {
 				$where_query[] = '(tracking.funnel_id!= 0)';
 			}
@@ -560,20 +582,24 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			}
 
 			$where_query = implode( ' AND ', $where_query );
-			$limit_str   = ! empty( $limit_str ) ? esc_sql( $limit_str ) : '';
+			$limit_str   = ! empty( $limit_str ) ? $limit_str : ''; // $limit_str is built from absint()'d offset/limit upstream.
 			$output_data = array();
 
 			if ( $args['total_count'] ) {
 				$count_query = "SELECT count( DISTINCT tracking.source) as total_count FROM `{$wpdb->prefix}bwf_conversion_tracking` as tracking JOIN {$wpdb->prefix}bwf_contact as cust ON cust.id = tracking.contact_id " . $conv_join . " WHERE {$where_query}";
 
-				$count_results              = $wpdb->get_results( $count_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				// $count_query assembled from $wpdb->prepare() fragments (funnel IN-list, period, search) + whitelisted operator + absint LIMIT; remaining raw parts are trusted hook SQL. PHPCS cannot verify the assembled string.
+				$count_results              = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$output_data['total_count'] = $count_results[0]['total_count'] ?? 0;
 			}
 
 			$order_number_field = $this->order_number_column_exists() ? "tracking.order_number as 'order_number'," : '';
 			$order_stats_query  = "SELECT (CASE WHEN TIMESTAMPDIFF( SECOND, tracking.first_click, tracking.timestamp ) != 0 THEN TIMESTAMPDIFF( SECOND, tracking.first_click, tracking.timestamp ) ELSE 0 END ) as 'convert_time', tracking.source as 'order_id', {$order_number_field} tracking.step_id as 'wfacp_id', tracking.funnel_id as 'fid', tracking.contact_id as 'cid', cust.f_name as 'f_name', cust.l_name as 'l_name', cust.email as 'email', cust.contact_no as 'phone', tracking.value as 'total_sales', tracking.timestamp as 'date' " . $case_string . " FROM  `{$wpdb->prefix}bwf_conversion_tracking` as tracking JOIN {$wpdb->prefix}bwf_contact as cust ON cust.id = tracking.contact_id " . $conv_join . " WHERE {$where_query} GROUP BY tracking.source ORDER BY tracking.timestamp DESC {$limit_str}";
 
-			$results = $wpdb->get_results( $order_stats_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// $order_stats_query assembled from $wpdb->prepare() fragments (funnel IN-list, period, search) + whitelisted operator + absint LIMIT; $case_string/$conv_join are trusted hook SQL. PHPCS cannot verify the assembled string.
+			$results = $wpdb->get_results( $order_stats_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// $order_stats_query assembled from $wpdb->prepare() fragments (funnel IN-list, period, search) + whitelisted operator + absint LIMIT; $case_string/$conv_join are trusted hook SQL. PHPCS cannot verify the assembled string.
+			$results = $wpdb->get_results( $order_stats_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			foreach ( $results as &$result ) {
 				if ( isset( $result['referrers'] ) && $result['referrers'] === 'Direct' ) {
 					$result['referrers'] = __( 'Direct', 'funnel-builder' );
@@ -591,20 +617,20 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			$output_data['data'] = $this->add_funnel_title( $results );
 
 			return $output_data;
-
 		}
 
 		public function maybe_upsell_filter( $where_query ) {
+			global $wpdb;
 			$filters = $this->search_filters;
 			if ( ! isset( $filters['offer'] ) && ! isset( $filters['funnels'] ) ) {
 				return $where_query;
 			}
 			if ( isset( $filters['offer'] ) && isset( $filters['offer']['rule'] ) && isset( $filters['offer']['data'] ) && ! empty( $filters['offer']['data'] ) ) {
-				$offer_data = '"' . esc_sql( $filters['offer']['data'] ) . '"';
+				$offer_like = '%"' . $filters['offer']['data'] . '"%';
 				if ( 'offer_accepted' === $filters['offer']['rule'] ) {
-					$where_query[] = "( tracking.offer_accepted LIKE '%{$offer_data}%' )";
+					$where_query[] = $wpdb->prepare( '( tracking.offer_accepted LIKE %s )', $offer_like );
 				} elseif ( 'offer_rejected' === $filters['offer']['rule'] ) {
-					$where_query[] = "( tracking.offer_rejected LIKE '%{$offer_data}%' )";
+					$where_query[] = $wpdb->prepare( '( tracking.offer_rejected LIKE %s )', $offer_like );
 				}
 			}
 
@@ -612,6 +638,7 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 		}
 
 		public function maybe_bump_filter( $where_query ) {
+			global $wpdb;
 			$filters = $this->search_filters;
 
 			if ( ! isset( $filters['wc_order_bump'] ) && ! isset( $filters['funnels'] ) ) {
@@ -622,11 +649,11 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 				return $where_query;
 			}
 			if ( isset( $filters['wc_order_bump'] ) && isset( $filters['wc_order_bump']['rule'] ) && isset( $filters['wc_order_bump']['data'] ) && ! empty( $filters['wc_order_bump']['data'] ) ) {
-				$bump_data = '"' . esc_sql( $filters['wc_order_bump']['data'] ) . '"';
+				$bump_like = '%"' . $filters['wc_order_bump']['data'] . '"%';
 				if ( 'bump_accepted' === $filters['wc_order_bump']['rule'] ) {
-					$where_query[] = "( tracking.bump_accepted LIKE '%{$bump_data}%' )";
+					$where_query[] = $wpdb->prepare( '( tracking.bump_accepted LIKE %s )', $bump_like );
 				} elseif ( 'bump_rejected' === $filters['wc_order_bump']['rule'] ) {
-					$where_query[] = "( tracking.bump_rejected LIKE '%{$bump_data}%' )";
+					$where_query[] = $wpdb->prepare( '( tracking.bump_rejected LIKE %s )', $bump_like );
 				}
 			}
 
@@ -635,8 +662,7 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 
 		public function add_funnel_title( $args ) {
 			global $wpdb;
-			$sql         = $wpdb->prepare( "select id as 'fid', title from {$wpdb->prefix}bwf_funnels WHERE 1 = %d", 1 );
-			$results     = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$results     = $wpdb->get_results( $wpdb->prepare( "select id as 'fid', title from {$wpdb->prefix}bwf_funnels WHERE 1 = %d", 1 ), ARRAY_A );
 			$funnel_data = array();
 			if ( is_array( $results ) && count( $results ) > 0 ) {
 				foreach ( $results as $item ) {
@@ -653,7 +679,7 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 				function ( $item ) use ( $funnel_data ) {
 					$fid = absint( $item['fid'] );
 					if ( $fid > 0 && isset( $funnel_data[ $fid ] ) ) {
-						  $item['funnel_title'] = $funnel_data[ $fid ];
+							$item['funnel_title'] = $funnel_data[ $fid ];
 					} else {
 						$item['funnel_title'] = '-';
 					}
@@ -676,14 +702,15 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 				'page_no'     => $request['page_no'] ?? 1,
 				'total_count' => $request['total_count'] ?? false,
 				'only_count'  => $request['only_count'] ?? false,
-				'delete_ids'  => isset( $request['delete_ids'] ) ? $request['delete_ids'] : false,
+				// Deleting order entries is a write operation; only honor delete_ids for callers with write access.
+				'delete_ids'  => ( isset( $request['delete_ids'] ) && wffn_rest_api_helpers()->get_api_permission_check( 'funnel', 'write' ) ) ? $request['delete_ids'] : false,
 				'offset'      => isset( $request['offset'] ) ? $request['offset'] : '',
 			);
 
 			$this->args = $args;
-			$limit      = $args['limit'];
-			$page_no    = $args['page_no'];
-			$offset     = ! empty( $args['offset'] ) ? $args['offset'] : ( intval( $limit ) * intval( $page_no - 1 ) );
+			$limit      = absint( $args['limit'] );
+			$page_no    = max( 1, absint( $args['page_no'] ) );
+			$offset     = ! empty( $args['offset'] ) ? absint( $args['offset'] ) : ( $limit * ( $page_no - 1 ) );
 
 			$response['filters_list'] = $this->filters_list( $args );
 			$limit_str                = " LIMIT $offset, $limit";
@@ -730,7 +757,6 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			}
 
 			return $return_data ? $response : rest_ensure_response( $response );
-
 		}
 
 		/**
@@ -805,7 +831,6 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 					}
 
 					return $data;
-
 				},
 				$final_orders
 			);
@@ -818,9 +843,7 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 		 */
 		private function order_number_column_exists() {
 			global $wpdb;
-			$table_name = $wpdb->prefix . 'bwf_conversion_tracking';
-			$query = $wpdb->prepare("SHOW COLUMNS FROM {$table_name} LIKE %s",'order_number');//phpcs:ignore
-			$result = $wpdb->get_results( $query );//phpcs:ignore
+			$result = $wpdb->get_results( $wpdb->prepare( "SHOW COLUMNS FROM {$wpdb->prefix}bwf_conversion_tracking LIKE %s", 'order_number' ) );
 			return ! empty( $result );
 		}
 
@@ -836,7 +859,6 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			);
 
 			return number_format( $price, $args['decimals'], $args['decimal_separator'], $args['thousand_separator'] );
-
 		}
 
 		/**
@@ -871,15 +893,16 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 				'page_no'     => $request['page_no'] ?? 1,
 				'total_count' => $request['total_count'] ?? false,
 				'only_count'  => $request['only_count'] ?? false,
-				'delete_ids'  => isset( $request['delete_ids'] ) ? $request['delete_ids'] : false,
+				// Deleting optin entries is a write operation; only honor delete_ids for callers with write access.
+				'delete_ids'  => ( isset( $request['delete_ids'] ) && wffn_rest_api_helpers()->get_api_permission_check( 'funnel', 'write' ) ) ? $request['delete_ids'] : false,
 				'offset'      => isset( $request['offset'] ) ? $request['offset'] : '',
 
 			);
 
 			$this->args              = $args;
-			$limit                   = $args['limit'];
-			$page_no                 = $args['page_no'];
-			$offset                  = ! empty( $args['offset'] ) ? $args['offset'] : ( intval( $limit ) * intval( $page_no - 1 ) );
+			$limit                   = absint( $args['limit'] );
+			$page_no                 = max( 1, absint( $args['page_no'] ) );
+			$offset                  = ! empty( $args['offset'] ) ? absint( $args['offset'] ) : ( $limit * ( $page_no - 1 ) );
 			$funnel_data             = WFFN_REST_Funnels::get_instance()->get_funnel_data( $args['funnel_id'] );
 			$response['funnel_data'] = is_array( $funnel_data ) ? $funnel_data : array();
 
@@ -918,9 +941,12 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			}
 
 			if ( isset( $filters['funnels'] ) && isset( $filters['funnels']['data'] ) && ! empty( $filters['funnels']['data'] ) ) {
-				$where_query[] = '(tracking.funnel_id IN (' . esc_sql( $filters['funnels']['data'] ) . '))';
+				$funnel_clause = $this->prepare_funnel_in_clause( 'tracking.funnel_id', $filters['funnels']['data'] );
+				if ( '' !== $funnel_clause ) {
+					$where_query[] = $funnel_clause;
+				}
 			} elseif ( $args['funnel_id'] > 0 ) {
-				$where_query[] = '(tracking.funnel_id = ' . esc_sql( $args['funnel_id'] ) . ')';
+				$where_query[] = $this->prepare_funnel_in_clause( 'tracking.funnel_id', array( $args['funnel_id'] ) );
 			}
 
 			if ( isset( $filters['period'] ) ) {
@@ -937,14 +963,13 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			}
 
 			$where_query = implode( ' AND ', $where_query );
-			$limit_str   = " LIMIT $offset, $limit";
-
-			$limit_str = esc_sql( $limit_str );
+			$limit_str   = " LIMIT $offset, $limit"; // $offset and $limit are absint()'d above.
 
 			$select_type = "select optin.*, tracking.funnel_id as fid {$case_string} ";
 			if ( 'yes' === $args['total_count'] ) {
-				$total_count_query  = "select count( DISTINCT tracking.source) as total_count from {$wpdb->prefix}bwf_conversion_tracking as tracking JOIN {$wpdb->prefix}bwf_optin_entries as optin ON tracking.source = optin.id where {$where_query}";
-				$total_count_result = $wpdb->get_results( $total_count_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$total_count_query = "select count( DISTINCT tracking.source) as total_count from {$wpdb->prefix}bwf_conversion_tracking as tracking JOIN {$wpdb->prefix}bwf_optin_entries as optin ON tracking.source = optin.id where {$where_query}";
+				// $total_count_query assembled from $wpdb->prepare() fragments (search, funnel IN-list, period); $case_string is trusted hook SQL. PHPCS cannot verify the assembled string.
+				$total_count_result = $wpdb->get_results( $total_count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				if ( ! empty( $total_count_result ) ) {
 					$response['total_count'] = absint( $total_count_result[0]['total_count'] );
 				}
@@ -952,7 +977,8 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 
 			$sql_query = "{$select_type} from {$wpdb->prefix}bwf_conversion_tracking as tracking JOIN {$wpdb->prefix}bwf_optin_entries as optin ON tracking.source = optin.id where {$where_query} ORDER BY tracking.source DESC {$limit_str}";
 
-			$results  = $wpdb->get_results( $sql_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// $sql_query assembled from $wpdb->prepare() fragments (search, funnel IN-list, period) + absint LIMIT; $case_string is trusted hook SQL. PHPCS cannot verify the assembled string.
+			$results  = $wpdb->get_results( $sql_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( is_array( $db_error ) && isset( $db_error['db_error'] ) && true === $db_error['db_error'] ) {
 				return rest_ensure_response( $response );
@@ -984,8 +1010,8 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 					'phone'        => $phone,
 					'others'       => $contact->prepare_optin_data( $result['data'] ),
 					'date'         => $result['date'] ?? '',
-					'device'       => ( isset( $result['device'] ) && $result['device'] === 'desktop' ) ? __( 'Desktop', 'funnel-builder' ) : ucfirst( $result['device'] ),
-					'referrers'    => ( isset( $result['referrers'] ) && $result['referrers'] === 'Direct' ) ? __( 'Direct', 'funnel-builder' ) : $result['referrers'],
+					'device'       => ! empty( $result['device'] ) ? ( $result['device'] === 'desktop' ? __( 'Desktop', 'funnel-builder' ) : ucfirst( $result['device'] ) ) : '',
+					'referrers'    => ! empty( $result['referrers'] ) ? ( $result['referrers'] === 'Direct' ? __( 'Direct', 'funnel-builder' ) : $result['referrers'] ) : '',
 					'utm_campaign' => $result['utm_campaign'] ?? '',
 					'utm_source'   => $result['utm_source'] ?? '',
 					'utm_medium'   => $result['utm_medium'] ?? '',
@@ -1004,7 +1030,6 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			$response['message']     = __( 'Success', 'funnel-builder' );
 
 			return $return_data ? $response : rest_ensure_response( $response );
-
 		}
 
 		public function delete_lead_entry( $request ) {
@@ -1026,9 +1051,7 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			);
 
 			return rest_ensure_response( $resp );
-
 		}
-
 	}
 
 

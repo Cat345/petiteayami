@@ -3,6 +3,7 @@
 /**
  * Author PhpStorm.
  */
+#[\AllowDynamicProperties]
 class BWFAN_Dynamic_Option_Base extends BWFAN_Rule_Base {
     public $rule_type = '';
 
@@ -107,6 +108,7 @@ if ( class_exists( 'WooCommerce' ) ) {
      *
      * @since 1.0.0
      */
+    #[\AllowDynamicProperties]
     class BWFAN_Rule_Products extends BWFAN_Dynamic_Option_Base {
 
         /**
@@ -320,6 +322,7 @@ if ( class_exists( 'WooCommerce' ) ) {
      *
      * @since 1.0.0
      */
+    #[\AllowDynamicProperties]
     class BWFAN_Rule_Term_Taxonomy extends BWFAN_Dynamic_Option_Base {
 
         public $taxonomy_name = 'product_cat';
@@ -573,6 +576,7 @@ if ( class_exists( 'WooCommerce' ) ) {
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Country extends BWFAN_Rule_Base {
 
     /**
@@ -746,6 +750,7 @@ class BWFAN_Rule_Country extends BWFAN_Rule_Base {
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Custom_Field extends BWFAN_Rule_Base {
 
     /**

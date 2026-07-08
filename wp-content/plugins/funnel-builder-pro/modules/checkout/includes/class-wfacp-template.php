@@ -162,6 +162,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			add_filter( 'wfacp_the_content', 'shortcode_unautop' );
 			add_filter( 'wfacp_the_content', 'prepend_attachment' );
 			add_filter( 'wfacp_the_content', 'do_shortcode', 11 );
+			add_filter( 'wfacp_the_content', array( 'WFACP_Common', 'strip_scripts_from_content' ), 99 );
 
 			add_filter( 'wfacp_the_content', array( $GLOBALS['wp_embed'], 'run_shortcode' ), 8 );
 			add_filter( 'wfacp_the_content', array( $GLOBALS['wp_embed'], 'autoembed' ), 8 );
@@ -846,7 +847,10 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			$settings = $this->page_settings;
 
 			if ( isset( $settings['header_script'] ) && '' != $settings['header_script'] ) {
-				printf( "\n \n %s \n \n", $settings['header_script'] );
+				$sanitized = WFACP_Common::sanitize_global_script( $settings['header_script'] );
+				if ( $sanitized === $settings['header_script'] ) {
+					printf( "\n \n %s \n \n", $settings['header_script'] ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				}
 			}
 		}
 
@@ -856,14 +860,20 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 			if ( false == $this->footer_js_printed && isset( $settings['footer_script'] ) && '' != $settings['footer_script'] ) {
 				$this->footer_js_printed = true;
-				printf( "\n \n %s \n\n", $settings['footer_script'] );
+				$sanitized_footer        = WFACP_Common::sanitize_global_script( $settings['footer_script'] );
+				if ( $sanitized_footer === $settings['footer_script'] ) {
+					printf( "\n \n %s \n\n", $settings['footer_script'] ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				}
 			}
 
 			$_wfacp_global_settings = get_option( '_wfacp_global_settings' );
 
 			if ( isset( $_wfacp_global_settings['wfacp_global_external_script'] ) && $_wfacp_global_settings['wfacp_global_external_script'] != '' ) {
-				$global_script = $_wfacp_global_settings['wfacp_global_external_script'];
-				echo $global_script;
+				$global_script    = $_wfacp_global_settings['wfacp_global_external_script'];
+				$sanitized_global = WFACP_Common::sanitize_global_script( $global_script );
+				if ( $sanitized_global === $global_script ) {
+					echo $global_script; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				}
 			}
 		}
 
@@ -1185,24 +1195,28 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 					}
 				}
 
-				if ( ! isset( $template_fields['shipping']['shipping_first_name'] ) && true == $billing_first_name ) {
+				if ( ! isset( $template_fields['shipping']['shipping_first_name'] ) && true == $billing_first_name && isset( $template_fields['billing']['billing_first_name'] ) ) {
 					$template_fields['shipping']['shipping_first_name']       = $template_fields['billing']['billing_first_name'];
 					$template_fields['shipping']['shipping_first_name']['id'] = 'shipping_first_name';
 					if ( isset( $template_fields['shipping']['shipping_first_name']['required'] ) ) {
 						unset( $template_fields['shipping']['shipping_first_name']['required'] );
 					}
-					$_POST['shipping_first_name']    = wc_clean( $_POST['billing_first_name'] );
-					$_REQUEST['shipping_first_name'] = wc_clean( $_POST['billing_first_name'] );
+					if ( isset( $_POST['billing_first_name'] ) ) {
+						$_POST['shipping_first_name']    = wc_clean( $_POST['billing_first_name'] );
+						$_REQUEST['shipping_first_name'] = wc_clean( $_POST['billing_first_name'] );
+					}
 				}
 
-				if ( ! isset( $template_fields['shipping']['shipping_last_name'] ) && true == $billing_last_name ) {
+				if ( ! isset( $template_fields['shipping']['shipping_last_name'] ) && true == $billing_last_name && isset( $template_fields['billing']['billing_last_name'] ) ) {
 					$template_fields['shipping']['shipping_last_name'] = $template_fields['billing']['billing_last_name'];
 					if ( isset( $template_fields['shipping']['shipping_last_name']['required'] ) ) {
 						unset( $template_fields['shipping']['shipping_last_name']['required'] );
 					}
 					$template_fields['shipping']['shipping_last_name']['id'] = 'shipping_last_name';
-					$_POST['shipping_last_name']                             = wc_clean( $_POST['billing_last_name'] );
-					$_REQUEST['shipping_last_name']                          = wc_clean( $_POST['billing_last_name'] );
+					if ( isset( $_POST['billing_last_name'] ) ) {
+						$_POST['shipping_last_name']    = wc_clean( $_POST['billing_last_name'] );
+						$_REQUEST['shipping_last_name'] = wc_clean( $_POST['billing_last_name'] );
+					}
 				}
 			}
 
@@ -2072,7 +2086,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			$coupon_text = apply_filters( 'wfacp_coupon_label_text', __( 'Coupon', 'woocommerce' ) );
 			$label       = apply_filters( 'woocommerce_cart_totals_coupon_label', sprintf( '<span>' . esc_html__( $coupon_text . ' %1$s %2$s', 'woocommerce' ) . '</span>', $svg, "<span class='wfacp_coupon_code'>" . $coupon->get_code() . '</span>' ), $coupon );
 			if ( $echo ) {
-				echo $label;
+				echo wp_kses_post( $label );
 			} else {
 				return $label;
 			}
@@ -2160,66 +2174,69 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 		public function merge_builder_data( $field, $field_index ) {
 			try {
 
-			$template_slug = $this->get_template_slug();
-			$template_slug = sanitize_title( $template_slug );
-			$css_ready     = $this->get_field_css_ready( $template_slug, $field_index );
+				$template_slug = $this->get_template_slug();
+				$template_slug = sanitize_title( $template_slug );
+				$css_ready     = $this->get_field_css_ready( $template_slug, $field_index );
 
-			// CRITICAL: Remove old wfacp-col-* classes from field['class'] before adding new ones
-			// This ensures that when the dropdown changes, the old class is replaced with the new one
-			// List of all possible wfacp-col-* classes that should be removed
-			$wfacp_col_classes_to_remove = [
-				'wfacp-col-full',
-				'wfacp-col-left-half',
-				'wfacp-col-right-half',
-				'wfacp-col-left-third',
-				'wfacp-col-right-third',
-				'wfacp-col-two-third',
-				'wfacp-col-one-third',
-			];
+				// CRITICAL: Remove old wfacp-col-* classes from field['class'] before adding new ones
+				// This ensures that when the dropdown changes, the old class is replaced with the new one
+				// List of all possible wfacp-col-* classes that should be removed
+				$wfacp_col_classes_to_remove = array(
+					'wfacp-col-full',
+					'wfacp-col-left-half',
+					'wfacp-col-right-half',
+					'wfacp-col-left-third',
+					'wfacp-col-right-third',
+					'wfacp-col-two-third',
+					'wfacp-col-one-third',
+				);
 
-			// Ensure field['class'] is an array
-			if ( ! isset( $field['class'] ) || ! is_array( $field['class'] ) ) {
-				$field['class'] = [];
-			}
+				// Ensure field['class'] is an array
+				if ( ! isset( $field['class'] ) || ! is_array( $field['class'] ) ) {
+					$field['class'] = array();
+				}
 
-			// Remove old wfacp-col-* classes from the class array
-			// field['class'] is an array of strings, where each string can contain multiple classes separated by spaces
-			// CRITICAL: Also remove any existing wrapper_class entries that contain wfacp-form-control-wrapper
-			// This prevents duplicate wrapper classes when the dropdown value changes
-			foreach ( $field['class'] as $key => $class_string ) {
-				if ( is_string( $class_string ) ) {
-					// Check if this string contains wfacp-form-control-wrapper (it's the wrapper_class we'll add later)
-					// If it does, remove the entire entry since we'll add a new one with the correct wfacp-col-* class
-					if ( strpos( $class_string, 'wfacp-form-control-wrapper' ) !== false ) {
-						unset( $field['class'][ $key ] );
-						continue;
-					}
+				// Remove old wfacp-col-* classes from the class array
+				// field['class'] is an array of strings, where each string can contain multiple classes separated by spaces
+				// CRITICAL: Also remove any existing wrapper_class entries that contain wfacp-form-control-wrapper
+				// This prevents duplicate wrapper classes when the dropdown value changes
+				foreach ( $field['class'] as $key => $class_string ) {
+					if ( is_string( $class_string ) ) {
+						// Check if this string contains wfacp-form-control-wrapper (it's the wrapper_class we'll add later)
+						// If it does, remove the entire entry since we'll add a new one with the correct wfacp-col-* class
+						if ( strpos( $class_string, 'wfacp-form-control-wrapper' ) !== false ) {
+							unset( $field['class'][ $key ] );
+							continue;
+						}
 
-					// For other class strings, remove any wfacp-col-* classes
-					$class_parts = array_map( 'trim', explode( ' ', $class_string ) );
-					// Filter out any wfacp-col-* classes
-					$filtered_parts = array_filter( $class_parts, function( $part ) use ( $wfacp_col_classes_to_remove ) {
-						return ! in_array( $part, $wfacp_col_classes_to_remove, true );
-					} );
-					// Rebuild the class string
-					$new_class_string = implode( ' ', $filtered_parts );
-					if ( ! empty( trim( $new_class_string ) ) ) {
-						$field['class'][ $key ] = $new_class_string;
-					} else {
-						// Remove empty class strings
-						unset( $field['class'][ $key ] );
+						// For other class strings, remove any wfacp-col-* classes
+						$class_parts = array_map( 'trim', explode( ' ', $class_string ) );
+						// Filter out any wfacp-col-* classes
+						$filtered_parts = array_filter(
+							$class_parts,
+							function ( $part ) use ( $wfacp_col_classes_to_remove ) {
+								return ! in_array( $part, $wfacp_col_classes_to_remove, true );
+							}
+						);
+						// Rebuild the class string
+						$new_class_string = implode( ' ', $filtered_parts );
+						if ( ! empty( trim( $new_class_string ) ) ) {
+							$field['class'][ $key ] = $new_class_string;
+						} else {
+							// Remove empty class strings
+							unset( $field['class'][ $key ] );
+						}
 					}
 				}
-			}
 
-			// Re-index the array after removing elements
-			$field['class'] = array_values( $field['class'] );
+				// Re-index the array after removing elements
+				$field['class'] = array_values( $field['class'] );
 
-			if ( '' !== $css_ready ) {
-				// Split by space (not comma) since get_field_css_ready returns space-separated classes
-				// Filter out empty strings from the array
-				$field['cssready'] = array_filter( array_map( 'trim', explode( ' ', $css_ready ) ) );
-			}
+				if ( '' !== $css_ready ) {
+					// Split by space (not comma) since get_field_css_ready returns space-separated classes
+					// Filter out empty strings from the array
+					$field['cssready'] = array_filter( array_map( 'trim', explode( ' ', $css_ready ) ) );
+				}
 
 				$css_classes = $this->default_css_class();
 
@@ -2440,8 +2457,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 		public function display_back_button( $step, $current_step ) {
 			// Prevent duplicate back button rendering in Divi 5
-			$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
-			static $displayed_back_buttons = [];
+			$is_divi5                      = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
+			static $displayed_back_buttons = array();
 
 			if ( $is_divi5 ) {
 				$button_key = 'back_' . $step . '_' . $current_step;
@@ -2475,8 +2492,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 		public function close_back_button_div( $step, $current_step ) {
 			// Prevent duplicate close div rendering in Divi 5
-			$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
-			static $closed_back_buttons = [];
+			$is_divi5                   = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
+			static $closed_back_buttons = array();
 
 			if ( $is_divi5 ) {
 				$button_key = 'close_' . $step . '_' . $current_step;
@@ -2494,36 +2511,36 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			}
 		}
 
-	public function display_next_button( $step, $current_step ) {
-		// CRITICAL: Prevent duplicate next button rendering in Divi 5 only
-		// This can happen in Divi 5 when the hook fires multiple times
-		// Check if we're in Divi 5 context before applying duplicate prevention
-		$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
+		public function display_next_button( $step, $current_step ) {
+			// CRITICAL: Prevent duplicate next button rendering in Divi 5 only
+			// This can happen in Divi 5 when the hook fires multiple times
+			// Check if we're in Divi 5 context before applying duplicate prevention
+			$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
 
-		// Static variable for tracking displayed buttons (only used in Divi 5)
-		static $displayed_buttons = [];
+			// Static variable for tracking displayed buttons (only used in Divi 5)
+			static $displayed_buttons = array();
 
-		if ( $is_divi5 ) {
-			$button_key = $step . '_' . $current_step;
-
-			// If this button was already displayed for this step, skip
-			if ( isset( $displayed_buttons[ $button_key ] ) ) {
-				return;
-			}
-		}
-
-		$form_data = $this->get_form_data();
-
-		if ( 'single_step' != $current_step ) {
-			$this->get_next_button( $step, $form_data );
-
-			// Mark this button as displayed (only in Divi 5)
 			if ( $is_divi5 ) {
 				$button_key = $step . '_' . $current_step;
-				$displayed_buttons[ $button_key ] = true;
+
+				// If this button was already displayed for this step, skip
+				if ( isset( $displayed_buttons[ $button_key ] ) ) {
+					return;
+				}
+			}
+
+			$form_data = $this->get_form_data();
+
+			if ( 'single_step' != $current_step ) {
+				$this->get_next_button( $step, $form_data );
+
+				// Mark this button as displayed (only in Divi 5)
+				if ( $is_divi5 ) {
+					$button_key                       = $step . '_' . $current_step;
+					$displayed_buttons[ $button_key ] = true;
+				}
 			}
 		}
-	}
 
 		public function change_back_step_label( $text, $next_action, $current_action ) {
 
@@ -2658,12 +2675,16 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			$page_settings          = $this->page_settings;
 
 			if ( isset( $_wfacp_global_settings['wfacp_checkout_global_css'] ) && $_wfacp_global_settings['wfacp_checkout_global_css'] != '' ) {
-				$global_custom_css = '<style>' . $_wfacp_global_settings['wfacp_checkout_global_css'] . '</style>';
-				echo $global_custom_css;
+				$sanitized_css = WFACP_Common::sanitize_global_css( $_wfacp_global_settings['wfacp_checkout_global_css'] );
+				if ( '' !== $sanitized_css ) {
+					echo '<style>' . $sanitized_css . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is sanitized via sanitize_global_css()
+				}
 			}
 			if ( isset( $page_settings['header_css'] ) && $page_settings['header_css'] != '' ) {
-				$header_css = '<style id="header_css">' . $page_settings['header_css'] . '</style>';
-				echo $header_css;
+				$sanitized_header_css = WFACP_Common::sanitize_global_css( $page_settings['header_css'] );
+				if ( '' !== $sanitized_header_css ) {
+					echo '<style id="header_css">' . $sanitized_header_css . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is sanitized via sanitize_global_css()
+				}
 			}
 		}
 
@@ -2989,7 +3010,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 					});
 
-					$(document.body).trigger('wfacp_editor_init', {'position_label': '<?php echo $this->get_field_label_position(); ?>'});
+					$(document.body).trigger('wfacp_editor_init', {'position_label': '<?php echo esc_js( $this->get_field_label_position() ); ?>'});
 				})(jQuery);
 			</script>
 			<?php

@@ -92,7 +92,7 @@ if ( ! class_exists( 'BWFABT_Report_Order_Bump' ) ) {
 				$date_query = ' AND ( ' . rtrim( $date_query, " OR " ) . ') ';
 			}
 
-			$sql = "SELECT * from $wpdb->wfob_stats WHERE `bid` IN( " . esc_sql( implode( ',', $query_variant_ids ) ) . " ) " . $date_query;
+			$sql = "SELECT * from $wpdb->wfob_stats WHERE `bid` IN( " . implode( ',', array_map( 'absint', $query_variant_ids ) ) . " ) " . $date_query;
 
 			$bumps_data = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 

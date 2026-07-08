@@ -22,6 +22,7 @@ if ( ! class_exists( 'WooFunnels_Tracking_Collector_Abstract' ) ) {
 	 * Abstract Class WooFunnels_Tracking_Collector_Abstract
 	 * @deprecated Use WooFunnels_Usage_Collector_Abstract instead
 	 */
+	#[\AllowDynamicProperties]
 	abstract class WooFunnels_Tracking_Collector_Abstract extends WooFunnels_Usage_Collector_Abstract {
 		// All methods inherited from WooFunnels_Usage_Collector_Abstract
 	}

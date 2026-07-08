@@ -11,10 +11,7 @@ use YOOtheme\Hook;
 
 class ConfigLoader
 {
-    /**
-     * @var Config
-     */
-    protected $config;
+    protected Config $config;
 
     /**
      * @var array<string, list<string|array<string, mixed>>>

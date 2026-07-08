@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 final class BWFAN_WC_Source extends BWFAN_Source {
 	// source type contains slug of current source. this helps events to become a child of a source
 	private static $instance = null;

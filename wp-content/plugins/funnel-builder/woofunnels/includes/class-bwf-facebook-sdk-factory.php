@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'BWF_Facebook_Sdk_Factory' ) ) {
 	#[AllowDynamicProperties]
 	class BWF_Facebook_Sdk_Factory {

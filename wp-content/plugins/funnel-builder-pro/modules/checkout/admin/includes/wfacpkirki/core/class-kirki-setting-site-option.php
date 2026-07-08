@@ -13,6 +13,10 @@
  * @since 3.0.0
  * @see WP_Customize_Setting
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Setting_Site_Option' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Setting_Site_Option extends WP_Customize_Setting {

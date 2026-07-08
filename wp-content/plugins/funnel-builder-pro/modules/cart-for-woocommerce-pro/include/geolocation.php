@@ -4,6 +4,11 @@
  */
 
 namespace FKCart\Pro;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( '\FKCart\Pro\Geolocation' ) ) {
 	#[\AllowDynamicProperties]
 	class Geolocation extends \WC_Geolocation {
@@ -91,19 +96,32 @@ if ( ! class_exists( '\FKCart\Pro\Geolocation' ) ) {
 		 * @return array|false|mixed|string|string[]
 		 */
 		private static function geolocate_via_api( $ip_address ) {
+			$empty = [ 'country' => '', 'state' => '', 'postcode' => '', 'city' => '' ];
+
+			$fail_key = 'fkcart_geoip_http_fail_global';
+			$fail_ttl = (int) apply_filters( 'fkcart_geoip_http_fail_ttl', DAY_IN_SECONDS );
+
+			// APIs failed recently for this site — do not call ip-api/ipinfo for any customer until TTL expires.
+			if ( get_transient( $fail_key ) ) {
+				return $empty;
+			}
+
 			$country_data = get_transient( 'fkcart_geoip_' . $ip_address );
 			if ( is_array( $country_data ) && isset( $country_data['country'] ) && ! empty( $country_data['country'] ) ) {
 				do_action( 'fkcart_geolocation', $country_data, $ip_address );
 
 				return $country_data;
 			}
-			$country_data   = [ 'country' => '', 'state' => '', 'postcode' => '', 'city' => '' ];
+
+			$country_data   = $empty;
 			$geoip_services = apply_filters( 'woocommerce_geolocation_geoip_apis', array(
 				'ip-api.com' => 'http://ip-api.com/json/%s',
 				'ipinfo.io'  => 'https://ipinfo.io/%s/json'
 			) );
 
 			if ( empty( $geoip_services ) ) {
+				set_transient( $fail_key, 1, $fail_ttl );
+
 				return $country_data;
 			}
 
@@ -133,17 +151,22 @@ if ( ! class_exists( '\FKCart\Pro\Geolocation' ) ) {
 						$country_data['city']     = isset( $data->city ) ? $data->city : '';
 						break;
 					default:
-						$country_data = [ 'country' => '', 'state' => '', 'postcode' => '', 'city' => '' ];
+						$country_data = $empty;
 						break;
 				}
 				if ( isset( $country_data['country'] ) && ! empty( $country_data['country'] ) ) {
 					set_transient( 'geoip_' . $ip_address, $country_data['country'], DAY_IN_SECONDS );
+					delete_transient( $fail_key );
 					break;
 				}
 			}
 
 			do_action( 'fkcart_geolocation', $country_data, $ip_address );
 			set_transient( 'fkcart_geoip_' . $ip_address, $country_data, DAY_IN_SECONDS );
+
+			if ( empty( $country_data['country'] ) ) {
+				set_transient( $fail_key, 1, $fail_ttl );
+			}
 
 			return $country_data;
 		}

@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
+	#[\AllowDynamicProperties]
 	abstract class WFOCU_Guten_Field {
 		protected $media_settings         = array();
 		protected $name                   = '';

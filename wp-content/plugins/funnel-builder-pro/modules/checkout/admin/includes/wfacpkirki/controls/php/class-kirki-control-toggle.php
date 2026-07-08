@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Toggle control (modified checkbox).
  */
 if ( ! class_exists( 'WFACPKirki_Control_Toggle' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Toggle extends WFACPKirki_Control_Base {
 
 		/**
@@ -40,17 +41,17 @@ if ( ! class_exists( 'WFACPKirki_Control_Toggle' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <label for="toggle_{{ data.id }}">
+			<label for="toggle_{{ data.id }}">
 			<span class="customize-control-title">
 				{{{ data.label }}}
 			</span>
-                <# if ( data.description ) { #>
-                <span class="description customize-control-description">{{{ data.description }}}</span>
-                <# } #>
-                <input class="screen-reader-text" {{{ data.inputAttrs }}} name="toggle_{{ data.id }}" id="toggle_{{ data.id }}" type="checkbox" value="{{ data.value }}" {{{ data.link }}}<# if ( '1' ==
-                data.value ) { #> checked<# } #> hidden />
-                <span class="switch"></span>
-            </label>
+				<# if ( data.description ) { #>
+				<span class="description customize-control-description">{{{ data.description }}}</span>
+				<# } #>
+				<input class="screen-reader-text" {{{ data.inputAttrs }}} name="toggle_{{ data.id }}" id="toggle_{{ data.id }}" type="checkbox" value="{{ data.value }}" {{{ data.link }}}<# if ( '1' ==
+				data.value ) { #> checked<# } #> hidden />
+				<span class="switch"></span>
+			</label>
 			<?php
 		}
 	}

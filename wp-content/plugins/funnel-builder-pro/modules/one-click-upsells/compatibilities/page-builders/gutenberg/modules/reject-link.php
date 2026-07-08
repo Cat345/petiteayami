@@ -1,7 +1,8 @@
 <?php
 if ( ! class_exists( 'WFOCU_Guten_Reject_Link' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Guten_Reject_Link extends WFOCU_Guten_Field {
-		public $slug = 'wfocu_reject_link';
+		public $slug  = 'wfocu_reject_link';
 		protected $id = 'wfocu_reject_link';
 
 		public function __construct() {
@@ -17,8 +18,7 @@ if ( ! class_exists( 'WFOCU_Guten_Reject_Link' ) ) {
 
 			return BWFBlocksUpsell_Render_Block::do_button_block( $settings, $content );
 		}
-
 	}
 
-	return new WFOCU_Guten_Reject_Link;
+	return new WFOCU_Guten_Reject_Link();
 }

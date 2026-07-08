@@ -23,6 +23,7 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Customizer_Styling' ) ) {
 	/**
 	 * Adds styles to the customizer.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Modules_Customizer_Styling {
 
 		/**

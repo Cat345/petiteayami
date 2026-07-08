@@ -5,18 +5,10 @@ if ( ! class_exists( 'WFACP_Exporter' ) ) {
 	 * Class WFACP_Exporter
 	 * Handles Exporting of Aero Checkout Pages into JSON Downloadable File
 	 */
+	#[\AllowDynamicProperties]
 	class WFACP_Exporter {
 
 		private static $ins = null;
-
-		public function __construct() {
-			if ( isset( $_POST['wfacp-action'] ) && 'export' === $_POST['wfacp-action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Hooking admin action, verification in maybe_export
-				add_action( 'admin_init', array( $this, 'maybe_export' ) );
-			}
-			if ( isset( $_GET['action'] ) && 'wfacp-export' === $_GET['action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin page detection
-				add_action( 'admin_init', array( $this, 'maybe_export_single' ) );
-			}
-		}
 
 		/**
 		 * @return WFACP_Exporter|null
@@ -27,47 +19,6 @@ if ( ! class_exists( 'WFACP_Exporter' ) ) {
 			}
 
 			return self::$ins;
-		}
-
-		public function maybe_export() {
-
-			$nonce = filter_input( INPUT_POST, 'wfacp-action-nonce', FILTER_UNSAFE_RAW );
-			if ( ! wp_verify_nonce( $nonce, 'wfacp-action-nonce' ) ) {
-				return;
-			}
-
-			$user = WFACP_Core()->role->user_access( 'checkout', 'write' );
-			if ( false === $user ) {
-				return;
-			}
-
-			$args = array(
-				'post_type'      => WFACP_Common::get_post_type_slug(),
-				'post_status'    => 'any',
-				'posts_per_page' => - 1,
-			);
-
-			$query_result = new WP_Query( $args );
-			$acp_posts    = array();
-			if ( $query_result instanceof WP_Query && $query_result->have_posts() ) {
-				$acp_posts = $query_result->posts;
-			}
-
-			$acps_to_export = array();
-			foreach ( $acp_posts as $post_key => $post ) {
-				$acps_to_export[ $post_key ] = $this->get_acp_array_for_json( $post->ID );
-			}
-
-			$acps_to_export = apply_filters( 'wfacp_export_data', $acps_to_export );
-
-			nocache_headers();
-
-			header( 'Content-Type: application/json; charset=utf-8' );
-			header( 'Content-Disposition: attachment; filename=wfacp-funnels-export-' . gmdate( 'm-d-Y' ) . '.json' );
-			header( 'Expires: 0' );
-
-			echo wp_json_encode( $acps_to_export );
-			exit;
 		}
 
 		public function get_acp_array_for_json( $post_id ) {
@@ -154,32 +105,6 @@ if ( ! class_exists( 'WFACP_Exporter' ) ) {
 
 		protected function get_image_url( $attachment_id ) {
 			return wp_get_attachment_image_src( absint( $attachment_id ) )[0];
-		}
-
-		public function maybe_export_single() {
-
-			$_wpnonce = filter_input( INPUT_GET, '_wpnonce', FILTER_UNSAFE_RAW );
-			if ( ! wp_verify_nonce( $_wpnonce, 'wfacp-export' ) ) {
-				return;
-			}
-
-			$user = WFACP_Core()->role->user_access( 'checkout', 'write' );
-			if ( false === $user ) {
-				return;
-			}
-			$post_id           = filter_input( INPUT_GET, 'id', FILTER_UNSAFE_RAW );
-			$acps_to_export    = array();
-			$acps_to_export[0] = $this->get_acp_array_for_json( $post_id );
-			$acps_to_export    = apply_filters( 'wfacp_export_data', $acps_to_export );
-
-			nocache_headers();
-
-			header( 'Content-Type: application/json; charset=utf-8' );
-			header( 'Content-Disposition: attachment; filename=wfacp-funnels-export-' . gmdate( 'm-d-Y' ) . '.json' );
-			header( 'Expires: 0' );
-
-			echo wp_json_encode( $acps_to_export );
-			exit;
 		}
 	}
 

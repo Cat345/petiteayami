@@ -101,6 +101,13 @@ class ThemeLoader
         ]);
 
         if ($version !== $themeConfig['version']) {
+            if (
+                ($themeConfig['minimum_stability'] ?? null) === 'beta' &&
+                !preg_match('/-(?:alpha|beta|rc)(?:[.-]|$)/i', $themeConfig['version'])
+            ) {
+                $themeConfig['minimum_stability'] = 'stable';
+            }
+
             set_theme_mod('config', json_encode($themeConfig));
         }
 

@@ -150,9 +150,12 @@ if ( ! function_exists( 'bwf_create_update_customer' ) ) {
 
 		$cid = $bwf_contact->get_id();
 		$bwf_contact->set_customer_cid( $cid );
-		$order->update_meta_data( '_woofunnel_custid', $cid );
-		$order->save_meta_data();
 
+		/**
+		 * The `_woofunnel_custid` indexed marker is stamped in bwf_create_update_contact()
+		 * after $bwf_contact->save(), once the contact has a real id. Stamping it here would
+		 * run before save() and write a premature 0 for every new contact.
+		 */
 	}
 }
 

@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Remove_Automation_Automation_Meta extends BWFAN_API_Base {
 	public static $ins;
 

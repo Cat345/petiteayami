@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Output' ) ) {
 	/**
 	 * Handles field CSS output.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Output {
 
 		/**
@@ -59,10 +60,10 @@ if ( ! class_exists( 'WFOCUKirki_Output' ) ) {
 		 *
 		 * @access public
 		 *
-		 * @param string $config_id The config ID.
-		 * @param array $output The output argument.
+		 * @param string       $config_id The config ID.
+		 * @param array        $output The output argument.
 		 * @param string|array $value The value.
-		 * @param array $field The field.
+		 * @param array        $field The field.
 		 */
 		public function __construct( $config_id, $output, $value, $field ) {
 
@@ -77,7 +78,7 @@ if ( ! class_exists( 'WFOCUKirki_Output' ) ) {
 		/**
 		 * If we have a sanitize_callback defined, apply it to the value.
 		 *
-		 * @param array $output The output args.
+		 * @param array        $output The output args.
 		 * @param string|array $value The value.
 		 *
 		 * @return string|array
@@ -95,13 +96,12 @@ if ( ! class_exists( 'WFOCUKirki_Output' ) ) {
 			}
 
 			return $value;
-
 		}
 
 		/**
 		 * If we have a value_pattern defined, apply it to the value.
 		 *
-		 * @param array $output The output args.
+		 * @param array        $output The output args.
 		 * @param string|array $value The value.
 		 *
 		 * @return string|array
@@ -135,7 +135,7 @@ if ( ! class_exists( 'WFOCUKirki_Output' ) ) {
 		/**
 		 * If we have a value_pattern defined, apply it to the value.
 		 *
-		 * @param array $output The output args.
+		 * @param array        $output The output args.
 		 * @param string|array $value The value.
 		 *
 		 * @return string|array
@@ -262,7 +262,7 @@ if ( ! class_exists( 'WFOCUKirki_Output' ) ) {
 		 *
 		 * @access protected
 		 *
-		 * @param array $output The field output.
+		 * @param array        $output The field output.
 		 * @param string|array $value The value.
 		 *
 		 * @return null
@@ -302,17 +302,20 @@ if ( ! class_exists( 'WFOCUKirki_Output' ) ) {
 		 *
 		 * @access protected
 		 *
-		 * @param string $property The CSS property.
+		 * @param string       $property The CSS property.
 		 * @param string|array $value The value.
 		 *
 		 * @return array
 		 */
 		protected function process_property_value( $property, $value ) {
-			$properties = apply_filters( "wfocukirki_{$this->config_id}_output_property_classnames", array(
+			$properties = apply_filters(
+				"wfocukirki_{$this->config_id}_output_property_classnames",
+				array(
 					'font-family'         => 'WFOCUKirki_Output_Property_Font_Family',
 					'background-image'    => 'WFOCUKirki_Output_Property_Background_Image',
 					'background-position' => 'WFOCUKirki_Output_Property_Background_Position',
-				) );
+				)
+			);
 			if ( array_key_exists( $property, $properties ) ) {
 				$classname = $properties[ $property ];
 				$obj       = new $classname( $property, $value );
@@ -329,7 +332,7 @@ if ( ! class_exists( 'WFOCUKirki_Output' ) ) {
 		 * @access protected
 		 *
 		 * @param string|array $value The value.
-		 * @param array $output The field "output".
+		 * @param array        $output The field "output".
 		 *
 		 * @return string|array
 		 */
@@ -349,6 +352,24 @@ if ( ! class_exists( 'WFOCUKirki_Output' ) ) {
 		 */
 		public function get_styles() {
 			return $this->styles;
+		}
+
+		/**
+		 * Sanitizes a CSS property value to prevent CSS injection.
+		 * Strips HTML, expression() and javascript: vectors, and control characters.
+		 *
+		 * @param string $value Raw CSS property value.
+		 * @return string Sanitized value.
+		 */
+		protected static function sanitize_css_value( $value ) {
+			if ( ! is_string( $value ) ) {
+				return $value;
+			}
+			$value = wp_strip_all_tags( $value );
+			$value = preg_replace( '/expression\s*\(/i', '', $value );
+			$value = preg_replace( '/javascript\s*:/i', '', $value );
+			$value = preg_replace( '/[\x00-\x1F\x7F]/u', '', $value );
+			return $value;
 		}
 	}
 }

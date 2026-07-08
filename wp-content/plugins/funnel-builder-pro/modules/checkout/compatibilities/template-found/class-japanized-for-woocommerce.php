@@ -1,10 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Author Artisan Workshop  https://wc.artws.info/
- * #[AllowDynamicProperties] 
- class WFACP_Japanized_for_Woocommerce
- *
+ * #[AllowDynamicProperties]
+class WFACP_Japanized_for_Woocommerce
  */
 if ( ! class_exists( 'WFACP_Japanized_for_Woocommerce' ) ) {
 	#[AllowDynamicProperties]
@@ -13,30 +16,28 @@ if ( ! class_exists( 'WFACP_Japanized_for_Woocommerce' ) ) {
 
 		public function __construct() {
 
-			add_action( 'wfacp_internal_css', [ $this, 'capture_instance' ] );
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_fields' ] );
+			add_action( 'wfacp_internal_css', array( $this, 'capture_instance' ) );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_fields' ) );
 			add_filter( 'wfacp_html_fields_wfacp_wc4jp', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'call_wc4jp_hook' ], 10, 3 );
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 10, 2 );
-
+			add_action( 'process_wfacp_html', array( $this, 'call_wc4jp_hook' ), 10, 3 );
+			add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 10, 2 );
 		}
 
 		public function capture_instance() {
 			$this->instance = WFACP_Common::remove_actions( 'woocommerce_before_order_notes', 'JP4WC_Delivery', 'delivery_date_designation' );
-
 		}
 
 
 		public function add_fields( $fields ) {
 			if ( $this->is_enable() ) {
-				$fields['wfacp_wc4jp'] = [
+				$fields['wfacp_wc4jp'] = array(
 					'type'       => 'wfacp_html',
-					'class'      => [ 'form-row-wide' ],
+					'class'      => array( 'form-row-wide' ),
 					'id'         => 'wfacp_wc4jp',
 					'field_type' => 'advanced',
 					'label'      => __( 'WooCommerce for Japan', 'woocommerce' ),
 
-				];
+				);
 			}
 
 			return $fields;
@@ -58,8 +59,8 @@ if ( ! class_exists( 'WFACP_Japanized_for_Woocommerce' ) ) {
 
 		public function add_default_wfacp_styling( $args, $key ) {
 			if ( false !== strpos( $key, 'wc4jp_' ) ) {
-				$all_cls             = array_merge( [ 'wfacp-form-control-wrapper wfacp-col-full' ], $args['class'] );
-				$input_class         = array_merge( [ 'wfacp-form-control' ], $args['input_class'] );
+				$all_cls             = array_merge( array( 'wfacp-form-control-wrapper wfacp-col-full' ), $args['class'] );
+				$input_class         = array_merge( array( 'wfacp-form-control' ), $args['input_class'] );
 				$args['class']       = $all_cls;
 				$args['input_class'] = $input_class;
 			}

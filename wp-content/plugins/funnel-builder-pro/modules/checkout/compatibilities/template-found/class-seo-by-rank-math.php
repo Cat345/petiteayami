@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Plugin Name:       Rank Math SEO
@@ -11,13 +15,13 @@ if ( ! class_exists( 'WFACP_Seo_By_Rank_Math' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Seo_By_Rank_Math {
 		public function __construct() {
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'add_action' ] );
-			add_action( 'wfacp_after_template_found', [ $this, 'remove_integrations_action' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'add_action' ) );
+			add_action( 'wfacp_after_template_found', array( $this, 'remove_integrations_action' ) );
 		}
 
 		public function add_action() {
 			WFACP_Common::remove_actions( 'rank_math/frontend/robots', 'RankMath\WooCommerce\WooCommerce', 'robots' );
-			add_filter( 'rank_math/frontend/description', [ $this, 'modify_rank_math_description' ], 10, 1 );
+			add_filter( 'rank_math/frontend/description', array( $this, 'modify_rank_math_description' ), 10, 1 );
 		}
 
 		/**

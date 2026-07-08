@@ -6,10 +6,11 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Oxygen' ) ) {
 	/**
 	 * Class WFOCU_Compatibility_With_Oxygen
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Oxygen {
 
 		public function __construct() {
-			add_action( 'plugins_loaded', [ $this, 'init_upstroke' ], 12 );
+			add_action( 'plugins_loaded', array( $this, 'init_upstroke' ), 12 );
 			add_filter( 'wfocu_should_render_script_jquery', array( $this, 'should_prevent_jq_on_editor' ), 10 );
 		}
 
@@ -30,8 +31,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Oxygen' ) ) {
 
 			return $bool;
 		}
-
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_Oxygen(), 'oxygen' );

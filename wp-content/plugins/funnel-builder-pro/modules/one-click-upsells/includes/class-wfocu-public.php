@@ -5,6 +5,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 	 * FrontEnd flow controller class
 	 * WFOCU_Public class
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Public {
 
 		private static $ins                 = null;
@@ -629,7 +630,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 
 				$full_note = $status_transition . ' ' . $transition_note;
 				$order->add_order_note( $full_note, false, false );
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 
 			}
 		}

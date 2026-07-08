@@ -528,7 +528,7 @@ class SeoFrontend
     {
         if( $this->isNoindex() ){
             $robots['noindex']  = true;
-            $robots['nofollow'] = true;
+            $robots['follow'] = true;
         }else{
             $robots['index']  = true;
             $robots['follow'] = true;

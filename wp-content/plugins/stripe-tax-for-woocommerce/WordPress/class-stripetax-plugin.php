@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) || exit;
 use Stripe\StripeTaxForWooCommerce\WooCommerce\Hook_Handlers\Tax_Rate_Tax_Calculation;
 use Stripe\StripeTaxForWooCommerce\WooCommerce\Hook_Handlers\Cart_Tax_Calculation;
 use Stripe\StripeTaxForWooCommerce\WooCommerce\Hook_Handlers\Order_Tax_Calculation;
+use Stripe\StripeTaxForWooCommerce\WooCommerce\Hook_Handlers\Admin_Order_Tax_Calculation;
 use Stripe\StripeTaxForWooCommerce\WooCommerce\Hook_Handlers\Order_Tax_Transaction;
 use Stripe\StripeTaxForWooCommerce\WooCommerce\StripeTaxTaxRateHooks;
 
@@ -29,6 +30,7 @@ abstract class StripeTax_Plugin {
 		StripeTaxTaxRateHooks::register_hook_handlers();
 		Cart_Tax_Calculation::register_hook_handlers();
 		Order_Tax_Calculation::register_hook_handlers();
+		Admin_Order_Tax_Calculation::register_hook_handlers();
 		Order_Tax_Transaction::register_hook_handlers();
 	}
 
@@ -39,6 +41,7 @@ abstract class StripeTax_Plugin {
 		StripeTaxTaxRateHooks::unregister_hook_handlers();
 		Cart_Tax_Calculation::unregister_hook_handlers();
 		Order_Tax_Calculation::unregister_hook_handlers();
+		Admin_Order_Tax_Calculation::unregister_hook_handlers();
 		Order_Tax_Transaction::unregister_hook_handlers();
 	}
 }

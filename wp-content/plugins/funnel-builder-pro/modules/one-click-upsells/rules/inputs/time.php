@@ -1,10 +1,10 @@
 <?php
 if ( ! class_exists( 'wfocu_Input_Time' ) ) {
+	#[\AllowDynamicProperties]
 	class wfocu_Input_Time extends wfocu_Input_Text {
 
 		public function __construct() {
 			$this->type = 'Time';
-
 
 			parent::__construct();
 		}
@@ -17,6 +17,5 @@ if ( ! class_exists( 'wfocu_Input_Time' ) ) {
 
 			echo '<input placeholder="For eg: 23:59" name="' . $field['name'] . '" type="text" id="' . esc_attr( $field['id'] ) . '" class="wfocu-time-picker-field' . esc_attr( $field['class'] ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . $value . '" />';
 		}
-
 	}
 }

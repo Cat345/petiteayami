@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFOCU_Compatibility_With_Theme_Bricks
  */
 if ( ! class_exists( 'WFOCU_Compatibility_With_Theme_Bricks' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Theme_Bricks {
 
 		public function __construct() {
@@ -24,6 +25,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Theme_Bricks' ) ) {
 
 		/**
 		 * Set default template when bricks theme activated
+		 *
 		 * @param $page_id
 		 *
 		 * @return void
@@ -36,6 +38,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Theme_Bricks' ) ) {
 
 		/**
 		 * Set default template when bricks theme activated and upsell created by funnel step
+		 *
 		 * @param $page_id
 		 *
 		 * @return void
@@ -45,9 +48,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Theme_Bricks' ) ) {
 				update_post_meta( $page_id, '_wp_page_template', '' );
 			}
 		}
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_Theme_Bricks(), 'bricks_theme' );
 }
-

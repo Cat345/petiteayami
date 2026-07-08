@@ -1,6 +1,7 @@
 <?php
 if ( ! class_exists( 'WFTY_Rule_Customer_Purchased_Products' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Customer_Purchased_Products extends WFTY_Rule_Base {
 
 		public $supports = array( 'cart', 'order' );
@@ -72,13 +73,13 @@ if ( ! class_exists( 'WFTY_Rule_Customer_Purchased_Products' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Customer ever purchased product %s <strong>%s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_product_title( $rule['condition'] ) );
+			return sprintf( __( 'Customer ever purchased product %1$s <strong>%2$s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_product_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Customer_Purchased_Cat' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Customer_Purchased_Cat extends WFTY_Rule_Base {
 
 		public $supports = array( 'cart', 'order' );
@@ -162,9 +163,7 @@ if ( ! class_exists( 'WFTY_Rule_Customer_Purchased_Cat' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Customer ever purchased products %s category <strong>%s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_category_title( $rule['condition'] ) );
+			return sprintf( __( 'Customer ever purchased products %1$s category <strong>%2$s</strong>', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_category_title( $rule['condition'] ) );
 		}
-
-
 	}
 }

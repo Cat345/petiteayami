@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Compatibility_With_PYS' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_PYS {
 		public function __construct() {
 			add_action( 'wp_head', array( $this, 'maybe_unhook' ), - 1 );
@@ -12,6 +13,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_PYS' ) ) {
 
 		/**
 		 * Unhook PYS override datalayer script
+		 *
 		 * @return void
 		 */
 		public function maybe_unhook() {
@@ -53,7 +55,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_PYS' ) ) {
 				WFOCU_Common::remove_actions( 'template_redirect', 'PixelYourSite\GATags', 'start_output_buffer' );
 
 			}
-
 		}
 	}
 

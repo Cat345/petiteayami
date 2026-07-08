@@ -7,6 +7,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 	 *
 	 * @author woofunnels.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Ecomm_Tracking {
 		private static $ins   = null;
 		public $api_events    = array();
@@ -1957,14 +1958,21 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 		public function render_global_external_scripts() {
 
 			if ( '' !== WFOCU_Core()->data->get_option( 'scripts' ) ) {
-				echo WFOCU_Core()->data->get_option( 'scripts' );  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$scripts = WFOCU_Core()->data->get_option( 'scripts' );
+				$scripts = WFOCU_AJAX_Controller::sanitize_global_script( $scripts );
+				if ( '' !== $scripts ) {
+					echo $scripts; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized via sanitize_global_script
+				}
 			}
 		}
 
 		public function render_global_external_scripts_head() {
 
 			if ( $this->should_render( false, true ) && '' !== WFOCU_Core()->data->get_option( 'scripts_head' ) ) {
-				echo WFOCU_Core()->data->get_option( 'scripts_head' );  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$scripts_head = WFOCU_AJAX_Controller::sanitize_global_script( WFOCU_Core()->data->get_option( 'scripts_head' ) );
+				if ( '' !== $scripts_head ) {
+					echo $scripts_head; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized via sanitize_global_script
+				}
 			}
 		}
 
@@ -1974,7 +1982,10 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 		public function render_offer_view_script() {
 			$get_offer_Data = WFOCU_Core()->data->get( '_current_offer' );
 			if ( $this->should_render( false ) && $get_offer_Data && is_object( $get_offer_Data ) && true === $get_offer_Data->settings->check_add_offer_script && '' !== $get_offer_Data->settings->upsell_page_track_code ) {
-				echo $get_offer_Data->settings->upsell_page_track_code;   //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$track_code = WFOCU_AJAX_Controller::sanitize_global_script( $get_offer_Data->settings->upsell_page_track_code );
+				if ( '' !== $track_code ) {
+					echo $track_code; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized via sanitize_global_script
+				}
 			}
 		}
 
@@ -1991,7 +2002,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 				return;
 			}
 
-			echo $data['success_offer'];  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo WFOCU_AJAX_Controller::sanitize_global_script( $data['success_offer'] ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized via WFOCU_AJAX_Controller::sanitize_global_script
 		}
 
 		/**
@@ -2010,7 +2021,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 				return;
 			}
 
-			echo $script;  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo WFOCU_AJAX_Controller::sanitize_global_script( $script ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized via WFOCU_AJAX_Controller::sanitize_global_script
 		}
 
 		public function maybe_remove_track_data() {
@@ -2083,7 +2094,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 			$results = array();
 
 			foreach ( $terms as $term ) {
-				$results[] = html_entity_decode( $term->name );
+				$results[] = html_entity_decode( $term->name, ENT_QUOTES | ENT_HTML401 );
 			}
 
 			if ( $implode ) {

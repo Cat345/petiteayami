@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Quantity_Selector' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Quantity_Selector extends WFOCU_Divi_HTML_BLOCK {
 
 		public function __construct() {

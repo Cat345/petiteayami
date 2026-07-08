@@ -8,6 +8,10 @@
  * @license     http://opensource.org/licenses/https://opensource.org/licenses/MIT
  * @since       3.0.0
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Background' ) ) {
 	/**
 	 * Field overrides.
@@ -23,7 +27,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Background' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-background';
-
 		}
 
 		/**
@@ -39,7 +42,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Background' ) ) {
 				return;
 			}
 			$this->sanitize_callback = array( $this, 'sanitize' );
-
 		}
 
 		/**

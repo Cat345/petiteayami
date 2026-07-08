@@ -5,9 +5,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
-	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 if ( ! class_exists( 'WFOB_Post_Table' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Post_Table extends WP_List_Table {
 
 		public $per_page = 4;
@@ -18,15 +19,18 @@ if ( ! class_exists( 'WFOB_Post_Table' ) ) {
 
 		/**
 		 * Constructor.
+		 *
 		 * @since  1.0.0
 		 */
 		public function __construct( $args = array() ) {
 			global $status, $page;
-			parent::__construct( array(
-				'singular' => 'Funnel',
-				'plural'   => 'Funnels',
-				'ajax'     => false,
-			) );
+			parent::__construct(
+				array(
+					'singular' => 'Funnel',
+					'plural'   => 'Funnels',
+					'ajax'     => false,
+				)
+			);
 			$status            = 'all';
 			$page              = $this->get_pagenum();
 			$this->data        = array();
@@ -38,14 +42,14 @@ if ( ! class_exists( 'WFOB_Post_Table' ) ) {
 
 			}
 			// Make sure this file is loaded, so we have access to plugins_api(), etc.
-			require_once( ABSPATH . '/wp-admin/includes/plugin-install.php' );
+			require_once ABSPATH . '/wp-admin/includes/plugin-install.php';
 
 			parent::__construct( $args );
-
 		}
 
 		/**
 		 * Text to display if no items are present.
+		 *
 		 * @return  void
 		 * @since  1.0.0
 		 */
@@ -57,7 +61,7 @@ if ( ! class_exists( 'WFOB_Post_Table' ) ) {
 		/**
 		 * The content of each column.
 		 *
-		 * @param array $item The current item in the list.
+		 * @param array  $item The current item in the list.
 		 * @param string $column_name The key of the current column.
 		 *
 		 * @return string              Output for the current column.
@@ -92,12 +96,12 @@ if ( ! class_exists( 'WFOB_Post_Table' ) ) {
 				$bump_status = "checked='checked'";
 			}
 			?>
-            <div class='wfob_fsetting_table_title'>
-                <div class='offer_state wfob_toggle_btn'>
-                    <input name='offer_state' id='state<?php echo $item['id']; ?>' data-id="<?php echo $item['id']; ?>" type='checkbox' class='wfob-tgl wfob-tgl-ios wfob_checkout_page_status' <?php echo $bump_status; ?> data-id="<?php echo $item['id']; ?>">
-                    <label for='state<?php echo $item['id']; ?>' class='wfob-tgl-btn wfob-tgl-btn-small'></label>
-                </div>
-            </div>
+			<div class='wfob_fsetting_table_title'>
+				<div class='offer_state wfob_toggle_btn'>
+					<input name='offer_state' id='state<?php echo $item['id']; ?>' data-id="<?php echo $item['id']; ?>" type='checkbox' class='wfob-tgl wfob-tgl-ios wfob_checkout_page_status' <?php echo $bump_status; ?> data-id="<?php echo $item['id']; ?>">
+					<label for='state<?php echo $item['id']; ?>' class='wfob-tgl-btn wfob-tgl-btn-small'></label>
+				</div>
+			</div>
 			<?php
 		}
 
@@ -114,7 +118,7 @@ if ( ! class_exists( 'WFOB_Post_Table' ) ) {
 			$item_last     = array_keys( $item['row_actions'] );
 			$item_last_key = end( $item_last );
 			foreach ( $item['row_actions'] as $k => $action ) {
-				$attr          = isset( $action['attrs'] ) ? $action['attrs'] : '';
+				$attr           = isset( $action['attrs'] ) ? $action['attrs'] : '';
 				$column_string .= '<span class="' . $action['action'] . '"><a href="' . $action['link'] . '" ' . $attr . '>' . $action['text'] . '</a>';
 				if ( $k != $item_last_key ) {
 					$column_string .= ' | ';
@@ -178,41 +182,55 @@ if ( ! class_exists( 'WFOB_Post_Table' ) ) {
 
 			$id = absint( $item['id'] );
 
-			$links = apply_filters( 'wfob_bump_quick_links', array(
+			$links = apply_filters(
+				'wfob_bump_quick_links',
 				array(
-					'text' => __( 'Products', 'woofunnels-order-bump' ),
-					'link' => add_query_arg( array(
-						'page'    => 'wfob',
-						'section' => 'products',
-						'wfob_id' => $id,
-					), admin_url( 'admin.php' ) ),
-				),
-				array(
-					'text' => __( 'Design', 'woofunnels-order-bump' ),
-					'link' => add_query_arg( array(
-						'page'    => 'wfob',
-						'section' => 'design',
-						'wfob_id' => $id,
-					), admin_url( 'admin.php' ) ),
-				),
-				array(
-					'text' => __( 'Rules', 'woofunnels-order-bump' ),
-					'link' => add_query_arg( array(
-						'page'    => 'wfob',
-						'section' => 'rules',
-						'wfob_id' => $id,
-					), admin_url( 'admin.php' ) ),
-				),
-				array(
-					'text' => __( 'Settings', 'woofunnels-order-bump' ),
-					'link' => add_query_arg( array(
-						'page'    => 'wfob',
-						'section' => 'settings',
-						'wfob_id' => $id,
-					), admin_url( 'admin.php' ) ),
-				),
-			) );
-
+					array(
+						'text' => __( 'Products', 'woofunnels-order-bump' ),
+						'link' => add_query_arg(
+							array(
+								'page'    => 'wfob',
+								'section' => 'products',
+								'wfob_id' => $id,
+							),
+							admin_url( 'admin.php' )
+						),
+					),
+					array(
+						'text' => __( 'Design', 'woofunnels-order-bump' ),
+						'link' => add_query_arg(
+							array(
+								'page'    => 'wfob',
+								'section' => 'design',
+								'wfob_id' => $id,
+							),
+							admin_url( 'admin.php' )
+						),
+					),
+					array(
+						'text' => __( 'Rules', 'woofunnels-order-bump' ),
+						'link' => add_query_arg(
+							array(
+								'page'    => 'wfob',
+								'section' => 'rules',
+								'wfob_id' => $id,
+							),
+							admin_url( 'admin.php' )
+						),
+					),
+					array(
+						'text' => __( 'Settings', 'woofunnels-order-bump' ),
+						'link' => add_query_arg(
+							array(
+								'page'    => 'wfob',
+								'section' => 'settings',
+								'wfob_id' => $id,
+							),
+							admin_url( 'admin.php' )
+						),
+					),
+				)
+			);
 
 			$html = array();
 
@@ -235,6 +253,7 @@ if ( ! class_exists( 'WFOB_Post_Table' ) ) {
 
 		/**
 		 * Retrieve an array of possible bulk actions.
+		 *
 		 * @return array
 		 * @since  1.0.0
 		 */
@@ -246,6 +265,7 @@ if ( ! class_exists( 'WFOB_Post_Table' ) ) {
 
 		/**
 		 * Prepare an array of items to be listed.
+		 *
 		 * @return array Prepared items.
 		 * @since  1.0.0
 		 */
@@ -257,22 +277,25 @@ if ( ! class_exists( 'WFOB_Post_Table' ) ) {
 
 			$total_items = $this->data['found_posts'];
 
-			$this->set_pagination_args( array(
-				'total_items' => $total_items, //WE have to calculate the total number of items
-				'per_page'    => $this->per_page, //WE have to determine how many items to show on a page
-			) );
+			$this->set_pagination_args(
+				array(
+					'total_items' => $total_items, // WE have to calculate the total number of items
+					'per_page'    => $this->per_page, // WE have to determine how many items to show on a page
+				)
+			);
 			$this->items = $this->data['items'];
 		}
 
 		protected function get_sortable_columns() {
 			return array(
-				'last_update' => [ 'modified', 1 ],
-				'priority'    => [ 'menu_order', 1 ],
+				'last_update' => array( 'modified', 1 ),
+				'priority'    => array( 'menu_order', 1 ),
 			);
 		}
 
 		/**
 		 * Retrieve an array of columns for the list table.
+		 *
 		 * @return array Key => Value pairs.
 		 * @since  1.0.0
 		 */
@@ -315,7 +338,6 @@ if ( ! class_exists( 'WFOB_Post_Table' ) ) {
 		 * @param string $input_id ID attribute value for the search input field.
 		 *
 		 * @since 3.1.0
-		 *
 		 */
 		public function search_box( $text = '', $input_id = 'wfob' ) {
 			$input_id = $input_id . '-search-input';
@@ -333,25 +355,34 @@ if ( ! class_exists( 'WFOB_Post_Table' ) ) {
 				echo '<input type="hidden" name="detached" value="' . esc_attr( $_REQUEST['detached'] ) . '" />';
 			}
 			?>
-            <p class="search-box">
-                <label class="screen-reader-text" for="<?php echo esc_attr( $input_id ); ?>"><?php echo $text; ?>:</label>
-                <input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="s"
-                       value="<?php _admin_search_query(); ?>"/>
+			<p class="search-box">
+				<label class="screen-reader-text" for="<?php echo esc_attr( $input_id ); ?>"><?php echo $text; ?>:</label>
+				<input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="s"
+						value="<?php _admin_search_query(); ?>"/>
 				<?php
-				submit_button( $text, '', '', false, array(
-					'id' => 'search-submit',
-				) );
+				submit_button(
+					$text,
+					'',
+					'',
+					false,
+					array(
+						'id' => 'search-submit',
+					)
+				);
 				?>
-            </p>
+			</p>
 			<?php
 		}
 
 		public static function render_trigger_nav() {
-			$get_campaign_statuses = apply_filters( 'wfob_admin_trigger_nav', array(
-				'all'      => __( 'All', 'woofunnels-order-bump' ),
-				'active'   => __( 'Active', 'woofunnels-order-bump' ),
-				'inactive' => __( 'Inactive', 'woofunnels-order-bump' ),
-			) );
+			$get_campaign_statuses = apply_filters(
+				'wfob_admin_trigger_nav',
+				array(
+					'all'      => __( 'All', 'woofunnels-order-bump' ),
+					'active'   => __( 'Active', 'woofunnels-order-bump' ),
+					'inactive' => __( 'Inactive', 'woofunnels-order-bump' ),
+				)
+			);
 			$html                  = '<ul class="subsubsub subsubsub_wfob">';
 			$html_inside           = array();
 			$current_status        = 'all';
@@ -365,9 +396,12 @@ if ( ! class_exists( 'WFOB_Post_Table' ) ) {
 					$need_class = 'current';
 				}
 
-				$url           = add_query_arg( array(
-					'status' => $slug,
-				), admin_url( 'admin.php?page=wfob' ) );
+				$url           = add_query_arg(
+					array(
+						'status' => $slug,
+					),
+					admin_url( 'admin.php?page=wfob' )
+				);
 				$html_inside[] = sprintf( '<li><a href="%s" class="%s">%s</a> </li>', $url, $need_class, $status );
 			}
 
@@ -386,25 +420,24 @@ if ( ! class_exists( 'WFOB_Post_Table' ) ) {
 		 * @param string $which
 		 *
 		 * @since 3.1.0
-		 *
 		 */
 		protected function display_tablenav( $which ) {
 
 			?>
-            <div class="tablenav <?php echo esc_attr( $which ); ?>">
+			<div class="tablenav <?php echo esc_attr( $which ); ?>">
 
 				<?php if ( $this->has_items() ) : ?>
-                    <div class="alignleft actions bulkactions">
+					<div class="alignleft actions bulkactions">
 						<?php $this->bulk_actions( $which ); ?>
-                    </div>
-				<?php
+					</div>
+					<?php
 				endif;
 				$this->extra_tablenav( $which );
 				$this->pagination( $which );
 				?>
 
-                <br class="clear"/>
-            </div>
+				<br class="clear"/>
+			</div>
 			<?php
 		}
 
@@ -416,39 +449,38 @@ if ( ! class_exists( 'WFOB_Post_Table' ) ) {
 
 		public function order_preview_template() {
 			?>
-            <script type="text/template" id="tmpl-wfob-page-popup">
-                <div class="wc-backbone-modal wc-order-preview">
-                    <div class="wc-backbone-modal-content">
-                        <section class="wc-backbone-modal-main" role="main">
-                            <header class="wc-backbone-modal-header">
-                                <h1>{{data.post_name}}</h1>
-                                <mark class="wfacp-os order-status status-{{ data.post_status.toLowerCase() }}">
-                                    <# if(data.post_status != 'publish') { #>
-                                    <span><?php _e( 'InActive', 'woocommerce' ) ?></span>
-                                    <# } else {#>
-                                    <span><?php _e( 'Active', 'woocommerce' ) ?></span>
-                                    <# } #>
-                                </mark>
+			<script type="text/template" id="tmpl-wfob-page-popup">
+				<div class="wc-backbone-modal wc-order-preview">
+					<div class="wc-backbone-modal-content">
+						<section class="wc-backbone-modal-main" role="main">
+							<header class="wc-backbone-modal-header">
+								<h1>{{data.post_name}}</h1>
+								<mark class="wfacp-os order-status status-{{ data.post_status.toLowerCase() }}">
+									<# if(data.post_status != 'publish') { #>
+									<span><?php _e( 'InActive', 'woocommerce' ); ?></span>
+									<# } else {#>
+									<span><?php _e( 'Active', 'woocommerce' ); ?></span>
+									<# } #>
+								</mark>
 
-                                <button class="modal-close modal-close-link dashicons dashicons-no-alt">
-                                    <span class="screen-reader-text"><?php esc_html_e( 'Close modal panel', 'woofunnels-order-bump' ); ?></span>
-                                </button>
-                            </header>
-                            <article>
-                                <# print(data.html) #>
-                            </article>
-                            <footer>
-                                <div class="inner">
-                                    <a target="_blank" href="{{data.launch_url}}" class="wfob_btn wfob_btn_primary wfob-funnel-pop-launch-btn "><?php _e( 'Edit', 'woofunnels-order-bump' ); ?></a>
-                                </div>
-                            </footer>
-                        </section>
-                    </div>
-                </div>
-                <div class="wc-backbone-modal-backdrop modal-close"></div>
-            </script>
+								<button class="modal-close modal-close-link dashicons dashicons-no-alt">
+									<span class="screen-reader-text"><?php esc_html_e( 'Close modal panel', 'woofunnels-order-bump' ); ?></span>
+								</button>
+							</header>
+							<article>
+								<# print(data.html) #>
+							</article>
+							<footer>
+								<div class="inner">
+									<a target="_blank" href="{{data.launch_url}}" class="wfob_btn wfob_btn_primary wfob-funnel-pop-launch-btn "><?php _e( 'Edit', 'woofunnels-order-bump' ); ?></a>
+								</div>
+							</footer>
+						</section>
+					</div>
+				</div>
+				<div class="wc-backbone-modal-backdrop modal-close"></div>
+			</script>
 			<?php
 		}
-
 	}
 }

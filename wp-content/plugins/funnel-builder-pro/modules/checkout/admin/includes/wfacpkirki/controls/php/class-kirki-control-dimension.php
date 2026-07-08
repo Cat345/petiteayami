@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * A text control with validation for CSS units.
  */
 if ( ! class_exists( 'WFACPKirki_Control_Dimension' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Dimension extends WFACPKirki_Control_Base {
 
 		/**
@@ -36,9 +37,13 @@ if ( ! class_exists( 'WFACPKirki_Control_Dimension' ) ) {
 		public function enqueue() {
 			parent::enqueue();
 
-			wp_localize_script( 'wfacpkirki-script', 'dimensionwfacpkirkiL10n', array(
-				'invalid-value' => esc_attr__( 'Invalid Value', 'wfacpkirki' ),
-			) );
+			wp_localize_script(
+				'wfacpkirki-script',
+				'dimensionwfacpkirkiL10n',
+				array(
+					'invalid-value' => esc_attr__( 'Invalid Value', 'wfacpkirki' ),
+				)
+			);
 		}
 
 		/**
@@ -53,14 +58,14 @@ if ( ! class_exists( 'WFACPKirki_Control_Dimension' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <label class="customizer-text">
-                <# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
-                <# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
-                <div class="input-wrapper">
-                    <# var val = ( data.value && _.isString( data.value ) ) ? data.value.replace( '%%', '%' ) : ''; #>
-                    <input {{{ data.inputAttrs }}} type="text" value="{{ val }}"/>
-                </div>
-            </label>
+			<label class="customizer-text">
+				<# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
+				<# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
+				<div class="input-wrapper">
+					<# var val = ( data.value && _.isString( data.value ) ) ? data.value.replace( '%%', '%' ) : ''; #>
+					<input {{{ data.inputAttrs }}} type="text" value="{{ val }}"/>
+				</div>
+			</label>
 			<?php
 		}
 	}

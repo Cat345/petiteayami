@@ -2,6 +2,7 @@
 
 if ( ! bwfan_is_autonami_pro_active() && ! class_exists( 'BWFAN_OptinForm_Source' ) ) {
 
+	#[\AllowDynamicProperties]
 	class BWFAN_OptinForm_Source extends BWFAN_Source {
 		private static $instance = null;
 

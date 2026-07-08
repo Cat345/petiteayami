@@ -1,5 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 if ( ! class_exists( 'WFOCU_Compatibility_With_FBA' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_FBA {
 
 		public function __construct() {
@@ -7,7 +10,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_FBA' ) ) {
 			add_action( 'wfocu_front_init_funnel_hooks', array( $this, 'prevent_fba_fulfilment' ) );
 			add_action( 'woocommerce_payment_complete', array( $this, 'prevent_fba_fulfilment_multiple' ), - 1 );
 			add_action( 'woocommerce_thankyou', array( $this, 'maybe_execute_fulfilment' ) );
-
 		}
 
 
@@ -40,7 +42,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_FBA' ) ) {
 
 				}
 			}
-
 		}
 
 		public function prevent_fba_fulfilment_multiple( $order_id ) {
@@ -63,8 +64,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_FBA' ) ) {
 				} else {
 					remove_action( 'woocommerce_payment_complete', array( $fba->outbound, 'send_fulfillment_order' ) );
 				}
-
-
 			}
 		}
 
@@ -77,7 +76,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_FBA' ) ) {
 
 			$get_order        = wc_get_order( $order_id );
 			$is_during_upsell = $get_order->get_meta( '_wfocu_upsell_abandoned', true );
-
 
 			if ( class_exists( 'NS_FBA' ) && ! empty( $is_during_upsell ) ) {
 
@@ -99,10 +97,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_FBA' ) ) {
 					$fba->outbound->send_fulfillment_order( $order_id );
 				}
 			}
-
 		}
-
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_FBA(), 'fba' );

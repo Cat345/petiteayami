@@ -13,10 +13,8 @@ class BadFunctionCallException extends \BadFunctionCallException implements
      * @param string|callable|object $callback
      * @param mixed                  $code
      * @param null|mixed             $previous
-     *
-     * @return self
      */
-    public static function create($callback, $code = 0, $previous = null)
+    public static function create($callback, $code = 0, $previous = null): self
     {
         $function = $callback;
 

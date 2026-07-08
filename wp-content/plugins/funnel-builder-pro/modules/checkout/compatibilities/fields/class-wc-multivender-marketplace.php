@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * WCFM - WooCommerce Multivendor Marketplace by WC Lovers
@@ -7,23 +11,23 @@
 if ( ! class_exists( 'WFACP_Multivender_Market_Place' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Multivender_Market_Place {
-		private $instance = null;
-		private $new_fields = [];
-		private $add_fields = [
+		private $instance   = null;
+		private $new_fields = array();
+		private $add_fields = array(
 			'wcfmmp_user_location',
 			'wcfmmp_user_location_lat',
 			'wcfmmp_user_location_lng',
-		];
+		);
 
 		public function __construct() {
 
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
-			add_filter( 'wfacp_after_checkout_page_found', [ $this, 'action' ], 20 );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
+			add_filter( 'wfacp_after_checkout_page_found', array( $this, 'action' ), 20 );
 			add_filter( 'wfacp_html_fields_wcfmmp_user_location', '__return_false' );
 			add_filter( 'wfacp_html_fields_wcfmmp_user_location_map', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'process_html' ], 999, 3 );
+			add_action( 'process_wfacp_html', array( $this, 'process_html' ), 999, 3 );
 
-			add_action( 'woocommerce_checkout_fields', [ $this, 'assign_checkout_fields' ], 99 );
+			add_action( 'woocommerce_checkout_fields', array( $this, 'assign_checkout_fields' ), 99 );
 
 			/* prevent third party fields and wrapper*/
 
@@ -37,9 +41,7 @@ if ( ! class_exists( 'WFACP_Multivender_Market_Place' ) ) {
 
 			$fields_here = $this->instance->wcfmmp_checkout_user_location_fields( $fields );
 
-
 			if ( is_array( $fields_here['billing'] ) && count( $fields_here['billing'] ) > 0 ) {
-
 
 				foreach ( $this->add_fields as $i => $field_key ) {
 					if ( isset( $fields_here['billing'] [ $field_key ] ) ) {
@@ -66,21 +68,20 @@ if ( ! class_exists( 'WFACP_Multivender_Market_Place' ) ) {
 			if ( ! $this->is_enable() ) {
 				return $fields;
 			}
-			$fields['wcfmmp_user_location']     = [
+			$fields['wcfmmp_user_location']     = array(
 				'type'       => 'wfacp_html',
-				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'wcfmmp_user_location' ],
+				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'wcfmmp_user_location' ),
 				'id'         => 'wcfmmp_user_location',
 				'field_type' => 'wcfmmp_user_location',
 				'label'      => __( 'Delivery Location', 'wc-multivendor-marketplace' ),
-			];
-			$fields['wcfmmp_user_location_map'] = [
+			);
+			$fields['wcfmmp_user_location_map'] = array(
 				'type'       => 'wfacp_html',
-				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'wcfmmp_user_location_map' ],
+				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'wcfmmp_user_location_map' ),
 				'id'         => 'wcfmmp_user_location_map',
 				'field_type' => 'wcfmmp_user_location_map',
 				'label'      => __( 'Display Map', 'wc-multivendor-marketplace' ),
-			];
-
+			);
 
 			return $fields;
 		}
@@ -94,35 +95,29 @@ if ( ! class_exists( 'WFACP_Multivender_Market_Place' ) ) {
 				return;
 			}
 
-
 			if ( 'wcfmmp_user_location' === $key ) {
 
 				foreach ( $this->new_fields as $field_key => $args ) {
 
 					if ( isset( $args['type'] ) && 'checkbox' !== $args['type'] ) {
 
-						$args['input_class'] = array_merge( [ 'wfacp-form-control' ], $args['input_class'] );
-						$args['label_class'] = array_merge( [ 'wfacp-form-control-label' ], $args['label_class'] );
-						$args['class']       = array_merge( [ 'wfacp-form-control-wrapper wfacp-col-full' ], $args['class'] );
-						$args['cssready']    = [ 'wfacp-col-full' ];
+						$args['input_class'] = array_merge( array( 'wfacp-form-control' ), $args['input_class'] );
+						$args['label_class'] = array_merge( array( 'wfacp-form-control-label' ), $args['label_class'] );
+						$args['class']       = array_merge( array( 'wfacp-form-control-wrapper wfacp-col-full' ), $args['class'] );
+						$args['cssready']    = array( 'wfacp-col-full' );
 
 					} else {
-						$args['class']    = array_merge( [ 'wfacp-form-control-wrapper wfacp-col-full ' ], $args['class'] );
-						$args['cssready'] = [ 'wfacp-col-full' ];
+						$args['class']    = array_merge( array( 'wfacp-form-control-wrapper wfacp-col-full ' ), $args['class'] );
+						$args['cssready'] = array( 'wfacp-col-full' );
 					}
 					woocommerce_form_field( $field_key, $args );
 				}
-
 			}
 
 			if ( 'wcfmmp_user_location_map' === $key ) {
 				$this->instance->wcfmmp_checkout_user_location_map( WC()->checkout() );
 			}
-
-
 		}
-
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Multivender_Market_Place(), 'wfacp-WCFmp' );

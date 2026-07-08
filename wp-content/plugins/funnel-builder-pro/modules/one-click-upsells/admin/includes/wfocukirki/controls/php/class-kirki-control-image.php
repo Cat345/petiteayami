@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Image' ) ) {
 	/**
 	 * Adds the image control.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Image extends WFOCUKirki_Control_Base {
 
 		/**
@@ -34,53 +35,53 @@ if ( ! class_exists( 'WFOCUKirki_Control_Image' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <#
-            var saveAs = 'url';
-            if ( ! _.isUndefined( data.choices ) && ! _.isUndefined( data.choices.save_as ) ) {
-            saveAs = data.choices.save_as;
-            }
-            url = data.value;
-            if ( _.isObject( data.value ) && ! _.isUndefined( data.value.url ) ) {
-            url = data.value.url;
-            }
+			<#
+			var saveAs = 'url';
+			if ( ! _.isUndefined( data.choices ) && ! _.isUndefined( data.choices.save_as ) ) {
+			saveAs = data.choices.save_as;
+			}
+			url = data.value;
+			if ( _.isObject( data.value ) && ! _.isUndefined( data.value.url ) ) {
+			url = data.value.url;
+			}
 
-            data.choices.labels = _.isObject( data.choices.labels ) ? data.choices.labels : {};
-            data.choices.labels = _.defaults( data.choices.labels, {
-            select: '<?php esc_attr_e( 'Select image', 'wfocukirki' ); ?>',
-            change: '<?php esc_attr_e( 'Change image', 'wfocukirki' ); ?>',
-            'default': '<?php esc_attr_e( 'Default', 'wfocukirki' ); ?>',
-            remove: '<?php esc_attr_e( 'Remove', 'wfocukirki' ); ?>',
-            placeholder: '<?php esc_attr_e( 'No image selected', 'wfocukirki' ); ?>',
-            frame_title: '<?php esc_attr_e( 'Select image', 'wfocukirki' ); ?>',
-            frame_button: '<?php esc_attr_e( 'Choose image', 'wfocukirki' ); ?>',
-            } );
-            #>
-            <label>
+			data.choices.labels = _.isObject( data.choices.labels ) ? data.choices.labels : {};
+			data.choices.labels = _.defaults( data.choices.labels, {
+			select: '<?php esc_attr_e( 'Select image', 'wfocukirki' ); ?>',
+			change: '<?php esc_attr_e( 'Change image', 'wfocukirki' ); ?>',
+			'default': '<?php esc_attr_e( 'Default', 'wfocukirki' ); ?>',
+			remove: '<?php esc_attr_e( 'Remove', 'wfocukirki' ); ?>',
+			placeholder: '<?php esc_attr_e( 'No image selected', 'wfocukirki' ); ?>',
+			frame_title: '<?php esc_attr_e( 'Select image', 'wfocukirki' ); ?>',
+			frame_button: '<?php esc_attr_e( 'Choose image', 'wfocukirki' ); ?>',
+			} );
+			#>
+			<label>
 			<span class="customize-control-title">
 				{{{ data.label }}}
 			</span>
-                <# if ( data.description ) { #>
-                <span class="description customize-control-description">{{{ data.description }}}</span>
-                <# } #>
-            </label>
-            <div class="image-wrapper attachment-media-view image-upload">
-                <# if ( data.value['url'] || '' !== url ) { #>
-                <div class="thumbnail thumbnail-image">
-                    <img src="{{ url }}" alt=""/>
-                </div>
-                <# } else { #>
-                <div class="placeholder">{{ data.choices.labels.placeholder }}</div>
-                <# } #>
-                <div class="actions">
-                    <button class="button image-upload-remove-button<# if ( '' === url ) { #> hidden <# } #>">{{ data.choices.labels.remove }}</button>
-                    <# if ( data.default && '' !== data.default ) { #>
-                    <button type="button" class="button image-default-button"
-                    <# if ( data.default === data.value || ( ! _.isUndefined( data.value.url ) && data.default === data.value.url ) ) { #> style="display:none;"<# } #>>{{
-                    data.choices.labels['default'] }}</button>
-                    <# } #>
-                    <button type="button" class="button image-upload-button">{{ data.choices.labels.select }}</button>
-                </div>
-            </div>
+				<# if ( data.description ) { #>
+				<span class="description customize-control-description">{{{ data.description }}}</span>
+				<# } #>
+			</label>
+			<div class="image-wrapper attachment-media-view image-upload">
+				<# if ( data.value['url'] || '' !== url ) { #>
+				<div class="thumbnail thumbnail-image">
+					<img src="{{ url }}" alt=""/>
+				</div>
+				<# } else { #>
+				<div class="placeholder">{{ data.choices.labels.placeholder }}</div>
+				<# } #>
+				<div class="actions">
+					<button class="button image-upload-remove-button<# if ( '' === url ) { #> hidden <# } #>">{{ data.choices.labels.remove }}</button>
+					<# if ( data.default && '' !== data.default ) { #>
+					<button type="button" class="button image-default-button"
+					<# if ( data.default === data.value || ( ! _.isUndefined( data.value.url ) && data.default === data.value.url ) ) { #> style="display:none;"<# } #>>{{
+					data.choices.labels['default'] }}</button>
+					<# } #>
+					<button type="button" class="button image-upload-button">{{ data.choices.labels.select }}</button>
+				</div>
+			</div>
 			<?php
 		}
 	}

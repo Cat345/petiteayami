@@ -7,12 +7,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This file is to initiate WooFunnel core and to run some common methods and decide which WooFunnels core should run
  */
 if ( ! class_exists( 'WooFunnel_Loader' ) ) {
+	#[\AllowDynamicProperties]
 	class WooFunnel_Loader {
 
-		public static $plugins = array();
-		public static $loaded = false;
+		public static $plugins       = array();
+		public static $loaded        = false;
 		public static $ultimate_path = '';
-		public static $version = null;
+		public static $version       = null;
 
 
 		public static function include_core() {
@@ -29,7 +30,6 @@ if ( ! class_exists( 'WooFunnel_Loader' ) ) {
 
 				}
 			}
-
 		}
 
 		public static function register( $configuration ) {
@@ -38,22 +38,25 @@ if ( ! class_exists( 'WooFunnel_Loader' ) ) {
 
 		public static function get_the_latest() {
 			$get_all = self::$plugins;
-			uasort( $get_all, function ( $a, $b ) {
-				if ( version_compare( $a['version'], $b['version'], '=' ) ) {
-					return 0;
-				} else {
-					return ( version_compare( $a['version'], $b['version'], '<' ) ) ? - 1 : 1;
+			uasort(
+				$get_all,
+				function ( $a, $b ) {
+					if ( version_compare( $a['version'], $b['version'], '=' ) ) {
+						return 0;
+					} else {
+						return ( version_compare( $a['version'], $b['version'], '<' ) ) ? - 1 : 1;
+					}
 				}
-			} );
+			);
 
 			$get_most_recent_configuration = end( $get_all );
 
 			return $get_most_recent_configuration;
 		}
-
 	}
 }
 
+#[\AllowDynamicProperties]
 class WooFunnel_WFOB {
 
 	public static $version = WFOB_BWF_VERSION;
@@ -70,7 +73,7 @@ class WooFunnel_WFOB {
 
 	public static function load_files() {
 
-		$get_global_path = dirname( __FILE__ ) . '/woofunnels/';
+		$get_global_path = __DIR__ . '/woofunnels/';
 
 		if ( false === @file_exists( $get_global_path . 'includes/class-woofunnels-api.php' ) ) {
 			_doing_it_wrong( __FUNCTION__, __( 'FunnelKit Core should be present in folder \'woofunnels\' in order to run this properly. ' ), self::$version );
@@ -93,19 +96,3 @@ class WooFunnel_WFOB {
 }
 
 WooFunnel_WFOB::register();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

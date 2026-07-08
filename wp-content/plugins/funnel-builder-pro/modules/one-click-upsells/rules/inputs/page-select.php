@@ -1,6 +1,7 @@
 <?php
 if ( ! class_exists( 'wfocu_Input_Page_Select' ) ) {
 
+	#[\AllowDynamicProperties]
 	class wfocu_Input_Page_Select extends wfocu_Input_Text {
 
 		public function __construct() {
@@ -12,18 +13,16 @@ if ( ! class_exists( 'wfocu_Input_Page_Select' ) ) {
 				'allow_null'    => 0,
 				'choices'       => array(),
 				'default_value' => '',
-				'class'         => 'ajax_chosen_select_products'
+				'class'         => 'ajax_chosen_select_products',
 			);
 		}
 
 		public function render( $field, $value = null ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
 
-
 			$field = array_merge( $this->defaults, $field );
 			if ( ! isset( $field['id'] ) ) {
 				$field['id'] = sanitize_title( $field['id'] );
 			}
-
 
 			$args = array(
 				'name'             => $field['name'],
@@ -33,13 +32,10 @@ if ( ! class_exists( 'wfocu_Input_Page_Select' ) ) {
 				'show_option_none' => ' ',
 				'class'            => '',
 				'echo'             => false,
-				'selected'         => absint( $value )
+				'selected'         => absint( $value ),
 			);
 
-
 			echo wp_dropdown_pages( $args );
-
 		}
-
 	}
 }

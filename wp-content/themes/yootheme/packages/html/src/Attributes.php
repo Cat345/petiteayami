@@ -9,17 +9,17 @@ class Attributes implements Stringable
     /**
      * @var array<int, string>
      */
-    protected $class = [];
+    protected array $class = [];
 
     /**
      * @var array<string, string>
      */
-    protected $style = [];
+    protected array $style = [];
 
     /**
      * @var array<string, string>
      */
-    protected $attributes = [];
+    protected array $attributes = [];
 
     public function __toString(): string
     {
@@ -72,11 +72,9 @@ class Attributes implements Stringable
     }
 
     /**
-     * @param string $name
-     *
      * @return $this
      */
-    public function remove($name): self
+    public function remove(string $name): self
     {
         if ($name === 'class') {
             $this->class = [];
@@ -94,7 +92,7 @@ class Attributes implements Stringable
      *
      * @return $this
      */
-    public function merge($attributes): self
+    public function merge(iterable $attributes): self
     {
         foreach ($attributes as $name => $value) {
             if (is_int($name)) {

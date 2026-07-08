@@ -99,47 +99,6 @@ if ( ! function_exists( 'wfocu_update_general_setting_fields_3_5' ) ) {
 
 }
 
-// Method to check and set up the recurring schedule
-if ( ! function_exists( 'wfocu_update_delete_duplicate_comments_3_6' ) ) {
-	function wfocu_update_delete_duplicate_comments_3_6() {
-		global $wpdb;
-
-		// Select query to check if any rows match the criteria
-		$select_query = "
-            SELECT wc.comment_ID
-            FROM {$wpdb->comments} wc
-            JOIN (
-                SELECT comment_post_ID, MIN(comment_ID) AS retained_comment_ID
-                FROM {$wpdb->comments}
-                WHERE comment_content LIKE '%Order charge successful in Stripe%'
-                GROUP BY comment_post_ID
-                HAVING COUNT(*) > 1
-            ) AS subquery
-            ON wc.comment_post_ID = subquery.comment_post_ID
-            WHERE wc.comment_ID != subquery.retained_comment_ID
-            AND wc.comment_content LIKE '%Order charge successful in Stripe%'
-            LIMIT 1
-        ";
-
-		// Run the select query
-		$rows = $wpdb->get_results( $select_query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-
-		// If no rows are found, return early
-		if ( empty( $rows ) ) {
-			WFOCU_Core()->log->log( 'No duplicate comments found. Recurring schedule not set up.' );
-
-			return;
-		}
-
-		// Schedule the action if not already scheduled
-		if ( ! wp_next_scheduled( 'wfocu_fkwcs_delete_duplicate_comments' ) ) {
-			wp_schedule_event( time(), 'hourly', 'wfocu_fkwcs_delete_duplicate_comments' );
-			WFOCU_Core()->log->log( 'Recurring schedule for deleting duplicate comments has been set up.' );
-
-
-		}
-	}
-}
 
 if ( ! function_exists( 'wfocu_update_sepa_trans_key_3_8' ) ) {
 

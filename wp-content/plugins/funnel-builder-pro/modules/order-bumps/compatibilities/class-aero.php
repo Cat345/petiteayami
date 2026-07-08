@@ -3,15 +3,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 if ( ! class_exists( 'WFOB_Compatibility_With_AeroCheckout' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_AeroCheckout {
 		public function __construct() {
 			/* checkout page */
-			add_action( 'wfacp_after_template_found', [ $this, 'alter_bump_position' ] );
-
+			add_action( 'wfacp_after_template_found', array( $this, 'alter_bump_position' ) );
 		}
 
 		public function alter_bump_position() {
-			add_filter( 'wfob_bump_positions', [ $this, 'wfob_bump_positions' ] );
+			add_filter( 'wfob_bump_positions', array( $this, 'wfob_bump_positions' ) );
 		}
 
 		public function wfob_bump_positions( $position ) {
@@ -24,8 +24,6 @@ if ( ! class_exists( 'WFOB_Compatibility_With_AeroCheckout' ) ) {
 
 			return $position;
 		}
-
-
 	}
 
 	new WFOB_Compatibility_With_AeroCheckout();

@@ -13,6 +13,7 @@ if ( ! class_exists( 'WFOCUKirki_Init' ) ) {
 	/**
 	 * Initialize WFOCUKirki
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Init {
 
 		/**
@@ -118,7 +119,6 @@ if ( ! class_exists( 'WFOCUKirki_Init' ) ) {
 			);
 
 			return array_merge( $this->control_types, $control_types );
-
 		}
 
 		/**
@@ -153,10 +153,13 @@ if ( ! class_exists( 'WFOCUKirki_Init' ) ) {
 				}
 			}
 
-			$skip_control_types = apply_filters( 'wfocukirki_control_types_exclude', array(
+			$skip_control_types = apply_filters(
+				'wfocukirki_control_types_exclude',
+				array(
 					'WFOCUKirki_Control_Repeater',
 					'WP_Customize_Control',
-				) );
+				)
+			);
 
 			foreach ( $this->control_types as $control_type ) {
 				if ( ! in_array( $control_type, $skip_control_types, true ) && class_exists( $control_type ) ) {

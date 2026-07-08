@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Automation_Recipient_Timeline extends BWFAN_API_Base {
 	public static $ins;
 

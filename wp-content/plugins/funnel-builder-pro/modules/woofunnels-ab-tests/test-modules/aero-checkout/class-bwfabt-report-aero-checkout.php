@@ -108,8 +108,8 @@ if ( ! class_exists( 'BWFABT_Report_Aero_Checkout' ) ) {
 				$conv_query = ' AND ( ' . rtrim( $conv_query, " OR " ) . ') ';
 			}
 
-			$sql        = "SELECT * from $wpdb->wfacp_stats WHERE `wfacp_id` IN( " . esc_sql( implode( ',', $query_variant_ids ) ) . " ) " . $conv_query;
-			$query      = "SELECT * FROM {table_name} WHERE `object_id` IN (" . esc_sql( implode( ',', $query_variant_ids ) ) . ") AND `type` = '12' " . $date_query;
+			$sql        = "SELECT * from $wpdb->wfacp_stats WHERE `wfacp_id` IN( " . implode( ',', array_map( 'absint', $query_variant_ids ) ) . " ) " . $conv_query;
+			$query      = "SELECT * FROM {table_name} WHERE `object_id` IN (" . implode( ',', array_map( 'absint', $query_variant_ids ) ) . ") AND `type` = '12' " . $date_query;
 			$aero_datum = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$data       = WFCO_Model_Report_views::get_results( $query );
 

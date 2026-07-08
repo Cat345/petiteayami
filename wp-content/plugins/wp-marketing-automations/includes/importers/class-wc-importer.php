@@ -15,6 +15,7 @@ use WP_Error;
  *
  * This class represents a WordPress importer for the CRM system.
  */
+#[\AllowDynamicProperties]
 class WC_Importer extends Importer {
 	protected $import_type = 'wc';
 

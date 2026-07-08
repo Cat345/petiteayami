@@ -9,10 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WFACP_Compatibility_With_Boxcar' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFACP_Compatibility_With_Boxcar {
 
 		public function __construct() {
-			add_action( 'after_setup_theme', [ $this, 'register_elementor_widget' ], 20 );
+			add_action( 'after_setup_theme', array( $this, 'register_elementor_widget' ), 20 );
 		}
 
 		public function register_elementor_widget() {
@@ -33,7 +34,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Boxcar' ) ) {
 
 				// Re-register widgets on wp hook instead to prevent conflict with FunnelKit
 				if ( $instance instanceof Boxcar_Elementor_Extensions ) {
-					add_action( 'wp', [ $instance, 'elementor_widgets' ], 100 );
+					add_action( 'wp', array( $instance, 'elementor_widgets' ), 100 );
 				}
 			}
 		}

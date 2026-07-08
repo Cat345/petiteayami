@@ -5,13 +5,14 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 	 * All the operations for the Funnels should be written here
 	 * Class WFOCU_Funnels
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Funnels {
 
 		private static $ins = null;
-		private $funnel_id = 0;
-		private $offers = 0;
-		private $options = null;
-		private $steps = [];
+		private $funnel_id  = 0;
+		private $offers     = 0;
+		private $options    = null;
+		private $steps      = array();
 
 		/**
 		 * WFOCU_Funnels constructor.
@@ -34,7 +35,7 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -67,19 +68,18 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 				return $funnels_from_base;
 			}
 
-
 			$licenses = $this->license_data( 'e837ebc716ca979006da34eecdce9f650ced6bef' );
 
 			if ( ! defined( 'WFFN_PRO_FILE' ) && empty( $licenses['license'] ) ) {
 				WFOCU_Core()->session_db->set_skip_id( 12 );
 
-				return [];
+				return array();
 			}
 
 			if ( ! defined( 'WFFN_PRO_FILE' ) && ! empty( $licenses['license']['expires'] ) && absint( $licenses['license']['expires'] ) > 0 && time() > strtotime( $licenses['license']['expires'] ) ) {
 				WFOCU_Core()->session_db->set_skip_id( 12 );
 
-				return [];
+				return array();
 			}
 
 			$args = array(
@@ -111,7 +111,6 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 				if ( false !== $transient_data ) {
 					$transient_data = $woofunnels_transient_obj->get_transient( $key, 'upstroke' );
 				}
-
 			}
 
 			if ( false !== $transient_data ) {
@@ -133,9 +132,12 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 
 							do_action( 'wfocu_before_matching_rules_after_query' );
 
-							array_push( $funnels, array(
-								'id' => $content_id,
-							) );
+							array_push(
+								$funnels,
+								array(
+									'id' => $content_id,
+								)
+							);
 
 							do_action( 'wfocu_after_matching_rules_after_query' );
 						}
@@ -146,7 +148,6 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 			}
 
 			return apply_filters( 'wfocu_front_funnels', $funnels );
-
 		}
 
 		public function get_funnel_offers_admin( $funnel_id = 0, $build_offer = true ) {
@@ -202,7 +203,7 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 		public function get_funnel_steps( $funnel_id, $use_cache = true ) {
 
 			if ( empty( $funnel_id ) ) {
-				return [];
+				return array();
 			}
 
 			if ( $use_cache === true && array_key_exists( $funnel_id, $this->steps ) ) {
@@ -278,7 +279,6 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 				$data = array_filter( $data );
 			}
 			update_post_meta( $funnel_id, '_funnel_products', $data );
-
 		}
 
 		public function save_funnel_options( $funnel_id, $data ) {
@@ -306,10 +306,12 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 
 		public function save_funnel_priority( $funnel_id, $priority = '0' ) {
 
-			wp_update_post( array(
-				'ID'         => $funnel_id,
-				'menu_order' => $priority,
-			) );
+			wp_update_post(
+				array(
+					'ID'         => $funnel_id,
+					'menu_order' => $priority,
+				)
+			);
 			WFOCU_Common::update_max_priority( $priority );
 		}
 
@@ -351,7 +353,6 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 			}
 
 			return wc_string_to_bool( $this->get_funnel_option( 'is_tax_included' ) );
-
 		}
 
 		public function get_funnel_option( $key = '' ) {
@@ -361,7 +362,6 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 			}
 
 			return $this->options;
-
 		}
 
 		public function maybe_set_funnel_on_customizer() {
@@ -388,7 +388,6 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 			if ( '' !== $funnel_id && false !== $funnel_id && 0 !== $funnel_id ) {
 
 				$options = get_post_meta( $funnel_id, '_wfocu_settings', true );
-
 
 				$this->options = wp_parse_args( $options, $this->get_funnel_default_settings() );
 
@@ -424,18 +423,19 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 				$this->set_funnel_id( $funnel_id );
 				$this->setup_funnel_options();
 			}
-
 		}
 
 		/**
 		 * Generate default posts on license activation once from the wizard
 		 */
 		public function create_default_funnels() {
-			$existing_funnles = get_posts( array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
+			$existing_funnles = get_posts(
+				array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
 				'post_type'      => 'wfocu_funnel',
 				'posts_per_page' => '5',
 				'post_status'    => 'any',
-			) );  //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
+				)
+			);  //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
 
 			$get_posts_created = get_option( 'wfocu_default_posts_created', false );
 			/**
@@ -466,10 +466,9 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 				$this->generate_preset_funnel_data( $funnel );
 			}
 			update_option( 'wfocu_default_posts_created', 'yes' );
-
 		}
 
-		public function generate_preset_funnel_data( $data = [] ) {
+		public function generate_preset_funnel_data( $data = array() ) {
 
 			$get_default_schema = $this->get_default_funnel_schema();
 
@@ -494,7 +493,7 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 				WFOCU_Core()->offers->duplicate_offer( $funnel_data['offer_inherit'], $offer_title, $new_funnel_id );
 			} else {
 				if ( $funnel_data['offers'] && count( $funnel_data['offers'] ) > 0 ) {
-					$funnel_data['meta']['_funnel_steps'] = [];
+					$funnel_data['meta']['_funnel_steps'] = array();
 					foreach ( $funnel_data['offers'] as $key => $offer_raw ) {
 						if ( isset( $data['offers_override'][ $key ] ) ) {
 							$offer_raw = wp_parse_args( $data['offers_override'][ $key ], $offer_raw );
@@ -527,7 +526,7 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 							if ( isset( $offer_raw['parent_meta'] ) && ! empty( $offer_raw['parent_meta'] ) ) {
 								global $wpdb;
 								$parent_meta_all   = $offer_raw['parent_meta'];
-								$sql_query_selects = [];
+								$sql_query_selects = array();
 								$content           = '';
 
 								foreach ( $parent_meta_all as $meta_info ) {
@@ -554,19 +553,21 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 										$meta_value = $meta_info->meta_value;
 									}
 
-									$meta_key   = esc_sql( $meta_key );
-									$meta_value = esc_sql( $meta_value );
-
-									$sql_query_selects[] = "($offer_id_new, '$meta_key', '$meta_value')"; //db call ok; no-cache ok; WPCS: unprepared SQL ok.
+									$sql_query_selects[] = array( (int) $offer_id_new, $meta_key, $meta_value );
 								}
 
-								$sql_query_meta_val = implode( ',', $sql_query_selects );
-								$wpdb->query( $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta ) );//phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared
+								if ( ! empty( $sql_query_selects ) ) {
+									$placeholders = implode( ', ', array_fill( 0, count( $sql_query_selects ), '(%d, %s, %s)' ) );
+									$values       = array();
+									foreach ( $sql_query_selects as $row ) {
+										array_push( $values, $row[0], $row[1], $row[2] );
+									}
+									$wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value) VALUES $placeholders", ...$values ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+								}
 
 								if ( $content !== '' ) {
 									WFOCU_Common::maybe_elementor_template( $offer_raw['id'], $offer_id_new );
 								}
-
 							} else {
 								foreach ( $offer_raw['meta'] as $key_meta => $meta_val ) {
 									$meta_val = is_array( $meta_val ) && isset( $meta_val[0] ) ? $meta_val[0] : $meta_val;
@@ -584,7 +585,6 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 								WFOCU_Core()->import->import_customizer_data( $offer_id_new, $offer_raw['meta']['_customizer_data'] );
 							}
 
-
 							if ( isset( $offer_raw['meta']['_wfocu_setting'] ) && ( isset( $offer_raw['meta']['_elementor_data'] ) ) && 'elementor' === $offer_raw['meta']['_wfocu_setting']->template_group ) {
 								if ( defined( 'ELEMENTOR_VERSION' ) ) {
 									require_once plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'compatibilities/page-builders/elementor/class-wfocu-elementor-importer.php';
@@ -601,7 +601,6 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 									Elementor\Plugin::$instance->files_manager->clear_cache();
 								}
 							}
-
 
 							if ( ! empty( $offer_post_content ) ) {
 								$offer_post               = get_post( $offer_id_new );
@@ -656,8 +655,6 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 						update_post_meta( $offerstep['id'], '_wfocu_setting', $offer_settings );
 
 					}
-
-
 				}
 			}
 
@@ -712,10 +709,9 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 					}
 					$offer_settings = WFOCU_Core()->offers->get_offer( $offer_id, false );
 
-					/** checking if jump settings are enabled and offers are selected to jump **/
+					/** checking if jump settings are enabled and offers are selected to jump */
 					$jump_accepted = ( isset( $offer_settings->settings ) && isset( $offer_settings->settings->jump_on_accepted ) && isset( $offer_settings->settings->jump_to_offer_on_accepted ) && true === $offer_settings->settings->jump_on_accepted ) ? $offer_settings->settings->jump_to_offer_on_accepted : 'automatic';
 					$jump_rejected = ( isset( $offer_settings->settings ) && isset( $offer_settings->settings->jump_on_rejected ) && isset( $offer_settings->settings->jump_to_offer_on_rejected ) && true === $offer_settings->settings->jump_on_rejected ) ? $offer_settings->settings->jump_to_offer_on_rejected : 'automatic';
-
 
 					if ( $key === ( count( $steps ) - 1 ) ) {
 						$jump_accepted = $jump_rejected = $automatic;
@@ -731,14 +727,12 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 						$jump_rejected      = ( $rejected_in_offers ) ? $jump_rejected : $automatic;
 					}
 
-					/** Checking if offer is enabled otherwise move to native upselll/downsell **/
+					/** Checking if offer is enabled otherwise move to native upselll/downsell */
 					$jump_accepted = ( $automatic === $jump_accepted || $terminate === $jump_accepted ) ? $jump_accepted : ( ( '1' === WFOCU_Core()->offers->get_offer_state( $steps, $jump_accepted ) ) ? $jump_accepted : $automatic );
 					$jump_rejected = ( $automatic === $jump_rejected || $terminate === $jump_rejected ) ? $jump_rejected : ( ( '1' === WFOCU_Core()->offers->get_offer_state( $steps, $jump_rejected ) ) ? $jump_rejected : $automatic );
 
-
 					$upsell_id   = ( $automatic === $jump_accepted ) ? $upsell_id : ( ( $terminate === $jump_accepted ) ? 0 : $jump_accepted );
 					$downsell_id = ( $automatic === $jump_rejected ) ? $downsell_id : ( ( $terminate === $jump_rejected ) ? 0 : $jump_rejected );
-
 
 					$upsell_downsell[ $offer_id ]['y'] = $upsell_id;
 					$upsell_downsell[ $offer_id ]['n'] = $downsell_id;
@@ -749,11 +743,9 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 			}
 
 			return $upsell_downsell;
-
 		}
 
 		public function get_current_index( $steps, $offer ) {
-
 
 			if ( ! empty( $steps ) && '' !== $offer ) {
 				foreach ( $steps as $k => $step ) {
@@ -832,18 +824,13 @@ if ( ! class_exists( 'WFOCU_Funnels' ) ) {
 							'license'                 => ! empty( $license_data ) ? $license_data : false,
 							'is_manually_deactivated' => ( isset( $license['_data']['manually_deactivated'] ) && true === bwf_string_to_bool( $license['_data']['manually_deactivated'] ) ) ? 1 : 0,
 							'activated'               => ( isset( $license['_data']['activated'] ) && true === bwf_string_to_bool( $license['_data']['activated'] ) ) ? 1 : 0,
-							'expired'                 => ( isset( $license['_data']['expired'] ) && true === bwf_string_to_bool( $license['_data']['expired'] ) ) ? 1 : 0
+							'expired'                 => ( isset( $license['_data']['expired'] ) && true === bwf_string_to_bool( $license['_data']['expired'] ) ) ? 1 : 0,
 						);
 					}
-
-
 				}
-
-
 			}
 
-			return [];
-
+			return array();
 		}
 	}
 

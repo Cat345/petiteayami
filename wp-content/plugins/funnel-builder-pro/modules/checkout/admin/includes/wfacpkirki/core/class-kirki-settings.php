@@ -13,6 +13,10 @@
 /**
  * Each setting is a separate instance
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Settings' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Settings {
@@ -54,7 +58,6 @@ if ( ! class_exists( 'WFACPKirki_Settings' ) ) {
 			$this->set_setting_types();
 			// Add the settings.
 			$this->add_settings( $args );
-
 		}
 
 		/**
@@ -87,6 +90,7 @@ if ( ! class_exists( 'WFACPKirki_Settings' ) ) {
 				if ( ! isset( $args['default'] ) || ! is_array( $args['default'] ) ) {
 					$args['default'] = array();
 				}
+				$defaults = $args['default'];
 				foreach ( $args['settings'] as $key => $value ) {
 					$default = ( isset( $defaults[ $key ] ) ) ? $defaults[ $key ] : '';
 					$this->add_setting( $classname, $value, $default, $args['option_type'], $args['capability'], $args['transport'], $args['sanitize_callback'] );
@@ -100,27 +104,32 @@ if ( ! class_exists( 'WFACPKirki_Settings' ) ) {
 		 *
 		 * @access private
 		 *
-		 * @param string $classname The name of the class that will be used to create this setting.
-		 *                                          We're getting this from $this->setting_types.
-		 * @param string $setting The setting-name.
-		 *                                          If settings is an array, then this method is called per-setting.
+		 * @param string       $classname The name of the class that will be used to create this setting.
+		 *                                                We're getting this from $this->setting_types.
+		 * @param string       $setting The setting-name.
+		 *                                                If settings is an array, then this method is called per-setting.
 		 * @param string|array $default Default value for this setting.
-		 * @param string $type The data type we're using. Valid options: theme_mod|option.
-		 * @param string $capability @see https://codex.wordpress.org/Roles_and_Capabilities.
-		 * @param string $transport Use refresh|postMessage.
+		 * @param string       $type The data type we're using. Valid options: theme_mod|option.
+		 * @param string       $capability @see https://codex.wordpress.org/Roles_and_Capabilities.
+		 * @param string       $transport Use refresh|postMessage.
 		 * @param string|array $sanitize_callback A callable sanitization function or method.
 		 */
 		private function add_setting( $classname, $setting, $default, $type, $capability, $transport, $sanitize_callback ) {
 
-			$this->wp_customize->add_setting( new $classname( $this->wp_customize, $setting, array(
-				'default'           => $default,
-				'type'              => $type,
-				'capability'        => $capability,
-				'transport'         => $transport,
-				'sanitize_callback' => $sanitize_callback,
-				'autoload'          => 'no'
-			) ) );
-
+			$this->wp_customize->add_setting(
+				new $classname(
+					$this->wp_customize,
+					$setting,
+					array(
+						'default'           => $default,
+						'type'              => $type,
+						'capability'        => $capability,
+						'transport'         => $transport,
+						'sanitize_callback' => $sanitize_callback,
+						'autoload'          => 'no',
+					)
+				)
+			);
 		}
 
 		/**
@@ -132,12 +141,15 @@ if ( ! class_exists( 'WFACPKirki_Settings' ) ) {
 		private function set_setting_types() {
 
 			// Apply the wfacpkirki_setting_types filter.
-			$this->setting_types = apply_filters( 'wfacpkirki_setting_types', array(
-				'default'     => 'WP_Customize_Setting',
-				'repeater'    => 'WFACPKirki_Settings_Repeater_Setting',
-				'user_meta'   => 'WFACPKirki_Setting_User_Meta',
-				'site_option' => 'WFACPKirki_Setting_Site_Option',
-			) );
+			$this->setting_types = apply_filters(
+				'wfacpkirki_setting_types',
+				array(
+					'default'     => 'WP_Customize_Setting',
+					'repeater'    => 'WFACPKirki_Settings_Repeater_Setting',
+					'user_meta'   => 'WFACPKirki_Setting_User_Meta',
+					'site_option' => 'WFACPKirki_Setting_Site_Option',
+				)
+			);
 
 			// Make sure the defined classes actually exist.
 			foreach ( $this->setting_types as $key => $classname ) {

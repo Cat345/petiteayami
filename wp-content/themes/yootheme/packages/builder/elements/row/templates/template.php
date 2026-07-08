@@ -24,9 +24,9 @@ $grid = $props['width'] ? $this->el('div') : null;
     'class' => [
         'uk-grid',
         'tm-grid-expand {!alignment}',
-        'uk-flex-center {@alignment:center}',
+        'uk-flex-{!alignment: |left}',
         $props['column_gap'] == $props['row_gap'] ? 'uk-grid-{column_gap}' : '[uk-grid-column-{column_gap}] [uk-grid-row-{row_gap}]',
-        'uk-grid-divider {@divider} {@!column_gap:collapse} {@!row_gap:collapse}' => count($children) > 1,
+        'uk-grid-divider {@divider} {@!column_gap: collapse} {@!row_gap: collapse}' => count($children) > 1,
         'uk-child-width-1-1 {@!layout}',
         'uk-flex-top {@parallax}',
     ],

@@ -5,9 +5,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
+	#[\AllowDynamicProperties]
 	class Element extends \Bricks\Element {
 		const TAB_CONTENT = 'content';
-		const TAB_STYLE = 'style';
+		const TAB_STYLE   = 'style';
 
 		private $separator_key = 0;
 		private $current_group = '';
@@ -55,7 +56,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * @return void
 		 */
 		public function add_heading( $label, $required = array() ) {
-			$key                    = 'divider_' . $this->separator_key ++;
+			$key                    = 'divider_' . $this->separator_key++;
 			$this->controls[ $key ] = array(
 				'group'    => $this->get_current_group(),
 				'type'     => 'separator',
@@ -68,7 +69,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * Adds a font family control to the element.
 		 *
 		 * @param string $key The key for the control.
-		 * @param array $selectors The CSS selectors for the control.
+		 * @param array  $selectors The CSS selectors for the control.
 		 * @param string $label The label for the control. Default is 'Font family'.
 		 * @param string $default The default font family. Default is 'Open Sans'.
 		 *
@@ -119,7 +120,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * Adds a background color control to the element.
 		 *
 		 * @param string $key The key for the control.
-		 * @param array $selectors The CSS selectors to apply the background color to.
+		 * @param array  $selectors The CSS selectors to apply the background color to.
 		 * @param string $label The label for the control. Default is 'Background color'.
 		 * @param string $default The default background color. Default is '#000000'.
 		 */
@@ -158,11 +159,11 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * Adds a color control to the element.
 		 *
 		 * @param string $key The key of the control.
-		 * @param array $selectors The CSS selectors to apply the color to.
+		 * @param array  $selectors The CSS selectors to apply the color to.
 		 * @param string $default The default color value.
 		 * @param string $label The label for the color control.
-		 * @param array $required The required fields for the color control.
-		 * @param bool $important Whether the color property is important.
+		 * @param array  $required The required fields for the color control.
+		 * @param bool   $important Whether the color property is important.
 		 *
 		 * @return void
 		 */
@@ -209,8 +210,8 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * This method adds a padding control to the element's controls array. The padding control allows the user to set the padding for the specified selectors.
 		 *
 		 * @param string $key The key for the control.
-		 * @param array $selectors The CSS selectors to which the padding will be applied.
-		 * @param array $default The default padding values. If empty, the default values will be [ 'top' => 0, 'right' => 0, 'bottom' => 0, 'left' => 0 ].
+		 * @param array  $selectors The CSS selectors to which the padding will be applied.
+		 * @param array  $default The default padding values. If empty, the default values will be [ 'top' => 0, 'right' => 0, 'bottom' => 0, 'left' => 0 ].
 		 *
 		 * @return void
 		 */
@@ -248,8 +249,8 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * This method adds a margin control to the element, allowing the user to set the margin values for the specified selectors.
 		 *
 		 * @param string $key The key for the control.
-		 * @param array $selectors An array of CSS selectors to which the margin property should be applied.
-		 * @param array $default An optional array of default margin values. If not provided, the default values will be set to 0 for top, right, bottom, and left.
+		 * @param array  $selectors An array of CSS selectors to which the margin property should be applied.
+		 * @param array  $default An optional array of default margin values. If not provided, the default values will be set to 0 for top, right, bottom, and left.
 		 *
 		 * @return void
 		 */
@@ -289,8 +290,8 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * Adds a border control to the element.
 		 *
 		 * @param string $key The key for the control.
-		 * @param array $selectors The CSS selectors for the element.
-		 * @param array $default The default border properties.
+		 * @param array  $selectors The CSS selectors for the element.
+		 * @param array  $default The default border properties.
 		 *
 		 * @return void
 		 */
@@ -318,9 +319,9 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		/**
 		 * Adds a border radius control to the element.
 		 *
-		 * @param string $key The key for the control.
+		 * @param string       $key The key for the control.
 		 * @param array|string $selectors The CSS selectors for the control.
-		 * @param array $default The default values for the control.
+		 * @param array        $default The default values for the control.
 		 */
 		public function add_border_radius( $key, $selectors, $default = array(), $label = '', $required = array() ) {
 			if ( ! is_array( $selectors ) ) {
@@ -371,11 +372,11 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		/**
 		 * Adds a typography control to the element.
 		 *
-		 * @param string $key The unique key for the control.
+		 * @param string       $key The unique key for the control.
 		 * @param array|string $selectors The CSS selectors to apply the typography to.
-		 * @param array $default The default typography settings.
-		 * @param string $label The label for the typography control.
-		 *                                If empty, the default label will be used.
+		 * @param array        $default The default typography settings.
+		 * @param string       $label The label for the typography control.
+		 *                                      If empty, the default label will be used.
 		 *
 		 * @return void
 		 */
@@ -420,7 +421,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * Adds text alignments control to the element.
 		 *
 		 * @param string $key The key for the control.
-		 * @param array $selectors The CSS selectors to apply the text alignment to.
+		 * @param array  $selectors The CSS selectors to apply the text alignment to.
 		 * @param string $default The default text alignment. Defaults to 'left'.
 		 * @param string $label The label for the control. Defaults to 'Alignment'.
 		 */
@@ -458,7 +459,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 *
 		 * @param string $key The key of the control.
 		 * @param string $label The label of the control.
-		 * @param array $options The options for the select control.
+		 * @param array  $options The options for the select control.
 		 * @param string $default The default value for the select control.
 		 *
 		 * @return void
@@ -486,10 +487,10 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * If $box_shadow is true, it also adds a box shadow effect.
 		 *
 		 * @param string $key The unique key for the control.
-		 * @param array $selectors An array of CSS selectors to which the border color will be applied.
+		 * @param array  $selectors An array of CSS selectors to which the border color will be applied.
 		 * @param string $default Optional. The default color value. Default is '#000000' (black).
 		 * @param string $label Optional. The label for the control. Default is 'Border Color'.
-		 * @param bool $box_shadow Optional. Whether to add a box shadow effect. Default is false.
+		 * @param bool   $box_shadow Optional. Whether to add a box shadow effect. Default is false.
 		 *
 		 * @return void
 		 */
@@ -540,8 +541,8 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * Adds a border shadow control to the element.
 		 *
 		 * @param string $key The key for the control.
-		 * @param array $selectors The CSS selectors to apply the box shadow to.
-		 * @param array $default The default box shadow values.
+		 * @param array  $selectors The CSS selectors to apply the box shadow to.
+		 * @param array  $default The default box shadow values.
 		 * @param string $label The label for the control. If empty, a default label will be used.
 		 *
 		 * @return void
@@ -581,7 +582,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * @return void
 		 */
 		public function add_divider() {
-			$key                    = 'divider_' . $this->separator_key ++;
+			$key                    = 'divider_' . $this->separator_key++;
 			$this->controls[ $key ] = array(
 				'group' => $this->get_current_group(),
 				'type'  => 'separator',
@@ -593,7 +594,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 *
 		 * @param string $key The unique key for the control.
 		 * @param string $label The label for the control. Default is 'Enable'.
-		 * @param bool $default The default value for the control. Default is false.
+		 * @param bool   $default The default value for the control. Default is false.
 		 *
 		 * @return void
 		 */
@@ -621,7 +622,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * @param string $key The key of the control.
 		 * @param string $label The label for the control. If empty, the default label "Text" will be used.
 		 * @param string $default The default value for the control.
-		 * @param array $required An array of required fields for the control.
+		 * @param array  $required An array of required fields for the control.
 		 *
 		 * @return void
 		 */
@@ -647,7 +648,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * @param string $key The unique key for the control.
 		 * @param string $label The label for the control. If empty, the default label "Text" will be used.
 		 * @param string $default The default value for the control.
-		 * @param array $required An array of required validation rules for the control.
+		 * @param array  $required An array of required validation rules for the control.
 		 *
 		 * @return void
 		 */
@@ -669,10 +670,10 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * Adds a font size control to the element.
 		 *
 		 * @param string $key The key for the control.
-		 * @param array $selectors The CSS selectors to apply the font size to.
+		 * @param array  $selectors The CSS selectors to apply the font size to.
 		 * @param string $label The label for the control. Default is 'Font Size'.
 		 * @param string $default The default value for the control.
-		 * @param array $required An array of required fields for the control.
+		 * @param array  $required An array of required fields for the control.
 		 *
 		 * @return void
 		 */
@@ -719,11 +720,11 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 * Adds a width control to the element.
 		 *
 		 * @param string $key The key for the control.
-		 * @param array $selectors The CSS selectors for the element.
+		 * @param array  $selectors The CSS selectors for the element.
 		 * @param string $label The label for the control. Default is 'Width'.
 		 * @param string $default The default value for the control.
-		 * @param array $required An array of required fields for the control.
-		 * @param array $units An array of units for the control. Default is an array with 'px' and '%'.
+		 * @param array  $required An array of required fields for the control.
+		 * @param array  $units An array of units for the control. Default is an array with 'px' and '%'.
 		 *
 		 * @return void
 		 */
@@ -769,7 +770,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		/**
 		 * Generates CSS rules for the given selectors and property.
 		 *
-		 * @param array $selectors An array of CSS selectors.
+		 * @param array  $selectors An array of CSS selectors.
 		 * @param string $property The CSS property to apply.
 		 *
 		 * @return array An array of CSS rules, each containing a 'property' and 'selector' key.

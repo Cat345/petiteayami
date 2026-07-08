@@ -37,6 +37,7 @@ if ( ! defined( 'ET_BUILDER_PLUGIN_DIR' ) ) {
 }
 
 if ( ! class_exists( 'WFACP_Divi5_Importer' ) && class_exists( 'ET_Core_Portability' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_Divi5_Importer extends ET_Core_Portability {
 
 		public function __construct() {
@@ -54,20 +55,32 @@ if ( ! class_exists( 'WFACP_Divi5_Importer' ) && class_exists( 'ET_Core_Portabil
 
 			$this->prevent_failure();
 			self::$_doing_import = true;
-			$timestamp           = $this->get_timestamp();
 
 			if ( ! is_array( $content ) && is_string( $content ) ) {
 				try {
 					$content = json_decode( $content, true );
-				} catch ( Exception $error ) {
+				} catch ( Throwable $error ) {
 					return false;
 				}
 			}
 
-			$data = $content['data'];
-			// Pass the post content and let js save the post.
+			if ( ! is_array( $content ) || empty( $content['data'] ) ) {
+				return false;
+			}
 
-			$data    = reset( $data );
+			require_once WFFN_PLUGIN_DIR . '/includes/class-wffn-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			$alien_count = WFFN_Content_Validator::sanitize_response_urls( $content );
+			if ( $alien_count >= 5 ) {
+				return false;
+			}
+
+			$data = $content['data'];
+
+			$data = reset( $data );
+			if ( WFFN_Content_Validator::contains_php_code( $data ) || WFFN_Content_Validator::contains_dangerous_tags( $data ) ) {
+				return false;
+			}
+
 			$success = true;
 			$result  = wp_update_post(
 				array(

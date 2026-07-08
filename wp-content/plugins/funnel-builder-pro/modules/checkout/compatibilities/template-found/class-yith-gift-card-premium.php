@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * YITH WooCommerce GIft Certificates Premium
@@ -7,12 +11,12 @@
  * class WFACP_Compatibility_With_Yith_Gift
  */
 if ( ! class_exists( 'WFACP_Compatibility_With_Yith_Gift' ) ) {
-	class  WFACP_Compatibility_With_Yith_Gift {
+	#[\AllowDynamicProperties]
+	class WFACP_Compatibility_With_Yith_Gift {
 
 		public function __construct() {
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'action' ] );
-			add_filter( 'wfacp_product_image_thumbnail_html', [ $this, 'call_thumbnail' ], 10, 2 );
-
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'action' ) );
+			add_filter( 'wfacp_product_image_thumbnail_html', array( $this, 'call_thumbnail' ), 10, 2 );
 		}
 
 		public function action() {
@@ -34,7 +38,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Yith_Gift' ) ) {
 			if ( isset( $cart_item['ywgc_product_id'] ) ) {
 				return apply_filters( 'woocommerce_cart_item_thumbnail', $cart_item['data']->get_image(), $cart_item, $cart_item_key );
 			}
-
 
 			return $image;
 		}

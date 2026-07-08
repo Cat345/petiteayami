@@ -9,7 +9,6 @@
 
 namespace FunnelKit\Checkout\Modules\Conditional_Fields\Api;
 
-use FunnelKit\Checkout\Modules\Conditional_Fields\Admin\Admin_Pages;
 use FunnelKit\Checkout\Modules\Conditional_Fields\Models\Rule;
 use FunnelKit\Checkout\Modules\Conditional_Fields\Storage\Rule_Storage;
 use WP_REST_Request;
@@ -26,6 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 2.4.0
  */
+#[\AllowDynamicProperties]
 class Rest_Controller {
 
 	/**
@@ -211,8 +211,7 @@ class Rest_Controller {
 	public function get_editor_data( $request ) {
 		$checkout_id = $request->get_param( 'checkout_id' );
 
-		$admin_pages   = Admin_Pages::get_instance();
-		$sections      = $admin_pages->get_checkout_sections( $checkout_id );
+		$sections      = $this->get_checkout_sections( $checkout_id );
 		$all_rules_v2  = Rule_Storage::get_all_rules_v2( $checkout_id );
 		$section_rules = array();
 
@@ -224,7 +223,7 @@ class Rest_Controller {
 			$section_rules[ $section_id ] = $section_rule ? $section_rule->to_array() : null;
 		}
 
-		$fields            = $admin_pages->get_checkout_fields( $checkout_id );
+		$fields            = $this->get_checkout_fields( $checkout_id );
 		$rules             = Rule_Storage::get_rules( $checkout_id );
 		$fields_with_rules = array();
 
@@ -265,8 +264,7 @@ class Rest_Controller {
 	public function get_fields( $request ) {
 		$checkout_id = $request->get_param( 'checkout_id' );
 
-		$admin_pages       = Admin_Pages::get_instance();
-		$fields            = $admin_pages->get_checkout_fields( $checkout_id );
+		$fields            = $this->get_checkout_fields( $checkout_id );
 		$rules             = Rule_Storage::get_rules( $checkout_id );
 		$fields_with_rules = array();
 
@@ -597,6 +595,199 @@ class Rest_Controller {
 				'data'    => array( 'message' => __( 'Failed to delete section rule.', 'woofunnels-aero-checkout' ) ),
 			),
 			500
+		);
+	}
+
+	/**
+	 * Get sections for a checkout page.
+	 *
+	 * @since 2.3.0
+	 * @param int $checkout_id Checkout page ID.
+	 * @return array Array of sections with IDs and labels.
+	 */
+	private function get_checkout_sections( $checkout_id ) {
+		if ( ! $checkout_id ) {
+			return array();
+		}
+
+		$page_layout = get_post_meta( $checkout_id, '_wfacp_page_layout', true );
+
+		if ( empty( $page_layout ) || ! is_array( $page_layout ) || ! isset( $page_layout['fieldsets'] ) ) {
+			return array(
+				'billing'  => __( 'Billing Information', 'woofunnels-aero-checkout' ),
+				'shipping' => __( 'Shipping Address', 'woofunnels-aero-checkout' ),
+				'account'  => __( 'Account Details', 'woofunnels-aero-checkout' ),
+				'order'    => __( 'Order Notes', 'woofunnels-aero-checkout' ),
+				'advanced' => __( 'Additional Fields', 'woofunnels-aero-checkout' ),
+			);
+		}
+
+		$sections = array();
+
+		foreach ( $page_layout['fieldsets'] as $step_key => $fieldsets ) {
+			if ( ! is_array( $fieldsets ) ) {
+				continue;
+			}
+
+			foreach ( $fieldsets as $index => $fieldset ) {
+				if ( ! is_array( $fieldset ) ) {
+					continue;
+				}
+
+				$section_name = isset( $fieldset['name'] ) ? $fieldset['name'] : 'Section ' . ( $index + 1 );
+				$section_key  = $step_key . '_fieldset_' . $index;
+
+				$sections[ $section_key ] = $section_name;
+			}
+		}
+
+		return $sections;
+	}
+
+	/**
+	 * Get checkout fields for a checkout page.
+	 *
+	 * @since 2.0.0
+	 * @param int $checkout_id Checkout page ID.
+	 * @return array Array of fields.
+	 */
+	private function get_checkout_fields( $checkout_id ) {
+		if ( ! $checkout_id ) {
+			return array();
+		}
+
+		$page_layout = get_post_meta( $checkout_id, '_wfacp_page_layout', true );
+
+		if ( empty( $page_layout ) || ! is_array( $page_layout ) || ! isset( $page_layout['fieldsets'] ) ) {
+			return $this->get_default_checkout_fields();
+		}
+
+		$all_fields = array();
+
+		foreach ( $page_layout['fieldsets'] as $step_key => $fieldsets ) {
+			if ( ! is_array( $fieldsets ) ) {
+				continue;
+			}
+
+			foreach ( $fieldsets as $index => $fieldset ) {
+				if ( ! is_array( $fieldset ) || ! isset( $fieldset['fields'] ) || ! is_array( $fieldset['fields'] ) ) {
+					continue;
+				}
+
+				$section_key = $step_key . '_fieldset_' . $index;
+
+				foreach ( $fieldset['fields'] as $field ) {
+					if ( ! is_array( $field ) || ! isset( $field['id'] ) ) {
+						continue;
+					}
+
+					$field_id = $field['id'];
+					$label    = $this->get_field_label( $field_id, $field );
+					$type     = isset( $field['type'] ) ? $field['type'] : 'text';
+
+					$all_fields[] = array(
+						'id'      => $field_id,
+						'label'   => $label,
+						'section' => $section_key,
+						'type'    => $type,
+					);
+				}
+			}
+		}
+
+		return $all_fields;
+	}
+
+	/**
+	 * Get label for a field.
+	 *
+	 * @since 2.0.5
+	 * @param string $field_id Field ID.
+	 * @param array  $field_data Field data.
+	 * @return string Field label.
+	 */
+	private function get_field_label( $field_id, $field_data ) {
+		if ( isset( $field_data['label'] ) && ! empty( $field_data['label'] ) ) {
+			return $field_data['label'];
+		}
+		if ( isset( $field_data['field_label'] ) && ! empty( $field_data['field_label'] ) ) {
+			return $field_data['field_label'];
+		}
+		if ( isset( $field_data['placeholder'] ) && ! empty( $field_data['placeholder'] ) ) {
+			return $field_data['placeholder'];
+		}
+
+		return ucwords( str_replace( array( '_', '-' ), ' ', $field_id ) );
+	}
+
+	/**
+	 * Get default checkout fields.
+	 *
+	 * @since 2.0.0
+	 * @return array Array of default fields.
+	 */
+	private function get_default_checkout_fields() {
+		return array(
+			array(
+				'id'      => 'billing_first_name',
+				'label'   => __( 'First Name', 'woofunnels-aero-checkout' ),
+				'section' => 'billing',
+				'type'    => 'text',
+			),
+			array(
+				'id'      => 'billing_last_name',
+				'label'   => __( 'Last Name', 'woofunnels-aero-checkout' ),
+				'section' => 'billing',
+				'type'    => 'text',
+			),
+			array(
+				'id'      => 'billing_company',
+				'label'   => __( 'Company Name', 'woofunnels-aero-checkout' ),
+				'section' => 'billing',
+				'type'    => 'text',
+			),
+			array(
+				'id'      => 'billing_email',
+				'label'   => __( 'Email Address', 'woofunnels-aero-checkout' ),
+				'section' => 'billing',
+				'type'    => 'email',
+			),
+			array(
+				'id'      => 'billing_phone',
+				'label'   => __( 'Phone', 'woofunnels-aero-checkout' ),
+				'section' => 'billing',
+				'type'    => 'tel',
+			),
+			array(
+				'id'      => 'billing_country',
+				'label'   => __( 'Country', 'woofunnels-aero-checkout' ),
+				'section' => 'billing',
+				'type'    => 'select',
+			),
+			array(
+				'id'      => 'billing_address_1',
+				'label'   => __( 'Street Address', 'woofunnels-aero-checkout' ),
+				'section' => 'billing',
+				'type'    => 'text',
+			),
+			array(
+				'id'      => 'billing_city',
+				'label'   => __( 'Town / City', 'woofunnels-aero-checkout' ),
+				'section' => 'billing',
+				'type'    => 'text',
+			),
+			array(
+				'id'      => 'billing_state',
+				'label'   => __( 'State', 'woofunnels-aero-checkout' ),
+				'section' => 'billing',
+				'type'    => 'select',
+			),
+			array(
+				'id'      => 'billing_postcode',
+				'label'   => __( 'ZIP / Postcode', 'woofunnels-aero-checkout' ),
+				'section' => 'billing',
+				'type'    => 'text',
+			),
 		);
 	}
 }

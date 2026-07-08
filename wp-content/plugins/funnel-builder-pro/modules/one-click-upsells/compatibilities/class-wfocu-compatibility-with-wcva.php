@@ -1,11 +1,11 @@
 <?php
 if ( ! class_exists( 'WFOCU_Compatibility_With_WCVA' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_WCVA {
 
 		public function __construct() {
 
 			add_action( 'wfocu_offer_setup_completed', array( $this, 'maybe_unhook' ) );
-
 		}
 
 
@@ -41,13 +41,8 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WCVA' ) ) {
 						}
 					}
 				}
-
-
 			}
-
 		}
-
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_WCVA(), 'wcva' );

@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_WFFN_Compatibility' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_WFFN_Compatibility {
 
 		public function __construct() {
@@ -22,8 +23,6 @@ if ( ! class_exists( 'WFOCU_WFFN_Compatibility' ) ) {
 
 			}
 		}
-
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_WFFN_Compatibility(), 'wfocu_wffn' );

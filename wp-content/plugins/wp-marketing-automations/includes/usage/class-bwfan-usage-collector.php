@@ -15,6 +15,7 @@ if ( ! class_exists( 'BWFAN_Usage_Collector' ) && class_exists( 'WooFunnels_Usag
 	/**
 	 * Class BWFAN_Usage_Collector
 	 */
+	#[\AllowDynamicProperties]
 	class BWFAN_Usage_Collector extends WooFunnels_Usage_Collector_Abstract {
 
 		/**

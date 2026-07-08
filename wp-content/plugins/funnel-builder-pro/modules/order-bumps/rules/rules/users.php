@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Rule_Users_Role' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Users_Role extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -51,10 +52,10 @@ if ( ! class_exists( 'wfob_Rule_Users_Role' ) ) {
 		public function sort_attribute_taxonomies( $taxa, $taxb ) {
 			return strcmp( $taxa->attribute_name, $taxb->attribute_name );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Users_User' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Users_User extends wfob_Rule_Base {
 
 		public function __construct() {

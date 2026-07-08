@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Automations extends BWFAN_API_Base {
 	public static $ins;
 
@@ -59,9 +60,9 @@ class BWFAN_API_Get_Automations extends BWFAN_API_Base {
 	public function process_api_call() {
 		$status          = $this->get_sanitized_arg( 'status', 'text_field' );
 		$search          = $this->get_sanitized_arg( 'search', 'text_field' );
-		$offset_arg   = $this->get_sanitized_arg( 'offset', 'text_field' );
+		$offset_arg   = $this->get_sanitized_arg( 'offset', 'absint' );
 		$offset       = ! empty( $offset_arg ) ? absint( $offset_arg ) : 0;
-		$limit_arg    = $this->get_sanitized_arg( 'limit', 'text_field' );
+		$limit_arg    = $this->get_sanitized_arg( 'limit', 'absint' );
 		$limit        = ! empty( $limit_arg ) ? absint( $limit_arg ) : 25;
 		$version      = isset( $this->args['version'] ) ? $this->args['version'] : 1;
 		$category_arg = $this->get_sanitized_arg( 'category', 'text_field' );
@@ -80,7 +81,7 @@ class BWFAN_API_Get_Automations extends BWFAN_API_Base {
 		}
 
 		/** Check basic worker last run time and status code check */
-		$resp = BWFAN_Common::validate_core_worker();
+		$resp = BWFAN_Common::validate_core_worker( false, $last_run );
 		if ( isset( $resp['response_code'] ) ) {
 			$get_automations['response_code'] = $resp['response_code'];
 		}

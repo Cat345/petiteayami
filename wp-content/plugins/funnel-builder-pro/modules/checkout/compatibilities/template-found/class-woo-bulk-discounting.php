@@ -1,16 +1,20 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * WooCommerce Bulk Discount
  * http://wordpress.org/plugins/woocommerce-bulk-discount/
- * #[AllowDynamicProperties] 
- class WFACP_Woo_Bulk_Discounting
+ * #[AllowDynamicProperties]
+class WFACP_Woo_Bulk_Discounting
  */
 if ( ! class_exists( 'WFACP_Woo_Bulk_Discounting' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Woo_Bulk_Discounting {
 		public function __construct() {
-			add_action( 'wfacp_after_template_found', [ $this, 'actions' ] );
+			add_action( 'wfacp_after_template_found', array( $this, 'actions' ) );
 		}
 
 		public function actions() {

@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
  * @var $this WFACP_Template_Common
  */
 
-//$this->pre($data);
+// $this->pre($data);
 if ( ( is_array( $data ) && count( $data ) <= 0 ) || is_null( $data ) ) {
 	return;
 }
@@ -26,8 +26,8 @@ if ( $supporter_name == '' && $supporter_designation == '' && $supporter_image =
 ?>
 
 <div class="<?php echo $section_key . ' ' . $rbox_border_type; ?> customer_support_wrap div_wrap_sec">
-    <!--   Customer Support -->
-    <div class="wfacp-customber-view clearfix">
+	<!--   Customer Support -->
+	<div class="wfacp-customber-view clearfix">
 		<?php
 		if ( isset( $data['heading_section']['heading'] ) && $data['heading_section']['heading'] != '' && isset( $data['heading_section']['enable_heading'] ) && $data['heading_section']['enable_heading'] == 1 ) {
 			$align_text         = $data['heading_section']['heading_talign'];
@@ -37,9 +37,9 @@ if ( $supporter_name == '' && $supporter_designation == '' && $supporter_image =
 			$heading_fs_mobile  = $data['heading_section']['heading_fs']['mobile'];
 
 			?>
-            <h2 class="wfacp-list-title wfacp_section_title <?php echo $align_text . ' ' . $font_weight; ?>">
-				<?php echo $data['heading_section']['heading']; ?>
-            </h2>
+			<h2 class="wfacp-list-title wfacp_section_title <?php echo $align_text . ' ' . $font_weight; ?>">
+				<?php echo esc_html( $data['heading_section']['heading'] ); ?>
+			</h2>
 
 
 			<?php
@@ -56,36 +56,36 @@ if ( $supporter_name == '' && $supporter_designation == '' && $supporter_image =
 
 			?>
 
-            <h6 class="wfacp-subtitle wfacp-subtitle <?php echo $align_text . ' ' . $font_weight; ?>">
+			<h6 class="wfacp-subtitle wfacp-subtitle <?php echo $align_text . ' ' . $font_weight; ?>">
 				<?php echo $data['sub_heading_section']['heading']; ?>
-            </h6>
+			</h6>
 
 			<?php
 		}
 		?>
 
 
-        <div class="wfacp-support-profile clearfix wfacp-customer-support-profile-wrap <?php echo $wfacp_display; ?>">
+		<div class="wfacp-support-profile clearfix wfacp-customer-support-profile-wrap <?php echo $wfacp_display; ?>">
 
 			<?php
 
 			if ( isset( $data['customer_support']['supporter_image'] ) && $data['customer_support']['supporter_image'] != '' ) {
 				?>
-                <div class="wfacp-support-img">
-                    <img src="<?php echo $data['customer_support']['supporter_image']; ?>" alt="">
-                </div>
+				<div class="wfacp-support-img">
+					<img src="<?php echo esc_url( $data['customer_support']['supporter_image'] ); ?>" alt="">
+				</div>
 				<?php
 			}
 			?>
 
 
-            <div class="wfacp-support-desc">
+			<div class="wfacp-support-desc">
 
 
-                <h6 class="wfacp-title-name wfacp-title-name wfacp-customer-support-title <?php echo $wfacp_display; ?>"><?php echo $data['customer_support']['supporter_name']; ?></h6>
+				<h6 class="wfacp-title-name wfacp-title-name wfacp-customer-support-title <?php echo $wfacp_display; ?>"><?php echo esc_html( $data['customer_support']['supporter_name'] ); ?></h6>
 
 
-                <span class="wfacp-customber-sub-tit wfacp-customer-support-desc <?php echo $wfacp_display; ?>"><?php echo $data['customer_support']['supporter_designation']; ?></span>
+				<span class="wfacp-customber-sub-tit wfacp-customer-support-desc <?php echo $wfacp_display; ?>"><?php echo esc_html( $data['customer_support']['supporter_designation'] ); ?></span>
 
 
 				<?php
@@ -93,17 +93,17 @@ if ( $supporter_name == '' && $supporter_designation == '' && $supporter_image =
 				if ( isset( $data['customer_support']['supporter_signature_image'] ) && $data['customer_support']['supporter_signature_image'] != '' ) {
 					?>
 
-                    <img class="wfacp_sign_support" src="<?php echo $data['customer_support']['supporter_signature_image']; ?>" alt="">
+					<img class="wfacp_sign_support" src="<?php echo esc_url( $data['customer_support']['supporter_signature_image'] ); ?>" alt="">
 
 					<?php
 				}
 				?>
-            </div>
-        </div>
+			</div>
+		</div>
 
 
-        <div class="wfacp-support_col-right">
-            <ul class="wfacp-support-details wfacp-support-details-wrap">
+		<div class="wfacp-support_col-right">
+			<ul class="wfacp-support-details wfacp-support-details-wrap">
 				<?php
 
 				$contact_heading = $contact_description = $contact_chat = $contact_timing = '';
@@ -132,7 +132,7 @@ if ( $supporter_name == '' && $supporter_designation == '' && $supporter_image =
 
 				?>
 
-                <li class="wfacp-email   <?php echo $none_class_name1; ?>">
+				<li class="wfacp-email   <?php echo $none_class_name1; ?>">
 					<?php
 
 
@@ -147,9 +147,9 @@ if ( $supporter_name == '' && $supporter_designation == '' && $supporter_image =
 
 					?>
 
-                </li>
+				</li>
 
-                <li class="wfacp-chat <?php echo $none_class_name2; ?>">
+				<li class="wfacp-chat <?php echo $none_class_name2; ?>">
 					<?php
 
 
@@ -163,12 +163,12 @@ if ( $supporter_name == '' && $supporter_designation == '' && $supporter_image =
 					?>
 
 
-                </li>
-            </ul>
-        </div>
+				</li>
+			</ul>
+		</div>
 
 
-    </div>
+	</div>
 </div>
 
 

@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Toggle_Automation_State extends BWFAN_API_Base {
 	public static $ins;
 

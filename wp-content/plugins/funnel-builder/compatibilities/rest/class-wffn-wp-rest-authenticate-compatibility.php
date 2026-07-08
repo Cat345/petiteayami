@@ -11,10 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WFFN_Compatibility_With_WP_Rest_Authenticate' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_WP_Rest_Authenticate {
 
 		public function __construct() {
-			add_filter( 'dra_allow_rest_api', [ $this, 'allow_rest_apis' ] );
+			add_filter( 'dra_allow_rest_api', array( $this, 'allow_rest_apis' ) );
 		}
 
 		public function is_enable() {
@@ -36,7 +37,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WP_Rest_Authenticate' ) ) {
 			}
 
 			$rest_route = $GLOBALS['wp']->query_vars['rest_route'];
-			if ( !is_null($rest_route) && false !== strpos( $rest_route, 'woofunnel' ) ) {
+			if ( ! is_null( $rest_route ) && false !== strpos( $rest_route, 'woofunnel' ) ) {
 				return true;
 			}
 

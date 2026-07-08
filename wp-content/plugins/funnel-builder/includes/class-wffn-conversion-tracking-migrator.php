@@ -1,10 +1,11 @@
 <?php
 
 if ( ! class_exists( 'WFFN_Conversion_Tracking_Migrator' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Conversion_Tracking_Migrator extends WooFunnels_Background_Updater {
 		public static $_instance = null;
-		protected $prefix = 'bwf_conversion_1';
-		protected $action = 'migrator';
+		protected $prefix        = 'bwf_conversion_1';
+		protected $action        = 'migrator';
 
 		public function __construct() {
 			parent::__construct();
@@ -12,7 +13,7 @@ if ( ! class_exists( 'WFFN_Conversion_Tracking_Migrator' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -47,7 +48,6 @@ if ( ! class_exists( 'WFFN_Conversion_Tracking_Migrator' ) ) {
 		}
 
 		public function manage_last_offsets() {
-
 		}
 
 		protected function complete() {
@@ -79,17 +79,16 @@ if ( ! class_exists( 'WFFN_Conversion_Tracking_Migrator' ) ) {
 				foreach ( $update_data as $key => $value ) {
 					$placeholders[] = "$key = %s";
 				}
-				$update_query       .= implode( ', ', $placeholders );
-				$update_query       .= " WHERE id = %d;";
+				$update_query      .= implode( ', ', $placeholders );
+				$update_query      .= ' WHERE id = %d;';
 				$update_data_values = array_merge( array_values( $update_data ), array( $primary_value ) );
-				$sql                .= $wpdb->prepare( $update_query, $update_data_values );
+				$sql               .= $wpdb->prepare( $update_query, $update_data_values );
 				$wpdb->query( $sql );
 
 				if ( ! empty( $wpdb->last_error ) ) {
 					WFFN_Core()->logger->log( 'migration process wffn_test_update_multiple_conversion_rows error ' . $wpdb->last_error . ' last query ' . $wpdb->last_query, 'fk_conv_migration', true );
 				}
 			}
-
 		}
 
 		public function get_upgrade_state() {
@@ -120,8 +119,8 @@ if ( ! class_exists( 'WFFN_Conversion_Tracking_Migrator' ) ) {
 			$first_row     = reset( $data );
 			$columns       = array_keys( $first_row );
 			$placeholders  = array_fill( 0, count( $data ), '(' . rtrim( str_repeat( '%s, ', count( $columns ) ), ', ' ) . ')' );
-			$query         = "INSERT INTO $table_name (" . implode( ', ', $columns ) . ") VALUES " . implode( ', ', $placeholders );
-			$insert_values = [];
+			$query         = "INSERT INTO $table_name (" . implode( ', ', $columns ) . ') VALUES ' . implode( ', ', $placeholders );
+			$insert_values = array();
 			foreach ( $data as $row ) {
 				$insert_values = array_merge( $insert_values, array_values( $row ) );
 			}
@@ -131,7 +130,6 @@ if ( ! class_exists( 'WFFN_Conversion_Tracking_Migrator' ) ) {
 			if ( ! empty( $wpdb->last_error ) ) {
 				WFFN_Core()->logger->log( 'migration process insert_multiple_conversion_rows error ' . $wpdb->last_error . ' last query ' . $wpdb->last_query, 'fk_conv_migration', true );
 			}
-
 		}
 	}
 
@@ -143,4 +141,3 @@ if ( ! class_exists( 'WFFN_Conversion_Tracking_Migrator' ) ) {
 
 	wffn_conversion_tracking_migrator();
 }
-

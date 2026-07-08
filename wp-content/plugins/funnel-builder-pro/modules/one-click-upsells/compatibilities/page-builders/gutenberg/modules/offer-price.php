@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Guten_Offer_Price' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Guten_Offer_Price extends WFOCU_Guten_Field {
 		public $slug  = 'wfocu_offer_price';
 		protected $id = 'wfocu_offer_price';

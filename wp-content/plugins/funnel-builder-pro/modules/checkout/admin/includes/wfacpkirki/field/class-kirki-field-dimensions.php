@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Dimensions' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Dimensions extends WFACPKirki_Field {
@@ -24,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Dimensions' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-dimensions';
-
 		}
 
 		/**
@@ -40,7 +43,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Dimensions' ) ) {
 				return;
 			}
 			$this->sanitize_callback = array( $this, 'sanitize' );
-
 		}
 
 		/**
@@ -60,7 +62,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Dimensions' ) ) {
 			}
 
 			return $value;
-
 		}
 
 		/**

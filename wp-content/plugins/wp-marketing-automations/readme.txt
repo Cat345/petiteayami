@@ -4,7 +4,7 @@ Tags: cart abandonment, follow up emails, email marketing, newsletter, marketing
 Requires at least: 5.0
 Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 3.8.0
+Stable tag: 3.8.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -415,6 +415,60 @@ FunnelKit Automations is 100% self-hosted and fully GDPR compliant.
 
 
 == Change log ==
+
+= 3.8.3 (June 30, 2026) =
+* Fixed: Improved background worker detection to prevent false firewall warnings when loopback requests are temporarily rate-limited (HTTP 429). (#4759)
+* Fixed: Improved Reply-To email header formatting for better compatibility with strict SMTP plugins when sending automation emails. (#4752)
+* Improvement: Persistent pagination across all admin list views. (#4526)
+
+= 3.8.2 (June 25, 2026) =
+* Added: PHP 8.4.x compatibility. (#4739)
+* Added: Added support for filtering contacts by audience using the `audience_id` URL parameter on the contact listing page. (#4702)
+* Added: WooCommerce Blocks Checkout compatibility for abandoned carts — full cart capture, recovery, prefilled fields, and restoration of the previously selected payment method now work on modern block-based checkouts. (#4706)
+* Improved: Skip the customer total-spent lookup on the admin orders page when the column is hidden, reducing unnecessary database queries. (#4695)
+* Improved handling of contact queueing deadlocks in V2 automations. (#4734)
+* Fixed: Enhanced WooCommerce Blocks Checkout compatibility for abandoned carts, including cart capture, recovery, and field prefill support. (#4708)
+* Fixed: Abandoned cart language is now captured correctly for multilingual stores during add-to-cart events. (#4698)
+* Fixed: Improved WPML compatibility to ensure the correct language-specific thank-you page is displayed after checkout, a case with Funnel Builder & WPML. (#4700)
+* Fixed: Automation processing now uses the latest order data from the database for improved accuracy. (#4709)
+* Fixed: Safari rendering and layout issues in the automation builder canvas, including split-path preview and customer journey nodes. (#4692)
+* Fixed: Abandoned carts not captured for wholesale and dynamic-priced products when added to cart. (#4729)
+* Fixed: Stale WooCommerce data returned by the contact-order update endpoint; fresh data is now pulled from the database. (#4697)
+* Fixed: Blank admin screens caused by REST responses polluted with stray PHP notices/deprecation warnings — a client-side issue, handling done. (#4715)
+* Fixed: A rare scenario on client site where contacts intermittently not enrolling in V2 automations under concurrent checkout load due to InnoDB deadlocks on the database. (#4734)
+* Fixed: Delay-until-custom-field-date step with day/month recurrence and "jump to step if time has passed" enabled scheduled contacts about a year ahead instead of jumping when the date had already passed. (#4742)
+* Devs: Added the `bwfan_skip_fka_email_tracking` filter to allow developers to disable open-pixel tracking and click-tracking link rewriting for FunnelKit Automations emails. (#4722)
+
+= 3.8.1.1 (May 22, 2026) =
+Fixed: Compatibility issue with the DateTime component in WordPress 7.0 in admin app. (#4689)
+
+= 3.8.1 (May 20, 2026) =
+* Added: Optional Capture IP Address and Capture Device settings under Cart Abandonment to help admins identify bot and fraudulent checkouts.
+* Added: Hook to add a default rule group, reducing manual setup steps. (#4617)
+* Added: Multi search filter component for rules. (#4208)
+* Added: `bwfan_search_product_post_types` filter to let integrations extend the Order Created product picker to additional post types. (#4621)
+* Added: Filter hook to disable the WooFunnels worker ping. (#4682)
+* Improved: Automation Builder event picker search now also matches integration and group names for easier discovery. (#4619)
+* Improved: Contact list query performance by optimizing filtered contact queries. (#4629, #4642)
+* Improved: Updated abandoned cart processing to improve protection. (#4664)
+* Improved: Order Product Tag and Order Product Category rules now support "matches any of / all of / none of" operators. (#4680)
+* Improved: Rule saving now enforces capability checks, nonce verification, and automation ID validation to prevent unauthorized modifications.
+* Improved: Validate DNS/MX email domain validation by default to prevent spam. (#4599)
+* Fixed: Email click-tracking now redirects correctly when URLs contain non-ASCII characters such as Cyrillic, Chinese, or Arabic. (#4602)
+* Fixed: Order status change events now respect from/to status validation when category filters are selected. (#4608)
+* Fixed: RTL display issues in contact filters, text-with-affix inputs, and conditional rules sidebar for RTL languages. (#4613)
+* Fixed: Reduced unnecessary WooCommerce status warnings and deprecated product item notices in debug logs. (#4625)
+* Fixed: Contacts now load correctly when filtering by custom fields with left join enabled. (#4644)
+* Fixed: Variation products now inherit parent product categories correctly when evaluating automation rules. (#4648)
+* Fixed: Email preheader text now displays decoded characters correctly in inbox previews. (#4658)
+* Fixed: Automation builder layout now remains stable for conditional nodes in saved or imported automations. (#4671)
+* Fixed: Payment method selection now remains unchanged after abandoned cart capture runs on checkout. (#4640)
+* Fixed: Improved abandoned cart processing reliability during high-concurrency database updates. (#4636)
+* Fixed: Regenerate unique key for imported webhook events. (#4649)
+* Fixed: Wrong date/time on "Completed Contacts" step modal. (#4678)
+* Fixed: PHP warning in the WordPress Send Email action. (#4675)
+* Fixed: WPML order language is now detected on checkout even when WooCommerce Multilingual (WCML) is not active. (#4654)
+* Fixed: Email click tracking for long URLs (e.g. Google Maps) no longer redirects recipients to the site homepage; oversized links are now delivered as-is instead of failing silently. (#4646)
 
 = 3.8.0 (Apr 09, 2026) =
 * Security: Hardened plug-in security for legacy automation actions. (#4592)

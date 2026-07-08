@@ -1,16 +1,18 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * WooCommerce DHL
  * By WP Desk
- *
  */
 if ( ! class_exists( 'WFACP_Shipping_DHL_WpDesk' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Shipping_DHL_WpDesk {
 		public function __construct() {
-			add_action( 'wfacp_after_template_found', [ $this, 'remove_action' ] );
-
+			add_action( 'wfacp_after_template_found', array( $this, 'remove_action' ) );
 		}
 
 		public function remove_action() {

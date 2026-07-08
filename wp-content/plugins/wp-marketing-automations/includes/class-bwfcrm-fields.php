@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'BWFCRM_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
+	#[\AllowDynamicProperties]
 	class BWFCRM_Fields {
 		public static $TYPE_TEXT = 1;
 		public static $TYPE_NUMBER = 2;

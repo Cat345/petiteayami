@@ -4,10 +4,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WFOB_Compatibility_WC_Deposit' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_WC_Deposit {
 		public function __construct() {
-			add_action( 'wfob_analytics_custom_order_status', [ $this, 'add_custom_order_status' ] );
-			add_filter( 'wfob_maybe_update_order', [ $this, 'maybe_update_parent_order' ] );
+			add_action( 'wfob_analytics_custom_order_status', array( $this, 'add_custom_order_status' ) );
+			add_filter( 'wfob_maybe_update_order', array( $this, 'maybe_update_parent_order' ) );
 		}
 
 		public function add_custom_order_status( $status ) {
@@ -34,9 +35,7 @@ if ( ! class_exists( 'WFOB_Compatibility_WC_Deposit' ) ) {
 			}
 
 			return $order;
-
 		}
-
 	}
 
 	new WFOB_Compatibility_WC_Deposit();

@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Dashicons' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Dashicons extends WFACPKirki_Field {
@@ -24,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Dashicons' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-dashicons';
-
 		}
 
 		/**

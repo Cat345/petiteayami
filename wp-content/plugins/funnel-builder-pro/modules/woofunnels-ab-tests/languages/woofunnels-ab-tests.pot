@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-04-23T14:50:44+00:00\n"
+"POT-Creation-Date: 2026-07-01T12:37:44+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woofunnels-ab-tests\n"
@@ -35,112 +35,112 @@ msgstr ""
 msgid "Funnelkit"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:87
+#: includes/class-bwfabt-admin.php:104
 #: views/bwfabt-experiment-listing-view.php:12
 msgid "Experiments"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:171
+#: includes/class-bwfabt-admin.php:188
 msgid "Select Test Type"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:231
+#: includes/class-bwfabt-admin.php:248
 msgid "Create New Experiment"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:233
-#: includes/class-bwfabt-rest-experiment.php:448
+#: includes/class-bwfabt-admin.php:250
+#: includes/class-bwfabt-rest-experiment.php:489
 msgid "An experiment is already running on this original variant. Please select other variant."
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:236
+#: includes/class-bwfabt-admin.php:253
 msgid "Select Original Variant"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:237
+#: includes/class-bwfabt-admin.php:254
 msgid "Search the original variant that you want to test"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:240
+#: includes/class-bwfabt-admin.php:257
 msgid "Name Your Experiment"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:241
-#: includes/class-bwfabt-admin.php:261
+#: includes/class-bwfabt-admin.php:258
+#: includes/class-bwfabt-admin.php:278
 msgid "Enter the title of your experiment (e.g., VSL vs text-based copy)"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:244
+#: includes/class-bwfabt-admin.php:261
 msgid "Description (Optional)"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:245
-#: includes/class-bwfabt-admin.php:266
+#: includes/class-bwfabt-admin.php:262
+#: includes/class-bwfabt-admin.php:283
 msgid "Write a description for your experiment (optional)"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:260
+#: includes/class-bwfabt-admin.php:277
 msgid "Experiment Name"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:265
-#: includes/class-bwfabt-admin.php:278
+#: includes/class-bwfabt-admin.php:282
+#: includes/class-bwfabt-admin.php:295
 msgid "Description <span> (optional)</span>"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:274
+#: includes/class-bwfabt-admin.php:291
 msgid "Name your variant"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:275
+#: includes/class-bwfabt-admin.php:292
 msgid "Enter the title of your variant"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:279
+#: includes/class-bwfabt-admin.php:296
 msgid "Write a description for your variant (optional)"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:293
+#: includes/class-bwfabt-admin.php:310
 msgid "Traffic distribution should be 100%"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:298
+#: includes/class-bwfabt-admin.php:315
 msgid "Start Experiment"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:299
+#: includes/class-bwfabt-admin.php:316
 msgid "Starting Experiment..."
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:301
+#: includes/class-bwfabt-admin.php:318
 msgid "Add atleast one variant to start the experiment"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:302
+#: includes/class-bwfabt-admin.php:319
 msgid "No variant should have 0 traffic"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:303
+#: includes/class-bwfabt-admin.php:320
 msgid "Traffic total must be equal to 100. Currently it is:"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:304
+#: includes/class-bwfabt-admin.php:321
 msgid "Below variants are inactive, activate them to start the experiment."
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:308
+#: includes/class-bwfabt-admin.php:325
 msgid "Pause Experiment"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:309
+#: includes/class-bwfabt-admin.php:326
 msgid "Pausing Experiment..."
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:310
+#: includes/class-bwfabt-admin.php:327
 msgid "Unable to stop the experiment."
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:317
+#: includes/class-bwfabt-admin.php:334
 #: test-modules/aero-checkout/class-bwfabt-report-aero-checkout.php:349
 #: test-modules/landing/class-bwfabt-report-landing.php:356
 #: test-modules/offer/class-bwfabt-report-offer.php:371
@@ -153,50 +153,50 @@ msgstr ""
 msgid "Choose Winner"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:318
+#: includes/class-bwfabt-admin.php:335
 msgid "Processing Winner"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:324
+#: includes/class-bwfabt-admin.php:341
 #: includes/class-bwfabt-controller.php:513
 msgid "Publish"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:325
+#: includes/class-bwfabt-admin.php:342
 #: includes/class-bwfabt-controller.php:507
 #: includes/class-bwfabt-experiment.php:521
 #: views/commons/section-head.php:2
 msgid "Draft"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:330
+#: includes/class-bwfabt-admin.php:347
 msgid "Oops! No elements found. Consider changing the search query."
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:495
-#: test-modules/aero-checkout/class-bwfabt-controller-aero-checkout.php:449
-#: test-modules/landing/class-bwfabt-controller-landing.php:346
-#: test-modules/offer/class-bwfabt-controller-offer.php:289
-#: test-modules/optin-ty/class-bwfabt-controller-optin-ty.php:342
-#: test-modules/optin/class-bwfabt-controller-optin.php:378
-#: test-modules/order-bumps/class-bwfabt-controller-order-bump.php:276
-#: test-modules/thankyou/class-bwfabt-controller-thankyou.php:343
-#: test-modules/upstroke/class-bwfabt-controller-upstroke.php:461
+#: includes/class-bwfabt-admin.php:516
+#: test-modules/aero-checkout/class-bwfabt-controller-aero-checkout.php:462
+#: test-modules/landing/class-bwfabt-controller-landing.php:371
+#: test-modules/offer/class-bwfabt-controller-offer.php:315
+#: test-modules/optin-ty/class-bwfabt-controller-optin-ty.php:366
+#: test-modules/optin/class-bwfabt-controller-optin.php:398
+#: test-modules/order-bumps/class-bwfabt-controller-order-bump.php:280
+#: test-modules/thankyou/class-bwfabt-controller-thankyou.php:368
+#: test-modules/upstroke/class-bwfabt-controller-upstroke.php:466
 #: views/commons/section-breacrumb.php:6
 msgid "Edit"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:502
+#: includes/class-bwfabt-admin.php:523
 #: includes/class-bwfabt-controller.php:497
 msgid "Delete"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:560
 #: includes/class-bwfabt-admin.php:581
-#: includes/class-bwfabt-admin.php:605
-#: includes/class-bwfabt-admin.php:629
-#: includes/class-bwfabt-admin.php:742
+#: includes/class-bwfabt-admin.php:602
+#: includes/class-bwfabt-admin.php:626
+#: includes/class-bwfabt-admin.php:650
 #: includes/class-bwfabt-admin.php:763
+#: includes/class-bwfabt-admin.php:784
 #: includes/class-bwfabt-controller.php:369
 #: includes/class-bwfabt-controller.php:385
 #: includes/class-bwfabt-controller.php:402
@@ -206,244 +206,265 @@ msgstr ""
 msgid "Respective controller is not registered"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:770
+#: includes/class-bwfabt-admin.php:791
 #: includes/class-bwfabt-experiment-table.php:97
 msgid "Variants"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:779
+#: includes/class-bwfabt-admin.php:800
 #: includes/class-bwfabt-experiment-table.php:106
 msgid "Analytics"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:788
+#: includes/class-bwfabt-admin.php:809
 #: includes/class-bwfabt-experiment-table.php:114
 msgid "Settings"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:884
-msgid "No expeirment exist with this id."
+#: includes/class-bwfabt-admin.php:905
+msgid "Invalid experiment."
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:1017
+#: includes/class-bwfabt-admin.php:1041
 msgid "Advanced"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:1102
+#: includes/class-bwfabt-admin.php:1126
 msgid "A/B Test Variant URL"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:1108
+#: includes/class-bwfabt-admin.php:1132
 msgid "Open Variants on same URL as Original step"
 msgstr ""
 
-#: includes/class-bwfabt-admin.php:1110
+#: includes/class-bwfabt-admin.php:1134
 msgid "This setting applied only to uncached pages. To ensure it is always applied, exclude all steps from caching."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:62
-#: includes/class-bwfabt-rest-experiment.php:400
+#: includes/class-bwfabt-ajax-controller.php:68
+#: includes/class-bwfabt-rest-experiment.php:441
 msgid "Unable to create test."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:68
+#: includes/class-bwfabt-ajax-controller.php:74
 msgid "Empty title or no control is selected."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:74
+#: includes/class-bwfabt-ajax-controller.php:80
 msgid "No experiment type provided"
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:116
-#: includes/class-bwfabt-rest-experiment.php:493
+#: includes/class-bwfabt-ajax-controller.php:122
+#: includes/class-bwfabt-rest-experiment.php:541
 msgid "Unable to add variant"
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:159
-#: includes/class-bwfabt-rest-experiment.php:513
+#: includes/class-bwfabt-ajax-controller.php:165
+#: includes/class-bwfabt-rest-experiment.php:561
 msgid "Unable to get controls, due to empty experiment type."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:189
-#: includes/class-bwfabt-rest-experiment.php:956
+#: includes/class-bwfabt-ajax-controller.php:195
+#: includes/class-bwfabt-rest-experiment.php:998
 msgid "Unable to delete the test."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:208
-#: includes/class-bwfabt-rest-experiment.php:627
+#: includes/class-bwfabt-ajax-controller.php:214
+#: includes/class-bwfabt-rest-experiment.php:674
 msgid "Unable to update the test."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:212
-#: includes/class-bwfabt-rest-experiment.php:661
+#: includes/class-bwfabt-ajax-controller.php:218
+#: includes/class-bwfabt-rest-experiment.php:708
 msgid "Empty title or no experiment id."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:231
-#: includes/class-bwfabt-rest-experiment.php:675
+#: includes/class-bwfabt-ajax-controller.php:237
+#: includes/class-bwfabt-rest-experiment.php:722
 msgid "Test updated successfully."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:255
-#: includes/class-bwfabt-rest-variant.php:129
+#: includes/class-bwfabt-ajax-controller.php:261
+#: includes/class-bwfabt-rest-variant.php:144
 msgid "Unable to create variant."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:259
-#: includes/class-bwfabt-rest-variant.php:133
+#: includes/class-bwfabt-ajax-controller.php:265
+#: includes/class-bwfabt-rest-variant.php:148
 msgid "Empty variant title or no experiment id"
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:268
-#: includes/class-bwfabt-ajax-controller.php:344
-#: includes/class-bwfabt-rest-variant.php:142
+#: includes/class-bwfabt-ajax-controller.php:274
+#: includes/class-bwfabt-ajax-controller.php:350
+#: includes/class-bwfabt-rest-variant.php:157
 msgid "Empty experiment type"
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:305
-#: includes/class-bwfabt-rest-variant.php:196
+#: includes/class-bwfabt-ajax-controller.php:311
+#: includes/class-bwfabt-rest-variant.php:211
 #, php-format
 msgid "Variant %s created successfully."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:331
+#: includes/class-bwfabt-ajax-controller.php:337
 msgid "Unable to duplicate variant."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:336
+#: includes/class-bwfabt-ajax-controller.php:342
 msgid "No experiment id or no variant id"
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:351
+#: includes/class-bwfabt-ajax-controller.php:357
 msgid "Respective controller is not registered."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:382
+#: includes/class-bwfabt-ajax-controller.php:388
 #, php-format
-msgid "Variant \"%s\" duplicated successfully. New Variant is: %s"
+msgid "Variant \"%1$s\" duplicated successfully. New Variant is: %2$s"
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:408
-#: includes/class-bwfabt-rest-variant.php:226
+#: includes/class-bwfabt-ajax-controller.php:414
+#: includes/class-bwfabt-rest-variant.php:243
 msgid "Unable to delete this variant."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:436
-#: includes/class-bwfabt-rest-variant.php:254
+#: includes/class-bwfabt-ajax-controller.php:442
+#: includes/class-bwfabt-rest-variant.php:271
 #: views/modals/bwfabt-delete-variant.php:77
 msgid "Variant deleted successfully!"
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:455
-#: includes/class-bwfabt-rest-experiment.php:648
+#: includes/class-bwfabt-ajax-controller.php:461
+#: includes/class-bwfabt-rest-experiment.php:695
 msgid "Unable to update the traffic."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:474
-#: includes/class-bwfabt-rest-experiment.php:652
+#: includes/class-bwfabt-ajax-controller.php:480
+#: includes/class-bwfabt-rest-experiment.php:699
 msgid "Traffic updated successfully."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:492
-#: includes/class-bwfabt-rest-experiment.php:698
+#: includes/class-bwfabt-ajax-controller.php:498
+#: includes/class-bwfabt-rest-experiment.php:745
 msgid "Unable to start this test."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:496
+#: includes/class-bwfabt-ajax-controller.php:502
 msgid "No experiment id."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:512
-#: includes/class-bwfabt-rest-experiment.php:839
+#: includes/class-bwfabt-ajax-controller.php:518
+#: includes/class-bwfabt-rest-experiment.php:882
 msgid "Test started successfully."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:537
-#: includes/class-bwfabt-ajax-controller.php:600
-#: includes/class-bwfabt-rest-experiment.php:702
-#: includes/class-bwfabt-rest-experiment.php:870
+#: includes/class-bwfabt-ajax-controller.php:543
+#: includes/class-bwfabt-ajax-controller.php:606
+#: includes/class-bwfabt-rest-experiment.php:749
+#: includes/class-bwfabt-rest-experiment.php:912
 msgid "No experiment id"
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:548
-#: includes/class-bwfabt-rest-experiment.php:714
+#: includes/class-bwfabt-ajax-controller.php:554
+#: includes/class-bwfabt-rest-experiment.php:760
 msgid "No controller type is defined"
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:596
-#: includes/class-bwfabt-rest-experiment.php:866
+#: includes/class-bwfabt-ajax-controller.php:602
+#: includes/class-bwfabt-rest-experiment.php:908
 msgid "Unable to stop this test."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:618
-#: includes/class-bwfabt-rest-experiment.php:889
+#: includes/class-bwfabt-ajax-controller.php:624
+#: includes/class-bwfabt-rest-experiment.php:931
 msgid "Test Paused successfully."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:641
-#: includes/class-bwfabt-rest-variant.php:274
+#. translators: %s: success message
+#: includes/class-bwfabt-ajax-controller.php:629
+#: includes/class-bwfabt-rest-experiment.php:940
+#, php-format
+msgid "Success: %s."
+msgstr ""
+
+#: includes/class-bwfabt-ajax-controller.php:648
+#: includes/class-bwfabt-rest-variant.php:291
 msgid "Unable to remove this variant."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:655
-#: includes/class-bwfabt-rest-variant.php:293
+#: includes/class-bwfabt-ajax-controller.php:662
+#: includes/class-bwfabt-rest-variant.php:307
 msgid "Unable to draft "
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:656
-#: includes/class-bwfabt-ajax-controller.php:666
-#: includes/class-bwfabt-rest-variant.php:294
-#: includes/class-bwfabt-rest-variant.php:304
+#: includes/class-bwfabt-ajax-controller.php:663
+#: includes/class-bwfabt-ajax-controller.php:673
+#: includes/class-bwfabt-rest-variant.php:308
+#: includes/class-bwfabt-rest-variant.php:318
 msgid "At least one Original & Variant step should be active. Use Pause to stop the experiment."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:665
-#: includes/class-bwfabt-rest-variant.php:303
+#: includes/class-bwfabt-ajax-controller.php:672
+#: includes/class-bwfabt-rest-variant.php:317
 msgid "Unable to draft"
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:679
-#: includes/class-bwfabt-rest-variant.php:318
+#: includes/class-bwfabt-ajax-controller.php:686
+#: includes/class-bwfabt-rest-variant.php:330
 msgid "Variant draft successfully."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:698
-#: includes/class-bwfabt-rest-variant.php:340
+#: includes/class-bwfabt-ajax-controller.php:705
+#: includes/class-bwfabt-rest-variant.php:351
 msgid "Unable to publish this variant."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:715
-#: includes/class-bwfabt-rest-variant.php:357
+#: includes/class-bwfabt-ajax-controller.php:722
+#: includes/class-bwfabt-rest-variant.php:367
 msgid "Variant published successfully."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:734
-#: includes/class-bwfabt-rest-experiment.php:991
+#: includes/class-bwfabt-ajax-controller.php:741
+#: includes/class-bwfabt-rest-experiment.php:1033
 msgid "Unable to declare the winner."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:781
-#: includes/class-bwfabt-rest-experiment.php:1047
+#: includes/class-bwfabt-ajax-controller.php:788
+#: includes/class-bwfabt-rest-experiment.php:1088
 msgid "Unable to transfer the control"
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:814
-#: includes/class-bwfabt-rest-experiment.php:1087
+#. translators: %d: control variant ID
+#: includes/class-bwfabt-ajax-controller.php:795
+#: includes/class-bwfabt-rest-experiment.php:1096
+#, php-format
+msgid "Unable to delete the old control variant %d"
+msgstr ""
+
+#. translators: %d: variant ID
+#: includes/class-bwfabt-ajax-controller.php:805
+#: includes/class-bwfabt-rest-experiment.php:1107
+#, php-format
+msgid "Unable to draft the variant %d"
+msgstr ""
+
+#: includes/class-bwfabt-ajax-controller.php:823
+#: includes/class-bwfabt-rest-experiment.php:1130
 msgid "Winner selected successfully."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:831
-#: includes/class-bwfabt-rest-experiment.php:914
+#: includes/class-bwfabt-ajax-controller.php:840
+#: includes/class-bwfabt-rest-experiment.php:957
 msgid "Unable to reset stats."
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:835
-#: includes/class-bwfabt-rest-experiment.php:918
+#: includes/class-bwfabt-ajax-controller.php:844
+#: includes/class-bwfabt-rest-experiment.php:961
 msgid "No experiment id provided"
 msgstr ""
 
-#: includes/class-bwfabt-ajax-controller.php:851
-#: includes/class-bwfabt-rest-experiment.php:936
+#: includes/class-bwfabt-ajax-controller.php:860
+#: includes/class-bwfabt-rest-experiment.php:979
 msgid "Analytics reset successfully."
 msgstr ""
 
@@ -460,7 +481,7 @@ msgid "Experiment"
 msgstr ""
 
 #: includes/class-bwfabt-experiment-table.php:160
-#: includes/class-bwfabt-rest-experiment.php:153
+#: includes/class-bwfabt-rest-experiment.php:168
 msgid "Description"
 msgstr ""
 
@@ -499,19 +520,19 @@ msgstr ""
 msgid "Paused"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:79
+#: includes/class-bwfabt-report.php:80
 msgid "Total Views"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:80
+#: includes/class-bwfabt-report.php:81
 msgid "Total Conversions"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:81
+#: includes/class-bwfabt-report.php:82
 msgid "Avg. Revenue Per Visit"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:82
+#: includes/class-bwfabt-report.php:83
 #: test-modules/aero-checkout/class-bwfabt-report-aero-checkout.php:318
 #: test-modules/aero-checkout/class-bwfabt-report-aero-checkout.php:347
 #: test-modules/landing/class-bwfabt-report-landing.php:326
@@ -533,7 +554,7 @@ msgstr ""
 msgid "Conversion Rate"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:83
+#: includes/class-bwfabt-report.php:84
 #: test-modules/aero-checkout/class-bwfabt-report-aero-checkout.php:348
 #: test-modules/landing/class-bwfabt-report-landing.php:355
 #: test-modules/offer/class-bwfabt-report-offer.php:310
@@ -549,52 +570,52 @@ msgstr ""
 msgid "Total Revenue"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:101
+#: includes/class-bwfabt-report.php:102
 msgid "Daily"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:102
+#: includes/class-bwfabt-report.php:103
 msgid "Weekly"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:103
+#: includes/class-bwfabt-report.php:104
 msgid "Monthly"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:117
+#: includes/class-bwfabt-report.php:118
 msgid "By Total Views"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:118
+#: includes/class-bwfabt-report.php:119
 msgid "By Total Revenue"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:119
+#: includes/class-bwfabt-report.php:120
 msgid "By Total Conversion"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:120
+#: includes/class-bwfabt-report.php:121
 msgid "By Conversion Rate"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:129
+#: includes/class-bwfabt-report.php:130
 msgid "Date (YYYY-MM-DD)"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:130
+#: includes/class-bwfabt-report.php:131
 msgid "Weeks of the year"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:131
+#: includes/class-bwfabt-report.php:132
 msgid "Months"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:155
+#: includes/class-bwfabt-report.php:156
 #, php-format
 msgid "Revenue in %s"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:156
+#: includes/class-bwfabt-report.php:157
 #: test-modules/aero-checkout/class-bwfabt-report-aero-checkout.php:308
 #: test-modules/aero-checkout/class-bwfabt-report-aero-checkout.php:345
 #: test-modules/landing/class-bwfabt-report-landing.php:316
@@ -616,15 +637,15 @@ msgstr ""
 msgid "Views"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:157
+#: includes/class-bwfabt-report.php:158
 msgid "Conversions"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:158
+#: includes/class-bwfabt-report.php:159
 msgid "Conversion Rate (%)"
 msgstr ""
 
-#: includes/class-bwfabt-report.php:204
+#: includes/class-bwfabt-report.php:203
 msgid "A/B Test Result"
 msgstr ""
 
@@ -632,113 +653,130 @@ msgstr ""
 msgid "No variant found"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:52
+#: includes/class-bwfabt-rest-experiment.php:55
 msgid "Offset"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:57
+#: includes/class-bwfabt-rest-experiment.php:60
 msgid "Limit"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:62
+#: includes/class-bwfabt-rest-experiment.php:65
 msgid "Experiment status"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:67
+#: includes/class-bwfabt-rest-experiment.php:70
 msgid "Search experiment"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:72
-#: includes/class-bwfabt-rest-experiment.php:98
+#: includes/class-bwfabt-rest-experiment.php:75
+#: includes/class-bwfabt-rest-experiment.php:101
 msgid "Control ID"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:77
+#: includes/class-bwfabt-rest-experiment.php:80
 msgid "Get all experiment with variant data"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:84
+#: includes/class-bwfabt-rest-experiment.php:87
 msgid "Create default variant if not exists"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:103
-#: includes/class-bwfabt-rest-experiment.php:148
+#: includes/class-bwfabt-rest-experiment.php:106
+#: includes/class-bwfabt-rest-experiment.php:163
 msgid "Title"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:108
-#: includes/class-bwfabt-rest-experiment.php:123
+#: includes/class-bwfabt-rest-experiment.php:111
+#: includes/class-bwfabt-rest-experiment.php:130
 msgid "Variant Type"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:158
+#: includes/class-bwfabt-rest-experiment.php:173
 msgid "Traffics"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:219
+#: includes/class-bwfabt-rest-experiment.php:258
 msgid "search term"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:224
+#: includes/class-bwfabt-rest-experiment.php:263
 msgid "Type of step"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:230
+#: includes/class-bwfabt-rest-experiment.php:269
 msgid "Set search limit"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:263
-#: includes/class-bwfabt-rest-experiment.php:550
+#: includes/class-bwfabt-rest-experiment.php:284
+#: includes/class-bwfabt-rest-experiment.php:292
+msgid "You do not have permission to perform this action."
+msgstr ""
+
+#: includes/class-bwfabt-rest-experiment.php:302
+#: includes/class-bwfabt-rest-experiment.php:597
 msgid "No experiment found"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:343
-#: includes/class-bwfabt-rest-experiment.php:357
+#: includes/class-bwfabt-rest-experiment.php:384
+#: includes/class-bwfabt-rest-experiment.php:398
 msgid "Get all experiments"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:361
+#: includes/class-bwfabt-rest-experiment.php:402
 msgid "A/B test with {variant_count} variants was started on {start_date}"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:413
-#: includes/class-bwfabt-rest-experiment.php:425
+#: includes/class-bwfabt-rest-experiment.php:454
+#: includes/class-bwfabt-rest-experiment.php:466
 msgid "No experiment type or title provided."
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:419
+#: includes/class-bwfabt-rest-experiment.php:460
 msgid "Unable to create Upsell test"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:490
+#: includes/class-bwfabt-rest-experiment.php:538
 msgid "Successfully created"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:812
+#. translators: %s: variant titles
+#: includes/class-bwfabt-rest-experiment.php:820
+#, php-format
+msgid "Template missing for steps: %s"
+msgstr ""
+
+#. translators: %s: variant titles
+#: includes/class-bwfabt-rest-experiment.php:837
+#, php-format
+msgid "Product missing for steps: %s"
+msgstr ""
+
+#: includes/class-bwfabt-rest-experiment.php:856
 msgid "At least one Original & Variant step should be active."
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:817
+#: includes/class-bwfabt-rest-experiment.php:861
 msgid "Invalid traffic"
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:972
+#: includes/class-bwfabt-rest-experiment.php:1014
 msgid "Successfully deleted test."
 msgstr ""
 
-#: includes/class-bwfabt-rest-experiment.php:1001
+#: includes/class-bwfabt-rest-experiment.php:1043
 msgid "Winner already declared"
 msgstr ""
 
-#: includes/class-bwfabt-rest-variant.php:52
+#: includes/class-bwfabt-rest-variant.php:55
 msgid "Variant title"
 msgstr ""
 
-#: includes/class-bwfabt-rest-variant.php:57
+#: includes/class-bwfabt-rest-variant.php:60
 msgid "Variant description"
 msgstr ""
 
-#: includes/class-bwfabt-rest-variant.php:68
+#: includes/class-bwfabt-rest-variant.php:75
 msgid "Unique variant id."
 msgstr ""
 
@@ -907,7 +945,7 @@ msgstr ""
 msgid "Optin-Thankyou-Pages/Variants"
 msgstr ""
 
-#: test-modules/optin/class-bwfabt-controller-optin.php:54
+#: test-modules/optin/class-bwfabt-controller-optin.php:53
 msgid "Optin"
 msgstr ""
 
@@ -935,7 +973,7 @@ msgstr ""
 msgid "One Click Upsells"
 msgstr ""
 
-#: test-modules/upstroke/class-bwfabt-controller-upstroke.php:156
+#: test-modules/upstroke/class-bwfabt-controller-upstroke.php:155
 msgid " Copy"
 msgstr ""
 

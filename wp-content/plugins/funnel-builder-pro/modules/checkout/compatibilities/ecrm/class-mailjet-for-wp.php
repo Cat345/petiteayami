@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Mailjet for WordPress by Mailjet SAS
@@ -11,13 +15,13 @@ if ( ! class_exists( 'Mailjet_For_WP' ) ) {
 
 		public function __construct() {
 			/* Register Add field */
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
 			add_filter( 'wfacp_html_fields_mailjet_for_wp', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'display_field' ], 999, 2 );
+			add_action( 'process_wfacp_html', array( $this, 'display_field' ), 999, 2 );
 			/* Assign Object */
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'action' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'action' ) );
 			/* Add Default Styling  */
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 10, 2 );
+			add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 10, 2 );
 
 			/* prevent third party fields and wrapper*/
 
@@ -26,13 +30,13 @@ if ( ! class_exists( 'Mailjet_For_WP' ) ) {
 
 
 		public function add_field( $fields ) {
-			$fields['mailjet_for_wp'] = [
+			$fields['mailjet_for_wp'] = array(
 				'type'       => 'wfacp_html',
-				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_mailjet_for_wp' ],
+				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_mailjet_for_wp' ),
 				'id'         => 'mailjet_for_wp',
 				'field_type' => 'mailjet_for_wp',
 				'label'      => __( 'Mailjet for WordPress', 'woofunnels-aero-checkout' ),
-			];
+			);
 
 			return $fields;
 		}
@@ -46,9 +50,9 @@ if ( ! class_exists( 'Mailjet_For_WP' ) ) {
 				return '';
 			}
 			?>
-            <div class="mailjet_show_wrap" id="mailjet_show_wrap">
+			<div class="mailjet_show_wrap" id="mailjet_show_wrap">
 				<?php $this->instance->mailjet_show_extra_woo_fields( WC()->checkout() ); ?>
-            </div>
+			</div>
 			<?php
 		}
 
@@ -58,7 +62,6 @@ if ( ! class_exists( 'Mailjet_For_WP' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function add_default_wfacp_styling( $args, $key ) {
@@ -71,13 +74,11 @@ if ( ! class_exists( 'Mailjet_For_WP' ) ) {
 				return $args;
 			}
 
-			$args['class']    = array_merge( [ 'wfacp-form-control-wrapper wfacp-col-full ' ], $args['class'] );
-			$args['cssready'] = [ 'wfacp-col-full' ];
-
+			$args['class']    = array_merge( array( 'wfacp-form-control-wrapper wfacp-col-full ' ), $args['class'] );
+			$args['cssready'] = array( 'wfacp-col-full' );
 
 			return $args;
 		}
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new Mailjet_For_WP(), 'wfacp-mailjet-for-wp' );

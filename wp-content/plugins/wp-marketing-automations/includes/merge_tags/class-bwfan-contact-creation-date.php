@@ -1,8 +1,13 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Class BWFAN_Contact_Creation_Date
  */
+#[\AllowDynamicProperties]
 class BWFAN_Contact_Creation_Date extends BWFAN_Merge_Tag {
 	private static $instance = null;
 

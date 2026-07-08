@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Multicolor control.
  */
 if ( ! class_exists( 'WFACPKirki_Control_Multicolor' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Multicolor extends WFACPKirki_Control_Base {
 
 		/**
@@ -59,22 +60,22 @@ if ( ! class_exists( 'WFACPKirki_Control_Multicolor' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <span class="customize-control-title">
+			<span class="customize-control-title">
 			{{{ data.label }}}
 		</span>
-            <# if ( data.description ) { #>
-            <span class="description customize-control-description">{{{ data.description }}}</span>
-            <# } #>
-            <div class="multicolor-group-wrapper">
-                <# for ( key in data.choices ) { #>
-                <# if ( 'irisArgs' !== key ) { #>
-                <div class="multicolor-single-color-wrapper">
-                    <input {{{ data.inputAttrs }}} id="{{ data.id }}-{{ key }}" type="text" data-palette="{{ data.palette }}" data-default-color="{{ data.default[ key ] }}" data-alpha="{{ data.alpha }}" value="{{ data.value[ key ] }}" class="wfacpkirki-color-control color-picker multicolor-index-{{ key }}" data-label="<# if ( data.choices[ key ] ) { #>{{ data.choices[ key ] }}<# } else { #>{{ key }}<# } #>"/>
-                </div>
-                <# } #>
-                <# } #>
-            </div>
-            <input class="multicolor-hidden-value" type="hidden" {{{ data.link }}}>
+			<# if ( data.description ) { #>
+			<span class="description customize-control-description">{{{ data.description }}}</span>
+			<# } #>
+			<div class="multicolor-group-wrapper">
+				<# for ( key in data.choices ) { #>
+				<# if ( 'irisArgs' !== key ) { #>
+				<div class="multicolor-single-color-wrapper">
+					<input {{{ data.inputAttrs }}} id="{{ data.id }}-{{ key }}" type="text" data-palette="{{ data.palette }}" data-default-color="{{ data.default[ key ] }}" data-alpha="{{ data.alpha }}" value="{{ data.value[ key ] }}" class="wfacpkirki-color-control color-picker multicolor-index-{{ key }}" data-label="<# if ( data.choices[ key ] ) { #>{{ data.choices[ key ] }}<# } else { #>{{ key }}<# } #>"/>
+				</div>
+				<# } #>
+				<# } #>
+			</div>
+			<input class="multicolor-hidden-value" type="hidden" {{{ data.link }}}>
 			<?php
 		}
 	}

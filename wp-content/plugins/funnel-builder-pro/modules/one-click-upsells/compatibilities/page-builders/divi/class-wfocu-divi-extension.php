@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Divi_Extension' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Divi_Extension extends DiviExtension {
 
 		/**

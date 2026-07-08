@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_WooFunnels_Support {
 
 	public static $_instance = null;

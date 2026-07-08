@@ -7,15 +7,15 @@
 
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'WP_Async_Request', false ) ) {
-	include_once dirname( dirname( __FILE__ ) ) . '/woofunnels/libraries/wp-async-request.php';
+	include_once dirname( __DIR__ ) . '/woofunnels/libraries/wp-async-request.php';
 }
 
 if ( ! class_exists( 'WP_Background_Process', false ) ) {
-	include_once dirname( dirname( __FILE__ ) ) . '/woofunnels/libraries/wp-background-process.php';
+	include_once dirname( __DIR__ ) . '/woofunnels/libraries/wp-background-process.php';
 }
 
 if ( ! class_exists( 'WFFN_Background_Process', false ) ) {
-	include_once dirname( dirname( __FILE__ ) ) . '/includes/class-wffn-background-process.php';
+	include_once dirname( __DIR__ ) . '/includes/class-wffn-background-process.php';
 }
 
 /**
@@ -23,6 +23,7 @@ if ( ! class_exists( 'WFFN_Background_Process', false ) ) {
  * Based on WFFN_Background_Process concept
  */
 if ( ! class_exists( 'WFFN_Background_Importer' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Background_Importer extends WFFN_Background_Process {
 
 
@@ -33,7 +34,6 @@ if ( ! class_exists( 'WFFN_Background_Importer' ) ) {
 		public function __construct() {
 			$this->action = 'funnel_importer';
 			parent::__construct();
-
 		}
 
 

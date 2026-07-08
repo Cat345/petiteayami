@@ -4,6 +4,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 	 * Class WFOCU_AJAX_Controller
 	 * Handles All the request came from front end or the backend
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_AJAX_Controller {
 
 		const CHARGE_ACTION               = 'wfocu_front_charge';
@@ -46,11 +47,21 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 			add_filter( 'bwf_global_save_settings_upstroke', array( __CLASS__, 'update_global_settings_fields' ) );
 
+			// Order-level endpoints: ungated. The is_admin_enabled() gate below is the Upsells-MENU
+			// toggle; only the upsell builder actions belong behind it. Both handlers self-check caps.
+			add_action( 'wp_ajax_wfocu_admin_refund_offer', array( __CLASS__, 'refund_offer' ) );
+			add_action( 'wp_ajax_wfocu_normalize_order_from_wc_list', array( __CLASS__, 'normalize_order_from_wc_list' ) );
+
 			/**
 			 * Backend AJAX actions
 			 */
 			if ( is_admin() ) {
-				self::handle_admin_ajax();
+				$is_admin_enabled = ! class_exists( 'WFFN_Pro_Upsells_Support' )
+					|| ! method_exists( 'WFFN_Pro_Upsells_Support', 'is_admin_enabled' )
+					|| WFFN_Pro_Upsells_Support::is_admin_enabled();
+				if ( $is_admin_enabled ) {
+					self::handle_admin_ajax();
+				}
 			}
 
 			add_action( 'wp_ajax_wfocu_front_calculate_standard_rates', array( __CLASS__, 'calculate_standard_tax_rates' ) );
@@ -103,13 +114,11 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			add_action( 'wp_ajax_wfocu_apply_template', array( __CLASS__, 'apply_template' ) );
 			add_action( 'wp_ajax_wfocu_delete_template', array( __CLASS__, 'delete_template' ) );
 
-			add_action( 'wp_ajax_wfocu_admin_refund_offer', array( __CLASS__, 'refund_offer' ) );
 			add_action( 'wp_ajax_wfocu_clear_template', array( __CLASS__, 'clear_template' ) );
 			add_action( 'wp_ajax_wfocu_activate_plugins', array( __CLASS__, 'activate_plugins' ) );
 			add_action( 'wp_ajax_wfocu_make_wpml_duplicate', array( __CLASS__, 'make_wpml_duplicate' ) );
 			add_action( 'wp_ajax_wfocu_get_wpml_edit_url', array( __CLASS__, 'get_wpml_edit_url' ) );
 			add_action( 'wp_ajax_wfocu_update_edit_url', array( __CLASS__, 'update_edit_url' ) );
-			add_action( 'wp_ajax_wfocu_normalize_order_from_wc_list', array( __CLASS__, 'normalize_order_from_wc_list' ) );
 		}
 
 		public static function handle_offer_skipped() {
@@ -274,14 +283,17 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			}
 			$get_current_offer      = WFOCU_Core()->data->get( 'current_offer' );
 			$get_current_offer_meta = WFOCU_Core()->offers->get_offer_meta( $get_current_offer );
-			if ( is_object( $get_current_offer_meta ) && isset( $get_current_offer_meta->products ) ) {
 
-				foreach ( $posted_data as $data ) {
+			// Fail closed: a missing/empty offer or invalid offer meta must not pass validation.
+			if ( empty( $get_current_offer ) || ! is_object( $get_current_offer_meta ) || ! isset( $get_current_offer_meta->products ) ) {
+				return apply_filters( 'wfocu_validate_charge_request', false, $get_current_offer, $get_current_offer_meta );
+			}
 
-					if ( ! isset( $get_current_offer_meta->products->{$data['hash']} ) ) {
-						$status = false;
-						break;
-					}
+			foreach ( $posted_data as $data ) {
+
+				if ( ! isset( $get_current_offer_meta->products->{$data['hash']} ) ) {
+					$status = false;
+					break;
 				}
 			}
 
@@ -1316,6 +1328,10 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 		}
 
 		public static function page_search() {
+			check_admin_referer( 'wfocu_page_search', '_nonce' );
+			if ( false === WFOCU_Core()->role->user_access( 'funnel', 'write' ) ) {
+				wp_die();
+			}
 			$args      = array(
 				'post_type'        => array( 'page' ),
 				'post_status'      => 'publish',
@@ -1447,7 +1463,6 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 		}
 
 		public static function update_global_settings_fields( $options ) {
-			$options = ( is_array( $options ) && count( $options ) > 0 ) ? wp_unslash( $options ) : 0;
 
 			$resp = array(
 				'status' => false,
@@ -1455,14 +1470,22 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 				'data'   => '',
 			);
 
+			if ( false === WFOCU_Core()->role->user_access( 'funnel', 'write' ) ) {
+				$resp['msg'] = __( 'Permission denied', 'woofunnels-upstroke-one-click-upsell' );
+
+				return $resp;
+			}
+
+			$options = ( is_array( $options ) && count( $options ) > 0 ) ? wp_unslash( $options ) : 0;
+
 			if ( ! is_array( $options ) || count( $options ) === 0 ) {
 				return $resp;
 			}
 
 			$options['primary_order_status_title'] = wp_unslash( sanitize_text_field( $options['primary_order_status_title'] ) );
 			$options['ttl_funnel']                 = sanitize_text_field( $options['ttl_funnel'] );
-			$options['scripts']                    = wp_unslash( $options['scripts'] );
-			$options['scripts_head']               = wp_unslash( $options['scripts_head'] );
+			$options['scripts']                    = self::sanitize_global_script( wp_unslash( $options['scripts'] ) );
+			$options['scripts_head']               = self::sanitize_global_script( wp_unslash( $options['scripts_head'] ) );
 			$options['offer_header_text']          = wp_unslash( $options['offer_header_text'] );
 			$options['offer_yes_btn_text']         = wp_unslash( $options['offer_yes_btn_text'] );
 			$options['offer_skip_link_text']       = wp_unslash( $options['offer_skip_link_text'] );
@@ -1503,6 +1526,92 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			$resp['status'] = true;
 
 			return $resp;
+		}
+
+		public static function sanitize_global_script( $script ) {
+			// (1) Dangerous standalone tags.
+			$script = preg_replace( '#<\s*/?\s*base\b[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*/?\s*link\b[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*meta\b[^>]*http-equiv\s*=\s*["\']?\s*refresh[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*/?\s*(?:object|embed)\b[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*/?\s*(?:svg|math|mglyph|mtext|annotation-xml|foreignObject)\b[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*/?\s*iframe\b[^>]*>#i', '', $script );
+
+			// (2) Dangerous attributes / inline-URI protocols.
+			$script = preg_replace( '#\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $script );
+			$script = preg_replace( '#\bsrcdoc\s*=#i', ' data-blocked-srcdoc=', $script );
+			$script = preg_replace( '#\s(?:href|src|action|formaction|xlink:href)\s*=\s*(["\']?)\s*(?:javascript|vbscript|data:\s*text/html)[^\s>"\']*\1?#i', '', $script );
+
+			// (3) Inline JS sink signatures.
+			$sinks = array(
+				'#\bimport\s*\(\s*[^)]*[\'"`]\s*\+#i',
+				'#\b(?:import|fetch)\s*\(\s*[\'"`][^\'"`]*\\\\(?:x[0-9a-f]{2}|u[0-9a-f]{4}|[0-7]{1,3})#i',
+				'#\bimport\s*\(\s*[^)]*\b(?:location|document|window|self|top|name|atob|unescape|decodeURI|localStorage|sessionStorage)\b#i',
+				'#\b(?:import|fetch|eval|Function)\s*\(\s*atob\s*\(#i',
+				'#(?:\.\s*then\s*\(\s*|=>\s*)(?:eval|Function|new\s+Function)\b#i',
+				'#document\s*\.cookie#i',
+				'#\b(?:top|self|parent|window|document)\s*\.\s*location\b#i',
+				'#\bnew\s+Function\s*\(#i',
+				'#\b(?:setTimeout|setInterval)\s*\(\s*[\'"`]#i',
+				'#\bnew\s+WebSocket\s*\(#i',
+				'#\bnew\s+Blob\s*\([^)]*(?:java|ecma)script#i',
+				'#createObjectURL#i',
+				'#data:\s*(?:text|application)/(?:java|ecma)script[^,]*;\s*base64\s*,[A-Za-z0-9+/=]*#i',
+				'#fromCharCode[\'"\]\s)]*\([^)]*\^#i',
+				'#(?:0x[0-9a-f]{1,2}\s*,\s*){8,}#i',
+				'#(?:window|top|self|globalThis|document)\s*\[\s*[\'"][^\'"]{1,8}[\'"]\s*\+#i',
+				'#(?:\\\\x[0-9a-f]{2}){16,}#i',
+			);
+
+			// (4) Remove whole <script> blocks that decode-and-execute, or carry a sink.
+			$script = preg_replace_callback(
+				'#<script[^>]*>(.*?)</script>#is',
+				static function ( $m ) use ( $sinks ) {
+					$b = $m[1];
+					for ( $i = 0; $i < 5 && ( $d = html_entity_decode( $b, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) !== $b; $i++ ) {
+						$b = $d;
+					}
+
+					$decode = preg_match( '#\batob\s*\(#i', $b ) + preg_match( '#fromCharCode#i', $b )
+						+ preg_match( '#\^\s*0x?[0-9a-f]+#i', $b ) + preg_match( '#(?:0x[0-9a-f]{1,2}\s*,\s*){8,}#i', $b )
+						+ preg_match( '#\bunescape\s*\(#i', $b ) + preg_match( '#decodeURIComponent\s*\([^)]{40,}#i', $b );
+					$exec   = preg_match( '#\beval\s*\(#i', $b ) + preg_match( '#\bnew\s+Function\s*\(#i', $b )
+						+ preg_match( '#createObjectURL#i', $b ) + preg_match( '#\bnew\s+WebSocket\s*\(#i', $b )
+						+ preg_match( '#createElement[\'"\]\s]+\(?\s*[\'"]script#i', $b ) + preg_match( '#\bimport\s*\(#i', $b )
+						+ preg_match( '#\b(?:setTimeout|setInterval)\s*\(\s*[\'"`]#i', $b );
+					$reach  = preg_match( '#(?:appendChild|insertBefore|\.append|\[\s*[\'"]append)#i', $b )
+						+ preg_match( '#[\.\[][\'"]?\s*src\s*[\'"\]]*\s*=#i', $b ) + preg_match( '#document\s*\.\s*write#i', $b );
+
+					if ( ( $decode >= 1 && $exec >= 1 ) || ( $exec >= 2 && $reach >= 1 ) ) {
+						return '';
+					}
+					// atob() + any script-injection scaffold (catches createElement(variable), .src = atob(...), etc.).
+					if (
+						preg_match( '#\batob\s*\(#i', $b ) &&
+						(
+							preg_match( '#\bcreateElement\s*\(#i', $b ) ||
+							preg_match( '#[\.\[][\'"]?\s*src\s*[\'"\]]*\s*=#i', $b ) ||
+							preg_match( '#(?:appendChild|insertBefore|\.append)\s*\(#i', $b )
+						)
+					) {
+						return '';
+					}
+					foreach ( $sinks as $re ) {
+						if ( preg_match( $re, $b ) ) {
+							return '';
+						}
+					}
+					return $m[0];
+				},
+				$script
+			);
+
+			// (5) Final sweep for sinks left outside <script>.
+			foreach ( $sinks as $re ) {
+				$script = preg_replace( $re, '', $script );
+			}
+
+			return $script;
 		}
 
 		public static function preview_details() {
@@ -1693,7 +1802,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 						global $wpdb;
 
-						$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$get_offer" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+						$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id = %d", absint( $get_offer ) ) );
 
 						if ( ! empty( $post_meta_all ) ) {
 							$sql_query_selects = array();
@@ -1721,16 +1830,18 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 									$meta_value = $meta_info->meta_value;
 								}
 
-								$meta_key   = esc_sql( $meta_key );
-								$meta_value = esc_sql( $meta_value );
-
-								$sql_query_selects[] = "( $offer_id_new, '$meta_key', '$meta_value')"; // db call ok; no-cache ok; WPCS: unprepared SQL ok.
+								$sql_query_selects[] = array( (int) $offer_id_new, $meta_key, $meta_value );
 
 							}
 
-							$sql_query_meta_val = implode( ',', $sql_query_selects );
-							$wpdb->query( $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta ) );//phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared
-
+							if ( ! empty( $sql_query_selects ) ) {
+								$placeholders = implode( ', ', array_fill( 0, count( $sql_query_selects ), '(%d, %s, %s)' ) );
+								$values       = array();
+								foreach ( $sql_query_selects as $row ) {
+									array_push( $values, $row[0], $row[1], $row[2] );
+								}
+								$wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value) VALUES $placeholders", ...$values ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+							}
 						}
 
 						do_action( 'wfocu_offer_duplicated', $offer_id_new, $get_offer );
@@ -1837,7 +1948,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 						global $wpdb;
 
-						$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$get_offer" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+						$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id = %d", absint( $get_offer ) ) );
 
 						if ( ! empty( $post_meta_all ) ) {
 							$sql_query_selects = array();
@@ -1849,15 +1960,17 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 									continue;
 								}
 
-								$meta_key   = esc_sql( $meta_key );
-								$meta_value = esc_sql( $meta_info->meta_value );
-
-								$sql_query_selects[] = "( $offer_id_new, '$meta_key', '$meta_value')"; // db call ok; no-cache ok; WPCS: unprepared SQL ok.
+								$sql_query_selects[] = array( (int) $offer_id_new, $meta_key, $meta_info->meta_value );
 							}
 
-							$sql_query_meta_val = implode( ',', $sql_query_selects );
-							$wpdb->query( $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta ) );//phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared
-
+							if ( ! empty( $sql_query_selects ) ) {
+								$placeholders = implode( ', ', array_fill( 0, count( $sql_query_selects ), '(%d, %s, %s)' ) );
+								$values       = array();
+								foreach ( $sql_query_selects as $row ) {
+									array_push( $values, $row[0], $row[1], $row[2] );
+								}
+								$wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value) VALUES $placeholders", ...$values ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+							}
 						}
 
 						do_action( 'wfocu_offer_duplicated', $offer_id_new, $get_offer );
@@ -2086,6 +2199,9 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 		public static function refund_offer() {
 
 			check_ajax_referer( 'wfocu_admin_refund_offer', 'nonce' );
+			if ( ! current_user_can( 'manage_woocommerce' ) ) {
+				wp_send_json_error( array( 'msg' => __( 'Insufficient permissions.', 'woofunnels-upstroke-one-click-upsell' ) ) );
+			}
 
 			$refund_data   = $_POST;
 			$order_id      = isset( $refund_data['order_id'] ) ? $refund_data['order_id'] : 0;
@@ -2209,6 +2325,9 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 		}
 
 		public static function clear_template() {
+			if ( false === WFOCU_Core()->role->user_access( 'funnel', 'write' ) ) {
+				wp_send_json_error( array( 'msg' => __( 'Insufficient permissions.', 'woofunnels-upstroke-one-click-upsell' ) ) );
+			}
 			check_ajax_referer( 'wfocu_clear_template', '_nonce' );
 			$offer     = ( isset( $_POST['offer_id'] ) ) ? absint( wp_unslash( $_POST['offer_id'] ) ) : 0;
 			$funnel_id = ( isset( $_POST['id'] ) ) ? absint( wp_unslash( $_POST['id'] ) ) : 0;
@@ -2237,11 +2356,21 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 		 */
 		public static function activate_plugins() {
 			$resp = array();
-			if ( false === WFOCU_Core()->role->user_access( 'funnel', 'write' ) ) {
+			if ( ! current_user_can( 'activate_plugins' ) ) {
 				wp_send_json( $resp );
 			}
 			check_admin_referer( 'wfocu_activate_plugins', '_nonce' );
+
+			$allowed     = array(
+				'elementor/elementor.php',
+				'divi-builder/divi-builder.php',
+				'oxygen/functions.php',
+				'slingblocks/slingblocks.php',
+			);
 			$plugin_init = isset( $_POST['plugin_init'] ) ? sanitize_text_field( wp_unslash( $_POST['plugin_init'] ) ) : '';
+			if ( ! in_array( $plugin_init, $allowed, true ) ) {
+				wp_send_json( array( 'success' => false ) );
+			}
 
 			$activate        = activate_plugin( $plugin_init, '', false, true );
 			$resp            = array( 'success' => true );

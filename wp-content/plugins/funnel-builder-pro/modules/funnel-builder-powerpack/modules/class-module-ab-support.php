@@ -24,26 +24,31 @@ if ( ! class_exists( 'WFFN_Pro_AB_Support' ) ) {
 			return self::$ins;
 		}
 
+		/**
+		 * Returns true when the A/B test module's admin UI should be active.
+		 * Fresh DB read — no globals, no cache.
+		 */
+		public static function is_admin_enabled() {
+			if ( self::is_module_exists() ) {
+				return true;
+			}
+			$modules = get_option( '_bwf_individual_modules', [] );
+
+			return (bool) apply_filters( 'wffn_show_menu_ab_tests', isset( $modules['ab_tests'] ) && 'yes' === $modules['ab_tests'] );
+		}
+
 		public static function setup_hooks() {
 
-			add_action( 'admin_head', function () {
-				global $submenu, $woofunnels_menu_slug;
-				$modules   = get_option( '_bwf_individual_modules', [] );
-				$ab_exists = apply_filters( 'wffn_show_menu_ab_tests', ( isset( $modules['ab_tests'] ) && 'yes' === $modules['ab_tests'] ) );
-
-				foreach ( $submenu as $key => $men ) {
-					if ( $woofunnels_menu_slug !== $key ) {
-						continue;
-					}
-
-					foreach ( $men as $k => $d ) {
-						if ( 'admin.php?page=bwf_ab_tests' === $d[2] && ! $ab_exists ) {
-
-							unset( $submenu[ $key ][ $k ] );
-						}
-					}
+			add_action( 'admin_menu', function () {
+				if ( self::is_admin_enabled() ) {
+					return;
 				}
-			} );
+				remove_submenu_page( 'woofunnels', 'bwf_ab_tests' );
+				if ( class_exists( 'BWFABT_Admin' ) ) {
+					$inst = BWFABT_Admin::get_instance();
+					remove_action( 'admin_menu', array( $inst, 'register_admin_menu' ), 100 );
+				}
+			}, 999 );
 
 			add_action( 'plugins_loaded', function () {
 				if ( class_exists( 'BWFABT_Admin' ) ) {

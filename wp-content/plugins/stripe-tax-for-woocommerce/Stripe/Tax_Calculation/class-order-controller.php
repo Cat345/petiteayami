@@ -10,6 +10,7 @@ namespace Stripe\StripeTaxForWooCommerce\Stripe\Tax_Calculation;
 defined( 'ABSPATH' ) || exit;
 
 use Stripe\StripeTaxForWooCommerce\Stripe\Tax_Calculation\Calculator;
+use Stripe\StripeTaxForWooCommerce\Stripe\StripeTaxLogger;
 use Stripe\StripeTaxForWooCommerce\Utils\Amount_Utility;
 use Stripe\StripeTaxForWooCommerce\WooCommerce\StripeOrderItemTax;
 
@@ -26,6 +27,52 @@ use Throwable;
  */
 abstract class Order_Controller {
 	/**
+	 * Validates that order line items and tax calculation line items refer to the same entries.
+	 *
+	 * @param WC_Order $order The order.
+	 * @param object   $tax_calculation The tax calculation result.
+	 */
+	private static function has_matching_line_items( WC_Order $order, $tax_calculation ) {
+		if ( ! isset( $tax_calculation['line_items'] ) || ! is_array( $tax_calculation['line_items'] ) ) {
+			return false;
+		}
+
+		$order_lines  = array();
+		$result_lines = array();
+
+		foreach ( $order->get_items( array( 'line_item', 'fee' ) ) as $item ) {
+			$reference = Order_Input::build_item_reference_by_type( $item );
+			$quantity  = method_exists( $item, 'get_quantity' ) ? (int) $item->get_quantity() : 1;
+
+			$order_lines[] = $reference . '|' . (string) $quantity;
+		}
+
+		foreach ( $tax_calculation['line_items'] as $result_line ) {
+			$reference = isset( $result_line['reference'] ) ? $result_line['reference'] : null;
+
+			if ( ! is_string( $reference ) || '' === $reference ) {
+				return false;
+			}
+
+			$quantity       = isset( $result_line['quantity'] ) ? (int) $result_line['quantity'] : 1;
+			$result_lines[] = $reference . '|' . (string) $quantity;
+		}
+
+		if ( count( $order_lines ) !== count( $result_lines ) ) {
+			StripeTaxLogger::log_error(
+				'Order line items count mismatch: order_lines count = ' . count( $order_lines ) .
+				', result_lines count = ' . count( $result_lines )
+			);
+			return false;
+		}
+
+		sort( $order_lines );
+		sort( $result_lines );
+
+		return $order_lines === $result_lines;
+	}
+
+	/**
 	 * Calculates taxes for a given order.
 	 *
 	 * @param WC_Order $order The order.
@@ -33,14 +80,16 @@ abstract class Order_Controller {
 	 * @param int      $customer_user_id_override Customer user ID.
 	 */
 	public static function calculate_taxes( WC_Order $order, $tax_location_override, $customer_user_id_override ) {
-		if ( 'checkout-draft' === $order->get_status() ) {
-			static::set_checkout_order_meta( $order );
-		}
 
-		$non_taxable_shipping_total = Order_Input::get_non_taxable_shipping_cost_amount( $order );
-		$tax_calculation_input      = Order_Input::from_order( $order, $tax_location_override, $customer_user_id_override );
+		$tax_calculation_input = Order_Input::from_order( $order, $tax_location_override, $customer_user_id_override );
 
 		$order_id = $order->get_id();
+
+		if ( ! $order_id ) {
+			$order->save();
+			$order_id = $order->get_id();
+		}
+
 		if ( ! isset( $tax_calculation_input['line_items'] ) || ! is_array( $tax_calculation_input['line_items'] ) ) {
 			return;
 		}
@@ -63,8 +112,6 @@ abstract class Order_Controller {
 				continue;
 			}
 
-			$item->update_meta_data( '__stripe_tax_behavior', $result_line->tax_behavior );
-
 			if ( Result::TAX_BEHAVIOR_INCLUSIVE !== $result_line->tax_behavior ) {
 				continue;
 			}
@@ -75,16 +122,13 @@ abstract class Order_Controller {
 				$item->set_subtotal( $result_line->amount_subtotal );
 			}
 
-			$item->update_meta_data( '__stripe_tax_item_subtotal_tax', $result_line->amount_subtotal_tax );
-			$item->update_meta_data( Result::TAX_EXCLUDED_META_NAME, 'yes' );
-
 			$item->save();
 		}
 
 		$result_line = $tax_calculation_result['shipping_cost'];
 
-		if ( Result::TAX_BEHAVIOR_INCLUSIVE === $result_line->tax_behavior ) {
-			$order->set_shipping_total( $result_line->amount + $non_taxable_shipping_total );
+		if ( $result_line && Result::TAX_BEHAVIOR_INCLUSIVE === $result_line->tax_behavior ) {
+			$order->set_shipping_total( $result_line->amount );
 		}
 	}
 
@@ -176,10 +220,15 @@ abstract class Order_Controller {
 				$item->set_total_tax( $result_line->amount_tax );
 			}
 		}
-		$order->set_total( $tax_calculation->amount_total );
 
 		$shipping_result_line = $tax_calculation['shipping_cost'];
-		$order->set_shipping_total( $shipping_result_line->amount );
+		$is_inclusive         = $shipping_result_line
+			&& Result::TAX_BEHAVIOR_INCLUSIVE === $shipping_result_line->tax_behavior;
+
+		if ( $is_inclusive && self::has_matching_line_items( $order, $tax_calculation ) ) {
+				$order->set_total( $tax_calculation->amount_total );
+				$order->set_shipping_total( $shipping_result_line->amount );
+		}
 	}
 
 	/**
@@ -235,34 +284,6 @@ abstract class Order_Controller {
 	}
 
 	/**
-	 * Marks an order item calculated with 'price includes tax'.
-	 *
-	 * @param object $order The order.
-	 */
-	public static function set_checkout_order_meta( $order ) {
-		$tax_calculation = isset( Calculator::$calculations['cart']['result'] ) ? Calculator::$calculations['cart']['result'] : null;
-
-		if ( ! $tax_calculation ) {
-			return;
-		}
-
-		foreach ( $order->get_items( array( 'line_item', 'fee', 'shipping' ) ) as $item ) {
-			$item_reference = Order_Input::build_item_reference_by_type( $item );
-			$result_line    = $tax_calculation->get_line_item_by_reference( $item_reference );
-
-			if ( ! $result_line ) {
-				continue;
-			}
-
-			if ( Result::TAX_BEHAVIOR_INCLUSIVE !== $result_line->tax_behavior ) {
-				continue;
-			}
-
-			$item->update_meta_data( Result::TAX_EXCLUDED_META_NAME, 'yes' );
-		}
-	}
-
-	/**
 	 * Stores a new order item price inclding taxes.
 	 *
 	 * @param object $item The order item.
@@ -291,6 +312,50 @@ abstract class Order_Controller {
 		if ( isset( $price_inclusive_tax ) ) {
 			$item->update_meta_data( '__stripe_tax_price_inclusive_tax', $price_inclusive_tax );
 			$item->save();
+		}
+	}
+
+	/**
+	 * Stores tax-inclusive total and subtotal values as meta on an order item.
+	 *
+	 * These values are later used when rebuilding Stripe Tax input for orders
+	 * created with prices that include tax.
+	 *
+	 * @param object $order_item The order item.
+	 */
+	public static function store_totals_tax_inclusive( $order_item ) {
+		$order_item_type = $order_item->get_type();
+
+		if ( ! in_array( $order_item_type, array( 'line_item', 'fee', 'shipping' ), true ) ) {
+			return;
+		}
+
+		$has_subtotal_tax_inclusive_meta = $order_item->get_meta( '_stripe_tax_checkout_subtotal_tax_inclusive' ) !== '';
+
+		$stripe_checkout_total_tax_inclusive    = (float) $order_item->get_total() + (float) $order_item->get_total_tax();
+		$stripe_checkout_subtotal_tax_inclusive = $stripe_checkout_total_tax_inclusive;
+
+		switch ( $order_item_type ) {
+			case 'fee':
+				$stripe_checkout_total_tax_inclusive    = (float) $order_item->get_total() + (float) $order_item->get_total_tax();
+				$stripe_checkout_subtotal_tax_inclusive = $stripe_checkout_total_tax_inclusive;
+				break;
+			case 'shipping':
+				break;
+			default:
+				if ( method_exists( $order_item, 'get_subtotal' ) ) {
+					$stripe_checkout_subtotal_tax_inclusive = 0 + $order_item->get_subtotal();
+
+					if ( method_exists( $order_item, 'get_subtotal_tax' ) ) {
+						$stripe_checkout_subtotal_tax_inclusive += 0 + $order_item->get_subtotal_tax();
+					}
+				}
+		}
+
+		$order_item->update_meta_data( '_stripe_tax_checkout_total_tax_inclusive', $stripe_checkout_total_tax_inclusive );
+
+		if ( ! $has_subtotal_tax_inclusive_meta ) {
+			$order_item->update_meta_data( '_stripe_tax_checkout_subtotal_tax_inclusive', $stripe_checkout_subtotal_tax_inclusive );
 		}
 	}
 }

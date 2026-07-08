@@ -7,10 +7,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFFN_Compatibility_With_Rehub_Theme
  */
 if ( ! class_exists( 'WFFN_Compatibility_With_Rehub_Theme' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_Rehub_Theme {
 
 		public function __construct() {
-			add_action( 'wp', [ $this, 'register_elementor_widget' ], 150 );
+			add_action( 'wp', array( $this, 'register_elementor_widget' ), 150 );
 		}
 
 		public function is_enable() {
@@ -28,13 +29,17 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Rehub_Theme' ) ) {
 			}
 
 			global $post;
-			if ( is_null( $post ) || ! in_array( $post->post_type, array(
+			if ( is_null( $post ) || ! in_array(
+				$post->post_type,
+				array(
 					'wffn_landing',
 					'wffn_ty',
 					'wffn_optin',
 					'wffn_oty',
 
-				), true ) ) {
+				),
+				true
+			) ) {
 				return;
 			}
 
@@ -51,11 +56,8 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Rehub_Theme' ) ) {
 					$op_pro_instance = WFFN_Pro_Optin_Pages_Elementor::get_instance();
 					$op_pro_instance->register_widgets();
 				}
-
-
 			}
 		}
-
 	}
 
 	WFFN_Plugin_Compatibilities::register( new WFFN_Compatibility_With_Rehub_Theme(), 'rehub_theme' );

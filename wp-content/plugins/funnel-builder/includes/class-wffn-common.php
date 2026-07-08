@@ -7,6 +7,7 @@ use Automattic\WooCommerce\Utilities\OrderUtil;
  * Handles Common Functions For Admin as well as front end interface
  */
 if ( ! class_exists( 'WFFN_Common' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Common {
 
 		public static $start_time           = 0;
@@ -340,11 +341,14 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			} else {
 				switch ( $type ) {
 					case 'aero':
-						$step_args = array(
-							'page'     => 'wfacp',
-							'wfacp_id' => $step_id,
+						// Standalone (non-funnel) checkout: page=wfacp removed; fall back to the WP post edit screen (post type is show_ui=true). (#9188)
+						return add_query_arg(
+							array(
+								'post'   => $step_id,
+								'action' => 'edit',
+							),
+							admin_url( 'post.php' )
 						);
-						break;
 					case 'upsell':
 						$step_args = array(
 							'page'    => 'upstroke',
@@ -1465,7 +1469,27 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			}
 
 			$upgrader = new \Plugin_Upgrader( new \Automatic_Upgrader_Skin() );
-			$result   = $upgrader->install( $api->download_link );
+
+			if ( ! empty( $api->download_link ) && ! empty( $api->package_hash ) ) {
+				add_filter(
+					'upgrader_post_download',
+					function ( $reply, $package, $upgrader_instance ) use ( $api ) {
+						if ( is_wp_error( $reply ) || empty( $reply ) ) {
+							return $reply;
+						}
+						$hash = hash_file( 'sha256', $reply );
+						if ( ! hash_equals( $api->package_hash, $hash ) ) {
+							return new \WP_Error( 'package_hash_mismatch', __( 'Package integrity check failed — hash mismatch.', 'funnel-builder' ) );
+						}
+
+						return $reply;
+					},
+					10,
+					3
+				);
+			}
+
+			$result = $upgrader->install( $api->download_link );
 
 			if ( is_wp_error( $result ) ) {
 				$resp['msg'] = $result->get_error_message();
@@ -1988,6 +2012,146 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			} catch ( Throwable $e ) {
 				return false;
 			}
+		}
+
+		public static function sanitize_global_css( $css ) {
+			$css = wp_strip_all_tags( $css );
+			$css = preg_replace( '/expression\s*\(/i', '', $css );
+			$css = preg_replace( '/javascript\s*:/i', '', $css );
+			$css = preg_replace( '/behavior\s*:/i', '', $css );
+			$css = preg_replace( '/vbscript\s*:/i', '', $css );
+			$css = preg_replace( '/-moz-binding\s*:/i', '', $css );
+			return $css;
+		}
+
+		public static function sanitize_global_script( $script ) {
+			// (1) Dangerous standalone tags.
+			$script = preg_replace( '#<\s*/?\s*base\b[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*/?\s*link\b[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*meta\b[^>]*http-equiv\s*=\s*["\']?\s*refresh[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*/?\s*(?:object|embed)\b[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*/?\s*iframe\b[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*(?:set|animate[a-z]*)\b[^>]*\battributeName\s*=\s*["\']?\s*(?:on|href|xlink)[^>]*>#i', '', $script );
+
+			// (2) Dangerous attributes / inline-URI protocols.
+			$script = preg_replace( '#\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $script );
+			$script = preg_replace( '#\bsrcdoc\s*=#i', ' data-blocked-srcdoc=', $script );
+			$script = preg_replace( '#\s(?:href|src|action|formaction|xlink:href)\s*=\s*(["\']?)\s*(?:javascript|vbscript|data:\s*text/html)[^\s>"\']*\1?#i', '', $script );
+
+			// (3) Inline JS sink signatures.
+			$sinks = array(
+				'#\bimport\s*\(\s*[^)]*[\'"`]\s*\+#i',
+				'#\b(?:import|fetch)\s*\(\s*[\'"`][^\'"`]*\\\\(?:x[0-9a-f]{2}|u[0-9a-f]{4}|[0-7]{1,3})#i',
+				'#\bimport\s*\(\s*[^)]*\b(?:location|document|window|self|top|name|atob|unescape|decodeURI|localStorage|sessionStorage)\b#i',
+				'#\b(?:import|fetch|eval|Function)\s*\(\s*atob\s*\(#i',
+				'#(?:\.\s*then\s*\(\s*|=>\s*)(?:eval|Function|new\s+Function)\b#i',
+				'#\bdocument\s*\.\s*cookie\b#i',
+				'#\blocation(?:\s*\.\s*(?:href|replace|assign))?\s*(?:=(?!=)|\(\s*)\s*(?:atob|unescape|decodeURI|decodeURIComponent|String\s*\.\s*fromCharCode)\s*\(#i',
+				'#\bnew\s+Function\s*\(#i',
+				'#\b(?:setTimeout|setInterval)\s*\(\s*[\'"`]#i',
+				'#\bnew\s+WebSocket\s*\(#i',
+				'#\bnew\s+Blob\s*\([^)]*(?:java|ecma)script#i',
+				'#createObjectURL#i',
+				'#data:\s*(?:text|application)/(?:java|ecma)script[^,]*;\s*base64\s*,[A-Za-z0-9+/=]*#i',
+				'#fromCharCode[\'"\]\s)]*\([^)]*\^#i',
+				'#(?:0x[0-9a-f]{1,2}\s*,\s*){8,}#i',
+				'#(?:window|top|self|globalThis|document)\s*\[\s*[\'"][^\'"]{1,8}[\'"]\s*\+#i',
+				'#(?:\\\\x[0-9a-f]{2}){16,}#i',
+			);
+
+			// (4) Remove whole <script> blocks that decode-and-execute, or carry a sink.
+			$script = preg_replace_callback(
+				'#<script[^>]*>(.*?)</script>#is',
+				static function ( $m ) use ( $sinks ) {
+					$b = $m[1];
+					for ( $i = 0; $i < 5 && ( $d = html_entity_decode( $b, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) !== $b; $i++ ) {
+						$b = $d;
+					}
+
+					$decode = preg_match( '#\batob\s*\(#i', $b ) + preg_match( '#fromCharCode#i', $b )
+						+ preg_match( '#\^\s*0x?[0-9a-f]+#i', $b ) + preg_match( '#(?:0x[0-9a-f]{1,2}\s*,\s*){8,}#i', $b )
+						+ preg_match( '#\bunescape\s*\(#i', $b ) + preg_match( '#decodeURIComponent\s*\([^)]{40,}#i', $b );
+					$exec   = preg_match( '#\beval\s*\(#i', $b ) + preg_match( '#\bnew\s+Function\s*\(#i', $b )
+						+ preg_match( '#createObjectURL#i', $b ) + preg_match( '#\bnew\s+WebSocket\s*\(#i', $b )
+						+ preg_match( '#createElement[\'"\]\s]*\(?\s*[\'"]script#i', $b ) + preg_match( '#\bimport\s*\(#i', $b )
+						+ preg_match( '#\b(?:setTimeout|setInterval)\s*\(\s*[\'"`]#i', $b );
+					$reach  = preg_match( '#(?:appendChild|insertBefore|\.append|\[\s*[\'"]append)#i', $b )
+						+ preg_match( '#[\.\[][\'"]?\s*src\s*[\'"\]]*\s*=#i', $b ) + preg_match( '#document\s*\.\s*write#i', $b );
+
+					if ( ( $decode >= 1 && $exec >= 1 ) || ( $exec >= 2 && $reach >= 1 ) ) {
+						return '';
+					}
+					// atob() + any script-injection scaffold (catches createElement(variable), .src = atob(...), etc.).
+					if (
+						preg_match( '#\batob\s*\(#i', $b ) &&
+						(
+							preg_match( '#\bcreateElement\s*\(#i', $b ) ||
+							preg_match( '#[\.\[][\'"]?\s*src\s*[\'"\]]*\s*=#i', $b ) ||
+							preg_match( '#(?:appendChild|insertBefore|\.append)\s*\(#i', $b )
+						)
+					) {
+						return '';
+					}
+					foreach ( $sinks as $re ) {
+						if ( preg_match( $re, $b ) ) {
+							return '';
+						}
+					}
+					return $m[0];
+				},
+				$script
+			);
+
+			// (5) Final sweep for sinks left outside <script>.
+			foreach ( $sinks as $re ) {
+				$script = preg_replace( $re, '', $script );
+			}
+
+			return $script;
+		}
+
+		/**
+		 * Enqueue the version-pinned FontAwesome and WebFont loader scripts used by the block editors.
+		 *
+		 * Both are remote, version-pinned CDN files locked with Subresource Integrity so a compromised
+		 * CDN response cannot execute in the privileged wp-admin editor origin.
+		 *
+		 * @param string $fa_handle      Handle to register/enqueue the FontAwesome script under.
+		 * @param string $webfont_handle Handle to register/enqueue the WebFont loader script under.
+		 */
+		public static function enqueue_block_editor_remote_assets( $fa_handle = 'bwf-font-awesome-kit', $webfont_handle = 'bwf-web-font' ) {
+			$assets = array(
+				$fa_handle      => array(
+					'src'       => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/js/all.min.js',
+					'version'   => '6.7.2',
+					'integrity' => 'sha384-DsXFqEUf3HnCU8om0zbXN58DxV7Bo8/z7AbHBGd2XxkeNpdLrygNiGFr/03W0Xmt',
+				),
+				$webfont_handle => array(
+					'src'       => 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js',
+					'version'   => '1.6.26',
+					'integrity' => 'sha384-pvXSwSU09c+q9mPyY++ygUHWIYRoaxgnJ/JC5wcOzMb/NVVu+IDniiB9qWp3ZNWM',
+				),
+			);
+
+			$integrity_map = array();
+			foreach ( $assets as $handle => $asset ) {
+				wp_register_script( $handle, $asset['src'], array(), $asset['version'], true );
+				wp_enqueue_script( $handle );
+				$integrity_map[ $handle ] = $asset['integrity'];
+			}
+
+			add_filter(
+				'script_loader_tag',
+				function ( $tag, $handle, $src ) use ( $integrity_map ) {
+					if ( isset( $integrity_map[ $handle ] ) && false === strpos( $tag, 'integrity=' ) ) {
+						$tag = str_replace( ' src=', ' integrity="' . esc_attr( $integrity_map[ $handle ] ) . '" crossorigin="anonymous" src=', $tag );
+					}
+
+					return $tag;
+				},
+				10,
+				3
+			);
 		}
 	}
 

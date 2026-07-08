@@ -4,16 +4,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 if ( ! class_exists( 'WFOCU_Compatibility_With_Theme_Nitro' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Theme_Nitro {
 		public function __construct() {
 			/* checkout page */
-			add_filter( 'wr_nitro_theme_options_definition', [ $this, 'remove_panels' ] );
+			add_filter( 'wr_nitro_theme_options_definition', array( $this, 'remove_panels' ) );
 		}
 
 		public function remove_panels( $theme_options ) {
 
 			if ( WFOCU_Core()->template_loader->is_customizer_preview() ) {
-				return [];
+				return array();
 			}
 
 			return $theme_options;

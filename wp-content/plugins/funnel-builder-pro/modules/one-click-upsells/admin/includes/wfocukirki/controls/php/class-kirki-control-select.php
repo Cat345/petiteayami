@@ -17,6 +17,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Select' ) ) {
 	/**
 	 * Select control.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Select extends WFOCUKirki_Control_Base {
 
 		/**

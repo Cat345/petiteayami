@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Create_Tag extends BWFAN_API_Base {
 
 	public static $ins;

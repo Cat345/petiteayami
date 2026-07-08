@@ -1,14 +1,16 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'WooFunnels_Support_WFOCU_PowerPack' ) ) {
 	/**
 	 * @author woofunnels
 	 * @package WooFunnels
 	 * Class WooFunnels_Support_WFOCU_PowerPack
 	 */
+	#[\AllowDynamicProperties]
 	class WooFunnels_Support_WFOCU_PowerPack {
 
 		protected static $instance;
-		public $full_name = 'UpStroke PowerPack';
+		public $full_name         = 'UpStroke PowerPack';
 		public $is_license_needed = true;
 		public $license_instance;
 		protected $encoded_basename = '';
@@ -19,13 +21,19 @@ if ( ! class_exists( 'WooFunnels_Support_WFOCU_PowerPack' ) ) {
 		public function __construct() {
 
 			add_filter( 'plugin_action_links_' . WF_UPSTROKE_POWERPACK_BASENAME, array( $this, 'plugin_actions' ) );
-			add_filter( 'woofunnels_default_reason_' . WF_UPSTROKE_POWERPACK_BASENAME, function () {
-				return 1;
-			} );
+			add_filter(
+				'woofunnels_default_reason_' . WF_UPSTROKE_POWERPACK_BASENAME,
+				function () {
+					return 1;
+				}
+			);
 
-			add_filter( 'woofunnels_default_reason_default', function () {
-				return 1;
-			} );
+			add_filter(
+				'woofunnels_default_reason_default',
+				function () {
+					return 1;
+				}
+			);
 			$this->encoded_basename = sha1( WF_UPSTROKE_POWERPACK_BASENAME );
 			$this->full_name        = __( 'UpStroke PowerPack', 'woofunnels-upstroke-power-pack' );
 			add_filter( 'woofunnels_plugins_license_needed', array( $this, 'add_license_support' ), 10 );
@@ -33,7 +41,6 @@ if ( ! class_exists( 'WooFunnels_Support_WFOCU_PowerPack' ) ) {
 			add_action( 'woofunnels_licenses_submitted', array( $this, 'process_licensing_form' ) );
 			add_action( 'woofunnels_deactivate_request', array( $this, 'maybe_process_deactivation' ) );
 			add_filter( 'wfocu_shortcode_list', array( $this, 'update_shortcode_list' ) );
-
 		}
 
 		/**
@@ -114,7 +121,6 @@ if ( ! class_exists( 'WooFunnels_Support_WFOCU_PowerPack' ) ) {
 					$this->license_instance->start_updater();
 				}
 			}
-
 		}
 
 		public function process_licensing_form( $posted_data ) {
@@ -153,7 +159,10 @@ if ( ! class_exists( 'WooFunnels_Support_WFOCU_PowerPack' ) ) {
 
 					$this->license_instance->setup_data( $data );
 					$this->license_instance->deactivate_license();
-					wp_safe_redirect( 'admin.php?page=' . $posted_data['page'] . '&tab=' . $posted_data['tab'] );
+					$allowed_pages = array( 'wfocu-settings', 'wfocu-dashboard', 'wffn-settings', 'wffn-dashboard' );
+					$page          = ( isset( $posted_data['page'] ) && in_array( $posted_data['page'], $allowed_pages, true ) ) ? $posted_data['page'] : 'wfocu-settings';
+					$tab           = isset( $posted_data['tab'] ) ? sanitize_key( $posted_data['tab'] ) : '';
+					wp_safe_redirect( 'admin.php?page=' . rawurlencode( $page ) . ( $tab ? '&tab=' . rawurlencode( $tab ) : '' ) );
 					exit();
 				}
 			}
@@ -197,23 +206,23 @@ if ( ! class_exists( 'WooFunnels_Support_WFOCU_PowerPack' ) ) {
 					'label' => __( 'Product Signup Fee', 'woofunnels-upstroke-power-pack' ),
 					'code'  => array(
 						'single' => '[wfocu_product_signup_fee]',
-						'multi'  => '[wfocu_product_signup_fee key="%s" signup_label="Signup Fee"]'
+						'multi'  => '[wfocu_product_signup_fee key="%s" signup_label="Signup Fee"]',
 					),
 				),
 				array(
 					'label' => __( 'Product Recurring Total String', 'woofunnels-upstroke-power-pack' ),
 					'code'  => array(
 						'single' => '[wfocu_product_recurring_total_string]',
-						'multi'  => '[wfocu_product_recurring_total_string key="%s" recurring_label="Recurring Price"]'
+						'multi'  => '[wfocu_product_recurring_total_string key="%s" recurring_label="Recurring Price"]',
 					),
 				),
 				array(
 					'label' => __( 'All Products Subscription Plan List', 'woofunnels-upstroke-power-pack' ),
 					'code'  => array(
 						'single' => '[wfocu_subscription_plans_list]',
-						'multi'  => '[wfocu_subscription_plans_list key="%s"]'
+						'multi'  => '[wfocu_subscription_plans_list key="%s"]',
 					),
-				)
+				),
 			);
 			array_splice( $shortcode_list, $key, 0, $pro_list );
 

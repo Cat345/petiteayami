@@ -453,10 +453,14 @@
 		 * Check if any of the specified coupons are applied to the cart.
 		 */
 		evaluateCouponContains: function(cartInfo, couponCodes) {
+
 			var appliedCoupons = cartInfo.applied_coupons || [];
 
 			if (!Array.isArray(couponCodes)) {
 				couponCodes = [couponCodes];
+			}
+			if(!Array.isArray(appliedCoupons) && Object.keys(appliedCoupons).length>0){
+				appliedCoupons=Object.values(appliedCoupons);
 			}
 
 			// Normalize to lowercase for comparison

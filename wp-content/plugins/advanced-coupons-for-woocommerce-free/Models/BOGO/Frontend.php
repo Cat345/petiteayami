@@ -239,6 +239,17 @@ class Frontend extends Base_Model implements Model_Interface {
             // hook to run after verifying items (auto-add).
             do_action( 'acfw_bogo_after_verify_trigger_deals', $bogo_deal );
 
+            // For same-products: re-verify deals after the auto-add hook.
+            // auto_add_same_products_to_cart runs after verify_deals() and may add items to the cart
+            // (e.g. raising a variation from qty=1 to qty=2). Without a second pass, that variation
+            // would have had zero spare quantity during the first verify_deals() and never receives a
+            // deal entry — causing the discount to be missing until a page refresh.
+            if ( 'same-products' === $bogo_deal->deal_type ) {
+                $bogo_deal->reset_counters( 'deal' );
+                $this->_calculation->clear_temp_entries( 'deal' );
+                $this->_calculation->verify_deals();
+            }
+
             // verify BOGO trigger conditions.
             // For same-products, we check if at least one trigger-deal pair is verified.
             // For other types, we check if all triggers are verified.
@@ -270,11 +281,14 @@ class Frontend extends Base_Model implements Model_Interface {
             // Increment run counter for the BOGO Deal.
             $bogo_deal->increment_run_counter();
 
-            // For same-products with repeat, check if any product still has spare quantity.
-            // This prevents infinite loops when some products are exhausted but others have allowed_deals > 0.
+            // For same-products with repeat, continuation depends solely on whether any product
+            // still has spare quantity — NOT on is_deal_fulfilled(). With multiple variations,
+            // one product may exhaust its items before others, causing is_deal_fulfilled() to
+            // return false (Red's deal unmet) even though other products (Blue) still have
+            // cycles to process. Using has_spare alone lets those remaining products complete.
             if ( 'same-products' === $bogo_deal->deal_type && $bogo_deal->is_repeat ) {
                 $has_spare       = $this->_same_products_has_spare_quantity( $bogo_deal );
-                $deals_fulfilled = $deals_fulfilled && $has_spare;
+                $deals_fulfilled = $has_spare;
             }
         } while (
             $bogo_deal->is_repeat && $deals_fulfilled

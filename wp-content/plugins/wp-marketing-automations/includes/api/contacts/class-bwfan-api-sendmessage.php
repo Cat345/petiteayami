@@ -5,6 +5,7 @@
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class BWFAN_API_SendMessage extends BWFAN_API_Base {
 	public static $ins;
 	private $conversation = null;
@@ -264,7 +265,8 @@ class BWFAN_API_SendMessage extends BWFAN_API_Base {
 		}
 
 		if ( isset( $global_email_settings['bwfan_email_reply_to'] ) && ! empty( $global_email_settings['bwfan_email_reply_to'] ) ) {
-			$headers[] = 'Reply-To:  ' . $global_email_settings['bwfan_email_reply_to'];
+			$reply_to_from_name = isset( $global_email_settings['bwfan_email_from_name'] ) ? $global_email_settings['bwfan_email_from_name'] : '';
+			$headers[]          = BWFAN_Common::build_reply_to_header( $global_email_settings['bwfan_email_reply_to'], '', $reply_to_from_name );
 		}
 
 		/** Set unsubscribe link in header */

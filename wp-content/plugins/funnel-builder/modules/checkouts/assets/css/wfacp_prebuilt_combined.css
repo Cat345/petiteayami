@@ -6535,11 +6535,6 @@ body #wfacp-sec-wrapper table.shop_table:not(#product_switching_field) {
         display: block;
     }
 
-    #wfacp_smart_buttons .wfacp_smart_button_container *:not(svg),
-    #wfacp_smart_buttons .wfacp_smart_button_container #wc-stripe-payment-request-wrapper {
-        width: 100% !important;
-    }
-
     body .wfacp_main_form .single_preview_inner {
         word-break: break-word;
     }

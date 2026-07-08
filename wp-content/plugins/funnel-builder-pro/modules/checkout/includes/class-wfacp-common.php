@@ -51,6 +51,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			add_action( 'woofunnels_loaded', array( __CLASS__, 'include_notification_class' ) );
 
 			add_action( 'woocommerce_form_field_wfacp_wysiwyg', array( __CLASS__, 'process_wfacp_wysiwyg' ), 10, 4 );
+			add_filter( 'wfacp_the_content', array( __CLASS__, 'strip_scripts_from_content' ), 99 );
 
 			add_action( 'woocommerce_locate_template', array( __CLASS__, 'woocommerce_locate_template' ) );
 
@@ -170,7 +171,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			if ( ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'wfacp' ) ) {
-				self::$wfacp_section = ! isset( $_REQUEST['section'] ) ? 'design' : $_REQUEST['section'];
+				self::$wfacp_section = ! isset( $_REQUEST['section'] ) ? 'design' : sanitize_key( wp_unslash( $_REQUEST['section'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 			if ( isset( $_REQUEST['wfacp_id'] ) && $_REQUEST['wfacp_id'] > 0 ) {
 				self::set_id( absint( $_REQUEST['wfacp_id'] ) );
@@ -738,6 +739,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 * remove unnecessay keys from single product array
 		 */
 		public static function remove_product_keys( $product ) {
+			if ( ! is_array( $product ) ) {
+				return $product;
+			}
 			unset( $product['image'] );
 			unset( $product['price'] );
 			unset( $product['regular_price'] );
@@ -1448,6 +1452,12 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					foreach ( $sections as $section_index => $section ) {
 						if ( ! isset( $section['fields'] ) || count( $section['fields'] ) == 0 ) {
 							continue;
+						}
+						if ( isset( $section['name'] ) ) {
+							$fieldsets[ $step ][ $section_index ]['name'] = sanitize_text_field( wp_unslash( $section['name'] ) );
+						}
+						if ( isset( $section['sub_heading'] ) ) {
+							$fieldsets[ $step ][ $section_index ]['sub_heading'] = sanitize_text_field( wp_unslash( $section['sub_heading'] ) );
 						}
 						$fields       = $section['fields'];
 						$newFields    = array();
@@ -3238,11 +3248,123 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				$data = array();
 			}
 
+			if ( isset( $data['header_script'] ) ) {
+				$data['header_script'] = self::sanitize_global_script( $data['header_script'] );
+			}
+			if ( isset( $data['footer_script'] ) ) {
+				$data['footer_script'] = self::sanitize_global_script( $data['footer_script'] );
+			}
+			if ( isset( $data['header_css'] ) ) {
+				$data['header_css'] = self::sanitize_global_css( $data['header_css'] );
+			}
+
 			$data['update_time'] = time();
 			$data['user_id']     = get_current_user_id();
 			update_post_meta( $page_id, '_wfacp_page_settings', $data );
 
 			return $data;
+		}
+
+		public static function sanitize_global_css( $css ) {
+			$css = wp_strip_all_tags( $css );
+			$css = preg_replace( '/expression\s*\(/i', '', $css );
+			$css = preg_replace( '/javascript\s*:/i', '', $css );
+			$css = preg_replace( '/behavior\s*:/i', '', $css );
+			$css = preg_replace( '/vbscript\s*:/i', '', $css );
+			$css = preg_replace( '/-moz-binding\s*:/i', '', $css );
+			return $css;
+		}
+
+		public static function sanitize_global_script( $script ) {
+			// (1) Dangerous standalone tags.
+			$script = preg_replace( '#<\s*/?\s*base\b[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*/?\s*link\b[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*meta\b[^>]*http-equiv\s*=\s*["\']?\s*refresh[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*/?\s*(?:object|embed)\b[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*/?\s*(?:svg|math|mglyph|mtext|annotation-xml|foreignObject)\b[^>]*>#i', '', $script );
+			$script = preg_replace( '#<\s*/?\s*iframe\b[^>]*>#i', '', $script );
+
+			// (2) Dangerous attributes / inline-URI protocols.
+			$script = preg_replace( '#\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $script );
+			$script = preg_replace( '#\bsrcdoc\s*=#i', ' data-blocked-srcdoc=', $script );
+			$script = preg_replace( '#\s(?:href|src|action|formaction|xlink:href)\s*=\s*(["\']?)\s*(?:javascript|vbscript|data:\s*text/html)[^\s>"\']*\1?#i', '', $script );
+
+			// (3) Inline JS sink signatures.
+			$sinks = array(
+				'#\bimport\s*\(\s*[^)]*[\'"`]\s*\+#i',
+				'#\b(?:import|fetch)\s*\(\s*[\'"`][^\'"`]*\\\\(?:x[0-9a-f]{2}|u[0-9a-f]{4}|[0-7]{1,3})#i',
+				'#\bimport\s*\(\s*[^)]*\b(?:location|document|window|self|top|name|atob|unescape|decodeURI|localStorage|sessionStorage)\b#i',
+				'#\b(?:import|fetch|eval|Function)\s*\(\s*atob\s*\(#i',
+				'#(?:\.\s*then\s*\(\s*|=>\s*)(?:eval|Function|new\s+Function)\b#i',
+				'#document\s*\.cookie#i',
+				'#\b(?:top|self|parent|window|document)\s*\.\s*location\b#i',
+				'#\bnew\s+Function\s*\(#i',
+				'#\b(?:setTimeout|setInterval)\s*\(\s*[\'"`]#i',
+				'#\bnew\s+WebSocket\s*\(#i',
+				'#\bnew\s+Blob\s*\([^)]*(?:java|ecma)script#i',
+				'#createObjectURL#i',
+				'#data:\s*(?:text|application)/(?:java|ecma)script[^,]*;\s*base64\s*,[A-Za-z0-9+/=]*#i',
+				'#fromCharCode[\'"\]\s)]*\([^)]*\^#i',
+				'#(?:0x[0-9a-f]{1,2}\s*,\s*){8,}#i',
+				'#(?:window|top|self|globalThis|document)\s*\[\s*[\'"][^\'"]{1,8}[\'"]\s*\+#i',
+				'#(?:\\\\x[0-9a-f]{2}){16,}#i',
+			);
+
+			// (4) Remove whole <script> blocks that decode-and-execute, or carry a sink.
+			$script = preg_replace_callback(
+				'#<script[^>]*>(.*?)</script>#is',
+				static function ( $m ) use ( $sinks ) {
+					$b = $m[1];
+					for ( $i = 0; $i < 5 && ( $d = html_entity_decode( $b, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) !== $b; $i++ ) {
+						$b = $d;
+					}
+
+					$decode = preg_match( '#\batob\s*\(#i', $b ) + preg_match( '#fromCharCode#i', $b )
+						+ preg_match( '#\^\s*0x?[0-9a-f]+#i', $b ) + preg_match( '#(?:0x[0-9a-f]{1,2}\s*,\s*){8,}#i', $b )
+						+ preg_match( '#\bunescape\s*\(#i', $b ) + preg_match( '#decodeURIComponent\s*\([^)]{40,}#i', $b );
+					$exec   = preg_match( '#\beval\s*\(#i', $b ) + preg_match( '#\bnew\s+Function\s*\(#i', $b )
+						+ preg_match( '#createObjectURL#i', $b ) + preg_match( '#\bnew\s+WebSocket\s*\(#i', $b )
+						+ preg_match( '#createElement[\'"\]\s]+\(?\s*[\'"]script#i', $b ) + preg_match( '#\bimport\s*\(#i', $b )
+						+ preg_match( '#\b(?:setTimeout|setInterval)\s*\(\s*[\'"`]#i', $b );
+					$reach  = preg_match( '#(?:appendChild|insertBefore|\.append|\[\s*[\'"]append)#i', $b )
+						+ preg_match( '#[\.\[][\'"]?\s*src\s*[\'"\]]*\s*=#i', $b ) + preg_match( '#document\s*\.\s*write#i', $b );
+
+					if ( ( $decode >= 1 && $exec >= 1 ) || ( $exec >= 2 && $reach >= 1 ) ) {
+						return '';
+					}
+					// atob() + any script-injection scaffold (catches createElement(variable), .src = atob(...), etc.).
+					if (
+						preg_match( '#\batob\s*\(#i', $b ) &&
+						(
+							preg_match( '#\bcreateElement\s*\(#i', $b ) ||
+							preg_match( '#[\.\[][\'"]?\s*src\s*[\'"\]]*\s*=#i', $b ) ||
+							preg_match( '#(?:appendChild|insertBefore|\.append)\s*\(#i', $b )
+						)
+					) {
+						return '';
+					}
+					foreach ( $sinks as $re ) {
+						if ( preg_match( $re, $b ) ) {
+							return '';
+						}
+					}
+					return $m[0];
+				},
+				$script
+			);
+
+			// (5) Final sweep for sinks left outside <script>.
+			foreach ( $sinks as $re ) {
+				$script = preg_replace( $re, '', $script );
+			}
+
+			return $script;
+		}
+
+		public static function strip_scripts_from_content( $content ) {
+			$content = preg_replace( '/<script\b[^>]*>(.*?)<\/script>/is', '', $content );
+			$content = preg_replace( '/<iframe\b[^>]*>(.*?)<\/iframe>/is', '', $content );
+			return $content;
 		}
 
 		public static function process_wfacp_wysiwyg( $field, $key, $args, $value ) {
@@ -3493,7 +3615,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$exclude_meta_keys_to_copy = apply_filters( 'wfacp_do_not_duplicate_meta', $exclude_data );
 
 			global $wpdb;
-			$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$old_post_id" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id = %d", absint( $old_post_id ) ) );
 
 			if ( ! empty( $post_meta_all ) ) {
 				$sql_query_selects = array();

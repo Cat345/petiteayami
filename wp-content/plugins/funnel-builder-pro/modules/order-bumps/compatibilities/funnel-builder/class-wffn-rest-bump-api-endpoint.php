@@ -1,9 +1,10 @@
 <?php
 
 if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_REST_BUMP_API_EndPoint extends WFFN_REST_Controller {
 
-		private static $ins = null;
+		private static $ins  = null;
 		protected $namespace = 'funnelkit-app';
 		protected $rest_base = 'funnel-bump';
 
@@ -11,7 +12,7 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 		 * WFFN_REST_API_EndPoint constructor.
 		 */
 		public function __construct() {
-			add_action( 'rest_api_init', [ $this, 'register_endpoint' ], 12 );
+			add_action( 'rest_api_init', array( $this, 'register_endpoint' ), 12 );
 		}
 
 		/**
@@ -19,7 +20,7 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -28,124 +29,145 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 		public function register_endpoint() {
 
 			// Get Rules for Order Bump page.
-			register_rest_route( $this->namespace, '/' . 'funnel-bump' . '/(?P<step_id>[\d]+)' . '/rules', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder-powerpack' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnel-bump' . '/(?P<step_id>[\d]+)' . '/rules',
+				array(
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder-powerpack' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_wfob_rules' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_wfob_rules' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'update_wfob_rules' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_wfob_rules' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Register routes for Order Bumps.
-			register_rest_route( $this->namespace, '/' . 'funnel-bump' . '/(?P<step_id>[\d]+)' . '/products', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder-powerpack' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnel-bump' . '/(?P<step_id>[\d]+)' . '/products',
+				array(
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder-powerpack' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'wfob_add_product' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'wfob_get_products' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'wfob_remove_product' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'wfob_add_product' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'wfob_get_products' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::DELETABLE,
+						'callback'            => array( $this, 'wfob_remove_product' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Register routes for Order Bumps Layout.
-			register_rest_route( $this->namespace, '/' . 'funnel-bump' . '/(?P<step_id>[\d]+)' . '/products' . '/save-layout', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder-powerpack' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnel-bump' . '/(?P<step_id>[\d]+)' . '/products' . '/save-layout',
+				array(
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder-powerpack' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'wfob_save_products' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
-
-
-			register_rest_route( $this->namespace, '/' . 'funnel-bump' . '/(?P<bump_id>[\d]+)/' . '/', array(
-				'args' => array(
-					'bump_id' => array(
-						'description' => __( 'Unique Bump id.', 'funnel-builder-powerpack' ),
-						'type'        => 'integer',
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'wfob_save_products' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_bump' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => [],
-				),
-				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'save_design' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => [],
-				),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
-			) );
-
-			register_rest_route( $this->namespace, '/' . 'funnel-bump' . '/(?P<bump_id>[\d]+)/' . 'import/skin', array(
-				'args' => array(
-					'bump_id' => array(
-						'description' => __( 'Unique Bump id.', 'funnel-builder-powerpack' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnel-bump' . '/(?P<bump_id>[\d]+)/' . '/',
+				array(
+					'args' => array(
+						'bump_id' => array(
+							'description' => __( 'Unique Bump id.', 'funnel-builder-powerpack' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'import_skin' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => [],
-				),
-
-			) );
-
-
-			register_rest_route( $this->namespace, '/' . 'funnel-bump' . '/(?P<bump_id>[\d]+)/' . 'skins/all', array(
-				'args' => array(
-					'bump_id' => array(
-						'description' => __( 'Unique Bump id.', 'funnel-builder-powerpack' ),
-						'type'        => 'integer',
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_bump' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(),
 					),
-				),
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'save_design' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(),
+					),
+
+				)
+			);
+
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnel-bump' . '/(?P<bump_id>[\d]+)/' . 'import/skin',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_all_bumps' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => [],
-				),
+					'args' => array(
+						'bump_id' => array(
+							'description' => __( 'Unique Bump id.', 'funnel-builder-powerpack' ),
+							'type'        => 'integer',
+						),
+					),
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'import_skin' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(),
+					),
 
-			) );
+				)
+			);
 
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnel-bump' . '/(?P<bump_id>[\d]+)/' . 'skins/all',
+				array(
+					'args' => array(
+						'bump_id' => array(
+							'description' => __( 'Unique Bump id.', 'funnel-builder-powerpack' ),
+							'type'        => 'integer',
+						),
+					),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_all_bumps' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(),
+					),
+
+				)
+			);
 		}
 
 		public function get_read_api_permission_check() {
@@ -198,7 +220,7 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 				$resp['success'] = true;
 				$resp['msg']     = __( 'Rules list loaded', 'funnel-builder-powerpack' );
 
-				$resp['data']['rules_list'] = ! empty( $rules_list ) ? $rules_list : [];
+				$resp['data']['rules_list'] = ! empty( $rules_list ) ? $rules_list : array();
 
 				if ( ! empty( $formatted_rules ) ) {
 					$resp['data']['rules'] = $formatted_rules;
@@ -239,7 +261,7 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 
 		public function get_ob_rules( $saved_rules ) {
 
-			$rule_list = [];
+			$rule_list = array();
 			if ( class_exists( 'WFOB_Rules' ) ) {
 				WFOB_Rules::get_instance()->load_rules_classes();
 				$wfob_rules = WFOB_Rules::get_instance()->default_rule_types( 'all' );
@@ -260,9 +282,8 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 						'category'  => 'basic',
 					);
 
-
 					foreach ( $rule_set as $rule ) {
-						$data_args            = [];
+						$data_args            = array();
 						$options              = array();
 						$rule_object          = WFOB_Rules::get_instance()->woocommerce_wfob_rule_get_rule_object( $rule['key'] );
 						$rule_type            = $rule_object->get_condition_input_type();
@@ -270,19 +291,19 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 						$options['rule_type'] = $rule_type;
 						$options              = array_merge( $defaults, $options );
 						$operators            = $rule_object->get_possible_rule_operators();
-						$operators            = ! empty( $operators ) && is_array( $operators ) ? wffn_rest_api_helpers()->array_to_nvp( array_flip( $operators ), "label", "value", "value", "key" ) : array();
+						$operators            = ! empty( $operators ) && is_array( $operators ) ? wffn_rest_api_helpers()->array_to_nvp( array_flip( $operators ), 'label', 'value', 'value', 'key' ) : array();
 						$rule['operators']    = $operators;
 						$condition_input_type = $rule_object->get_condition_input_type();
 
 						$data_args['condition_input_type'] = $condition_input_type;
 						$data_args['condition']            = $saved_rules;
 
-						if ( in_array( $rule_type, [ 'Cart_Product_Select', 'Product_Select' ], true ) ) {
-							$products = ( ! empty( $saved_rules ) && is_array( $saved_rules ) ) ? $this->get_product_from_conditions( $saved_rules ) : [];
+						if ( in_array( $rule_type, array( 'Cart_Product_Select', 'Product_Select' ), true ) ) {
+							$products = ( ! empty( $saved_rules ) && is_array( $saved_rules ) ) ? $this->get_product_from_conditions( $saved_rules ) : array();
 							$values   = $products;
 						}
-						if ( in_array( $rule_type, [ 'Chosen_Select', 'Coupon_Select' ], true ) ) {
-							$coupons = ( ! empty( $saved_rules ) && is_array( $saved_rules ) ) ? $this->get_coupons_from_conditions( $saved_rules ) : [];
+						if ( in_array( $rule_type, array( 'Chosen_Select', 'Coupon_Select' ), true ) ) {
+							$coupons = ( ! empty( $saved_rules ) && is_array( $saved_rules ) ) ? $this->get_coupons_from_conditions( $saved_rules ) : array();
 
 							if ( ! empty( $coupons ) ) {
 
@@ -292,8 +313,8 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 							}
 						}
 
-						if ( method_exists( 'WFFN_REST_Controller', 'get_user_from_conditions' ) && in_array( $rule_type, [ 'User_Select' ], true ) ) {
-							$users = ( ! empty( $saved_rules ) && is_array( $saved_rules ) ) ? $this->get_user_from_conditions( $saved_rules ) : [];
+						if ( method_exists( 'WFFN_REST_Controller', 'get_user_from_conditions' ) && in_array( $rule_type, array( 'User_Select' ), true ) ) {
+							$users = ( ! empty( $saved_rules ) && is_array( $saved_rules ) ) ? $this->get_user_from_conditions( $saved_rules ) : array();
 
 							if ( ! empty( $users ) ) {
 								foreach ( $users as $user_id ) {
@@ -312,7 +333,6 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 						$rule_list[]    = $rule;
 
 					}
-
 				}
 			}
 
@@ -341,7 +361,6 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 				$get_design_data         = get_post_meta( $wfob_id, '_wfob_design_data', true );
 				$tmp_default_design_data = WFOB_Common::get_default_model_data( $wfob_id );
 
-
 				if ( isset( $posted_data['layout'] ) && ! empty( $posted_data['layout'] ) ) {
 					$layout_slug = $posted_data['layout'];
 				} elseif ( isset( $get_design_data['layout'] ) && ! empty( $get_design_data['layout'] ) ) {
@@ -349,7 +368,6 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 				}
 
 				$default_design_data = WFOB_Common::get_override_design_keys( $layout_slug, $tmp_default_design_data );
-
 
 				if ( empty( $get_design_data ) ) {
 					$default_slug = WFOB_Common::$design_default_layout;
@@ -359,9 +377,8 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 					}
 				}
 
-
 				if ( empty( $existing_product ) ) {
-					$existing_product = [];
+					$existing_product = array();
 				}
 				foreach ( $products as $pid ) {
 
@@ -385,7 +402,6 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 
 						$default['image'] = apply_filters( 'wfob_product_image', $product_image_url, $product );
 
-
 						if ( '' == $default['image'] ) {
 							$default['image'] = WFOB_PLUGIN_URL . '/admin/assets/img/product_default_icon.jpg';
 						}
@@ -401,15 +417,12 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 							$default['variable'] = 'yes';
 							$default['price']    = $product->get_price_html();
 
-
 							$pro                = WFOB_Common::wc_get_product( $default['id'] );
 							$is_found_variation = WFOB_Common::get_default_variation( $pro );
 							if ( count( $is_found_variation ) > 0 ) {
 								$default['default_variation']      = $is_found_variation['variation_id'];
 								$default['default_variation_attr'] = $is_found_variation['attributes'];
 							}
-
-
 						} else {
 							if ( in_array( $product_type, WFOB_Common::get_variation_product_type() ) ) {
 								$default['title'] = $product->get_name();
@@ -424,13 +437,11 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 						}
 						$resp_products[ $unique_id ] = $default;
 
-
 						$default = WFOB_Common::remove_product_keys( $default );
 
 						$existing_product[ $unique_id ] = $default;
 						$default['key']                 = $default['id'];
 						$default['id']                  = $unique_id;
-
 
 						$resp['data']['products'][] = wffn_rest_api_helpers()->unstrip_product_data( $default );
 					}
@@ -450,7 +461,6 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 				WFOB_Common::update_product_settings( $wfob_id, $product_settings );
 				WFOB_Common::update_setting_data( $wfob_id, $wfob_settings );
 
-
 				if ( isset( $posted_data['layout'] ) && ! empty( $posted_data['layout'] ) ) {
 					$default_slug     = $posted_data['layout'];
 					$design_bump_data = $default_design_data[ $default_slug ];
@@ -459,11 +469,9 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 					$design_bump_data = $get_design_data;
 				}
 
-
 				if ( is_array( $design_bump_data ) && count( $design_bump_data ) > 0 ) {
 					$design_bump_data = WFOB_Common::check_default_bump_keys( $design_bump_data );
 				}
-
 
 				$temp = WFOB_Common::add_product_details_default_layout( $existing_product, $design_bump_data );
 				WFOB_Common::update_design_data( $wfob_id, $temp );
@@ -474,7 +482,6 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 					$resp['success']   = true;
 					$resp['msg']       = __( 'Products added to order bump', 'woofunnels-order-bump' );
 				}
-
 			}
 
 			return rest_ensure_response( $resp );
@@ -540,7 +547,8 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 							$_product['product_type']      = $this_product->get_type();
 							$_product['product_attribute'] = ! empty( $variation_name ) ? $variation_name : '-';
 							$_product['regular_price']     = ! empty( $regular_price ) ? $regular_price : 0;
-							$_product['sale_price']        = ! empty( $sale_price ) ? $sale_price : 0;;
+							$_product['sale_price']        = ! empty( $sale_price ) ? $sale_price : 0;
+
 							$_product['is_on_sale']           = $this_product->is_on_sale();
 							$_product['currency_symbol']      = get_woocommerce_currency_symbol();
 							$_product['product_stock_status'] = $stock_status;
@@ -586,7 +594,7 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 				$ob_tabs_data['order_bump_position_hooks'] = ! empty( $wfob_settings['order_bump_position_hooks'] ) ? $wfob_settings['order_bump_position_hooks'] : 0;
 				$ob_tabs_data['bump_replace_type']         = ! empty( $product_settings['bump_replace_type'] ) ? $product_settings['bump_replace_type'] : 'all';
 
-				$default_product  = [];
+				$default_product  = array();
 				$product_defaults = array(
 					'category'         => 0,
 					'orderby'          => 'date',
@@ -603,87 +611,93 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 					foreach ( $product_ids as $product_id ) {
 						$product           = wc_get_product( $product_id );
 						$product_name      = strip_tags( BWF_WC_Compatibility::woocommerce_get_formatted_product_name( $product ) );
-						$default_product[] = [ 'label' => $product_name, 'product' => $product_name, 'id' => $product_id ];
+						$default_product[] = array(
+							'label'   => $product_name,
+							'product' => $product_name,
+							'id'      => $product_id,
+						);
 					}
 				}
 
-
 				if ( isset( $product_settings['selected_replace_product']['id'] ) ) {
-					$selected_product = [ $product_settings['selected_replace_product'] ];
+					$selected_product = array( $product_settings['selected_replace_product'] );
 				} else {
 					$selected_product = $product_settings['selected_replace_product'];
 				}
 
 				if ( ! empty( $selected_product ) ) {
-					$selected_product = array_map( function ( $item ) {
-						if ( isset( $item['product'] ) ) {
-							$item['label'] = $item['product'];
-						}
+					$selected_product = array_map(
+						function ( $item ) {
+							if ( isset( $item['product'] ) ) {
+									$item['label'] = $item['product'];
+							}
 
-						return $item;
-					}, $selected_product );
+							return $item;
+						},
+						$selected_product
+					);
 
 					$default_product = array_merge( $default_product, $selected_product );
 				}
-				$selected_product                         = is_array( $selected_product ) ? $selected_product : [];
+				$selected_product                         = is_array( $selected_product ) ? $selected_product : array();
 				$ob_tabs_data['selected_replace_product'] = $selected_product;
-				$tabs                                     = [
-					'fields'      => [
-						[
+				$tabs                                     = array(
+					'fields'      => array(
+						array(
 							'type'   => 'radios',
 							'key'    => 'bump_action_type',
 							'label'  => __( 'Behaviour', 'funnel-builder-powerpack' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
+							'values' => array(
+								0 => array(
 									'value' => '1',
 									'label' => __( 'Add Order Bumps to Cart Items', 'funnel-builder-powerpack' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => '2',
 									'label' => __( 'Replace Order Bumps with a Cart Item (used for upgrades)', 'funnel-builder-powerpack' ),
-								],
-							],
-						],
-						[
+								),
+							),
+						),
+						array(
 							'type'        => 'select',
 							'key'         => 'bump_replace_type',
 							'label'       => '',
 							'hint'        => '',
-							'values'      => [
-								0 => [
+							'values'      => array(
+								0 => array(
 									'value' => 'all',
 									'label' => __( 'Replace All Products', 'funnel-builder-powerpack' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => 'specific',
 									'label' => __( 'Replace Specific Product(s)', 'funnel-builder-powerpack' ),
-								],
-							],
-							'toggler'     => [
+								),
+							),
+							'toggler'     => array(
 								'key'   => 'bump_action_type',
 								'value' => '2',
-							],
+							),
 							'apiEndPoint' => '/funnels/products/search',
-						],
-						[
+						),
+						array(
 							'type'        => 'chosen-select',
 							'key'         => 'selected_replace_product',
 							'label'       => '',
 							'hint'        => '',
 							'hintLabel'   => __( 'Enter minimum 3 letters.', 'funnel-builder-powerpack' ),
-							'toggler'     => [
+							'toggler'     => array(
 								'key'   => 'bump_replace_type',
 								'value' => 'specific',
-							],
+							),
 							'apiEndPoint' => '/funnels/products/search',
 							'options'     => $default_product,
-						]
-					],
+						),
+					),
 					'priority'    => 10,
 					'values'      => $ob_tabs_data,
 					'settingName' => __( 'Product Settings', 'funnel-builder-powerpack' ),
-				];
+				);
 				$tabs_settings_data                       = $tabs;
 				$resp['success']                          = true;
 				$resp['msg']                              = __( 'Loaded', 'funnel-builder-powerpack' );
@@ -734,7 +748,6 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 					$resp['msg']     = __( 'Product removed from order bump page', 'woofunnels-order-bump' );
 					$resp['success'] = true;
 				}
-
 			}
 
 			return rest_ensure_response( $resp );
@@ -742,7 +755,6 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 
 		// Save Products to Order Bump.
 		public function wfob_save_products( WP_REST_Request $request ) {
-
 
 			$resp            = array();
 			$resp['success'] = false;
@@ -756,37 +768,37 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 				$posted_data = $this->sanitize_custom( $options );
 
 				$wfob_id                                      = absint( $step_id );
-				$product_settings['bump_action_type']         = isset( $posted_data['settings']['bump_action_type'] ) ? ( $posted_data['settings']['bump_action_type'] ) : [];
+				$product_settings['bump_action_type']         = isset( $posted_data['settings']['bump_action_type'] ) ? ( $posted_data['settings']['bump_action_type'] ) : array();
 				$product_settings['bump_replace_type']        = isset( $posted_data['settings']['bump_replace_type'] ) ? ( $posted_data['settings']['bump_replace_type'] ) : 'all';
 				$product_settings['selected_replace_product'] = isset( $posted_data['settings']['selected_replace_product'] ) ? ( $posted_data['settings']['selected_replace_product'] ) : '';
 				unset( $posted_data['settings']['bump_action_type'] );
 
 				if ( ! empty( $posted_data['settings']['selected_replace_product'] ) ) {
 					if ( isset( $product_settings['selected_replace_product']['id'] ) ) {
-						$temp_Product                                   = [
+						$temp_Product                                   = array(
 							'id'      => $product_settings['selected_replace_product']['id'],
-							'product' => $product_settings['selected_replace_product']['label']
-						];
-						$product_settings['selected_replace_product']   = [];
+							'product' => $product_settings['selected_replace_product']['label'],
+						);
+						$product_settings['selected_replace_product']   = array();
 						$product_settings['selected_replace_product'][] = $temp_Product;
 					} else {
 						$temp_products = $product_settings['selected_replace_product'];
 
-						$product_settings['selected_replace_product'] = array_map( function ( $item ) {
-							$item['product'] = $item['label'];
+						$product_settings['selected_replace_product'] = array_map(
+							function ( $item ) {
+								$item['product'] = $item['label'];
 
-							return $item;
-						}, $temp_products );
-
+								return $item;
+							},
+							$temp_products
+						);
 
 					}
 				}
 
-
-				$wfob_settings   = isset( $posted_data['settings'] ) ? ( $posted_data['settings'] ) : [];
+				$wfob_settings   = isset( $posted_data['settings'] ) ? ( $posted_data['settings'] ) : array();
 				$posted_products = $posted_data['products'];
-				$products        = [];
-
+				$products        = array();
 
 				foreach ( $posted_products as $key => $val ) {
 					// Swap Key and ID Value for Product Component
@@ -805,13 +817,11 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 					$products[ $wfob_key ] = WFOB_Common::remove_product_keys( $products[ $wfob_key ] );
 				}
 
-
 				$default_product_settings = WFOB_Common::get_product_settings( $wfob_id );
 				$default_wfob_settings    = WFOB_Common::get_setting_data( $wfob_id );
 
 				$wfob_settings    = wp_parse_args( $wfob_settings, $default_wfob_settings );
 				$product_settings = wp_parse_args( $product_settings, $default_product_settings );
-
 
 				WFOB_Common::update_page_product( $wfob_id, $products );
 				WFOB_Common::update_product_settings( $wfob_id, $product_settings );
@@ -835,9 +845,9 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 			}
 			$bump = WFOB_Bump_Fc::create( $bump_id );
 
-			$data = [
+			$data = array(
 				'success' => false,
-			];
+			);
 
 			if ( is_null( $bump ) ) {
 				$data['message'] = __( 'We are unable to find any bump with this ID', 'funnel-builder-powerpack' );
@@ -851,11 +861,9 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 
 			wffn_rest_api_helpers()->maybe_step_not_exits( $bump_id );
 
+			$schema = array();
 
-			$schema = [];
-
-
-			$schema['structure'] = [];
+			$schema['structure'] = array();
 
 			$admin_schema = $bump->get_admin_schema();
 
@@ -866,20 +874,16 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 				$data['message']        = 'Bump Products List are Empty';
 				$wfob_selected_products = get_post_meta( $bump_id, '_wfob_selected_products', true );
 
-
 				if ( isset( $wfob_selected_products ) && is_array( $wfob_selected_products ) && count( $wfob_selected_products ) == 0 ) {
-					$data['data']['structure'] = [];
+					$data['data']['structure'] = array();
 					$data['success']           = true;
 				}
-
 
 				return rest_ensure_response( $data );
 			}
 
-
 			$schema['funnel_data'] = $data['data']['funnel_data'];
 			$schema['step_data']   = $data['data']['step_data'];
-
 
 			$schema['structure']['content'] = $admin_schema['contents']['content'];
 			$schema['structure']['design']  = $admin_schema['design'];
@@ -894,7 +898,6 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 			$schema['html']          = $admin_schema['html'];
 			$schema['default_css']   = $admin_schema['default_css'];
 
-
 			$data['success'] = false;
 			$temp            = $schema;
 
@@ -903,13 +906,12 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 				$data['data']    = $temp;
 				unset( $data['message'] );
 			} else {
-				$data = [
+				$data = array(
 					'success'       => false,
-					'message'       => "Bump Html Not Created",
+					'message'       => 'Bump Html Not Created',
 					'product_count' => sizeof( $schema['products'] ),
-				];
+				);
 			}
-
 
 			return rest_ensure_response( $data );
 		}
@@ -920,30 +922,36 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 
 			$all_layout = WFOB_Bump_Fc::get_layouts();
 
-			$default_bumps_preview = apply_filters( 'wfob_default_preview_templates', [
-				'layout_1',
-				'layout_8',
-				'layout_5',
-				'layout_7',
-				'layout_11',
-				'layout_10',
-				'layout_9',
-				'layout_6',
-			] );
+			$default_bumps_preview = apply_filters(
+				'wfob_default_preview_templates',
+				array(
+					'layout_1',
+					'layout_8',
+					'layout_5',
+					'layout_7',
+					'layout_11',
+					'layout_10',
+					'layout_9',
+					'layout_6',
+				)
+			);
 
-			$temp      = [];
-			$bump_list = [];
-			$bump_html = [];
+			$temp      = array();
+			$bump_list = array();
+			$bump_html = array();
 
-			add_filter( 'wfob_maximum_bump_print', function () {
-				return 1;
-			} );
+			add_filter(
+				'wfob_maximum_bump_print',
+				function () {
+					return 1;
+				}
+			);
 
 			wffn_rest_api_helpers()->maybe_step_not_exits( $bump_id );
 
 			foreach ( $default_bumps_preview as $key => $slug ) {
 
-				$overide_keys = [];
+				$overide_keys = array();
 
 				if ( ! isset( $default_models[ $slug ] ) ) {
 					continue;
@@ -956,18 +964,14 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 				}
 				$layout = $design_data['layout'];
 
-
-				WFOB_Bump_Fc::$number_of_bump_print = [];
+				WFOB_Bump_Fc::$number_of_bump_print = array();
 				$temp[ $bump_id ]                   = new $all_layout[ $layout ]( $bump_id );
 
 				$design_data = $temp[ $bump_id ]->override_design_data_keys( $design_data, $layout );
 
-
 				$temp[ $bump_id ]->prepare_frontend_data();
 
-
 				$temp[ $bump_id ]->set_design_data( $design_data, true );
-
 
 				$temp[ $bump_id ]->get_order_bump_html( false );
 				$bump_list[ $layout ]['html']               = $temp[ $bump_id ]->get_single_bump_html();
@@ -975,14 +979,12 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 
 			}
 
-
 			ob_start();
 			include WFOB_PLUGIN_DIR . '/assets/css/public.min.css';
 			$css_file = ob_get_clean();
 
 			$temp_data['skin_all']    = $bump_list;
 			$temp_data['default_css'] = $css_file;
-
 
 			return rest_ensure_response( $temp_data );
 		}
@@ -1056,7 +1058,6 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 			}
 			$default_data = WFOB_Bump_Fc::get_default_models();
 
-
 			if ( ! isset( $default_data[ $layout ] ) ) {
 				$resp['msg'] = __( 'Layout Not Found', 'funnel-builder-powerpack' );
 
@@ -1064,7 +1065,6 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 			}
 
 			$products = WFOB_Common::get_prepared_products( $bump_id );
-
 
 			$design_data = $default_data[ $layout ];
 
@@ -1075,9 +1075,7 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 
 			}
 
-
 			$temp = WFOB_Common::add_product_details_default_layout( $products, $design_data );
-
 
 			// Delete transient before update
 			WFOB_Common::delete_transient( $bump_id );
@@ -1086,13 +1084,9 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 			$resp['status'] = true;
 			$resp['msg']    = __( 'Skin imported', 'funnel-builder-powerpack' );
 
-
 			return rest_ensure_response( $resp );
-
 		}
-
 	}
 
 	WFFN_REST_BUMP_API_EndPoint::get_instance();
 }
-

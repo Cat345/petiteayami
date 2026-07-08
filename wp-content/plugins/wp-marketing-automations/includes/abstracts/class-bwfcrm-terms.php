@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'BWFCRM_Term' ) && BWFAN_Common::is_pro_3_0() ) {
+	#[\AllowDynamicProperties]
 	class BWFCRM_Term {
 		protected $_id = null;
 		protected $_name = null;

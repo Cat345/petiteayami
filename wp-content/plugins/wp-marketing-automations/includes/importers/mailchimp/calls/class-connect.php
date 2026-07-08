@@ -9,6 +9,7 @@ use BWF_CO;
  *
  * Handles Mailchimp API connection validation
  */
+#[\AllowDynamicProperties]
 class Connect extends Call {
 	/**
 	 * Get static endpoint URL

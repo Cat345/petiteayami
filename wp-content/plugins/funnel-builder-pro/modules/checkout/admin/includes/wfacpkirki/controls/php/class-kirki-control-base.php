@@ -10,10 +10,15 @@
  * @license     http://opensource.org/licenses/https://opensource.org/licenses/MIT
  * @since       3.0.12
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Control_Base' ) ) {
 	/**
 	 * A base for controls.
 	 */
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Base extends WP_Customize_Control {
 
 		/**
@@ -93,7 +98,7 @@ if ( ! class_exists( 'WFACPKirki_Control_Base' ) ) {
 		public function enqueue() {
 
 			// Build the suffix for the script.
-			$suffix = '';
+			$suffix  = '';
 			$suffix .= ( ! defined( 'SCRIPT_DEBUG' ) || true !== SCRIPT_DEBUG ) ? '.min' : '';
 
 			// The WFACPKirki plugin URL.
@@ -106,29 +111,38 @@ if ( ! class_exists( 'WFACPKirki_Control_Base' ) ) {
 			// Enqueue selectWoo.
 			wp_enqueue_script( 'selectWoo', trailingslashit( WFACPKirki::$url ) . 'assets/vendor/selectWoo/js/selectWoo.full.js', array( 'jquery' ), WFACP_VERSION, true );
 			wp_enqueue_style( 'selectWoo', trailingslashit( WFACPKirki::$url ) . 'assets/vendor/selectWoo/css/selectWoo.css', array(), WFACP_VERSION );
-			wp_enqueue_style( 'wfacpkirki-selectWoo', trailingslashit( WFACPKirki::$url ) . 'assets/vendor/selectWoo/kirki.css', [], WFACP_VERSION );
+			wp_enqueue_style( 'wfacpkirki-selectWoo', trailingslashit( WFACPKirki::$url ) . 'assets/vendor/selectWoo/kirki.css', array(), WFACP_VERSION );
 
 			// Enqueue the script.
-			wp_enqueue_script( 'wfacpkirki-script', "{$wfacpkirki_url}controls/js/script{$suffix}.js", array(
-				'jquery',
-				'customize-base',
-				'wp-color-picker-alpha',
-				'selectWoo',
-				'jquery-ui-button',
-				'jquery-ui-datepicker',
-			), WFACP_VERSION );
+			wp_enqueue_script(
+				'wfacpkirki-script',
+				"{$wfacpkirki_url}controls/js/script{$suffix}.js",
+				array(
+					'jquery',
+					'customize-base',
+					'wp-color-picker-alpha',
+					'selectWoo',
+					'jquery-ui-button',
+					'jquery-ui-datepicker',
+				),
+				WFACP_VERSION
+			);
 
-			wp_localize_script( 'wfacpkirki-script', 'wfacpkirkiL10n', array(
-				'isScriptDebug'        => ( defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG ),
-				'noFileSelected'       => esc_attr__( 'No File Selected', 'wfacpkirki' ),
-				'remove'               => esc_attr__( 'Remove', 'wfacpkirki' ),
-				'default'              => esc_attr__( 'Default', 'wfacpkirki' ),
-				'selectFile'           => esc_attr__( 'Select File', 'wfacpkirki' ),
-				'standardFonts'        => esc_attr__( 'Standard Fonts', 'wfacpkirki' ),
-				'googleFonts'          => esc_attr__( 'Google Fonts', 'wfacpkirki' ),
-				'defaultCSSValues'     => esc_attr__( 'CSS Defaults', 'wfacpkirki' ),
-				'defaultBrowserFamily' => esc_attr__( 'Default Browser Font-Family', 'wfacpkirki' ),
-			) );
+			wp_localize_script(
+				'wfacpkirki-script',
+				'wfacpkirkiL10n',
+				array(
+					'isScriptDebug'        => ( defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG ),
+					'noFileSelected'       => esc_attr__( 'No File Selected', 'wfacpkirki' ),
+					'remove'               => esc_attr__( 'Remove', 'wfacpkirki' ),
+					'default'              => esc_attr__( 'Default', 'wfacpkirki' ),
+					'selectFile'           => esc_attr__( 'Select File', 'wfacpkirki' ),
+					'standardFonts'        => esc_attr__( 'Standard Fonts', 'wfacpkirki' ),
+					'googleFonts'          => esc_attr__( 'Google Fonts', 'wfacpkirki' ),
+					'defaultCSSValues'     => esc_attr__( 'CSS Defaults', 'wfacpkirki' ),
+					'defaultBrowserFamily' => esc_attr__( 'Default Browser Font-Family', 'wfacpkirki' ),
+				)
+			);
 
 			$suffix = str_replace( '.min', '', $suffix );
 			// Enqueue the style.

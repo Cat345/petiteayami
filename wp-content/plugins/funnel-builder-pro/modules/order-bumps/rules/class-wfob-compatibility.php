@@ -44,6 +44,7 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 	 *
 	 * @version 1.0
 	 */
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility {
 
 		/**
@@ -211,7 +212,6 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 				return get_post_meta( $order->id, '_shipping_country', true );
 
 			}
-
 		}
 
 
@@ -223,7 +223,6 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 				return get_post_meta( $order->id, '_billing_country', true );
 
 			}
-
 		}
 
 		public static function get_order_id( $order ) {
@@ -234,7 +233,6 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 				return $order->id;
 
 			}
-
 		}
 
 		public static function get_product_parent_id( $product ) {
@@ -259,7 +257,6 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 				return $order->billing_address_1;
 
 			}
-
 		}
 
 
@@ -300,7 +297,6 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 			}
 
 			return __return_empty_string();
-
 		}
 
 
@@ -330,7 +326,6 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 					return $customer_first_name;
 				}
 			}
-
 		}
 
 		/**
@@ -359,7 +354,6 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 					return $customer_last_name;
 				}
 			}
-
 		}
 
 		/**
@@ -376,7 +370,6 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 			} else {
 				return $status;
 			}
-
 		}
 
 		/**
@@ -392,7 +385,6 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 				return $order->billing_address_2;
 
 			}
-
 		}
 
 		/**
@@ -408,7 +400,6 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 				return $order->shipping_address_1;
 
 			}
-
 		}
 
 
@@ -425,7 +416,6 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 				return $order->get_total_shipping();
 
 			}
-
 		}
 
 		/**
@@ -441,7 +431,6 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 				return $order->shipping_address_2;
 
 			}
-
 		}
 
 		/**
@@ -613,8 +602,8 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 		 * @since 1.0
 		 *
 		 * @param  float|string $number Expects either a float or a string with a decimal separator only (no thousands)
-		 * @param  mixed $dp number of decimal points to use, blank to use woocommerce_price_num_decimals, or false to avoid all rounding.
-		 * @param  boolean $trim_zeros from end of string
+		 * @param  mixed        $dp number of decimal points to use, blank to use woocommerce_price_num_decimals, or false to avoid all rounding.
+		 * @param  boolean      $trim_zeros from end of string
 		 *
 		 * @return string
 		 */
@@ -783,7 +772,6 @@ if ( ! class_exists( 'WFOB_Compatibility' ) ) :
 
 			return self::get_wc_version() && version_compare( self::get_wc_version(), $version, '>' );
 		}
-
 	}
 
 endif; // Class exists check

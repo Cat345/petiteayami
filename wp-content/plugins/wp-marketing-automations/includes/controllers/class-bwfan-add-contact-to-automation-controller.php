@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Add_Contact_To_Automation_Controller {
 	public $automation_id = '';
 	public $contact_id = '';
@@ -58,7 +59,7 @@ class BWFAN_Add_Contact_To_Automation_Controller {
 
 		$result = $event->handle_automation_run_v2( $this->automation_id, $automation_data );
 
-		return false === $result ? $this->get_response( 500, 'not_added_to_automation' ) : $this->get_response( 200, 'added_to_automation' );
+		return empty( $result ) ? $this->get_response( 500, 'not_added_to_automation' ) : $this->get_response( 200, 'added_to_automation' );
 	}
 
 	public function prepare_automation_data() {

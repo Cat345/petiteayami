@@ -19,13 +19,13 @@ if ( ! class_exists( 'WFFN_WooCommerce_Usage_Pro' ) ) {
 	/**
 	 * Class WFFN_WooCommerce_Usage_Pro
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_WooCommerce_Usage_Pro {
 
 		/**
 		 * Constructor - hooks into filter to add advanced WooCommerce data
 		 */
 		public function __construct() {
-
 
 			// Hook into filter to add advanced WooCommerce data to core 'woocommerce' key
 			// Pro always collects data (no activation date check needed)
@@ -98,4 +98,3 @@ if ( ! class_exists( 'WFFN_WooCommerce_Usage_Pro' ) ) {
 		$GLOBALS['wffn_woocommerce_usage_pro_instance'] = new WFFN_WooCommerce_Usage_Pro();
 	}
 }
-

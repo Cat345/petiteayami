@@ -1,7 +1,8 @@
 <?php
 if ( ! class_exists( 'WFOCU_Oxy_Reject_Link' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Oxy_Reject_Link extends WFOCU_Oxy_HTML_BLOCK {
-		public $slug = 'wfocu_reject_link';
+		public $slug  = 'wfocu_reject_link';
 		protected $id = 'wfocu_reject_link';
 
 		public function __construct() {
@@ -15,13 +16,11 @@ if ( ! class_exists( 'WFOCU_Oxy_Reject_Link' ) ) {
 			$this->typography_settings();
 			$this->spacing_setting();
 			$this->border_setting();
-
 		}
 
 		public function text_settings() {
 			$tab_id = $this->add_tab( __( 'Text', 'woofunnels-upstroke-one-click-upsell' ) );
 			$this->add_text( $tab_id, 'text', __( 'Reject Offer', 'woofunnels-upstroke-one-click-upsell' ), __( 'No thanks, I don’t want to take advantage of this one-time offer', 'woofunnels-upstroke-one-click-upsell' ) );
-
 		}
 
 		public function color_settings() {
@@ -38,13 +37,12 @@ if ( ! class_exists( 'WFOCU_Oxy_Reject_Link' ) ) {
 
 			$tab_id = $this->add_tab( __( 'Typography', 'woofunnels-upstroke-one-click-upsell' ) );
 			$this->add_heading( $tab_id, __( 'Title Typography' ) );
-			$default = [
+			$default = array(
 				'font_size' => '16',
-			];
+			);
 
 			$this->add_text_alignments( $tab_id, $this->slug . '_alignment', '.wfocu-button-wrapper .wfocu-reject', '', 'center' );
 			$this->custom_typography( $tab_id, $this->slug . '_typography', '.wfocu-button-wrapper .wfocu-reject', '', $default );
-
 		}
 
 
@@ -64,18 +62,18 @@ if ( ! class_exists( 'WFOCU_Oxy_Reject_Link' ) ) {
 		public function html( $settings, $defaults, $content ) {//phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
 			$text = isset( $settings['text'] ) ? $settings['text'] : '';
 			?>
-            <div class="wfocu-button-wrapper">
-                <a class="wfocu-reject wfocu_skip_offer" href="javascript:void(0);">
+			<div class="wfocu-button-wrapper">
+				<a class="wfocu-reject wfocu_skip_offer" href="javascript:void(0);">
 					<?php echo wp_kses_post( $text ); ?>
 
-                </a>
-            </div>
+				</a>
+			</div>
 			<?php
 		}
 
 		public function defaultCSS() {
 
-			$defaultCSS = "
+			$defaultCSS = '
 		      body .wfocu-button-wrapper .wfocu-reject {
 		      	display: block;
                 font-size: 16px;
@@ -92,13 +90,11 @@ if ( ! class_exists( 'WFOCU_Oxy_Reject_Link' ) ) {
             body .wfocu-button-wrapper a:not(.wfocu-accept-button-link):not(.wfocu-wfocu-reject) {
                 color: #777777;
             }
-		";
+		';
 
 			return $defaultCSS;
 		}
-
-
 	}
 
-	return new WFOCU_Oxy_Reject_Link;
+	return new WFOCU_Oxy_Reject_Link();
 }

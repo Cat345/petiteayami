@@ -4,6 +4,7 @@ if ( ! class_exists( 'WFFN_Pro_Dependencies' ) ) {
 	 * WFFN Dependency Checker
 	 * Check if primary plugin is active
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_Pro_Dependencies {
 
 		private static $active_plugins;
@@ -24,6 +25,5 @@ if ( ! class_exists( 'WFFN_Pro_Dependencies' ) ) {
 
 			return in_array( 'funnel-builder/funnel-builder.php', self::$active_plugins, true ) || array_key_exists( 'funnel-builder/funnel-builder.php', self::$active_plugins );
 		}
-
 	}
 }

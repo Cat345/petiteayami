@@ -1,5 +1,10 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'WFACP_LiteSpeed' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_LiteSpeed {
 		public function __construct() {
 			if ( ! class_exists( '\LiteSpeed\CDN' ) ) {
@@ -11,8 +16,6 @@ if ( ! class_exists( 'WFACP_LiteSpeed' ) ) {
 			} catch ( Exception $e ) {
 
 			}
-
-
 		}
 	}
 

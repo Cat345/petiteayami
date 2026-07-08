@@ -12,7 +12,12 @@
 /**
  * Output overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Output_Property_Background_Image' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Output_Property_Background_Image extends WFACPKirki_Output_Property {
 
 		/**

@@ -5,6 +5,7 @@
  */
 
 if ( ! class_exists( 'BWFAN_DB_Table_Lite_Import_Export' ) ) {
+	#[\AllowDynamicProperties]
 	class BWFAN_DB_Table_Lite_Import_Export extends BWFAN_DB_Tables_Base {
 		public $table_name = 'bwfan_import_export';
 

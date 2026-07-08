@@ -14,6 +14,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Select2' ) ) {
 	 * In older versions of WFOCUKirki there was a separate 'select2' field.
 	 * This exists here just for compatibility purposes.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Select2 extends WFOCUKirki_Field_Select {
 	}
 }

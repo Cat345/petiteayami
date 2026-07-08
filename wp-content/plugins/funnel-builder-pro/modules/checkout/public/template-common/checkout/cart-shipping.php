@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Shipping Methods Display
  *
@@ -33,7 +37,13 @@ $formatted_destination    = isset( $formatted_destination ) ? $formatted_destina
 $has_calculated_shipping  = ! empty( $has_calculated_shipping );
 $show_shipping_calculator = ! empty( $show_shipping_calculator );
 $calculator_text          = '';
-$colspans                 = apply_filters( 'wfacp_order_shipping_colspan', [ 'first' => $colspan_attr, 'second' => 1 ] );
+$colspans                 = apply_filters(
+	'wfacp_order_shipping_colspan',
+	array(
+		'first'  => $colspan_attr,
+		'second' => 1,
+	)
+);
 if ( $available_methods ) {
 	foreach ( $available_methods as $method ) {
 		if ( $chosen_method == $method->get_id() ) {
@@ -43,22 +53,21 @@ if ( $available_methods ) {
 				$shippingLabelText = '<small>&nbsp;' . $shippingLabel . '</small>';
 			}
 			?>
-            <tr class="shipping_total_fee">
-                <td colspan="<?php echo empty( $colspans['first'] ) ? '1' : $colspans['first'] ?>"><span><?php echo $package_name; ?><?php echo $shippingLabelText ?></span></td>
-                <td colspan="<?php echo empty( $colspans['second'] ) ? '1' : $colspans['second'] ?>"  data-title="<?php echo esc_attr( $package_name ); ?>">
-                    <span><?php echo WFACP_Common::wc_cart_totals_shipping_method_cost( $method ) ?></span>
-                </td>
-            </tr>
+			<tr class="shipping_total_fee">
+				<td colspan="<?php echo empty( $colspans['first'] ) ? '1' : $colspans['first']; ?>"><span><?php echo $package_name; ?><?php echo $shippingLabelText; ?></span></td>
+				<td colspan="<?php echo empty( $colspans['second'] ) ? '1' : $colspans['second']; ?>"  data-title="<?php echo esc_attr( $package_name ); ?>">
+					<span><?php echo WFACP_Common::wc_cart_totals_shipping_method_cost( $method ); ?></span>
+				</td>
+			</tr>
 			<?php
 		}
 	}
-
 } else {
 
 	$colspans_first  = empty( $colspans['first'] ) ? '1' : $colspans['first'];
 	$colspans_second = empty( $colspans['second'] ) ? '1' : $colspans['second'];
 	echo '<tr class="shipping_total_fee">';
-	echo "<td colspan={$colspans_first}><span>" . wp_kses_post( $package_name ) . "</span></td>";
+	echo "<td colspan={$colspans_first}><span>" . wp_kses_post( $package_name ) . '</span></td>';
 	echo "<td colspan={$colspans_second}><span>";
 
 	if ( ! $has_calculated_shipping || ! $formatted_destination ) {
@@ -74,5 +83,5 @@ if ( $available_methods ) {
 		echo '<p class="woocommerce-shipping-contents"><small>' . esc_html( $package_details ) . '</small></p>';
 	endif;
 
-	echo "</span></td></tr>";
+	echo '</span></td></tr>';
 }

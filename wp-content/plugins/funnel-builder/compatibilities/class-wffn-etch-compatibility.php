@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * bypass this pipeline, causing Etch theme styles to be stripped from the frontend.
  */
 if ( ! class_exists( 'WFFN_Compatibility_With_Etch' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_Etch {
 
 		public function __construct() {

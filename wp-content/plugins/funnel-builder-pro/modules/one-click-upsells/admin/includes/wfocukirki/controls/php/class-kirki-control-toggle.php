@@ -17,6 +17,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Toggle' ) ) {
 	/**
 	 * Toggle control (modified checkbox).
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Toggle extends WFOCUKirki_Control_Base {
 
 		/**
@@ -39,17 +40,17 @@ if ( ! class_exists( 'WFOCUKirki_Control_Toggle' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <label for="toggle_{{ data.id }}">
+			<label for="toggle_{{ data.id }}">
 			<span class="customize-control-title">
 				{{{ data.label }}}
 			</span>
-                <# if ( data.description ) { #>
-                <span class="description customize-control-description">{{{ data.description }}}</span>
-                <# } #>
-                <input class="screen-reader-text" {{{ data.inputAttrs }}} name="toggle_{{ data.id }}" id="toggle_{{ data.id }}" type="checkbox" value="{{ data.value }}" {{{ data.link }}}<# if ( '1' ==
-                data.value ) { #> checked<# } #> hidden />
-                <span class="switch"></span>
-            </label>
+				<# if ( data.description ) { #>
+				<span class="description customize-control-description">{{{ data.description }}}</span>
+				<# } #>
+				<input class="screen-reader-text" {{{ data.inputAttrs }}} name="toggle_{{ data.id }}" id="toggle_{{ data.id }}" type="checkbox" value="{{ data.value }}" {{{ data.link }}}<# if ( '1' ==
+				data.value ) { #> checked<# } #> hidden />
+				<span class="switch"></span>
+			</label>
 			<?php
 		}
 	}

@@ -2,6 +2,7 @@
 
 if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro_3_0() ) {
 
+	#[\AllowDynamicProperties]
 	class BWFAN_Model_Engagement_Tracking extends BWFAN_Model {
 		static $primary_key = 'ID';
 
@@ -156,7 +157,8 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			if ( ! empty( $recipients ) ) {
 
 				/** Get unsubscribers data **/
-				$unsubscribe_query    = "SELECT ID,recipient FROM {$wpdb->prefix}bwfan_message_unsubscribe WHERE recipient IN ('$recipients') AND automation_id=$oid AND c_type = $type";
+				$recipients_ph        = implode( ',', array_fill( 0, count( $send_to ), '%s' ) );
+				$unsubscribe_query    = $wpdb->prepare( "SELECT ID,recipient FROM {$wpdb->prefix}bwfan_message_unsubscribe WHERE recipient IN ( $recipients_ph ) AND automation_id = %d AND c_type = %d", array_merge( $send_to, array( $oid, $type ) ) );
 				$unsubscribers_result = self::get_results( $unsubscribe_query );
 				foreach ( $unsubscribers_result as $unsubscriber ) {
 					$unsubscribers[ $unsubscriber['recipient'] ] = $unsubscriber;
@@ -264,7 +266,8 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 		 */
 		public static function get_automation_recipient_timeline( $automation_id, $contact_id, $mode ) {
 			$table       = self::_table();
-			$query       = " SELECT ID,mode,c_status,c_interaction,o_interaction,created_at FROM $table WHERE type = 1 AND  oid = $automation_id AND cid = $contact_id AND (c_status = 2 OR c_status = 3) AND mode=$mode";
+			global $wpdb;
+			$query       = $wpdb->prepare( " SELECT ID,mode,c_status,c_interaction,o_interaction,created_at FROM $table WHERE type = 1 AND oid = %d AND cid = %d AND (c_status = 2 OR c_status = 3) AND mode = %d", $automation_id, $contact_id, $mode );
 			$engagements = self::get_results( $query );
 			$engage_ids  = array_map( function ( $engagement ) {
 				return $engagement['ID'];
@@ -366,8 +369,8 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 		}
 
 		public static function get_last_engagement_sent_time( $contact_id, $mode = 1 ) {
-			$query   = "SELECT max(created_at) as last_sent FROM {table_name} WHERE cid = $contact_id AND mode = $mode AND c_status = 2";
-			$results = self::get_results( $query );
+			$query   = "SELECT max(created_at) as last_sent FROM {table_name} WHERE cid = %d AND mode = %d AND c_status = 2";
+			$results = self::get_results( $query, array( absint( $contact_id ), absint( $mode ) ) );
 			$res     = '';
 			if ( ! empty( $results[0]['last_sent'] ) ) {
 				$res = $results[0]['last_sent'];
@@ -378,9 +381,10 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 
 		public static function get_last_24_hours_conversations_count( $mode = 1 ) {
 			global $wpdb;
+			$mode       = absint( $mode );
 			$start_time = date( 'Y-m-d H:i:s', strtotime( '-24 hours' ) );
-			$and_mode   = ! empty( absint( $mode ) ) ? " AND mode = $mode " : "";
-			$query      = "SELECT COUNT(ID)  FROM {$wpdb->prefix}bwfan_engagement_tracking WHERE c_status = 2 AND created_at > '$start_time' $and_mode";
+			$and_mode   = ! empty( $mode ) ? " AND mode = {$mode} " : "";
+			$query      = $wpdb->prepare( "SELECT COUNT(ID)  FROM {$wpdb->prefix}bwfan_engagement_tracking WHERE c_status = 2 AND created_at > %s {$and_mode}", $start_time ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 			return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
@@ -391,7 +395,8 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			$interaction = ( BWFAN_Email_Conversations::$MODE_SMS === intval( $mode ) ) ? 'click' : 'open';
 			$interaction = apply_filters( 'bwfan_most_interacted_template_based_on', $interaction, $mode, $oid );
 
-			$sql = "SELECT tid, SUM($interaction) AS $interaction FROM `{$wpdb->prefix}bwfan_engagement_tracking` WHERE oid=$oid AND type=$otype AND c_status=2 GROUP BY tid ORDER BY $interaction DESC LIMIT 0, 1";
+			$interaction = in_array( $interaction, array( 'click', 'open' ), true ) ? $interaction : 'open';
+			$sql = "SELECT tid, SUM($interaction) AS $interaction FROM `{$wpdb->prefix}bwfan_engagement_tracking` WHERE oid=" . absint( $oid ) . " AND type=" . absint( $otype ) . " AND c_status=2 GROUP BY tid ORDER BY $interaction DESC LIMIT 0, 1";
 
 			return $wpdb->get_row( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
@@ -424,22 +429,29 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 
 			$table    = "{$wpdb->prefix}bwfan_engagement_tracking";
 			$step_ids = ! is_array( $step_ids ) ? [ $step_ids ] : $step_ids;
-			$ids      = implode( "','", $step_ids );
+			$step_ids = array_map( 'absint', $step_ids );
+			$ids_ph   = implode( ', ', array_fill( 0, count( $step_ids ), '%d' ) );
 
 			$conversions_query = "SELECT trackid, count(ID) as conversions, SUM(wctotal) as revenue, cid FROM {$wpdb->prefix}bwfan_conversions GROUP BY trackid,cid";
-			$query             = "SELECT SUM(if(con.open>0,1,0)) AS open_count,(SUM(IF(con.open>0, 1, 0))/COUNT(con.ID)) * 100 as open_rate ,SUM(IF(con.c_status=2, 1, 0)) as sent,SUM(if(con.click>0,1,0)) AS click_count,(SUM(IF(con.click>0, 1, 0))/COUNT(con.ID)) * 100 as click_rate,  SUM(conv.conversions) as conversions, SUM(conv.revenue) as revenue, COUNT(DISTINCT con.cid) as contacts_count  FROM {$table} AS con LEFT JOIN ({$conversions_query}) as conv ON con.ID = conv.trackid WHERE 1=1 AND con.type = " . BWFAN_Email_Conversations::$TYPE_AUTOMATION . " AND con.sid IN('$ids') AND con.c_status = 2 ";
+			$query             = "SELECT SUM(if(con.open>0,1,0)) AS open_count,(SUM(IF(con.open>0, 1, 0))/COUNT(con.ID)) * 100 as open_rate ,SUM(IF(con.c_status=2, 1, 0)) as sent,SUM(if(con.click>0,1,0)) AS click_count,(SUM(IF(con.click>0, 1, 0))/COUNT(con.ID)) * 100 as click_rate,  SUM(conv.conversions) as conversions, SUM(conv.revenue) as revenue, COUNT(DISTINCT con.cid) as contacts_count  FROM {$table} AS con LEFT JOIN ({$conversions_query}) as conv ON con.ID = conv.trackid WHERE 1=1 AND con.type = %d AND con.sid IN ({$ids_ph}) AND con.c_status = 2 ";
+			$args              = array_merge( array( absint( BWFAN_Email_Conversations::$TYPE_AUTOMATION ) ), $step_ids );
 			if ( ! empty( $oid ) ) {
-				$query .= " AND con.oid IN ($oid) ";
+				$query  .= " AND con.oid IN (%d) ";
+				$args[] = absint( $oid );
 			}
 			/** Add query for get data after date */
 			if ( ! empty( $after_date ) && empty( $end_date ) ) {
-				$query .= " AND con.created_at > '$after_date'";
+				$query  .= " AND con.created_at > %s";
+				$args[] = $after_date;
 			}
 
 			if ( ! empty( $after_date ) && ! empty( $end_date ) ) {
-				$query .= " AND ( con.created_at > '$after_date' AND con.created_at < '$end_date' ) ";
+				$query  .= " AND ( con.created_at > %s AND con.created_at < %s ) ";
+				$args[] = $after_date;
+				$args[] = $end_date;
 			}
 
+			$query                    = $wpdb->prepare( $query, $args ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$results                  = $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$results['unsubscribers'] = self::get_automation_unsubscribers( $oid, $step_ids );
 
@@ -529,7 +541,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			}
 
 			if ( ! empty( $search ) ) {
-				$filter_query .= $wpdb->prepare( " AND send_to LIKE %s", "%" . esc_sql( $search ) . "%" );
+				$filter_query .= $wpdb->prepare( " AND send_to LIKE %s", "%" . $wpdb->esc_like( $search ) . "%" );
 			}
 
 			/** Default status filter query to exclude drafts */
@@ -540,7 +552,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 				switch ( $filter['filter'] ) {
 					case 'source':
 						if ( ! empty( $filter['data'] ) ) {
-							$oid = array_column( $filter['data'], 'id' );
+							$oid = array_map( 'absint', array_column( $filter['data'], 'id' ) );
 						}
 						switch ( $filter['rule'] ) {
 							case 1:
@@ -576,7 +588,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 						$start_date = ! empty( $filter['data']['after'] ) ? $filter['data']['after'] : '';
 						$end_date   = ! empty( $filter['data']['before'] ) ? $filter['data']['before'] : '';
 						if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
-							$filter_query .= " AND (created_at >= '{$start_date}' AND created_at <= '{$end_date}')";
+							$filter_query .= $wpdb->prepare( " AND (created_at >= %s AND created_at <= %s)", $start_date, $end_date );
 						}
 						break;
 				}
@@ -704,10 +716,11 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 		public static function get_engagements_by_tid( $tid, $only_count = false ) {
 			global $wpdb;
 			$table = self::_table();
+			$tid   = absint( $tid );
 			if ( $only_count ) {
-				$query = "SELECT COUNT(ID) as count FROM {$table} WHERE tid = $tid";
+				$query = $wpdb->prepare( "SELECT COUNT(ID) as count FROM {$table} WHERE tid = %d", $tid );
 			} else {
-				$query = "SELECT * FROM {$table} WHERE tid = $tid";
+				$query = $wpdb->prepare( "SELECT * FROM {$table} WHERE tid = %d", $tid );
 			}
 
 

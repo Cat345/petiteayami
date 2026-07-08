@@ -8,6 +8,7 @@
 /**
  * Test Mail API class
  */
+#[\AllowDynamicProperties]
 class BWFAN_API_Send_Test_Mail extends BWFAN_API_Base {
 
 	/**

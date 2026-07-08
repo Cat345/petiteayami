@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Control' ) ) {
 	/**
 	 * Our main WFOCUKirki_Control object
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control {
 
 		/**
@@ -51,7 +52,6 @@ if ( ! class_exists( 'WFOCUKirki_Control' ) ) {
 			$this->set_control_types();
 			// Add the control.
 			$this->add_control( $args );
-
 		}
 
 		/**
@@ -73,7 +73,6 @@ if ( ! class_exists( 'WFOCUKirki_Control' ) ) {
 			}
 
 			return $class_name;
-
 		}
 
 		/**
@@ -89,7 +88,6 @@ if ( ! class_exists( 'WFOCUKirki_Control' ) ) {
 			$class_name = $this->get_control_class_name( $args );
 			// Add the control.
 			$this->wp_customize->add_control( new $class_name( $this->wp_customize, $args['settings'], $args ) );
-
 		}
 
 		/**

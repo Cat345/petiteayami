@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class bwfan_Input_Geo_Postal_Code_Entry {
 
 	public function __construct() {

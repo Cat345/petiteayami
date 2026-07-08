@@ -300,7 +300,7 @@ class WidgetsListener
     /**
      * @param array<string, mixed>|false $instance
      * @param WP_Widget $widget
-     * @param array<string, mixed> $args
+     * @param ?array<string, mixed> $args
      *
      * @return array<string, mixed>|false
      *
@@ -308,6 +308,14 @@ class WidgetsListener
      */
     public function displayWidget($instance, $widget, $args)
     {
+        $args ??= [];
+        $args += [
+            'before_widget' => '',
+            'after_widget' => '',
+            'before_title' => '',
+            'after_title' => '',
+        ];
+
         // store sidebar in case another sidebar is rendered within this widget
         $sidebar = $this->sidebar;
 

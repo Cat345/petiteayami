@@ -13,6 +13,7 @@ if ( ! class_exists( 'WFOCUKirki_Panel' ) ) {
 	/**
 	 * Each panel is a separate instance of the WFOCUKirki_Panel object.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Panel {
 
 		/**
@@ -36,7 +37,6 @@ if ( ! class_exists( 'WFOCUKirki_Panel' ) ) {
 
 			$this->panel_types = apply_filters( 'wfocukirki_panel_types', $this->panel_types );
 			$this->add_panel( $args );
-
 		}
 
 		/**
@@ -53,7 +53,6 @@ if ( ! class_exists( 'WFOCUKirki_Panel' ) ) {
 			$panel_classname = $this->panel_types[ $args['type'] ];
 
 			$wp_customize->add_panel( new $panel_classname( $wp_customize, sanitize_key( $args['id'] ), $args ) );
-
 		}
 	}
 }

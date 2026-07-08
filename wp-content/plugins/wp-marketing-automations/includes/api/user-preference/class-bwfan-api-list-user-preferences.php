@@ -6,6 +6,7 @@
  *
  * Preferences are built from CRM filter classes (Pro): rules with is_preference / preference true.
  */
+#[\AllowDynamicProperties]
 class BWFAN_API_List_User_Preferences extends BWFAN_API_Base {
 	public static $ins;
 
@@ -13,7 +14,6 @@ class BWFAN_API_List_User_Preferences extends BWFAN_API_Base {
 		parent::__construct();
 		$this->method     = WP_REST_Server::READABLE;
 		$this->route      = 'v2/preferences';
-		$this->public_api = true;
 	}
 
 	public static function get_instance() {

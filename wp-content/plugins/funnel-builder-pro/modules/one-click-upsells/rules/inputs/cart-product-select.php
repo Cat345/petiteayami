@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfocu_Input_Cart_Product_Select' ) ) {
+	#[\AllowDynamicProperties]
 	class wfocu_Input_Cart_Product_Select {
 		public function __construct() {
 			// vars
@@ -10,7 +11,7 @@ if ( ! class_exists( 'wfocu_Input_Cart_Product_Select' ) ) {
 				'allow_null'    => 0,
 				'choices'       => array(),
 				'default_value' => '',
-				'class'         => 'ajax_chosen_select_products'
+				'class'         => 'ajax_chosen_select_products',
 			);
 		}
 
@@ -22,18 +23,18 @@ if ( ! class_exists( 'wfocu_Input_Cart_Product_Select' ) ) {
 
 			?>
 
-            <table style="width:100%;">
-                <tr>
-                    <td style="width:32px;"><?php esc_html_e( 'Quantity', 'woofunnels-upstroke-one-click-upsell' ); ?></td>
-                    <td><?php esc_html_e( 'Products', 'woofunnels-upstroke-one-click-upsell' ); ?></td>
-                </tr>
-                <tr>
-                    <td style="width:32px; vertical-align:top;">
-                        <input type="text" id="<?php echo esc_attr( $field['id'] ); ?>_qty" name="<?php echo esc_attr( $field['name'] ); ?>[qty]" value="<?php echo isset( $value['qty'] ) ? esc_attr( $value['qty'] ) : 1; ?>"/>
+			<table style="width:100%;">
+				<tr>
+					<td style="width:32px;"><?php esc_html_e( 'Quantity', 'woofunnels-upstroke-one-click-upsell' ); ?></td>
+					<td><?php esc_html_e( 'Products', 'woofunnels-upstroke-one-click-upsell' ); ?></td>
+				</tr>
+				<tr>
+					<td style="width:32px; vertical-align:top;">
+						<input type="text" id="<?php echo esc_attr( $field['id'] ); ?>_qty" name="<?php echo esc_attr( $field['name'] ); ?>[qty]" value="<?php echo isset( $value['qty'] ) ? esc_attr( $value['qty'] ) : 1; ?>"/>
 
-                    </td>
-                    <td>
-                        <select id="<?php echo esc_attr( $field['id'] ); ?>" name="<?php echo esc_attr( $field['name'] ); ?>[products]" class="ajax_chosen_select_products" data-placeholder="<?php esc_html_e( 'Look for a product&hellip;', 'woocommerce' ); ?>">
+					</td>
+					<td>
+						<select id="<?php echo esc_attr( $field['id'] ); ?>" name="<?php echo esc_attr( $field['name'] ); ?>[products]" class="ajax_chosen_select_products" data-placeholder="<?php esc_html_e( 'Look for a product&hellip;', 'woocommerce' ); ?>">
 							<?php
 							$defaults = array(
 								'numberposts'      => 5,
@@ -59,20 +60,18 @@ if ( ! class_exists( 'wfocu_Input_Cart_Product_Select' ) ) {
 									$product      = wc_get_product( $product_id );
 									$product_name = WFOCU_WC_Compatibility::woocommerce_get_formatted_product_name( $product );
 
-									echo "<option value='" . esc_attr( $product_id ) . "' " . selected( $current[0], $product_id, false ) . ">" . esc_html( $product_name ) . "</option>";
+									echo "<option value='" . esc_attr( $product_id ) . "' " . selected( $current[0], $product_id, false ) . '>' . esc_html( $product_name ) . '</option>';
 								}
 							}
 							?>
-                        </select>
-                    </td>
-                </tr>
-            </table>
+						</select>
+					</td>
+				</tr>
+			</table>
 
 
 			<?php
-
 		}
-
 	}
 }
 ?>

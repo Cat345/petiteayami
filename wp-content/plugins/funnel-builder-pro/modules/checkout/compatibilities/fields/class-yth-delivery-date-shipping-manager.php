@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * YITH WooCommerce Delivery Date Premium by YITH (up to  2.1.29 Version)
@@ -11,27 +15,27 @@ if ( ! class_exists( 'WFACP_Yth_WC_Delivery_Date_Premium' ) ) {
 
 		public function __construct() {
 			/* Register Add field */
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
 			add_filter( 'wfacp_html_fields_wfacp_yth_wc_delivery_date', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'display_field' ], 999, 2 );
+			add_action( 'process_wfacp_html', array( $this, 'display_field' ), 999, 2 );
 			/* Assign Object */
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'action' ] );
-			add_action( 'wfacp_before_process_checkout_template_loader', [ $this, 'action' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'action' ) );
+			add_action( 'wfacp_before_process_checkout_template_loader', array( $this, 'action' ) );
 			/* internal css for plugin */
-			add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
+			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
 
 			/* prevent third party fields and wrapper*/
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
 		}
 
 		public function add_field( $fields ) {
-			$fields['wfacp_yth_wc_delivery_date'] = [
+			$fields['wfacp_yth_wc_delivery_date'] = array(
 				'type'       => 'wfacp_html',
-				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_yth_wc_delivery_date' ],
+				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_yth_wc_delivery_date' ),
 				'id'         => 'wfacp_yth_wc_delivery_date',
 				'field_type' => 'wfacp_yth_wc_delivery_date',
 				'label'      => __( 'YITH Delivery Date', 'woofunnels-aero-checkout' ),
-			];
+			);
 
 			return $fields;
 		}
@@ -50,14 +54,11 @@ if ( ! class_exists( 'WFACP_Yth_WC_Delivery_Date_Premium' ) ) {
 				return '';
 			}
 
-
 			?>
-            <div id="wfacp_yth_wc_delivery_date_wrap">
+			<div id="wfacp_yth_wc_delivery_date_wrap">
 				<?php echo $this->instance->print_delivery_from(); ?>
-            </div>
+			</div>
 			<?php
-
-
 		}
 
 		public function is_enable() {
@@ -75,17 +76,17 @@ if ( ! class_exists( 'WFACP_Yth_WC_Delivery_Date_Premium' ) ) {
 				return;
 			}
 
-			$bodyClass = "body ";
+			$bodyClass = 'body ';
 			if ( 'pre_built' !== $instance->get_template_type() ) {
 
-				$bodyClass = "body #wfacp-e-form ";
+				$bodyClass = 'body #wfacp-e-form ';
 			}
-			$px = $instance->get_template_type_px() . "px";
+			$px = $instance->get_template_type_px() . 'px';
 
-			$cssHtml = "<style>";
-			$cssHtml .= $bodyClass . "#wfacp_yth_wc_delivery_date_wrap input {padding: 12px 10px;color: #404040;}";
+			$cssHtml  = '<style>';
+			$cssHtml .= $bodyClass . '#wfacp_yth_wc_delivery_date_wrap input {padding: 12px 10px;color: #404040;}';
 			$cssHtml .= $bodyClass . "#wfacp_yth_wc_delivery_date_wrap {padding-left:$px;padding-right:$px;}";
-			$cssHtml .= "</style>";
+			$cssHtml .= '</style>';
 			echo $cssHtml;
 		}
 	}

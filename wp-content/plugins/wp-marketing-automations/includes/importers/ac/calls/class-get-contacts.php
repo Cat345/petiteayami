@@ -2,6 +2,7 @@
 
 namespace BWFAN\Importers\AC\Calls;
 
+#[\AllowDynamicProperties]
 class Get_Contacts extends Call {
 	/**
 	 * Returns the endpoint URL for making a request to retrieve contacts.

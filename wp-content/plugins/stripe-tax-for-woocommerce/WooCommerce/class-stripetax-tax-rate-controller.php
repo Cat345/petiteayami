@@ -127,8 +127,12 @@ abstract class StripeTax_Tax_Rate_Controller {
 			);
 		}
 
-		if ( $tax_breakdown_line->tax_rate_details ) {
-			$properties['rate'] = (float) $tax_breakdown_line->tax_rate_details->percentage_decimal;
+		$tax_rate_details = $tax_breakdown_line->tax_rate_details;
+
+		if ( $tax_rate_details ) {
+			$properties['rate'] = (float) $tax_rate_details->percentage_decimal;
+			$properties['name'] = $tax_breakdown_line->jurisdiction->display_name
+				. ( $tax_rate_details->display_name ? ' ' . $tax_rate_details->display_name : '' );
 		} else {
 			$properties['rate'] = 0;
 		}

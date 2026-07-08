@@ -23,6 +23,7 @@ if ( ! class_exists( 'WFOCUKirki' ) ) {
 	 * You can also access all available configurations, fields, panels and sections
 	 * by accessing the object's static properties.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki extends WFOCUKirki_Init {
 
 		/**
@@ -141,7 +142,7 @@ if ( ! class_exists( 'WFOCUKirki' ) ) {
 		 * @access public
 		 *
 		 * @param string $config_id The configuration ID.
-		 * @param array $args The configuration options.
+		 * @param array  $args The configuration options.
 		 */
 		public static function add_config( $config_id, $args = array() ) {
 
@@ -157,7 +158,7 @@ if ( ! class_exists( 'WFOCUKirki' ) ) {
 		 * @access public
 		 *
 		 * @param string $id The ID for this panel.
-		 * @param array $args The panel arguments.
+		 * @param array  $args The panel arguments.
 		 */
 		public static function add_panel( $id = '', $args = array() ) {
 
@@ -193,7 +194,7 @@ if ( ! class_exists( 'WFOCUKirki' ) ) {
 		 * @access public
 		 *
 		 * @param string $id The ID for this section.
-		 * @param array $args The section arguments.
+		 * @param array  $args The section arguments.
 		 */
 		public static function add_section( $id, $args ) {
 
@@ -230,7 +231,7 @@ if ( ! class_exists( 'WFOCUKirki' ) ) {
 		 * @access public
 		 *
 		 * @param string $config_id The configuration ID for this field.
-		 * @param array $args The field arguments.
+		 * @param array  $args The field arguments.
 		 */
 		public static function add_field( $config_id, $args ) {
 
@@ -265,7 +266,6 @@ if ( ! class_exists( 'WFOCUKirki' ) ) {
 			}
 
 			new WFOCUKirki_Field( $config_id, $args );
-
 		}
 
 		/**

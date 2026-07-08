@@ -3,7 +3,6 @@
 namespace YOOtheme\Theme\Wordpress\Listener;
 
 use YOOtheme\Config;
-use YOOtheme\Path;
 use YOOtheme\Url;
 
 class AddAdminMenuButton
@@ -22,7 +21,10 @@ class AddAdminMenuButton
      */
     public function handle(): void
     {
-        $menu_slug = Path::relative(get_admin_url(), Url::route('customizer'));
+        $menu_slug = Url::relative(
+            wp_make_link_relative(Url::route('customizer')),
+            wp_make_link_relative(get_admin_url()),
+        );
 
         add_menu_page(
             '',

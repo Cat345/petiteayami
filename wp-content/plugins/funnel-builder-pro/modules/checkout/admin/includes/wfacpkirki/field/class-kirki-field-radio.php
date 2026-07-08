@@ -12,7 +12,12 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Radio' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Field_Radio extends WFACPKirki_Field {
 
 		/**
@@ -38,7 +43,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Radio' ) ) {
 				_doing_it_wrong( __METHOD__, sprintf( esc_attr__( 'Error in field %1$s. The "mode" argument has been deprecated since WFACPKirki v0.8. Use the "radio-%2$s" type instead.', 'wfacpkirki' ), esc_attr( $this->settings ), esc_attr( $this->mode ) ), '3.0.10' );
 				$this->type = 'radio-' . $this->mode;
 			}
-
 		}
 
 		/**
@@ -54,7 +58,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Radio' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'esc_attr';
-
 		}
 	}
 }

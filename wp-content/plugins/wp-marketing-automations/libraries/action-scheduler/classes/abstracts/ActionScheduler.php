@@ -360,14 +360,14 @@ abstract class ActionScheduler {
 	 * Clone.
 	 */
 	final public function __clone() {
-		trigger_error( 'Singleton. No cloning allowed!', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+		throw new \Exception( 'Singleton. No cloning allowed!' );
 	}
 
 	/**
 	 * Wakeup.
 	 */
 	final public function __wakeup() {
-		trigger_error( 'Singleton. No serialization allowed!', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+		throw new \Exception( 'Singleton. No serialization allowed!' );
 	}
 
 	/**

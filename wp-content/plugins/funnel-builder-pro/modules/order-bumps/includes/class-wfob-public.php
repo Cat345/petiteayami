@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * WFOB_Public class
  */
+#[\AllowDynamicProperties]
 class WFOB_Public {
 
 	private static $ins       = null;

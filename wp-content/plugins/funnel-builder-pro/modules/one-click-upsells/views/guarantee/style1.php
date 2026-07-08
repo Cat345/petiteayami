@@ -48,8 +48,8 @@ if ( true === $guarantee_override_global ) {
             <div class="wfocu-col-md-12">
 				<?php if ( ! empty( $sec_heading ) || ! empty( $sec_sub_heading ) ) { ?>
                     <div class="wfocu-section-headings">
-						<?php echo $sec_heading ? '<div class="wfocu-heading">' . $sec_heading . '</div>' : ''; ?>
-						<?php echo $sec_sub_heading ? '<div class="wfocu-sub-heading wfocu-max-845">' . $sec_sub_heading . '</div>' : ''; ?>
+						<?php echo $sec_heading ? '<div class="wfocu-heading">' . wp_kses_post( $sec_heading ) . '</div>' : ''; ?>
+						<?php echo $sec_sub_heading ? '<div class="wfocu-sub-heading wfocu-max-845">' . wp_kses_post( $sec_sub_heading ) . '</div>' : ''; ?>
                     </div>
 				<?php } ?>
             </div>
@@ -69,16 +69,16 @@ if ( true === $guarantee_override_global ) {
 						?>
                         <div class="wfocu-col-md-6 wfocu-col-sm-6 wfocu-col-xs-12 wfocu-guarantee-box-col">
                             <!--  Add Class "wfocu-block-no-img" with "wfocu-guarantee-box" to disable image. -->
-                            <div class="wfocu-guarantee-box wfocu-clearfix <?php echo $disp_img_class; ?>">
+                            <div class="wfocu-guarantee-box wfocu-clearfix <?php echo esc_attr( $disp_img_class ); ?>">
                                 <div class="wfocu-guarantee-img">
                                     <div class="wfocu-img-cover">
-                                        <img class="skip-lazy" src="<?php echo $gbox_img_path; ?>" alt="" title=""/>
+                                        <img class="skip-lazy" src="<?php echo esc_url( $gbox_img_path ); ?>" alt="" title=""/>
                                     </div>
                                 </div>
                                 <div class="wfocu-guarantee-content">
 									<?php
-									echo $gbox_heading ? ' <div class="wfocu-block-heading">' . $gbox_heading . '</div>' : '';
-									echo $gbox_text ? ' <div class="wfocu-block-text">' . apply_filters( 'wfocu_the_content', $gbox_text ) . '</div>' : '';
+									echo $gbox_heading ? ' <div class="wfocu-block-heading">' . wp_kses_post( $gbox_heading ) . '</div>' : '';
+									echo $gbox_text ? ' <div class="wfocu-block-text">' . apply_filters( 'wfocu_the_content', $gbox_text ) . '</div>' : ''; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- filtered through wfocu_the_content
 									?>
                                 </div>
                             </div>
@@ -99,7 +99,7 @@ if ( true === $guarantee_override_global ) {
 		<?php if ( $additional_text !== '' ) { ?>
             <div class="wfocu-row">
                 <div class="wfocu-col-md-12">
-                    <div class="wfocu-content-area <?php echo $additional_text_align; ?> wfocu-max-1024">
+                    <div class="wfocu-content-area <?php echo esc_attr( $additional_text_align ); ?> wfocu-max-1024">
 						<?php echo apply_filters( 'wfocu_the_content', $additional_text ); ?>
                     </div>
                 </div>

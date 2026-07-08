@@ -38,6 +38,7 @@ foreach ( $traits as $trait_file ) {
 	}
 }
 
+#[\AllowDynamicProperties]
 class OfferPrice extends BaseModule {
 	use RenderCallbackTrait;
 	use ModuleClassnamesTrait;

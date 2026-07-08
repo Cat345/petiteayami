@@ -6,10 +6,10 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Thrive' ) ) {
 	/**
 	 * Class WFOCU_Compatibility_With_Thrive
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Thrive {
 
 		public function __construct() {
-
 
 			add_filter( 'wfocu_should_render_script_jquery', array( $this, 'should_prevent_jq_on_editor' ), 10 );
 			add_action( 'template_redirect', array( $this, 'prevent_changing_template' ), 1000 );
@@ -42,8 +42,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Thrive' ) ) {
 
 			}
 		}
-
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_Thrive(), 'thrive' );

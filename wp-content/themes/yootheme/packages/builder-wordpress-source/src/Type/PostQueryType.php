@@ -13,10 +13,9 @@ use YOOtheme\Str;
 class PostQueryType
 {
     /**
-     *
      * @return ObjectConfig
      */
-    public static function config(Source $source, WP_Post_Type $type)
+    public static function config(Source $source, WP_Post_Type $type): array
     {
         $name = Str::camelCase([SourceHelper::getBase($type), 'Query'], true);
         $field = Str::camelCase(SourceHelper::getBase($type));

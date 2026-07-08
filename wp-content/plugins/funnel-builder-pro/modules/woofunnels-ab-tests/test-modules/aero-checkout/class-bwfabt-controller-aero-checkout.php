@@ -93,7 +93,7 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 				}
 				$pages[] = array(
 					'id'   => $id,
-					'name' => html_entity_decode( get_the_title( $id ) ),
+					'name' => html_entity_decode( get_the_title( $id ), ENT_QUOTES | ENT_HTML401 ),
 				);
 			}
 
@@ -194,7 +194,7 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 				}
 
 				global $wpdb;
-				$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id=%d", $checkout_page_id ) );
+				$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id=%d", absint( $checkout_page_id ) ) );
 				if ( ! empty( $post_meta_all ) ) {
 					$sql_query_selects = array();
 
@@ -354,7 +354,7 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 				'_wfacp_version',
 			);
 
-			$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id=%d", $winner_variant_id ) );
+			$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id=%d", absint( $winner_variant_id ) ) );
 			$post_content  = get_post_field( 'post_content', $winner_variant_id );
 			wp_update_post(
 				wp_slash(
@@ -387,17 +387,30 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 						$is_oxy = true;
 					}
 
-					$meta_key   = esc_sql( $meta_key );
-					$meta_value = esc_sql( $meta_info->meta_value );
+					$meta_value = $meta_info->meta_value;
 
 					if ( ! isset( $control_metas[ $meta_key ] ) ) {
-						$sql_query_meta_val = "($control_id, '$meta_key', '$meta_value')";
-						$sql_query_meta     = $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta );//phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared
+						$wpdb->insert(
+							$wpdb->postmeta,
+							array(
+								'post_id'    => $control_id,
+								'meta_key'   => $meta_key,
+								'meta_value' => $meta_value,
+							),
+							array( '%d', '%s', '%s' )
+						);
 					} else {
-						$sql_query_meta = $wpdb->prepare( "UPDATE %1s SET `meta_value` = '" . $meta_value . "' WHERE `post_id` = " . $control_id . " AND `meta_key` = '" . $meta_key . "'", $wpdb->postmeta );//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
+						$wpdb->update(
+							$wpdb->postmeta,
+							array( 'meta_value' => $meta_value ),
+							array(
+								'post_id'  => $control_id,
+								'meta_key' => $meta_key,
+							),
+							array( '%s' ),
+							array( '%d', '%s' )
+						);
 					}
-
-					$wpdb->query( $sql_query_meta ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				}
 				update_post_meta( $winner_variant_id, '_bwf_ab_variation_of', $control_id );
 				update_option( 'wfacp_c_' . $control_id, get_option( 'wfacp_c_' . $winner_variant_id, array() ) );
@@ -757,7 +770,7 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 				$params         = ", 0 as 'revenue', 0 as 'converted' ";
 			}
 
-			$step_ids = esc_sql( implode( ',', $ids ) );
+			$step_ids = implode( ',', array_map( 'absint', $ids ) );
 
 			$get_all_dates = BWFABT_Core()->get_dataStore()->get_experiment_time_chunk( $experiment_id );
 

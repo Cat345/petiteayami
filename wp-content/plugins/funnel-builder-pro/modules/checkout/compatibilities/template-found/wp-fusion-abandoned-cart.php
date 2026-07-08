@@ -1,9 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'WFACP_WP_Fusion_abandoned_cart' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_WP_Fusion_abandoned_cart {
 		public function __construct() {
-			add_action( 'wfacp_before_form', [ $this, 'remove_actions' ] );
+			add_action( 'wfacp_before_form', array( $this, 'remove_actions' ) );
 		}
 
 		public function remove_actions() {

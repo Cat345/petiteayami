@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Adds styles to the customizer.
  */
 if ( ! class_exists( 'WFACPKirki_Modules_Field_Dependencies' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Modules_Field_Dependencies {
 
 		/**
@@ -68,11 +69,17 @@ if ( ! class_exists( 'WFACPKirki_Modules_Field_Dependencies' ) ) {
 		 */
 		public function field_dependencies() {
 
-			wp_enqueue_script( 'wfacpkirki_field_dependencies', trailingslashit( WFACPKirki::$url ) . 'modules/field-dependencies/field-dependencies.js', array(
-				'jquery',
-				'customize-base',
-				'customize-controls'
-			), WFACP_VERSION, true );
+			wp_enqueue_script(
+				'wfacpkirki_field_dependencies',
+				trailingslashit( WFACPKirki::$url ) . 'modules/field-dependencies/field-dependencies.js',
+				array(
+					'jquery',
+					'customize-base',
+					'customize-controls',
+				),
+				WFACP_VERSION,
+				true
+			);
 		}
 	}
 }

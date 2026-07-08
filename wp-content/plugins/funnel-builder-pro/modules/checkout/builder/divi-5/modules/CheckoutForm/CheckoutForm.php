@@ -25,14 +25,14 @@ require_once plugin_dir_path( __FILE__ ) . '../BaseModule.php';
 // Load trait files - using consistent pattern for all modules
 // IMPORTANT: Load CustomCssTrait before ModuleStylesTrait since ModuleStylesTrait depends on it
 $trait_dir = __DIR__ . '/CheckoutFormTrait/';
-$traits = [
+$traits    = array(
 	'CustomCssTrait.php',        // Must be loaded first (dependency for ModuleStylesTrait)
 	'RenderCallbackTrait.php',
 	'RestApiTrait.php',          // REST API for Visual Builder rendering
 	'ModuleClassnamesTrait.php',
 	'ModuleStylesTrait.php',     // Depends on CustomCssTrait
 	'ModuleScriptDataTrait.php',
-];
+);
 
 foreach ( $traits as $trait_file ) {
 	$trait_path = $trait_dir . $trait_file;
@@ -49,6 +49,7 @@ foreach ( $traits as $trait_file ) {
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class CheckoutForm extends BaseModule {
 	use RenderCallbackTrait;
 	use RestApiTrait;

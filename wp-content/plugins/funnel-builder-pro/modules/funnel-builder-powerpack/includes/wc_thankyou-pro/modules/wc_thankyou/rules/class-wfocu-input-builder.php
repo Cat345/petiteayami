@@ -3,6 +3,7 @@ if ( ! class_exists( 'wfty_Input_Builder' ) ) {
 	/**
 	 * Helper class to render input field types.
 	 */
+	#[\AllowDynamicProperties]
 	class wfty_Input_Builder {
 
 		/**
@@ -49,6 +50,5 @@ if ( ! class_exists( 'wfty_Input_Builder' ) ) {
 
 			return $field_args;
 		}
-
 	}
 }

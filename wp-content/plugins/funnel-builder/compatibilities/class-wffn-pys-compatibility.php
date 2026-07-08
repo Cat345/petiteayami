@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'WFFN_PYS_Compatibility' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_PYS_Compatibility {
 		public function __construct() {
 
@@ -14,6 +15,7 @@ if ( ! class_exists( 'WFFN_PYS_Compatibility' ) ) {
 
 		/**
 		 * Unhook PYS override datalayer script
+		 *
 		 * @return void
 		 */
 		public function maybe_unhook() {
@@ -26,13 +28,17 @@ if ( ! class_exists( 'WFFN_PYS_Compatibility' ) ) {
 			}
 
 			global $post;
-			if ( is_null( $post ) || empty( $post->post_type ) || ! in_array( $post->post_type, array(
+			if ( is_null( $post ) || empty( $post->post_type ) || ! in_array(
+				$post->post_type,
+				array(
 					'wffn_landing',
 					'wffn_ty',
 					'wffn_optin',
 					'wffn_oty',
 
-				), true ) ) {
+				),
+				true
+			) ) {
 				return;
 			}
 
@@ -59,7 +65,6 @@ if ( ! class_exists( 'WFFN_PYS_Compatibility' ) ) {
 
 			WFFN_Common::remove_actions( 'wp_head', 'PixelYourSite\GATags', 'start_output_buffer' );
 			WFFN_Common::remove_actions( 'template_redirect', 'PixelYourSite\GATags', 'start_output_buffer' );
-
 		}
 	}
 

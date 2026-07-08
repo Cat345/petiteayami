@@ -195,17 +195,17 @@ if ( ! class_exists( 'WFOP_Optin_Form' ) ) {
 		$post_id = 0;
 		if ( wp_doing_ajax() ) {
 
-			if ( isset( $_REQUEST['action'] ) && "heartbeat" === $_REQUEST['action'] && isset( $_REQUEST['data'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				if ( isset( $_REQUEST['data']['et'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_REQUEST['action'] ) && "heartbeat" === $_REQUEST['action'] && isset( $_REQUEST['data'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- read-only post_id lookup; AJAX entry render_ajax() enforces nonce + capability
+				if ( isset( $_REQUEST['data']['et'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- read-only post_id lookup; AJAX entry render_ajax() enforces nonce + capability
 					$post_id = $_REQUEST['data']['et']['post_id']; //phpcs:ignore
 				}
 			}
 
-			if ( isset( $_REQUEST['post_id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$post_id = absint( $_REQUEST['post_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_REQUEST['post_id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- read-only post_id lookup; AJAX entry render_ajax() enforces nonce + capability
+				$post_id = absint( $_REQUEST['post_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- read-only post_id lookup; AJAX entry render_ajax() enforces nonce + capability
 			}
-			if ( isset( $_REQUEST['et_post_id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$post_id = absint( $_REQUEST['et_post_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_REQUEST['et_post_id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- read-only post_id lookup; AJAX entry render_ajax() enforces nonce + capability
+				$post_id = absint( $_REQUEST['et_post_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- read-only post_id lookup; AJAX entry render_ajax() enforces nonce + capability
 			}
 
 			if ( $post_id > 0 ) {
@@ -231,6 +231,10 @@ if ( ! class_exists( 'WFOP_Optin_Form' ) ) {
 		$wrapper_class = 'divi-form-fields-wrapper';
 		$show_labels   = ( isset( $settings['show_labels'] ) && 'off' === $settings['show_labels'] ) ? false : true;
 		$input_size    = isset( $settings['input_size'] ) ? $settings['input_size'] : '12px';
+		// Confine to the known field-size allowlist to prevent CSS/HTML injection via $_REQUEST.
+		if ( ! array_key_exists( $input_size, self::get_input_fields_sizes() ) ) {
+			$input_size = '12px';
+		}
 
 		$wrapper_class .= $show_labels ? '' : ' wfop_hide_label';
 

@@ -2,6 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_WooFunnels_Support {
 
 		public static $_instance = null;

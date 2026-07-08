@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 if ( ! class_exists( 'WFOB_Compatibility_With_Yith_Currency_Exchange' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_Yith_Currency_Exchange {
 
 		public function __construct() {

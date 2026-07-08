@@ -6,10 +6,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details' ) ) {
+	#[\AllowDynamicProperties]
 	class Customer_Details extends \Bricks\Element {
 		public $category = 'funnelkit';
-		public $name = 'wfty-customer-detail';
-		public $icon = 'wfty-icon-offer_title';
+		public $name     = 'wfty-customer-detail';
+		public $icon     = 'wfty-icon-offer_title';
 
 		/**
 		 * Retrieves the label for the "Customer Details" element.
@@ -91,12 +92,12 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 
 			// Control for enabling extra content
 			$this->controls['enableExtraContent'] = array(
-				'group'   => 'contentCustomerDetails',
-				'label'   => esc_html__( 'Show Extra Thankyou Content' ),
+				'group'       => 'contentCustomerDetails',
+				'label'       => esc_html__( 'Show Extra Thankyou Content' ),
 				'description' => esc_html__( 'When enabled, this will display additional content/hooks from WooCommerce on the thank you page. Useful for compatibility with payment gateways and plugins.' ),
-				'type'    => 'checkbox',
-				'default' => false,
-				'rerender' => true,
+				'type'        => 'checkbox',
+				'default'     => false,
+				'rerender'    => true,
 			);
 
 			$this->controls['typographySectionHeading'] = array(
@@ -194,10 +195,10 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 		 * Renders the customer details element.
 		 */
 		public function render() {
-			$settings       = $this->settings;
-			$heading_text   = $settings['customerDetailsHeading'];
-			$layout_setting = $settings['customerLayout'];
-			$enable_extra_content = !empty($settings['enableExtraContent']) ? 'yes' : 'no';
+			$settings             = $this->settings;
+			$heading_text         = $settings['customerDetailsHeading'];
+			$layout_setting       = $settings['customerLayout'];
+			$enable_extra_content = ! empty( $settings['enableExtraContent'] ) ? 'yes' : 'no';
 
 			if ( $layout_setting === '50' ) {
 				$layout_setting = '2c';
@@ -206,13 +207,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 			$this->set_attribute( 'wrapper', 'class', 'bricks-customer-details-wrapper' );
 
 			?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 					<?php
 					echo do_shortcode( '[wfty_customer_details layout_settings ="' . $layout_setting . '" customer_details_heading="' . $heading_text . '" enable_extra_content="' . $enable_extra_content . '"]' );
 					?>
-                </div>
-            </div>
+				</div>
+			</div>
 			<?php
 		}
 	}

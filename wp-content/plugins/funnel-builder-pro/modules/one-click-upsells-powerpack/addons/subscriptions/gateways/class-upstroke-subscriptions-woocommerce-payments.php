@@ -1,8 +1,10 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 /**
  * Author PhpStorm.
  */
 if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_Payments' ) ) {
+	#[\AllowDynamicProperties]
 	class UpStroke_Subscriptions_WooCommerce_Payments extends WFOCU_Gateway_Integration_WooCommerce_Payments {
 
 		public function __construct() {
@@ -16,7 +18,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_Payments' ) ) {
 		 *
 		 * @param WC_Subscription $subscription
 		 * @param $key
-		 * @param WC_Order $order
+		 * @param WC_Order        $order
 		 */
 		public function save_to_subscription( $subscription, $key, $order ) {
 
@@ -31,9 +33,8 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_Payments' ) ) {
 			$customer_id    = $order->get_meta( '_stripe_customer_id', true );
 			$user           = $order->get_user();
 
-
-			$global = WC_Payments::is_network_saved_cards_enabled();
-			$gateway = WC_Payments::get_gateway();
+			$global       = WC_Payments::is_network_saved_cards_enabled();
+			$gateway      = WC_Payments::get_gateway();
 			$is_test_mode = method_exists( $gateway, 'is_in_test_mode' ) ? $gateway->is_in_test_mode() : WC_Payments::mode()->is_test();
 
 			$get_id = $is_test_mode ? WC_Payments_Customer_Service::WCPAY_TEST_CUSTOMER_ID_OPTION : WC_Payments_Customer_Service::WCPAY_LIVE_CUSTOMER_ID_OPTION;
@@ -50,11 +51,9 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_Payments' ) ) {
 					}
 				}
 
-
 				$subscription->update_meta_data( '_stripe_customer_id', $customer_id );
 				$subscription->save_meta_data();
 			}
-
 		}
 
 
@@ -64,7 +63,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_Payments' ) ) {
 
 			return $meta_keys;
 		}
-
 	}
 
 	if ( class_exists( 'WC_Subscriptions' ) ) {

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 use WP_CLI\ExitException;
 use function WP_CLI\Utils\get_flag_value;

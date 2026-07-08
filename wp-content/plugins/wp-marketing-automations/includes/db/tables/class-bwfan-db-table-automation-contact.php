@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_DB_Table_Automation_Contact extends BWFAN_DB_Tables_Base {
 	public $table_name = 'bwfan_automation_contact';
 

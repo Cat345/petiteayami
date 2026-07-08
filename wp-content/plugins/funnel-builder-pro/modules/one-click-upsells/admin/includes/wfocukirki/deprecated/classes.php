@@ -3,6 +3,7 @@
 
 if ( ! class_exists( 'WFOCUKirki_Active_Callback' ) ) {
 	// Removed in https://github.com/aristath/kirki/pull/1682/files
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Active_Callback {
 		public static function evaluate() {
 			_deprecated_function( __METHOD__, '3.0.17', null );

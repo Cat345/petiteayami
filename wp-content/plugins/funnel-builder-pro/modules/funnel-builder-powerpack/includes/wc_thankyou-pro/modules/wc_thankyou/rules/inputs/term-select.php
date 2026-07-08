@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfty_Input_Term_Select' ) ) {
+	#[\AllowDynamicProperties]
 	class wfty_Input_Term_Select extends wfty_Input_Text {
 
 		public function __construct() {
@@ -11,7 +12,7 @@ if ( ! class_exists( 'wfty_Input_Term_Select' ) ) {
 				'allow_null'    => 0,
 				'choices'       => array(),
 				'default_value' => '',
-				'class'         => ''
+				'class'         => '',
 			);
 		}
 
@@ -22,7 +23,6 @@ if ( ! class_exists( 'wfty_Input_Term_Select' ) ) {
 				$field['id'] = sanitize_title( $field['id'] );
 			}
 
-
 			$args = array(
 				'name'             => $field['name'],
 				'id'               => $field['id'],
@@ -31,15 +31,10 @@ if ( ! class_exists( 'wfty_Input_Term_Select' ) ) {
 				'orderby'          => 'name',
 				'echo'             => 0,
 				'taxonomy'         => 'product_cat',
-				'selected'         => absint( $value )
+				'selected'         => absint( $value ),
 			);
 
-
 			echo wp_dropdown_categories( $args );
-
 		}
-
 	}
 }
-
-

@@ -8,7 +8,7 @@
     <link rel="profile" href="http://gmpg.org/xfn/11">
     <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>">
 	<?php wp_site_icon(); ?>
-    <title><?php echo $page_meta_title ? $page_meta_title : bloginfo( 'name' ) ?></title>
+    <title><?php echo $page_meta_title ? esc_html( $page_meta_title ) : bloginfo( 'name' ); ?></title>
 	<?php
 	WFOCU_Core()->assets->print_styles( true );
 	WFOCU_Core()->assets->print_scripts( true );

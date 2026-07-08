@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -29,130 +33,130 @@ if ( ! $show_smart_button_shimmer ) {
 ?>
 <style>
 
-    @media (min-width: 768px) {
-        #wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="1"] .wfacp_smart_button_container {
-            width: 100%;
-            float: none;
-        }
+	@media (min-width: 768px) {
+		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="1"] .wfacp_smart_button_container {
+			width: 100%;
+			float: none;
+		}
 
-        #wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="2"] .wfacp_smart_button_container {
-            width: 50%;
-        }
+		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="2"] .wfacp_smart_button_container {
+			width: 50%;
+		}
 
 
-        #wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="3"] .wfacp_smart_button_container {
-            width: 33.33%;
+		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="3"] .wfacp_smart_button_container {
+			width: 33.33%;
 
-        }
+		}
 
-        #wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="4"] .wfacp_smart_button_container {
-            width: 25%;
+		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="4"] .wfacp_smart_button_container {
+			width: 25%;
 
-        }
+		}
 
-        #wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="4"] .wfacp_smart_button_container:nth-child(2) {
-            padding-left: 0;
-        }
+		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="4"] .wfacp_smart_button_container:nth-child(2) {
+			padding-left: 0;
+		}
 
-        #wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="3"] .wfacp_smart_button_container:nth-child(2) {
-            padding-left: 0;
-        }
+		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="3"] .wfacp_smart_button_container:nth-child(2) {
+			padding-left: 0;
+		}
 
-        #wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="1"] #pay_with_amazon {
-            background-size: 20%;
-            margin: 0 auto;
+		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="1"] #pay_with_amazon {
+			background-size: 20%;
+			margin: 0 auto;
 
-        }
+		}
 
-        #wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="2"] #pay_with_amazon {
-            background-size: 30%;
-        }
+		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="2"] #pay_with_amazon {
+			background-size: 30%;
+		}
 
-        #wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="3"] #pay_with_amazon {
-            background-size: 45%;
-        }
+		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="3"] #pay_with_amazon {
+			background-size: 45%;
+		}
 
-        #wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="4"] #pay_with_amazon {
-            background-size: 50%;
-        }
+		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="4"] #pay_with_amazon {
+			background-size: 50%;
+		}
 
-        #wfacp_smart_buttons .wfacp_smart_button_wrap_st {
-            margin: 0 -10px !important;
-        }
+		#wfacp_smart_buttons .wfacp_smart_button_wrap_st {
+			margin: 0 -10px !important;
+		}
 
-        #wfacp_smart_buttons.wfacp_smart_buttons .wc-amazon-checkout-message.wc-amazon-payments-advanced-populated {
-            display: block;
-        }
+		#wfacp_smart_buttons.wfacp_smart_buttons .wc-amazon-checkout-message.wc-amazon-payments-advanced-populated {
+			display: block;
+		}
 
-        #wfacp_smart_buttons.wfacp_smart_buttons div#pay_with_amazon,
-        #wfacp_smart_buttons #wfacp_smart_button_stripe_gpay_apay div#wc-stripe-payment-request-wrapper,
-        #wfacp_smart_buttons #wfacp_smart_button_stripe_gpay_apay div#wc-stripe-payment-request-wrapper,
-        #wfacp_smart_buttons .wfacp_smart_button_wrap_st div#paypal_box_button > div {
-            width: 100%;
-        }
+		#wfacp_smart_buttons.wfacp_smart_buttons div#pay_with_amazon,
+		#wfacp_smart_buttons #wfacp_smart_button_stripe_gpay_apay div#wc-stripe-payment-request-wrapper,
+		#wfacp_smart_buttons #wfacp_smart_button_stripe_gpay_apay div#wc-stripe-payment-request-wrapper,
+		#wfacp_smart_buttons .wfacp_smart_button_wrap_st div#paypal_box_button > div {
+			width: 100%;
+		}
 
-        .wfacp_smart_button_wrap_st div#paypal_box_button > div {
-            max-width: 100%;
-        }
+		.wfacp_smart_button_wrap_st div#paypal_box_button > div {
+			max-width: 100%;
+		}
 
-        #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container {
-            display: block;
-            margin: 0 !important;
-            padding: 0 10px;
-            float: left;
-        }
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container {
+			display: block;
+			margin: 0 !important;
+			padding: 0 10px;
+			float: left;
+		}
 
-        #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container iframe {
-            max-height: 42px !important;
-            height: 100% !important;
-        }
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container iframe {
+			max-height: 42px !important;
+			height: 100% !important;
+		}
 
-        #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container:after,
-        #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container:before {
-            content: '';
-            display: block;
-        }
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container:after,
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container:before {
+			content: '';
+			display: block;
+		}
 
-        #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container:after {
-            clear: both;
-        }
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container:after {
+			clear: both;
+		}
 
-        #wfacp_smart_buttons .wfacp_smart_button_wrap_st div#paypal_box_button .paypal-buttons {
-            min-width: 1px;
-            height: 42px !important;
-            display: block !important;
-        }
+		#wfacp_smart_buttons .wfacp_smart_button_wrap_st div#paypal_box_button .paypal-buttons {
+			min-width: 1px;
+			height: 42px !important;
+			display: block !important;
+		}
 
-        #wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="2"] .wfacp_smart_button_container .angelleye_ppcp-button-container.angelleye_ppcp_horizontal_medium {
-            width: 100%;
-        }
+		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="2"] .wfacp_smart_button_container .angelleye_ppcp-button-container.angelleye_ppcp_horizontal_medium {
+			width: 100%;
+		}
 
-        #wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="2"] .wfacp_smart_button_container .angelleye_ppcp-button-container.angelleye_ppcp_horizontal_medium .paypal-buttons.paypal-buttons-context-iframe {
-            height: 40px;
-            margin-top: 8px;
-        }
+		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="2"] .wfacp_smart_button_container .angelleye_ppcp-button-container.angelleye_ppcp_horizontal_medium .paypal-buttons.paypal-buttons-context-iframe {
+			height: 40px;
+			margin-top: 8px;
+		}
 		span.wfacp_single_btn_shimmer {
-    display: none;
-    position: absolute;
-    background: #ececec;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000000;
+	display: none;
+	position: absolute;
+	background: #ececec;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000000;
 }
-    }
+	}
 
 </style>
-<div class="wfacp_smart_buttons wfacp-dynamic-checkout-loading" id="wfacp_smart_buttons" style="<?php echo $show_smart_wrapper_visibility ?>">
-    <div class="wfacp_smart_button_outer_buttons" count="<?php echo $button_count ?>">
-        <div class="wfacp_smart_button_inner wfacp_smart_buttons_placeholder">
-            <fieldset>
-                <legend><?php echo $legend_title ?></legend>
-                <div class="wfacp_smart_button_wrap_st wfacp_clearfix">
-                    <div class="dynamic-checkout__skeleton">
-                        <div class="placeholder-line placeholder-line--animated"></div>
-                    </div>
+<div class="wfacp_smart_buttons wfacp-dynamic-checkout-loading" id="wfacp_smart_buttons" style="<?php echo esc_attr( $show_smart_wrapper_visibility ); ?>">
+	<div class="wfacp_smart_button_outer_buttons" count="<?php echo esc_attr( $button_count ); ?>">
+		<div class="wfacp_smart_button_inner wfacp_smart_buttons_placeholder">
+			<fieldset>
+				<legend><?php echo esc_html( $legend_title ); ?></legend>
+				<div class="wfacp_smart_button_wrap_st wfacp_clearfix">
+					<div class="dynamic-checkout__skeleton">
+						<div class="placeholder-line placeholder-line--animated"></div>
+					</div>
 					<?php
 					foreach ( $payment_buttons as $slug => $payment ) {
 
@@ -162,38 +166,37 @@ if ( ! $show_smart_button_shimmer ) {
 						}
 
 						?>
-                        <div class="wfacp_smart_button_container" id="wfacp_smart_button_<?php echo $slug; ?>" style="<?php echo $hide_button_container ?>">
-                            <div class="wfacp_button_container">
+						<div class="wfacp_smart_button_container" id="wfacp_smart_button_<?php echo esc_attr( $slug ); ?>" style="<?php echo esc_attr( $hide_button_container ); ?>">
+							<div class="wfacp_button_container">
 								<?php
 								if ( isset( $payment['iframe'] ) ) {
 									do_action( 'wfacp_smart_button_container_' . $slug, $payment, $slug );
 
-								} else {
-									if ( '' !== $payment['image'] ) {
-										?>
-                                        <div class="wfacp_smart_button_image_container">
-                                            <img src="<?php echo $payment['image'] ?>">
-                                        </div>
+								} elseif ( '' !== $payment['image'] ) {
+									?>
+										<div class="wfacp_smart_button_image_container">
+											<img src="<?php echo esc_url( $payment['image'] ); ?>">
+										</div>
 										<?php
-									}
+
 								}
 								?>
-                                <span class="wfacp_single_btn_shimmer"></span>
-                            </div>
-                        </div>
+								<span class="wfacp_single_btn_shimmer"></span>
+							</div>
+						</div>
 						<?php
 					}
 					?>
-                </div>
-            </fieldset>
-        </div>
+				</div>
+			</fieldset>
+		</div>
 		<?php
 		if ( '' !== $or_title ) {
 			?>
-            <div class="wfacp_smart_button_inner wfacp_smart_button_or_text_placeholder"><label><?php echo $or_title; ?></label></div>
+			<div class="wfacp_smart_button_inner wfacp_smart_button_or_text_placeholder"><label><?php echo $or_title; ?></label></div>
 			<?php
 		}
 		?>
-    </div>
+	</div>
 </div>
 

@@ -6,10 +6,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 if ( ! class_exists( 'WFOB_Compatibility_With_WC_Multicurrency_By_TIV' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_WC_Multicurrency_By_TIV {
 
 		public function __construct() {
-			add_filter( 'wfob_product_switcher_price_data', [ $this, 'wfob_product_switcher_price_data' ], 10, 2 );
+			add_filter( 'wfob_product_switcher_price_data', array( $this, 'wfob_product_switcher_price_data' ), 10, 2 );
 		}
 
 		public function is_enable() {

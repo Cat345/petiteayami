@@ -20,12 +20,9 @@ if ( ! class_exists( 'WFACP_Importer' ) ) {
 
 			WP_Filesystem();
 
-			// @todo: Warning! For Development Purpose Only. Delete it when going to Production level
-			// remove flag that prevent local WP sites (Same IP, Hosts) to download images from each other
-			add_filter( 'http_request_host_is_external', '__return_true' );
-			if ( isset( $_POST['wfacp-action'] ) && 'import' === $_POST['wfacp-action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Hooking admin action, verification in maybe_import
-				add_action( 'admin_init', array( $this, 'maybe_import' ) );
-			}
+			require_once WFFN_PLUGIN_DIR . '/includes/class-wffn-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			WFFN_Content_Validator::register_http_guard();
+			add_filter( 'http_request_host_is_external', array( $this, 'allow_known_hosts' ), 10, 2 );
 		}
 
 		/**
@@ -37,51 +34,6 @@ if ( ! class_exists( 'WFACP_Importer' ) ) {
 			}
 
 			return self::$ins;
-		}
-
-		/**
-		 * Import our exported file
-		 *
-		 * @since 1.1.4
-		 */
-		function maybe_import() {
-			if ( empty( $_POST['wfacp-action'] ) || 'import' != $_POST['wfacp-action'] ) {
-				return;
-			}
-			$nonce = filter_input( INPUT_POST, 'wfacp-action-nonce', FILTER_UNSAFE_RAW );
-			if ( ! wp_verify_nonce( $nonce, 'wfacp-action-nonce' ) ) {
-				return;
-			}
-
-			$user = WFACP_Core()->role->user_access( 'checkout', 'write' );
-			if ( false === $user ) {
-				return;
-			}
-			if ( ! isset( $_FILES['file']['name'] ) ) {
-				return;
-			}
-			$filename  = bwf_clean( $_FILES['file']['name'] );
-			$file_info = explode( '.', $filename );
-			$extension = end( $file_info );
-
-			if ( 'json' != $extension ) {
-				wp_die( esc_html__( 'Please upload a valid .json file', 'woofunnels-aero-checkout' ) );
-			}
-			if ( ! isset( $_FILES['file']['tmp_name'] ) ) {
-				return;
-			}
-			$file = bwf_clean( $_FILES['file']['tmp_name'] );
-
-			if ( empty( $file ) ) {
-				wp_die( esc_html__( 'Please upload a file to import', 'woofunnels-aero-checkout' ) );
-			}
-
-			// Retrieve the settings from the file and convert the JSON object to an array.
-			$acps = json_decode( file_get_contents( $file ), true );
-
-			$this->import_from_json_data( $acps );
-
-			$this->is_imported = true;
 		}
 
 		public function import_from_json_data( $acps ) {
@@ -209,7 +161,19 @@ if ( ! class_exists( 'WFACP_Importer' ) ) {
 			// Extract the file name and extension from the url.
 			$filename = basename( $url );
 
-			$file_content = wp_remote_retrieve_body( wp_safe_remote_get( $url ) );
+			require_once WFFN_PLUGIN_DIR . '/includes/class-wffn-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			WFFN_Content_Validator::begin_import();
+			$file_content = wp_remote_retrieve_body(
+				wp_safe_remote_get(
+					$url,
+					array(
+						'timeout'     => 60, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
+						'sslverify'   => true,
+						'redirection' => 0,
+					)
+				)
+			);
+			WFFN_Content_Validator::end_import();
 
 			if ( empty( $file_content ) ) {
 				return false;
@@ -274,10 +238,26 @@ if ( ! class_exists( 'WFACP_Importer' ) ) {
 			return sha1( $attachment_url );
 		}
 
+		public function allow_known_hosts( $allow, $host ) {
+			$allowed_hosts = apply_filters(
+				'wffn_allowed_image_hosts',
+				array(
+					'gettemplates.funnelkit.com',
+					'templates.funnelkit.com',
+				)
+			);
+
+			if ( in_array( $host, $allowed_hosts, true ) ) {
+				return true;
+			}
+
+			return $allow;
+		}
+
 		public function imported_successfully() {
 			?>
 		<div class="notice notice-success is-dismissible">
-			<p><?php esc_html_e( 'Imported Successfully!', 'woofunnels-order-acp' ); ?></p>
+			<p><?php esc_html_e( 'Imported Successfully!', 'woofunnels-order-acp' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></p>
 		</div>
 			<?php
 		}

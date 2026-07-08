@@ -30,9 +30,13 @@ use WC_Order_Item;
 class CalculateTax {
 	use StripeClientTrait;
 
-	const CACHE_GROUP = 'stripe-tax-for-woocommerce';
-	const CACHE_KEY   = 'calculate-tax';
-	const TABLE_NAME  = STRIPE_TAX_FOR_WOOCOMMERCE_DB_PREFIX . 'calculate_tax';
+	const CACHE_GROUP               = 'stripe-tax-for-woocommerce';
+	const CACHE_KEY                 = 'calculate-tax';
+	const TABLE_NAME                = STRIPE_TAX_FOR_WOOCOMMERCE_DB_PREFIX . 'calculate_tax';
+	const CLEANUP_RETENTION_SECONDS = 2 * HOUR_IN_SECONDS;
+	const CLEANUP_BATCH_SIZE        = 1500;
+	const CLEANUP_COOLDOWN_SECONDS  = 1 * MINUTE_IN_SECONDS;
+	const CLEANUP_TRANSIENT_KEY     = 'stripe_tax_calculate_tax_cleanup_lock';
 
 	/**
 	 * Stripe API key
@@ -867,7 +871,6 @@ class CalculateTax {
 							'amount'    => $tax_breakdown->amount,
 						);
 					} else {
-						$new_item_tax_rates[ $rate_key ]['rate']   += (float) $rate_percentage;
 						$new_item_tax_rates[ $rate_key ]['amount'] += $tax_breakdown->amount;
 					}
 				}
@@ -973,11 +976,7 @@ class CalculateTax {
 	 * @see https://stripe.com/docs/api/tax/transactions/create_from_calculation#tax_transaction_create-calculation
 	 */
 	public function delete() {
-		$items = wp_cache_get( self::CACHE_KEY, self::CACHE_GROUP );
-		if ( is_array( $items ) || array_key_exists( $this->md5_concat, $items ) ) {
-			unset( $items[ $this->md5_concat ] );
-			wp_cache_set( self::CACHE_KEY, $items, self::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
-		}
+		wp_cache_delete( self::CACHE_KEY . '_' . $this->md5_concat, self::CACHE_GROUP );
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 		$wpdb->query(
@@ -1004,20 +1003,19 @@ class CalculateTax {
 	 * @return mixed|null
 	 */
 	protected function get_from_object_cache() {
-		$items = wp_cache_get( self::CACHE_KEY, self::CACHE_GROUP );
+		$item = wp_cache_get( self::CACHE_KEY . '_' . $this->md5_concat, self::CACHE_GROUP );
 
-		if ( ! is_array( $items ) || ! array_key_exists( $this->md5_concat, $items ) ) {
+		if ( false === $item ) {
 			return null;
 		}
 
-		if ( $this->is_expired( $items[ $this->md5_concat ] ) ) {
-			unset( $items[ $this->md5_concat ] );
-			wp_cache_set( self::CACHE_KEY, $items, self::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
+		if ( $this->is_expired( $item ) ) {
+			wp_cache_delete( self::CACHE_KEY . '_' . $this->md5_concat, self::CACHE_GROUP );
 
 			return null;
 		}
 
-		return $items[ $this->md5_concat ];
+		return $item;
 	}
 
 	/**
@@ -1028,15 +1026,7 @@ class CalculateTax {
 	 * @return void
 	 */
 	protected function set_to_object_cache( $response ) {
-		$cache = wp_cache_get( self::CACHE_KEY, self::CACHE_GROUP );
-
-		if ( ! is_array( $cache ) ) {
-			$cache = array();
-		}
-
-		$cache[ $this->md5_concat ] = $response;
-
-		wp_cache_set( self::CACHE_KEY, $cache, self::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
+		wp_cache_set( self::CACHE_KEY . '_' . $this->md5_concat, $response, self::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
 	}
 
 	/**
@@ -1118,6 +1108,52 @@ class CalculateTax {
 				)
 			)
 		);
+
+		static::maybe_cleanup_old_rows();
+	}
+
+	/**
+	 * Deletes old calculate_tax rows in bounded batches.
+	 *
+	 * @param int $keep_seconds Retention period in seconds. Default: 2 hours.
+	 * @param int $batch_size Batch size per delete query. Default: 1000 rows.
+	 *
+	 * @return int Number of rows deleted.
+	 */
+	public static function cleanup_old_rows_batch( int $keep_seconds = self::CLEANUP_RETENTION_SECONDS, int $batch_size = self::CLEANUP_BATCH_SIZE ): int {
+		global $wpdb;
+
+		$cutoff = time() - $keep_seconds;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$deleted = $wpdb->query(
+			$wpdb->prepare(
+				'DELETE FROM %i WHERE %i < %d LIMIT %d',
+				array(
+					self::TABLE_NAME,
+					'time',
+					$cutoff,
+					$batch_size,
+				)
+			)
+		);
+
+		return is_int( $deleted ) ? $deleted : 0;
+	}
+
+	/**
+	 * Runs throttled cleanup of old calculate_tax rows.
+	 * Uses a transient to prevent running more than once per minute.
+	 *
+	 * @return void
+	 */
+	protected static function maybe_cleanup_old_rows(): void {
+		if ( get_transient( self::CLEANUP_TRANSIENT_KEY ) ) {
+			return;
+		}
+
+		set_transient( self::CLEANUP_TRANSIENT_KEY, 1, self::CLEANUP_COOLDOWN_SECONDS );
+		static::cleanup_old_rows_batch();
 	}
 
 	/**

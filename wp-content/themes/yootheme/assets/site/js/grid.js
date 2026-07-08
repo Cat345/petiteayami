@@ -1,3 +1,3 @@
-/*! YOOtheme Pro v5.0.29 | https://yootheme.com */
+/*! YOOtheme Pro v5.0.36 | https://yootheme.com */
 
 const a=window.UIkit&&Object.prototype.hasOwnProperty.call(window.UIkit,"default")?window.UIkit.default:window.UIkit,{isTag:d,toggleClass:o}=window.UIkit.util;a.component("GridChecked",{args:"classes",extends:a.component("margin"),props:{classes:"list"},data:{classes:"",margin:"",firstColumn:""},update:{write({rows:i}){var l;for(let e=0;e<i.length;e++)for(let s=0;s<i[0].length;s++){const n=e%2^s%2;let t=(l=i[e][s])==null?void 0:l.firstElementChild;d(t==null?void 0:t.firstElementChild,"a")&&(t=t.firstElementChild),o(t,this.classes[0],!n),o(t,this.classes[1],n)}},events:["resize"]}});

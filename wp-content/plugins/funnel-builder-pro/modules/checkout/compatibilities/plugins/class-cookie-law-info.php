@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin Name: CookieYes | GDPR Cookie Consent (cookie-law-info)
  */
 
-if ( ! class_exists( 'WFACP_CookieYes_Cookie_Consent' ) ) {
+if ( ! class_exists( 'WFACP_CookieYes_Cookie_Consent', false ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_CookieYes_Cookie_Consent {
 		public function __construct() {

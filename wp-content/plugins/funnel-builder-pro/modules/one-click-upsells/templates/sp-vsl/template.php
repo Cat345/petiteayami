@@ -1,18 +1,19 @@
 <?php
 if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFOCU_Template_Sp_Vsl extends WFOCU_Customizer_Common {
 
 
-		private static $ins = null;
-		public $template_slug = 'sp-vsl';
-		protected $section_fields = array();
-		protected $offer_data = null;
+		private static $ins            = null;
+		public $template_slug          = 'sp-vsl';
+		protected $section_fields      = array();
+		protected $offer_data          = null;
 		protected $offer_products_meta = null;
-		protected $change_set = array();
-		protected $sections = array( 'wfocu_section' );
-		protected $template_dir = __DIR__;
-		protected $offer_id = 0;
+		protected $change_set          = array();
+		protected $sections            = array( 'wfocu_section' );
+		protected $template_dir        = __DIR__;
+		protected $offer_id            = 0;
 
 		public function __construct() {
 			parent::__construct();
@@ -100,7 +101,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 				$merge_tags_description = '<a href="javascript:void(0)"  onclick="wfocu_show_tb(\'WooFunnels Shortcodes\', \'wfocu_shortcode_help_box\');" >' . __( 'Click here to learn about merge tags available for this area.', 'woofunnels-upstroke-one-click-upsell' ) . '</a>';
 
 				/** PANEL: LAYOUT */
-				$layout_panel                                                = [];
+				$layout_panel = array();
 				$layout_panel[ 'wfocu_' . $this->template_slug . '_layout' ] = array(
 					'panel'    => 'no',
 					'data'     => array(
@@ -176,15 +177,15 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 										'video',
 									),
 									'choices'     => array(
-										'header'              => esc_attr__( 'Header', 'woofunnels-upstroke-one-click-upsell' ),
+										'header'      => esc_attr__( 'Header', 'woofunnels-upstroke-one-click-upsell' ),
 										'header_progress_bar' => esc_attr__( 'Progress Bar', 'woofunnels-upstroke-one-click-upsell' ),
-										'heading'             => esc_attr__( 'Pattern Interrupt', 'woofunnels-upstroke-one-click-upsell' ),
-										'video'               => esc_attr__( 'Video', 'woofunnels-upstroke-one-click-upsell' ),
-										'reviews'             => esc_attr__( 'Reviews', 'woofunnels-upstroke-one-click-upsell' ),
-										'features'            => esc_attr__( 'Features', 'woofunnels-upstroke-one-click-upsell' ),
-										'guarantee'           => esc_attr__( 'Guarantee', 'woofunnels-upstroke-one-click-upsell' ),
-										'urgency_bar'         => esc_attr__( 'Urgency Bar', 'woofunnels-upstroke-one-click-upsell' ),
-										'footer'              => esc_attr__( 'Footer', 'woofunnels-upstroke-one-click-upsell' ),
+										'heading'     => esc_attr__( 'Pattern Interrupt', 'woofunnels-upstroke-one-click-upsell' ),
+										'video'       => esc_attr__( 'Video', 'woofunnels-upstroke-one-click-upsell' ),
+										'reviews'     => esc_attr__( 'Reviews', 'woofunnels-upstroke-one-click-upsell' ),
+										'features'    => esc_attr__( 'Features', 'woofunnels-upstroke-one-click-upsell' ),
+										'guarantee'   => esc_attr__( 'Guarantee', 'woofunnels-upstroke-one-click-upsell' ),
+										'urgency_bar' => esc_attr__( 'Urgency Bar', 'woofunnels-upstroke-one-click-upsell' ),
+										'footer'      => esc_attr__( 'Footer', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'    => 50,
 								),
@@ -195,7 +196,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 
 				$this->customizer_data[] = $layout_panel;
 				/** PANEL: HEADER */
-				$header_panel                 = [];
+				$header_panel                 = array();
 				$header_panel['wfocu_header'] = array(
 					'panel'    => 'yes',
 					'data'     => array(
@@ -221,7 +222,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									'priority'      => 20,
 									'transport'     => 'postMessage',
 									'wfocu_partial' => array(
-										'elem'                => '.wfocu-page-header-section .wfocu-page-logo',
+										'elem' => '.wfocu-page-header-section .wfocu-page-logo',
 										'container_inclusive' => false,
 									),
 								),
@@ -249,7 +250,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									'label'           => __( 'Align', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => 'wfocu-text-center',
 									'choices'         => array(
-										'wfocu-text-left'   => 'Left',
+										'wfocu-text-left' => 'Left',
 										'wfocu-text-center' => 'Center',
 									),
 									'priority'        => 40,
@@ -632,7 +633,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 				$this->customizer_data[] = $header_panel;
 
 				/** PANEL: PATTERN INTERRUPT */
-				$heading_panel                  = [];
+				$heading_panel                  = array();
 				$heading_panel['wfocu_heading'] = array(
 					'panel'    => 'no',
 					'data'     => array(
@@ -800,7 +801,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 
 				$this->customizer_data[] = $heading_panel;
 				/** PANEL: VIDEO  */
-				$video_panel                = [];
+				$video_panel                = array();
 				$video_panel['wfocu_video'] = array(
 					'panel'    => 'no',
 					'data'     => array(
@@ -1051,9 +1052,9 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									'label'           => __( 'Align', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => 'wfocu-text-center',
 									'choices'         => array(
-										'wfocu-text-left'   => 'Left',
+										'wfocu-text-left'  => 'Left',
 										'wfocu-text-center' => 'Center',
-										'wfocu-text-right'  => 'Right',
+										'wfocu-text-right' => 'Right',
 									),
 									'transport'       => 'postMessage',
 									'wfocu_transport' => array(
@@ -1217,7 +1218,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 				$this->customizer_data[] = $video_panel;
 
 				/** PANEL: BUY BLOCK BLOCK */
-				$buy_block_panel                    = [];
+				$buy_block_panel                    = array();
 				$buy_block_panel['wfocu_buy_block'] = array(
 					'panel'    => 'no',
 					'data'     => array(
@@ -1232,12 +1233,12 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 								'priority' => 50,
 							),
 							'fields' => array(
-								'ct_layout'           => array(
+								'ct_layout'                => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Layout', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 									'priority' => 10,
 								),
-								'style'               => array(
+								'style'                    => array(
 									'type'     => 'radio-image-full',
 									'label'    => esc_attr__( 'Style', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'  => 'style2',
@@ -1253,12 +1254,12 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority' => 20,
 								),
-								'ct_buy_block'        => array(
+								'ct_buy_block'             => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Buy Block', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 									'priority' => 30,
 								),
-								'accept_btn_text1'    => array(
+								'accept_btn_text1'         => array(
 									'type'            => 'textarea',
 									'description'     => $merge_tags_description,
 									'label'           => esc_attr__( 'Accept Button Text', 'woofunnels-upstroke-one-click-upsell' ),
@@ -1279,7 +1280,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority'        => 40,
 								),
-								'accept_btn_text1_fs' => array(
+								'accept_btn_text1_fs'      => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Accept Button Text Font Size', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => array(
@@ -1329,7 +1330,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority'        => 50,
 								),
-								'accept_btn_text2'    => array(
+								'accept_btn_text2'         => array(
 									'type'            => 'textarea',
 									'description'     => $merge_tags_description,
 									'label'           => esc_attr__( 'Accept Button Sub Text', 'woofunnels-upstroke-one-click-upsell' ),
@@ -1350,7 +1351,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority'        => 60,
 								),
-								'accept_btn_text2_fs' => array(
+								'accept_btn_text2_fs'      => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Accept Button Sub Text Font Size', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => array(
@@ -1388,7 +1389,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 								),
 
 								/** style 2 fields */
-								'skip_btn_text'       => array(
+								'skip_btn_text'            => array(
 									'type'            => 'textarea',
 									'description'     => $merge_tags_description,
 									'label'           => esc_attr__( 'Decline Button Text', 'woofunnels-upstroke-one-click-upsell' ),
@@ -1406,7 +1407,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority'        => 80,
 								),
-								'skip_btn_text_fs'    => array(
+								'skip_btn_text_fs'         => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Decline Button Text Font Size', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => array(
@@ -1444,7 +1445,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 								),
 								/** style 2 fields */
 
-								'click_trigger_text'    => array(
+								'click_trigger_text'       => array(
 									'type'            => 'textarea',
 									'description'     => $merge_tags_description,
 									'label'           => esc_attr__( 'Text Below Button', 'woofunnels-upstroke-one-click-upsell' ),
@@ -1458,7 +1459,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 										),
 									),
 								),
-								'click_trigger_text_fs' => array(
+								'click_trigger_text_fs'    => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Text Below Button Font Size', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => array(
@@ -1487,7 +1488,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority'        => 110,
 								),
-								'skip_offer_text'       => array(
+								'skip_offer_text'          => array(
 									'type'            => 'textarea',
 									'description'     => $merge_tags_description,
 									'label'           => esc_attr__( 'Decline Offer Link Text', 'woofunnels-upstroke-one-click-upsell' ),
@@ -1508,7 +1509,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority'        => 120,
 								),
-								'skip_offer_text_fs'    => array(
+								'skip_offer_text_fs'       => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Decline Offer Link Text Font Size', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => array(
@@ -1544,7 +1545,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority'        => 130,
 								),
-								'skip_offer_btn_style'  => array(
+								'skip_offer_btn_style'     => array(
 									'type'            => 'checkbox',
 									'label'           => esc_attr__( 'Dispay Decline Offer Link  As A Button', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => false,
@@ -1564,29 +1565,29 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 										),
 									),
 								),
-								'ct_payment_icons'      => array(
+								'ct_payment_icons'         => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Payment Icons', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 									'priority' => 150,
 								),
-								'display_payment_icon'  => array(
+								'display_payment_icon'     => array(
 									'type'        => 'checkbox',
 									'label'       => esc_attr__( 'Display Payment Icons', 'woofunnels-upstroke-one-click-upsell' ),
 									'description' => esc_attr__( 'Manage settings from Other->Payment Icons Section.', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'     => false,
 									'priority'    => 160,
 								),
-								'ct_advanced'           => array(
+								'ct_advanced'              => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Advanced', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 									'priority' => 170,
 								),
-								'btn_type'              => array(
+								'btn_type'                 => array(
 									'type'            => 'radio-buttonset',
 									'label'           => esc_attr__( 'Button Style', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => 'wfocu-btn-full',
 									'choices'         => array(
-										'wfocu-btn-full'     => __( 'Full', 'woofunnels-upstroke-one-click-upsell' ),
+										'wfocu-btn-full' => __( 'Full', 'woofunnels-upstroke-one-click-upsell' ),
 										'wfocu-btn-flexible' => __( 'Flexible', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'transport'       => 'postMessage',
@@ -1599,7 +1600,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority'        => 180,
 								),
-								'btn_width'             => array(
+								'btn_width'                => array(
 									'type'            => 'slider',
 									'label'           => esc_attr__( 'Button Width (%)', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => 100,
@@ -1632,7 +1633,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority'        => 190,
 								),
-								'btn_vertical_gap'      => array(
+								'btn_vertical_gap'         => array(
 									'type'            => 'number',
 									'label'           => esc_attr__( 'Button Top/Bottom Padding', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => 20,
@@ -1656,7 +1657,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority'        => 200,
 								),
-								'btn_horizontal_gap'    => array(
+								'btn_horizontal_gap'       => array(
 									'type'            => 'number',
 									'label'           => esc_attr__( 'Button Left/Right Padding', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => 30,
@@ -1680,7 +1681,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority'        => 210,
 								),
-								'btn_radius'            => array(
+								'btn_radius'               => array(
 									'type'            => 'number',
 									'label'           => esc_attr__( 'Button Radius', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => 3,
@@ -1699,47 +1700,47 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority'        => 220,
 								),
-								'show_accept_btn_icon'  => array(
+								'show_accept_btn_icon'     => array(
 									'type'        => 'checkbox',
 									'label'       => esc_attr__( 'Enable Accept Button Icon', 'woofunnels-upstroke-one-click-upsell' ),
 									'description' => esc_attr__( '', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'     => false,
 									'priority'    => 230,
 								),
-								'accept_btn_icon'       => array(
+								'accept_btn_icon'          => array(
 									'type'            => 'radio-icon',
 									'label'           => esc_attr__( 'Accept Button Icon', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => 'dashicons-cart',
 									'transport'       => 'refresh',
 									'choices'         => array(
-										'dashicons-cart'             => '<span class="dashicons dashicons-cart"></span>',
-										'dashicons-yes'              => '<span class="dashicons dashicons-yes"></span>',
-										'dashicons-arrow-up'         => '<span class="dashicons dashicons-arrow-up"></span>',
-										'dashicons-arrow-down'       => '<span class="dashicons dashicons-arrow-down"></span>',
-										'dashicons-arrow-right'      => '<span class="dashicons dashicons-arrow-right"></span>',
-										'dashicons-arrow-left'       => '<span class="dashicons dashicons-arrow-left"></span>',
-										'dashicons-arrow-up-alt'     => '<span class="dashicons dashicons-arrow-up-alt"></span>',
-										'dashicons-arrow-down-alt'   => '<span class="dashicons dashicons-arrow-down-alt"></span>',
-										'dashicons-arrow-right-alt'  => '<span class="dashicons dashicons-arrow-right-alt"></span>',
-										'dashicons-arrow-left-alt'   => '<span class="dashicons dashicons-arrow-left-alt"></span>',
-										'dashicons-arrow-up-alt2'    => '<span class="dashicons dashicons-arrow-up-alt2"></span>',
-										'dashicons-arrow-down-alt2'  => '<span class="dashicons dashicons-arrow-down-alt2"></span>',
+										'dashicons-cart'   => '<span class="dashicons dashicons-cart"></span>',
+										'dashicons-yes'    => '<span class="dashicons dashicons-yes"></span>',
+										'dashicons-arrow-up' => '<span class="dashicons dashicons-arrow-up"></span>',
+										'dashicons-arrow-down' => '<span class="dashicons dashicons-arrow-down"></span>',
+										'dashicons-arrow-right' => '<span class="dashicons dashicons-arrow-right"></span>',
+										'dashicons-arrow-left' => '<span class="dashicons dashicons-arrow-left"></span>',
+										'dashicons-arrow-up-alt' => '<span class="dashicons dashicons-arrow-up-alt"></span>',
+										'dashicons-arrow-down-alt' => '<span class="dashicons dashicons-arrow-down-alt"></span>',
+										'dashicons-arrow-right-alt' => '<span class="dashicons dashicons-arrow-right-alt"></span>',
+										'dashicons-arrow-left-alt' => '<span class="dashicons dashicons-arrow-left-alt"></span>',
+										'dashicons-arrow-up-alt2' => '<span class="dashicons dashicons-arrow-up-alt2"></span>',
+										'dashicons-arrow-down-alt2' => '<span class="dashicons dashicons-arrow-down-alt2"></span>',
 										'dashicons-arrow-right-alt2' => '<span class="dashicons dashicons-arrow-right-alt2"></span>',
-										'dashicons-arrow-left-alt2'  => '<span class="dashicons dashicons-arrow-left-alt2"></span>',
-										'dashicons-heart'            => '<span class="dashicons dashicons-heart"></span>',
-										'dashicons-star-filled'      => '<span class="dashicons dashicons-star-filled"></span>',
-										'dashicons-plus-alt'         => '<span class="dashicons dashicons-plus-alt"></span>',
-										'dashicons-awards'           => '<span class="dashicons dashicons-awards"></span>',
-										'dashicons-shield'           => '<span class="dashicons dashicons-shield"></span>',
-										'dashicons-shield-alt'       => '<span class="dashicons dashicons-shield-alt"></span>',
-										'dashicons-thumbs-up'        => '<span class="dashicons dashicons-thumbs-up"></span>',
-										'dashicons-thumbs-down'      => '<span class="dashicons dashicons-thumbs-down"></span>',
-										'dashicons-smiley'           => '<span class="dashicons dashicons-smiley"></span>',
-										'dashicons-tickets-alt'      => '<span class="dashicons dashicons-tickets-alt"></span>',
-										'dashicons-tag'              => '<span class="dashicons dashicons-tag"></span>',
-										'dashicons-cloud'            => '<span class="dashicons dashicons-cloud"></span>',
+										'dashicons-arrow-left-alt2' => '<span class="dashicons dashicons-arrow-left-alt2"></span>',
+										'dashicons-heart'  => '<span class="dashicons dashicons-heart"></span>',
+										'dashicons-star-filled' => '<span class="dashicons dashicons-star-filled"></span>',
+										'dashicons-plus-alt' => '<span class="dashicons dashicons-plus-alt"></span>',
+										'dashicons-awards' => '<span class="dashicons dashicons-awards"></span>',
+										'dashicons-shield' => '<span class="dashicons dashicons-shield"></span>',
+										'dashicons-shield-alt' => '<span class="dashicons dashicons-shield-alt"></span>',
+										'dashicons-thumbs-up' => '<span class="dashicons dashicons-thumbs-up"></span>',
+										'dashicons-thumbs-down' => '<span class="dashicons dashicons-thumbs-down"></span>',
+										'dashicons-smiley' => '<span class="dashicons dashicons-smiley"></span>',
+										'dashicons-tickets-alt' => '<span class="dashicons dashicons-tickets-alt"></span>',
+										'dashicons-tag'    => '<span class="dashicons dashicons-tag"></span>',
+										'dashicons-cloud'  => '<span class="dashicons dashicons-cloud"></span>',
 										'dashicons-controls-forward' => '<span class="dashicons dashicons-controls-forward"></span>',
-										'dashicons-controls-back'    => '<span class="dashicons dashicons-controls-back"></span>',
+										'dashicons-controls-back' => '<span class="dashicons dashicons-controls-back"></span>',
 									),
 									'active_callback' => array(
 										array(
@@ -1750,7 +1751,7 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority'        => 240,
 								),
-								'show_skip_btn_icon'    => array(
+								'show_skip_btn_icon'       => array(
 									'type'            => 'checkbox',
 									'label'           => esc_attr__( 'Enable Decline Button Icon', 'woofunnels-upstroke-one-click-upsell' ),
 									'description'     => '',
@@ -1764,41 +1765,47 @@ if ( ! class_exists( 'WFOCU_Template_Sp_Vsl' ) ) {
 									),
 									'priority'        => 250,
 								),
-								'skip_btn_icon'         => array(
+								'skip_btn_icon'            => array(
 									'type'            => 'radio-icon',
 									'label'           => esc_attr__( 'Decline Button Icon', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => 'dashicons-cart',
 									'choices'         => array(
-										'dashicons-cart'             => __( '<span class="dashicons dashicons-cart"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-yes'              => __( '<span class="dashicons dashicons-yes"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-arrow-up'         => __( '<span class="dashicons dashicons-arrow-up"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-arrow-down'       => __( '<span class="dashicons dashicons-arrow-down"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-arrow-right'      => __( '<span class="dashicons dashicons-arrow-right"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-arrow-left'       => __( '<span class="dashicons dashicons-arrow-left"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-arrow-up-alt'     => __( '<span class="dashicons 
-dashicons-arrow-up-alt"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-arrow-down-alt'   => __( '<span class="dashicons dashicons-arrow-down-alt"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-arrow-right-alt'  => __( '<span class="dashicons dashicons-arrow-right-alt"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-arrow-left-alt'   => __( '<span class="dashicons dashicons-arrow-left-alt"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-arrow-up-alt2'    => __( '<span class="dashicons 
-dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-arrow-down-alt2'  => __( '<span class="dashicons dashicons-arrow-down-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-cart'   => __( '<span class="dashicons dashicons-cart"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-yes'    => __( '<span class="dashicons dashicons-yes"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-arrow-up' => __( '<span class="dashicons dashicons-arrow-up"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-arrow-down' => __( '<span class="dashicons dashicons-arrow-down"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-arrow-right' => __( '<span class="dashicons dashicons-arrow-right"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-arrow-left' => __( '<span class="dashicons dashicons-arrow-left"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-arrow-up-alt' => __(
+											'<span class="dashicons 
+dashicons-arrow-up-alt"></span>',
+											'woofunnels-upstroke-one-click-upsell'
+										),
+										'dashicons-arrow-down-alt' => __( '<span class="dashicons dashicons-arrow-down-alt"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-arrow-right-alt' => __( '<span class="dashicons dashicons-arrow-right-alt"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-arrow-left-alt' => __( '<span class="dashicons dashicons-arrow-left-alt"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-arrow-up-alt2' => __(
+											'<span class="dashicons 
+dashicons-arrow-up-alt2"></span>',
+											'woofunnels-upstroke-one-click-upsell'
+										),
+										'dashicons-arrow-down-alt2' => __( '<span class="dashicons dashicons-arrow-down-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 										'dashicons-arrow-right-alt2' => __( '<span class="dashicons dashicons-arrow-right-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-arrow-left-alt2'  => __( '<span class="dashicons dashicons-arrow-left-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-heart'            => __( '<span class="dashicons dashicons-heart"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-star-filled'      => __( '<span class="dashicons dashicons-star-filled"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-plus-alt'         => __( '<span class="dashicons dashicons-plus-alt"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-awards'           => __( '<span class="dashicons dashicons-awards"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-shield'           => __( '<span class="dashicons dashicons-shield"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-shield-alt'       => __( '<span class="dashicons dashicons-shield-alt"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-thumbs-up'        => __( '<span class="dashicons dashicons-thumbs-up"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-thumbs-down'      => __( '<span class="dashicons dashicons-thumbs-down"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-smiley'           => __( '<span class="dashicons dashicons-smiley"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-tickets-alt'      => __( '<span class="dashicons dashicons-tickets-alt"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-tag'              => __( '<span class="dashicons dashicons-tag"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-cloud'            => __( '<span class="dashicons dashicons-cloud"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-arrow-left-alt2' => __( '<span class="dashicons dashicons-arrow-left-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-heart'  => __( '<span class="dashicons dashicons-heart"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-star-filled' => __( '<span class="dashicons dashicons-star-filled"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-plus-alt' => __( '<span class="dashicons dashicons-plus-alt"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-awards' => __( '<span class="dashicons dashicons-awards"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-shield' => __( '<span class="dashicons dashicons-shield"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-shield-alt' => __( '<span class="dashicons dashicons-shield-alt"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-thumbs-up' => __( '<span class="dashicons dashicons-thumbs-up"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-thumbs-down' => __( '<span class="dashicons dashicons-thumbs-down"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-smiley' => __( '<span class="dashicons dashicons-smiley"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-tickets-alt' => __( '<span class="dashicons dashicons-tickets-alt"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-tag'    => __( '<span class="dashicons dashicons-tag"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-cloud'  => __( '<span class="dashicons dashicons-cloud"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 										'dashicons-controls-forward' => __( '<span class="dashicons dashicons-controls-forward"></span>', 'woofunnels-upstroke-one-click-upsell' ),
-										'dashicons-controls-back'    => __( '<span class="dashicons dashicons-controls-back"></span>', 'woofunnels-upstroke-one-click-upsell' ),
+										'dashicons-controls-back' => __( '<span class="dashicons dashicons-controls-back"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 
 									),
 									'transport'       => 'refresh',
@@ -1816,14 +1823,14 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 										),
 									),
 								),
-								'btn_effect'            => array(
+								'btn_effect'               => array(
 									'type'            => 'select',
 									'label'           => esc_attr__( 'Button Hover Effect', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => 'no-effect',
 									'choices'         => array(
-										'none'                        => __( 'No effect', 'woofunnels-upstroke-one-click-upsell' ),
-										'wfocu-btn-pulse-grow'        => __( 'Pulse Grow', 'woofunnels-upstroke-one-click-upsell' ),
-										'wfocu-btn-bounce-in'         => __( 'Bounce In', 'woofunnels-upstroke-one-click-upsell' ),
+										'none' => __( 'No effect', 'woofunnels-upstroke-one-click-upsell' ),
+										'wfocu-btn-pulse-grow' => __( 'Pulse Grow', 'woofunnels-upstroke-one-click-upsell' ),
+										'wfocu-btn-bounce-in' => __( 'Bounce In', 'woofunnels-upstroke-one-click-upsell' ),
 										'wfocu-btn-wobble-horizontal' => __( 'Wobble', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'transport'       => 'postMessage',
@@ -1846,13 +1853,13 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 270,
 								),
-								'ct_accept_btn'         => array(
+								'ct_accept_btn'            => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Accept Button Colors', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 									'priority' => 280,
 								),
 
-								'ct_accept_btn_state'            => array(
+								'ct_accept_btn_state'      => array(
 									'type'      => 'radio-buttonset',
 									'label'     => '',
 									'default'   => 'normal',
@@ -1863,7 +1870,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									'transport' => 'postMessage',
 									'priority'  => 290,
 								),
-								'accept_btn_bg_color'            => array(
+								'accept_btn_bg_color'      => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Background Color', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => '#70dc1d',
@@ -1891,7 +1898,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 300,
 								),
-								'accept_btn_text_color'          => array(
+								'accept_btn_text_color'    => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Text Color', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => '#ffffff',
@@ -1947,7 +1954,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 320,
 								),
-								'accept_btn_bg_color_hover'      => array(
+								'accept_btn_bg_color_hover' => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Background Color', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => '#89e047',
@@ -1975,7 +1982,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 330,
 								),
-								'accept_btn_text_color_hover'    => array(
+								'accept_btn_text_color_hover' => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Text Color', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => '#ffffff',
@@ -2003,7 +2010,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 340,
 								),
-								'click_trigger_text_color'       => array(
+								'click_trigger_text_color' => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Text Below Button Color', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => '#414349',
@@ -2017,7 +2024,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 										),
 									),
 								),
-								'ct_skip_btn'                    => array(
+								'ct_skip_btn'              => array(
 									'type'            => 'custom',
 									'default'         => '<div class="options-title-divider">' . esc_html__( 'Decline Button Colors', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 									'priority'        => 360,
@@ -2029,7 +2036,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 										),
 									),
 								),
-								'ct_skip_btn_state'              => array(
+								'ct_skip_btn_state'        => array(
 									'type'            => 'radio-buttonset',
 									'label'           => '',
 									'default'         => 'normal',
@@ -2047,7 +2054,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 370,
 								),
-								'skip_btn_bg_color'              => array(
+								'skip_btn_bg_color'        => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Background Color', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => '#d52011',
@@ -2074,7 +2081,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 380,
 								),
-								'skip_btn_text_color'            => array(
+								'skip_btn_text_color'      => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Text Color', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => '#ffffff',
@@ -2102,7 +2109,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 
 								),
-								'skip_btn_bottom_shadow_color'   => array(
+								'skip_btn_bottom_shadow_color' => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Bottom Shadow Color', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => '#890e04',
@@ -2129,7 +2136,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 400,
 								),
-								'skip_btn_bg_color_hover'        => array(
+								'skip_btn_bg_color_hover'  => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Background Color', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => '#ab251a',
@@ -2156,7 +2163,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 410,
 								),
-								'skip_btn_text_color_hover'      => array(
+								'skip_btn_text_color_hover' => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Text Color', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => '#ffffff',
@@ -2183,7 +2190,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 										),
 									),
 								),
-								'ct_skip_offer'                  => array(
+								'ct_skip_offer'            => array(
 									'type'            => 'custom',
 									'default'         => '<div class="options-title-divider">' . esc_html__( 'Decline Offer Colors', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 									'priority'        => 430,
@@ -2195,7 +2202,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 										),
 									),
 								),
-								'ct_skip_offer_state'            => array(
+								'ct_skip_offer_state'      => array(
 									'type'            => 'radio-buttonset',
 									'label'           => '',
 									'default'         => 'normal',
@@ -2213,7 +2220,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 440,
 								),
-								'skip_offer_btn_bg_color'        => array(
+								'skip_offer_btn_bg_color'  => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Button Background Color', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => '#dddddd',
@@ -2245,7 +2252,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 450,
 								),
-								'skip_offer_text_color'          => array(
+								'skip_offer_text_color'    => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Text Color', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => '#777777',
@@ -2272,7 +2279,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 										),
 									),
 								),
-								'skip_offer_btn_bg_color_hover'  => array(
+								'skip_offer_btn_bg_color_hover' => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Button Background Color', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => '#a3a3a3',
@@ -2304,7 +2311,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 470,
 								),
-								'skip_offer_text_color_hover'    => array(
+								'skip_offer_text_color_hover' => array(
 									'type'            => 'color',
 									'label'           => esc_attr__( 'Text Color', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => '#9e9e9e',
@@ -2339,7 +2346,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 
 				$this->customizer_data[] = $buy_block_panel;
 				/** PANEL: FEATURES */
-				$feature_panel                   = [];
+				$feature_panel                   = array();
 				$feature_panel['wfocu_features'] = array(
 					'panel'    => 'no',
 					'data'     => array(
@@ -2447,9 +2454,9 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									'label'           => __( 'Align', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => 'wfocu-text-center',
 									'choices'         => array(
-										'wfocu-text-left'   => 'Left',
+										'wfocu-text-left'  => 'Left',
 										'wfocu-text-center' => 'Center',
-										'wfocu-text-right'  => 'Right',
+										'wfocu-text-right' => 'Right',
 									),
 									'transport'       => 'postMessage',
 									'wfocu_transport' => array(
@@ -2636,7 +2643,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 
 				$this->customizer_data[] = $feature_panel;
 				/** PANEL: REVIEWS */
-				$review_panel                  = [];
+				$review_panel                  = array();
 				$review_panel['wfocu_reviews'] = array(
 					'panel'    => 'no',
 					'data'     => array(
@@ -2651,12 +2658,12 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 								'priority' => 70,
 							),
 							'fields' => array(
-								'ct_headings'       => array(
+								'ct_headings'        => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Heading', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 									'priority' => 10,
 								),
-								'heading'           => array(
+								'heading'            => array(
 									'type'          => 'textarea',
 									'label'         => __( 'Heading', 'woofunnels-upstroke-one-click-upsell' ),
 									'description'   => $merge_tags_description,
@@ -2667,7 +2674,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'      => 20,
 								),
-								'sub_heading'       => array(
+								'sub_heading'        => array(
 									'type'            => 'textarea',
 									'label'           => __( 'Sub Heading', 'woofunnels-upstroke-one-click-upsell' ),
 									'description'     => $merge_tags_description,
@@ -2681,12 +2688,12 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 30,
 								),
-								'ct_review'         => array(
+								'ct_review'          => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Review Box', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 									'priority' => 40,
 								),
-								'rtype'             => array(
+								'rtype'              => array(
 									'type'     => 'radio-buttonset',
 									'label'    => __( 'Product Reviews', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'  => 'manual',
@@ -2697,7 +2704,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority' => 50,
 								),
-								'rthreshold'        => array(
+								'rthreshold'         => array(
 									'type'            => 'slider',
 									'label'           => __( 'Show Reviews With Ratings', 'woofunnels-upstroke-one-click-upsell' ),
 									'description'     => __( 'Greater than or equal to', 'woofunnels-upstroke-one-click-upsell' ),
@@ -2716,7 +2723,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 										),
 									),
 								),
-								'limit'             => array(
+								'limit'              => array(
 									'type'            => 'number',
 									'label'           => __( 'No. Of Reviews To Show ', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => 4,
@@ -2734,7 +2741,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 										),
 									),
 								),
-								'testimonial'       => array(
+								'testimonial'        => array(
 									'type'            => 'repeater',
 									'label'           => esc_attr__( 'Reviews', 'woofunnels-upstroke-one-click-upsell' ),
 									'priority'        => 80,
@@ -2819,7 +2826,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 										),
 									),
 								),
-								'rbox_heading_fs'   => array(
+								'rbox_heading_fs'    => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Review Title Font Size', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => array(
@@ -2855,7 +2862,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 90,
 								),
-								'rbox_meta_fs'      => array(
+								'rbox_meta_fs'       => array(
 									'type'            => 'wfocu-responsive-font',
 									'label'           => __( 'Review Meta Font Size', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => array(
@@ -2884,33 +2891,33 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 100,
 								),
-								'display_rating'    => array(
+								'display_rating'     => array(
 									'type'        => 'checkbox',
 									'label'       => __( 'Display Star Ratings', 'woofunnels-upstroke-one-click-upsell' ),
 									'description' => __( 'Display Ratings inside Review Box', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'     => true,
 									'priority'    => 110,
 								),
-								'display_image'     => array(
+								'display_image'      => array(
 									'type'        => 'checkbox',
 									'label'       => __( 'Display Image', 'woofunnels-upstroke-one-click-upsell' ),
 									'description' => __( 'Display image inside Review Box', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'     => true,
 									'priority'    => 120,
 								),
-								'display_auth_date' => array(
+								'display_auth_date'  => array(
 									'type'        => 'checkbox',
 									'label'       => __( 'Display Author With Date', 'woofunnels-upstroke-one-click-upsell' ),
 									'description' => __( 'Display author with date inside Review Box', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'     => true,
 									'priority'    => 130,
 								),
-								'ct_desc'           => array(
+								'ct_desc'            => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Additional Description', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 									'priority' => 140,
 								),
-								'additional_text'   => array(
+								'additional_text'    => array(
 									'type'            => 'textarea',
 									'label'           => __( 'Additional Text', 'woofunnels-upstroke-one-click-upsell' ),
 									'description'     => $merge_tags_description,
@@ -2925,14 +2932,14 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 150,
 								),
-								'additional_talign' => array(
+								'additional_talign'  => array(
 									'type'            => 'radio-buttonset',
 									'label'           => __( 'Align', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => 'wfocu-text-center',
 									'choices'         => array(
-										'wfocu-text-left'   => 'Left',
+										'wfocu-text-left'  => 'Left',
 										'wfocu-text-center' => 'Center',
-										'wfocu-text-right'  => 'Right',
+										'wfocu-text-right' => 'Right',
 									),
 									'transport'       => 'postMessage',
 									'wfocu_transport' => array(
@@ -2944,12 +2951,12 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority'        => 160,
 								),
-								'ct_buy_block'      => array(
+								'ct_buy_block'       => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Buy Block', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 									'priority' => 170,
 								),
-								'display_buy_block' => array(
+								'display_buy_block'  => array(
 									'type'        => 'checkbox',
 									'label'       => esc_attr__( 'Display Buy Block', 'woofunnels-upstroke-one-click-upsell' ),
 									'description' => esc_attr__( 'Enable if you want to display buy block.', 'woofunnels-upstroke-one-click-upsell' ),
@@ -3229,7 +3236,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 				$this->customizer_data[] = $review_panel;
 
 				/** PANEL: GUARANTEE */
-				$guarantee_panel                    = [];
+				$guarantee_panel                    = array();
 				$guarantee_panel['wfocu_guarantee'] = array(
 					'panel'    => 'no',
 					'data'     => array(
@@ -3413,9 +3420,9 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									'label'           => __( 'Align', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'         => 'wfocu-text-center',
 									'choices'         => array(
-										'wfocu-text-left'   => 'Left',
+										'wfocu-text-left'  => 'Left',
 										'wfocu-text-center' => 'Center',
-										'wfocu-text-right'  => 'Right',
+										'wfocu-text-right' => 'Right',
 									),
 									'transport'       => 'postMessage',
 									'wfocu_transport' => array(
@@ -3611,7 +3618,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 				$this->customizer_data[] = $guarantee_panel;
 
 				/** PANEL: URGENCY BAR */
-				$urgency_bar_panel                      = [];
+				$urgency_bar_panel                      = array();
 				$urgency_bar_panel['wfocu_urgency_bar'] = array(
 					'panel'    => 'no',
 					'data'     => array(
@@ -3626,12 +3633,12 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 								'priority' => 90,
 							),
 							'fields' => array(
-								'ct_layout' => array(
+								'ct_layout'       => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Layout', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 									'priority' => 10,
 								),
-								'position'  => array(
+								'position'        => array(
 									'type'     => 'radio-image-text',
 									'label'    => esc_attr__( 'Position', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'  => 'sticky_header',
@@ -3842,7 +3849,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 				$this->customizer_data[] = $urgency_bar_panel;
 
 				/** PANEL: Countdown Timer */
-				$other_panel                = [];
+				$other_panel                = array();
 				$other_panel['wfocu_other'] = array(
 					'panel'    => 'yes',
 					'data'     => array(
@@ -3857,16 +3864,16 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 								'priority' => 10,
 							),
 							'fields' => array(
-								'ct_layout'   => array(
+								'ct_layout'        => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Layout', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 									'priority' => 10,
 								),
-								'skin'        => array(
-									'type'    => 'radio-image-text',
-									'label'   => esc_attr__( 'Skin', 'woofunnels-upstroke-one-click-upsell' ),
-									'default' => 'style1',
-									'choices' => array(
+								'skin'             => array(
+									'type'     => 'radio-image-text',
+									'label'    => esc_attr__( 'Skin', 'woofunnels-upstroke-one-click-upsell' ),
+									'default'  => 'style1',
+									'choices'  => array(
 										'style1' => array(
 											'label' => __( 'Style 1', 'woofunnels-upstroke-one-click-upsell' ),
 											'path'  => $this->img_path . 'countdown_1.svg',
@@ -3879,12 +3886,12 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 
 									'priority' => 20,
 								),
-								'ct_timer'    => array(
+								'ct_timer'         => array(
 									'type'     => 'custom',
 									'default'  => '<div class="options-title-divider">' . esc_html__( 'Countdown Timer', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 									'priority' => 30,
 								),
-								'timer_hours' => array(
+								'timer_hours'      => array(
 									'type'     => 'number',
 									'label'    => __( 'Hours', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'  => 0,
@@ -3895,7 +3902,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 									),
 									'priority' => 40,
 								),
-								'timer_mins'  => array(
+								'timer_mins'       => array(
 									'type'     => 'number',
 									'label'    => __( 'Minutes', 'woofunnels-upstroke-one-click-upsell' ),
 									'default'  => 30,
@@ -4221,7 +4228,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 										),
 									),
 
-									'priority' => 50,
+									'priority'        => 50,
 								),
 							),
 						),
@@ -4230,7 +4237,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 
 				$this->customizer_data[] = $other_panel;
 				/** PANEL: FOOTER */
-				$footer_panel                 = [];
+				$footer_panel                 = array();
 				$footer_panel['wfocu_footer'] = array(
 					'panel'    => 'no',
 					'data'     => array(
@@ -4428,7 +4435,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 
 				$this->customizer_data[] = $footer_panel;
 				/** PANEL: STYLE */
-				$style_panel                = [];
+				$style_panel                = array();
 				$style_panel['wfocu_style'] = array(
 					'data'     => array(
 						'priority'    => 130,
@@ -4686,7 +4693,7 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 				$this->customizer_data[] = $style_panel;
 
 				/** PANEL: LAYOUT */
-				$css_panel                     = [];
+				$css_panel                     = array();
 				$css_panel['wfocu_custom_css'] = array(
 					'panel'    => 'no',
 					'data'     => array(
@@ -4724,7 +4731,6 @@ dashicons-arrow-up-alt2"></span>', 'woofunnels-upstroke-one-click-upsell' ),
 		public function get_group() {
 			return 'customizer';
 		}
-
 	}
 
 	return WFOCU_Template_Sp_Vsl::get_instance();

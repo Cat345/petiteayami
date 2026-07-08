@@ -12,7 +12,12 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Text' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Field_Text extends WFACPKirki_Field_WFACPKirki_Generic {
 
 		/**
@@ -27,7 +32,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Text' ) ) {
 			}
 			$this->choices['element'] = 'input';
 			$this->choices['type']    = 'text';
-
 		}
 
 		/**
@@ -43,7 +47,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Text' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'esc_textarea';
-
 		}
 	}
 }

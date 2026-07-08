@@ -21,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 2.3.0
  */
+#[\AllowDynamicProperties]
 class Section_Evaluator {
 
 	/**

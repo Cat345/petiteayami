@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'BWFCRM_Group' ) && BWFAN_Common::is_pro_3_0() ) {
+	#[\AllowDynamicProperties]
 	class BWFCRM_Group {
 
 		public static $default_groups = array();
@@ -80,8 +81,8 @@ if ( ! class_exists( 'BWFCRM_Group' ) && BWFAN_Common::is_pro_3_0() ) {
 		 */
 
 		public static function get_groupby_name( $group_name ) {
-			$query      = "select * from {table_name} where name='" . $group_name . "'";
-			$group_data = BWFAN_Model_Field_Groups::get_results( $query );
+			$query      = "select * from {table_name} where name = %s";
+			$group_data = BWFAN_Model_Field_Groups::get_results( $query, array( $group_name ) );
 
 			return $group_data;
 		}
@@ -91,8 +92,8 @@ if ( ! class_exists( 'BWFCRM_Group' ) && BWFAN_Common::is_pro_3_0() ) {
 		 */
 
 		public static function get_groupby_id( $group_id ) {
-			$query      = "select ID as id,name,created_at from {table_name} where id='" . $group_id . "'";
-			$group_data = BWFAN_Model_Field_Groups::get_results( $query );
+			$query      = "select ID as id,name,created_at from {table_name} where id = %d";
+			$group_data = BWFAN_Model_Field_Groups::get_results( $query, array( absint( $group_id ) ) );
 
 			return $group_data;
 		}

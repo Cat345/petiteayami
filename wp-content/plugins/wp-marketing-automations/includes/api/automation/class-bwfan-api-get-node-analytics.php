@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Node_Analytics extends BWFAN_API_Base {
 
 	public static $ins;
@@ -135,8 +136,8 @@ class BWFAN_API_Get_Node_Analytics extends BWFAN_API_Base {
 		if ( bwfan_is_woocommerce_active() ) {
 
 			$currency_symbol = get_woocommerce_currency_symbol();
-			$revenue         = html_entity_decode( $currency_symbol . $revenue );
-			$rev_per_person  = html_entity_decode( $currency_symbol . $rev_per_person );
+			$revenue         = html_entity_decode( $currency_symbol . $revenue, ENT_QUOTES | ENT_HTML401 );
+			$rev_per_person  = html_entity_decode( $currency_symbol . $rev_per_person, ENT_QUOTES | ENT_HTML401 );
 
 			$revenue_tiles = [
 				[
@@ -281,8 +282,8 @@ class BWFAN_API_Get_Node_Analytics extends BWFAN_API_Base {
 		if ( bwfan_is_woocommerce_active() ) {
 
 			$currency_symbol = get_woocommerce_currency_symbol();
-			$revenue         = empty( $revenue ) ? '' : html_entity_decode( $currency_symbol . $revenue );
-			$rev_per_person  = empty( $rev_per_person ) ? '' : html_entity_decode( $currency_symbol . $rev_per_person );
+			$revenue         = empty( $revenue ) ? '' : html_entity_decode( $currency_symbol . $revenue, ENT_QUOTES | ENT_HTML401 );
+			$rev_per_person  = empty( $rev_per_person ) ? '' : html_entity_decode( $currency_symbol . $rev_per_person, ENT_QUOTES | ENT_HTML401 );
 
 			$revenue_tiles = [
 				[

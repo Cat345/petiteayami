@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - LiteSpeed Cache - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-12-16 19:49:27+0000\n"
+"PO-Revision-Date: 2026-06-28 16:09:46+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,18 @@ msgstr ""
 "X-Generator: GlotPress/4.0.3\n"
 "Language: ru\n"
 "Project-Id-Version: Plugins - LiteSpeed Cache - Stable (latest release)\n"
+
+#: tpl/toolbox/log_viewer.tpl.php:68
+msgid "Download"
+msgstr "Скачать"
+
+#: src/debug2.cls.php:670
+msgid "Log file not found."
+msgstr "Файл журнала не найден."
+
+#: src/task.cls.php:268
+msgid "Every 15 Minutes"
+msgstr "Каждые 15 минут"
 
 #: tpl/page_optm/settings_media.tpl.php:289
 msgid "Automatically replace large images with scaled versions."
@@ -42,6 +54,10 @@ msgstr "Список лучших в автозагрузке"
 msgid "Autoload size"
 msgstr "Размер автозагрузки"
 
+#: tpl/dash/dashboard.tpl.php:870
+msgid "more"
+msgstr "ещё"
+
 #: tpl/toolbox/purge.tpl.php:224
 msgid "e.g. Use %1$s or %2$s."
 msgstr "используйте например %1$s или %2$s."
@@ -50,7 +66,11 @@ msgstr "используйте например %1$s или %2$s."
 msgid "Click to copy"
 msgstr "Кликните, чтобы скопировать"
 
-#: src/lang.cls.php:265
+#: tpl/banner/score.php:122
+msgid "Submit a ticket"
+msgstr "Отправить сообщение об ошибке"
+
+#: src/lang.cls.php:264
 msgid "Clear Cloudflare cache"
 msgstr "Очистить кэш CloudFlare"
 
@@ -96,7 +116,7 @@ msgstr "Настройки Cloudflare"
 msgid "Failed to detect IP"
 msgstr "Не удалось обнаружить IP"
 
-#: src/lang.cls.php:189
+#: src/lang.cls.php:188
 msgid "CCSS Selector Allowlist"
 msgstr "Список разрешений селектора CCSS"
 
@@ -396,43 +416,43 @@ msgstr "Отправьте в twitter, чтобы получить %s бонус
 msgid "Spread the love and earn %s credits to use in our QUIC.cloud online services."
 msgstr "Распространяйте любовь и зарабатывайте %s кредитов для использования в наших онлайн-сервисах QUIC.cloud."
 
-#: src/media.cls.php:526
+#: src/media.cls.php:641
 msgid "No backup of unoptimized AVIF file exists."
 msgstr "Резервная копия неоптимизированного файла AVIF не существует."
 
-#: src/media.cls.php:510
+#: src/media.cls.php:625
 msgid "AVIF saved %s"
 msgstr "AVIF сохранен %s"
 
-#: src/media.cls.php:502
+#: src/media.cls.php:616
 msgid "AVIF file reduced by %1$s (%2$s)"
 msgstr "Файл AVIF, уменьшенный на %1$s (%2$s)"
 
-#: src/media.cls.php:492
+#: src/media.cls.php:606
 msgid "Currently using original (unoptimized) version of AVIF file."
 msgstr "В настоящее время используется оригинальная (неоптимизированная) версия файла AVIF."
 
-#: src/media.cls.php:485
+#: src/media.cls.php:599
 msgid "Currently using optimized version of AVIF file."
 msgstr "В настоящее время используется оптимизированная версия файла AVIF."
 
-#: src/lang.cls.php:232
+#: src/lang.cls.php:231
 msgid "WebP/AVIF For Extra srcset"
 msgstr "WebP/AVIF для дополнительного набора кадров"
 
-#: src/lang.cls.php:227
+#: src/lang.cls.php:226
 msgid "Next-Gen Image Format"
 msgstr "Формат изображений нового поколения"
 
-#: src/img-optm.cls.php:2031
+#: src/img-optm-manage.trait.php:833
 msgid "Enabled AVIF file successfully."
 msgstr "Успешное включение файла AVIF."
 
-#: src/img-optm.cls.php:2026
+#: src/img-optm-manage.trait.php:828
 msgid "Disabled AVIF file successfully."
 msgstr "Успешное отключение файла AVIF."
 
-#: src/img-optm.cls.php:1378
+#: src/img-optm-manage.trait.php:118
 msgid "Reset image optimization counter successfully."
 msgstr "Сброс счетчика оптимизации изображений прошел успешно."
 
@@ -444,64 +464,66 @@ msgstr "Имя файла пустое!"
 msgid "You will need to finish %s setup to use the online services."
 msgstr "Чтобы воспользоваться онлайн-сервисами, необходимо завершить настройку %s."
 
-#: src/cloud.cls.php:2276
+#: src/cloud.cls.php:299
 msgid "Sync QUIC.cloud status successfully."
 msgstr "Состояние QUIC.cloud успешно синхронизировано."
 
-#: src/cloud.cls.php:2220
+#: src/cloud-misc.trait.php:401
 msgid "Linked to QUIC.cloud preview environment, for testing purpose only."
 msgstr "Связано с предварительной средой QUIC.cloud, только для тестирования."
 
-#: src/cloud.cls.php:1919
+#: src/cloud-auth-callback.trait.php:297
 msgid "Click here to proceed."
 msgstr "Нажмите здесь, чтобы продолжить."
 
-#: src/cloud.cls.php:1918
+#: src/cloud-auth-callback.trait.php:296
 msgid "Site not recognized. QUIC.cloud deactivated automatically. Please reactivate your QUIC.cloud account."
 msgstr "Сайт не распознан. QUIC.cloud деактивировался автоматически. Пожалуйста, активируйте вашу учетную запись QUIC.cloud заново."
 
-#: src/cloud.cls.php:846
+#: src/cloud-auth.trait.php:346
 msgid "Reset %s activation successfully."
 msgstr "Сброс %s успешно активирован."
 
-#: src/cloud.cls.php:725 src/cloud.cls.php:775 src/cloud.cls.php:818
+#: src/cloud-auth-callback.trait.php:226 src/cloud-auth-callback.trait.php:262
+#: src/cloud-misc.trait.php:57
 msgid "Congratulations, %s successfully set this domain up for the online services with CDN service."
 msgstr "Поздравляем, %s успешно настроил этот домен для работы с онлайн-сервисами с помощью службы CDN."
 
-#: src/cloud.cls.php:720
+#: src/cloud-auth-callback.trait.php:221
 msgid "Congratulations, %s successfully set this domain up for the online services."
 msgstr "Поздравляем, %s успешно настроил этот домен для работы с онлайн-сервисами."
 
-#: src/cloud.cls.php:718
+#: src/cloud-auth-callback.trait.php:219
 msgid "Congratulations, %s successfully set this domain up for the anonymous online services."
 msgstr "Поздравляем, %s успешно настроил этот домен на анонимные онлайн-сервисы."
 
-#: src/cloud.cls.php:690
+#: src/cloud-auth-callback.trait.php:191
 msgid "%s activation data expired."
 msgstr "%s истек срок действия данных активации."
 
-#: src/cloud.cls.php:683
+#: src/cloud-auth-callback.trait.php:184
 msgid "Failed to parse %s activation status."
 msgstr "Не удалось разобрать статус активации %s."
 
-#: src/cloud.cls.php:676
+#: src/cloud-auth-callback.trait.php:177
 msgid "Failed to validate %s activation data."
 msgstr "Не удалось проверить данные активации %s."
 
-#: src/cloud.cls.php:386
+#: src/cloud-auth.trait.php:196
 msgid "Cert or key file does not exist."
 msgstr "Сертификат или файл ключа не существует."
 
-#: src/cloud.cls.php:368 src/cloud.cls.php:414 src/cloud.cls.php:441
-#: src/cloud.cls.php:460 src/cloud.cls.php:481 src/cloud.cls.php:499
+#: src/cloud-auth.trait.php:178 src/cloud-auth.trait.php:224
+#: src/cloud-auth.trait.php:251 src/cloud-auth.trait.php:270
+#: src/cloud-auth.trait.php:291 src/cloud-auth.trait.php:309
 msgid "You need to activate QC first."
 msgstr "Сначала вам нужно активировать QC."
 
-#: src/cloud.cls.php:319 src/cloud.cls.php:376
+#: src/cloud-auth.trait.php:129 src/cloud-auth.trait.php:186
 msgid "You need to set the %1$s first. Please use the command %2$s to set."
 msgstr "Сначала необходимо установить %1$s. Для установки используйте команду %2$s."
 
-#: src/cloud.cls.php:256 src/cloud.cls.php:341
+#: src/cloud-auth.trait.php:66 src/cloud-auth.trait.php:151
 msgid "Failed to get echo data from WPAPI"
 msgstr "Не удалось получить данные эха из WPAPI"
 
@@ -529,7 +551,7 @@ msgstr "При минификации HTML не удаляйте коммент�
 msgid "Specify an AJAX action in POST/GET and the number of seconds to cache that request, separated by a space."
 msgstr "Укажите действие AJAX в POST/GET и количество секунд для кэширования этого запроса, разделенные пробелом."
 
-#: src/lang.cls.php:169
+#: src/lang.cls.php:168
 msgid "HTML Keep Comments"
 msgstr "HTML Сохранить комментарии"
 
@@ -565,7 +587,7 @@ msgstr "В последний раз загружено"
 msgid "You can list the 3rd party vary cookies here."
 msgstr "Вы можете перечислить здесь все варианты cookie от третьих лиц."
 
-#: src/lang.cls.php:245
+#: src/lang.cls.php:244
 msgid "Vary Cookies"
 msgstr "Список Cookie"
 
@@ -585,7 +607,7 @@ msgstr "Создаёт отдельную копию кэша для мини к
 msgid "Vary for Mini Cart"
 msgstr "Отдельный кэш мини корзины"
 
-#: src/lang.cls.php:179
+#: src/lang.cls.php:178
 msgid "DNS Preconnect"
 msgstr "Предварительное подключение"
 
@@ -601,15 +623,15 @@ msgstr "Перечисленные файлы JS или встроенный к�
 msgid "URL Search"
 msgstr "Поиск URL"
 
-#: src/lang.cls.php:181
+#: src/lang.cls.php:180
 msgid "JS Delayed Includes"
 msgstr "Отложенные включения JS"
 
-#: src/cloud.cls.php:1693
+#: src/cloud-request.trait.php:417
 msgid "Your domain_key has been temporarily blocklisted to prevent abuse. You may contact support at QUIC.cloud to learn more."
 msgstr "Ваш domain_key был временно заблокирован для предотвращения злоупотреблений. Для получения дополнительной информации вы можете обратиться в службу поддержки по адресу QUIC.cloud."
 
-#: src/cloud.cls.php:1688
+#: src/cloud-request.trait.php:412
 msgid "Cloud server refused the current request due to unpulled images. Please pull the images first."
 msgstr "Облачный сервер отклонил текущий запрос из-за наличия незагруженных изображений. Сначала извлеките изображения."
 
@@ -617,7 +639,7 @@ msgstr "Облачный сервер отклонил текущий запро
 msgid "Current server load"
 msgstr "Текущая загрузка сервера"
 
-#: src/img-optm.cls.php:890
+#: src/img-optm-pull.trait.php:203
 msgid "Started async image optimization request"
 msgstr "Запущен асинхронный запрос на оптимизацию изображений"
 
@@ -629,7 +651,7 @@ msgstr "Запущено асинхронное сканирование"
 msgid "Saving option failed. IPv4 only for %s."
 msgstr "Не удалось сохранить опцию. IPv4 только для %s."
 
-#: src/cloud.cls.php:1700
+#: src/cloud-request.trait.php:424
 msgid "Cloud server refused the current request due to rate limiting. Please try again later."
 msgstr "Облачный сервер отклонил текущий запрос из-за ограничения скорости. Повторите попытку позже."
 
@@ -675,7 +697,7 @@ msgstr "Ключ кэша должен быть целым числом или �
 msgid "Cache key must not be an empty string."
 msgstr "Ключ кэша не должен быть пустой строкой."
 
-#: src/lang.cls.php:190
+#: src/lang.cls.php:189
 msgid "JS Deferred / Delayed Excludes"
 msgstr "Исключить JS из Отложенных / Задержанных"
 
@@ -683,7 +705,7 @@ msgstr "Исключить JS из Отложенных / Задержанных
 msgid "The queue is processed asynchronously. It may take time."
 msgstr "Очередь обрабатывается асинхронно. Это может занять время."
 
-#: src/cloud.cls.php:1362
+#: src/cloud-request.trait.php:110
 msgid "In order to use QC services, need a real domain name, cannot use an IP."
 msgstr "Для того чтобы воспользоваться услугами QC, необходимо реальное доменное имя, нельзя использовать IP."
 
@@ -871,7 +893,7 @@ msgstr "Стандартные предустановки"
 msgid "Listed CSS files will be excluded from UCSS and saved to inline."
 msgstr "Перечисленные CSS-файлы будут исключены из UCSS и сохранены во встроенном режиме."
 
-#: src/lang.cls.php:161
+#: src/lang.cls.php:160
 msgid "UCSS Selector Allowlist"
 msgstr "Белый список селекторов UCSS"
 
@@ -965,15 +987,15 @@ msgstr "Отключить отложенную загрузку изображ�
 msgid "Disable Cache"
 msgstr "Отключить кэширование"
 
-#: src/lang.cls.php:282
+#: src/lang.cls.php:281
 msgid "Debug String Excludes"
 msgstr "Исключение отладочных строк"
 
-#: src/lang.cls.php:221
+#: src/lang.cls.php:220
 msgid "Viewport Images Cron"
 msgstr "Планировщик для изображений области просмотра"
 
-#: src/lang.cls.php:220 src/metabox.cls.php:42 src/metabox.cls.php:43
+#: src/lang.cls.php:219 src/metabox.cls.php:42 src/metabox.cls.php:43
 #: tpl/page_optm/settings_vpi.tpl.php:23
 msgid "Viewport Images"
 msgstr "Изображения в области просмотра"
@@ -1075,19 +1097,19 @@ msgstr "Прочитайте все предупреждения перед вк
 msgid "This will delete all generated unique CSS files"
 msgstr "Это удалит все сгенерированные уникальные файлы CSS"
 
-#: tpl/toolbox/beta_test.tpl.php:85
+#: tpl/toolbox/beta_test.tpl.php:88
 msgid "In order to avoid an upgrade error, you must be using %1$s or later before you can upgrade to %2$s versions."
 msgstr "Чтобы избежать ошибки обновления, вы должны использовать %1$s или более позднюю версию, прежде чем сможете выполнить обновление до версии %2$s."
 
-#: tpl/toolbox/beta_test.tpl.php:78
+#: tpl/toolbox/beta_test.tpl.php:81
 msgid "Use latest GitHub Dev/Master commit"
 msgstr "Используйте последний коммит GitHub Dev/Master"
 
-#: tpl/toolbox/beta_test.tpl.php:78
+#: tpl/toolbox/beta_test.tpl.php:81
 msgid "Press the %s button to use the most recent GitHub commit. Master is for release candidate & Dev is for experimental testing."
 msgstr "Нажмите кнопку %s, чтобы использовать последний коммит GitHub. Master предназначен для релиз-кандидата, а Dev - для экспериментального тестирования."
 
-#: tpl/toolbox/beta_test.tpl.php:73
+#: tpl/toolbox/beta_test.tpl.php:76
 msgid "Downgrade not recommended. May cause fatal error due to refactored code."
 msgstr "Понижение версии не рекомендуется. Может привести к фатальной ошибке из-за рефакторинга кода."
 
@@ -1281,31 +1303,31 @@ msgstr "По умолчанию страницы «Моя учетная зап�
 msgid "Cleaned all Unique CSS files."
 msgstr "Очищены все уникальные файлы CSS."
 
-#: src/lang.cls.php:219
+#: src/lang.cls.php:218
 msgid "Add Missing Sizes"
 msgstr "Добавить недостающие размеры"
 
-#: src/lang.cls.php:195
+#: src/lang.cls.php:194
 msgid "Optimize for Guests Only"
 msgstr "Оптимизировать только для гостей"
 
-#: src/lang.cls.php:191
+#: src/lang.cls.php:190
 msgid "Guest Mode JS Excludes"
 msgstr "Исключить JS в гостевом режиме"
 
-#: src/lang.cls.php:171
+#: src/lang.cls.php:170
 msgid "CCSS Per URL"
 msgstr "CCSS на каждый URL"
 
-#: src/lang.cls.php:168
+#: src/lang.cls.php:167
 msgid "HTML Lazy Load Selectors"
 msgstr "Селекторы отложенной загрузки HTML"
 
-#: src/lang.cls.php:163
+#: src/lang.cls.php:162
 msgid "UCSS URI Excludes"
 msgstr "Исключения URI UCSS"
 
-#: src/lang.cls.php:160
+#: src/lang.cls.php:159
 msgid "UCSS Inline"
 msgstr "Встроить UCSS"
 
@@ -1343,15 +1365,15 @@ msgstr "В очереди осталось %1$s %2$s файлов"
 msgid "Crawler disabled list is cleared! All crawlers are set to active! "
 msgstr "Список отключенных обходчиков очищен! Все обходчики активны! "
 
-#: src/cloud.cls.php:1708
+#: src/cloud-request.trait.php:432
 msgid "Redetected node"
 msgstr "Повторное обнаружение узла"
 
-#: src/cloud.cls.php:1182
+#: src/cloud-node.trait.php:128
 msgid "No available Cloud Node after checked server load."
 msgstr "Нет доступного узла Cloud Node после проверки нагрузки на сервер."
 
-#: src/lang.cls.php:176
+#: src/lang.cls.php:175
 msgid "Localization Files"
 msgstr "Файлы локализации"
 
@@ -1363,11 +1385,11 @@ msgstr "Очищено!"
 msgid "Resources listed here will be copied and replaced with local URLs."
 msgstr "Ресурсы, перечисленные здесь, будут скопированы и заменены локальными URL-адресами."
 
-#: tpl/toolbox/beta_test.tpl.php:61
+#: tpl/toolbox/beta_test.tpl.php:64
 msgid "Use latest GitHub Master commit"
 msgstr "Использовать последний коммит GitHub Master"
 
-#: tpl/toolbox/beta_test.tpl.php:57
+#: tpl/toolbox/beta_test.tpl.php:60
 msgid "Use latest GitHub Dev commit"
 msgstr "Использовать последний коммит GitHub Dev"
 
@@ -1375,7 +1397,7 @@ msgstr "Использовать последний коммит GitHub Dev"
 msgid "No valid sitemap parsed for crawler."
 msgstr "Для поискового робота не была найдена действительная карта сайта."
 
-#: src/lang.cls.php:158
+#: src/lang.cls.php:157
 msgid "CSS Combine External and Inline"
 msgstr "Объединение внешних и встроенных CSS"
 
@@ -1409,7 +1431,7 @@ msgstr "Объединение всех локальных файлов JS в о
 msgid "Listed JS files or inline JS code will not be deferred or delayed."
 msgstr "Перечисленные файлы JS или встроенный код JS не будут отложены или задержаны."
 
-#: src/lang.cls.php:166
+#: src/lang.cls.php:165
 msgid "JS Combine External and Inline"
 msgstr "Объединение внешних и встроенных JS"
 
@@ -1434,7 +1456,7 @@ msgstr "Объединение файлов CSS и встроенного код
 msgid "Minify JS files and inline JS codes."
 msgstr "Минификация файлов JS и встроенного кода JS."
 
-#: src/lang.cls.php:209
+#: src/lang.cls.php:208
 msgid "LQIP Excludes"
 msgstr "Исключения LQIP"
 
@@ -1454,7 +1476,7 @@ msgstr "Этот параметр удалит все теги %s из HTML."
 msgid "Are you sure you want to clear all cloud nodes?"
 msgstr "Вы уверены, что хотите очистить все облачные узлы?"
 
-#: src/lang.cls.php:193 tpl/presets/standard.tpl.php:52
+#: src/lang.cls.php:192 tpl/presets/standard.tpl.php:52
 msgid "Remove Noscript Tags"
 msgstr "Удалить теги Noscript"
 
@@ -1467,7 +1489,7 @@ msgstr "Сайт не зарегистрирован на QUIC.cloud."
 msgid "Click here to set."
 msgstr "Щелкните здесь, чтобы установить."
 
-#: src/lang.cls.php:175
+#: src/lang.cls.php:174
 msgid "Localize Resources"
 msgstr "Локализация ресурсов"
 
@@ -1503,7 +1525,7 @@ msgstr "Настройки локализации"
 msgid "Use QUIC.cloud online service to generate unique CSS."
 msgstr "Используйте онлайн-сервис QUIC.cloud для создания уникального CSS."
 
-#: src/lang.cls.php:159
+#: src/lang.cls.php:158
 msgid "Generate UCSS"
 msgstr "Сгенерировать UCSS"
 
@@ -1536,15 +1558,15 @@ msgstr "URL-адреса с подстановочными знаками мог
 msgid "By design, this option may serve stale content. Do not enable this option, if that is not OK with you."
 msgstr "Из-за особенностей этого параметра, он может отдавать устаревший контент. Не включайте его, если для вас это критично."
 
-#: src/lang.cls.php:146
+#: src/lang.cls.php:145
 msgid "Serve Stale"
 msgstr "Просроченный кэш"
 
-#: src/img-optm.cls.php:1166
+#: src/img-optm-pull.trait.php:493
 msgid "One or more pulled images does not match with the notified image md5"
 msgstr "Одно или несколько извлечённых изображений не совпадают с md5 заявленного изображения"
 
-#: src/img-optm.cls.php:1087
+#: src/img-optm-pull.trait.php:408
 msgid "Some optimized image file(s) has expired and was cleared."
 msgstr "Некоторые оптимизированные файлы изображений были просрочены и очищены."
 
@@ -1552,11 +1574,11 @@ msgstr "Некоторые оптимизированные файлы изоб�
 msgid "You have too many requested images, please try again in a few minutes."
 msgstr "У вас слишком много запрошенных изображений. Повторите попытку через несколько минут."
 
-#: src/img-optm.cls.php:1102
+#: src/img-optm-pull.trait.php:425
 msgid "Pulled WebP image md5 does not match the notified WebP image md5."
 msgstr "Извлеченный md5 WebP-изображения не совпадает с md5 уведомленного WebP-изображения."
 
-#: src/img-optm.cls.php:1131
+#: src/img-optm-pull.trait.php:456
 msgid "Pulled AVIF image md5 does not match the notified AVIF image md5."
 msgstr "Вытащенный md5 AVIF-изображения не совпадает с md5 уведомленного AVIF-изображения."
 
@@ -1572,7 +1594,7 @@ msgstr "Обработка очереди ещё не завершена. Ост
 msgid "Specify how long, in seconds, Gravatar files are cached."
 msgstr "Укажите продолжительность кэширования файлов Gravatar в секундах."
 
-#: src/img-optm.cls.php:618
+#: src/img-optm-send.trait.php:564
 msgid "Cleared %1$s invalid images."
 msgstr "Очищено %1$s недопустимых изображений."
 
@@ -1600,19 +1622,19 @@ msgstr "Укажите макс. размер файла журнала."
 msgid "To prevent filling up the disk, this setting should be OFF when everything is working."
 msgstr "Чтобы предотвратить переполнение диска, эта настройка должна быть ВЫКЛ. в рабочей среде."
 
-#: tpl/toolbox/beta_test.tpl.php:81
+#: tpl/toolbox/beta_test.tpl.php:84
 msgid "Press the %s button to stop beta testing and go back to the current release from the WordPress Plugin Directory."
 msgstr "Нажмите кнопку %s, чтобы остановить бета-тестирование и вернуться к текущему выпуску из каталога плагинов WordPress."
 
-#: tpl/toolbox/beta_test.tpl.php:65 tpl/toolbox/beta_test.tpl.php:81
+#: tpl/toolbox/beta_test.tpl.php:68 tpl/toolbox/beta_test.tpl.php:84
 msgid "Use latest WordPress release version"
 msgstr "Используйте последнюю версию выпуска WordPress"
 
-#: tpl/toolbox/beta_test.tpl.php:65
+#: tpl/toolbox/beta_test.tpl.php:68
 msgid "OR"
 msgstr "ИЛИ"
 
-#: tpl/toolbox/beta_test.tpl.php:48
+#: tpl/toolbox/beta_test.tpl.php:51
 msgid "Use this section to switch plugin versions. To beta test a GitHub commit, enter the commit URL in the field below."
 msgstr "Используйте этот раздел для переключения версий подключаемых модулей. Для бета-тестирования GitHub commit введите URL-адрес коммита в поле ниже."
 
@@ -2343,91 +2365,91 @@ msgstr "Кэш LQIP"
 msgid "Options saved."
 msgstr "Настройки сохранены."
 
-#: src/img-optm.cls.php:1749
+#: src/img-optm-manage.trait.php:520
 msgid "Removed backups successfully."
 msgstr "Резервные копии удалены успешно."
 
-#: src/img-optm.cls.php:1657
+#: src/img-optm-manage.trait.php:419
 msgid "Calculated backups successfully."
 msgstr "Расчет резервных копий выполнен успешно."
 
-#: src/img-optm.cls.php:1591
+#: src/img-optm-manage.trait.php:348
 msgid "Rescanned %d images successfully."
 msgstr "Повторное сканирование %d изображений выполнено успешно."
 
-#: src/img-optm.cls.php:1527 src/img-optm.cls.php:1591
+#: src/img-optm-manage.trait.php:283 src/img-optm-manage.trait.php:348
 msgid "Rescanned successfully."
 msgstr "Повторное сканирование выполнено успешно."
 
-#: src/img-optm.cls.php:1462
+#: src/img-optm-manage.trait.php:208
 msgid "Destroy all optimization data successfully."
 msgstr "Успешно уничтожены все данные оптимизации."
 
-#: src/img-optm.cls.php:1361
+#: src/img-optm-manage.trait.php:101
 msgid "Cleaned up unfinished data successfully."
 msgstr "Успешно очищены незавершенные данные."
 
-#: src/img-optm.cls.php:976
+#: src/img-optm-pull.trait.php:295
 msgid "Pull Cron is running"
 msgstr "Выполнить извлечение через cron"
 
-#: src/img-optm.cls.php:700
+#: src/img-optm-send.trait.php:651
 msgid "No valid image found by Cloud server in the current request."
 msgstr "В текущем запросе облачный сервер не нашел ни одного допустимого изображения."
 
-#: src/img-optm.cls.php:675
+#: src/img-optm-send.trait.php:626
 msgid "No valid image found in the current request."
 msgstr "В текущем запросе не найдено допустимое изображение."
 
-#: src/img-optm.cls.php:350
+#: src/img-optm-send.trait.php:279
 msgid "Pushed %1$s to Cloud server, accepted %2$s."
 msgstr "На облачный сервер отправлено %1$s, принято %2$s."
 
-#: src/lang.cls.php:285
+#: src/lang.cls.php:284
 msgid "Revisions Max Age"
 msgstr "Макс. возраст редакций"
 
-#: src/lang.cls.php:284
+#: src/lang.cls.php:283
 msgid "Revisions Max Number"
 msgstr "Макс. количество редакций"
 
-#: src/lang.cls.php:281
+#: src/lang.cls.php:280
 msgid "Debug URI Excludes"
 msgstr "Исключение отладочных URI"
 
-#: src/lang.cls.php:280
+#: src/lang.cls.php:279
 msgid "Debug URI Includes"
 msgstr "Включение отладочных URI"
 
-#: src/lang.cls.php:260
+#: src/lang.cls.php:259
 msgid "HTML Attribute To Replace"
 msgstr "HTML-атрибут для замены"
 
-#: src/lang.cls.php:254
+#: src/lang.cls.php:253
 msgid "Use CDN Mapping"
 msgstr "Использовать CDN Mapping"
 
-#: src/lang.cls.php:252
+#: src/lang.cls.php:251
 msgid "Editor Heartbeat TTL"
 msgstr "TTL пульсации в редакторе"
 
-#: src/lang.cls.php:251
+#: src/lang.cls.php:250
 msgid "Editor Heartbeat"
 msgstr "Пульсации в редакторе"
 
-#: src/lang.cls.php:250
+#: src/lang.cls.php:249
 msgid "Backend Heartbeat TTL"
 msgstr "TTL пульсации внутреннего интерфейса"
 
-#: src/lang.cls.php:249
+#: src/lang.cls.php:248
 msgid "Backend Heartbeat Control"
 msgstr "Управление пульсацией во внутреннем интерфейсе"
 
-#: src/lang.cls.php:248
+#: src/lang.cls.php:247
 msgid "Frontend Heartbeat TTL"
 msgstr "TTL пульсации внешнего интерфейса"
 
-#: src/lang.cls.php:247
+#: src/lang.cls.php:246
 msgid "Frontend Heartbeat Control"
 msgstr "Управление пульсацией во внешнем интерфейсе"
 
@@ -2439,84 +2461,84 @@ msgstr "Путь к .htaccess во внутреннем интерфейсе"
 msgid "Frontend .htaccess Path"
 msgstr "Путь к .htaccess во внешнем интерфейсе"
 
-#: src/lang.cls.php:237
+#: src/lang.cls.php:236
 msgid "ESI Nonces"
 msgstr "ESI Nonces"
 
-#: src/lang.cls.php:233
+#: src/lang.cls.php:232
 msgid "WordPress Image Quality Control"
 msgstr "Управление качеством изображения в WordPress"
 
-#: src/lang.cls.php:224
+#: src/lang.cls.php:223
 msgid "Auto Request Cron"
 msgstr "Авто запрос через Cron"
 
-#: src/lang.cls.php:217
+#: src/lang.cls.php:216
 msgid "Generate LQIP In Background"
 msgstr "Генерировать LQIP в фоновом режиме"
 
-#: src/lang.cls.php:216
+#: src/lang.cls.php:215
 msgid "LQIP Minimum Dimensions"
 msgstr "Мин. размеры LQIP"
 
-#: src/lang.cls.php:215
+#: src/lang.cls.php:214
 msgid "LQIP Quality"
 msgstr "Качество LQIP"
 
-#: src/lang.cls.php:214
+#: src/lang.cls.php:213
 msgid "LQIP Cloud Generator"
 msgstr "Генератор LQIP в облаке"
 
-#: src/lang.cls.php:213
+#: src/lang.cls.php:212
 msgid "Responsive Placeholder SVG"
 msgstr "SVG, как адаптивный заполнитель"
 
-#: src/lang.cls.php:212
+#: src/lang.cls.php:211
 msgid "Responsive Placeholder Color"
 msgstr "Цвет адаптивного заполнителя"
 
-#: src/lang.cls.php:210
+#: src/lang.cls.php:209
 msgid "Basic Image Placeholder"
 msgstr "Основной заполнитель изображения"
 
-#: src/lang.cls.php:208
+#: src/lang.cls.php:207
 msgid "Lazy Load URI Excludes"
 msgstr "Исключить отложенную загрузку URI"
 
-#: src/lang.cls.php:207
+#: src/lang.cls.php:206
 msgid "Lazy Load Iframe Parent Class Name Excludes"
 msgstr "Исключить отложенную загрузку имен родительского класса Iframe"
 
-#: src/lang.cls.php:206
+#: src/lang.cls.php:205
 msgid "Lazy Load Iframe Class Name Excludes"
 msgstr "Исключить отложенную загрузку имен классов iframe"
 
-#: src/lang.cls.php:205
+#: src/lang.cls.php:204
 msgid "Lazy Load Image Parent Class Name Excludes"
 msgstr "Исключить отложенную загрузку имен родительского класса изображений"
 
-#: src/lang.cls.php:200
+#: src/lang.cls.php:199
 msgid "Gravatar Cache TTL"
 msgstr "TTL кэша Gravatar"
 
-#: src/lang.cls.php:199
+#: src/lang.cls.php:198
 msgid "Gravatar Cache Cron"
 msgstr "Cron кэша Gravatar"
 
-#: src/gui.cls.php:812 src/gui.cls.php:1032 src/lang.cls.php:198
+#: src/gui.cls.php:812 src/gui.cls.php:1032 src/lang.cls.php:197
 #: tpl/presets/standard.tpl.php:49 tpl/toolbox/purge.tpl.php:118
 msgid "Gravatar Cache"
 msgstr "Кэш Gravatar"
 
-#: src/lang.cls.php:178
+#: src/lang.cls.php:177
 msgid "DNS Prefetch Control"
 msgstr "Управление предварительной выборкой DNS"
 
-#: src/lang.cls.php:173 tpl/presets/standard.tpl.php:46
+#: src/lang.cls.php:172 tpl/presets/standard.tpl.php:46
 msgid "Font Display Optimization"
 msgstr "Оптимизация отображения шрифта"
 
-#: src/lang.cls.php:150
+#: src/lang.cls.php:149
 msgid "Force Public Cache URIs"
 msgstr "Принудительно использовать URI Public Cache"
 
@@ -2536,7 +2558,8 @@ msgstr "TTL REST по умолчанию"
 msgid "Enable Cache"
 msgstr "Включить кэш"
 
-#: src/cloud.cls.php:320 src/cloud.cls.php:377 src/lang.cls.php:106
+#: src/cloud-auth.trait.php:130 src/cloud-auth.trait.php:187
+#: src/lang.cls.php:106
 msgid "Server IP"
 msgstr "IP-адрес сервера"
 
@@ -2544,32 +2567,33 @@ msgstr "IP-адрес сервера"
 msgid "Images not requested"
 msgstr "Изображения не запрошены"
 
-#: src/cloud.cls.php:2283
+#: src/cloud.cls.php:306
 msgid "Sync credit allowance with Cloud Server successfully."
 msgstr "Успешная синхронизация кредита с облачным сервером."
 
-#: src/cloud.cls.php:1859
+#: src/cloud-request.trait.php:583
 msgid "Failed to communicate with QUIC.cloud server"
 msgstr "Не удалось связаться с сервером QUIC.cloud"
 
-#: src/cloud.cls.php:1783
+#: src/cloud-request.trait.php:507
 msgid "Good news from QUIC.cloud server"
 msgstr "Хорошие новости с сервера QUIC.cloud"
 
-#: src/cloud.cls.php:1767 src/cloud.cls.php:1775
+#: src/cloud-request.trait.php:491 src/cloud-request.trait.php:499
 msgid "Message from QUIC.cloud server"
 msgstr "Сообщение с сервера QUIC.cloud"
 
-#: src/cloud.cls.php:1411
+#: src/cloud-request.trait.php:159
 msgid "Please try after %1$s for service %2$s."
 msgstr "Повторите попытку после %1$s для службы %2$s."
 
-#: src/cloud.cls.php:1250
+#: src/cloud-node.trait.php:196
 msgid "No available Cloud Node."
 msgstr "Нет доступного узла облака."
 
-#: src/cloud.cls.php:1131 src/cloud.cls.php:1144 src/cloud.cls.php:1182
-#: src/cloud.cls.php:1250 src/cloud.cls.php:1408
+#: src/cloud-node.trait.php:77 src/cloud-node.trait.php:90
+#: src/cloud-node.trait.php:128 src/cloud-node.trait.php:196
+#: src/cloud-request.trait.php:156
 msgid "Cloud Error"
 msgstr "Ошибка облака (Cloud)"
 
@@ -2578,84 +2602,84 @@ msgstr "Ошибка облака (Cloud)"
 msgid "The database has been upgrading in the background since %s. This message will disappear once upgrade is complete."
 msgstr "База данных обновляется в фоновом режиме с %s. Это сообщение исчезнет после завершения обновления."
 
-#: src/media.cls.php:541
+#: src/media.cls.php:656
 msgid "Restore from backup"
 msgstr "Восстановление из резервной копии"
 
-#: src/media.cls.php:526
+#: src/media.cls.php:641
 msgid "No backup of unoptimized WebP file exists."
 msgstr "Резервной копии неоптимизированного файла WebP не существует."
 
-#: src/media.cls.php:502
+#: src/media.cls.php:616
 msgid "WebP file reduced by %1$s (%2$s)"
 msgstr "Файл WebP уменьшен на %1$s (%2$s)"
 
-#: src/media.cls.php:493
+#: src/media.cls.php:607
 msgid "Currently using original (unoptimized) version of WebP file."
 msgstr "В настоящее время используется исходная (неоптимизированная) версия файла WebP."
 
-#: src/media.cls.php:486
+#: src/media.cls.php:600
 msgid "Currently using optimized version of WebP file."
 msgstr "В настоящее время используется оптимизированная версия файла WebP."
 
-#: src/media.cls.php:464
+#: src/media.cls.php:578
 msgid "Orig"
 msgstr "Оригинал"
 
-#: src/media.cls.php:461
+#: src/media.cls.php:575
 msgid "(no savings)"
 msgstr "(без экономии)"
 
-#: src/media.cls.php:460
+#: src/media.cls.php:574
 msgid "Orig %s"
 msgstr "Оригинал %s"
 
-#: src/media.cls.php:458
+#: src/media.cls.php:572
 msgid "Congratulation! Your file was already optimized"
 msgstr "Поздравляем! Ваш файл уже оптимизирован"
 
-#: src/media.cls.php:453
+#: src/media.cls.php:567
 msgid "No backup of original file exists."
 msgstr "Резервная копия исходного файла отсутствует."
 
-#: src/media.cls.php:453 src/media.cls.php:525
+#: src/media.cls.php:567 src/media.cls.php:640
 msgid "Using optimized version of file. "
 msgstr "Использование оптимизированной версии файла. "
 
-#: src/media.cls.php:438
+#: src/media.cls.php:552
 msgid "Orig saved %s"
 msgstr "Оригинал сохранен %s"
 
-#: src/media.cls.php:429
+#: src/media.cls.php:542
 msgid "Original file reduced by %1$s (%2$s)"
 msgstr "Исходный файл уменьшен на %1$s (%2$s)"
 
-#: src/media.cls.php:421 src/media.cls.php:494
+#: src/media.cls.php:534 src/media.cls.php:608
 msgid "Click to switch to optimized version."
 msgstr "Щелкните, чтобы переключиться на оптимизированную версию."
 
-#: src/media.cls.php:421
+#: src/media.cls.php:534
 msgid "Currently using original (unoptimized) version of file."
 msgstr "В настоящее время используется исходная (неоптимизированная) версия файла."
 
-#: src/media.cls.php:420 src/media.cls.php:490
+#: src/media.cls.php:533 src/media.cls.php:604
 msgid "(non-optm)"
 msgstr "(без оптимизации)"
 
-#: src/media.cls.php:417 src/media.cls.php:487
+#: src/media.cls.php:530 src/media.cls.php:601
 msgid "Click to switch to original (unoptimized) version."
 msgstr "Щелкните, чтобы переключиться на исходную (неоптимизированную) версию."
 
-#: src/media.cls.php:417
+#: src/media.cls.php:530
 msgid "Currently using optimized version of file."
 msgstr "В настоящее время используется оптимизированная версия файла."
 
-#: src/media.cls.php:416 src/media.cls.php:454 src/media.cls.php:483
-#: src/media.cls.php:527
+#: src/media.cls.php:529 src/media.cls.php:568 src/media.cls.php:597
+#: src/media.cls.php:642
 msgid "(optm)"
 msgstr "(оптимизация)"
 
-#: src/placeholder.cls.php:233
+#: src/placeholder.cls.php:234
 msgid "LQIP image preview for size %s"
 msgstr "Предпросмотр изображения LQIP для размера %s"
 
@@ -2671,7 +2695,7 @@ msgstr "Ранее был в черном списке"
 msgid "Manually added to blocklist"
 msgstr "Ручное добавление в черный список"
 
-#: src/htaccess.cls.php:325
+#: src/htaccess.cls.php:425
 msgid "Mobile Agent Rules"
 msgstr "Правила для мобильных агентов"
 
@@ -2856,11 +2880,11 @@ msgstr "Время загрузки страницы"
 msgid "To use the caching functions you must have a LiteSpeed web server or be using QUIC.cloud CDN."
 msgstr "Для использования функций кэширования необходимо иметь веб-сервер LiteSpeed или использовать QUIC.cloud CDN."
 
-#: src/lang.cls.php:230
+#: src/lang.cls.php:229
 msgid "Preserve EXIF/XMP data"
 msgstr "Хранить данные EXIF/XMP"
 
-#: tpl/toolbox/beta_test.tpl.php:36
+#: tpl/toolbox/beta_test.tpl.php:39
 msgid "Try GitHub Version"
 msgstr "Попробуйте версию GitHub"
 
@@ -2876,7 +2900,7 @@ msgstr "Могут использоваться как полные, так и �
 msgid "Images containing these class names will not be lazy loaded."
 msgstr "Изображения, содержащие эти имена классов, не будут отложено загружаться."
 
-#: src/lang.cls.php:204
+#: src/lang.cls.php:203
 msgid "Lazy Load Image Class Name Excludes"
 msgstr "Исключить отложенную загрузку имен классов изображений"
 
@@ -2897,7 +2921,7 @@ msgid "Turn On Auto Upgrade"
 msgstr "Включить автообновление"
 
 #: tpl/banner/new_version.php:77 tpl/banner/new_version_dev.tpl.php:41
-#: tpl/toolbox/beta_test.tpl.php:88
+#: tpl/toolbox/beta_test.tpl.php:91
 msgid "Upgrade"
 msgstr "Обновление"
 
@@ -2921,11 +2945,11 @@ msgstr "Конечно, я хотел бы сделать обзор!"
 msgid "Thank You for Using the LiteSpeed Cache Plugin!"
 msgstr "Спасибо за использование плагина LiteSpeed Cache!"
 
-#: src/activation.cls.php:570
+#: src/activation.cls.php:569
 msgid "Upgraded successfully."
 msgstr "Обновление выполнено успешно."
 
-#: src/activation.cls.php:561 src/activation.cls.php:566
+#: src/activation.cls.php:560 src/activation.cls.php:565
 msgid "Failed to upgrade."
 msgstr "Не удалось обновить."
 
@@ -2969,7 +2993,7 @@ msgstr "Значения файлов cookie"
 msgid "Cookie Name"
 msgstr "Имя cookie"
 
-#: src/lang.cls.php:271
+#: src/lang.cls.php:270
 msgid "Cookie Simulation"
 msgstr "Симуляция куки"
 
@@ -3005,7 +3029,7 @@ msgstr "Сбросить все настройки"
 msgid "Separate critical CSS files will be generated for paths containing these strings."
 msgstr "Для путей, содержащих эти строки, будут созданы отдельные критические CSS файлы."
 
-#: src/lang.cls.php:188
+#: src/lang.cls.php:187
 msgid "Separate CCSS Cache URIs"
 msgstr "Отдельные URI кэша CCSS"
 
@@ -3017,7 +3041,7 @@ msgstr "Например, если каждая страница вашего с
 msgid "List post types where each item of that type should have its own CCSS generated."
 msgstr "Перечислите типы записей, в которых каждый предмет этого типа должен иметь собственный сгенерированный CCSS."
 
-#: src/lang.cls.php:187
+#: src/lang.cls.php:186
 msgid "Separate CCSS Cache Post Types"
 msgstr "Разделить кеш CCSS по типу записей"
 
@@ -3041,7 +3065,7 @@ msgstr "Это сгенерирует заполнитель с теми же р
 msgid "Responsive image placeholders can help to reduce layout reshuffle when images are loaded."
 msgstr "Адаптивные заполнители изображений могут помочь уменьшить дрожание макета при загрузке изображений."
 
-#: src/lang.cls.php:211
+#: src/lang.cls.php:210
 msgid "Responsive Placeholder"
 msgstr "Адаптивный заполнитель"
 
@@ -3057,7 +3081,7 @@ msgstr "Включите LiteSpeed Cache в настройках плагина.
 msgid "Please enable the LSCache Module at the server level, or ask your hosting provider."
 msgstr "Включите модуль LSCache на уровне сервера или обратитесь к своему хостинг-провайдеру."
 
-#: src/cloud.cls.php:1633 src/cloud.cls.php:1656
+#: src/cloud-request.trait.php:357 src/cloud-request.trait.php:380
 msgid "Failed to request via WordPress"
 msgstr "Не удалось выполнить запрос через WordPress"
 
@@ -3066,7 +3090,7 @@ msgstr "Не удалось выполнить запрос через WordPress
 msgid "High-performance page caching and site optimization from LiteSpeed"
 msgstr "Высокопроизводительное кэширование страниц и оптимизация сайта от LiteSpeed"
 
-#: src/img-optm.cls.php:2103
+#: src/img-optm-manage.trait.php:913
 msgid "Reset the optimized data successfully."
 msgstr "Сброс оптимизированных данных успешно выполнен."
 
@@ -3094,11 +3118,11 @@ msgstr "Установить %s"
 msgid "LSCache caching functions on this page are currently unavailable!"
 msgstr "Функции кэширования LiteSpeed Cache на этой странице в настоящее время недоступны!"
 
-#: src/cloud.cls.php:1792
+#: src/cloud-request.trait.php:516
 msgid "%1$s plugin version %2$s required for this action."
 msgstr "Для этого действия требуется плагин %1$s версии %2$s ."
 
-#: src/cloud.cls.php:1716
+#: src/cloud-request.trait.php:440
 msgid "We are working hard to improve your online service experience. The service will be unavailable while we work. We apologize for any inconvenience."
 msgstr "Мы прилагаем все усилия, чтобы улучшить качество вашего обслуживания в Интернете. Пока мы работаем, сервис будет недоступен. Мы приносим извинения за возможные неудобства."
 
@@ -3106,7 +3130,7 @@ msgstr "Мы прилагаем все усилия, чтобы улучшить
 msgid "Automatically remove the original image backups after fetching optimized images."
 msgstr "Авто удаление резервных копий исходных изображений после получения оптимизированных изображений."
 
-#: src/lang.cls.php:226
+#: src/lang.cls.php:225
 msgid "Remove Original Backups"
 msgstr "Удалить исходные резервные копии"
 
@@ -3118,7 +3142,7 @@ msgstr "Авто запрашивать оптимизацию с помощью
 msgid "A backup of each image is saved before it is optimized."
 msgstr "Перед оптимизацией сохраняется резервная копия каждого изображения."
 
-#: src/img-optm.cls.php:1896
+#: src/img-optm-manage.trait.php:682
 msgid "Switched images successfully."
 msgstr "Изображения успешно переключены."
 
@@ -3130,7 +3154,7 @@ msgstr "Это может улучшить качество, но может п�
 msgid "Optimize images using lossless compression."
 msgstr "Оптимизация изображений, используя сжатие без потерь."
 
-#: src/lang.cls.php:228
+#: src/lang.cls.php:227
 msgid "Optimize Losslessly"
 msgstr "Оптимизация без потерь"
 
@@ -3142,7 +3166,7 @@ msgstr "При оптимизации запрашивайте WebP/AVIF-вер�
 msgid "Optimize images and save backups of the originals in the same folder."
 msgstr "Оптимизируйте изображения и сохраняйте резервные копии оригиналов в той же папке."
 
-#: src/lang.cls.php:225
+#: src/lang.cls.php:224
 msgid "Optimize Original Images"
 msgstr "Оптимизация исходных изображений"
 
@@ -3158,7 +3182,7 @@ msgstr "Очищены все критические CSS файлы."
 msgid "This will inline the asynchronous CSS library to avoid render blocking."
 msgstr "Это позволит встроить асинхронную библиотеку CSS, чтобы избежать блокировки рендеринга."
 
-#: src/lang.cls.php:172
+#: src/lang.cls.php:171
 msgid "Inline CSS Async Lib"
 msgstr "Встроенная асинхронная библиотека CSS"
 
@@ -3282,7 +3306,7 @@ msgstr "Будут заменены только перечисленные зд
 msgid "Specify which element attributes will be replaced with WebP/AVIF."
 msgstr "Укажите, какие атрибуты элементов будут заменены на WebP/AVIF."
 
-#: src/lang.cls.php:231
+#: src/lang.cls.php:230
 msgid "WebP/AVIF Attribute To Replace"
 msgstr "Замена атрибута WebP/AVIF"
 
@@ -3290,7 +3314,7 @@ msgstr "Замена атрибута WebP/AVIF"
 msgid "Only files within these directories will be pointed to the CDN."
 msgstr "Только файлы в этих каталогах будут направлены на CDN."
 
-#: src/lang.cls.php:262
+#: src/lang.cls.php:261
 msgid "Included Directories"
 msgstr "Включенные каталоги"
 
@@ -3298,7 +3322,7 @@ msgstr "Включенные каталоги"
 msgid "A Purge All will be executed when WordPress runs these hooks."
 msgstr "Когда WordPress выполняет эти хуки, все очищается."
 
-#: src/lang.cls.php:239
+#: src/lang.cls.php:238
 msgid "Purge All Hooks"
 msgstr "Очистить все хуки"
 
@@ -3318,7 +3342,7 @@ msgstr "Принудительное кеширование"
 msgid "Paths containing these strings will be cached regardless of no-cacheable settings."
 msgstr "Пути, содержащие эти строки, будут кэшироваться независимо от каких-либо настроек, которые нельзя кэшировать."
 
-#: src/lang.cls.php:149
+#: src/lang.cls.php:148
 msgid "Force Cache URIs"
 msgstr "Принудительный кэш URIs"
 
@@ -3331,7 +3355,7 @@ msgstr "Настройки исключения"
 msgid "This will disable LSCache and all optimization features for debug purpose."
 msgstr "Это приведет к отключению функции LSCache и всех функций оптимизации для отладки."
 
-#: src/lang.cls.php:274
+#: src/lang.cls.php:273
 msgid "Disable All Features"
 msgstr "Отключить все функции"
 
@@ -3420,7 +3444,7 @@ msgstr "Гость"
 msgid "To crawl the site as a logged-in user, enter the user ids to be simulated."
 msgstr "Чтобы сканировать сайт как зарегистрированный пользователь, введите IDs пользователей, которые будут имитироваться."
 
-#: src/lang.cls.php:270
+#: src/lang.cls.php:269
 msgid "Role Simulation"
 msgstr "Симуляция роли"
 
@@ -3462,15 +3486,6 @@ msgstr "Последнее полное время работы всех роб�
 #: tpl/crawler/summary.tpl.php:77
 msgid "Current sitemap crawl started at"
 msgstr "Сканирование (crawl) текущей карты сайта началось в"
-
-#. translators: %1$s: Object Cache Admin title, %2$s: OFF status
-#: tpl/cache/settings_inc.object.tpl.php:278
-msgid "Save transients in database when %1$s is %2$s."
-msgstr "Сохраните переходные процессы в базе данных, когда %1$s равен %2$s."
-
-#: src/lang.cls.php:143
-msgid "Store Transients"
-msgstr "Хранить транзиенты"
 
 #. translators: %1$s: Cache Mobile label, %2$s: ON status, %3$s: List of Mobile
 #. User Agents label
@@ -3528,7 +3543,7 @@ msgstr "Это создаст дополнительные запросы к с�
 msgid "When a visitor hovers over a page link, preload that page. This will speed up the visit to that link."
 msgstr "Когда пользователь наводит курсор на ссылку страницы, предварительно загрузите эту страницу. Это ускорит переход по ссылке."
 
-#: src/lang.cls.php:241
+#: src/lang.cls.php:240
 msgid "Instant Click"
 msgstr "Мгновенный щелчок"
 
@@ -3695,11 +3710,11 @@ msgstr "Недоступно"
 msgid "Purge all the object caches"
 msgstr "Очистить все кеши объектов"
 
-#: src/cdn/cloudflare.cls.php:275 src/cdn/cloudflare.cls.php:297
+#: src/cdn/cloudflare.cls.php:285 src/cdn/cloudflare.cls.php:307
 msgid "Failed to communicate with Cloudflare"
 msgstr "Не удалось связаться с CloudFlare"
 
-#: src/cdn/cloudflare.cls.php:288
+#: src/cdn/cloudflare.cls.php:298
 msgid "Communicated with Cloudflare successfully."
 msgstr "Успешное взаимодействие с CloudFlare."
 
@@ -3731,7 +3746,7 @@ msgstr "Вы можете ввести только часть домена."
 msgid "Domain"
 msgstr "Домен"
 
-#: src/lang.cls.php:264
+#: src/lang.cls.php:263
 msgid "Cloudflare API"
 msgstr "API CloudFlare"
 
@@ -3801,7 +3816,7 @@ msgstr "Например"
 msgid "Prefetching DNS can reduce latency for visitors."
 msgstr "Предварительная выборка DNS может уменьшить задержки для посетителей."
 
-#: src/lang.cls.php:177
+#: src/lang.cls.php:176
 msgid "DNS Prefetch"
 msgstr "Предзагрузка DNS"
 
@@ -3826,7 +3841,7 @@ msgstr "Отбросить строку запроса"
 msgid "Enable this option if you are using both HTTP and HTTPS in the same domain and are noticing cache irregularities."
 msgstr "Включите эту опцию, если вы используете и HTTP, и HTTPS в одном домене и замечаете нарушения кеширования."
 
-#: src/lang.cls.php:240
+#: src/lang.cls.php:239
 msgid "Improve HTTP/HTTPS Compatibility"
 msgstr "Улучшение совместимости HTTP/HTTPS"
 
@@ -3850,7 +3865,7 @@ msgstr "Это увеличит размер оптимизированных ф
 msgid "Preserve EXIF data (copyright, GPS, comments, keywords, etc) when optimizing."
 msgstr "Сохранить данные EXIF (авторское право, GPS, описание, теги и т.д.) при оптимизации."
 
-#: tpl/toolbox/log_viewer.tpl.php:46 tpl/toolbox/log_viewer.tpl.php:75
+#: tpl/toolbox/log_viewer.tpl.php:46 tpl/toolbox/log_viewer.tpl.php:78
 msgid "Clear Logs"
 msgstr "Очистить журнал"
 
@@ -3858,7 +3873,7 @@ msgstr "Очистить журнал"
 msgid " %s ago"
 msgstr " %s назад"
 
-#: src/media.cls.php:510
+#: src/media.cls.php:625
 msgid "WebP saved %s"
 msgstr "WebP сохранен %s"
 
@@ -3906,11 +3921,11 @@ msgstr "Отправьте этот отчет в LiteSpeed. Cошлитесь �
 msgid "Send to LiteSpeed"
 msgstr "Отправить в LiteSpeed"
 
-#: src/media.cls.php:361
+#: src/media.cls.php:474
 msgid "LiteSpeed Optimization"
 msgstr "Оптимизация LiteSpeed"
 
-#: src/lang.cls.php:184
+#: src/lang.cls.php:183
 msgid "Load Google Fonts Asynchronously"
 msgstr "Асинхронная загрузка шрифтов Google"
 
@@ -3938,19 +3953,19 @@ msgstr "Изображения оптимизированы и извлечен�
 msgid "Images requested"
 msgstr "Запрошенные изображения"
 
-#: src/img-optm.cls.php:1993 src/img-optm.cls.php:2053
+#: src/img-optm-manage.trait.php:793 src/img-optm-manage.trait.php:854
 msgid "Switched to optimized file successfully."
 msgstr "Переключение на оптимизированный файл прошло успешно."
 
-#: src/img-optm.cls.php:2047
+#: src/img-optm-manage.trait.php:848
 msgid "Restored original file successfully."
 msgstr "Исходный файл успешно восстановлен."
 
-#: src/img-optm.cls.php:2017
+#: src/img-optm-manage.trait.php:820
 msgid "Enabled WebP file successfully."
 msgstr "Успешно включен файл WebP."
 
-#: src/img-optm.cls.php:2012
+#: src/img-optm-manage.trait.php:815
 msgid "Disabled WebP file successfully."
 msgstr "Успешно отключен WebP-файл."
 
@@ -3970,7 +3985,7 @@ msgstr "Настройка"
 msgid "Selected roles will be excluded from all optimizations."
 msgstr "Выбранные роли будут исключены из всех оптимизаций."
 
-#: src/lang.cls.php:196
+#: src/lang.cls.php:195
 msgid "Role Excludes"
 msgstr "Исключить роли"
 
@@ -4058,7 +4073,7 @@ msgstr "Фильтр %s поддерживается ."
 msgid "Listed images will not be lazy loaded."
 msgstr "Перечисленные изображения не будут отложено загружаться."
 
-#: src/lang.cls.php:203
+#: src/lang.cls.php:202
 msgid "Lazy Load Image Excludes"
 msgstr "Исключить отложенную загрузку изображений"
 
@@ -4070,7 +4085,7 @@ msgstr "Без оптимизации"
 msgid "Prevent any optimization of listed pages."
 msgstr "Предотвращает любую оптимизацию перечисленных страниц."
 
-#: src/lang.cls.php:194
+#: src/lang.cls.php:193
 msgid "URI Excludes"
 msgstr "Исключенные URI"
 
@@ -4086,7 +4101,7 @@ msgstr "Можно использовать как полные URL-адреса
 msgid "Load iframes only when they enter the viewport."
 msgstr "Загружайте iframe только тогда, когда они появляются в окне просмотра."
 
-#: src/lang.cls.php:218
+#: src/lang.cls.php:217
 msgid "Lazy Load Iframes"
 msgstr "Отложенная загрузка Iframes"
 
@@ -4099,7 +4114,7 @@ msgstr "Это может улучшить время загрузки стра�
 msgid "Load images only when they enter the viewport."
 msgstr "Загружайте изображения только когда они появляются в окне просмотра."
 
-#: src/lang.cls.php:202
+#: src/lang.cls.php:201
 msgid "Lazy Load Images"
 msgstr "Отложенная загрузка изображений"
 
@@ -4138,7 +4153,7 @@ msgstr "Я уже оставил отзыв"
 msgid "Welcome to LiteSpeed"
 msgstr "Добро пожаловать в LiteSpeed"
 
-#: src/lang.cls.php:192 tpl/presets/standard.tpl.php:51
+#: src/lang.cls.php:191 tpl/presets/standard.tpl.php:51
 msgid "Remove WordPress Emoji"
 msgstr "Удалить WordPress Emoji"
 
@@ -4162,7 +4177,7 @@ msgstr "Отметить эту страницу как "
 msgid "Purge this page"
 msgstr "Очистить эту страницу"
 
-#: src/lang.cls.php:174
+#: src/lang.cls.php:173
 msgid "Load JS Deferred"
 msgstr "Отложенная загрузка JS"
 
@@ -4170,11 +4185,11 @@ msgstr "Отложенная загрузка JS"
 msgid "Specify critical CSS rules for above-the-fold content when enabling %s."
 msgstr "Укажите правила критического CSS для содержимого в верхней части экрана (выше сгиба) при включении %s."
 
-#: src/lang.cls.php:186
+#: src/lang.cls.php:185
 msgid "Critical CSS Rules"
 msgstr "Правила критического CSS"
 
-#: src/lang.cls.php:170 tpl/page_optm/settings_tuning_css.tpl.php:167
+#: src/lang.cls.php:169 tpl/page_optm/settings_tuning_css.tpl.php:167
 msgid "Load CSS Asynchronously"
 msgstr "Асинхронная загрузка CSS"
 
@@ -4182,7 +4197,7 @@ msgstr "Асинхронная загрузка CSS"
 msgid "Prevent Google Fonts from loading on all pages."
 msgstr "Предотвращать загрузку шрифтов Google на всех страницах."
 
-#: src/lang.cls.php:185
+#: src/lang.cls.php:184
 msgid "Remove Google Fonts"
 msgstr "Удалить шрифты Google"
 
@@ -4195,7 +4210,7 @@ msgstr "Это может улучшить ваш показатель скор�
 msgid "Remove query strings from internal static resources."
 msgstr "Удалите строки запроса из внутренних статических ресурсов."
 
-#: src/lang.cls.php:183
+#: src/lang.cls.php:182
 msgid "Remove Query Strings"
 msgstr "Удалить строки запроса"
 
@@ -4220,7 +4235,7 @@ msgstr "Кэш браузера"
 msgid "tags"
 msgstr "теги"
 
-#: src/lang.cls.php:154
+#: src/lang.cls.php:153
 msgid "Do Not Cache Tags"
 msgstr "Не кэшировать теги"
 
@@ -4241,7 +4256,7 @@ msgstr "категории"
 msgid "To prevent %s from being cached, enter them here."
 msgstr "Чтобы предотвратить кэширование %s, введите его здесь."
 
-#: src/lang.cls.php:153
+#: src/lang.cls.php:152
 msgid "Do Not Cache Categories"
 msgstr "Не кэшировать категории"
 
@@ -4249,7 +4264,7 @@ msgstr "Не кэшировать категории"
 msgid "Query strings containing these parameters will not be cached."
 msgstr "Строки запроса, содержащие эти параметры, не кэшируются."
 
-#: src/lang.cls.php:152
+#: src/lang.cls.php:151
 msgid "Do Not Cache Query Strings"
 msgstr "Не кэшировать строки запроса"
 
@@ -4257,7 +4272,7 @@ msgstr "Не кэшировать строки запроса"
 msgid "Paths containing these strings will not be cached."
 msgstr "Пути, содержащие эти строки, не будут кэшироваться."
 
-#: src/lang.cls.php:151
+#: src/lang.cls.php:150
 msgid "Do Not Cache URIs"
 msgstr "Не кэшировать URI"
 
@@ -4277,11 +4292,11 @@ msgstr "Private Cached URIs"
 msgid "Paths containing these strings will not be served from the CDN."
 msgstr "Пути, содержащие эти строки, не будут обслуживаться из CDN."
 
-#: src/lang.cls.php:263
+#: src/lang.cls.php:262
 msgid "Exclude Path"
 msgstr "Исключить путь"
 
-#: src/lang.cls.php:259 tpl/cdn/other.tpl.php:113
+#: src/lang.cls.php:258 tpl/cdn/other.tpl.php:113
 msgid "Include File Types"
 msgstr "Включить типы файлов"
 
@@ -4289,7 +4304,7 @@ msgstr "Включить типы файлов"
 msgid "Serve all JavaScript files through the CDN. This will affect all enqueued WP JavaScript files."
 msgstr "Обслуживайте все файлы JavaScript через CDN. Это повлияет на все файлы WP JavaScript в очереди."
 
-#: src/lang.cls.php:258
+#: src/lang.cls.php:257
 msgid "Include JS"
 msgstr "Включить JS"
 
@@ -4297,11 +4312,11 @@ msgstr "Включить JS"
 msgid "Serve all CSS files through the CDN. This will affect all enqueued WP CSS files."
 msgstr "Обслуживайте все CSS-файлы через CDN. Это повлияет на все поставленные в очередь файлы CSS WP."
 
-#: src/lang.cls.php:257
+#: src/lang.cls.php:256
 msgid "Include CSS"
 msgstr "Включить CSS"
 
-#: src/lang.cls.php:256
+#: src/lang.cls.php:255
 msgid "Include Images"
 msgstr "Включить изображения"
 
@@ -4309,7 +4324,7 @@ msgstr "Включить изображения"
 msgid "CDN URL to be used. For example, %s"
 msgstr "Используемый URL-адрес CDN. Напр., %s"
 
-#: src/lang.cls.php:255
+#: src/lang.cls.php:254
 msgid "CDN URL"
 msgstr "URL-адрес CDN"
 
@@ -4317,7 +4332,7 @@ msgstr "URL-адрес CDN"
 msgid "Site URL to be served through the CDN. Beginning with %1$s. For example, %2$s."
 msgstr "URL сайта будет обслуживаться через CDN. Начиная с%1$s. Например,%2$s."
 
-#: src/lang.cls.php:261
+#: src/lang.cls.php:260
 msgid "Original URLs"
 msgstr "Исходные URL-адреса"
 
@@ -4331,8 +4346,7 @@ msgstr "CDN"
 
 #: src/admin-display.cls.php:487 src/admin-display.cls.php:1168
 #: src/admin-display.cls.php:1197 src/admin-display.cls.php:1284
-#: tpl/cache/settings-cache.tpl.php:28
-#: tpl/cache/settings_inc.object.tpl.php:280 tpl/cdn/other.tpl.php:53
+#: tpl/cache/settings-cache.tpl.php:28 tpl/cdn/other.tpl.php:53
 #: tpl/dash/dashboard.tpl.php:69 tpl/dash/dashboard.tpl.php:462
 #: tpl/dash/dashboard.tpl.php:584 tpl/dash/dashboard.tpl.php:613
 #: tpl/img_optm/settings.media_webp.tpl.php:22
@@ -4362,31 +4376,31 @@ msgstr "Уведомление веб-сервера LiteSpeed LiteSpeed о не
 msgid "Minify HTML content."
 msgstr "Минификация контента HTML."
 
-#: src/lang.cls.php:167
+#: src/lang.cls.php:166
 msgid "HTML Minify"
 msgstr "Минификация HTML"
 
-#: src/lang.cls.php:182
+#: src/lang.cls.php:181
 msgid "JS Excludes"
 msgstr "Исключить JS"
 
-#: src/lang.cls.php:165
+#: src/lang.cls.php:164
 msgid "JS Combine"
 msgstr "Объединение JS"
 
-#: src/lang.cls.php:164
+#: src/lang.cls.php:163
 msgid "JS Minify"
 msgstr "Минификация JS"
 
-#: src/lang.cls.php:180
+#: src/lang.cls.php:179
 msgid "CSS Excludes"
 msgstr "Исключения CSS"
 
-#: src/lang.cls.php:157
+#: src/lang.cls.php:156
 msgid "CSS Combine"
 msgstr "Объединение CSS"
 
-#: src/lang.cls.php:156
+#: src/lang.cls.php:155
 msgid "CSS Minify"
 msgstr "Минификация CSS"
 
@@ -4530,7 +4544,7 @@ msgstr "TTL Private Cache по умолчанию"
 msgid "If your site contains public content that certain user roles can see but other roles cannot, you can specify a Vary Group for those user roles. For example, specifying an administrator vary group allows there to be a separate publicly-cached page tailored to administrators (with “edit” links, etc), while all other user roles see the default public page."
 msgstr "Если на вашем сайте есть общедоступный контент, который определенные группы могут видеть, но не могут видеть другие группы, вы можете указать групповую переменную (Vary Group) для этих ролей пользователей. Например, указание отдельной группы для администратора позволяет создать отдельную кэшированную общедоступную страницу, предназначенную для администраторов (со со ссылками \"изменить\" и т. д.), В то время как все другие роли пользователей имеют общедоступную страницу по умолчанию."
 
-#: src/lang.cls.php:238 tpl/page_optm/settings_css.tpl.php:140
+#: src/lang.cls.php:237 tpl/page_optm/settings_css.tpl.php:140
 #: tpl/page_optm/settings_css.tpl.php:277 tpl/page_optm/settings_vpi.tpl.php:88
 msgid "Vary Group"
 msgstr "Vary Group"
@@ -4539,11 +4553,11 @@ msgstr "Vary Group"
 msgid "Cache the built-in Comment Form ESI block."
 msgstr "Кэшировать встроенный блок ESI Comment Form."
 
-#: src/lang.cls.php:236
+#: src/lang.cls.php:235
 msgid "Cache Comment Form"
 msgstr "Кэш формы комментария"
 
-#: src/lang.cls.php:235
+#: src/lang.cls.php:234
 msgid "Cache Admin Bar"
 msgstr "Кэш админ панели"
 
@@ -4651,7 +4665,7 @@ msgstr "Укажите время очистки списка \"%s\"."
 msgid "Both %1$s and %2$s are acceptable."
 msgstr "Оба %1$s и %2$s приемлемы."
 
-#: src/lang.cls.php:148 tpl/cache/settings-purge.tpl.php:106
+#: src/lang.cls.php:147 tpl/cache/settings-purge.tpl.php:106
 msgid "Scheduled Purge Time"
 msgstr "Запланированное время очистки"
 
@@ -4659,7 +4673,7 @@ msgstr "Запланированное время очистки"
 msgid "The URLs here (one per line) will be purged automatically at the time set in the option \"%s\"."
 msgstr "URL, указанные здесь (по одному в строке), будут автоматически очищены в срок, установленный в опции \"%s\"."
 
-#: src/lang.cls.php:147 tpl/cache/settings-purge.tpl.php:131
+#: src/lang.cls.php:146 tpl/cache/settings-purge.tpl.php:131
 msgid "Scheduled Purge URLs"
 msgstr "URL-адреса запланированной очистки"
 
@@ -4675,11 +4689,12 @@ msgstr "Пульсация"
 msgid "MB"
 msgstr "Мб"
 
-#: src/lang.cls.php:278
+#: src/lang.cls.php:277
 msgid "Log File Size Limit"
 msgstr "Предельный размер файла журнала"
 
-#: src/htaccess.cls.php:784
+#. translators: 1: file path, 2: code block
+#: src/htaccess.cls.php:923
 msgid "<p>Please add/replace the following codes into the beginning of %1$s:</p> %2$s"
 msgstr "<p>Добавьте/замените следующие коды в начале %1$s:</p> %2$s"
 
@@ -4691,7 +4706,7 @@ msgstr "%s файл недоступен для записи."
 msgid "%s file not readable."
 msgstr "%s файл не доступен для чтения."
 
-#: src/lang.cls.php:279
+#: src/lang.cls.php:278
 msgid "Collapse Query Strings"
 msgstr "Свернуть строки запроса"
 
@@ -4707,11 +4722,11 @@ msgstr "TTL, равный 0, указывает на отсутствие кэш
 msgid "Recommended value: 28800 seconds (8 hours)."
 msgstr "Рекомендуемое значение: 28800 секунд (8 часов)."
 
-#: src/lang.cls.php:234 tpl/esi_widget_edit.php:43
+#: src/lang.cls.php:233 tpl/esi_widget_edit.php:43
 msgid "Enable ESI"
 msgstr "Включить ESI"
 
-#: src/lang.cls.php:272
+#: src/lang.cls.php:271
 msgid "Custom Sitemap"
 msgstr "Пользовательская Sitemap"
 
@@ -4759,7 +4774,7 @@ msgstr "Уведомление веб-сервер LiteSpeed об очистке
 msgid "Allows listed IPs (one per line) to perform certain actions from their browsers."
 msgstr "Позволяет перечисленным IP-адресам (по одному в каждой строке) выполнять определенные действия из своих браузеров."
 
-#: src/lang.cls.php:269
+#: src/lang.cls.php:268
 msgid "Server Load Limit"
 msgstr "Ограничение загрузки сервера"
 
@@ -4767,7 +4782,7 @@ msgstr "Ограничение загрузки сервера"
 msgid "Specify how long in seconds before the crawler should initiate crawling the entire sitemap again."
 msgstr "Задает время в секундах, по истечении которого поисковый робот снова просканирует всю карту сайта."
 
-#: src/lang.cls.php:268
+#: src/lang.cls.php:267
 msgid "Crawl Interval"
 msgstr "Интервал обхода"
 
@@ -4848,7 +4863,7 @@ msgstr "Сгенерировано в %s"
 msgid "LiteSpeed Cache Crawler"
 msgstr "Поисковый робот LiteSpeed Cache"
 
-#: src/admin-display.cls.php:260 src/lang.cls.php:267
+#: src/admin-display.cls.php:260 src/lang.cls.php:266
 msgid "Crawler"
 msgstr "Поисковый робот"
 
@@ -5045,7 +5060,7 @@ msgstr "Это сообщение указывает на то, что плаг�
 msgid "LiteSpeed Cache plugin is installed!"
 msgstr "Плагин LiteSpeed Cache установлен!"
 
-#: src/lang.cls.php:275 tpl/toolbox/log_viewer.tpl.php:18
+#: src/lang.cls.php:274 tpl/toolbox/log_viewer.tpl.php:18
 msgid "Debug Log"
 msgstr "Журнал отладки"
 
@@ -5089,7 +5104,7 @@ msgstr "Убедившись, что кеш в целом работает, пр
 msgid "When enabled, the cache will automatically purge when any plugin, theme or the WordPress core is upgraded."
 msgstr "Если эта функция включена, кэш будет автоматически очищаться при обновлении любого плагина, темы или ядра WordPress."
 
-#: src/lang.cls.php:145
+#: src/lang.cls.php:144
 msgid "Purge All On Upgrade"
 msgstr "Очистить всё при обновлении"
 
@@ -5191,7 +5206,7 @@ msgstr "Эта настройка полезена для тех, у кого н
 msgid "The default login cookie is %s."
 msgstr "Cookie для входа в систему по умолчанию - %s."
 
-#: src/lang.cls.php:244
+#: src/lang.cls.php:243
 msgid "Login Cookie"
 msgstr "Файл cookie для входа"
 
@@ -5280,11 +5295,11 @@ msgstr "Просмотр файла .htaccess LiteSpeed Cache"
 msgid "Failed to back up %s file, aborted changes."
 msgstr "Не удалось создать резервную копию файла %s, изменения не были внесены."
 
-#: src/lang.cls.php:242
+#: src/lang.cls.php:241
 msgid "Do Not Cache Cookies"
 msgstr "Не кэшировать файлы cookie"
 
-#: src/lang.cls.php:243
+#: src/lang.cls.php:242
 msgid "Do Not Cache User Agents"
 msgstr "Не кэшировать агентов пользователя"
 
@@ -5298,7 +5313,7 @@ msgstr "Включить сетевой кэш"
 
 #: thirdparty/woocommerce.content.tpl.php:24
 #: tpl/cache/settings-advanced.tpl.php:21
-#: tpl/cache/settings_inc.browser.tpl.php:23 tpl/toolbox/beta_test.tpl.php:42
+#: tpl/cache/settings_inc.browser.tpl.php:23 tpl/toolbox/beta_test.tpl.php:45
 #: tpl/toolbox/heartbeat.tpl.php:24 tpl/toolbox/report.tpl.php:46
 msgid "NOTICE:"
 msgstr "ВНИМАНИЕ:"
@@ -5340,7 +5355,7 @@ msgid "Purge Front Page"
 msgstr "Очистить главную страницу"
 
 #: tpl/page_optm/settings_localization.tpl.php:146
-#: tpl/toolbox/beta_test.tpl.php:51
+#: tpl/toolbox/beta_test.tpl.php:54
 msgid "Example"
 msgstr "Например"
 
@@ -5389,7 +5404,7 @@ msgstr "Отключено"
 msgid "Enabled"
 msgstr "Включено"
 
-#: src/lang.cls.php:155
+#: src/lang.cls.php:154
 msgid "Do Not Cache Roles"
 msgstr "Не кэшировать роли"
 
@@ -5410,7 +5425,7 @@ msgstr "LiteSpeed Technologies"
 msgid "LiteSpeed Cache"
 msgstr "LiteSpeed Cache"
 
-#: src/lang.cls.php:277
+#: src/lang.cls.php:276
 msgid "Debug Level"
 msgstr "Уровень отладки"
 
@@ -5474,7 +5489,7 @@ msgstr "TTL Public Cache по умолчанию"
 msgid "seconds"
 msgstr "секунды"
 
-#: src/lang.cls.php:276
+#: src/lang.cls.php:275
 msgid "Admin IPs"
 msgstr "IP-адреса администратора"
 

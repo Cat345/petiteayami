@@ -18,6 +18,7 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Tooltips' ) ) {
 	/**
 	 * Adds script for tooltips.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Modules_Tooltips {
 
 		/**
@@ -105,7 +106,6 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Tooltips' ) ) {
 				'id'      => sanitize_key( $field_id ),
 				'content' => wp_kses_post( $tooltip ),
 			);
-
 		}
 
 		/**
@@ -121,7 +121,6 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Tooltips' ) ) {
 			wp_enqueue_script( 'wfocukirki-tooltip', trailingslashit( WFOCUKirki::$url ) . 'modules/tooltips/tooltip.js', array( 'jquery' ), WFOCU_KIRKI_VERSION );
 			wp_localize_script( 'wfocukirki-tooltip', 'wfocukirkiTooltips', $this->tooltips_content );
 			wp_enqueue_style( 'wfocukirki-tooltip', trailingslashit( WFOCUKirki::$url ) . 'modules/tooltips/tooltip.css', array(), WFOCU_KIRKI_VERSION );
-
 		}
 	}
 }

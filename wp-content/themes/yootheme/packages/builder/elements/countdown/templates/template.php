@@ -47,14 +47,6 @@ $separator = $this->el('div', [
 
 ]);
 
-$separator = $this->el('div', [
-
-    'class' => [
-        'uk-countdown-separator',
-    ],
-
-]);
-
 $separator_container = $props['show_label'] ? $this->el('div', [
 
     'class' => [

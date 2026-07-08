@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Compatibility_With_Subscriptions' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Subscriptions {
 
 		public function __construct() {
@@ -26,7 +27,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Subscriptions' ) ) {
 		 *
 		 * @return false when having subscription in the cart
 		 * @see wcs_order_contains_subscription()
-		 *
 		 */
 		public function maybe_disable_integration_when_subscription_in_cart( $is_enable, $order ) {
 			if ( function_exists( 'wcs_order_contains_subscription' ) && is_a( $order, 'WC_Abstract_Order' ) ) {
@@ -38,8 +38,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Subscriptions' ) ) {
 
 			return $is_enable;
 		}
-
-
 	}
 
 

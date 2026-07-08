@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Input_Text' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Input_Text {
 
 		public function __construct() {
@@ -20,8 +21,7 @@ if ( ! class_exists( 'wfob_Input_Text' ) ) {
 				$field['id'] = sanitize_title( $field['id'] );
 			}
 
-			echo '<input name="' . $field['name'] . '" type="text" id="' . esc_attr( $field['id'] ) . '" class="' . esc_attr( $field['class'] ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . $value . '" />';
+			echo '<input name="' . $field['name'] . '" type="text" id="' . esc_attr( $field['id'] ) . '" class="' . esc_attr( $field['class'] ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $value ) . '" />';
 		}
-
 	}
 }

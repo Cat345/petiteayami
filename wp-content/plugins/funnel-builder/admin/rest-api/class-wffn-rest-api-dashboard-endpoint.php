@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_REST_API_Dashboard_EndPoint extends WFFN_REST_Controller {
 
 		private static $ins  = null;
@@ -447,11 +448,23 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 					)
 				);
 			}
-			$placeholders = implode( ',', array_fill( 0, count( $sess_ids ), '%d' ) );
-			$query        = "SELECT p.post_title as product_name,SUM(ev.value) as total FROM {$wpdb->prefix}wfocu_event AS ev INNER JOIN {$wpdb->prefix}wfocu_event_meta AS em ON ev.id = em.event_id INNER JOIN {$wpdb->prefix}posts AS p ON ev.object_id = p.ID WHERE ev.sess_id IN ($placeholders) AND ev.object_type = 'product' AND ev.action_type_id = 5
-	             AND em.meta_key = '_offer_id' AND em.meta_value = %d GROUP BY ev.object_id, p.post_title";
-			$query_params = array_merge( $sess_ids, array( $fid ) );
-			$upsell_items = $wpdb->get_results( $wpdb->prepare( $query, ...$query_params ), ARRAY_A );//phpcs:ignore
+
+			$upsell_items = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT p.post_title as product_name, SUM(ev.value) as total
+						 FROM {$wpdb->prefix}wfocu_event AS ev
+						 INNER JOIN {$wpdb->prefix}wfocu_event_meta AS em ON ev.id = em.event_id
+						 INNER JOIN {$wpdb->prefix}posts AS p ON ev.object_id = p.ID
+						 WHERE ev.sess_id IN (" . implode( ', ', array_fill( 0, count( $sess_ids ), '%d' ) ) . ")
+						   AND ev.object_type = 'product'
+						   AND ev.action_type_id = 5
+						   AND em.meta_key = '_offer_id'
+						   AND em.meta_value = %d
+						 GROUP BY ev.object_id, p.post_title",
+					array_merge( $sess_ids, array( $fid ) )
+				),
+				ARRAY_A
+			);
 			if ( empty( $upsell_items ) ) {
 				return rest_ensure_response(
 					array(
@@ -536,9 +549,18 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 				);
 
 			}
-			$placeholders = implode( ',', array_fill( 0, count( $iids ), '%d' ) );
-			$query        = "SELECT oi.order_item_name as product_name, SUM(meta_total.meta_value + meta_tax.meta_value) AS total FROM {$wpdb->prefix}woocommerce_order_items AS oi LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS meta_total ON oi.order_item_id = meta_total.order_item_id AND meta_total.meta_key = '_line_total' LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS meta_tax ON oi.order_item_id = meta_tax.order_item_id AND meta_tax.meta_key = '_line_tax' WHERE oi.order_item_id IN ($placeholders) GROUP BY oi.order_item_name";
-			$order_items  = $wpdb->get_results( $wpdb->prepare( $query, ...$iids ), ARRAY_A );//phpcs:ignore
+			$order_items = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT oi.order_item_name as product_name, SUM(meta_total.meta_value + meta_tax.meta_value) AS total
+					 FROM {$wpdb->prefix}woocommerce_order_items AS oi
+					 LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS meta_total ON oi.order_item_id = meta_total.order_item_id AND meta_total.meta_key = '_line_total'
+					 LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS meta_tax ON oi.order_item_id = meta_tax.order_item_id AND meta_tax.meta_key = '_line_tax'
+					 WHERE oi.order_item_id IN (" . implode( ', ', array_fill( 0, count( $iids ), '%d' ) ) . ')
+					 GROUP BY oi.order_item_name',
+					$iids
+				),
+				ARRAY_A
+			);
 			if ( empty( $order_items ) ) {
 				return rest_ensure_response(
 					array(
@@ -742,63 +764,50 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 		/**
 		 * Get cart upsells data for analytics
 		 */
-		// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.LikeWithoutWildcards,WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 		private function get_cart_upsells_for_analytics( $start_date = '', $end_date = '' ) {
 			global $wpdb;
 
-			$date_condition = '';
-			$date_params    = array();
 			if ( $start_date && $end_date ) {
-				$date_condition = 'AND c.date_created BETWEEN %s AND %s';
-				$date_params    = array( $start_date, $end_date );
-			}
-
-			$subquery_date_condition = '';
-			if ( $start_date && $end_date ) {
-				$subquery_date_condition = "AND c2.date_created BETWEEN '{$start_date}' AND '{$end_date}'";
-			}
-
-			if ( $start_date && $end_date ) {
-				$query = $wpdb->prepare(
-					"
-            SELECT
+				// Date filters are bound via %s. The subquery clause is emitted earlier in the
+				// SQL text than the main WHERE, so its bound values are listed first.
+				// The LIKE pattern is a CONCAT over the cp.product_id column (no user input) and
+				// therefore cannot be parameterized; scope the two LIKE sniffs to this query only.
+				// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery, WordPress.DB.PreparedSQLPlaceholders.LikeWithoutWildcards
+				$results = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT
                 cp.product_id,
                 p.post_title as product_name,
                 SUM(cp.price) as revenue,
                 COUNT(DISTINCT cp.oid) as conversions,
-
-                -- FIXED: Count how many times this specific product was offered as upsell
                 (SELECT COUNT(DISTINCT c2.oid)
                  FROM {$wpdb->prefix}fk_cart c2
                  WHERE c2.upsells_viewed IS NOT NULL
                  AND c2.upsells_viewed != ''
                  AND c2.upsells_viewed NOT LIKE '[]'
-                 AND c2.upsells_viewed LIKE CONCAT('%\"', cp.product_id, '\"%')
-                 {$subquery_date_condition}
+                 AND c2.upsells_viewed LIKE CONCAT('%%\"', cp.product_id, '\"%%')
+                 AND c2.date_created BETWEEN %s AND %s
                 ) as times_offered
-            FROM
-                {$wpdb->prefix}fk_cart_products cp
-            JOIN
-                {$wpdb->prefix}fk_cart c ON cp.oid = c.oid
-            LEFT JOIN
-                {$wpdb->posts} p ON cp.product_id = p.ID
-            WHERE cp.type = 1 {$date_condition}
-            GROUP BY
-                cp.product_id, p.post_title
-            ORDER BY
-                revenue DESC
-        ",
-					...$date_params
+            FROM {$wpdb->prefix}fk_cart_products cp
+            JOIN {$wpdb->prefix}fk_cart c ON cp.oid = c.oid
+            LEFT JOIN {$wpdb->posts} p ON cp.product_id = p.ID
+            WHERE cp.type = 1 AND c.date_created BETWEEN %s AND %s
+            GROUP BY cp.product_id, p.post_title
+            ORDER BY revenue DESC",
+						$start_date,
+						$end_date,
+						$start_date,
+						$end_date
+					)
 				);
+				// phpcs:enable WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery, WordPress.DB.PreparedSQLPlaceholders.LikeWithoutWildcards
 			} else {
-				$query = "
-            SELECT
+				$results = $wpdb->get_results(
+					"SELECT
                 cp.product_id,
                 p.post_title as product_name,
                 SUM(cp.price) as revenue,
                 COUNT(DISTINCT cp.oid) as conversions,
-
-                -- FIXED: Count how many times this specific product was offered as upsell
                 (SELECT COUNT(DISTINCT c2.oid)
                  FROM {$wpdb->prefix}fk_cart c2
                  WHERE c2.upsells_viewed IS NOT NULL
@@ -806,21 +815,15 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
                  AND c2.upsells_viewed NOT LIKE '[]'
                  AND c2.upsells_viewed LIKE CONCAT('%\"', cp.product_id, '\"%')
                 ) as times_offered
-            FROM
-                {$wpdb->prefix}fk_cart_products cp
-            JOIN
-                {$wpdb->prefix}fk_cart c ON cp.oid = c.oid
-            JOIN
-                {$wpdb->posts} p ON cp.product_id = p.ID
+            FROM {$wpdb->prefix}fk_cart_products cp
+            JOIN {$wpdb->prefix}fk_cart c ON cp.oid = c.oid
+            JOIN {$wpdb->posts} p ON cp.product_id = p.ID
             WHERE cp.type = 1
-            GROUP BY
-                cp.product_id, p.post_title
-            ORDER BY
-                revenue DESC
-        ";
+            GROUP BY cp.product_id, p.post_title
+            ORDER BY revenue DESC"
+				);
 			}
 
-			$results = $wpdb->get_results( $query );//phpcs:ignore
 			$cart_upsells = array();
 
 			foreach ( $results as $row ) {
@@ -970,17 +973,29 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 				/**
 				 * get all funnel conversion from conversion table order by top conversion table
 				 */
-				$report_range = ( '' !== $start_date && '' !== $end_date ) ? " AND conv.timestamp >= '" . esc_sql( $start_date ) . "' AND conv.timestamp < '" . esc_sql( $end_date ) . "' " : '';
-
-				// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
-				$f_query = $wpdb->prepare(
-					'SELECT funnel.id as fid, funnel.title as title, SUM( COALESCE(conv.value, 0) ) as total, 0 as views, COUNT(conv.ID) as conversion, 0 as conversion_rate FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel
-				LEFT JOIN ' . $wpdb->prefix . 'bwf_conversion_tracking AS conv ON funnel.id = conv.funnel_id  AND conv.type = 2 ' . $report_range . ' WHERE 1=1 AND funnel.steps LIKE %s GROUP BY funnel.id ORDER BY SUM( conv.value ) DESC LIMIT 0, %d', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $report_range is safely escaped with esc_sql
-					'%wc_%',
-					$limit
-				);
-
-				$get_funnels = $wpdb->get_results( $f_query, ARRAY_A ); //phpcs:ignore
+				if ( '' !== $start_date && '' !== $end_date ) {
+					$get_funnels = $wpdb->get_results(
+						$wpdb->prepare(
+							'SELECT funnel.id as fid, funnel.title as title, SUM( COALESCE(conv.value, 0) ) as total, 0 as views, COUNT(conv.ID) as `conversion`, 0 as conversion_rate FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel
+				LEFT JOIN ' . $wpdb->prefix . 'bwf_conversion_tracking AS conv ON funnel.id = conv.funnel_id  AND conv.type = 2 AND conv.timestamp >= %s AND conv.timestamp < %s WHERE 1=1 AND funnel.steps LIKE %s GROUP BY funnel.id ORDER BY SUM( conv.value ) DESC LIMIT 0, %d',
+							$start_date,
+							$end_date,
+							'%wc_%',
+							$limit
+						),
+						ARRAY_A
+					);
+				} else {
+					$get_funnels = $wpdb->get_results(
+						$wpdb->prepare(
+							'SELECT funnel.id as fid, funnel.title as title, SUM( COALESCE(conv.value, 0) ) as total, 0 as views, COUNT(conv.ID) as `conversion`, 0 as conversion_rate FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel
+				LEFT JOIN ' . $wpdb->prefix . 'bwf_conversion_tracking AS conv ON funnel.id = conv.funnel_id  AND conv.type = 2 WHERE 1=1 AND funnel.steps LIKE %s GROUP BY funnel.id ORDER BY SUM( conv.value ) DESC LIMIT 0, %d',
+							'%wc_%',
+							$limit
+						),
+						ARRAY_A
+					);
+				}
 				if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 					$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 					if ( false === $db_error['db_error'] ) {
@@ -1013,17 +1028,29 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 				/**
 				 * get all funnel conversion from conversion table order by top conversion table
 				 */
-				$report_range = ( '' !== $start_date && '' !== $end_date ) ? esc_sql( " AND conv.timestamp >= '" . esc_sql( $start_date ) . "' AND conv.timestamp < '" . esc_sql( $end_date ) . "' " ) : '';
-
-				// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
-				$l_query = $wpdb->prepare(
-					'SELECT funnel.id as fid, funnel.title as title, 0 as total, 0 as views, COUNT(conv.id) as conversion, 0 as conversion_rate FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel
-				LEFT JOIN ' . $wpdb->prefix . 'bwf_conversion_tracking AS conv ON funnel.id = conv.funnel_id AND conv.type = 1 ' . $report_range . ' WHERE 1=1 AND funnel.steps NOT LIKE %s GROUP BY funnel.id ORDER BY COUNT(conv.id) DESC LIMIT 0, %d', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $report_range is safely escaped with esc_sql
-					'%wc_%',
-					$limit
-				);
-
-				$l_funnels = $wpdb->get_results( $l_query, ARRAY_A ); //phpcs:ignore
+				if ( '' !== $start_date && '' !== $end_date ) {
+					$l_funnels = $wpdb->get_results(
+						$wpdb->prepare(
+							'SELECT funnel.id as fid, funnel.title as title, 0 as total, 0 as views, COUNT(conv.id) as `conversion`, 0 as conversion_rate FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel
+				LEFT JOIN ' . $wpdb->prefix . 'bwf_conversion_tracking AS conv ON funnel.id = conv.funnel_id AND conv.type = 1 AND conv.timestamp >= %s AND conv.timestamp < %s WHERE 1=1 AND funnel.steps NOT LIKE %s GROUP BY funnel.id ORDER BY COUNT(conv.id) DESC LIMIT 0, %d',
+							$start_date,
+							$end_date,
+							'%wc_%',
+							$limit
+						),
+						ARRAY_A
+					);
+				} else {
+					$l_funnels = $wpdb->get_results(
+						$wpdb->prepare(
+							'SELECT funnel.id as fid, funnel.title as title, 0 as total, 0 as views, COUNT(conv.id) as `conversion`, 0 as conversion_rate FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel
+				LEFT JOIN ' . $wpdb->prefix . 'bwf_conversion_tracking AS conv ON funnel.id = conv.funnel_id AND conv.type = 1 WHERE 1=1 AND funnel.steps NOT LIKE %s GROUP BY funnel.id ORDER BY COUNT(conv.id) DESC LIMIT 0, %d',
+							'%wc_%',
+							$limit
+						),
+						ARRAY_A
+					);
+				}
 				if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 					$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 					if ( false === $db_error['db_error'] ) {
@@ -1051,12 +1078,25 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 		public function get_funnel_views_data( $funnels, $start_date, $end_date ) {
 			global $wpdb;
 
-			$ids          = array_unique( wp_list_pluck( $funnels, 'fid' ) );
-			$ids          = esc_sql( implode( ',', $ids ) );
-			$report_range = ( '' !== $start_date && '' !== $end_date ) ? " AND date >= '" . esc_sql( $start_date ) . "' AND date < '" . esc_sql( $end_date ) . "' " : '';
+			$ids = array_values( array_unique( array_map( 'absint', wp_list_pluck( $funnels, 'fid' ) ) ) );
 
-			$view_query  = 'SELECT object_id as fid , SUM(COALESCE(no_of_sessions, 0)) AS views FROM ' . $wpdb->prefix . 'wfco_report_views WHERE type = 7 AND object_id IN (' . $ids . ') ' . $report_range . ' GROUP BY object_id';
-			$report_data = $wpdb->get_results( $view_query, ARRAY_A ); //phpcs:ignore
+			if ( '' !== $start_date && '' !== $end_date ) {
+				$report_data = $wpdb->get_results(
+					$wpdb->prepare(
+						'SELECT object_id as fid , SUM(COALESCE(no_of_sessions, 0)) AS views FROM ' . $wpdb->prefix . 'wfco_report_views WHERE type = 7 AND object_id IN ( ' . implode( ', ', array_fill( 0, count( $ids ), '%d' ) ) . ' ) AND date >= %s AND date < %s GROUP BY object_id',
+						array_merge( $ids, array( $start_date, $end_date ) )
+					),
+					ARRAY_A
+				);
+			} else {
+				$report_data = $wpdb->get_results(
+					$wpdb->prepare(
+						'SELECT object_id as fid , SUM(COALESCE(no_of_sessions, 0)) AS views FROM ' . $wpdb->prefix . 'wfco_report_views WHERE type = 7 AND object_id IN ( ' . implode( ', ', array_fill( 0, count( $ids ), '%d' ) ) . ' ) GROUP BY object_id',
+						$ids
+					),
+					ARRAY_A
+				);
+			}
 			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 				if ( false === $db_error['db_error'] ) {
@@ -1089,11 +1129,18 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 
 		public function get_timeline_funnels() {
 			global $wpdb;
-			$conv_table    = $wpdb->prefix . 'bwf_conversion_tracking';
-			$contact_table = $wpdb->prefix . 'bwf_contact';
-			$final_q       = $wpdb->prepare( "SELECT conv.*, coalesce(contact.f_name, '') as f_name, coalesce(contact.l_name, '') as l_name FROM {$conv_table} as conv LEFT JOIN {$contact_table} AS contact ON contact.id=conv.contact_id WHERE contact.id != '' AND conv.funnel_id != '' AND ( conv.type != '' AND conv.type IS NOT NULL ) ORDER BY conv.timestamp DESC LIMIT %d", 20 );//phpcs:ignore
-
-			$get_results = $wpdb->get_results( $final_q, ARRAY_A );//phpcs:ignore
+			$get_results = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT conv.*, coalesce(contact.f_name, '') as f_name, coalesce(contact.l_name, '') as l_name
+					 FROM {$wpdb->prefix}bwf_conversion_tracking as conv
+					 LEFT JOIN {$wpdb->prefix}bwf_contact AS contact ON contact.id = conv.contact_id
+					 WHERE contact.id != '' AND conv.funnel_id != '' AND ( conv.type != '' AND conv.type IS NOT NULL )
+					 ORDER BY conv.timestamp DESC
+					 LIMIT %d",
+					20
+				),
+				ARRAY_A
+			);
 			$steps       = array();
 			if ( is_array( $get_results ) && count( $get_results ) > 0 ) {
 				foreach ( $get_results as $result ) {
@@ -1254,9 +1301,9 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 			$date_col       = 'tracking.timestamp';
 			$interval_query = '';
 			$group_by       = '';
-			$limit          = '';
 			$intervals      = array();
-			$funnel_query   = ( 0 === intval( $funnel_id ) ) ? ' AND tracking.funnel_id != ' . esc_sql( $funnel_id ) . ' ' : ' AND tracking.funnel_id = ' . esc_sql( $funnel_id ) . ' ';
+			$funnel_id      = absint( $funnel_id );
+			$funnel_query   = ( 0 === $funnel_id ) ? $wpdb->prepare( ' AND tracking.funnel_id != %d ', $funnel_id ) : $wpdb->prepare( ' AND tracking.funnel_id = %d ', $funnel_id );
 
 			if ( 'interval' === $is_interval ) {
 				$get_interval   = $this->get_interval_format_query( $int_request, $date_col );
@@ -1266,9 +1313,9 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 
 			}
 
-			$date = ( '' !== $start_date && '' !== $end_date ) ? ' AND ' . $date_col . " >= '" . esc_sql( $start_date ) . "' AND " . $date_col . " < '" . esc_sql( $end_date ) . "' " : '';
+			$date = ( '' !== $start_date && '' !== $end_date ) ? $wpdb->prepare( ' AND tracking.timestamp >= %s AND tracking.timestamp < %s ', $start_date, $end_date ) : '';
 
-			$total_orders = $wpdb->get_results( "SELECT count(DISTINCT tracking.source) as total_orders " . $interval_query . "  FROM `" . $table . "` as tracking JOIN `" . $wpdb->prefix . "bwf_contact` as cust ON cust.id=tracking.contact_id WHERE 1=1 AND tracking.type=2 " . $date . $funnel_query . $group_by . " ORDER BY tracking.id ASC $limit", ARRAY_A );//phpcs:ignore
+			$total_orders = $wpdb->get_results( 'SELECT count(DISTINCT tracking.source) as total_orders ' . $interval_query . '  FROM `' . $table . '` as tracking JOIN `' . $wpdb->prefix . 'bwf_contact` as cust ON cust.id=tracking.contact_id WHERE 1=1 AND tracking.type=2 ' . $date . $funnel_query . $group_by . ' ORDER BY tracking.id ASC ', ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $date and $funnel_query are $wpdb->prepare() fragments; $interval_query/$group_by are whitelisted (carry DATE_FORMAT %Y specifiers that must not pass through prepare); $table is $wpdb->prefix + literal.
 			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 				if ( true === $db_error['db_error'] ) {
@@ -1306,7 +1353,8 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 			$date_col       = 'conv.timestamp';
 			$interval_query = '';
 			$group_by       = '';
-			$funnel_query   = ( 0 === intval( $funnel_id ) ) ? ' AND conv.funnel_id != ' . esc_sql( $funnel_id ) . ' ' : ' AND conv.funnel_id = ' . esc_sql( $funnel_id ) . ' ';
+			$funnel_id      = absint( $funnel_id );
+			$funnel_query   = ( 0 === $funnel_id ) ? $wpdb->prepare( ' AND conv.funnel_id != %d ', $funnel_id ) : $wpdb->prepare( ' AND conv.funnel_id = %d ', $funnel_id );
 
 			if ( 'interval' === $is_interval ) {
 				$get_interval   = $this->get_interval_format_query( $int_request, $date_col );
@@ -1316,14 +1364,14 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 
 			}
 
-			$date = ( '' !== $start_date && '' !== $end_date ) ? ' AND ' . $date_col . " >= '" . esc_sql( $start_date ) . "' AND " . $date_col . " < '" . esc_sql( $end_date ) . "' " : '';
+			$date = ( '' !== $start_date && '' !== $end_date ) ? $wpdb->prepare( ' AND conv.timestamp >= %s AND conv.timestamp < %s ', $start_date, $end_date ) : '';
 
 			if ( class_exists( 'WFACP_Core' ) ) {
 				$query              = 'SELECT SUM(conv.value) as total, SUM(conv.checkout_total) as sum_aero ' . $interval_query . ' FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . $group_by . ' ORDER BY conv.id ASC';
-				$total_revenue_aero = $wpdb->get_results( $query, ARRAY_A );//phpcs:ignore
+				$total_revenue_aero = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal.
 
 				$count_query     = 'SELECT COUNT(conv.id) AS checkout_orders ' . $interval_query . ' FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . ' AND conv.checkout_total != 0 ' . $group_by . ' ORDER BY conv.id ASC';
-				$checkout_orders = $wpdb->get_results( $count_query, ARRAY_A );//phpcs:ignore
+				$checkout_orders = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal.
 
 				if ( ! empty( $total_revenue_aero ) && ! empty( $checkout_orders ) ) {
 					if ( 'interval' === $is_interval ) {
@@ -1348,10 +1396,10 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 
 			if ( class_exists( 'WFOB_Core' ) ) {
 				$query              = 'SELECT SUM(conv.bump_total) as sum_bump ' . $interval_query . ' FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . $group_by . ' ORDER BY conv.id ASC';
-				$total_revenue_bump = $wpdb->get_results( $query, ARRAY_A );//phpcs:ignore
+				$total_revenue_bump = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal.
 
 				$count_query = 'SELECT COUNT(conv.id) AS bump_orders ' . $interval_query . ' FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . " AND conv.bump_accepted != '' " . $group_by . ' ORDER BY conv.id ASC';
-				$bump_orders = $wpdb->get_results( $count_query, ARRAY_A );//phpcs:ignore
+				$bump_orders = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal.
 
 				if ( ! empty( $total_revenue_bump ) && ! empty( $bump_orders ) ) {
 					if ( 'interval' === $is_interval ) {
@@ -1376,10 +1424,10 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 
 			if ( class_exists( 'WFOCU_Core' ) ) {
 				$query                 = 'SELECT SUM(conv.offer_total) as sum_upsells ' . $interval_query . ' FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . $group_by . ' ORDER BY conv.id ASC';
-				$total_revenue_upsells = $wpdb->get_results( $query, ARRAY_A );//phpcs:ignore
+				$total_revenue_upsells = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal.
 
 				$count_query   = 'SELECT COUNT(conv.id) AS upsell_orders ' . $interval_query . ' FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . " AND conv.offer_accepted != '' " . $group_by . ' ORDER BY conv.id ASC';
-				$upsell_orders = $wpdb->get_results( $count_query, ARRAY_A );//phpcs:ignore
+				$upsell_orders = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal.
 
 				if ( ! empty( $total_revenue_upsells ) && ! empty( $upsell_orders ) ) {
 					if ( 'interval' === $is_interval ) {
@@ -1425,7 +1473,8 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 			$date_col       = 'timestamp';
 			$interval_query = '';
 			$group_by       = '';
-			$funnel_query   = ( 0 === intval( $funnel_id ) ) ? ' AND funnel_id != ' . esc_sql( $funnel_id ) . ' ' : ' AND funnel_id = ' . esc_sql( $funnel_id ) . ' ';
+			$funnel_id      = absint( $funnel_id );
+			$funnel_query   = ( 0 === $funnel_id ) ? ' AND funnel_id != ' . $funnel_id . ' ' : ' AND funnel_id = ' . $funnel_id . ' ';
 
 			if ( 'interval' === $is_interval ) {
 				$get_interval   = $this->get_interval_format_query( $int_request, $date_col );

@@ -112,11 +112,11 @@
                 <tr>
                     <td style="width: 50%; padding: 0px 0px 16px 0;mso-padding-alt: 0px 0px 16px 0px;">
                         <p style="font-size: 14px; margin: 0; color: #353030;">Total Orders</p>
-                        <p style="font-size: 32px; margin: 0; font-weight: 700;"><?php echo $totals['totals']['orders']; ?></p>
+                        <p style="font-size: 32px; margin: 0; font-weight: 700;"><?php echo esc_html( $totals['totals']['orders'] ); ?></p>
                     </td>
                     <td style="width: 50%; padding: 0px 16px 16px 16px;mso-padding-alt:0 16px 16px 16px;">
                         <p style="font-size: 14px; margin: 0; color: #353030;">Total Revenue</p>
-                        <p style="font-size: 32px; margin: 0; font-weight: 700;"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol"><?php echo $totals['totals']['total']; ?></span></bdi></span></p>
+                        <p style="font-size: 32px; margin: 0; font-weight: 700;"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol"><?php echo esc_html( $totals['totals']['total'] ); ?></span></bdi></span></p>
                     </td>
                 </tr>
             </table>
@@ -129,12 +129,12 @@
             <p style="font-size: 16px; color: #333333;">Don't miss out on the additional revenue. This problem is easy to fix.</p>
         </td>
     </tr>
-    <tr style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px;"><td class="bwfbe-block-btn bwfbe-block-btn-f41b40e" align="left" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px; padding: 0 16px 16px 16px; mso-padding-alt:16px 16px 16px 0;"><!--[if mso | IE]><span style="margin-left:16px"><![endif]--><table cellpadding="0" cellspacing="0" border="0" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px; width: auto; border-collapse: separate;" role="presentation" class="bwfbe-block-btn-container"><tbody><tr style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px;"><td class="bwfbe-btn-text-wrap" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px; font-size: 16px; cursor: auto; border-style: none; background-color: #E15334; font-size: 16px; border-radius: 8px 8px 8px 8px; mso-padding-alt: 10px 20px; mso-padding-alt: 10px 24px 10px 24px; text-align: center; line-height: 1.5;" bgcolor="#E15334" align="center"><a href="<?php echo $button_url; ?>" target="_blank" class="bwfbe-block-btn-content" style="line-height: 1.5; text-decoration: none; padding: 10px 20px; padding: 10px 24px 10px 24px; mso-padding-alt: 0; background-color: #E15334; font-size: 16px; font-family: arial,helvetica,sans-serif; display: inline-block; text-decoration: none; text-transform: none; color: #ffffff; border-radius: 8px 8px 8px 8px;"><strong>Renew Now</strong></a></td></tr></tbody></table><!--[if mso | IE]></span><![endif]--></td></tr>
+    <tr style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px;"><td class="bwfbe-block-btn bwfbe-block-btn-f41b40e" align="left" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px; padding: 0 16px 16px 16px; mso-padding-alt:16px 16px 16px 0;"><!--[if mso | IE]><span style="margin-left:16px"><![endif]--><table cellpadding="0" cellspacing="0" border="0" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px; width: auto; border-collapse: separate;" role="presentation" class="bwfbe-block-btn-container"><tbody><tr style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px;"><td class="bwfbe-btn-text-wrap" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px; font-size: 16px; cursor: auto; border-style: none; background-color: #E15334; font-size: 16px; border-radius: 8px 8px 8px 8px; mso-padding-alt: 10px 20px; mso-padding-alt: 10px 24px 10px 24px; text-align: center; line-height: 1.5;" bgcolor="#E15334" align="center"><a href="<?php echo esc_url( $button_url ); ?>" target="_blank" class="bwfbe-block-btn-content" style="line-height: 1.5; text-decoration: none; padding: 10px 20px; padding: 10px 24px 10px 24px; mso-padding-alt: 0; background-color: #E15334; font-size: 16px; font-family: arial,helvetica,sans-serif; display: inline-block; text-decoration: none; text-transform: none; color: #ffffff; border-radius: 8px 8px 8px 8px;"><strong>Renew Now</strong></a></td></tr></tbody></table><!--[if mso | IE]></span><![endif]--></td></tr>
 
     <!-- Footer Section -->
     <tr>
         <td style="padding: 16px 20px; font-size: 14px; line-height: 1.6; color: #353030;">
-            <p style="margin: 0;">Over 820+ 5 star reviews show that FunnelKit users trust our top-rated support for their online business. Need help? <a href="<?php echo $support; ?>" target="_blank" style="color:#0073AA">Contact FunnelKit Support</a></p>
+            <p style="margin: 0;">Over 820+ 5 star reviews show that FunnelKit users trust our top-rated support for their online business. Need help? <a href="<?php echo esc_url( $support ); ?>" target="_blank" style="color:#0073AA">Contact FunnelKit Support</a></p>
         </td>
     </tr>
     <tr>

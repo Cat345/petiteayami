@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Status_Event_Worker extends BWFAN_API_Base {
 	public static $ins;
 

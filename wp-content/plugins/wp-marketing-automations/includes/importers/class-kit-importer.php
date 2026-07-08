@@ -12,6 +12,7 @@ use BWFCRM_Term_Type;
 use WFCO_Common;
 use WP_Error;
 
+#[\AllowDynamicProperties]
 class Kit_Importer extends Importer implements Autoresponder_Importer_Interface {
 	/**
 	 * Set limit to 50

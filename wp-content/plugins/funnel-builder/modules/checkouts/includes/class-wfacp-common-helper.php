@@ -171,7 +171,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 			}
 			global $wpdb;
 			$slug                  = WFACP_Common::get_post_type_slug();
-			self::$get_saved_pages = $wpdb->get_results( $wpdb->prepare( "SELECT `ID`, `post_title`, `post_type` FROM `{$wpdb->prefix}posts` WHERE `post_type` = %s AND `post_title` != '' AND `post_status` = 'publish' ORDER BY `post_title` ASC", $slug ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			self::$get_saved_pages = $wpdb->get_results( $wpdb->prepare( "SELECT `ID`, `post_title`, `post_type` FROM `{$wpdb->prefix}posts` WHERE `post_type` = %s AND `post_title` != '' AND `post_status` = 'publish' ORDER BY `post_title` ASC", $slug ), ARRAY_A );
 
 			return self::$get_saved_pages;
 		}

@@ -2,6 +2,7 @@
 if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 
+	#[\AllowDynamicProperties]
 	class WFOB_Bump {
 
 		private $wfob_id            = 0;
@@ -953,8 +954,8 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				return;
 			}
 
-			$this->bump_name   = $post->post_title;
-			$prepared = WFOB_Common::get_prepared_products( $this->wfob_id );
+			$this->bump_name = $post->post_title;
+			$prepared        = WFOB_Common::get_prepared_products( $this->wfob_id );
 			if ( is_array( $prepared ) ) {
 				// Allow developers to filter the prepared products list before frontend rendering.
 				// e.g., add_filter( 'wfob_frontend_prepared_bump_products', fn( $products, $id ) => array_slice( $products, 0, 2 ), 10, 2 )

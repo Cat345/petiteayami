@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Textarea' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Textarea extends WFACPKirki_Field_WFACPKirki_Generic {

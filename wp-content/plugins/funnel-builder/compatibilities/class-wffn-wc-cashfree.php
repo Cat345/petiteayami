@@ -10,9 +10,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 if ( ! class_exists( 'WFFN_Compatibility_WC_Cashfree' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_WC_Cashfree {
 		public function __construct() {
-			add_filter( 'wc_cashfree_return_url', [ $this, 'return_url' ], 10, 1 );
+			add_filter( 'wc_cashfree_return_url', array( $this, 'return_url' ), 10, 1 );
 		}
 
 		public function is_enable() {

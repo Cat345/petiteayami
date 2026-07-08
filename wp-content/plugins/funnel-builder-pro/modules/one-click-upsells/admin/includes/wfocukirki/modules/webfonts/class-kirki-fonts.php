@@ -13,6 +13,7 @@ if ( ! class_exists( 'WFOCUKirki_Fonts' ) ) {
 	/**
 	 * The WFOCUKirki_Fonts object.
 	 */
+	#[\AllowDynamicProperties]
 	final class WFOCUKirki_Fonts {
 
 		/**
@@ -139,7 +140,7 @@ if ( ! class_exists( 'WFOCUKirki_Fonts' ) ) {
 
 			// If we got this far, cache was empty so we need to get from JSON.
 			ob_start();
-			include wp_normalize_path( dirname( __FILE__ ) . '/webfonts.json' );
+			include wp_normalize_path( __DIR__ . '/webfonts.json' );
 
 			$fonts_json = ob_get_clean();
 			$fonts      = json_decode( $fonts_json, true );

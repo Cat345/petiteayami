@@ -3,13 +3,13 @@
  * Upstroke Admin Report - Dashboard Stats
  *
  * Creates the upsells admin reports area.
- *
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 if ( ! class_exists( 'WFOCU_Upstroke_Report_Dashboard' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Upstroke_Report_Dashboard {
 
 		/**
@@ -31,60 +31,62 @@ if ( ! class_exists( 'WFOCU_Upstroke_Report_Dashboard' ) ) {
 		 */
 		public static function add_upstroke_stats_to_dashboard() {
 
-			$upsells_data = WFOCU_Core()->track->query_results( array(
-				'data'        => array(
-					'value'          => array(
-						'type'     => 'col',
-						'function' => 'SUM',
-						'name'     => 'upsells',
+			$upsells_data = WFOCU_Core()->track->query_results(
+				array(
+					'data'        => array(
+						'value'          => array(
+							'type'     => 'col',
+							'function' => 'SUM',
+							'name'     => 'upsells',
+						),
+						'action_type_id' => array(
+							'type'     => 'col',
+							'function' => 'COUNT',
+							'name'     => 'item_count',
+						),
+						'timestamp'      => array(
+							'type'     => 'col',
+							'function' => '',
+							'name'     => 'upsells_date',
+						),
 					),
-					'action_type_id' => array(
-						'type'     => 'col',
-						'function' => 'COUNT',
-						'name'     => 'item_count',
+					'where'       => array(
+						array(
+							'key'      => 'events.action_type_id',
+							'value'    => 5,
+							'operator' => '=',
+						),
 					),
-					'timestamp'      => array(
-						'type'     => 'col',
-						'function' => '',
-						'name'     => 'upsells_date',
-					),
-				),
-				'where'       => array(
-					array(
-						'key'      => 'events.action_type_id',
-						'value'    => 5,
-						'operator' => '=',
-					),
-				),
-				'query_type'  => 'get_results',
-				'event_range' => true,
-				'order_by'    => 'events.timestamp',
-				'group_by'    => 'YEAR(events.timestamp), MONTH(events.timestamp), DAY(events.timestamp)',
-				'order'       => 'ASC',
-				'start_date'  => strtotime( date( 'Y-m-01', current_time( 'timestamp' ) ) ),
-				'end_date'    => strtotime( 'tomorrow midnight' ),
-			) );
+					'query_type'  => 'get_results',
+					'event_range' => true,
+					'order_by'    => 'events.timestamp',
+					'group_by'    => 'YEAR(events.timestamp), MONTH(events.timestamp), DAY(events.timestamp)',
+					'order'       => 'ASC',
+					'start_date'  => strtotime( date( 'Y-m-01', current_time( 'timestamp' ) ) ),
+					'end_date'    => strtotime( 'tomorrow midnight' ),
+				)
+			);
 
 			$total_upsells = array_sum( wp_list_pluck( $upsells_data, 'upsells' ) );
 			$total_count   = array_sum( wp_list_pluck( $upsells_data, 'item_count' ) );
 
 			?>
-            <li class="upsells-total">
-                <a href="<?php echo esc_url( admin_url( 'admin.php?page=wc-reports&tab=upsells&report=upsells_by_date&range=month' ) ); ?>">
+			<li class="upsells-total">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=wc-reports&tab=upsells&report=upsells_by_date&range=month' ) ); ?>">
 					<?php
 					/* translators: %s: total upsells price */
 					printf( wp_kses_post( __( '<strong>%s </strong> one click upsells revenue', 'woocommerce' ) ), wp_kses_post( wc_price( ( $total_upsells ) ) ) );
 					?>
-                </a>
-            </li>
-            <li class="upsells-count">
-                <a href="<?php echo esc_url( admin_url( 'admin.php?page=wc-reports&tab=upsells&report=upsells_by_date&range=month' ) ); ?>">
+				</a>
+			</li>
+			<li class="upsells-count">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=wc-reports&tab=upsells&report=upsells_by_date&range=month' ) ); ?>">
 					<?php
 					/* translators: %s: Offer accepted  */
 					printf( wp_kses_post( _n( '<strong>%s Upsells</strong> offer accepted this month', '<strong>%s Upsells</strong> offers accepted this month', $total_count, 'woocommerce' ) ), esc_html( $total_count ) );
 					?>
-                </a>
-            </li>
+				</a>
+			</li>
 			<?php
 		}
 

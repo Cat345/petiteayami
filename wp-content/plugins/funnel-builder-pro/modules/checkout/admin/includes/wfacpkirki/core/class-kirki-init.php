@@ -9,6 +9,10 @@
  * @license     http://opensource.org/licenses/https://opensource.org/licenses/MIT
  * @since       1.0
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Init' ) ) {
 	/**
 	 * Initialize WFACPKirki
@@ -80,7 +84,6 @@ if ( ! class_exists( 'WFACPKirki_Init' ) ) {
 		 *
 		 * @return array
 		 * @since 3.0.0
-		 *
 		 */
 		public function default_control_types( $control_types = array() ) {
 
@@ -120,7 +123,6 @@ if ( ! class_exists( 'WFACPKirki_Init' ) ) {
 			);
 
 			return array_merge( $this->control_types, $control_types );
-
 		}
 
 		/**
@@ -155,10 +157,13 @@ if ( ! class_exists( 'WFACPKirki_Init' ) ) {
 				}
 			}
 
-			$skip_control_types = apply_filters( 'wfacpkirki_control_types_exclude', array(
-				'WFACPKirki_Control_Repeater',
-				'WP_Customize_Control',
-			) );
+			$skip_control_types = apply_filters(
+				'wfacpkirki_control_types_exclude',
+				array(
+					'WFACPKirki_Control_Repeater',
+					'WP_Customize_Control',
+				)
+			);
 
 			foreach ( $this->control_types as $control_type ) {
 				if ( ! in_array( $control_type, $skip_control_types, true ) && class_exists( $control_type ) ) {
@@ -295,7 +300,6 @@ if ( ! class_exists( 'WFACPKirki_Init' ) ) {
 		 *
 		 * @return void
 		 * @since 3.0.17
-		 *
 		 */
 		public function remove_panels( $wp_customize ) {
 			foreach ( WFACPKirki::$panels_to_remove as $panel ) {
@@ -310,7 +314,6 @@ if ( ! class_exists( 'WFACPKirki_Init' ) ) {
 		 *
 		 * @return void
 		 * @since 3.0.17
-		 *
 		 */
 		public function remove_sections( $wp_customize ) {
 			foreach ( WFACPKirki::$sections_to_remove as $section ) {
@@ -325,7 +328,6 @@ if ( ! class_exists( 'WFACPKirki_Init' ) ) {
 		 *
 		 * @return void
 		 * @since 3.0.17
-		 *
 		 */
 		public function remove_controls( $wp_customize ) {
 			foreach ( WFACPKirki::$controls_to_remove as $control ) {

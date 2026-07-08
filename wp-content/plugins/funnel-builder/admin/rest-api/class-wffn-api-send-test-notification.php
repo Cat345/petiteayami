@@ -8,6 +8,7 @@ if ( ! class_exists( 'WFFN_API_Send_Test_Notification' ) ) {
 	/**
 	 * Test Notification API class
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_API_Send_Test_Notification extends WFFN_REST_Controller {
 
 		public static $ins;
@@ -23,7 +24,7 @@ if ( ! class_exists( 'WFFN_API_Send_Test_Notification' ) ) {
 		 *
 		 * @var string
 		 */
-		protected $args = array();
+		protected $args      = array();
 		protected $namespace = 'funnelkit-app';
 
 		/**
@@ -45,17 +46,25 @@ if ( ! class_exists( 'WFFN_API_Send_Test_Notification' ) ) {
 		}
 
 		public function register_routes() {
-			register_rest_route( $this->namespace, '/' . 'test-email-notification/', array(
-				'methods'             => WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'process_api_call' ),
-				'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-			) );
+			register_rest_route(
+				$this->namespace,
+				'/' . 'test-email-notification/',
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'process_api_call' ),
+					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+				)
+			);
 
-			register_rest_route( $this->namespace, '/' . 'wp-users', array(
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_wp_users' ),
-				'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-			) );
+			register_rest_route(
+				$this->namespace,
+				'/' . 'wp-users',
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_wp_users' ),
+					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+				)
+			);
 		}
 
 		public function get_write_api_permission_check() {
@@ -67,38 +76,41 @@ if ( ! class_exists( 'WFFN_API_Send_Test_Notification' ) ) {
 			$limit  = isset( $this->args['limit'] ) ? $this->get_sanitized_arg( 'limit', 'text_field' ) : 10;
 			$data   = $this->get_users( $search, $limit );
 
-
-			return rest_ensure_response( [
-				'status' => true,
-				'data'   => $data
-			] );
+			return rest_ensure_response(
+				array(
+					'status' => true,
+					'data'   => $data,
+				)
+			);
 		}
 
 		public function get_users( $search, $limit = 10 ) {
-			$user_data = get_users( array(
-				'number'  => $limit,
-				'orderby' => 'name',
-				'order'   => 'asc',
-				'search'  => '*' . esc_attr( $search ) . '*',
-				'fields'  => [
-					'display_name',
-					'user_nicename',
-					'user_email',
-					'ID'
-				]
-			) );
+			$user_data = get_users(
+				array(
+					'number'  => $limit,
+					'orderby' => 'name',
+					'order'   => 'asc',
+					'search'  => '*' . esc_attr( $search ) . '*',
+					'fields'  => array(
+						'display_name',
+						'user_nicename',
+						'user_email',
+						'ID',
+					),
+				)
+			);
 
 			if ( empty( $user_data ) ) {
-				return [];
+				return array();
 			}
-			$data = [];
+			$data = array();
 			foreach ( $user_data as $user ) {
-				$data[] = [
+				$data[] = array(
 					'display_name' => $user->user_nicename,
 					'name'         => $user->display_name,
 					'email'        => $user->user_email,
-					'id'           => $user->id
-				];
+					'id'           => $user->id,
+				);
 			}
 
 			return $data;
@@ -118,7 +130,7 @@ if ( ! class_exists( 'WFFN_API_Send_Test_Notification' ) ) {
 			$frequencies           = $this->get_frequencies();
 			if ( empty( $frequencies ) ) {
 				/** If frequency is set will try that else default */
-				$frequencies = [ 'weekly' ];
+				$frequencies = array( 'weekly' );
 			}
 			// If monthly is not set then add it.
 			if ( ! in_array( 'monthly', $frequencies, true ) ) {
@@ -151,7 +163,7 @@ if ( ! class_exists( 'WFFN_API_Send_Test_Notification' ) ) {
 			}
 
 			if ( empty( $sent ) && $errors->has_errors() ) {
-				return $this->response( false, implode( ", ", $errors->get_error_messages() ), $is_rest );
+				return $this->response( false, implode( ', ', $errors->get_error_messages() ), $is_rest );
 			}
 
 			return $this->response( true, 'Notifications Sent', $is_rest );
@@ -187,7 +199,10 @@ if ( ! class_exists( 'WFFN_API_Send_Test_Notification' ) ) {
 		}
 
 		protected function response( $success, $message, $is_rest ) {
-			$response = array( 'success' => $success, 'message' => $message );
+			$response = array(
+				'success' => $success,
+				'message' => $message,
+			);
 
 			return $is_rest ? rest_ensure_response( $response ) : $response;
 		}

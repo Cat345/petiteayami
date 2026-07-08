@@ -3,11 +3,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 if ( ! class_exists( 'WFOCU_Template_Group_Gutenberg' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Template_Group_Gutenberg extends WFOCU_Template_Group {
 		public $allow_empty_template = true;
-		public $prefix = 'gutenberg';
-		public $listing_index = 3;
-		private $post_id = null;
+		public $prefix               = 'gutenberg';
+		public $listing_index        = 3;
+		private $post_id             = null;
 
 		public function __construct() {
 			parent::__construct();
@@ -30,14 +31,16 @@ if ( ! class_exists( 'WFOCU_Template_Group_Gutenberg' ) ) {
 
 			$template = array_merge( $this->get_remote_templates(), $this->local_templates() );
 
-
 			foreach ( $template as $temp_key => $temp_val ) {
 				if ( empty( $temp_val ) ) {
 					continue;
 				}
-				$temp_val = wp_parse_args( $temp_val, array(
-					'path' => $this->get_template(),
-				) );
+				$temp_val = wp_parse_args(
+					$temp_val,
+					array(
+						'path' => $this->get_template(),
+					)
+				);
 				WFOCU_Core()->template_loader->register_template( $temp_key, $temp_val );
 			}
 		}
@@ -49,27 +52,34 @@ if ( ! class_exists( 'WFOCU_Template_Group_Gutenberg' ) ) {
 		}
 
 		public function get_edit_link() {
-			return add_query_arg( [
-				'post'   => '{{offer_id}}',
-				'action' => 'edit',
-			], admin_url( 'post.php' ) );
+			return add_query_arg(
+				array(
+					'post'   => '{{offer_id}}',
+					'action' => 'edit',
+				),
+				admin_url( 'post.php' )
+			);
 		}
 
 		public function get_preview_link() {
-			return add_query_arg( [
-				'p' => '{{offer_id}}',
-			], site_url() );
+			return add_query_arg(
+				array(
+					'p' => '{{offer_id}}',
+				),
+				site_url()
+			);
 		}
 
 
 		public function update_template( $template, $offer, $offer_settings ) {//phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
 			$this->post_id = $offer;
 
-			wp_update_post( [
-				'ID'           => $offer,
-				'post_content' => '',
-			] );
-
+			wp_update_post(
+				array(
+					'ID'           => $offer,
+					'post_content' => '',
+				)
+			);
 
 			if ( $this->if_current_template_is_empty( $template ) ) {
 				return;
@@ -96,7 +106,7 @@ if ( ! class_exists( 'WFOCU_Template_Group_Gutenberg' ) ) {
 					update_post_meta( $offer, $meta_key, trim( $meta_value ) );
 				}
 
-				return [ 'status' => true ];
+				return array( 'status' => true );
 			}
 
 			return true;
@@ -117,9 +127,7 @@ if ( ! class_exists( 'WFOCU_Template_Group_Gutenberg' ) ) {
 
 		public function init_extension() {
 
-
 			include __DIR__ . '/class-wfocu-gutenberg-extension.php';
-
 		}
 
 		public function delete_other_builder_data( $post_id ) {
@@ -132,5 +140,5 @@ if ( ! class_exists( 'WFOCU_Template_Group_Gutenberg' ) ) {
 		}
 	}
 
-	WFOCU_Core()->template_loader->register_group( new WFOCU_Template_Group_Gutenberg, 'gutenberg' );
+	WFOCU_Core()->template_loader->register_group( new WFOCU_Template_Group_Gutenberg(), 'gutenberg' );
 }

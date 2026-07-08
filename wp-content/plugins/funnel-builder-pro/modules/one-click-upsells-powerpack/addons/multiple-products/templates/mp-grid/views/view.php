@@ -110,7 +110,7 @@ $template_views = ob_get_clean();
 /** Load Output Starts */
 WFOCU_Core()->template_loader->load_header();
 
-echo $template_views; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+echo $template_views; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Full HTML template buffer; each sub-template is responsible for escaping its own output.
 /** Sidebar Bucket */
 if ( false === WFOCU_Core()->template_loader->is_customizer_preview() ) {
 	WFOCU_Core()->template_loader->get_template_part( 'offer-confirmations', $data->products );

@@ -13,6 +13,10 @@
 /**
  * Manages the way Google Fonts are enqueued.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Modules_Webfonts_Async' ) ) {
 	#[AllowDynamicProperties]
 	final class WFACPKirki_Modules_Webfonts_Async {
@@ -61,7 +65,7 @@ if ( ! class_exists( 'WFACPKirki_Modules_Webfonts_Async' ) ) {
 		 * @param string $config_id The config-ID.
 		 * @param object $webfonts The WFACPKirki_Modules_Webfonts object.
 		 * @param object $googlefonts The WFACPKirki_Fonts_Google object.
-		 * @param array $args Extra args we want to pass.
+		 * @param array  $args Extra args we want to pass.
 		 *
 		 * @since 3.0
 		 */
@@ -75,7 +79,6 @@ if ( ! class_exists( 'WFACPKirki_Modules_Webfonts_Async' ) ) {
 			add_action( 'wp_head', array( $this, 'webfont_loader_script' ), 30 );
 
 			add_filter( 'wp_resource_hints', array( $this, 'resource_hints' ), 10, 2 );
-
 		}
 
 		/**
@@ -83,7 +86,7 @@ if ( ! class_exists( 'WFACPKirki_Modules_Webfonts_Async' ) ) {
 		 *
 		 * @access public
 		 *
-		 * @param array $urls URLs to print for resource hints.
+		 * @param array  $urls URLs to print for resource hints.
 		 * @param string $relation_type The relation type the URLs are printed.
 		 *
 		 * @return array $urls           URLs to print for resource hints.
@@ -100,7 +103,6 @@ if ( ! class_exists( 'WFACPKirki_Modules_Webfonts_Async' ) ) {
 			}
 
 			return $urls;
-
 		}
 
 		/**

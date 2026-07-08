@@ -2,6 +2,7 @@
 
 use BWFAN\Importers\Importer;
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Import_Status extends BWFAN_API_Base {
 	public static $ins;
 

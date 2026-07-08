@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WooFunnels_Addons' ) ) {
 	/**
 	 * Basic class that do operations and get data from wp core

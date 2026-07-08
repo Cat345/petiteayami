@@ -7,6 +7,7 @@
  * Time: 10:43 AM
  */
 if ( ! class_exists( 'WFOCU_Rule_WFACP_Page' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_WFACP_Page extends WFOCU_Rule_Base {
 		public $supports = array( 'cart' );
 
@@ -27,7 +28,7 @@ if ( ! class_exists( 'WFOCU_Rule_WFACP_Page' ) ) {
 		public function get_possible_rule_values() {
 
 			if ( ! defined( 'WFACP_SLUG' ) ) {
-				return [];
+				return array();
 			}
 			$result = array();
 			$pages  = $pages = WFACP_Common::save_publish_checkout_pages_in_transient();
@@ -55,7 +56,7 @@ if ( ! class_exists( 'WFOCU_Rule_WFACP_Page' ) ) {
 			if ( $wfacp_id ) {
 				$wfacp_id = absint( $wfacp_id );
 			}
-			$wfacp_set = [ $wfacp_id ];
+			$wfacp_set = array( $wfacp_id );
 			$result    = false;
 			$type      = $rule_data['operator'];
 
@@ -75,7 +76,6 @@ if ( ! class_exists( 'WFOCU_Rule_WFACP_Page' ) ) {
 					default:
 						$result = false;
 
-
 						break;
 				}
 			}
@@ -85,8 +85,7 @@ if ( ! class_exists( 'WFOCU_Rule_WFACP_Page' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Checkout Page %s %s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_checkout_title( $rule['condition'] ) );
+			return sprintf( __( 'Checkout Page %1$s %2$s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_checkout_title( $rule['condition'] ) );
 		}
-
 	}
 }

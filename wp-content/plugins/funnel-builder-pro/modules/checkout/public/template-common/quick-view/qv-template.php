@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * ========================
  * Quick View Template
@@ -51,8 +55,8 @@ add_action(
 
 remove_action( 'woocommerce_single_variation', 'woocommerce_single_variation_add_to_cart_button', 20 );
 // hide update qty input field for single variation and simple product type
-add_action( 'wfacp_woocommerce_simple_add_to_cart', [ WFACP_Core()->public, 'woocommerce_simple_add_to_cart' ] );
-add_action( 'woocommerce_single_variation', [ WFACP_Core()->public, 'woocommerce_single_variation_add_to_cart_button' ], 20 );
+add_action( 'wfacp_woocommerce_simple_add_to_cart', array( WFACP_Core()->public, 'woocommerce_simple_add_to_cart' ) );
+add_action( 'woocommerce_single_variation', array( WFACP_Core()->public, 'woocommerce_single_variation_add_to_cart_button' ), 20 );
 
 add_action(
 	'wfac_qv_images',
@@ -81,7 +85,7 @@ add_filter( 'woocommerce_is_is_purchasable', '__return_true', 100 );
 add_filter( 'woocommerce_variation_is_purchasable', '__return_true', 100 );
 add_filter( 'woocommerce_available_variation', array( WFACP_Core()->public, 'force_purchasable_quick_view' ), 99 );
 ?>
-<div id="wfacp_qr_model_wrap" class=" wfacp_qv-inner-modal <?php echo $productType; ?>" data-item-key="<?php echo $item_key; ?>" data-cart-key="<?php echo $cart_key; ?>">
+<div id="wfacp_qr_model_wrap" class=" wfacp_qv-inner-modal <?php echo $productType; ?>" data-item-key="<?php echo esc_attr( $item_key ); ?>" data-cart-key="<?php echo esc_attr( $cart_key ); ?>">
 	<div class="wfacp_qv-container woocommerce single-product">
 
 		<div class="wfacp_qv-top-panel">

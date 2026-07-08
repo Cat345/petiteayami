@@ -4,6 +4,7 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'FK_Checkout_Redirect_Admin' ) ) {
 
+	#[\AllowDynamicProperties]
 	class FK_Checkout_Redirect_Admin {
 
 		private static $ins = null;

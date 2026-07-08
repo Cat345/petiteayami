@@ -21,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Adds styles to the customizer.
  */
 if ( ! class_exists( 'WFACPKirki_Modules_Customizer_Branding' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Modules_Customizer_Branding {
 
 		/**

@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class bwfan_Input_Page_Select extends bwfan_Input_Text {
 
 	public function __construct() {

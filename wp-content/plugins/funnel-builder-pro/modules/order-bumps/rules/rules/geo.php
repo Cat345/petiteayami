@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Rule_Geo_Country_Code' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Geo_Country_Code extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -44,6 +45,5 @@ if ( ! class_exists( 'wfob_Rule_Geo_Country_Code' ) ) {
 
 			return $result;
 		}
-
 	}
 }

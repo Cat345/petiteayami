@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 final class BWFAN_WC_New_Order extends BWFAN_Event {
 	private static $instance = null;
 
@@ -567,7 +568,7 @@ final class BWFAN_WC_New_Order extends BWFAN_Event {
 					continue;
 				}
 
-				$product_categories = $product->get_category_ids();
+				$product_categories = BWFAN_Common::get_wc_product_category_ids_for_order_line( $product );
 				if ( is_array( $product_categories ) && ! empty( $product_categories ) ) {
 					$order_product_categories = array_merge( $order_product_categories, $product_categories );
 				}

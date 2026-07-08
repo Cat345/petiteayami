@@ -11,7 +11,7 @@ if ( ! class_exists( 'BWFABT_WFFN_Compatibility' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -21,12 +21,10 @@ if ( ! class_exists( 'BWFABT_WFFN_Compatibility' ) ) {
 			add_filter( 'wffn_rest_get_funnel_steps', array( $this, 'maybe_experiment_run' ) );
 			add_filter( 'wffn_rest_get_step_post', array( $this, 'maybe_experiment_run_on_step' ), 10, 2 );
 			add_action( 'wffn_state_toggle_step', array( $this, 'maybe_pause_experiment' ), 10, 2 );
-
 		}
 
 
 		public function maybe_experiment_run( $steps ) {
-
 
 			foreach ( $steps as &$step ) {
 
@@ -49,7 +47,6 @@ if ( ! class_exists( 'BWFABT_WFFN_Compatibility' ) ) {
 			}
 
 			return $steps;
-
 		}
 
 		public function maybe_experiment_run_on_step( $resp, $step_id ) {
@@ -61,7 +58,7 @@ if ( ! class_exists( 'BWFABT_WFFN_Compatibility' ) ) {
 					if ( isset( $resp['global_slug'] ) && empty( $resp['global_slug'] ) ) {
 						$get_controller = BWFABT_Core()->controllers->get_integration( $exp_data[0]['type'] );
 
-						$variant_data = [];
+						$variant_data = array();
 						foreach ( $variants as $variant_id => $data ) {
 							if ( absint( $step_id ) === absint( $variant_id ) ) {
 								continue;
@@ -71,9 +68,9 @@ if ( ! class_exists( 'BWFABT_WFFN_Compatibility' ) ) {
 							if ( $post_data instanceof WP_Post ) {
 								$variant_data[] = array(
 									'id'        => $variant_id,
-									'title'     => html_entity_decode( $post_data->post_title ),
+									'title'     => html_entity_decode( $post_data->post_title, ENT_QUOTES | ENT_HTML401 ),
 									'view_link' => $get_controller->get_entity_view_link( $variant_id ),
-									'post_slug' => $post_data->post_name
+									'post_slug' => $post_data->post_name,
 								);
 							}
 						}
@@ -81,7 +78,7 @@ if ( ! class_exists( 'BWFABT_WFFN_Compatibility' ) ) {
 							$resp['variants'] = $variant_data;
 						}
 					}
-					$resp['experiment_message'] = sprintf( "A/B test with %d variants was started %s", $count, date( 'F d,Y', strtotime( $exp_data[0]['date_added'] ) ) );
+					$resp['experiment_message'] = sprintf( 'A/B test with %d variants was started %s', $count, date( 'F d,Y', strtotime( $exp_data[0]['date_added'] ) ) );
 				}
 			}
 
@@ -100,18 +97,11 @@ if ( ! class_exists( 'BWFABT_WFFN_Compatibility' ) ) {
 						$get_controller->stop_experiment( $experiment );
 					}
 				}
-
 			}
 		}
-
 	}
 
 	if ( true === function_exists( 'WFFN_Core' ) ) {
 		return BWFABT_WFFN_Compatibility::get_instance();
 	}
-
-
 }
-
-
-

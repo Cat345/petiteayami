@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WFFN_Compatibility_With_Password_Protected' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_Password_Protected {
 
 		public function __construct() {

@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFFN_Compatibility_With_Bricks_Theme
  */
 if ( ! class_exists( 'WFFN_Compatibility_With_Bricks_Theme' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_Bricks_Theme {
 
 		public function __construct() {

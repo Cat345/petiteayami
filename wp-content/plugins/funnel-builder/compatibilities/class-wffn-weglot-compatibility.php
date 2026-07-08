@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 if ( ! class_exists( 'WFFN_Compatibility_With_Weglot' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_Weglot {
 
 		public function __construct() {
@@ -33,7 +34,6 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Weglot' ) ) {
 
 			return $url->getForLanguage( $url_service->get_current_language() );
 		}
-
 	}
 
 	WFFN_Plugin_Compatibilities::register( new WFFN_Compatibility_With_Weglot(), 'weglot' );

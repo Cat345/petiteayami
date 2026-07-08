@@ -1,23 +1,24 @@
 <?php //phpcs:ignore WordPress.WP.TimezoneChange.DeprecatedSniff
 
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class WFFN_OTY_Pages_Oxygen
  */
 if ( ! class_exists( 'WFFN_OTY_Pages_Gutenberg' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFFN_OTY_Pages_Gutenberg {
-		private static $ins = null;
-		public $modules_instance = [];
-		private $edit_id = 0;
+		private static $ins      = null;
+		public $modules_instance = array();
+		private $edit_id         = 0;
 
 		/**
 		 * WFFN_OTY_Pages_Oxygen constructor.
 		 */
 		private function __construct() {
 			$this->register();
-			add_action( 'init', [ $this, 'init_extension' ], 21 );
+			add_action( 'init', array( $this, 'init_extension' ), 21 );
 		}
 
 		public static function get_instance() {
@@ -26,22 +27,19 @@ if ( ! class_exists( 'WFFN_OTY_Pages_Gutenberg' ) ) {
 			}
 
 			return self::$ins;
-
 		}
 
 
 
 		private function register() {
-			add_action( 'wffn_step_duplicated', [ $this, 'assign_empty_template' ] );
-			add_action( 'wfoty_page_design_updated', [ $this, 'assign_empty_template' ] );
-
+			add_action( 'wffn_step_duplicated', array( $this, 'assign_empty_template' ) );
+			add_action( 'wfoty_page_design_updated', array( $this, 'assign_empty_template' ) );
 		}
 
 		public function assign_empty_template( $wfop_id ) {
 			if ( $wfop_id < 1 ) {
 				return;
 			}
-
 		}
 
 		public function init_extension() {
@@ -56,25 +54,27 @@ if ( ! class_exists( 'WFFN_OTY_Pages_Gutenberg' ) ) {
 			if ( ! is_null( $post ) && $post->post_type === WFOPP_Core()->optin_ty_pages->get_post_type_slug() ) {
 
 			}
-
 		}
 
 		public function add_default_templates() {
 
-			$template = [
+			$template = array(
 				'slug'        => 'gutenberg',
 				'title'       => __( 'Block Editor', 'funnel-builder' ),
 				'button_text' => __( 'Edit', 'funnel-builder' ),
 				'description' => __( 'Use Block Editor Builder modules to create your own designs. Or pick from professionally-designed templates.', 'funnel-builder' ),
-				'edit_url'    => add_query_arg( [
-					'action' => 'edit',
-					'post'   => $this->edit_id
-				], admin_url( 'post.php' ) ),
-			];
+				'edit_url'    => add_query_arg(
+					array(
+						'action' => 'edit',
+						'post'   => $this->edit_id,
+					),
+					admin_url( 'post.php' )
+				),
+			);
 
 			WFOPP_Core()->optin_ty_pages->register_template_type( $template );
 			$templates = WooFunnels_Dashboard::get_all_templates();
-			$designs   = isset( $templates['optin_ty'] ) ? $templates['optin_ty'] : [];
+			$designs   = isset( $templates['optin_ty'] ) ? $templates['optin_ty'] : array();
 
 			if ( isset( $designs['gutenberg'] ) && is_array( $designs['gutenberg'] ) ) {
 				foreach ( $designs['gutenberg'] as $d_key => $templates ) {
@@ -87,19 +87,18 @@ if ( ! class_exists( 'WFFN_OTY_Pages_Gutenberg' ) ) {
 				}
 			} else {
 
-				$empty_template = [
-					"type"               => "view",
-					"import"             => "no",
-					"show_import_popup"  => "no",
-					"slug"               => "gutenberg_1",
-					"build_from_scratch" => true,
+				$empty_template = array(
+					'type'               => 'view',
+					'import'             => 'no',
+					'show_import_popup'  => 'no',
+					'slug'               => 'gutenberg_1',
+					'build_from_scratch' => true,
 
-				];
+				);
 				WFOPP_Core()->optin_ty_pages->register_template( 'gutenberg_1', $empty_template, 'gutenberg' );
 			}
 
-			return [];
-
+			return array();
 		}
 
 		public function allow_theme_css( $is, $post_id ) {
@@ -111,8 +110,6 @@ if ( ! class_exists( 'WFFN_OTY_Pages_Gutenberg' ) ) {
 
 			return $is;
 		}
-
-
 	}
 
 	WFFN_OTY_Pages_Gutenberg::get_instance();

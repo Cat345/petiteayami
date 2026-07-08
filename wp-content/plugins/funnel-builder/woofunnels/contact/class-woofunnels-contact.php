@@ -220,7 +220,7 @@ if ( ! class_exists( 'WooFunnels_Contact' ) ) {
 
 			$contact_meta = $this->db_operations->get_contact_metadata( $this->id );
 			foreach ( is_array( $contact_meta ) ? $contact_meta : array() as $meta ) {
-				$this->meta->{$meta->meta_key} = maybe_unserialize( $meta->meta_value );
+				$this->meta->{$meta->meta_key} = bwf_safe_unserialize( $meta->meta_value );
 			}
 		}
 
@@ -370,7 +370,7 @@ if ( ! class_exists( 'WooFunnels_Contact' ) ) {
 				}
 			}
 			if ( isset( $this->meta->{$meta_key} ) ) {
-				return maybe_unserialize( $this->meta->{$meta_key} );
+				return bwf_safe_unserialize( $this->meta->{$meta_key} );
 			}
 
 			return '';
@@ -645,13 +645,13 @@ if ( ! class_exists( 'WooFunnels_Contact' ) ) {
 
 				/** Check if UID empty */
 				if ( empty( $this->get_uid() ) ) {
-					$contact['uid'] = md5( $this->email . $this->wp_id . time() );
+					$contact['uid'] = bin2hex( random_bytes( 16 ) );
 					$this->set_uid( $contact['uid'] );
 				}
 
 				$this->db_operations->update_contact( $contact );
 			} elseif ( empty( $this->get_id() ) ) {
-				$contact['uid']  = md5( $this->email . $this->wp_id . time() );
+				$contact['uid']  = bin2hex( random_bytes( 16 ) );
 				$contact['wpid'] = $this->get_wpid() > 0 ? $this->get_wpid() : 0;
 				$this->set_uid( $contact['uid'] );
 				$contact_id = $this->db_operations->insert_contact( $contact );

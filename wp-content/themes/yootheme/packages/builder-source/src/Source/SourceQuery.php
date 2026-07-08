@@ -68,22 +68,27 @@ class SourceQuery
         }
 
         // check if field already exists
-        $nodeExists = $node->get($name);
+        $existingNode = $node->get($name);
 
         // create node for field
-        $node = $node->field($name, $arguments);
+        $fieldNode = $node->field($name, $arguments);
 
         // add directives
         foreach ($directives as $directive) {
-            $node->directive($directive->name, (array) ($directive->arguments ?? []));
+            $fieldNode->directive($directive->name, (array) ($directive->arguments ?? []));
         }
 
         // add alias
-        if ($nodeExists && $nodeExists->toHash() !== ($hash = $node->toHash())) {
-            $node->alias = "{$name}_{$hash}";
-            $field->name .= "_{$hash}";
+        if ($existingNode) {
+            if ($existingNode->toHash() !== ($hash = $fieldNode->toHash())) {
+                $fieldNode->alias = "{$name}_{$hash}";
+                $field->name .= "_{$hash}";
+            } else {
+                array_pop($node->children);
+                return $existingNode;
+            }
         }
 
-        return $node;
+        return $fieldNode;
     }
 }

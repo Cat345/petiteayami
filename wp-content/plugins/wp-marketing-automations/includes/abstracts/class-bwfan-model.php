@@ -60,6 +60,60 @@ abstract class BWFAN_Model {
 		return $wpdb->query( $wpdb->prepare( $sql, $value ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
+	/**
+	 * Whether the last DB error indicates an InnoDB deadlock.
+	 *
+	 * @param string $last_error wpdb last_error string.
+	 * @return bool
+	 */
+	protected static function is_deadlock_error( $last_error ) {
+		if ( '' === $last_error ) {
+			return false;
+		}
+
+		return false !== stripos( $last_error, 'deadlock' ) || false !== stripos( $last_error, 'lock wait timeout' );  
+	}
+
+	/**
+	 * Run a pre-prepared write query with InnoDB deadlock detection and retry.
+	 *
+	 * Callers may use the literal `{table_name}` placeholder; it is substituted
+	 * with the late-static-bound table name. Use for raw UPDATE/DELETE/INSERT
+	 * statements that bypass `$wpdb->update/insert`.
+	 *
+	 * @param string $sql     Pre-prepared SQL statement.
+	 * @param string $context Short label included in retry log lines.
+	 * @return int|false Rows affected, or false on non-deadlock failure / retry exhaustion.
+	 */
+	public static function query_with_retry( $sql, $context = 'query' ) {
+		global $wpdb;
+		$sql         = str_replace( '{table_name}', self::_table(), $sql );
+		$max_retries = 3;
+
+		for ( $attempt = 0; $attempt <= $max_retries; $attempt++ ) {
+			if ( $attempt > 0 ) {
+				BWFAN_Common::log_test_data( 'BWFAN: Deadlock on ' . $context . ', retry attempt ' . $attempt . ' of ' . $max_retries, 'fka-db-deadlock', true );
+				usleep( $attempt * 100000 );
+			}
+
+			/** Suppress wpdb's native error logging; deadlocks are handled here and logged via fka-db-deadlock. last_error stays populated for detection below. */
+			$suppress = $wpdb->suppress_errors( true );
+			$result   = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->suppress_errors( $suppress );
+
+			if ( false !== $result || ! self::is_deadlock_error( $wpdb->last_error ) ) {
+				/** Re-surface genuine (non-deadlock) failures that wpdb would normally have logged, unless an outer context already suppressed errors. */
+				if ( false === $result && ! $suppress && '' !== $wpdb->last_error ) {
+					$wpdb->print_error( $wpdb->last_error ); //phpcs:ignore
+				}
+
+				return $result;
+			}
+		}
+
+		return false;
+	}
+
 	static function insert_id() {
 		global $wpdb;
 
@@ -89,11 +143,28 @@ abstract class BWFAN_Model {
 
 		$sql = 'SELECT COUNT(*) FROM ' . self::_table();
 		if ( ! is_null( $dependency ) ) {
-			$sql = 'SELECT COUNT(*) FROM ' . self::_table() . ' INNER JOIN ' . $dependency['dependency_table'] . ' on ' . self::_table() . '.' . $dependency['dependent_col'] . '=' . $dependency['dependency_table'] . '.' . $dependency['dependency_col'] . ' WHERE ' . $dependency['dependency_table'] . '.' . $dependency['col_name'] . '=' . $dependency['col_value'];
 			if ( isset( $dependency['automation_id'] ) ) {
-				$sql = 'SELECT COUNT(*) FROM ' . self::_table() . ' INNER JOIN ' . $dependency['dependency_table'] . ' on ' . self::_table() . '.' . $dependency['dependent_col'] . '=' . $dependency['dependency_table'] . '.' . $dependency['dependency_col'] . ' WHERE ' . $dependency['dependency_table'] . '.' . $dependency['col_name'] . '=' . $dependency['col_value'] . ' AND ' . $dependency['automation_table'] . '.' . $dependency['automation_col'] . '=' . $dependency['automation_id'];
+				$dependency['automation_id'] = absint( $dependency['automation_id'] );
+			}
+			if ( isset( $dependency['col_value'] ) && 'any' !== $dependency['col_value'] ) {
+				$dependency['col_value'] = "'" . esc_sql( $dependency['col_value'] ) . "'";
+			}
+			$self_tbl = '`' . str_replace( '`', '``', self::_table() ) . '`';
+			$dep_tbl  = '`' . str_replace( '`', '``', $dependency['dependency_table'] ) . '`';
+			$dep_on   = '`' . str_replace( '`', '``', $dependency['dependent_col'] ) . '`';
+			$dep_col  = '`' . str_replace( '`', '``', $dependency['dependency_col'] ) . '`';
+			$col_name = '`' . str_replace( '`', '``', $dependency['col_name'] ) . '`';
+			$join     = ' INNER JOIN ' . $dep_tbl . ' on ' . $self_tbl . '.' . $dep_on . '=' . $dep_tbl . '.' . $dep_col;
+
+			$sql = 'SELECT COUNT(*) FROM ' . $self_tbl . $join . ' WHERE ' . $dep_tbl . '.' . $col_name . '=' . $dependency['col_value'];
+			if ( isset( $dependency['automation_id'] ) ) {
+				$auto_tbl  = '`' . str_replace( '`', '``', $dependency['automation_table'] ) . '`';
+				$auto_col  = '`' . str_replace( '`', '``', $dependency['automation_col'] ) . '`';
+				$auto_cond = ' AND ' . $auto_tbl . '.' . $auto_col . '=' . $dependency['automation_id'];
+
+				$sql = 'SELECT COUNT(*) FROM ' . $self_tbl . $join . ' WHERE ' . $dep_tbl . '.' . $col_name . '=' . $dependency['col_value'] . $auto_cond;
 				if ( 'any' === $dependency['col_value'] ) {
-					$sql = 'SELECT COUNT(*) FROM ' . self::_table() . ' INNER JOIN ' . $dependency['dependency_table'] . ' on ' . self::_table() . '.' . $dependency['dependent_col'] . '=' . $dependency['dependency_table'] . '.' . $dependency['dependency_col'] . ' WHERE ' . $dependency['automation_table'] . '.' . $dependency['automation_col'] . '=' . $dependency['automation_id'];
+					$sql = 'SELECT COUNT(*) FROM ' . $self_tbl . $join . ' WHERE ' . $auto_tbl . '.' . $auto_col . '=' . $dependency['automation_id'];
 				}
 			}
 		}
@@ -108,12 +179,14 @@ abstract class BWFAN_Model {
 		$sql_params = [];
 		if ( is_array( $data ) && count( $data ) > 0 ) {
 			foreach ( $data as $key => $val ) {
-				$sql          .= " AND `{$key}` LIKE {$val['operator']}";
+				$column       = '`' . str_replace( '`', '``', $key ) . '`';
+				$operator     = in_array( $val['operator'], array( '%s', '%d', '%f' ), true ) ? $val['operator'] : '%s';
+				$sql          .= " AND {$column} LIKE {$operator}";
 				$sql_params[] = $val['value'];
 			}
 
 			if ( ! empty( $sql_params ) ) {
-				$sql = $wpdb->prepare( $sql, $sql_params ); // WPCS: unprepared SQL OK
+				$sql = $wpdb->prepare( $sql, ...$sql_params ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			}
 		}
 
@@ -177,9 +250,12 @@ abstract class BWFAN_Model {
 		return $result;
 	}
 
-	static function get_results( $query ) {
+	static function get_results( $query, $args = array() ) {
 		global $wpdb;
 		$query   = str_replace( '{table_name}', self::_table(), $query );
+		if ( ! empty( $args ) ) {
+			$query = $wpdb->prepare( $query, ...$args ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		}
 		$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return $results;
@@ -236,25 +312,31 @@ abstract class BWFAN_Model {
 		return $data;
 	}
 
-	static function get_var( $query ) {
+	static function get_var( $query, $args = array() ) {
 		global $wpdb;
 		$query = str_replace( '{table_name}', self::_table(), $query );
+		if ( ! empty( $args ) ) {
+			$query = $wpdb->prepare( $query, ...$args ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		}
 
 		return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
-	static function delete_multiple( $query ) {
-		self::query( $query );
+	static function delete_multiple( $query, $args = array() ) {
+		self::query( $query, $args );
 	}
 
-	static function query( $query ) {
+	static function query( $query, $args = array() ) {
 		global $wpdb;
 		$query = str_replace( '{table_name}', self::_table(), $query );
+		if ( ! empty( $args ) ) {
+			$query = $wpdb->prepare( $query, ...$args ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		}
 		$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
-	static function update_multiple( $query ) {
-		self::query( $query );
+	static function update_multiple( $query, $args = array() ) {
+		self::query( $query, $args );
 	}
 
 	static function get_current_date_time() {

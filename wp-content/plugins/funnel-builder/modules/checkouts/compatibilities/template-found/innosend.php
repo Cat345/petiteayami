@@ -9,6 +9,7 @@
  *
  * @link https://innosend.eu/
  */
+#[\AllowDynamicProperties]
 class WFACP_InnoSend {
 	public function __construct() {
 		add_action( 'wfacp_internal_css', array( $this, 'reattach_hook' ) );

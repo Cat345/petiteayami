@@ -1,8 +1,10 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 /**
  * Author PhpStorm.
  */
 if ( ! class_exists( 'UpStroke_Subscriptions_PayPal' ) ) {
+	#[\AllowDynamicProperties]
 	class UpStroke_Subscriptions_PayPal extends WFOCU_Gateway_Integration_PayPal_Standard {
 
 		public function __construct() {
@@ -11,7 +13,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PayPal' ) ) {
 			add_filter( 'wfocu_order_copy_meta_keys', array( $this, 'set_keys_to_copy' ), 10, 1 );
 			add_filter( 'wfocu_gateway_paypal_param_setexpresscheckout', array( $this, 'maybe_filter_paypal_setexpress_checkout_arguments' ), 10, 2 );
 			add_filter( 'wfocu_gateway_in_offer_transaction_paypal_after_express_checkout_response', array( $this, 'perform_createrecurring_profile' ), 10, 4 );
-
 		}
 
 		public function maybe_filter_paypal_setexpress_checkout_arguments( $arguments, $is_upsell = false ) {
@@ -35,13 +36,12 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PayPal' ) ) {
 					if ( is_a( $product_object, 'WC_Product' ) && WC_Subscriptions_Product::is_subscription( $product_object->get_id() ) ) {
 						$arguments[ 'L_BILLINGAGREEMENTDESCRIPTION' . $incr ] = wp_specialchars_decode( get_the_title( $product_object->get_id() ), ENT_QUOTES );
 						$arguments[ 'L_BILLINGTYPE' . $incr ]                 = 'RecurringPayments';
-						$incr ++;
+						++$incr;
 					}
 				}
 			}
 
 			return $arguments;
-
 		}
 
 		/**
@@ -77,7 +77,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PayPal' ) ) {
 								$api_response_result = false;
 							}
 						}
-
 					}
 				}
 			}
@@ -86,7 +85,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PayPal' ) ) {
 			WFOCU_Core()->data->save( 'paypal' );
 
 			return $api_response_result;
-
 		}
 
 		public function get_recurring_billing_profile_args( $product, $product_args ) {
@@ -112,7 +110,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PayPal' ) ) {
 
 			// An initial period is being used to charge a sign-up fee
 			if ( 0 !== $total_billing_cycles && 0 === $free_trial_length ) {
-				$total_billing_cycles --;
+				--$total_billing_cycles;
 			}
 
 			return array(
@@ -124,7 +122,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PayPal' ) ) {
 				'billing_frequency'    => $frequency,
 
 			);
-
 		}
 
 		public function create_recurring_payments_profile( $profile_args, $token, $payerID, $get_express_checkout_details ) {
@@ -165,7 +162,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PayPal' ) ) {
 			}
 
 			return false;
-
 		}
 
 		/**
@@ -173,7 +169,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PayPal' ) ) {
 		 *
 		 * @param WC_Subscription $subscription
 		 * @param $key
-		 * @param WC_Order $order
+		 * @param WC_Order        $order
 		 */
 		public function save_meta_to_subscription( $subscription, $key, $order ) {
 
@@ -188,7 +184,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions_PayPal' ) ) {
 
 				$subscription->save();
 			}
-
 		}
 
 		public function set_keys_to_copy( $meta_keys ) {

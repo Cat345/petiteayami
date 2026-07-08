@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Class BWFAN_WC_Order_Shipping_Country
  *
@@ -7,6 +11,7 @@
  *
  * Since 2.0.6
  */
+#[\AllowDynamicProperties]
 class BWFAN_WC_Order_Shipping_Country extends BWFAN_Merge_Tag {
 
 	private static $instance = null;

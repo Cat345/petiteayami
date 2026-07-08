@@ -404,7 +404,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			if ( ! empty( $formatted_variation_list ) && count( $formatted_variation_list ) > 0 ) {
 				foreach ( $formatted_variation_list as $att => $att_val ) {
 					if ( $att_val == '' ) {
-						$att_val = __( 'any' );
+						$att_val = __( 'any', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					}
 					$att         = strtolower( $att );
 					$att_val     = strtolower( $att_val );
@@ -661,6 +661,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 * remove unnecessay keys from single product array
 		 */
 		public static function remove_product_keys( $product ) {
+			if ( ! is_array( $product ) ) {
+				return $product;
+			}
 			unset( $product['image'] );
 			unset( $product['price'] );
 			unset( $product['regular_price'] );
@@ -776,17 +779,17 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		public static function get_frontend_global_settings() {
 			$save_models                            = get_option( '_wfacp_global_settings', array() );
 			$models                                 = array();
-			$models['invalid_email_field']          = __( '%s is not a valid email address.', 'woocommerce' );
-			$models['inline_email_field']           = apply_filters( 'wfacp_inline_email_field_message', __( 'Please enter a valid email address', 'woocommerce' ) );
-			$models['error_required_msg']           = __( '%s is a required field.', 'woocommerce' );
-			$models['field_required_msg']           = __( '%s is a required field.', 'woocommerce' );
-			$models['phone_number_invalid']         = __( '%s Enter valid number', 'woocommerce' );
+			$models['invalid_email_field']          = __( '%s is not a valid email address.', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			$models['inline_email_field']           = apply_filters( 'wfacp_inline_email_field_message', __( 'Please enter a valid email address', 'woocommerce' ) ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			$models['error_required_msg']           = __( '%s is a required field.', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			$models['field_required_msg']           = __( '%s is a required field.', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			$models['phone_number_invalid']         = __( '%s Enter valid number', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			$models['override_checkout_page_id']    = 0;
 			$models['wfacp_set_shipping_method']    = '';
 			$models['wfacp_google_address_key']     = '';
 			$models['wfacp_global_external_script'] = '';
 			$models['wfacp_checkout_global_css']    = '';
-			$models['phone_inline_number_number']   = apply_filters( 'wfacp_phone_inline_number_message', __( 'The provided phone number is not valid', 'woocommerce' ) );
+			$models['phone_inline_number_number']   = apply_filters( 'wfacp_phone_inline_number_message', __( 'The provided phone number is not valid', 'woocommerce' ) ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 			if ( is_array( $save_models ) && 0 < count( $save_models ) ) {
 				$keys_to_remove = array(
@@ -850,9 +853,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$args['class'][] = 'wfacp_custom_field_radio_wrap';
 			if ( $args['required'] ) {
 				$args['class'][] = 'validate-required';
-				$required        = '&nbsp;<abbr class="required" title="' . esc_attr__( 'required', 'woocommerce' ) . '">*</abbr>';
+				$required        = '&nbsp;<abbr class="required" title="' . esc_attr__( 'required', 'woocommerce' ) . '">*</abbr>'; //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			} else {
-				$required = '&nbsp;<span class="optional">(' . esc_html__( 'optional', 'woocommerce' ) . ')</span>';
+				$required = '&nbsp;<span class="optional">(' . esc_html__( 'optional', 'woocommerce' ) . ')</span>'; //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			}
 			$sort              = $args['priority'] ? $args['priority'] : '';
 			$field_container   = '<p class="form-row %1$s" id="%2$s" data-priority="' . esc_attr( $sort ) . '">%3$s</p>';
@@ -1081,7 +1084,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				'total_purchased_redirect_url'            => '',
 				'hide_best_value'                         => false,
 				'best_value_product'                      => '',
-				'best_value_text'                         => __( 'Best Value', 'woofunnels-aero-checkout' ),
+				'best_value_text'                         => __( 'Best Value', 'woofunnels-aero-checkout' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				'best_value_position'                     => 'below',
 				'enable_custom_name_in_order_summary'     => 'false',
 				'autocomplete_enable'                     => 'false',
@@ -1120,7 +1123,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				'save_phone_number_type'                  => 'false',
 				'enable_live_validation'                  => 'false',
 				'enable_address_field_number_validation'  => 'false',
-				'address_field_number_validation_message' => __( 'House/Building number is required in {{address_field}}', 'woofunnel-aero-checkout' ),
+				'address_field_number_validation_message' => __( 'House/Building number is required in {{address_field}}', 'woofunnel-aero-checkout' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			);
 
 			if ( is_array( $data ) && count( $data ) > 0 ) {
@@ -1445,7 +1448,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 				// Always include billing phone field in FunnelKit Checkout, bypassing WooCommerce hidden setting
 				$address_fields['billing_phone'] = array(
-					'label'        => __( 'Phone', 'woocommerce' ),
+					'label'        => __( 'Phone', 'woocommerce' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'type'         => 'tel',
 					'class'        => array( 'form-row-wide' ),
 					'validate'     => array( 'phone' ),
@@ -1455,7 +1458,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				);
 				// added 3.4.1
 				$address_fields['shipping_phone'] = array(
-					'label'        => self::translation_string_to_check( __( 'Shipping Phone', 'woofunnels-aero-checkout' ) ),
+					'label'        => self::translation_string_to_check( __( 'Shipping Phone', 'woofunnels-aero-checkout' ) ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'type'         => 'tel',
 					'class'        => array( 'form-row-wide' ),
 					'validate'     => array( 'phone' ),
@@ -1466,7 +1469,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 				if ( 'billing_' === $type ) {
 					$address_fields['billing_email'] = array(
-						'label'        => __( 'Email', 'woocommerce' ),
+						'label'        => __( 'Email', 'woocommerce' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 						'required'     => true,
 						'type'         => 'email',
 						'class'        => array( 'form-row-wide' ),
@@ -1910,7 +1913,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					'name'             => '',
 					'id'               => '',
 					'class'            => '',
-					'show_option_none' => __( 'Choose an option', 'woocommerce' ),
+					'show_option_none' => __( 'Choose an option', 'woocommerce' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				)
 			);
 
@@ -1933,7 +1936,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$id                    = $args['id'] ? $args['id'] : sanitize_title( $attribute );
 			$class                 = $args['class'];
 			$show_option_none      = (bool) $args['show_option_none'];
-			$show_option_none_text = $args['show_option_none'] ? $args['show_option_none'] : __( 'Choose an option', 'woocommerce' ); // We'll do our best to hide the placeholder, but we'll need to show something when resetting options.
+			$show_option_none_text = $args['show_option_none'] ? $args['show_option_none'] : __( 'Choose an option', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- matches WooCommerce's own translation
 
 			if ( empty( $options ) && ! empty( $product ) && ! empty( $attribute ) ) {
 				$attributes = $product->get_variation_attributes();
@@ -2338,7 +2341,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$discount_amount_html = wc_price( $amount );
 
 			if ( $coupon->get_free_shipping() && empty( $amount ) ) {
-				$discount_amount_html = __( 'Free shipping coupon', 'woocommerce' );
+				$discount_amount_html = __( 'Free shipping coupon', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			}
 
 			return $discount_amount_html;
@@ -2478,11 +2481,30 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				$data = array();
 			}
 
+			if ( isset( $data['header_script'] ) ) {
+				$data['header_script'] = self::sanitize_global_script( $data['header_script'] );
+			}
+			if ( isset( $data['footer_script'] ) ) {
+				$data['footer_script'] = self::sanitize_global_script( $data['footer_script'] );
+			}
+			if ( isset( $data['header_css'] ) ) {
+				$data['header_css'] = self::sanitize_global_css( $data['header_css'] );
+			}
+
 			$data['update_time'] = time();
 			$data['user_id']     = get_current_user_id();
 			update_post_meta( $page_id, '_wfacp_page_settings', $data );
 
 			return $data;
+		}
+
+		public static function sanitize_global_css( $css ) {
+			return WFFN_Common::sanitize_global_css( $css );
+		}
+
+		public static function sanitize_global_script( $script ) {
+
+			return WFFN_Common::sanitize_global_script( $script );
 		}
 
 		public static function get_fragments_attr() {
@@ -2655,7 +2677,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$exclude_meta_keys_to_copy = apply_filters( 'wfacp_do_not_duplicate_meta', $exclude_data );
 
 			global $wpdb;
-			$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$old_post_id" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d", absint( $old_post_id ) ) );
 
 			if ( ! empty( $post_meta_all ) ) {
 				$sql_query_selects = array();
@@ -3450,7 +3472,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				$keys = array_keys( $fields );
 
 				$fields['company'] = array(
-					'label'        => __( 'Company name', 'woocommerce' ),
+					'label'        => __( 'Company name', 'woocommerce' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'type'         => 'text',
 					'class'        => array( 'form-row-wide' ),
 					'autocomplete' => 'organization',
@@ -3464,11 +3486,11 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 			if ( ! isset( $fields['address_2'] ) ) {
 				$keys                  = array_keys( $fields );
-				$address_2_label       = __( 'Apartment, suite, unit, etc.', 'woocommerce' );
+				$address_2_label       = __( 'Apartment, suite, unit, etc.', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				$address_2_placeholder = $address_2_label;
 
 				if ( class_exists( 'Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils' ) && 'optional' === Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils::get_address_2_field_visibility() ) {
-					$address_2_placeholder = __( 'Apartment, suite, unit, etc. (optional)', 'woocommerce' );
+					$address_2_placeholder = __( 'Apartment, suite, unit, etc. (optional)', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				$fields['address_2'] = array(

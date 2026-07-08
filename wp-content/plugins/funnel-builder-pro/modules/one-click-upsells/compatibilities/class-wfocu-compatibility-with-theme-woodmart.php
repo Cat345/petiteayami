@@ -7,10 +7,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFOCU_Compatibility_With_WoodMart_Theme
  */
 if ( ! class_exists( 'WFOCU_Compatibility_With_WoodMart_Theme' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_WoodMart_Theme {
 
 		public function __construct() {
-			add_action( 'wp', [ $this, 'register_elementor_widget' ], 150 );
+			add_action( 'wp', array( $this, 'register_elementor_widget' ), 150 );
 		}
 
 		public function is_enable() {
@@ -51,7 +52,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WoodMart_Theme' ) ) {
 					$typekit_id = woodmart_get_opt( 'typekit_id' );
 					$version    = woodmart_get_theme_info( 'Version' );
 
-					if ( ! empty ( $typekit_id ) ) {
+					if ( ! empty( $typekit_id ) ) {
 						$project_ids = explode( ',', $typekit_id );
 						foreach ( $project_ids as $id ) {
 							wp_enqueue_style( 'woodmart-typekit-' . $id, 'https://use.typekit.net/' . esc_attr( $id ) . '.css', array(), $version );
@@ -60,7 +61,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WoodMart_Theme' ) ) {
 				}
 			}
 		}
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_WoodMart_Theme(), 'woodmart_theme' );

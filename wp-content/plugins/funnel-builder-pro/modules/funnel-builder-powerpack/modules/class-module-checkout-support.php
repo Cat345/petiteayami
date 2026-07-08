@@ -19,6 +19,14 @@ if (! class_exists( 'WFFN_Pro_Checkout_Support' ) ) {
 			return self::$ins;
 		}
 
+		public static function is_admin_enabled() {
+			if ( self::is_module_exists() ) {
+				return true;
+			}
+			$modules = get_option( '_bwf_individual_modules', [] );
+			return (bool) apply_filters( 'wffn_show_menu_checkout', isset( $modules['checkout'] ) && 'yes' === $modules['checkout'] );
+		}
+
 		public static function setup_hooks() {
 			add_action( 'plugins_loaded', function () {
 				if ( function_exists( 'WFACP_Core' ) ) {
@@ -35,25 +43,20 @@ if (! class_exists( 'WFFN_Pro_Checkout_Support' ) ) {
 				return true;
 			} );
 
-			add_action( 'admin_head', function () {
-
-				global $submenu, $woofunnels_menu_slug;
-				foreach ( $submenu as $key => $men ) {
-					if ( $woofunnels_menu_slug !== $key ) {
-						continue;
-					}
-					$modules     = get_option( '_bwf_individual_modules', [] );
-					$aero_exists = apply_filters( 'wffn_show_menu_checkout', ( isset( $modules['checkout'] ) && 'yes' === $modules['checkout'] ) );
-
-					foreach ( $men as $k => $d ) {
-						if ( 'admin.php?page=wfacp' === $d[2] && ! $aero_exists ) {
-
-							unset( $submenu[ $key ][ $k ] );
+			add_action( 'admin_menu', function () {
+				if ( self::is_admin_enabled() ) {
+					return;
+				}
+				global $submenu;
+				foreach ( $submenu as $parent_slug => $men ) {
+					foreach ( $men as $d ) {
+						if ( 'wfacp' === $d[2] ) {
+							remove_submenu_page( $parent_slug, $d[2] );
+							break 2;
 						}
 					}
 				}
-
-			} );
+			}, 999999 );
 
 			add_action( 'plugins_loaded', function () {
 				if ( class_exists( 'WFACP_Autonami' ) ) {
@@ -97,3 +100,4 @@ if (! class_exists( 'WFFN_Pro_Checkout_Support' ) ) {
 
 	WFFN_Pro_Modules::register( 'checkout/woofunnels-aero-checkout.php', 'WFFN_Pro_Checkout_Support' );
 }
+

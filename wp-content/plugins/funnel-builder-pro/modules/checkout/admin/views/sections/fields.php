@@ -7,7 +7,7 @@ $is_old_version = false;
 if ( version_compare( $version, WFACP_VERSION, '<=' ) ) {
 	$is_old_version = true;
 }
-if ( false == $is_old_version && empty( $template_is_set ) ) {
+if ( false === $is_old_version && empty( $template_is_set ) ) {
 	include __DIR__ . '/fields/no-template.php';
 
 	return;
@@ -21,7 +21,7 @@ if ( false == $is_old_version && empty( $template_is_set ) ) {
 </style>
 <div id="wfacp_layout_container">
     <div class="wfacp_p20_noside wfacp_box_size">
-        <div class="wfacp_wrap_inner wfacp_wrap_inner_offers <?php echo ( isset( $_REQUEST['section'] ) ) ? 'wfacp_wrap_inner_' . $_REQUEST['section'] : ''; ?>" style="margin-left: 0;">
+        <div class="wfacp_wrap_inner wfacp_wrap_inner_offers <?php echo ( isset( $_REQUEST['section'] ) ) ? 'wfacp_wrap_inner_' . sanitize_key( wp_unslash( $_REQUEST['section'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>" style="margin-left: 0;">
 
             <div class="wfacp_wrap_r">
                 <div class="template_field_holder" style="min-height: 500px">
@@ -41,14 +41,14 @@ if ( false == $is_old_version && empty( $template_is_set ) ) {
 
                                         <div class="wfacp_add_new_step" v-if="current_step!='third_step'">
                                             <div class="wfacp_step wfacp_modal_open wfacp_step_add_step_btn" v-on:click="addNewStep()">
-												<?php _e( '<i class="dashicons dashicons-plus"></i>', 'woofunnels-aero-checkout' ); ?>
-                                                <span class="wfacp_tooltip"><?php _e( 'Add Next Step', 'woofunnels-aero-checkout' ) ?></span>
+												<i class="dashicons dashicons-plus"></i>
+                                                <span class="wfacp_tooltip"><?php esc_html_e( 'Add Next Step', 'woofunnels-aero-checkout' ); ?></span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="bwf_ajax_save_buttons bwf_form_submit">
-                                    <a href="javascript:void(0)" id="wfacp_save_form_layout" class="wfacp_save_btn_style" v-on:click="save_template()"><?php _e( 'Save Changes', 'woofunnels-aero-checkout' ); ?></a>
+                                    <a href="javascript:void(0)" id="wfacp_save_form_layout" class="wfacp_save_btn_style" v-on:click="save_template()"><?php esc_html_e( 'Save Changes', 'woofunnels-aero-checkout' ); ?></a>
                                 </div>
                             </div>
                         </div>
@@ -57,7 +57,9 @@ if ( false == $is_old_version && empty( $template_is_set ) ) {
                                 <img src="<?php echo WFACP_PLUGIN_URL . '/admin/assets/img/form-tab/danger.svg' ?>" alt="">
                             </div>
                             <div class="notice_msg_wrap">
+                                <?php // phpcs:disable WordPressVIPMinimum.Security.Vuejs.RawHTMLDirectiveFound ?>
                                 <p v-html="d.message"></p>
+                                <?php // phpcs:enable WordPressVIPMinimum.Security.Vuejs.RawHTMLDirectiveFound ?>
                             </div>
                             <span v-if="d.dismissible==true" v-on:click="remove_dependency_messages(m)" class="wfacp_close_icon">x</span>
                         </div>
@@ -70,7 +72,7 @@ if ( false == $is_old_version && empty( $template_is_set ) ) {
                         <div class="wfacp_fsetting_table_head">
                             <div class="wfacp_fsetting_table_head_in wfacp_clearfix">
                                 <div class="wfacp_fsetting_table_title">
-                                    <strong><span class="wfacp_template_friendly_name"><?php _e( 'Fields', 'woofunnels-aero-checkout' ); ?></span></strong>
+                                    <strong><span class="wfacp_template_friendly_name"><?php esc_html_e( 'Fields', 'woofunnels-aero-checkout' ); ?></span></strong>
                                 </div>
 
                             </div>

@@ -1,4 +1,62 @@
 *** FunnelKit Funnel Builder Pro ***
+
+= 3.15.0.14 (July 01, 2026)=
+* Improved: Checkout: Improved compatibility with WooCommerce PayPal Payments. (#8885)
+* Improved: Funnel: Improved compatibility with Bricks Builder. (#9174)
+* Improved: Funnel: Analytics database queries improved for MariaDB 12.3.2 version. (#9199)
+* Fixed: Checkout: Resolved flickering of express checkout smart buttons for a smoother checkout experience. (#9168)
+* Fixed: Checkout: Resolved a PHP error while adding a product in the legacy admin checkout product editor. (#9196)
+* Fixed: Checkout: Resolved an issue where custom CSS is not rendering due to a mismatch with white spaces. (#9203)
+
+= 3.15.0.13 (June 24, 2026)=
+* Fixed: Checkout: Customizer editor was not working since last release. (#9160)
+
+= 3.15.0.12 (June 23, 2026)=
+* Improved: Compatibility with PHP version 8.4.x. (#9140)
+* Improved: Funnel: Hardened the security of the plugin. (#9036)
+* Fixed: Checkout: PHP warnings when store checkout template is used as subscription change-payment method page. (#8854)
+
+= 3.15.0.11 (June 19, 2026)=
+* Fixed: Checkout: Checkout form preview was not loading in the editor with Divi v4. (#9129)
+
+= 3.15.0.10 (June 08, 2026)=
+* Improved: Upsells: Compatibility with Mollie gateway for version 8.1.4 or above. (#9080)
+* Fixed: Upsells: Upsell refunds using upsell refund admin metaboxes were showing infinite loading state. (#9084)
+
+= 3.15.0.9 (June 08, 2026)=
+* Fixed: Bump: Quantity switcher input box was not showing up since the last update. (#9070)
+* Fixed: A/B Experiments: Global Settings for Open variants on same URL was hidden. (#9045)
+* Fixed: Upsells: PHP warnings showing up in case of Stores with HPOS disabled. (#9059)
+
+= 3.15.0.8 (June 03, 2026)=
+* Fixed: Checkout: Admin field editor changes in shipping & billing fields are not reflecting since last update. (#9006)
+
+= 3.15.0.7 (June 02, 2026)=
+* Improved: Checkout: Compatibility updated with Mecadopago gateway. (#8783)
+* Improved: Upsells: Compatibility with Woo Payments updated. (#8998)
+* Improved: Upsells: Compatibility with Sublium updated related to upsell rules. (#8999)
+* Improved: Funnels: Restrict legacy user interface & menu registration for funnel-builder users. (#9006)
+
+= 3.15.0.6 (May 22, 2026)=
+* Fixed: Upsells: Compatibility with WooCommerce Stripe updated for version 10.7.0. (#8979)
+
+= 3.15.0.5 (May 18, 2026)=
+* Improved: Checkout: Compatibility with MercadoPago Gateway improved. (#8783)
+
+= 3.15.0.4 (May 15, 2026) =
+* Improved: Checkout: Compatibility with CookieYes plugin improved to fix the PHP warning. (#8932)
+* Improved: Cart: Improved handling for the Geolocation API failures. (#1067)
+* Fixed: Checkout: Unused admin menu registration for Checkout Field Editor. (#8904)
+* Fixed: Checkout: Multi Product selection checkboxes are not working since last update. (#8927)
+
+= 3.15.0.3 (May 13, 2026) =
+* Improved: Upsells: Compatibility with WooCommerce 10.8.0. (#8877)
+* Security Fix: Hardened the security of the plugin.(#8906)
+* Improved: Checkout: Express checkout buttons loading improved with FK Stripe. (#8749)
+* Fixed: Checkout: Javascript console error on checkout when coupon fields are set as conditional fields.(#8849)
+* Fixed: Upsells: admin settings for dynamic shipping option changes were not reflecting in admin UI. (#8880)
+
+
 = 3.15.0.2 (Apr 22, 2026) =
 * Fixed: Funnel: Compatibility issues with Divi5 checkout module is resolved. (#8831)
 

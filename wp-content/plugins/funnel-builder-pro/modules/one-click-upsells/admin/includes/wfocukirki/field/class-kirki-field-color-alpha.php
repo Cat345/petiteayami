@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Color_Alpha' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Color_Alpha extends WFOCUKirki_Field_Color {
 
 		/**
@@ -25,7 +26,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Color_Alpha' ) ) {
 				$this->choices = array();
 			}
 			$this->choices['alpha'] = true;
-
 		}
 	}
 }

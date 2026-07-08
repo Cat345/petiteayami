@@ -1,18 +1,25 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFOB_Importer' ) ) {
 	/**
 	 * Class WFOB_Importer
 	 * Handles Importing of Order Bumbs Export JSON file
 	 */
+	#[\AllowDynamicProperties]
 	class WFOB_Importer {
 
 		private static $ins = null;
 		public $is_imported = false;
 
 		public function __construct() {
-			if ( isset( $_POST['wfob-action'] ) && 'import' === $_POST['wfob-action'] ) {
-				add_action( 'admin_init', [ $this, 'maybe_import' ] );
+			$is_admin_enabled = ! class_exists( 'WFFN_Pro_Bump_Support' )
+				|| ! method_exists( 'WFFN_Pro_Bump_Support', 'is_admin_enabled' )
+				|| WFFN_Pro_Bump_Support::is_admin_enabled();
+			if ( ! $is_admin_enabled ) {
+				return;
+			}
+			if ( isset( $_POST['wfob-action'] ) && 'import' === $_POST['wfob-action'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				add_action( 'admin_init', array( $this, 'maybe_import' ) );
 			}
 		}
 
@@ -21,7 +28,7 @@ if ( ! class_exists( 'WFOB_Importer' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -34,7 +41,7 @@ if ( ! class_exists( 'WFOB_Importer' ) ) {
 		 */
 		function maybe_import() {
 
-			if ( ! wp_verify_nonce( $_POST['wfob-action-nonce'], 'wfob-action-nonce' ) ) {
+			if ( ! wp_verify_nonce( isset( $_POST['wfob-action-nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['wfob-action-nonce'] ) ) : '', 'wfob-action-nonce' ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				return;
 			}
 
@@ -43,15 +50,15 @@ if ( ! class_exists( 'WFOB_Importer' ) ) {
 				return;
 			}
 
-			$filename  = $_FILES['file']['name'];
+			$filename  = isset( $_FILES['file']['name'] ) ? sanitize_text_field( wp_unslash( $_FILES['file']['name'] ) ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 			$file_info = explode( '.', $filename );
 			$extension = end( $file_info );
 
-			if ( 'json' != $extension ) {
+			if ( 'json' !== $extension ) {
 				wp_die( __( 'Please upload a valid .json file', 'woofunnels-order-bump' ) );
 			}
 
-			$file = $_FILES['file']['tmp_name'];
+			$file = isset( $_FILES['file']['tmp_name'] ) ? sanitize_text_field( wp_unslash( $_FILES['file']['tmp_name'] ) ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 
 			if ( empty( $file ) ) {
 				wp_die( __( 'Please upload a file to import', 'woofunnels-order-bump' ) );
@@ -66,7 +73,7 @@ if ( ! class_exists( 'WFOB_Importer' ) ) {
 		}
 
 		public function import_from_json_data( $bumps ) {
-			$imported_bumps = [];
+			$imported_bumps = array();
 
 			foreach ( $bumps as $bump ) {
 				$bump_id = 0;
@@ -79,7 +86,6 @@ if ( ! class_exists( 'WFOB_Importer' ) ) {
 					$bump_post = get_post( $bump_id );
 				}
 
-
 				$bump_title = $bump['title'];
 				if ( null !== $bump_post && $bump_title === $bump_post->post_title ) {
 					$bump_title = $bump_title . ' Copy';
@@ -90,11 +96,10 @@ if ( ! class_exists( 'WFOB_Importer' ) ) {
 					'post_title'  => $bump_title,
 					'post_type'   => WFOB_Common::get_bump_post_type_slug(),
 					'post_status' => isset( $bump['post_status'] ) ? $bump['post_status'] : 'published',
-					'menu_order'  => isset( $settings['priority'] ) ? $settings['priority'] : 0
+					'menu_order'  => isset( $settings['priority'] ) ? $settings['priority'] : 0,
 				);
 				$bump_id        = wp_insert_post( $bump_post_args );
 				$products       = isset( $bump['products'] ) ? $bump['products'] : '';
-
 
 				/**
 				 * Here we are validating products to check if a product existing in the current site
@@ -110,16 +115,15 @@ if ( ! class_exists( 'WFOB_Importer' ) ) {
 
 				if ( is_array( $bump['design_data'] ) && count( $bump['design_data'] ) > 0 ) {
 
-					$bump['design_data']=WFOB_Common::check_default_bump_keys($bump['design_data']);
+					$bump['design_data'] = WFOB_Common::check_default_bump_keys( $bump['design_data'] );
 
 				}
 
-
 				if ( $bump_id !== 0 ) {
-					update_post_meta( $bump_id, '_wfob_settings', $bump['settings'] );
-					update_post_meta( $bump_id, '_wfob_rules', $bump['rules'] );
+					update_post_meta( $bump_id, '_wfob_settings', map_deep( $bump['settings'], 'sanitize_text_field' ) );
+					update_post_meta( $bump_id, '_wfob_rules', map_deep( $bump['rules'], 'sanitize_text_field' ) );
 					update_post_meta( $bump_id, '_wfob_is_rules_saved', 'yes' );
-					update_post_meta( $bump_id, '_wfob_design_data', $bump['design_data'] );
+					update_post_meta( $bump_id, '_wfob_design_data', map_deep( $bump['design_data'], 'wp_kses_post' ) );
 					update_post_meta( $bump_id, '_wfob_selected_products', $products );
 
 					$imported_bumps[] = $bump_id;
@@ -128,8 +132,6 @@ if ( ! class_exists( 'WFOB_Importer' ) ) {
 
 			return $imported_bumps;
 		}
-
-
 	}
 
 

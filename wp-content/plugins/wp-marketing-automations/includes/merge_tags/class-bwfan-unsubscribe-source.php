@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Outputs the source of unsubscribe for the contact (e.g. Broadcast, Automation, Manual, Form, CSV).
  * Uses bwfan_message_unsubscribe.c_type. Filter bwfan_unsubscribe_source_labels can add more sources.
  */
+#[\AllowDynamicProperties]
 class BWFAN_Unsubscribe_Source extends BWFAN_Merge_Tag {
 
 	private static $instance = null;

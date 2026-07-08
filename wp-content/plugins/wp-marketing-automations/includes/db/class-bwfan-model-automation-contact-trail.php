@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Model_Automation_Contact_Trail extends BWFAN_Model {
 	static $primary_key = 'ID';
 
@@ -214,12 +215,18 @@ class BWFAN_Model_Automation_Contact_Trail extends BWFAN_Model {
 		$table_name = self::_table();
 
 		$where = "aid = %d";
+		$args  = array( $aid );
 		if ( is_array( $aid ) ) {
-			$where = "aid IN ('" . implode( "','", array_map( 'esc_sql', $aid ) ) . "')";
-			$aid   = [];
+			$aid = array_map( 'absint', $aid );
+			if ( empty( $aid ) ) {
+				return false;
+			}
+			$placeholders = implode( ', ', array_fill( 0, count( $aid ), '%d' ) );
+			$where        = "aid IN ({$placeholders})";
+			$args         = $aid;
 		}
 
-		$query = $wpdb->prepare( "DELETE FROM $table_name WHERE $where", $aid );
+		$query = $wpdb->prepare( "DELETE FROM {$table_name} WHERE {$where}", $args );
 
 		return $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}

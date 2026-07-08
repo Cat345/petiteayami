@@ -115,6 +115,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 		 * @throws WFOCU_Payment_Gateway_Exception
 		 */
 		public function process_client_payment() {
+			check_ajax_referer( 'wfocu_front_charge', 'nonce' );
 
 			/**
 			 * Prepare and populate client collected data to process further.

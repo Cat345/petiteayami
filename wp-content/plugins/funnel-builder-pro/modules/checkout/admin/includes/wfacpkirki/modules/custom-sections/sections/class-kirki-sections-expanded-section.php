@@ -12,7 +12,12 @@
 /**
  * Expanded Section.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Sections_Expanded_Section' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Sections_Expanded_Section extends WP_Customize_Section {
 
 		/**
@@ -22,6 +27,5 @@ if ( ! class_exists( 'WFACPKirki_Sections_Expanded_Section' ) ) {
 		 * @var string
 		 */
 		public $type = 'wfacpkirki-expanded';
-
 	}
 }

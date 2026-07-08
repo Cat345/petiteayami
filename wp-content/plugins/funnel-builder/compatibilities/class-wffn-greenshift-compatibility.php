@@ -11,6 +11,7 @@
  */
 
 if ( ! class_exists( 'WFFN_Greenshift_Compatibility' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Greenshift_Compatibility {
 
 		public function __construct() {

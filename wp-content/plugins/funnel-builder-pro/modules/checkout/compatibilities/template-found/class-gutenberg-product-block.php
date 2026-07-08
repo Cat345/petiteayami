@@ -1,16 +1,20 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  *  WooCommerce Blocks
  * https://github.com/woocommerce/woocommerce-gutenberg-products-block
  * #[AllowDynamicProperties]
- class WFACP_GutenBerg_Product_Block
+class WFACP_GutenBerg_Product_Block
  */
 if ( ! class_exists( 'WFACP_GutenBerg_Product_Block' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_GutenBerg_Product_Block {
 		public function __construct() {
-			add_action( 'wfacp_after_template_found', [ $this, 'remove_gutenberg_action' ] );
+			add_action( 'wfacp_after_template_found', array( $this, 'remove_gutenberg_action' ) );
 		}
 
 		public function remove_gutenberg_action() {

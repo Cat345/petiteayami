@@ -1,13 +1,14 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Funnel contact class
  * Class WFFN_Funnel_Contacts
  */
 if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Funnel_Contacts extends WFFN_REST_Controller {
-		private static $ins = null;
+		private static $ins  = null;
 		protected $namespace = 'funnelkit-app';
 		protected $rest_base = 'funnel-analytics';
 
@@ -16,7 +17,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 		 */
 		public function __construct() {
 
-			add_action( 'rest_api_init', [ $this, 'register_contact_data_endpoint' ], 11 );
+			add_action( 'rest_api_init', array( $this, 'register_contact_data_endpoint' ), 11 );
 		}
 
 		/**
@@ -24,73 +25,95 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
 		}
 
 		public function register_contact_data_endpoint() {
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/contacts/', array(
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_funnel_contacts' ),
-				'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				'args'                => $this->sanitize_receive_params(),
-			) );
-
-
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/contacts/(?P<cid>[\d]+)', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/(?P<id>[\d]+)/contacts/',
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_contact_single' ),
+					'callback'            => array( $this, 'get_funnel_contacts' ),
 					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
 					'args'                => $this->sanitize_receive_params(),
-				),
+				)
+			);
 
-			) );
-
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/contacts/spend/(?P<cid>[\d]+)', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/(?P<id>[\d]+)/contacts/(?P<cid>[\d]+)',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_funnel_contacts_spend_details' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => $this->sanitize_receive_params(),
-				),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_contact_single' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => $this->sanitize_receive_params(),
+					),
 
-			) );
+				)
+			);
+
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/(?P<id>[\d]+)/contacts/spend/(?P<cid>[\d]+)',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_funnel_contacts_spend_details' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => $this->sanitize_receive_params(),
+					),
+
+				)
+			);
 
 			// Global Contacts API Routes
 
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/global/contacts', array(
-				'args'                => array(
-					'id' => array(
-						'description' => __( 'Unique identifier for the resource.', 'funnel-builder' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/global/contacts',
+				array(
+					'args'                => array(
+						'id' => array(
+							'description' => __( 'Unique identifier for the resource.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'global_funnel_contacts' ),
-				'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-			) );
-
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/global/contacts/(?P<cid>[\d]+)', array(
-				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_contact_single' ),
+					'callback'            => array( $this, 'global_funnel_contacts' ),
 					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => $this->sanitize_receive_params(),
-				),
-			) );
+				)
+			);
 
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/global/contacts/spend/(?P<cid>[\d]+)', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/global/contacts/(?P<cid>[\d]+)',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_global_contacts_spend_details' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => $this->sanitize_receive_params(),
-				),
-			) );
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_contact_single' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => $this->sanitize_receive_params(),
+					),
+				)
+			);
 
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/global/contacts/spend/(?P<cid>[\d]+)',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_global_contacts_spend_details' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => $this->sanitize_receive_params(),
+					),
+				)
+			);
 		}
 
 		public function get_read_api_permission_check() {
@@ -102,7 +125,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				$filters = json_decode( $filters, true );
 			}
 
-			$single_data = [];
+			$single_data = array();
 
 			if ( ! is_array( $filters ) || count( $filters ) === 0 ) {
 				return $single_data;
@@ -130,12 +153,13 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				'page_no'     => isset( $request['page_no'] ) ? $request['page_no'] : 1,
 				'orderby'     => isset( $request['orderby'] ) ? $request['orderby'] : 'last_modified',
 				'order'       => ( isset( $request['order'] ) && 'DESC' === $request['order'] ) ? $request['order'] : 'ASC',
-				'delete_cid'  => isset( $request['delete_cid'] ) ? $request['delete_cid'] : false,
+				// Deleting contacts is a write operation; only honor delete_cid for callers with write access.
+				'delete_cid'  => ( isset( $request['delete_cid'] ) && wffn_rest_api_helpers()->get_api_permission_check( 'funnel', 'write' ) ) ? $request['delete_cid'] : false,
 				'filters'     => isset( $request['filters'] ) ? $request['filters'] : false,
 				'total_count' => isset( $request['total_count'] ) ? $request['total_count'] : false,
 			);
 
-			$filters = [];
+			$filters = array();
 
 			if ( isset( $args['filters'] ) ) {
 				$filters = $this->prepare_filters( $args['filters'] );
@@ -155,7 +179,6 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 			if ( isset( $filters['wc_order_bump_accepted'] ) && '' !== $filters['wc_order_bump_accepted'] && ! empty( $filters['wc_order_bump_in'] ) ) {
 				return true;
 			}
-
 
 			// Filters for upsell offer
 			if ( isset( $filters['offer_accepted'] ) && '' !== $filters['offer_accepted'] && ! empty( $filters['offer_in'] ) ) {
@@ -182,7 +205,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 			if ( is_string( $cids ) ) {
 				$get_cids = explode( ',', $cids );
 			} else {
-				$get_cids = [ $cids ];
+				$get_cids = array( $cids );
 			}
 
 			if ( class_exists( 'WFACP_Contacts_Analytics' ) ) {
@@ -199,7 +222,6 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				if ( is_array( $optin ) && isset( $optin['db_error'] ) && $optin['db_error'] === true ) {
 					return $optin;
 				}
-
 			}
 
 			if ( class_exists( 'WFOB_Contacts_Analytics' ) ) {
@@ -227,10 +249,10 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 			$activity_ids = $this->get_contact_activity_ids( $request['cid'], $funnel_id );
 
 			$cid             = (int) $request['cid'];
-			$user_info       = [];
+			$user_info       = array();
 			$bwf_contacts    = BWF_Contacts::get_instance();
 			$bwf_contact     = $bwf_contacts->get_contact_by( 'id', $cid );
-			$additional_info = [];
+			$additional_info = array();
 
 			if ( $bwf_contact instanceof WooFunnels_Contact and $bwf_contact->get_id() > 0 ) {
 				$contact_type            = ! empty( $bwf_contact->get_type() ) ? ucfirst( $bwf_contact->get_type() ) : __( 'Optin', 'funnel-builder' );
@@ -240,8 +262,11 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				$user_info['email']      = $bwf_contact->get_email();
 				$user_info['contact_no'] = ! empty( $bwf_contact->get_contact_no() ) ? $bwf_contact->get_contact_no() : '';
 				$user_info['created_on'] = $bwf_contact->get_creation_date();
-				$additional_info         = [];
-				$additional_info[]       = [ 'name' => 'contact_id', 'value' => $bwf_contact->get_id() ];
+				$additional_info         = array();
+				$additional_info[]       = array(
+					'name'  => 'contact_id',
+					'value' => $bwf_contact->get_id(),
+				);
 			}
 
 			$activity_records = $this->get_contact_activity_records( $cid, $activity_ids, $funnel_id );
@@ -252,30 +277,31 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 			$view_link          = $is_autonami_active ? admin_url( "admin.php?page=autonami&path=/contact/$cid" ) : '#';
 			$funnel_data        = WFFN_REST_Funnels::get_instance()->get_funnel_data( $funnel_id );
 
-			return rest_ensure_response( array(
-				'user_info'   => $user_info,
-				'records'     => $this->add_links_to_records( $activity_records['records'] ),
-				'orders'      => $activity_records['sales_data'],
-				'optins'      => $activity_records['optin_data'],
-				'is_autonami' => $is_autonami_active,
-				'view_link'   => $view_link,
-				'overview'    => $activity_records['overview'],
-				'funnel_data' => is_array( $funnel_data ) ? $funnel_data : []
+			return rest_ensure_response(
+				array(
+					'user_info'   => $user_info,
+					'records'     => $this->add_links_to_records( $activity_records['records'] ),
+					'orders'      => $activity_records['sales_data'],
+					'optins'      => $activity_records['optin_data'],
+					'is_autonami' => $is_autonami_active,
+					'view_link'   => $view_link,
+					'overview'    => $activity_records['overview'],
+					'funnel_data' => is_array( $funnel_data ) ? $funnel_data : array(),
 
-			) );
+				)
+			);
 		}
 
 
 		public function get_funnel_contacts_spend_details( $request ) {
 
 			$id                       = (int) $request['cid'];
-			$get_all_upsell_records   = [];
-			$get_all_checkout_records = [];
-			$get_all_bump_records     = [];
+			$get_all_upsell_records   = array();
+			$get_all_checkout_records = array();
+			$get_all_bump_records     = array();
 			$funnel_id                = ! empty( $request['id'] ) ? (int) $request['id'] : 0;//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$records                  = [];
+			$records                  = array();
 			$total                    = 0;
-
 
 			if ( class_exists( 'WFACP_Contacts_Analytics' ) ) {
 				$aero_obj                 = WFACP_Contacts_Analytics::get_instance();
@@ -304,23 +330,23 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				}
 			}
 
-
 			$records_by_date = $this->sort_by_date( array_merge( $get_all_checkout_records, $get_all_bump_records, $get_all_upsell_records ) );
 
 			if ( ! empty( $records_by_date ) && is_array( $records_by_date ) ) {
 				foreach ( $records_by_date as $record ) {
 					if ( ! empty( $record->total_revenue ) && $record->total_revenue > 0 ) {
 						$records[] = $record;
-						$total     += $record->total_revenue;
+						$total    += $record->total_revenue;
 					}
 				}
 			}
 
-			return rest_ensure_response( array(
-				'records'       => $this->add_links_to_records( $records, $funnel_id ),
-				'total_revenue' => $total
-			) );
-
+			return rest_ensure_response(
+				array(
+					'records'       => $this->add_links_to_records( $records, $funnel_id ),
+					'total_revenue' => $total,
+				)
+			);
 		}
 
 		public function get_nice_names_for_keys( $user_info ) {
@@ -354,17 +380,20 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 		 * @return mixed
 		 */
 		public function sort_by_date( $records ) {
-			usort( $records, function ( $a, $b ) {
-				if ( strtotime( $a->date ) > strtotime( $b->date ) ) {
-					return - 1;
+			usort(
+				$records,
+				function ( $a, $b ) {
+					if ( strtotime( $a->date ) > strtotime( $b->date ) ) {
+						return - 1;
+					}
+					if ( strtotime( $a->date ) < strtotime( $b->date ) ) {
+						return 1;
+					}
+					if ( strtotime( $a->date ) === strtotime( $b->date ) ) {
+						return 1;
+					}
 				}
-				if ( strtotime( $a->date ) < strtotime( $b->date ) ) {
-					return 1;
-				}
-				if ( strtotime( $a->date ) === strtotime( $b->date ) ) {
-					return 1;
-				}
-			} );
+			);
 
 			return $records;
 		}
@@ -380,7 +409,15 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 						$record->link = admin_url( 'admin.php?page=wf-op&edit=' . $record->object_id . '&section=design&funnel_id=' . $funnel_id );
 						break;
 					case 'checkout':
-						$record->link = admin_url( 'admin.php?page=wfacp&wfacp_id=' . $record->object_id . '&funnel_id=' . $funnel_id );
+						// page=wfacp removed; link to the funnel-checkout builder (page=bwf). (#9188)
+						$record->link = add_query_arg(
+							array(
+								'page'      => 'bwf',
+								'path'      => '/funnel-checkout/' . $record->object_id . '/design',
+								'funnel_id' => $funnel_id,
+							),
+							admin_url( 'admin.php' )
+						);
 						break;
 					case 'upsell':
 						$record->link = admin_url( 'admin.php?page=upstroke&section=offers&edit=' . $record->object_id . '&funnel_id=' . $funnel_id );
@@ -392,15 +429,14 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 					default:
 						$record->link = get_permalink( $record->object_id );
 				}
-
 			}
 
 			return $records;
 		}
 
 		public function get_productlist_from_records( $records ) {
-			$products = [];
-			$revenue  = [];
+			$products = array();
+			$revenue  = array();
 
 			if ( ! empty( $records ) && is_array( $records ) ) {
 				foreach ( $records as &$record ) {
@@ -408,9 +444,9 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 					if ( ! empty( $record->type ) && 'optin' !== $record->type ) {
 						$product->type = $record->type;
 						if ( 'upsell' === $record->type ) {
-							$product->revenue = ! empty( $record->value ) ? ( float ) $record->value : 0;
+							$product->revenue = ! empty( $record->value ) ? (float) $record->value : 0;
 						} else {
-							$product->revenue = ! empty( $record->total_revenue ) ? ( float ) $record->total_revenue : 0;
+							$product->revenue = ! empty( $record->total_revenue ) ? (float) $record->total_revenue : 0;
 						}
 						$product->name = ! empty( $record->product_name ) ? $record->product_name : 0;
 						$product->qty  = ! empty( $record->qty ) ? $record->qty : '';
@@ -421,11 +457,13 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 						$revenue[ $product->type ] += $product->revenue;
 
 					}
-
 				}
 			}
 
-			return [ 'products' => $products, 'revenue' => $revenue ];
+			return array(
+				'products' => $products,
+				'revenue'  => $revenue,
+			);
 		}
 
 		public function get_funnel_export_contacts( $args = array(), $total_count = false ) {
@@ -438,13 +476,13 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				'total_count' => false,
 			);
 			$args        = wp_parse_args( $args, $defaults );
-			$db_results  = [];
+			$db_results  = array();
 			$contact_ids = $this->global_funnel_contacts( $args, true );
 			if ( true === $total_count ) {
 				return array(
 					'status'  => ( is_array( $contact_ids ) && ! empty( $contact_ids ) > 0 ) ? true : false,
-					'records' => [],
-					'total'   => count( $contact_ids )
+					'records' => array(),
+					'total'   => count( $contact_ids ),
 				);
 			}
 			foreach ( $contact_ids as $cid ) {
@@ -468,7 +506,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 			return array(
 				'status'  => true,
 				'records' => $db_results,
-				'total'   => $total
+				'total'   => $total,
 			);
 		}
 
@@ -479,11 +517,10 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 		 * @param $optin_data
 		 *
 		 * @return string
-		 *
 		 */
 		public function prepare_optin_data( $optin_data ) {
 
-			$output        = [];
+			$output        = array();
 			$excluded_keys = array( 'optin_first_name', 'optin_last_name', 'optin_phone', 'wfop_optin_country' );
 			$optin_output  = '';
 			$data          = json_decode( $optin_data, true );
@@ -492,7 +529,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 					continue;
 				}
 				if ( ! isset( $output[ $k ] ) ) {
-					$output[ $k ] = [];
+					$output[ $k ] = array();
 				}
 				$output[ $k ][] = $v;
 			}
@@ -500,7 +537,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				return '';
 			}
 			foreach ( $output as $key => $value ) {
-				$optin_output .= $key . ":" . implode( ',', array_unique( $value ) ) . ',';
+				$optin_output .= $key . ':' . implode( ',', array_unique( $value ) ) . ',';
 			}
 			unset( $optin_data );
 
@@ -516,9 +553,10 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				'page_no'     => isset( $request['page_no'] ) ? $request['page_no'] : 1,
 				'orderby'     => isset( $request['orderby'] ) ? $request['orderby'] : 'creation_date',
 				'order'       => ( isset( $request['order'] ) && 'DESC' === $request['order'] ) ? $request['order'] : 'ASC',
-				'delete_cid'  => isset( $request['delete_cid'] ) ? $request['delete_cid'] : false,
+				// Deleting contacts is a write operation; only honor delete_cid for callers with write access.
+				'delete_cid'  => ( isset( $request['delete_cid'] ) && wffn_rest_api_helpers()->get_api_permission_check( 'funnel', 'write' ) ) ? $request['delete_cid'] : false,
 				'total_count' => isset( $request['total_count'] ) ? $request['total_count'] : false,
-				'filters'     => isset( $request['filters'] ) ? $request['filters'] : [],
+				'filters'     => isset( $request['filters'] ) ? $request['filters'] : array(),
 			);
 
 			if ( isset( $request['offset'] ) ) {
@@ -538,18 +576,17 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 		}
 
 		public function get_global_contacts( $args, $only_contact_ids = false ) {
-			$search_filters = [];
+			$search_filters = array();
 			if ( isset( $args['filters'] ) ) {
 				$search_filters = $this->prepare_filters( $args['filters'] );
 			}
 			$search_filters['need_total_ids_count'] = $only_contact_ids;
 
-
 			return $this->get_contacts( $args, $search_filters );
 		}
 
 
-		public function get_contacts( $args = array(), $search_filters = [] ) {
+		public function get_contacts( $args = array(), $search_filters = array() ) {
 			global $wpdb;
 			$funnel_id    = $args['funnel_id'];
 			$data         = array( 'records' => 0 );
@@ -565,16 +602,32 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 			$args         = wp_parse_args( $args, $defaults );
 			$total_count  = wffn_string_to_bool( $args['total_count'] );
 			$total        = null;
-			$final_result = [];
+			$final_result = array();
 			$delete_cid   = $args['delete_cid'];
 			if ( ! empty( $delete_cid ) ) {
 				$this->delete_funnel_contacts( $delete_cid, $funnel_id );
 				$total_count = true;
 			}
 
-			$limit   = $args['limit'];
-			$page    = $args['page_no'];
-			$orderby = $args['orderby'];
+			$limit = $args['limit'];
+			$page  = $args['page_no'];
+
+			/*
+			 * ORDER BY column originates from the `orderby` request param and is interpolated into the query.
+			 * It cannot be parameterised, so map the known keys to fixed column expressions and reject anything else.
+			 */
+			$orderby_whitelist = array(
+				'creation_date'         => 'contact.creation_date',
+				'contact.creation_date' => 'contact.creation_date',
+				'date'                  => 'contact.creation_date',
+				'last_modified'         => 'contact.last_modified',
+				'f_name'                => 'contact.f_name',
+				'l_name'                => 'contact.l_name',
+				'email'                 => 'contact.email',
+				'type'                  => 'contact.type',
+			);
+			$orderby           = isset( $orderby_whitelist[ $args['orderby'] ] ) ? $orderby_whitelist[ $args['orderby'] ] : 'contact.creation_date';
+
 			if ( isset( $args['offset'] ) ) {
 				$offset = $args['offset'];
 			} else {
@@ -590,9 +643,9 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				$search = $search_filters['s']['data'];
 			}
 
-			$filters = [
+			$filters = array(
 				's' => $search,
-			];
+			);
 			// Contact Type Filter
 			if ( isset( $search_filters['contact_type'] ) ) {
 				$filters['contact_type'] = $search_filters['contact_type']['data'];
@@ -602,11 +655,10 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				$filters['created_on'] = $search_filters['period']['data'];
 			}
 
-
 			$filter_query = '';
 
 			if ( ! empty( $filters['s'] ) ) {
-				$search_name  = "%" . $filters['s'] . "%";
+				$search_name   = '%' . $filters['s'] . '%';
 				$filter_query .= $wpdb->prepare( " AND (CONCAT(contact.f_name,' ',contact.l_name) like %s OR contact.email LIKE %s ", $search_name, $search_name );
 			}
 			/*
@@ -620,32 +672,38 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 			 * created_on -> we get data from direct bwf_contact table base on after and end before request
 			 */
 			if ( ! empty( $filters['created_on'] ) ) {
-				$filter_query .= $wpdb->prepare( " AND contact.creation_date BETWEEN %s AND %s ", $filters['created_on']['after'], $filters['created_on']['before'] );
+				$filter_query .= $wpdb->prepare( ' AND contact.creation_date BETWEEN %s AND %s ', $filters['created_on']['after'], $filters['created_on']['before'] );
 			}
-
 
 			$funnel_id_Query = '';
+			$funnel_ids      = array();
 
 			if ( isset( $search_filters['funnels'] ) && isset( $search_filters['funnels']['data'] ) && ! empty( $search_filters['funnels']['data'] ) ) {
-				$funnels_data    = is_array( $search_filters['funnels']['data'] ) ? implode( ',', $search_filters['funnels']['data'] ) : $search_filters['funnels']['data'];
-				$funnels_data    = esc_sql( $funnels_data );
-				$funnel_id_Query = " AND ( aero.fid IN (" . $funnels_data . ") OR optin.funnel_id IN (" . $funnels_data . ") )";
+				$raw_funnel_ids = is_array( $search_filters['funnels']['data'] ) ? $search_filters['funnels']['data'] : explode( ',', (string) $search_filters['funnels']['data'] );
+				$funnel_ids     = array_values( array_filter( array_map( 'absint', $raw_funnel_ids ) ) );
 			} elseif ( $funnel_id > 0 ) {
-				$funnels_data    = esc_sql( $funnel_id );
-				$funnel_id_Query = " AND ( aero.fid IN (" . $funnels_data . ") OR optin.funnel_id IN (" . $funnels_data . ") )";
+				$funnel_ids = array( absint( $funnel_id ) );
 			}
 
-			$query = "SELECT contact.id as 'id', ( CASE WHEN contact.f_name = '' THEN 'no name' ELSE contact.f_name END ) 'f_name',contact.l_name as 'l_name',contact.contact_no as phone, contact.email as 'email', contact.creation_date as 'date', ( CASE WHEN contact.type = '' THEN 'lead' ELSE 'customer' END ) as 'type' FROM " . $wpdb->prefix . "bwf_contact as contact
-			 LEFT JOIN " . $wpdb->prefix . "wfacp_stats as aero ON contact.id = aero.cid 
-			 LEFT JOIN " . $wpdb->prefix . "bwf_optin_entries as optin ON contact.id = optin.cid	
-			 WHERE 1=1 AND (contact.id IS NOT NULL) AND ( optin.cid IS NOT NULL OR aero.cid IS NOT NULL ) " . $funnel_id_Query . $filter_query;
-			$query .= " GROUP BY contact.id";
+			if ( ! empty( $funnel_ids ) ) {
+				$funnel_id_Query = $wpdb->prepare(
+					' AND ( aero.fid IN ( ' . implode( ', ', array_fill( 0, count( $funnel_ids ), '%d' ) ) . ' ) OR optin.funnel_id IN ( ' . implode( ', ', array_fill( 0, count( $funnel_ids ), '%d' ) ) . ' ) )',
+					array_merge( $funnel_ids, $funnel_ids )
+				);
+			}
+
+			$query  = "SELECT contact.id as 'id', ( CASE WHEN contact.f_name = '' THEN 'no name' ELSE contact.f_name END ) 'f_name',contact.l_name as 'l_name',contact.contact_no as phone, contact.email as 'email', contact.creation_date as 'date', ( CASE WHEN contact.type = '' THEN 'lead' ELSE 'customer' END ) as 'type' FROM " . $wpdb->prefix . 'bwf_contact as contact
+			 LEFT JOIN ' . $wpdb->prefix . 'wfacp_stats as aero ON contact.id = aero.cid
+			 LEFT JOIN ' . $wpdb->prefix . 'bwf_optin_entries as optin ON contact.id = optin.cid
+			 WHERE 1=1 AND (contact.id IS NOT NULL) AND ( optin.cid IS NOT NULL OR aero.cid IS NOT NULL ) ' . $funnel_id_Query . $filter_query;
+			$query .= ' GROUP BY contact.id';
 			$query .= " ORDER BY $orderby DESC";
 
 			if ( false === $this->is_advance_filters( $filters ) && false === $total_count ) {
-				$query .= $wpdb->prepare( " LIMIT %d, %d", $offset, $limit );
+				$query .= $wpdb->prepare( ' LIMIT %d, %d', $offset, $limit );
 			}
-			$contact_data = $wpdb->get_results( $query, ARRAY_A );//phpcs:ignore
+			// $query is assembled from $wpdb->prepare() fragments (funnel IN-list, $filter_query, LIMIT) plus a whitelisted ORDER BY column; phpcs cannot statically verify the assembled string.
+			$contact_data = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
@@ -664,14 +722,13 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				return $filtered_ids;
 			}
 
-
 			if ( $total_count && is_array( $contact_data ) && count( $contact_data ) > 0 ) {
 				$page_key            = absint( $page ) - 1;
 				$total               = count( $filtered_ids );
 				$all_chunks_filters  = array_chunk( $filtered_ids, $limit );
-				$filtered_ids        = isset( $all_chunks_filters[ $page_key ] ) ? $all_chunks_filters[ $page_key ] : [];
+				$filtered_ids        = isset( $all_chunks_filters[ $page_key ] ) ? $all_chunks_filters[ $page_key ] : array();
 				$contact_data_chunks = array_chunk( $contact_data, $limit );
-				$contact_data        = isset( $contact_data_chunks[ $page_key ] ) ? $contact_data_chunks[ $page_key ] : [];
+				$contact_data        = isset( $contact_data_chunks[ $page_key ] ) ? $contact_data_chunks[ $page_key ] : array();
 
 			}
 			if ( is_array( $filtered_ids ) && 0 < count( $filtered_ids ) ) {
@@ -689,15 +746,20 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 					);
 				}
 
-
 				if ( ! empty( $filtered_ids ) ) {
 					$filtered_ids = array_map( 'absint', $filtered_ids );
-					uksort( $final_result, function ( $a, $b ) use ( $filtered_ids ) {
-						return array_search( $a, $filtered_ids, true ) > array_search( $b, $filtered_ids, true ) ? 1 : - 1;
-					} );
-					$final_result = array_map( function ( $k ) use ( $final_result ) {
-						return array_merge( $final_result[ $k ], array( 'cid' => $k ) );
-					}, $filtered_ids );
+					uksort(
+						$final_result,
+						function ( $a, $b ) use ( $filtered_ids ) {
+							return array_search( $a, $filtered_ids, true ) > array_search( $b, $filtered_ids, true ) ? 1 : - 1;
+						}
+					);
+					$final_result = array_map(
+						function ( $k ) use ( $final_result ) {
+							return array_merge( $final_result[ $k ], array( 'cid' => $k ) );
+						},
+						$filtered_ids
+					);
 				}
 
 				$data = array( 'records' => $final_result );
@@ -709,7 +771,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 					'steps' => $funnel->get_step_count(),
 				);
 			} else {
-				$data = array( 'records' => [] );
+				$data = array( 'records' => array() );
 
 				$funnel             = new WFFN_Funnel( $funnel_id );
 				$data['count_data'] = array(
@@ -723,11 +785,11 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 
 
 		public function get_contact_activity_records( $cid, $activity_ids, $funnel_id = 0 ) {
-			$sales_data      = [];
-			$optin_data      = [];
-			$all_orders      = [];
-			$all_optins      = [];
-			$records_by_date = [];
+			$sales_data      = array();
+			$optin_data      = array();
+			$all_orders      = array();
+			$all_optins      = array();
+			$records_by_date = array();
 			$bwf_conversion  = array(
 				'bump'         => 0,
 				'checkout'     => 0,
@@ -741,7 +803,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				'sales_data' => $sales_data,
 				'optin_data' => $optin_data,
 				'overview'   => $bwf_conversion,
-				'records'    => $records_by_date
+				'records'    => $records_by_date,
 			);
 
 			if ( ! is_array( $activity_ids ) || count( $activity_ids ) === 0 ) {
@@ -757,16 +819,15 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 					if ( ! isset( $optin_records['db_error'] ) ) {
 						$optin_data = $optin_records;
 					}
-
 				}
 			}
 
 			if ( is_array( $activity_ids['order_ids'] ) && count( $activity_ids['order_ids'] ) > 0 ) {
 				foreach ( $activity_ids['order_ids'] as $order_id ) {
-					$conv_order   = [];
+					$conv_order   = array();
 					$product_data = $this->get_single_order_info( $order_id, $cid );
 
-					$conv_data  = apply_filters( 'wffn_conversion_tracking_data_activity', [], $cid, $order_id );
+					$conv_data  = apply_filters( 'wffn_conversion_tracking_data_activity', array(), $cid, $order_id );
 					$conv_order = array_merge( $conv_order, $conv_data );
 
 					$conv_order['products']         = $product_data['products'];
@@ -786,7 +847,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 
 						$get_funnel = new WFFN_Funnel( $s_funnel_id );
 						if ( $get_funnel instanceof WFFN_Funnel && 0 !== $get_funnel->get_id() ) {
-							$funnel_link                              = ( $get_funnel->get_id() === WFFN_Common::get_store_checkout_id() ) ? admin_url( "admin.php?page=bwf&path=/store-checkout" ) : admin_url( "admin.php?page=bwf&path=/funnels/$s_funnel_id" );
+							$funnel_link                              = ( $get_funnel->get_id() === WFFN_Common::get_store_checkout_id() ) ? admin_url( 'admin.php?page=bwf&path=/store-checkout' ) : admin_url( "admin.php?page=bwf&path=/funnels/$s_funnel_id" );
 							$conv_order['conversion']['funnel_link']  = $funnel_link;
 							$conv_order['conversion']['funnel_title'] = $get_funnel->get_title();
 						}
@@ -801,19 +862,19 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 
 					if ( ! empty( $order_id ) && absint( $order_id ) > 0 && function_exists( 'wc_get_order' ) ) {
 						$conv_order['order_url'] = WFFN_Common::add_order_urls( $order_id );
-						$order_data = wc_get_order( $order_id );
+						$order_data              = wc_get_order( $order_id );
 						if ( $order_data instanceof WC_Order ) {
 							$order_number = $order_data->get_order_number() ?? '';
 
-							$conv_order['order_number'] = $order_number;
-							$conv_order['customer_info'] = [
+							$conv_order['order_number']  = $order_number;
+							$conv_order['customer_info'] = array(
 								'email'            => $order_data->get_billing_email(),
 								'phone'            => $order_data->get_billing_phone(),
 								'billing_address'  => wp_kses_post( $order_data->get_formatted_billing_address() ),
 								'shipping_address' => wp_kses_post( $order_data->get_formatted_shipping_address() ),
 								'purchased_on'     => ! empty( $order_data->get_date_created() ) ? $order_data->get_date_created()->date( 'Y-m-d H:i:s' ) : $product_data['date_added'],
 								'payment_method'   => $order_data->get_payment_method_title(),
-							];
+							);
 						}
 					}
 
@@ -821,14 +882,16 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				}
 			}
 
-
 			$records_by_date = $this->sort_by_date( array_merge( $sales_data, $optin_data ) );
 
 			if ( is_array( $records_by_date ) && count( $records_by_date ) > 0 ) {
 				$all_products = $this->get_productlist_from_records( $records_by_date );
-				$total_orders = array_filter( $records_by_date, function ( $item ) {
-					return $item->type === 'checkout';
-				} );
+				$total_orders = array_filter(
+					$records_by_date,
+					function ( $item ) {
+						return $item->type === 'checkout';
+					}
+				);
 
 				$bwf_conversion['bump']         = ! empty( $all_products['revenue']['bump'] ) ? $all_products['revenue']['bump'] : 0;
 				$bwf_conversion['checkout']     = ! empty( $all_products['revenue']['checkout'] ) ? $all_products['revenue']['checkout'] : 0;
@@ -840,26 +903,36 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 
 			if ( is_array( $activity_ids['op_entry_ids'] ) && count( $activity_ids['op_entry_ids'] ) > 0 ) {
 				foreach ( $activity_ids['op_entry_ids'] as $entry_id ) {
-					$conv_optin = apply_filters( 'wffn_conversion_tracking_data_activity', [], $cid, $entry_id );
+					$conv_optin = apply_filters( 'wffn_conversion_tracking_data_activity', array(), $cid, $entry_id );
 					$search_key = array_search( $entry_id, wp_list_pluck( $optin_data, 'id' ) ); //phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 					if ( false !== $search_key && isset( $optin_data[ $search_key ] ) ) {
 						$op_funnel_id           = $optin_data[ $search_key ]->fid;
 						$op_date                = $optin_data[ $search_key ]->date;
-						$optin_contact_data     = [];
+						$optin_contact_data     = array();
 						$conv_optin['entry_id'] = $entry_id;
 
 						if ( ! empty( $optin_data[ $search_key ]->email ) ) {
-							$optin_contact_data[] = [ 'name' => 'email', 'value' => $optin_data[ $search_key ]->email ];
+							$optin_contact_data[] = array(
+								'name'  => 'email',
+								'value' => $optin_data[ $search_key ]->email,
+							);
 						}
 						if ( ! empty( $optin_data[ $search_key ]->date ) ) {
-							$optin_contact_data[] = [ 'name' => 'op_created_date', 'value' => $op_date, 'added_date' => 'yes' ];
+							$optin_contact_data[] = array(
+								'name'       => 'op_created_date',
+								'value'      => $op_date,
+								'added_date' => 'yes',
+							);
 						}
 
 						$get_last_optin_data = $optin_data[ $search_key ]->data;
 						$get_last_optin_data = json_decode( $get_last_optin_data, true );
 						if ( is_array( $get_last_optin_data ) && count( $get_last_optin_data ) > 0 ) {
 							foreach ( $get_last_optin_data as $k => $d ) {
-								$optin_contact_data[] = [ 'name' => $k, 'value' => $d ];
+								$optin_contact_data[] = array(
+									'name'  => $k,
+									'value' => $d,
+								);
 							}
 						}
 						$conv_optin['fields_data'] = $this->get_nice_names_for_keys( $optin_contact_data );
@@ -873,7 +946,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 
 							$get_funnel = new WFFN_Funnel( $conv_optin['conversion']['funnel_id'] );
 							if ( $get_funnel instanceof WFFN_Funnel && 0 !== $get_funnel->get_id() ) {
-								$funnel_link                              = ( $get_funnel->get_id() === WFFN_Common::get_store_checkout_id() ) ? admin_url( "admin.php?page=bwf&path=/store-checkout" ) : admin_url( "admin.php?page=bwf&path=/funnels/$op_funnel_id" );
+								$funnel_link                              = ( $get_funnel->get_id() === WFFN_Common::get_store_checkout_id() ) ? admin_url( 'admin.php?page=bwf&path=/store-checkout' ) : admin_url( "admin.php?page=bwf&path=/funnels/$op_funnel_id" );
 								$conv_optin['conversion']['funnel_link']  = $funnel_link;
 								$conv_optin['conversion']['funnel_title'] = $get_funnel->get_title();
 							}
@@ -888,20 +961,20 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				'sales_data' => $all_orders,
 				'optin_data' => $all_optins,
 				'overview'   => $bwf_conversion,
-				'records'    => $records_by_date
+				'records'    => $records_by_date,
 			);
 		}
 
 		public function get_single_order_info( $order_id, $cid = '' ) {
 
-			$timeline_data = [];
-			$products      = [];
-			$data          = [
+			$timeline_data = array();
+			$products      = array();
+			$data          = array(
 				'products'         => $products,
 				'date_added'       => '',
 				'timeline_data'    => $timeline_data,
 				'order_total_html' => $timeline_data,
-			];
+			);
 
 			$order = wc_get_order( $order_id );
 			if ( ! $order instanceof WC_Order ) {
@@ -915,7 +988,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 			$subtotal       = 0;
 			$i              = 0;
 
-			$data['order_total_html'] = wc_price( $order_total, [ 'currency' => $currency ] );
+			$data['order_total_html'] = wc_price( $order_total, array( 'currency' => $currency ) );
 			foreach ( $items as $item ) {
 				$product       = new stdClass();
 				$key           = 'checkout';
@@ -934,7 +1007,6 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 						$data['date_added']    = $checkout_records[0]->date;
 						$data['timeline_data'] = array_merge( $data['timeline_data'], $checkout_records );
 					}
-
 				}
 				if ( 'yes' === $item->get_meta( '_upstroke_purchase' ) ) {
 					$key = 'upsell';
@@ -946,7 +1018,6 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 							$data['date_added']    = empty( $data['date_added'] ) ? $upsell_records[0]->date : $data['date_added'];
 							$data['timeline_data'] = array_merge( $data['timeline_data'], $upsell_records );
 						}
-
 					}
 				}
 				if ( 'yes' === $item->get_meta( '_bump_purchase' ) ) {
@@ -966,10 +1037,10 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				$product->name         = $item->get_name();
 				$product->revenue      = $sub_total;
 				$product->type         = $key;
-				$product->html_revenue = wc_price( $product->revenue, [ 'currency' => $currency ] );
+				$product->html_revenue = wc_price( $product->revenue, array( 'currency' => $currency ) );
 				$data['products'][]    = $product;
-				$subtotal              += $sub_total;
-				$i ++;
+				$subtotal             += $sub_total;
+				++$i;
 			}
 			$remaining_amount = $order_total - ( $subtotal - $total_discount );
 			if ( $remaining_amount > 0 ) {
@@ -977,7 +1048,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				$shipping_tax->name         = __( 'Including shipping and taxes ,other costs', 'funnel-builder' );
 				$shipping_tax->revenue      = WFFN_Common::wffn_round( $remaining_amount );
 				$shipping_tax->type         = 'shipping';
-				$shipping_tax->html_revenue = wc_price( $shipping_tax->revenue, [ 'currency' => $currency ] );
+				$shipping_tax->html_revenue = wc_price( $shipping_tax->revenue, array( 'currency' => $currency ) );
 				$data['products'][]         = $shipping_tax;
 			}
 			if ( $total_discount > 0 ) {
@@ -985,24 +1056,23 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				$discount->name         = __( 'Discount', 'funnel-builder' );
 				$discount->revenue      = WFFN_Common::wffn_round( $total_discount );
 				$discount->type         = 'discount';
-				$discount->html_revenue = wc_price( $discount->revenue, [ 'currency' => $currency ] );
+				$discount->html_revenue = wc_price( $discount->revenue, array( 'currency' => $currency ) );
 				$data['products'][]     = $discount;
 			}
 
 			return $data;
-
 		}
 
 		public function get_funnel_from_contact_id( $cid, $all = false ) {
 			global $wpdb;
-			$funnel_id = [];
+			$funnel_id = array();
 			if ( absint( $cid ) > 0 ) {
 
 				// Fetch Funnel ID from Order Bump
-				$bump_sql = "SELECT DISTINCT fid as funnel_id FROM " . $wpdb->prefix . "wfob_stats WHERE cid = %d";
+				$bump_sql = 'SELECT DISTINCT fid as funnel_id FROM ' . $wpdb->prefix . 'wfob_stats WHERE cid = %d';
 
 				if ( $all ) {
-					$bump_sql       .= " AND converted = 1 ";
+					$bump_sql      .= ' AND converted = 1 ';
 					$bump_funnel_id = $wpdb->get_col( $wpdb->prepare( $bump_sql, $cid ) );//phpcs:ignore
 					if ( is_array( $bump_funnel_id ) && count( $bump_funnel_id ) > 0 ) {
 						$funnel_id = array_merge( $funnel_id, $bump_funnel_id );
@@ -1015,7 +1085,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				}
 
 				// Fetch Funnel ID from Checkout
-				$checkout_sql = "SELECT DISTINCT fid as funnel_id FROM " . $wpdb->prefix . "wfacp_stats WHERE cid = %d";
+				$checkout_sql = 'SELECT DISTINCT fid as funnel_id FROM ' . $wpdb->prefix . 'wfacp_stats WHERE cid = %d';
 				if ( $all ) {
 					$checkout_funnel_id = $wpdb->get_col( $wpdb->prepare( $checkout_sql, $cid ) );//phpcs:ignore
 					if ( is_array( $checkout_funnel_id ) && count( $checkout_funnel_id ) > 0 ) {
@@ -1029,7 +1099,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				}
 
 				// Fetch Funnel ID from Optin
-				$optin_sql = "SELECT DISTINCT funnel_id FROM " . $wpdb->prefix . "bwf_optin_entries WHERE cid = %d";
+				$optin_sql = 'SELECT DISTINCT funnel_id FROM ' . $wpdb->prefix . 'bwf_optin_entries WHERE cid = %d';
 				if ( $all ) {
 					$optin_funnel_id = $wpdb->get_col( $wpdb->prepare( $optin_sql, $cid ) );//phpcs:ignore
 					if ( is_array( $optin_funnel_id ) && count( $optin_funnel_id ) > 0 ) {
@@ -1043,7 +1113,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				}
 
 				// Fetch Funnel ID from Upsell
-				$upsell_sql = "SELECT DISTINCT fid as funnel_id FROM " . $wpdb->prefix . "wfocu_session WHERE cid = %d";
+				$upsell_sql = 'SELECT DISTINCT fid as funnel_id FROM ' . $wpdb->prefix . 'wfocu_session WHERE cid = %d';
 				if ( $all ) {
 					$upsell_funnel_id = $wpdb->get_col( $wpdb->prepare( $upsell_sql, $cid ) );//phpcs:ignore
 					if ( is_array( $upsell_funnel_id ) && count( $upsell_funnel_id ) > 0 ) {
@@ -1055,36 +1125,33 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 						$funnel_id[] = $upsell_funnel_id;
 					}
 				}
-
 			}
 
 			return array_unique( $funnel_id );
-
 		}
 
 		public function get_contact_activity_ids( $cid, $funnel_id = 0 ) {
 			global $wpdb;
-			$order_ids = [];
-			$optin_ids = [];
+			$order_ids = array();
+			$optin_ids = array();
 			$funnel_id = ( intval( $funnel_id ) > 0 ) ? $funnel_id : 0;
-			$data      = [
+			$data      = array(
 				'order_ids'    => $order_ids,
 				'op_entry_ids' => $optin_ids,
-			];
+			);
 			if ( absint( $cid ) === 0 ) {
 				return $data;
 			}
-			$funnel_q = ( intval( $funnel_id ) > 0 ) ? " AND fid = %d " : " AND fid != %d ";
+			$funnel_q = ( intval( $funnel_id ) > 0 ) ? ' AND fid = %d ' : ' AND fid != %d ';
 
 			// Fetch Funnel ID from Optin
-			$funnel_optin_q = ( intval( $funnel_id ) > 0 ) ? " AND funnel_id = %d " : " AND funnel_id != %d ";
+			$funnel_optin_q = ( intval( $funnel_id ) > 0 ) ? ' AND funnel_id = %d ' : ' AND funnel_id != %d ';
 			$optin_sql      = $wpdb->prepare( "SELECT DISTINCT id as 'entry_id' FROM " . $wpdb->prefix . "bwf_optin_entries WHERE 1 = 1" . $funnel_optin_q . " AND cid = %d ORDER BY entry_id DESC", $funnel_id, $cid );//phpcs:ignore
 
 			$optin_funnel_id = $wpdb->get_col( $optin_sql );//phpcs:ignore
 			if ( is_array( $optin_funnel_id ) && count( $optin_funnel_id ) > 0 ) {
 				$optin_ids = $optin_funnel_id;
 			}
-
 
 			// Fetch Funnel ID from Checkout
 			$checkout_sql       = $wpdb->prepare( "SELECT DISTINCT order_id as order_id FROM " . $wpdb->prefix . "wfacp_stats WHERE order_id != 0 " . $funnel_q . " AND cid = %d ORDER BY order_id DESC", $funnel_id, $cid );//phpcs:ignore
@@ -1093,12 +1160,10 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				$order_ids = $checkout_funnel_id;
 			}
 
-
 			$data['order_ids']    = $order_ids;
 			$data['op_entry_ids'] = $optin_ids;
 
 			return $data;
-
 		}
 
 		public function get_global_contacts_spend_details( $request ) {
@@ -1106,14 +1171,13 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 			$funnel_cid = $this->get_funnel_from_contact_id( (int) $request['cid'] );
 
 			$id                       = (int) $request['cid'];
-			$get_all_upsell_records   = [];
-			$get_all_optin_records    = [];
-			$get_all_checkout_records = [];
-			$get_all_bump_records     = [];
+			$get_all_upsell_records   = array();
+			$get_all_optin_records    = array();
+			$get_all_checkout_records = array();
+			$get_all_bump_records     = array();
 			$funnel_id                = ! empty( $request['id'] ) ? (int) $request['id'] : $funnel_cid;//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$records                  = [];
+			$records                  = array();
 			$total                    = 0;
-
 
 			if ( class_exists( 'WFACP_Contacts_Analytics' ) ) {
 				$aero_obj                 = WFACP_Contacts_Analytics::get_instance();
@@ -1148,50 +1212,52 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				foreach ( $records_by_date as $record ) {
 					if ( ! empty( $record->total_revenue ) && $record->total_revenue > 0 ) {
 						$records[] = $record;
-						$total     += $record->total_revenue;
+						$total    += $record->total_revenue;
 					}
 				}
 			}
 
-			return rest_ensure_response( array(
-				'records'       => $this->add_links_to_records( $records, $funnel_id ),
-				'total_revenue' => $total
-			) );
-
+			return rest_ensure_response(
+				array(
+					'records'       => $this->add_links_to_records( $records, $funnel_id ),
+					'total_revenue' => $total,
+				)
+			);
 		}
 
 		/**
 		 * Contact UI Filters
+		 *
 		 * @return array[]
 		 */
 		public function filters_list( $args = array() ) {
 
 			$filters = array(
 				array(
-					"type"  => "sticky",
-					"rules" => array(
+					'type'  => 'sticky',
+					'rules' => array(
 						array(
-							"slug"          => "period",
-							"title"         => __( "Date Created", 'funnel-builder' ),
-							"type"          => "date-range",
-							"op_label"      => __( "Time Period", 'funnel-builder' ),
-							"required"      => array( "rule", "data" ),
-							"readable_text" => "{{value /}}",
+							'slug'          => 'period',
+							'title'         => __( 'Date Created', 'funnel-builder' ),
+							'type'          => 'date-range',
+							'op_label'      => __( 'Time Period', 'funnel-builder' ),
+							'required'      => array( 'rule', 'data' ),
+							'readable_text' => '{{value /}}',
 						),
 						array(
-							"slug"          => "contact_type",
-							"title"         => __( "Type", 'funnel-builder' ),
-							"type"          => "select",
-							"options"       => array(
-								"purchased" => __( "Customer", 'funnel-builder' ),
-								"lead"      => __( "Optin", 'funnel-builder' ),
+							'slug'          => 'contact_type',
+							'title'         => __( 'Type', 'funnel-builder' ),
+							'type'          => 'select',
+							'options'       => array(
+								'purchased' => __( 'Customer', 'funnel-builder' ),
+								'lead'      => __( 'Optin', 'funnel-builder' ),
 							),
-							"val_label"     => __( "Type", 'funnel-builder' ),
-							"required"      => array( "data" ),
-							"readable_text" => "{{value /}}",
+							'val_label'     => __( 'Type', 'funnel-builder' ),
+							'required'      => array( 'data' ),
+							'readable_text' => '{{value /}}',
 						),
 					),
-				)
+				),
 			);
 
 			if ( ! isset( $args['funnel_id'] ) || intval( $args['funnel_id'] ) === 0 ) {
@@ -1208,8 +1274,6 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 
 			return $filters;
 		}
-
-
 	}
 
 

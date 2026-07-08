@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_REST_CHECKOUT_API_EndPoint extends WFFN_REST_Controller {
 
 		private static $ins  = null;

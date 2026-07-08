@@ -1,10 +1,15 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Bwfan Wc Order Data
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class BWFAN_WC_Order_Data extends BWFAN_Merge_Tag {
 
 	private static $instance = null;

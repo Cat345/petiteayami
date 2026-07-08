@@ -19,7 +19,7 @@ interface Translator
      *
      * @return array<string, array<string, string>>
      */
-    public function getResources();
+    public function getResources(): array;
 
     /**
      * Adds a Resource.

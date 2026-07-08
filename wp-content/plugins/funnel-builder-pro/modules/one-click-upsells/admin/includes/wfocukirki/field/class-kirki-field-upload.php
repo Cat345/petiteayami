@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Upload' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Upload extends WFOCUKirki_Field {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Upload' ) ) {
 		protected function set_type() {
 
 			$this->type = 'upload';
-
 		}
 
 		/**
@@ -38,7 +38,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Upload' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'esc_url_raw';
-
 		}
 	}
 }

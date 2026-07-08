@@ -199,7 +199,8 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => array( $this, 'duplicate_funnel' ),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						// Duplicating a funnel creates funnels/steps — a write operation, not a read.
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
 						'args'                => array(),
 					),
 				)
@@ -1115,8 +1116,8 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 		}
 
 		public function get_all_builders() {
-			$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
-			$divi_key = $is_divi5 ? 'divi5' : 'divi';
+			// D5 active → 'divi5'; Divi installed (D4) → 'divi'; neither installed → 'divi5' (future-facing default).
+			$divi_key = WFFN_Common::get_effective_divi_builder_key();
 
 			return array(
 				'funnel'      => array(
@@ -1194,14 +1195,6 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 
 			$resp['all_builder'] = $this->get_all_builders();
 
-			// Add divi5 as a hidden builder key (same label as "Divi") for internal template switching
-			foreach ( $resp['all_builder'] as $type => &$builders ) {
-				if ( isset( $builders['divi'] ) ) {
-					$builders['divi5'] = $builders['divi'];
-				}
-			}
-			unset( $builders );
-
 			$resp['sub_filter_group'] = array(
 				'funnel'      => array(
 					'all'   => __( 'All', 'funnel-builder' ),
@@ -1234,7 +1227,7 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 
 			// If no default builder is set, try to detect one
 			if (
-				empty( $default_builder ) || in_array( $default_builder, array( 'elementor', 'divi', 'oxy', 'bricks' ), true )
+				empty( $default_builder ) || in_array( $default_builder, array( 'elementor', 'divi', 'divi5', 'oxy', 'bricks' ), true )
 			) {
 				$default_builder = WFFN_Core()->admin->get_detected_page_builder();
 			}
@@ -1383,6 +1376,17 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 			$plugin_slug   = isset( $plugin_slug ) ? $plugin_slug : '';
 			$plugin_status = isset( $plugin_status ) ? $plugin_status : '';
 
+			/**
+			 * Installing/activating plugins are privileged WordPress core operations.
+			 * Enforce the core capabilities explicitly, independent of the funnel write permission.
+			 */
+			if ( ! current_user_can( 'activate_plugins' ) ) {
+				return new WP_Error( 'rest_forbidden', __( 'You are not allowed to manage plugins.', 'funnel-builder' ), array( 'status' => rest_authorization_required_code() ) );
+			}
+			if ( 'install' === $plugin_status && ! current_user_can( 'install_plugins' ) ) {
+				return new WP_Error( 'rest_forbidden', __( 'You are not allowed to install plugins.', 'funnel-builder' ), array( 'status' => rest_authorization_required_code() ) );
+			}
+
 			if ( $plugin_init === '' ) {
 				return rest_ensure_response( $resp );
 			}
@@ -1460,8 +1464,7 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 		/** Checks for automation active status */
 		public function check_for_automation_exists() {
 			global $wpdb;
-			$table        = $wpdb->prefix . 'bwfan_automations';
-			$result       = $wpdb->get_results( 'SELECT `event` FROM ' . $table . ' WHERE `event` IN ("wc_new_order", "ab_cart_abandoned") GROUP BY `event`', ARRAY_A );//phpcs:ignore
+			$result       = $wpdb->get_results( "SELECT `event` FROM {$wpdb->prefix}bwfan_automations WHERE `event` IN ( 'wc_new_order', 'ab_cart_abandoned' ) GROUP BY `event`", ARRAY_A );
 			$active_event = array();
 			foreach ( $result as $event ) {
 				$active_event[] = $event['event'];
@@ -1588,7 +1591,11 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 				return $response;
 			}
 
-			$funnel_ids  = ! is_array( $funnel_ids ) ? explode( ',', $funnel_ids ) : $funnel_ids;
+			$funnel_ids = ! is_array( $funnel_ids ) ? explode( ',', $funnel_ids ) : $funnel_ids;
+			$funnel_ids = array_values( array_filter( array_map( 'absint', $funnel_ids ) ) );
+			if ( empty( $funnel_ids ) ) {
+				return $response;
+			}
 			$all_funnels = array();
 			foreach ( $funnel_ids as $fid ) {
 				$all_funnels[ $fid ] = array(
@@ -1603,16 +1610,22 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 				);
 
 			}
-			$funnel_ids = implode( ',', $funnel_ids );
 			/**
 			 * get all funnel conversion from conversion table order by top conversion table
 			 */
 
 			global $wpdb;
-			$f_query     = $wpdb->prepare(
-				"SELECT conv.funnel_id as fid, '' as title, SUM( conv.value ) as total, SUM( conv.offer_total ) as offer_total, SUM( conv.bump_total ) as bump_total, SUM( CASE WHEN conv.type = 2 THEN 1 ELSE 0 END ) as order_count, 0 as views, COUNT(conv.ID) as conversion, 0 as conversion_rate 
-			FROM {$wpdb->prefix}bwf_conversion_tracking AS conv WHERE conv.funnel_id IN ( %1s ) GROUP BY conv.funnel_id ORDER BY SUM( conv.value ) DESC ", $funnel_ids ); //@codingStandardsIgnoreLine
-			$get_funnels = $wpdb->get_results( $f_query, ARRAY_A ); //@codingStandardsIgnoreLine
+			$get_funnels = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT conv.funnel_id as fid, '' as title, SUM( conv.value ) as total, SUM( conv.offer_total ) as offer_total, SUM( conv.bump_total ) as bump_total, SUM( CASE WHEN conv.type = 2 THEN 1 ELSE 0 END ) as order_count, 0 as views, COUNT(conv.ID) as `conversion`, 0 as conversion_rate
+					 FROM {$wpdb->prefix}bwf_conversion_tracking AS conv
+					 WHERE conv.funnel_id IN ( " . implode( ', ', array_fill( 0, count( $funnel_ids ), '%d' ) ) . ' )
+					 GROUP BY conv.funnel_id
+					 ORDER BY SUM( conv.value ) DESC',
+					...$funnel_ids
+				),
+				ARRAY_A
+			);
 
 			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
@@ -1635,8 +1648,16 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 			/**
 			 *  get funnel unique views and conversion rate
 			 */
-			$view_query  = $wpdb->prepare( "SELECT object_id as fid , SUM(COALESCE(no_of_sessions, 0)) AS views FROM {$wpdb->prefix}wfco_report_views WHERE type = 7 AND object_id IN (%1s) GROUP BY object_id", $funnel_ids ); //@codingStandardsIgnoreLine
-			$report_data = $wpdb->get_results( $view_query, ARRAY_A ); //@codingStandardsIgnoreLine
+			$report_data = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT object_id as fid , SUM(COALESCE(no_of_sessions, 0)) AS views
+					 FROM {$wpdb->prefix}wfco_report_views
+					 WHERE type = 7 AND object_id IN ( " . implode( ', ', array_fill( 0, count( $funnel_ids ), '%d' ) ) . ' )
+					 GROUP BY object_id',
+					...$funnel_ids
+				),
+				ARRAY_A
+			);
 			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 				if ( false === $db_error['db_error'] ) {

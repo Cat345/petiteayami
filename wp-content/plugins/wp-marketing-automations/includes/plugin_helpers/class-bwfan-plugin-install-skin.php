@@ -5,6 +5,7 @@ require_once BWFAN_PLUGIN_DIR . '/includes/plugin_helpers/class-bwfan-plugin-sil
 /**
  * Class BWFAN_Plugin_Install_Skin
  */
+#[\AllowDynamicProperties]
 class BWFAN_Plugin_Install_Skin extends BWFAN_Plugin_Silent_Upgrader_Skin {
 	public function error( $errors ) {
 		if ( ! empty( $errors ) ) {

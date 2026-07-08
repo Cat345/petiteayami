@@ -59,7 +59,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Field_Hidden' ) ) {
 
 			if ( is_array( $attributes ) && count( $attributes ) > 0 ) {
 				foreach ( $attributes as $attr => $val ) {
-					$attributes_str .= sprintf( ' %1$s=%3$s%2$s%3$s', $attr, $val, '"' );
+					$attributes_str .= sprintf( ' %1$s=%3$s%2$s%3$s', esc_attr( $attr ), esc_attr( $val ), '"' );
 				}
 			}
 

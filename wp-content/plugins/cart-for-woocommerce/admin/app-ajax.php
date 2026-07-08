@@ -49,11 +49,18 @@ if ( ! class_exists( '\FKCart\Admin\App_Ajax' ) ) {
 		 * @return void
 		 */
 		protected function verify_nonce() {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json( array(
+					'msg'  => __( 'You do not have permission to perform this action.', 'cart-for-woocommerce' ),
+					'code' => 403,
+				) );
+			}
+
 			$nonce = isset( $_POST['fkcart_nonce'] ) ? sanitize_text_field( $_POST['fkcart_nonce'] ) : '';
-			if ( is_null( $nonce ) || ! wp_verify_nonce( $nonce, 'fkcart-action-admin' ) ) {
+			if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'fkcart-action-admin' ) ) {
 				wp_send_json( array(
 					'msg'  => __( 'Unable to save settings. Refresh the page and try again.', 'cart-for-woocommerce' ),
-					'code' => 401
+					'code' => 401,
 				) );
 			}
 		}
@@ -302,7 +309,7 @@ if ( ! class_exists( '\FKCart\Admin\App_Ajax' ) ) {
 			$resp['success'] = false;
 			$resp['msg']     = __( 'No Product Found', 'cart-for-woocommerce' );
 
-			$term       = $request['term'] ?? '';
+			$term       = isset( $request['term'] ) ? sanitize_text_field( $request['term'] ) : '';
 			$variations = isset( $request['variations'] ) ? wp_validate_boolean( $request['variations'] ) : false;
 			$products   = $this->search_products( $term, $variations );
 
@@ -615,7 +622,7 @@ if ( ! class_exists( '\FKCart\Admin\App_Ajax' ) ) {
 			$this->verify_nonce();
 			$this->clear_cache();
 
-			$product_id   = isset( $_POST['product_id'] ) ? sanitize_text_field( $_POST['product_id'] ) : '';
+			$product_id   = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
 			$type         = isset( $_POST['type'] ) ? sanitize_text_field( $_POST['type'] ) : '';
 			$product_data = isset( $_POST['product_data'] ) ? wc_clean( $_POST['product_data'] ) : [];
 
@@ -623,6 +630,13 @@ if ( ! class_exists( '\FKCart\Admin\App_Ajax' ) ) {
 				wp_send_json( array(
 					'status' => false,
 					'msg'    => __( 'Invalid data provided', 'cart-for-woocommerce' ),
+				) );
+			}
+
+			if ( 'product' !== get_post_type( $product_id ) ) {
+				wp_send_json( array(
+					'status' => false,
+					'msg'    => __( 'Invalid product ID', 'cart-for-woocommerce' ),
 				) );
 			}
 
@@ -760,6 +774,13 @@ if ( ! class_exists( '\FKCart\Admin\App_Ajax' ) ) {
 		 * @return array
 		 */
 		public function install_plugin( $plugin_slug, $plugin ) {
+			if ( ! current_user_can( 'install_plugins' ) ) {
+				return array(
+					'status' => false,
+					'msg'    => __( 'You do not have permission to install plugins.', 'cart-for-woocommerce' ),
+				);
+			}
+
 			if ( empty( $plugin_slug ) ) {
 				return array(
 					'status' => false,
@@ -769,7 +790,7 @@ if ( ! class_exists( '\FKCart\Admin\App_Ajax' ) ) {
 
 			$resp = array(
 				'status' => false,
-				'msg'    => __( 'Unable to install plugin', 'cart-for-woocommerce' )
+				'msg'    => __( 'Unable to install plugin', 'cart-for-woocommerce' ),
 			);
 
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -848,7 +869,6 @@ if ( ! class_exists( '\FKCart\Admin\App_Ajax' ) ) {
 					'msg'    => __( 'Some error occurred while activating the plugin', 'cart-for-woocommerce' ),
 				);
 			}
-			update_option( 'fkwcs_wp_stripe', 'cd9978fd4c96198821cc1e3a78b823cd', false );
 
 			return array(
 				'status' => true,
@@ -864,18 +884,13 @@ if ( ! class_exists( '\FKCart\Admin\App_Ajax' ) ) {
 		public function update_user_preference() {
 			$this->verify_nonce();
 
-			$user_id = isset( $_POST['user_id'] ) ? sanitize_text_field( $_POST['user_id'] ) : '';
+			$user_id = get_current_user_id();
 			$data    = isset( $_POST['data'] ) ? wc_clean( $_POST['data'] ) : [];
 
-			$user_exists = (bool) get_users( array(
-				'include' => $user_id,
-				'fields'  => 'ID',
-			) );
-
-			if ( ! $user_exists ) {
+			if ( empty( $user_id ) ) {
 				wp_send_json( array(
 					'status' => false,
-					'msg'    => __( "Contact doesn't exists with the id : ", 'cart-for-woocommerce' ) . $user_id,
+					'msg'    => __( 'Invalid user', 'cart-for-woocommerce' ),
 				) );
 			}
 
@@ -897,6 +912,8 @@ if ( ! class_exists( '\FKCart\Admin\App_Ajax' ) ) {
 		}
 
 		public function get_cart_html() {
+			$this->verify_nonce();
+
 			$_GET['page'] = 'fkcart';
 			$output       = '<div id="fkcart-modal" class="fkcart-modal fkcart-show">' . fkcart_get_active_skin_html() . '</div>';
 

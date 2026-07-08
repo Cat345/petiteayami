@@ -4,6 +4,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 	 * Class WFOB_Common
 	 * Handles Common Functions For Admin as well as front end interface
 	 */
+	#[\AllowDynamicProperties]
 	class WFOB_Common {
 
 		public static $ins                        = null;
@@ -68,7 +69,14 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 			add_filter( 'wfob_parse_shortcode', 'do_shortcode' );
 
-			add_action( 'wp_ajax_wfob_change_rule_type', array( __CLASS__, 'ajax_render_rule_choice' ) );
+			if ( is_admin() ) {
+				$is_admin_enabled = ! class_exists( 'WFFN_Pro_Bump_Support' )
+					|| ! method_exists( 'WFFN_Pro_Bump_Support', 'is_admin_enabled' )
+					|| WFFN_Pro_Bump_Support::is_admin_enabled();
+				if ( $is_admin_enabled ) {
+					add_action( 'wp_ajax_wfob_change_rule_type', array( __CLASS__, 'ajax_render_rule_choice' ) );
+				}
+			}
 
 			add_filter( 'wcct_get_restricted_action', array( __CLASS__, 'wcct_get_restricted_action' ) );
 			add_filter( 'woofunnels_global_settings_fields', array( __CLASS__, 'add_global_settings_fields' ) );
@@ -83,8 +91,8 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 
 		public static function include_core() {
-			if ( isset( $_REQUEST['wfob_id'] ) && $_REQUEST['wfob_id'] > 0 ) {
-				self::set_id( absint( $_REQUEST['wfob_id'] ) );
+			if ( isset( $_REQUEST['wfob_id'] ) && $_REQUEST['wfob_id'] > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				self::set_id( absint( $_REQUEST['wfob_id'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 			WooFunnel_Loader::include_core();
 		}
@@ -365,7 +373,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			// $pattern = "/.*\{(.*)\}/";
 			if ( is_serialized( $val ) ) {
 				$val = trim( $val );
-				$ret = unserialize( $val );
+				$ret = unserialize( $val, array( 'allowed_classes' => false ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 				if ( is_array( $ret ) ) {
 					foreach ( $ret as &$r ) {
 						$r = self::unserialize_recursive( $r );
@@ -485,6 +493,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 						array(
 							'wfob_duplicate' => 'true',
 							'wfob_id'        => $post->ID,
+							'_wpnonce'       => wp_create_nonce( 'wfob_duplicate_' . $post->ID ),
 						),
 						admin_url( 'admin.php?page=wfob' )
 					);
@@ -1065,10 +1074,18 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			);
 			$is_ajax  = false;
 
-			if ( isset( $_POST['action'] ) && $_POST['action'] == 'wfob_change_rule_type' ) {
+			if ( isset( $_POST['action'] ) && $_POST['action'] === 'wfob_change_rule_type' ) {
+				if ( ! current_user_can( 'manage_woocommerce' ) ) {
+					wp_send_json_error( null, 403 );
+				}
+				check_ajax_referer( 'wfob_admin_secure_key', 'security' );
 				$is_ajax = true;
 			}
 			if ( $is_ajax ) {
+				if ( ! current_user_can( 'manage_woocommerce' ) ) {
+					wp_die( '', '', 403 );
+				}
+				check_ajax_referer( 'wfob_admin_secure_key', 'security' );
 				$options = array_merge( $defaults, $_POST );
 			} else {
 				$options = array_merge( $defaults, $options );
@@ -1079,10 +1096,13 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				$values               = $rule_object->get_possible_rule_values();
 				$operators            = $rule_object->get_possible_rule_operators();
 				$condition_input_type = $rule_object->get_condition_input_type();
+				$rule_category        = esc_attr( $options['rule_category'] );
+				$group_id             = esc_attr( $options['group_id'] );
+				$rule_id              = esc_attr( $options['rule_id'] );
 				// create operators field
 				$operator_args = array(
 					'input'   => 'select',
-					'name'    => 'wfob_rule[' . $options['rule_category'] . '][' . $options['group_id'] . '][' . $options['rule_id'] . '][operator]',
+					'name'    => 'wfob_rule[' . $rule_category . '][' . $group_id . '][' . $rule_id . '][operator]',
 					'choices' => $operators,
 				);
 
@@ -1096,7 +1116,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				// create values field
 				$value_args = array(
 					'input'   => $condition_input_type,
-					'name'    => 'wfob_rule[' . $options['rule_category'] . '][' . $options['group_id'] . '][' . $options['rule_id'] . '][condition]',
+					'name'    => 'wfob_rule[' . $rule_category . '][' . $group_id . '][' . $rule_id . '][condition]',
 					'choices' => $values,
 				);
 				echo '<td class="condition">';
@@ -1197,6 +1217,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		}
 
 		public static function update_design_data( $wfob_id, $data = array() ) {
+			$data = map_deep( $data, 'wp_kses_post' );
 			update_post_meta( $wfob_id, '_wfob_design_data', $data );
 		}
 
@@ -2065,6 +2086,9 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		}
 
 		public static function make_duplicate( $post_id ) {
+			if ( ! current_user_can( 'manage_woocommerce' ) ) {
+				return null;
+			}
 			if ( $post_id > 0 ) {
 				$post = get_post( $post_id );
 				if ( ! is_null( $post ) && $post->post_type === self::get_bump_post_type_slug() ) {
@@ -2097,7 +2121,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		public static function get_highest_menu_order() {
 			global $wpdb;
 			$menu_order = 0;
-			$result     = $wpdb->get_results( sprintf( "SELECT menu_order FROM `%s` where `post_type`='%s' ORDER BY `%s`.`menu_order`  DESC LIMIT 1", $wpdb->prefix . 'posts', self::get_bump_post_type_slug(), $wpdb->prefix . 'posts' ), ARRAY_A );
+			$result     = $wpdb->get_results( $wpdb->prepare( "SELECT menu_order FROM `{$wpdb->prefix}posts` WHERE `post_type` = %s ORDER BY `{$wpdb->prefix}posts`.`menu_order` DESC LIMIT 1", self::get_bump_post_type_slug() ), ARRAY_A );
 			if ( is_array( $result ) && count( $result ) > 0 ) {
 				$menu_order = $result[0]['menu_order'];
 			}
@@ -2877,7 +2901,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			}
 
 			global $wpdb;
-			$results = $wpdb->get_results( "select * from {$wpdb->prefix}wfob_stats where 1=1 and converted ='1' and oid='{$oid}'", ARRAY_A );
+			$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wfob_stats WHERE converted = '1' AND oid = %d", absint( $oid ) ), ARRAY_A );
 			if ( empty( $results ) ) {
 
 				return false;
@@ -3083,6 +3107,33 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				// Return original data on error
 				return $design_data;
 			}
+		}
+
+		/**
+		 * Sanitise bump content that may include the {{quantity_incrementer}} merge tag.
+		 * Extends wp_kses_post() to also allow <input> so the quantity input field survives.
+		 *
+		 * @param string $content Raw HTML content to sanitise.
+		 * @return string Sanitised HTML.
+		 */
+		public static function kses_bump_content( $content ) {
+			$allowed = array_merge(
+				wp_kses_allowed_html( 'post' ),
+				array(
+					'input' => array(
+						'type'  => true,
+						'class' => true,
+						'min'   => true,
+						'max'   => true,
+						'value' => true,
+						'step'  => true,
+						'name'  => true,
+						'id'    => true,
+					),
+				)
+			);
+
+			return wp_kses( $content, $allowed );
 		}
 	}
 }

@@ -16,6 +16,7 @@ if ( ! class_exists( 'WFOCUKirki_Values' ) ) {
 	/**
 	 * Wrapper class for static methods.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Values {
 
 		/**
@@ -35,7 +36,7 @@ if ( ! class_exists( 'WFOCUKirki_Values' ) ) {
 		 * @access public
 		 *
 		 * @param string|array $value The value.
-		 * @param string $field_id The field-ID.
+		 * @param string       $field_id The field-ID.
 		 *
 		 * @return array
 		 * @since 3.0.10
@@ -133,7 +134,6 @@ if ( ! class_exists( 'WFOCUKirki_Values' ) ) {
 			} // End if().
 
 			return apply_filters( 'wfocukirki_values_get_value', $value, $field_id );
-
 		}
 
 		/**
@@ -163,7 +163,6 @@ if ( ! class_exists( 'WFOCUKirki_Values' ) ) {
 			}
 
 			return $value;
-
 		}
 	}
 }

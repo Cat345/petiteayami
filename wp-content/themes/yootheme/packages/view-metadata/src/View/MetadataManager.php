@@ -17,12 +17,12 @@ class MetadataManager implements Metadata, \IteratorAggregate
     /**
      * @var list<string>
      */
-    protected $prefix = ['article', 'fb', 'og', 'twitter'];
+    protected array $prefix = ['article', 'fb', 'og', 'twitter'];
 
     /**
      * @var array<string, MetadataObject>
      */
-    protected $metadata = [];
+    protected array $metadata = [];
 
     /**
      * @inheritdoc
@@ -40,7 +40,7 @@ class MetadataManager implements Metadata, \IteratorAggregate
 
             foreach ($this->metadata as $metadata) {
                 if (
-                    isset($this->metadata[$name]) ||
+                    $metadata->name === $name ||
                     ($prefix && str_starts_with($metadata->name, $prefix))
                 ) {
                     $result[$metadata->name] = $metadata;

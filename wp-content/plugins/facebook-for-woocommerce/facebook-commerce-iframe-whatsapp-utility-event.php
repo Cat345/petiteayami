@@ -63,7 +63,7 @@ class WC_Facebookcommerce_Iframe_Whatsapp_Utility_Event {
 		// Get WhatsApp Phone number from entered Billing and Shipping phone number
 		$billing_phone_number  = $order->get_billing_phone();
 		$shipping_phone_number = $order->get_shipping_phone();
-		$phone_number          = $billing_phone_number ?? $shipping_phone_number;
+		$phone_number          = ! empty( $billing_phone_number ) ? $billing_phone_number : $shipping_phone_number;
 		// Get Country Code from Billing and Shipping Country to override Country Calling Code
 		$should_use_billing_info = ! empty( $billing_phone_number );
 		$country_code            = $should_use_billing_info ? $order->get_billing_country() : $order->get_shipping_country();
@@ -110,8 +110,8 @@ class WC_Facebookcommerce_Iframe_Whatsapp_Utility_Event {
 
 		$items = method_exists( $order, 'get_items' ) ? $order->get_items() : array();
 		foreach ( $items as $item ) {
-			$product_id = method_exists( $item, 'get_product_id' ) ? $item->get_product_id() : ( isset( $item['product_id'] ) ? $item['product_id'] : 0 );
-			$item_total = method_exists( $item, 'get_total' ) ? $item->get_total() : ( isset( $item['line_total'] ) ? $item['line_total'] : 0 );
+			$product_id                = method_exists( $item, 'get_product_id' ) ? $item->get_product_id() : ( isset( $item['product_id'] ) ? $item['product_id'] : 0 );
+			$item_total                = method_exists( $item, 'get_total' ) ? $item->get_total() : ( isset( $item['line_total'] ) ? $item['line_total'] : 0 );
 			$order_metadata['items'][] = array(
 				'product_id' => $product_id,
 				'name'       => method_exists( $item, 'get_name' ) ? $item->get_name() : ( isset( $item['name'] ) ? $item['name'] : '' ),

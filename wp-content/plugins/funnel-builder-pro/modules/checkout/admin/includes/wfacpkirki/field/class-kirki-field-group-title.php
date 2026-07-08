@@ -13,6 +13,10 @@
  * Prior to version 0.8 there was a separate 'group-title' field.
  * This exists here just for backwards-compatibility purposes.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Group_Title' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Group_Title extends WFACPKirki_Field_Custom {

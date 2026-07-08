@@ -193,11 +193,9 @@ class PostSearchQueryType
             );
         }
 
-        if ($args['offset'] || $args['limit']) {
-            return array_slice($posts, (int) $args['offset'], (int) $args['limit'] ?: null);
-        }
-
-        return $posts;
+        return $args['offset'] || $args['limit']
+            ? array_slice($posts, (int) $args['offset'], (int) $args['limit'] ?: null)
+            : $posts;
     }
 
     /**

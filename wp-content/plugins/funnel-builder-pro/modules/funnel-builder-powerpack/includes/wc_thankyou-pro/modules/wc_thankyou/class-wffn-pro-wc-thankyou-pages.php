@@ -1,11 +1,12 @@
 <?php
 
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFFN_Pro_WC_Thankyou_Pages' ) ) {
 	/**
 	 * Funnel pro optin page module
 	 * Class WFFN_Pro_WC_Thankyou_Pages
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_Pro_WC_Thankyou_Pages {
 
 		private static $ins = null;
@@ -14,8 +15,7 @@ if ( ! class_exists( 'WFFN_Pro_WC_Thankyou_Pages' ) ) {
 		 * WFFN_Pro_Optin_Pages constructor.
 		 */
 		public function __construct() {
-			add_action( 'after_setup_theme', [ $this, 'load_rules' ], 12 );
-
+			add_action( 'after_setup_theme', array( $this, 'load_rules' ), 12 );
 		}
 
 		/**
@@ -23,7 +23,7 @@ if ( ! class_exists( 'WFFN_Pro_WC_Thankyou_Pages' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -36,7 +36,6 @@ if ( ! class_exists( 'WFFN_Pro_WC_Thankyou_Pages' ) ) {
 		public function get_path() {
 			return __DIR__;
 		}
-
 	}
 
 	if ( class_exists( 'WFFN_Pro_WC_Thankyou_Pages' ) ) {

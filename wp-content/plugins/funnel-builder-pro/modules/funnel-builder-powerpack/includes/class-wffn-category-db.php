@@ -1,15 +1,16 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * This class contain data for experiments
  * Class WFFN_Category_DB
  */
 if ( ! class_exists( 'WFFN_Category_DB' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Category_DB {
 
 		public static $category_option_key = 'wffn_funnel_category';
-		public static $funnel_meta_key = 'wffn_funnel_category';
+		public static $funnel_meta_key     = 'wffn_funnel_category';
 
 		private static $message = '';
 
@@ -32,23 +33,12 @@ if ( ! class_exists( 'WFFN_Category_DB' ) ) {
 		}
 
 		/**
-		 * Get the dynamic table name for funnel meta
-		 *
-		 * @return string Full table name with WordPress prefix
-		 */
-		private static function get_funnel_meta_table_name() {
-			global $wpdb;
-
-			return $wpdb->prefix . 'bwf_funnelmeta';
-		}
-
-		/**
 		 * Retrieve all categories.
 		 *
 		 * @return array
 		 */
 		public static function get_categories() {
-			return get_option( self::$category_option_key, [] );
+			return get_option( self::$category_option_key, array() );
 		}
 
 		/**
@@ -87,7 +77,7 @@ if ( ! class_exists( 'WFFN_Category_DB' ) ) {
 		public static function delete_category( $slug ) {
 			$categories = self::get_categories();
 			if ( ! isset( $categories[ $slug ] ) ) {
-				self::set_message( "Failed to delete category." );
+				self::set_message( 'Failed to delete category.' );
 
 				return false;
 			}
@@ -113,12 +103,12 @@ if ( ! class_exists( 'WFFN_Category_DB' ) ) {
 			$new_slug = sanitize_title( $new_name );
 			$new_slug = str_replace( '-', '_', $new_slug );
 			if ( self::category_exists( $new_slug ) ) {
-				self::set_message( "The category you want to rename already exists." );
+				self::set_message( 'The category you want to rename already exists.' );
 
 				return false;
 			}
 			if ( ! self::update_category_in_options( $old_slug, $new_name ) ) {
-				self::set_message( "Failed to update category in options." );
+				self::set_message( 'Failed to update category in options.' );
 
 				return false;
 			}
@@ -131,12 +121,12 @@ if ( ! class_exists( 'WFFN_Category_DB' ) ) {
 			$new_slug   = sanitize_title( $new_name );
 			$new_slug   = str_replace( '-', '_', $new_slug );
 
-			$updated_categories = [];
+			$updated_categories = array();
 			foreach ( $categories as $slug => $name ) {
 				if ( $slug === $old_slug ) {
-					$updated_categories[$new_slug] = $new_name;
+					$updated_categories[ $new_slug ] = $new_name;
 				} else {
-					$updated_categories[$slug] = $name;
+					$updated_categories[ $slug ] = $name;
 				}
 			}
 
@@ -145,18 +135,21 @@ if ( ! class_exists( 'WFFN_Category_DB' ) ) {
 
 		private static function update_category_in_funnels( $old_slug, $new_slug ) {
 			global $wpdb;
-			$funnels = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM " . self::get_funnel_meta_table_name() . " WHERE meta_key = %s", self::$funnel_meta_key ) ); // phpcs:ignore
+			$funnels = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}bwf_funnelmeta WHERE meta_key = %s", self::$funnel_meta_key ) );
 
 			foreach ( $funnels as $funnel ) {
 				$categories = json_decode( $funnel->meta_value, true );
 
 				if ( in_array( $old_slug, $categories, true ) ) {
-					$updated_categories = array_map( function ( $category ) use ( $old_slug, $new_slug ) {
-						return $category === $old_slug ? $new_slug : $category;
-					}, $categories );
+					$updated_categories = array_map(
+						function ( $category ) use ( $old_slug, $new_slug ) {
+							return $category === $old_slug ? $new_slug : $category;
+						},
+						$categories
+					);
 
 					$meta_value = wp_json_encode( $updated_categories );
-					$wpdb->update( self::get_funnel_meta_table_name(), [ 'meta_value' => $meta_value ], [ 'meta_id' => $funnel->meta_id ], [ '%s' ], [ '%d' ] );
+					$wpdb->update( $wpdb->prefix . 'bwf_funnelmeta', array( 'meta_value' => $meta_value ), array( 'meta_id' => $funnel->meta_id ), array( '%s' ), array( '%d' ) );
 				}
 			}
 
@@ -193,12 +186,12 @@ if ( ! class_exists( 'WFFN_Category_DB' ) ) {
 		 * Merge existing categories with new ones (to avoid duplicates).
 		 *
 		 * @param object|null $existing_meta Existing meta for the funnel.
-		 * @param array $new_categories New categories to add.
+		 * @param array       $new_categories New categories to add.
 		 *
 		 * @return array Merged categories.
 		 */
 		private static function merge_categories( $existing_meta, $new_categories ) {
-			$existing_categories = $existing_meta ? json_decode( $existing_meta->meta_value, true ) : [];
+			$existing_categories = $existing_meta ? json_decode( $existing_meta->meta_value, true ) : array();
 
 			return array_unique( array_merge( $existing_categories, $new_categories ) );
 		}
@@ -206,7 +199,7 @@ if ( ! class_exists( 'WFFN_Category_DB' ) ) {
 		/**
 		 * Get funnel meta data.
 		 *
-		 * @param int $funnel_id Funnel ID.
+		 * @param int    $funnel_id Funnel ID.
 		 * @param string $meta_key Meta key.
 		 *
 		 * @return object|null Funnel meta or null.
@@ -214,13 +207,13 @@ if ( ! class_exists( 'WFFN_Category_DB' ) ) {
 		public static function get_funnel_meta( $funnel_id, $meta_key ) {
 			global $wpdb;
 
-			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM " . self::get_funnel_meta_table_name() . " WHERE bwf_funnel_id = %d AND meta_key = %s", $funnel_id, $meta_key ) );//phpcs:ignore
+			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}bwf_funnelmeta WHERE bwf_funnel_id = %d AND meta_key = %s", $funnel_id, $meta_key ) );
 		}
 
 		/**
 		 * Insert new funnel meta data.
 		 *
-		 * @param int $funnel_id Funnel ID.
+		 * @param int    $funnel_id Funnel ID.
 		 * @param string $meta_key Meta key.
 		 * @param string $meta_value Meta value.
 		 *
@@ -233,27 +226,30 @@ if ( ! class_exists( 'WFFN_Category_DB' ) ) {
 
 			if ( $existing_row ) {
 				$wpdb->delete(
-					self::get_funnel_meta_table_name(),
-					[ 'bwf_funnel_id' => $funnel_id, 'meta_key' => $meta_key ],
-					[ '%d', '%s' ]
+					$wpdb->prefix . 'bwf_funnelmeta',
+					array(
+						'bwf_funnel_id' => $funnel_id,
+						'meta_key'      => $meta_key,
+					),
+					array( '%d', '%s' )
 				);
 			}
 
 			return $wpdb->insert(
-				self::get_funnel_meta_table_name(),
-				[
+				$wpdb->prefix . 'bwf_funnelmeta',
+				array(
 					'bwf_funnel_id' => $funnel_id,
 					'meta_key'      => $meta_key,
 					'meta_value'    => $meta_value,
-				],
-				[ '%d', '%s', '%s' ]
+				),
+				array( '%d', '%s', '%s' )
 			);
 		}
 
 		/**
 		 * Update existing funnel meta data.
 		 *
-		 * @param int $meta_id Meta ID.
+		 * @param int    $meta_id Meta ID.
 		 * @param string $meta_value Meta value.
 		 *
 		 * @return bool
@@ -261,7 +257,7 @@ if ( ! class_exists( 'WFFN_Category_DB' ) ) {
 		public static function update_funnel_meta( $meta_id, $meta_value ) {
 			global $wpdb;
 
-			return $wpdb->update( self::get_funnel_meta_table_name(), [ 'meta_value' => $meta_value ], [ 'meta_id' => $meta_id ], [ '%s' ], [ '%d' ] );
+			return $wpdb->update( $wpdb->prefix . 'bwf_funnelmeta', array( 'meta_value' => $meta_value ), array( 'meta_id' => $meta_id ), array( '%s' ), array( '%d' ) );
 		}
 
 		/**
@@ -274,20 +270,20 @@ if ( ! class_exists( 'WFFN_Category_DB' ) ) {
 		public static function remove_category_from_funnels( $category_slug ) {
 			global $wpdb;
 
-			$funnels = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM " . self::get_funnel_meta_table_name() . " WHERE meta_key = %s", 'wffn_funnel_category' ) );//phpcs:ignore
+			$funnels = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}bwf_funnelmeta WHERE meta_key = %s", 'wffn_funnel_category' ) );
 
 			foreach ( $funnels as $funnel ) {
 				$categories = json_decode( $funnel->meta_value, true );
 
 				if ( in_array( $category_slug, $categories, true ) ) {
-					$updated_categories = array_diff( $categories, [ $category_slug ] );
+					$updated_categories = array_diff( $categories, array( $category_slug ) );
 					$updated_categories = array_values( $updated_categories );
 
 					if ( ! empty( $updated_categories ) ) {
 						$meta_value = wp_json_encode( $updated_categories );
-						$wpdb->update( self::get_funnel_meta_table_name(), [ 'meta_value' => $meta_value ], [ 'meta_id' => $funnel->meta_id ], [ '%s' ], [ '%d' ] );
+						$wpdb->update( $wpdb->prefix . 'bwf_funnelmeta', array( 'meta_value' => $meta_value ), array( 'meta_id' => $funnel->meta_id ), array( '%s' ), array( '%d' ) );
 					} else {
-						$wpdb->delete( self::get_funnel_meta_table_name(), [ 'meta_id' => $funnel->meta_id ], [ '%d' ] );
+						$wpdb->delete( $wpdb->prefix . 'bwf_funnelmeta', array( 'meta_id' => $funnel->meta_id ), array( '%d' ) );
 					}
 				}
 			}
@@ -297,7 +293,7 @@ if ( ! class_exists( 'WFFN_Category_DB' ) ) {
 
 		public static function get_category_funnel_count( $category_slug ) {
 			global $wpdb;
-			return $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . self::get_funnel_meta_table_name() . " WHERE meta_key = %s AND meta_value LIKE %s",self::$funnel_meta_key, '%"' . $category_slug . '"%' ) );//phpcs:ignore
+			return $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}bwf_funnelmeta WHERE meta_key = %s AND meta_value LIKE %s", self::$funnel_meta_key, '%"' . $category_slug . '"%' ) );
 		}
 	}
 

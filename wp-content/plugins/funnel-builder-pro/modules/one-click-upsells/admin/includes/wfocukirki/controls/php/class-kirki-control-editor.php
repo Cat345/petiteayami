@@ -19,6 +19,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Editor' ) ) {
 	/**
 	 * A TinyMCE control.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Editor extends WFOCUKirki_Control_Base {
 
 		/**
@@ -45,11 +46,11 @@ if ( ! class_exists( 'WFOCUKirki_Control_Editor' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <label>
-                <# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
-                <# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
-            </label>
-            <textarea id="wfocukirki-editor-{{{ data.id.replace( '[', '' ).replace( ']', '' ) }}}" {{{ data.inputAttrs }}} {{{ data.link }}}>{{ data.value }}</textarea>
+			<label>
+				<# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
+				<# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
+			</label>
+			<textarea id="wfocukirki-editor-{{{ data.id.replace( '[', '' ).replace( ']', '' ) }}}" {{{ data.inputAttrs }}} {{{ data.link }}}>{{ data.value }}</textarea>
 			<?php
 		}
 	}

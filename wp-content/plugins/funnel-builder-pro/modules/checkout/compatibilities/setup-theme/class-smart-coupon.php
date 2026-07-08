@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * WooCommerce Smart Coupons By Store Apps
@@ -8,20 +12,20 @@
 if ( ! class_exists( 'WFACP_Compatibility_With_Smart_Coupons' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_Smart_Coupons {
-		private $process = false;
+		private $process  = false;
 		private $instance = null;
 
 		public function __construct() {
 
 			/* Register Gift Certificate field */
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
 			add_filter( 'wfacp_html_fields_smart_coupon_gift', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'display_field' ], 999, 2 );
+			add_action( 'process_wfacp_html', array( $this, 'display_field' ), 999, 2 );
 
-			add_action( 'wfacp_internal_css', [ $this, 'wfacp_internal_css_script' ] );
-			add_action( 'woocommerce_checkout_update_order_review', [ $this, 'get_data' ], 5 );
-			add_filter( 'woocommerce_update_order_review_fragments', [ $this, 'unset_fragments' ], 900 );
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'action' ] );
+			add_action( 'wfacp_internal_css', array( $this, 'wfacp_internal_css_script' ) );
+			add_action( 'woocommerce_checkout_update_order_review', array( $this, 'get_data' ), 5 );
+			add_filter( 'woocommerce_update_order_review_fragments', array( $this, 'unset_fragments' ), 900 );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'action' ) );
 
 			/* prevent third party fields and wrapper*/
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
@@ -35,20 +39,18 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Smart_Coupons' ) ) {
 			}
 			$this->instance = WC_SC_Coupon_Message::get_instance();
 
-
 			remove_action( 'woocommerce_checkout_before_customer_details', array( $this->instance, 'wc_coupon_message_display' ) );
 			add_action( 'woocommerce_checkout_before_customer_details', array( $this, 'wc_coupon_message_display' ), 99 );
-
 		}
 
 		public function add_field( $fields ) {
-			$fields['smart_coupon_gift'] = [
+			$fields['smart_coupon_gift'] = array(
 				'type'  => 'wfacp_html',
-				'class' => [ 'wfacp-col-full', 'wfacp-form-control-wrapper' ],
+				'class' => array( 'wfacp-col-full', 'wfacp-form-control-wrapper' ),
 				'id'    => 'smart_coupon_gift',
 				'label' => __( 'Smart Coupon Gift', 'woofunnels-aero-checkout' ),
 
-			];
+			);
 
 			return $fields;
 		}
@@ -61,13 +63,13 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Smart_Coupons' ) ) {
 				return '';
 			}
 			$instance = WC_SC_Purchase_Credit::get_instance();
-			remove_action( 'woocommerce_checkout_after_customer_details', [ $instance, 'gift_certificate_receiver_detail_form' ] );
+			remove_action( 'woocommerce_checkout_after_customer_details', array( $instance, 'gift_certificate_receiver_detail_form' ) );
 
 			if ( $instance instanceof WC_SC_Purchase_Credit ) {
 
-				echo "<div id=wfacp_smart_coupon_gift>";
+				echo '<div id=wfacp_smart_coupon_gift>';
 				$instance->gift_certificate_receiver_detail_form();
-				echo "</div>";
+				echo '</div>';
 			}
 		}
 
@@ -102,7 +104,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Smart_Coupons' ) ) {
 			}
 			unset( $fragments['cart_total'] );
 
-
 			$fragments['wc_coupon_message_wrap'] = $this->wc_coupon_html();
 
 			return $fragments;
@@ -123,7 +124,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Smart_Coupons' ) ) {
 			$html = ob_get_clean();
 
 			return $html;
-
 		}
 
 		public function wc_coupon_message_display() {
@@ -135,8 +135,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Smart_Coupons' ) ) {
 			echo '<div class="wc_coupon_message_wrap" style="padding: 10px 0 10px;">';
 			echo $this->instance->print_coupon_message();
 			echo '</div>';
-
-
 		}
 
 		public function wfacp_internal_css_script() {
@@ -146,49 +144,48 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Smart_Coupons' ) ) {
 				return;
 			}
 
-			$bodyClass = "body ";
-			$px        = $instance->get_template_type_px() . "px";
+			$bodyClass = 'body ';
+			$px        = $instance->get_template_type_px() . 'px';
 			if ( 'pre_built' !== $instance->get_template_type() ) {
-				$bodyClass = "body #wfacp-e-form ";
-				$px        = "7px";
+				$bodyClass = 'body #wfacp-e-form ';
+				$px        = '7px';
 			}
 
-			$cssHtml = "<style>";
+			$cssHtml  = '<style>';
 			$cssHtml .= $bodyClass . "#wfacp_smart_coupon_gift {clear: both;padding: 0 $px;}";
-			$cssHtml .= $bodyClass . "#wfacp_smart_coupon_gift ul.show_hide_list {padding: 0;margin: 0;}";
+			$cssHtml .= $bodyClass . '#wfacp_smart_coupon_gift ul.show_hide_list {padding: 0;margin: 0;}';
 			$cssHtml .= $bodyClass . "#wfacp_smart_coupon_gift input[type='text'] {padding: 12px 10px;margin: 0 0 15px;}";
-			$cssHtml .= $bodyClass . "#wfacp_smart_coupon_gift .form_table {margin: 15px 0 0;width: 100%;padding: 15px 0 0;}";
-			$cssHtml .= "</style>";
+			$cssHtml .= $bodyClass . '#wfacp_smart_coupon_gift .form_table {margin: 15px 0 0;width: 100%;padding: 15px 0 0;}';
+			$cssHtml .= '</style>';
 
 			echo $cssHtml;
 
-
 			?>
 
-            <script>
-                window.addEventListener('load', function () {
-                    (function ($) {
-                        wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_apply_coupon_field', set_custom_data);
-                        wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_apply_coupon_main', set_custom_data);
-                        wfacp_frontend.hooks.addAction('wfacp_ajax_apply_coupon_field', trigger_checkout);
-                        wfacp_frontend.hooks.addAction('wfacp_ajax_apply_coupon_main', trigger_checkout);
+			<script>
+				window.addEventListener('load', function () {
+					(function ($) {
+						wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_apply_coupon_field', set_custom_data);
+						wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_apply_coupon_main', set_custom_data);
+						wfacp_frontend.hooks.addAction('wfacp_ajax_apply_coupon_field', trigger_checkout);
+						wfacp_frontend.hooks.addAction('wfacp_ajax_apply_coupon_main', trigger_checkout);
 
-                        function set_custom_data(data) {
-                            data['unset_fragments'] = 'yes';
-                            return data;
-                        }
+						function set_custom_data(data) {
+							data['unset_fragments'] = 'yes';
+							return data;
+						}
 
-                        function trigger_checkout(rsp) {
-                            if (rsp.hasOwnProperty('message')) {
-                                var message = rsp.message;
-                                if (!message.hasOwnProperty('error')) {
-                                    $(document.body).trigger('update_checkout');
-                                }
-                            }
-                        }
-                    })(jQuery);
-                });
-            </script>
+						function trigger_checkout(rsp) {
+							if (rsp.hasOwnProperty('message')) {
+								var message = rsp.message;
+								if (!message.hasOwnProperty('error')) {
+									$(document.body).trigger('update_checkout');
+								}
+							}
+						}
+					})(jQuery);
+				});
+			</script>
 			<?php
 		}
 	}

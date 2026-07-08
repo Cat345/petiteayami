@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 if ( ! class_exists( 'WFOB_Role_Capability' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Role_Capability {
 
 		private static $ins = null;
@@ -18,7 +19,7 @@ if ( ! class_exists( 'WFOB_Role_Capability' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -68,8 +69,8 @@ if ( ! class_exists( 'WFOB_Role_Capability' ) ) {
 					 */
 					if ( isset( $all_role['capabilities'] ) && isset( $all_role['capabilities']['manage_woocommerce'] ) && true === $all_role['capabilities']['manage_woocommerce'] ) {
 						$funnel_user[ $role_name ] = array(
-							'menu'      => array( 'read', 'write' ),
-							'bump'      => array( 'read', 'write' ),
+							'menu' => array( 'read', 'write' ),
+							'bump' => array( 'read', 'write' ),
 						);
 					}
 				}
@@ -91,7 +92,6 @@ if ( ! class_exists( 'WFOB_Role_Capability' ) ) {
 
 			return false;
 		}
-
 	}
 
 	if ( class_exists( 'WFOB_Core' ) ) {

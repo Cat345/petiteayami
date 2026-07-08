@@ -24,7 +24,7 @@ class FieldsType
      *
      * @return ObjectConfig
      */
-    public static function config(Source $source, object $type, array $fields)
+    public static function config(Source $source, object $type, array $fields): array
     {
         $isType = $type->config['metadata']['type'] ?? false;
 

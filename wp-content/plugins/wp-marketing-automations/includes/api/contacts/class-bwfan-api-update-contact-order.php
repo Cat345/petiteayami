@@ -3,6 +3,7 @@
 /**
  * Class BWFAN_API_Update_Contact_Order for syncing contact order data
  */
+#[\AllowDynamicProperties]
 class BWFAN_API_Update_Contact_Order extends BWFAN_API_Base {
 	public static $ins;
 
@@ -101,7 +102,8 @@ class BWFAN_API_Update_Contact_Order extends BWFAN_API_Base {
 				return $this->error_response( __( 'Unknown error occurred.', 'wp-marketing-automations' ), '', 404 );
 		}
 
-		// Otherwise, return success response with contact data
+		// Reload contact fresh from DB to get updated customer data
+		$contact     = new BWFCRM_Contact( $cid );
 		$new_contact = $contact->get_customer_as_array();
 
 		return $this->success_response( [

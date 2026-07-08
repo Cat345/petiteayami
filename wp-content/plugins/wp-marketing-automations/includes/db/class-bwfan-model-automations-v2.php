@@ -3,6 +3,7 @@
 /**
  * Automation V2 modal class
  */
+#[\AllowDynamicProperties]
 class BWFAN_Model_Automations_V2 extends BWFAN_Model {
 	static $primary_key = 'ID';
 
@@ -19,7 +20,8 @@ class BWFAN_Model_Automations_V2 extends BWFAN_Model {
 		$exists = false;
 
 		$query  = 'SELECT ID FROM ' . self::_table();
-		$query  .= $wpdb->prepare( " WHERE {$field} = %s ", $data );
+		$field  = preg_replace( '/[^a-zA-Z0-9_]/', '', (string) $field );
+		$query  .= $wpdb->prepare( " WHERE `{$field}` = %s ", $data );
 		$result = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( ! empty( $result ) ) {
 			$exists = true;
@@ -273,46 +275,6 @@ class BWFAN_Model_Automations_V2 extends BWFAN_Model {
 		}
 
 		return absint( $complete_count );
-	}
-
-	/**
-	 * Returns automations
-	 *
-	 * @param int $offset
-	 * @param int $limit
-	 * @param string $search
-	 * @param string $order
-	 * @param string $order_by
-	 * @param array $id
-	 *
-	 * @return array
-	 */
-	public function get_all_automations( $offset = 0, $limit = 0, $search = '', $order = 'DESC', $order_by = 'ID', $id = [] ) {
-		global $wpdb;
-		$table_name = self::_table();
-		$query      = "SELECT * FROM $table_name WHERE 1=1";
-
-		if ( ! empty( $id ) ) {
-			$query .= $wpdb->prepare( " AND ID in ( " . implode( ',', $id ) . " )" );
-		}
-		if ( ! empty( $search ) ) {
-			$query .= $wpdb->prepare( " AND title LIKE %s", "%$search%" );
-		}
-		$query .= " ORDER BY $order_by $order";
-		if ( intval( $limit ) > 0 ) {
-			$offset = ! empty( $offset ) ? intval( $offset ) : 0;
-			$query  .= $wpdb->prepare( " LIMIT %d, %d", $offset, $limit );
-		}
-
-		$core_cache_obj = WooFunnels_Cache::get_instance();
-
-		$result = $core_cache_obj->get_cache( md5( $query ), 'fka-automation' );
-		if ( false === $result ) {
-			$result = self::get_results( $query );
-			$core_cache_obj->set_cache( md5( $query ), $result, 'fka-automation' );
-		}
-
-		return is_array( $result ) && ! empty( $result ) ? $result : array();
 	}
 
 	/**

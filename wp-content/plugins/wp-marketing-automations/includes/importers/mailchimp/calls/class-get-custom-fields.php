@@ -5,6 +5,7 @@ namespace BWFAN\Importers\Mailchimp\Calls;
 /**
  * Get merge fields (custom fields) for a list
  */
+#[\AllowDynamicProperties]
 class Get_Merge_Fields extends Call {
 	protected $required_fields = array( 'api_key', 'list_id' );
 

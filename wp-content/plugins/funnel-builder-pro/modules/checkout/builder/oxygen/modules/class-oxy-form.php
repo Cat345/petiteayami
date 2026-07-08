@@ -29,25 +29,27 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 			$params['selector'] = $selector;
 
 			if ( ! is_null( $oxygen_vsb_components[ $slug ] ) ) {
-				$selector_id = '#' . $params['selector'];
+				$selector_id = '#' . preg_replace( '/[^a-zA-Z0-9_-]/', '', $params['selector'] );
 
 				if ( isset( $params['oxy-wfacp_checkout_form_tab_heading_alignment'] ) && ! empty( $params['oxy-wfacp_checkout_form_tab_heading_alignment'] ) ) {
-					$alignment = $params['oxy-wfacp_checkout_form_tab_heading_alignment'];
+					$alignment = in_array( $params['oxy-wfacp_checkout_form_tab_heading_alignment'], array( 'left', 'center', 'right', 'justify' ), true )
+						? $params['oxy-wfacp_checkout_form_tab_heading_alignment']
+						: 'left';
 					$styles    = $styles . $selector_id . " .wfacp-order2StepTitle.wfacp-order2StepTitleS1.wfacp_tcolor{text-align:$alignment}";
 				}
 
 				if ( isset( $params['oxy-wfacp_checkout_form_wfacp_checkout_form_text_focus_color'] ) && ! empty( $params['oxy-wfacp_checkout_form_wfacp_checkout_form_text_focus_color'] ) ) {
-					$focus_color = $params['oxy-wfacp_checkout_form_wfacp_checkout_form_text_focus_color'];
+					$focus_color = preg_replace( '/[^a-zA-Z0-9#(),. %-]/', '', $params['oxy-wfacp_checkout_form_wfacp_checkout_form_text_focus_color'] );
 					$styles      = $styles . $selector_id . " #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-email) .wfacp-form-control:not(.wfacp_coupon_code):focus{box-shadow:0 0 0 1px $focus_color}";
 				}
 
 				if ( isset( $params['oxy-wfacp_checkout_form_order_coupon_focus_color'] ) && ! empty( $params['oxy-wfacp_checkout_form_order_coupon_focus_color'] ) ) {
-					$focus_color = $params['oxy-wfacp_checkout_form_order_coupon_focus_color'];
+					$focus_color = preg_replace( '/[^a-zA-Z0-9#(),. %-]/', '', $params['oxy-wfacp_checkout_form_order_coupon_focus_color'] );
 					$styles      = $styles . $selector_id . " #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_coupon_field_box p.wfacp-form-control-wrapper .wfacp-form-control:focus{box-shadow:0 0 0 1px $focus_color}";
 				}
 
 				if ( isset( $params['oxy-wfacp_checkout_form_default_primary_color'] ) && ! empty( $params['oxy-wfacp_checkout_form_default_primary_color'] ) ) {
-					$default_primary_color = $params['oxy-wfacp_checkout_form_default_primary_color'];
+					$default_primary_color = preg_replace( '/[^a-zA-Z0-9#(),. %-]/', '', $params['oxy-wfacp_checkout_form_default_primary_color'] );
 
 					$styles = $styles . $selector_id . " #wfacp-e-form .wfacp_main_form .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus{border-color:$default_primary_color}";
 					$styles = $styles . $selector_id . " #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus{box-shadow:0 0 0 1px $default_primary_color}";
@@ -102,7 +104,7 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 
 				}
 				if ( isset( $params['oxy-wfacp_checkout_form_text_validation_color'] ) && ! empty( $params['oxy-wfacp_checkout_form_text_validation_color'] ) ) {
-					$default_primary_color = $params['oxy-wfacp_checkout_form_text_validation_color'];
+					$default_primary_color = preg_replace( '/[^a-zA-Z0-9#(),. %-]/', '', $params['oxy-wfacp_checkout_form_text_validation_color'] );
 
 					// $styles = $styles . $selector_id . " #wfacp-e-form .wfacp_main_form.woocommerce p.woocommerce-invalid-required-field .wfacp-form-control{box-shadow:0 0 0 1px $default_primary_color}";
 					$styles = $styles . $selector_id . " #wfacp-e-form .wfacp_main_form.woocommerce p.woocommerce-invalid-required-field .wfacp-form-control:focus{box-shadow:0 0 0 1px $default_primary_color}";
@@ -1237,9 +1239,11 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 			$this->save_ajax_settings();
 			$template->set_form_data( $this->settings );
 			if ( isset( $_COOKIE['wfacp_oxy_open_page'] ) && wp_doing_ajax() ) {
-				$cookie = $_COOKIE['wfacp_oxy_open_page'];//phpcs:ignore
+				$cookie = sanitize_text_field( wp_unslash( $_COOKIE['wfacp_oxy_open_page'] ) );
 				$parts  = explode( '@', $cookie );
-				$template->set_current_open_step( $parts[1] );
+				if ( isset( $parts[1] ) ) {
+					$template->set_current_open_step( sanitize_html_class( $parts[1] ) );
+				}
 			}
 			include $template->wfacp_get_form();
 		}

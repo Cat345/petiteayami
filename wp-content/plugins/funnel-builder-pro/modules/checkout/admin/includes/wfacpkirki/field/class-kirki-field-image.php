@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Image' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Image extends WFACPKirki_Field {
@@ -34,11 +38,12 @@ if ( ! class_exists( 'WFACPKirki_Field_Image' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-image';
-
 		}
 
 		protected function set_button_labels() {
-			$this->button_labels = wp_parse_args( $this->button_labels, array(
+			$this->button_labels = wp_parse_args(
+				$this->button_labels,
+				array(
 					'select'       => esc_attr__( 'Select image', 'wfacpkirki' ),
 					'change'       => esc_attr__( 'Change image', 'wfacpkirki' ),
 					'default'      => esc_attr__( 'Default', 'wfacpkirki' ),
@@ -46,7 +51,8 @@ if ( ! class_exists( 'WFACPKirki_Field_Image' ) ) {
 					'placeholder'  => esc_attr__( 'No image selected', 'wfacpkirki' ),
 					'frame_title'  => esc_attr__( 'Select image', 'wfacpkirki' ),
 					'frame_button' => esc_attr__( 'Choose image', 'wfacpkirki' ),
-				) );
+				)
+			);
 		}
 
 		/**
@@ -83,7 +89,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Image' ) ) {
 				return;
 			}
 			$this->sanitize_callback = array( $this, 'sanitize' );
-
 		}
 
 		/**

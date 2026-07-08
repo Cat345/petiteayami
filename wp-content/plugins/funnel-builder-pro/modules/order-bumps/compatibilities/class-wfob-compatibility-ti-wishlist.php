@@ -3,10 +3,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 if ( ! class_exists( 'WFOB_Compatibility_With_Ti_Wishlist' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_Ti_Wishlist {
 		public function __construct() {
 			/* checkout page */
-			add_action( 'wfob_qv_images', [ $this, 'unhook_wishlist_button' ] );
+			add_action( 'wfob_qv_images', array( $this, 'unhook_wishlist_button' ) );
 		}
 
 		public function unhook_wishlist_button() {

@@ -11,6 +11,7 @@ if ( ! class_exists( 'WFTY_Template_Group_Divi5' ) ) {
 	/**
 	 * Template group for Thank You Page Divi 5
 	 */
+	#[\AllowDynamicProperties]
 	class WFTY_Template_Group_Divi5 {
 		public $allow_empty_template = true;
 		public $prefix               = 'divi-5';

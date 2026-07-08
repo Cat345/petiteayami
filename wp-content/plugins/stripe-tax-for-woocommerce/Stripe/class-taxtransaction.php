@@ -41,7 +41,7 @@ abstract class TaxTransaction {
 	 *
 	 * @param int $order_id WooCommerce Order ID.
 	 *
-	 * @return \stdClass
+	 * @return \stdClass|null
 	 * @throws ApiErrorException In case of API error.
 	 * @see https://stripe.com/docs/api/tax/transactions/create_from_calculation
 	 */
@@ -54,7 +54,7 @@ abstract class TaxTransaction {
 		$tax_calculation = Calculator::$calculations[ $order_id ];
 
 		if ( ! $tax_calculation ) {
-			return;
+			return null;
 		}
 
 		$tax_calculation_input  = $tax_calculation['input'];
@@ -75,9 +75,7 @@ abstract class TaxTransaction {
 				static::create_order_refund_reversal( $order_refund );
 			}
 		}
-		$test = Calculator::$calculations;
 		unset( Calculator::$calculations[ $order_id ] );
-		$test2 = Calculator::$calculations;
 
 		$tax_calculation_payload = $tax_calculation_input->get_payload();
 		$calculate_tax           = new CalculateTax( Options::get_current_mode_key(), $tax_calculation_payload );
@@ -121,8 +119,9 @@ abstract class TaxTransaction {
 		if ( ! $order_last_transaction ) {
 			return;
 		}
-		$tax_transaction = $order_last_transaction->tax_transaction;
-		$line_items      = static::get_tax_transaction_refund_line_items( $order_refund, $tax_transaction );
+		$tax_transaction  = $order_last_transaction->tax_transaction;
+		$already_refunded = static::get_already_refunded_amounts( $order_last_transaction->reversals );
+		$line_items       = static::get_tax_transaction_refund_line_items( $order_refund, $tax_transaction, $already_refunded['line_items'] );
 
 		$currency = $order_refund->get_currency();
 
@@ -132,9 +131,28 @@ abstract class TaxTransaction {
 		$shipping_cost = array();
 
 		if ( $shipping_total < 0.0 || $shipping_tax < 0.0 ) {
+			$shipping_amount     = Amount_Utility::to_cents( $shipping_total, $currency );
+			$shipping_tax_amount = Amount_Utility::to_cents( $shipping_tax, $currency );
+
+			if ( isset( $tax_transaction->shipping_cost->tax_behavior ) && 'inclusive' === $tax_transaction->shipping_cost->tax_behavior ) {
+				$shipping_amount += $shipping_tax_amount;
+			}
+
+			if ( isset( $tax_transaction->shipping_cost ) ) {
+				$remaining_shipping_tax = ( $tax_transaction->shipping_cost->amount_tax ?? 0 ) - $already_refunded['shipping']['amount_tax'];
+				if ( abs( $shipping_tax_amount ) > $remaining_shipping_tax ) {
+					$shipping_tax_amount = $shipping_tax_amount < 0 ? -$remaining_shipping_tax : $remaining_shipping_tax;
+				}
+
+				$remaining_shipping_amount = ( $tax_transaction->shipping_cost->amount ?? 0 ) - $already_refunded['shipping']['amount'];
+				if ( abs( $shipping_amount ) > $remaining_shipping_amount ) {
+					$shipping_amount = $shipping_amount < 0 ? -$remaining_shipping_amount : $remaining_shipping_amount;
+				}
+			}
+
 			$shipping_cost = array(
-				'amount'     => Amount_Utility::to_cents( $shipping_total, $currency ),
-				'amount_tax' => Amount_Utility::to_cents( $shipping_tax, $currency ),
+				'amount'     => $shipping_amount,
+				'amount_tax' => $shipping_tax_amount,
 			);
 		}
 
@@ -152,13 +170,14 @@ abstract class TaxTransaction {
 	 *
 	 * @param object $order_refund Order refund.
 	 * @param object $order_refund_item Order refund item.
+	 * @param bool   $is_refund_reference Whether to build reference in refund context.
 	 */
-	protected static function get_original_item_reference( $order_refund, $order_refund_item ) {
+	protected static function get_original_item_reference( $order_refund, $order_refund_item, bool $is_refund_reference = true ) {
 		$order                  = wc_get_order( $order_refund->get_parent_id() );
 		$order_refunded_item_id = $order_refund_item->get_meta( '_refunded_item_id' );
 		$order_refunded_item    = $order->get_item( $order_refunded_item_id );
 
-		$reference = Order_Input::build_item_reference_by_type( $order_refunded_item );
+		$reference = Order_Input::build_item_reference_by_type( $order_refunded_item, $is_refund_reference );
 
 		return $reference;
 	}
@@ -168,10 +187,14 @@ abstract class TaxTransaction {
 	 *
 	 * @param object $wc_order_refund Order refund.
 	 * @param object $tax_transaction_data Tax calculation data.
+	 * @param array  $already_refunded_per_line_item Already refunded per line item.
+	 *
+	 * @return array
+	 * @throws \Exception If a line item has zero quantity but a non-zero refund amount.
 	 */
-	public static function get_tax_transaction_refund_line_items( $wc_order_refund, object $tax_transaction_data ): array {
+	public static function get_tax_transaction_refund_line_items( $wc_order_refund, object $tax_transaction_data, array $already_refunded_per_line_item = array() ): array {
 		$tax_transaction_data = Util::convertToStripeObject( $tax_transaction_data, array() );
-		$items                = $wc_order_refund->get_items();
+		$items                = $wc_order_refund->get_items( array( 'line_item', 'fee' ) );
 		$currency             = $wc_order_refund->get_currency();
 		$line_items           = array();
 		$line_items_counter   = 0;
@@ -179,7 +202,7 @@ abstract class TaxTransaction {
 		$items_reference_already_added = array();
 
 		foreach ( $items as $item ) {
-			$reference = static::get_original_item_reference( $wc_order_refund, $item );
+			$reference = static::get_original_item_reference( $wc_order_refund, $item, true );
 
 			$original_line_item_id = '';
 			// @phpstan-ignore-next-line
@@ -191,12 +214,54 @@ abstract class TaxTransaction {
 			}
 
 			if ( ! $original_line_item_id ) {
+				$reference = static::get_original_item_reference( $wc_order_refund, $item, false );
+
+				// @phpstan-ignore-next-line
+				foreach ( $tax_transaction_data->line_items as $transaction_line_item ) {
+					if ( $reference === $transaction_line_item->reference ) {
+						$original_line_item_id = $transaction_line_item->id;
+						break;
+					}
+				}
+			}
+
+			if ( ! $original_line_item_id ) {
 				continue;
 			}
 
-			$quantity   = - $item->get_quantity();
+			$quantity   = 'fee' === $item->get_type() ? 1 : - $item->get_quantity();
 			$amount     = Amount_Utility::to_cents( $item->get_total( 'edit' ), $currency );
 			$tax_amount = Amount_Utility::to_cents( $item->get_total_tax( 'edit' ), $currency );
+
+			if ( 0 === $quantity ) {
+				if ( 0 !== $amount || 0 !== $tax_amount ) {
+					throw new \Exception(
+						esc_html__( 'Stripe Tax: Please select a quantity for each refunded line item. Refund amounts cannot be processed without specifying the item quantity.', 'stripe-tax-for-woocommerce' )
+					);
+				}
+				continue;
+			}
+
+			if ( isset( $transaction_line_item->tax_behavior ) && 'inclusive' === $transaction_line_item->tax_behavior ) {
+				$amount += $tax_amount;
+			}
+
+			$refunded_for_item = isset( $already_refunded_per_line_item[ $original_line_item_id ] ) ? $already_refunded_per_line_item[ $original_line_item_id ] : array(
+				'amount'     => 0,
+				'amount_tax' => 0,
+			);
+
+			// @phpstan-ignore-next-line
+			$remaining_tax = $transaction_line_item->amount_tax - $refunded_for_item['amount_tax'];
+			if ( abs( $tax_amount ) > $remaining_tax ) {
+				$tax_amount = $tax_amount < 0 ? -$remaining_tax : $remaining_tax;
+			}
+
+			// @phpstan-ignore-next-line
+			$remaining_amount = $transaction_line_item->amount - $refunded_for_item['amount'];
+			if ( abs( $amount ) > $remaining_amount ) {
+				$amount = $amount < 0 ? -$remaining_amount : $remaining_amount;
+			}
 
 			$line_items[ $line_items_counter ] = array(
 				'amount'             => $amount,
@@ -206,10 +271,59 @@ abstract class TaxTransaction {
 				'amount_tax'         => $tax_amount,
 			);
 
+			++$line_items_counter;
 		}
 
 		return $line_items;
 	}
+	/**
+	 * Get already-refunded amounts from existing reversals.
+	 *
+	 * @param array $reversals Existing reversal transaction DTOs.
+	 *
+	 * @return array Already-refunded amounts per line item and for shipping.
+	 */
+	protected static function get_already_refunded_amounts( array $reversals ): array {
+		$result = array(
+			'line_items' => array(),
+			'shipping'   => array(
+				'amount'     => 0,
+				'amount_tax' => 0,
+			),
+		);
+
+		foreach ( $reversals as $reversal ) {
+			$tx = $reversal->tax_transaction;
+
+			if ( isset( $tx->line_items ) ) {
+				foreach ( $tx->line_items as $li ) {
+					$original_id = isset( $li->reversal->original_line_item ) ? $li->reversal->original_line_item : null;
+
+					if ( ! $original_id ) {
+						continue;
+					}
+
+					if ( ! isset( $result['line_items'][ $original_id ] ) ) {
+						$result['line_items'][ $original_id ] = array(
+							'amount'     => 0,
+							'amount_tax' => 0,
+						);
+					}
+
+					$result['line_items'][ $original_id ]['amount']     += abs( $li->amount );
+					$result['line_items'][ $original_id ]['amount_tax'] += abs( $li->amount_tax );
+				}
+			}
+
+			if ( isset( $tx->shipping_cost ) && $tx->shipping_cost ) {
+				$result['shipping']['amount']     += abs( $tx->shipping_cost->amount ?? 0 );
+				$result['shipping']['amount_tax'] += abs( $tx->shipping_cost->amount_tax ?? 0 );
+			}
+		}
+
+		return $result;
+	}
+
 	/**
 	 * Returns an order's refunds sorted by date desc
 	 *
@@ -419,7 +533,7 @@ abstract class TaxTransaction {
 		$stripe_client = StripeClientFactory::get_stripe_client();
 
 		$reversal_transaction_request_data = array(
-			'mode' => $line_items ? 'partial' : 'full',
+			'mode' => ( $line_items || $shipping_cost ) ? 'partial' : 'full',
 		);
 
 		$reversal_transaction_request_data['original_transaction'] = $original_api_transaction_id;

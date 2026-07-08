@@ -197,16 +197,8 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 					}
 				);
 
-				wp_register_script(
-					'bwf-font-awesome-kit',
-					'https://kit.fontawesome.com/f4306c3ab0.js', // Our free kit https://fontawesome.com/kits/f4306c3ab0/settings
-					array(),
-					'6.0',
-					true
-				);
+				WFFN_Common::enqueue_block_editor_remote_assets( 'bwf-font-awesome-kit', 'bwf-web-font' );
 				wp_enqueue_script( 'wfty-block-editor', $frontend_dir . $js_path, $script_deps, $version, true );
-
-				wp_enqueue_script( 'web-font', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js', array(), '1.6.26', true );
 
 				$exp_date = gmdate( 'Y-m-d H:i:s', strtotime( '+10 days' ) );
 				if ( ! empty( $exp_date ) ) {
@@ -224,7 +216,7 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 					'total_price'    => '12.00',
 					'shipping_price' => '3.00',
 					'shipping'       => 'false',
-					'currency'       => html_entity_decode( get_woocommerce_currency_symbol() ),
+					'currency'       => html_entity_decode( get_woocommerce_currency_symbol(), ENT_QUOTES | ENT_HTML401 ),
 					'img_url'        => wc_placeholder_img_src( 'thumbnail' ),
 					'pro_name'       => __( 'Test Product', 'funnel-builder' ),
 					'sub_head'       => __( 'Subtotal', 'funnel-builder' ),

@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfocu_Input_Product_Select' ) ) {
+	#[\AllowDynamicProperties]
 	class wfocu_Input_Product_Select {
 
 		public function __construct() {
@@ -11,12 +12,11 @@ if ( ! class_exists( 'wfocu_Input_Product_Select' ) ) {
 				'allow_null'    => 0,
 				'choices'       => array(),
 				'default_value' => '',
-				'class'         => 'ajax_chosen_select_products'
+				'class'         => 'ajax_chosen_select_products',
 			);
 		}
 
 		public function render( $field, $value = null ) {
-
 
 			$field = array_merge( $this->defaults, $field );
 			if ( ! isset( $field['id'] ) ) {
@@ -25,7 +25,7 @@ if ( ! class_exists( 'wfocu_Input_Product_Select' ) ) {
 
 			?>
 
-            <select id="<?php echo $field['id']; ?>" multiple="multiple" name="<?php echo $field['name']; ?>[]" class="ajax_chosen_select_products" data-placeholder="<?php esc_html_e( 'Search for a product&hellip;', 'woocommerce' ); ?>">
+			<select id="<?php echo $field['id']; ?>" multiple="multiple" name="<?php echo $field['name']; ?>[]" class="ajax_chosen_select_products" data-placeholder="<?php esc_html_e( 'Search for a product&hellip;', 'woocommerce' ); ?>">
 				<?php
 				$current     = $value ? $value : array();
 				$product_ids = ! empty( $current ) ? array_map( 'absint', $current ) : null;
@@ -40,11 +40,10 @@ if ( ! class_exists( 'wfocu_Input_Product_Select' ) ) {
 					}
 				}
 				?>
-            </select>
+			</select>
 
 			<?php
 		}
-
 	}
 }
 

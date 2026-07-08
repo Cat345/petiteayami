@@ -9,6 +9,10 @@
  * @license     http://opensource.org/licenses/https://opensource.org/licenses/MIT
  * @since       1.0
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Panel' ) ) {
 	/**
 	 * Each panel is a separate instance of the WFACPKirki_Panel object.
@@ -37,7 +41,6 @@ if ( ! class_exists( 'WFACPKirki_Panel' ) ) {
 
 			$this->panel_types = apply_filters( 'wfacpkirki_panel_types', $this->panel_types );
 			$this->add_panel( $args );
-
 		}
 
 		/**
@@ -54,7 +57,6 @@ if ( ! class_exists( 'WFACPKirki_Panel' ) ) {
 			$panel_classname = $this->panel_types[ $args['type'] ];
 
 			$wp_customize->add_panel( new $panel_classname( $wp_customize, sanitize_key( $args['id'] ), $args ) );
-
 		}
 	}
 }

@@ -3,10 +3,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 if ( ! class_exists( 'WFOB_Compatibility_With_WOOCS' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_WOOCS {
 
 		public function __construct() {
-			add_filter( 'wfob_product_switcher_price_data', [ $this, 'wfob_product_switcher_price_data' ], 999, 2 );
+			add_filter( 'wfob_product_switcher_price_data', array( $this, 'wfob_product_switcher_price_data' ), 999, 2 );
 		}
 
 		public function is_enable() {
@@ -34,8 +35,6 @@ if ( ! class_exists( 'WFOB_Compatibility_With_WOOCS' ) ) {
 
 			return $price_data;
 		}
-
-
 	}
 
 	new WFOB_Compatibility_With_WOOCS();

@@ -39,7 +39,8 @@ remove_filter( 'woocommerce_get_checkout_url', array( WFACP_Core()->public, 'woo
 <div class="wfacp_main_form woocommerce <?php echo esc_attr( implode( ' ', $form_class ) ); ?>">
 	<?php
 	do_action( 'wfacp_outside_header' );
-	$checkout = WC()->checkout();
+	$checkout               = WC()->checkout();
+	$selected_template_slug = $instance->get_template_slug();
 	require __DIR__ . '/form_internal_css.php';
 
 	ob_start();
@@ -129,7 +130,6 @@ remove_filter( 'woocommerce_get_checkout_url', array( WFACP_Core()->public, 'woo
 			$payment_part = trim( $inner );
 		}
 
-		$selected_template_slug      = $instance->get_template_slug();
 		$border_cls                  = $instance->get_heading_title_class();
 		$payment_methods_heading     = $instance->payment_heading();
 		$payment_methods_sub_heading = $instance->payment_sub_heading();

@@ -52,6 +52,90 @@ class SLINGBLOCKS_Render_Block {
 	}
 
 	/**
+	 * Sanitize SVG markup before echoing it to the frontend. Allowlists the
+	 * elements and attributes used by FontAwesome-style icons; drops every
+	 * `on*` event handler, `<script>`, `<foreignObject>`, SMIL animation
+	 * elements, and `href`/`xlink:href` (which can carry `javascript:`).
+	 */
+	public function bwf_kses_svg( $svg ) {
+		return wp_kses( (string) $svg, $this->slb_allowed_svg_tags() );
+	}
+
+	/**
+	 * Allowlist for SVG icon markup. Kept tight on purpose — covers the
+	 * elements/attributes FontAwesome and similar icon SVGs actually use.
+	 * Notably excluded: script, foreignObject, animate*, set, all on* attrs,
+	 * href/xlink:href (javascript: vector), and style (CSS not parsed by kses).
+	 */
+	protected function slb_allowed_svg_tags() {
+		$shared_attrs = array(
+			'class'             => true,
+			'id'                => true,
+			'role'              => true,
+			'aria-hidden'       => true,
+			'aria-label'        => true,
+			'aria-labelledby'   => true,
+			'data-*'            => true,
+			'fill'              => true,
+			'fill-rule'         => true,
+			'fill-opacity'      => true,
+			'clip-rule'         => true,
+			'clip-path'         => true,
+			'stroke'            => true,
+			'stroke-width'      => true,
+			'stroke-linecap'    => true,
+			'stroke-linejoin'   => true,
+			'stroke-miterlimit' => true,
+			'stroke-dasharray'  => true,
+			'stroke-dashoffset' => true,
+			'stroke-opacity'    => true,
+			'opacity'           => true,
+			'transform'         => true,
+		);
+
+		// NOTE: wp_kses lowercases attribute and element names when matching
+		// against this allowlist, so keys here must be lowercase. Browsers
+		// still recognise lowercase viewBox/preserveAspectRatio/etc. on SVG.
+		return array(
+			'svg'            => array_merge(
+				$shared_attrs,
+				array(
+					'xmlns'               => true,
+					'xmlns:xlink'         => true,
+					'viewbox'             => true,
+					'width'               => true,
+					'height'              => true,
+					'preserveaspectratio' => true,
+					'focusable'           => true,
+					'version'             => true,
+				)
+			),
+			'g'              => $shared_attrs,
+			'defs'           => array(),
+			'title'          => array(),
+			'desc'           => array(),
+			'symbol'         => array_merge( $shared_attrs, array( 'viewbox' => true ) ),
+			'path'           => array_merge( $shared_attrs, array( 'd' => true ) ),
+			'circle'         => array_merge( $shared_attrs, array( 'cx' => true, 'cy' => true, 'r' => true ) ),
+			'ellipse'        => array_merge( $shared_attrs, array( 'cx' => true, 'cy' => true, 'rx' => true, 'ry' => true ) ),
+			'rect'           => array_merge( $shared_attrs, array( 'x' => true, 'y' => true, 'width' => true, 'height' => true, 'rx' => true, 'ry' => true ) ),
+			'line'           => array_merge( $shared_attrs, array( 'x1' => true, 'y1' => true, 'x2' => true, 'y2' => true ) ),
+			'polygon'        => array_merge( $shared_attrs, array( 'points' => true ) ),
+			'polyline'       => array_merge( $shared_attrs, array( 'points' => true ) ),
+			'lineargradient' => array_merge( $shared_attrs, array( 'x1' => true, 'y1' => true, 'x2' => true, 'y2' => true, 'gradientunits' => true, 'gradienttransform' => true, 'spreadmethod' => true ) ),
+			'radialgradient' => array_merge( $shared_attrs, array( 'cx' => true, 'cy' => true, 'r' => true, 'fx' => true, 'fy' => true, 'gradientunits' => true, 'gradienttransform' => true, 'spreadmethod' => true ) ),
+			'stop'           => array(
+				'offset'       => true,
+				'stop-color'   => true,
+				'stop-opacity' => true,
+				'class'        => true,
+			),
+			'clippath'       => array_merge( $shared_attrs, array( 'clippathunits' => true ) ),
+			'mask'           => array_merge( $shared_attrs, array( 'maskunits' => true, 'maskcontentunits' => true, 'x' => true, 'y' => true, 'width' => true, 'height' => true ) ),
+		);
+	}
+
+	/**
 	 * Register our dynamic blocks.
 	 *
 	 * @since 1.2.0
@@ -62,59 +146,65 @@ class SLINGBLOCKS_Render_Block {
 			return;
 		}
 
-		$bwfblocks = [
-			[
+		$bwfblocks = array(
+			array(
 				'name'     => 'sling-block/accordion',
 				'callback' => 'do_accordion_block',
-			],
-			[
+			),
+			array(
 				'name'     => 'sling-block/pane',
 				'callback' => 'do_pane_block',
-			],
-			[
+			),
+			array(
 				'name'     => 'sling-block/columns',
 				'callback' => 'do_columns_block',
-			],
-			[
+			),
+			array(
 				'name'     => 'sling-block/col',
 				'callback' => 'do_inner_column_block',
-			],
-			[
+			),
+			array(
 				'name'     => 'sling-block/advance-button',
 				'callback' => 'do_adv_button_block',
-			],
-			[
+			),
+			array(
 				'name'     => 'sling-block/button',
 				'callback' => 'do_button_block',
-			],
-			[
+			),
+			array(
 				'name'     => 'sling-block/advance-heading',
 				'callback' => 'do_heading_block',
-			],
-			[
+			),
+			array(
 				'name'     => 'sling-block/icon-list',
 				'callback' => 'do_icon_list_block',
-			],
-			[
+			),
+			array(
 				'name'     => 'sling-block/space-divider',
 				'callback' => 'do_divider_block',
-			],
-			[
+			),
+			array(
 				'name'     => 'sling-block/icon',
 				'callback' => 'do_icon_block',
-			],
-			[
+			),
+			array(
 				'name'     => 'sling-block/progress-bar',
 				'callback' => 'do_progress_block',
-			],
-			[
+			),
+			array(
 				'name'     => 'sling-block/countdown',
 				'callback' => 'do_count_down_block',
-			],
-		];
+			),
+		);
 
 		foreach ( $bwfblocks as $block ) {
-			register_block_type( $block['name'], array( 'render_callback' => array( $this, $block['callback'] ) ) );
+			register_block_type(
+				$block['name'],
+				array(
+					'api_version'     => 3,
+					'render_callback' => array( $this, $block['callback'] ),
+				)
+			);
 		}
 	}
 
@@ -135,7 +225,7 @@ class SLINGBLOCKS_Render_Block {
 	/**
 	 * Output the dynamic aspects of our Accordion block.
 	 *
-	 * @param array $attributes The block attributes.
+	 * @param array  $attributes The block attributes.
 	 * @param string $content The inner blocks.
 	 *
 	 * @since 1.2.0
@@ -158,11 +248,10 @@ class SLINGBLOCKS_Render_Block {
 			'paneClose'   => false,
 			'paneOpenOne' => true,
 			'openPane'    => 1,
-			'anchor'      => ''
+			'anchor'      => '',
 		);
 
 		$settings = wp_parse_args( $attributes, $defaults );
-
 
 		if ( ! isset( $settings['accordionLayout'] ) ) {
 			return $output;
@@ -188,17 +277,23 @@ class SLINGBLOCKS_Render_Block {
 			$start_open = 'none';
 		}
 
-		$output = sprintf( '<div %s>', slingblocks_attr( 'accordion', array(
-			'id'                       => $settings['anchor'],
-			'class'                    => implode( ' ', $classNames ),
-			'data-allow-multiple-open' => isset( $settings['paneOpenOne'] ) && true === $settings['paneOpenOne'] ? 'false' : 'true',
-			'data-open'                => $start_open,
-		), $settings ) );
+		$output = sprintf(
+			'<div %s>',
+			slingblocks_attr(
+				'accordion',
+				array(
+					'id'                       => $settings['anchor'],
+					'class'                    => implode( ' ', $classNames ),
+					'data-allow-multiple-open' => isset( $settings['paneOpenOne'] ) && true === $settings['paneOpenOne'] ? 'false' : 'true',
+					'data-open'                => $start_open,
+				),
+				$settings
+			)
+		);
 
 		$output .= $content;
 
 		$output .= '</div>';
-
 
 		return $output;
 	}
@@ -206,7 +301,7 @@ class SLINGBLOCKS_Render_Block {
 	/**
 	 * Output the dynamic aspects of our Pane block.
 	 *
-	 * @param array $attributes The block attributes.
+	 * @param array  $attributes The block attributes.
 	 * @param string $content The inner blocks.
 	 *
 	 * @since 1.2.0
@@ -219,11 +314,10 @@ class SLINGBLOCKS_Render_Block {
 			'paneClose'   => true,
 			'paneOpenOne' => false,
 			'openPane'    => 1,
-			'anchor'      => ''
+			'anchor'      => '',
 		);
 
 		$settings = wp_parse_args( $attributes, $defaults );
-
 
 		$classNames = array(
 			'bwf-accordion-wrapper',
@@ -236,20 +330,27 @@ class SLINGBLOCKS_Render_Block {
 
 		$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-		$output .= sprintf( '<div %1$s>', slingblocks_attr( 'pane', array(
-			'id'    => $settings['anchor'],
-			'class' => implode( ' ', $classNames ),
-		), $settings ) );
+		$output .= sprintf(
+			'<div %1$s>',
+			slingblocks_attr(
+				'pane',
+				array(
+					'id'    => $settings['anchor'],
+					'class' => implode( ' ', $classNames ),
+				),
+				$settings
+			)
+		);
 		$output .= '<div class="bwf-accordion-head">';
 
 		$output .= '<h2 class="bwf-accordion-head-tag">';
-		$output .= isset( $settings['content'] ) ? $this->bwf_kses_post( $settings['content'] ) : ''; //pane heading title
+		$output .= isset( $settings['content'] ) ? $this->bwf_kses_post( $settings['content'] ) : ''; // pane heading title
 		$output .= '</h2>';
 		$output .= $this->get_pane_toggle_icon( $settings );
 		$output .= '</div>';
 
 		$output .= '<div class="bwf-accordion-body">';
-		$output .= $content; //InnerBlocks.Content
+		$output .= $content; // InnerBlocks.Content
 		$output .= '</div>';
 
 		$output .= '</div>';
@@ -286,7 +387,7 @@ class SLINGBLOCKS_Render_Block {
 	/**
 	 * Output the dynamic aspects of our Columns block.
 	 *
-	 * @param array $attributes The block attributes.
+	 * @param array  $attributes The block attributes.
 	 * @param string $content The inner blocks.
 	 *
 	 * @since 1.2.0
@@ -304,12 +405,11 @@ class SLINGBLOCKS_Render_Block {
 			}
 		}
 
-
 		$output = '';
 
 		$defaults = array(
 			'columns' => 1,
-			'anchor'  => ''
+			'anchor'  => '',
 		);
 
 		$settings = wp_parse_args( $attributes, $defaults );
@@ -325,7 +425,6 @@ class SLINGBLOCKS_Render_Block {
 			$output .= '<div class="bwf-align-wrap-' . $settings['align'] . '">';
 		}
 
-
 		if ( ! empty( $settings['className'] ) ) {
 			$classNames[] = $settings['className'];
 		}
@@ -338,38 +437,53 @@ class SLINGBLOCKS_Render_Block {
 			$classNames[] = 'bwf-has-bg';
 		}
 
-		$allowed_tags = [ 'div', 'header', 'section', 'article', 'main', 'aside', 'footer' ];
+		$allowed_tags = array( 'div', 'header', 'section', 'article', 'main', 'aside', 'footer' );
 
 		$tagName = ! empty( $settings['htmlTag'] ) && in_array( $settings['htmlTag'], $allowed_tags ) ? $settings['htmlTag'] : 'div';
 
 		if ( ! empty( $settings['link'] ) ) {
 			$classNames[] = 'bwf-cursor';
 		}
-		$output .= sprintf( '<%1$s %2$s>', $tagName, slingblocks_attr( 'columns', array(
-			'id'         => $settings['anchor'],
-			'class'      => implode( ' ', $classNames ),
-			'bwf-href'   => isset( $settings['link'] ) ? $settings['link'] : '',
-			'bwf-newtab' => isset( $settings['linkNewTab'] ) && $settings['linkNewTab'] ? "_blank" : '',
-		), $settings ) );
+		$output .= sprintf(
+			'<%1$s %2$s>',
+			$tagName,
+			slingblocks_attr(
+				'columns',
+				array(
+					'id'         => $settings['anchor'],
+					'class'      => implode( ' ', $classNames ),
+					'bwf-href'   => isset( $settings['link'] ) ? esc_url( $settings['link'] ) : '',
+					'bwf-newtab' => isset( $settings['linkNewTab'] ) && $settings['linkNewTab'] ? '_blank' : '',
+				),
+				$settings
+			)
+		);
 
 		// Column background video
 		if ( isset( $settings['backgroundVideo'] ) && ! empty( $settings['backgroundVideo'] ) && isset( $settings['backgroundVideo']['desktop'] ) ) {
 			$column_bgvideo = $settings['backgroundVideo']['desktop'];
 
 			if ( isset( $column_bgvideo['local'] ) && ! empty( $column_bgvideo['local'] ) ) {
-				$output .= sprintf( '<video autoplay %2$s><source src="%1$s" type="video/mp4"/></video>', esc_url( $column_bgvideo['local'] ), slingblocks_attr( 'columns-video', array(
-					'muted'   => isset( $column_bgvideo['mute'] ) ? $column_bgvideo['mute'] : null,
-					'loop'    => isset( $column_bgvideo['loop'] ) ? $column_bgvideo['loop'] : null,
-					'control' => isset( $column_bgvideo['control'] ) ? $column_bgvideo['control'] : null,
-				), $settings ) );
+				$output .= sprintf(
+					'<video autoplay %2$s><source src="%1$s" type="video/mp4"/></video>',
+					esc_url( $column_bgvideo['local'] ),
+					slingblocks_attr(
+						'columns-video',
+						array(
+							'muted'   => isset( $column_bgvideo['mute'] ) ? $column_bgvideo['mute'] : null,
+							'loop'    => isset( $column_bgvideo['loop'] ) ? $column_bgvideo['loop'] : null,
+							'control' => isset( $column_bgvideo['control'] ) ? $column_bgvideo['control'] : null,
+						),
+						$settings
+					)
+				);
 			}
 		}
 		$column = $settings['columns'] ?? 1;
 
 		$output .= '<div class="bwf-col">';
-		$output .= $content; //InnerBlocks.Content
+		$output .= $content; // InnerBlocks.Content
 		$output .= '</div>';
-
 
 		$output .= sprintf( '</%s>', $tagName );
 		if ( isset( $settings['align'] ) && ! empty( $settings['align'] ) ) {
@@ -435,7 +549,7 @@ class SLINGBLOCKS_Render_Block {
 	/**
 	 * Output the dynamic aspects of our Inner Columns block(Column block child).
 	 *
-	 * @param array $attributes The block attributes.
+	 * @param array  $attributes The block attributes.
 	 * @param string $content The inner blocks.
 	 *
 	 * @since 1.2.0
@@ -475,15 +589,21 @@ class SLINGBLOCKS_Render_Block {
 			$classNames[] = 'bwf-cursor';
 		}
 
-		$output .= sprintf( '<div %1$s>', slingblocks_attr( 'inner-column', array(
-			'id'         => $settings['anchor'],
-			'class'      => implode( ' ', $classNames ),
-			'bwf-href'   => isset( $settings['link'] ) ? $settings['link'] : '',
-			'bwf-newtab' => isset( $settings['linkNewTab'] ) && $settings['linkNewTab'] ? "_blank" : '',
-		), $settings ) );
+		$output .= sprintf(
+			'<div %1$s>',
+			slingblocks_attr(
+				'inner-column',
+				array(
+					'id'         => $settings['anchor'],
+					'class'      => implode( ' ', $classNames ),
+					'bwf-href'   => isset( $settings['link'] ) ? esc_url( $settings['link'] ) : '',
+					'bwf-newtab' => isset( $settings['linkNewTab'] ) && $settings['linkNewTab'] ? '_blank' : '',
+				),
+				$settings
+			)
+		);
 
-
-		$output .= $content; //InnerBlocks.Content
+		$output .= $content; // InnerBlocks.Content
 		$output .= '</div>';
 
 		return $output;
@@ -492,7 +612,7 @@ class SLINGBLOCKS_Render_Block {
 	/**
 	 * Output the dynamic aspects of our Space Divider block.
 	 *
-	 * @param array $attributes The block attributes.
+	 * @param array  $attributes The block attributes.
 	 * @param string $content The inner blocks.
 	 *
 	 * @since 1.2.0
@@ -513,9 +633,9 @@ class SLINGBLOCKS_Render_Block {
 		$output = '';
 
 		$defaults = array(
-			'alignment' => [ 'desktop' => 'center' ],
-			'width'     => [ 'desktop' => 100 ],
-			'anchor'    => ''
+			'alignment' => array( 'desktop' => 'center' ),
+			'width'     => array( 'desktop' => 100 ),
+			'anchor'    => '',
 		);
 		$settings = wp_parse_args( $attributes, $defaults );
 
@@ -530,11 +650,17 @@ class SLINGBLOCKS_Render_Block {
 			$classNames[] = $settings['className'];
 		}
 
-		$output .= sprintf( '<div %1$s>', slingblocks_attr( 'space-divider', array(
-			'id'    => $settings['anchor'],
-			'class' => implode( ' ', $classNames ),
-		), $settings ) );
-
+		$output .= sprintf(
+			'<div %1$s>',
+			slingblocks_attr(
+				'space-divider',
+				array(
+					'id'    => $settings['anchor'],
+					'class' => implode( ' ', $classNames ),
+				),
+				$settings
+			)
+		);
 
 		$output .= '<div class="bwf-space-divider"></div>';
 		$output .= '</div>';
@@ -545,7 +671,7 @@ class SLINGBLOCKS_Render_Block {
 	/**
 	 * Output the dynamic aspects of our Advance Button blocks.
 	 *
-	 * @param array $attributes The block attributes.
+	 * @param array  $attributes The block attributes.
 	 * @param string $content The inner blocks.
 	 *
 	 * @since 1.2.0
@@ -578,12 +704,19 @@ class SLINGBLOCKS_Render_Block {
 
 		$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-		$output .= sprintf( '<div %1$s>', slingblocks_attr( 'adv-button', array(
-			'id'    => ! empty( $settings['anchor'] ) ? $settings['anchor'] : '',
-			'class' => implode( ' ', $classNames ),
-		), $settings ) );
+		$output .= sprintf(
+			'<div %1$s>',
+			slingblocks_attr(
+				'adv-button',
+				array(
+					'id'    => ! empty( $settings['anchor'] ) ? $settings['anchor'] : '',
+					'class' => implode( ' ', $classNames ),
+				),
+				$settings
+			)
+		);
 
-		$output .= $content; //inner block
+		$output .= $content; // inner block
 		$output .= '</div>';
 
 		return $output;
@@ -592,7 +725,7 @@ class SLINGBLOCKS_Render_Block {
 	/**
 	 * Output the dynamic aspects of our Advance Button blocks.
 	 *
-	 * @param array $attributes The block attributes.
+	 * @param array  $attributes The block attributes.
 	 * @param string $content The inner blocks.
 	 *
 	 * @since 1.2.0
@@ -615,7 +748,7 @@ class SLINGBLOCKS_Render_Block {
 		$defaults = array(
 			'type'    => 'solid',
 			'content' => __( 'Button', 'slingblocks' ),
-			'anchor'  => ''
+			'anchor'  => '',
 		);
 
 		$settings = wp_parse_args( $attributes, $defaults );
@@ -631,10 +764,9 @@ class SLINGBLOCKS_Render_Block {
 		}
 		$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-
 		$button_rel    = '';
 		$button_target = '';
-		$button        = isset( $settings['button'] ) ? $settings['button'] : [];
+		$button        = isset( $settings['button'] ) ? $settings['button'] : array();
 		if ( isset( $button['icon'] ) && ! empty( $button['icon'] ) ) {
 			$classNames[] = 'has-icon';
 		}
@@ -646,31 +778,38 @@ class SLINGBLOCKS_Render_Block {
 		if ( isset( $button['noFollow'] ) && ! empty( $button['noFollow'] ) ) {
 			$button_rel .= ' nofollow';
 		}
-		$output .= sprintf( '<a %1$s>', slingblocks_attr( 'button-anchor', array(
-			'id'     => $settings['anchor'],
-			'class'  => implode( ' ', $classNames ),
-			'href'   => isset( $settings['link'] ) ? esc_url( $settings['link'] ) : '',
-			'target' => $button_target,
-			'rel'    => $button_rel,
-		), $settings ) );
+		$output .= sprintf(
+			'<a %1$s>',
+			slingblocks_attr(
+				'button-anchor',
+				array(
+					'id'     => $settings['anchor'],
+					'class'  => implode( ' ', $classNames ),
+					'href'   => isset( $settings['link'] ) ? esc_url( $settings['link'] ) : '',
+					'target' => $button_target,
+					'rel'    => $button_rel,
+				),
+				$settings
+			)
+		);
 
-		//Button Icon Left Side
+		// Button Icon Left Side
 		if ( isset( $button['icon'] ) && ! empty( $button['icon'] ) && 'left' === $button['iconPos'] ) {
-			$output .= '<span class="bwf-icon-inner-svg bwf-left-icon">' . $button['icon'] . '</span>';
+			$output .= '<span class="bwf-icon-inner-svg bwf-left-icon">' . $this->bwf_kses_svg( $button['icon'] ) . '</span>';
 		}
 
-		//Button content
+		// Button content
 		$output .= isset( $settings['content'] ) ? '<span class="bwf-btn-inner-text">' . $this->bwf_kses_post( $settings['content'] ) . '</span>' : '';
 
-		//Button Icon Right Side
+		// Button Icon Right Side
 		if ( isset( $button['icon'] ) && ! empty( $button['icon'] ) && 'right' === $button['iconPos'] ) {
-			$output .= '<span class="bwf-icon-inner-svg bwf-right-icon">' . $button['icon'] . '</span>';
+			$output .= '<span class="bwf-icon-inner-svg bwf-right-icon">' . $this->bwf_kses_svg( $button['icon'] ) . '</span>';
 		}
 
 		// Button Secondary Text (Sub heading)
 		if ( isset( $settings['secondaryContentEnable'] ) && ! empty( $settings['secondaryContentEnable'] ) ) {
 			$buttonSubText = isset( $settings['secondaryContent'] ) ? $settings['secondaryContent'] : '';
-			$output        .= '<span class="bwf-btn-sub-text">' . $buttonSubText . '</span>';
+			$output       .= '<span class="bwf-btn-sub-text">' . $this->bwf_kses_post( $buttonSubText ) . '</span>';
 		}
 
 		$output .= '</a>';
@@ -681,7 +820,7 @@ class SLINGBLOCKS_Render_Block {
 	/**
 	 * Output the dynamic aspects of our Advance Heading block.
 	 *
-	 * @param array $attributes The block attributes.
+	 * @param array  $attributes The block attributes.
 	 * @param string $content The inner blocks.
 	 *
 	 * @since 1.2.0
@@ -716,15 +855,23 @@ class SLINGBLOCKS_Render_Block {
 
 		$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-		$allowed_tags = [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p' ];
+		$allowed_tags = array( 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
 
 		$tagName = ! empty( $settings['htmlTag'] ) && in_array( $settings['htmlTag'], $allowed_tags ) ? $settings['htmlTag'] : 'div';
 
-		$output .= sprintf( '<%1$s %2$s>', $tagName, slingblocks_attr( 'heading', array(
-			'id'    => $settings['anchor'],
-			'class' => implode( ' ', $classNames ),
-		), $settings ) );
-		$output .= isset( $settings['content'] ) ? $this->bwf_kses_post( $settings['content'] ) : ''; //Heading Content
+		$output .= sprintf(
+			'<%1$s %2$s>',
+			$tagName,
+			slingblocks_attr(
+				'heading',
+				array(
+					'id'    => $settings['anchor'],
+					'class' => implode( ' ', $classNames ),
+				),
+				$settings
+			)
+		);
+		$output .= isset( $settings['content'] ) ? $this->bwf_kses_post( $settings['content'] ) : ''; // Heading Content
 
 		$output .= sprintf( '</%s>', $tagName );
 
@@ -734,7 +881,7 @@ class SLINGBLOCKS_Render_Block {
 	/**
 	 * Output the dynamic aspects of our Icon List block.
 	 *
-	 * @param array $attributes The block attributes.
+	 * @param array  $attributes The block attributes.
 	 * @param string $content The inner blocks.
 	 *
 	 * @since 1.2.0
@@ -755,7 +902,7 @@ class SLINGBLOCKS_Render_Block {
 		$output     = '';
 		$defaults   = array(
 			'listCount' => 1,
-			'anchor'    => ''
+			'anchor'    => '',
 		);
 		$settings   = wp_parse_args( $attributes, $defaults );
 		$classNames = array(
@@ -769,15 +916,22 @@ class SLINGBLOCKS_Render_Block {
 
 		$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-		$output  .= sprintf( '<div %1$s>', slingblocks_attr( 'icon-list', array(
-			'class' => implode( ' ', $classNames ),
-		), $settings ) );
-		$blockID = $settings['anchor'] ? 'id="' . esc_attr( $settings['anchor']) . '"' : '';
-		$output  .= '<ul class="bwf-icon-list" ' . $blockID . '>';
+		$output .= sprintf(
+			'<div %1$s>',
+			slingblocks_attr(
+				'icon-list',
+				array(
+					'class' => implode( ' ', $classNames ),
+				),
+				$settings
+			)
+		);
+		$blockID = $settings['anchor'] ? 'id="' . esc_attr( $settings['anchor'] ) . '"' : '';
+		$output .= '<ul class="bwf-icon-list" ' . $blockID . '>';
 
 		$listCount = isset( $settings['listCount'] ) ? $settings['listCount'] : 1;
 
-		for ( $i = 0; $i < $listCount; $i ++ ) {
+		for ( $i = 0; $i < $listCount; $i++ ) {
 
 			$output .= '<li class="bwf-icon-list-item-wrap bwf-icon-list-item-' . $i . '">';
 
@@ -787,7 +941,7 @@ class SLINGBLOCKS_Render_Block {
 				$icon = $settings['items'][ $i ]['icon'] ? $settings['items'][ $i ]['icon'] : ( ! empty( $settings['defaultIcon'] ) ? $settings['defaultIcon'] : $defaultIcon );
 				$text = isset( $settings['items'][ $i ]['text'] ) ? $this->bwf_kses_post( $settings['items'][ $i ]['text'] ) : '';
 
-				$output .= '<span class="bwf-icon-inner-svg">' . $icon;
+				$output .= '<span class="bwf-icon-inner-svg">' . $this->bwf_kses_svg( $icon );
 				$output .= '</span>';
 				$output .= '<span class="bwf-icon-list-text">' . $text;
 				$output .= '</span>';
@@ -817,7 +971,7 @@ class SLINGBLOCKS_Render_Block {
 
 		$output = '';
 
-		$settings = wp_parse_args( $attributes, [] );
+		$settings = wp_parse_args( $attributes, array() );
 
 		$classNames = array(
 			'bwf-icon-wrap',
@@ -830,39 +984,51 @@ class SLINGBLOCKS_Render_Block {
 
 		$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-		$output .= sprintf( '<div %1$s>', slingblocks_attr( 'icon', array(
-			'class' => implode( ' ', $classNames ),
-			'id'    => isset( $settings['anchor'] ) ? $settings['anchor'] : '',
-		), $settings ) );
+		$output .= sprintf(
+			'<div %1$s>',
+			slingblocks_attr(
+				'icon',
+				array(
+					'class' => implode( ' ', $classNames ),
+					'id'    => isset( $settings['anchor'] ) ? $settings['anchor'] : '',
+				),
+				$settings
+			)
+		);
 
 		$listCount = isset( $settings['count'] ) ? $settings['count'] : 1;
 
-
 		$defaultIcon = isset( $settings['defaultIcon'] ) && $settings['defaultIcon'] ? $settings['defaultIcon'] : '';
 
-		for ( $i = 0; $i < $listCount; $i ++ ) {
+		for ( $i = 0; $i < $listCount; $i++ ) {
 
 			$icon_type = isset( $settings['type'] ) && 'shaped' === $settings['type'] ? ' bwf-svg-shaped' : '';
-			$output    .= '<div class="bwf--icon bwf--icon-' . $i . $icon_type . '">';
+			$output   .= '<div class="bwf--icon bwf--icon-' . $i . $icon_type . '">';
 
 			if ( isset( $settings['icons'] ) && isset( $settings['icons'][ $i ] ) ) {
 				if ( ! empty( $settings['icons'][ $i ]['link'] ) ) {
-					$target   = ! empty( $settings['icons'][ $i ]['newTab'] ) ? 'target="__blank"' : '';
-					$relation = '';
+					$target    = ! empty( $settings['icons'][ $i ]['newTab'] ) ? 'target="__blank"' : '';
+					$relation  = '';
 					$relation .= ! empty( $settings['icons'][ $i ]['newTab'] ) ? 'noopener noreferrer' : '';
 					$relation .= ! empty( $settings['icons'][ $i ]['noFollow'] ) ? ' nofollow' : '';
 
-					$output .= sprintf( '<a %1$s>', slingblocks_attr( 'icon-link', array(
-						'href'   => $settings['icons'][ $i ]['link'],
-						'target' => $target,
-						'rel'    => trim( $relation ),
-						'class'  => 'bwf-icon-link'
-					), $settings ) );
+					$output .= sprintf(
+						'<a %1$s>',
+						slingblocks_attr(
+							'icon-link',
+							array(
+								'href'   => esc_url( $settings['icons'][ $i ]['link'] ),
+								'target' => $target,
+								'rel'    => trim( $relation ),
+								'class'  => 'bwf-icon-link',
+							),
+							$settings
+						)
+					);
 				}
-
 			}
-			$icon   = isset( $settings['icons'][ $i ]['icon'] ) ? $settings['icons'][ $i ]['icon'] : $defaultIcon;
-			$output .= $icon;
+			$icon    = isset( $settings['icons'][ $i ]['icon'] ) ? $settings['icons'][ $i ]['icon'] : $defaultIcon;
+			$output .= $this->bwf_kses_svg( $icon );
 
 			if ( isset( $settings['icons'] ) && isset( $settings['icons'][ $i ] ) ) {
 				$output .= '</a>';
@@ -878,7 +1044,7 @@ class SLINGBLOCKS_Render_Block {
 	/**
 	 * Output the dynamic aspects of our Progress Bar block.
 	 *
-	 * @param array $attributes The block attributes.
+	 * @param array  $attributes The block attributes.
 	 * @param string $content The inner blocks.
 	 *
 	 * @since 1.2.0
@@ -898,7 +1064,7 @@ class SLINGBLOCKS_Render_Block {
 
 		$output = '';
 
-		$settings = wp_parse_args( $attributes, [] );
+		$settings = wp_parse_args( $attributes, array() );
 
 		$classNames = array(
 			'bwf-progress-bar-wrapper',
@@ -911,17 +1077,31 @@ class SLINGBLOCKS_Render_Block {
 
 		$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-		$output .= sprintf( '<div %1$s>', slingblocks_attr( 'bwf-progress-wrap', array(
-			'class' => implode( ' ', $classNames ),
-			'id'    => isset( $settings['anchor'] ) ? $settings['anchor'] : '',
-		), $settings ) );
+		$output .= sprintf(
+			'<div %1$s>',
+			slingblocks_attr(
+				'bwf-progress-wrap',
+				array(
+					'class' => implode( ' ', $classNames ),
+					'id'    => isset( $settings['anchor'] ) ? $settings['anchor'] : '',
+				),
+				$settings
+			)
+		);
 
-		$output .= sprintf( '<div %1$s>', slingblocks_attr( 'bwf-progress-inner-wrap', array(
-			'class' => 'bwf-progress-inner-wrap',
-		), $settings ) );
+		$output .= sprintf(
+			'<div %1$s>',
+			slingblocks_attr(
+				'bwf-progress-inner-wrap',
+				array(
+					'class' => 'bwf-progress-inner-wrap',
+				),
+				$settings
+			)
+		);
 
 		if ( isset( $settings['enableTitle'] ) && $settings['enableTitle'] && isset( $settings['titleContent'] ) ) {
-			$output .= '<div class="bwf-progress-title">' . $settings['titleContent'] . '</div>';
+			$output .= '<div class="bwf-progress-title">' . $this->bwf_kses_post( $settings['titleContent'] ) . '</div>';
 		}
 		$content = 'Progress...';
 		if ( isset( $settings['content'] ) ) {
@@ -941,7 +1121,7 @@ class SLINGBLOCKS_Render_Block {
 	/**
 	 * Output the dynamic aspects of Countdown block.
 	 *
-	 * @param array $attributes The block attributes.
+	 * @param array  $attributes The block attributes.
 	 * @param string $content The inner blocks.
 	 *
 	 * @since 1.1.0
@@ -960,13 +1140,16 @@ class SLINGBLOCKS_Render_Block {
 		}
 
 		try {
-			//code...
+			// code...
 
 			$output = '';
 
-			$settings = wp_parse_args( $attributes, [
-				'separatorStyle' => 'dotted'
-			] );
+			$settings = wp_parse_args(
+				$attributes,
+				array(
+					'separatorStyle' => 'dotted',
+				)
+			);
 
 			$classNames = array(
 				'bwf-countdown-outer',
@@ -984,13 +1167,27 @@ class SLINGBLOCKS_Render_Block {
 
 			$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-			$output     .= sprintf( '<div %1$s>', slingblocks_attr( 'bwf-countdown-outer', array(
-				'class' => implode( ' ', $classNames ),
-				'id'    => isset( $settings['anchor'] ) ? $settings['anchor'] : '',
-			), $settings ) );
-			$output     .= sprintf( '<div %1$s>', slingblocks_attr( 'bwf-countdown-wrapper', array(
-				'class' => 'bwf-countdown-wrapper',
-			), $settings ) );
+			$output    .= sprintf(
+				'<div %1$s>',
+				slingblocks_attr(
+					'bwf-countdown-outer',
+					array(
+						'class' => implode( ' ', $classNames ),
+						'id'    => isset( $settings['anchor'] ) ? $settings['anchor'] : '',
+					),
+					$settings
+				)
+			);
+			$output    .= sprintf(
+				'<div %1$s>',
+				slingblocks_attr(
+					'bwf-countdown-wrapper',
+					array(
+						'class' => 'bwf-countdown-wrapper',
+					),
+					$settings
+				)
+			);
 			$date_style = '';
 			if ( ! isset( $settings['campaignType'] ) ) {
 				$campaignType = 'evergreen';
@@ -1007,7 +1204,7 @@ class SLINGBLOCKS_Render_Block {
 			$cookie_data = null;
 			$cookie_name = null;
 			if ( $campaignType === 'evergreen' ) {
-				$cookie_name = "sling_user_end_date" . $settings['uniqueID'];
+				$cookie_name = 'sling_user_end_date' . $settings['uniqueID'];
 
 				$evergreenDay    = isset( $settings['evergreenDay'] ) ? $settings['evergreenDay'] : 0;
 				$evergreenHour   = isset( $settings['evergreenHour'] ) ? $settings['evergreenHour'] : 11;
@@ -1026,7 +1223,6 @@ class SLINGBLOCKS_Render_Block {
 				}
 			} else {
 
-
 				$date = isset( $settings['timestamp'] ) ? $settings['timestamp'] : null;
 
 				$date_style = $date ? $date : '';
@@ -1034,19 +1230,17 @@ class SLINGBLOCKS_Render_Block {
 					$date       = isset( $settings['starttimestamp'] ) ? $settings['starttimestamp'] : null;
 					$end_date   = $date_style;
 					$date_style = $date ? $date : '';
-				} else {
-					if ( empty( $settings['startdate'] ) || new DateTime( $settings['startdate'], $timezone ) < $currentDate ) {
+				} elseif ( empty( $settings['startdate'] ) || new DateTime( $settings['startdate'], $timezone ) < $currentDate ) {
 						$date = isset( $settings['timestamp'] ) ? $settings['timestamp'] : null;
-					} else {
-						return;
-					}
+				} else {
+					return;
 				}
 			}
 			ob_start();
 
 			if ( $checkDate && ! empty( $settings['reverseText'] ) ) {
 				?>
-				<div class="bwf-pre-text bwf-reverse-text"><?php echo $settings['reverseText']; ?></div>
+				<div class="bwf-pre-text bwf-reverse-text"><?php echo $this->bwf_kses_post( $settings['reverseText'] ); ?></div>
 				<?php
 			} elseif ( ! empty( $settings['preText'] ) ) {
 				?>
@@ -1063,25 +1257,32 @@ class SLINGBLOCKS_Render_Block {
 					$funnel_redirect_link = 'wffn-next-link=yes';
 				}
 			}
-			$seperator_classes = [
+			$seperator_classes = array(
 				'bwf-countdown-inner-wrap',
-				'bwf-hidden'
-			];
+				'bwf-hidden',
+			);
 			if ( ! isset( $settings['enableSeparator'] ) || $settings['enableSeparator'] && 'inline' !== $countdownStyle ) {
 				array_push( $seperator_classes, 'bwf-separator' );
 				array_push( $seperator_classes, 'bwf-separator-' . $settings['separatorStyle'] );
 			}
-			$output                  .= ob_get_clean();
-			$output                  .= sprintf( '<div %1$s>', slingblocks_attr( 'bwf-countdown-inner-wrap', array(
-				'class'             => implode( ' ', $seperator_classes ),
-				'cookie_data'       => $cookie_data ? $cookie_data : null,
-				'cookie_name'       => $cookie_data ? $cookie_name : null,
-				'bwf-date'          => $date_style,
-				'end_date'          => $end_date,
-				'msgAfter'          => isset( $settings['expiryType'] ) && 'message' === $settings['expiryType'] ? ( isset( $settings['expiryTitle'] ) ? $this->bwf_kses_post(html_entity_decode( $settings['expiryTitle'] ) ) : 'Countdown is finished!' ) : null,
-				'expiryRedirectUrl' => isset( $settings['expiryType'] ) && 'redirect' === $settings['expiryType'] ? ( isset( $settings['expiryRedirectUrl'] ) ? esc_url( $settings['expiryRedirectUrl'] ) : null ) : null,
-				'funnel-next-step'  => isset( $settings['expiryType'] ) && 'funnel-next-step' === $settings['expiryType'] ? $funnel_redirect_link : null,
-			), $settings ) );
+			$output                 .= ob_get_clean();
+			$output                 .= sprintf(
+				'<div %1$s>',
+				slingblocks_attr(
+					'bwf-countdown-inner-wrap',
+					array(
+						'class'             => implode( ' ', $seperator_classes ),
+						'cookie_data'       => $cookie_data ? $cookie_data : null,
+						'cookie_name'       => $cookie_data ? $cookie_name : null,
+						'bwf-date'          => $date_style,
+						'end_date'          => $end_date,
+						'msgAfter'          => isset( $settings['expiryType'] ) && 'message' === $settings['expiryType'] ? ( isset( $settings['expiryTitle'] ) ? $this->bwf_kses_post( html_entity_decode( $settings['expiryTitle'] ) ) : 'Countdown is finished!' ) : null,
+						'expiryRedirectUrl' => isset( $settings['expiryType'] ) && 'redirect' === $settings['expiryType'] ? ( isset( $settings['expiryRedirectUrl'] ) ? esc_url( $settings['expiryRedirectUrl'] ) : null ) : null,
+						'funnel-next-step'  => isset( $settings['expiryType'] ) && 'funnel-next-step' === $settings['expiryType'] ? $funnel_redirect_link : null,
+					),
+					$settings
+				)
+			);
 			$settings['dayLabel']    = isset( $settings['dayLabel'] ) ? $settings['dayLabel'] : 'Days';
 			$settings['hourLabel']   = isset( $settings['hourLabel'] ) ? $settings['hourLabel'] : 'Hours';
 			$settings['minuteLabel'] = isset( $settings['minuteLabel'] ) ? $settings['minuteLabel'] : 'Minutes';
@@ -1090,7 +1291,7 @@ class SLINGBLOCKS_Render_Block {
 			?>
 			<!-- Days  -->
 			<?php if ( ! isset( $settings['fixDayEnable'] ) || $settings['fixDayEnable'] ) { ?>
-				<div class="bwf-digit-card" bwftype="<?php echo 'inline' !== $countdownStyle ? ( isset( $settings['separatorStyle'] ) && 'dotted' !== $settings['separatorStyle'] ? "|" : ":" ) : ''; ?>">
+				<div class="bwf-digit-card" bwftype="<?php echo 'inline' !== $countdownStyle ? ( isset( $settings['separatorStyle'] ) && 'dotted' !== $settings['separatorStyle'] ? '|' : ':' ) : ''; ?>">
 					<div class="bwf-card-data">
 						<div class="bwf-timer-digit">{days}</div>
 						<?php if ( $settings['dayLabel'] ) { ?>
@@ -1103,7 +1304,7 @@ class SLINGBLOCKS_Render_Block {
 			<?php } ?>
 			<!-- Hours  -->
 			<?php if ( ! isset( $settings['fixHourEnable'] ) || $settings['fixHourEnable'] ) { ?>
-				<div class="bwf-digit-card" bwftype="<?php echo 'inline' !== $countdownStyle ? ( isset( $settings['separatorStyle'] ) && 'dotted' !== $settings['separatorStyle'] ? "|" : ":" ) : ''; ?>">
+				<div class="bwf-digit-card" bwftype="<?php echo 'inline' !== $countdownStyle ? ( isset( $settings['separatorStyle'] ) && 'dotted' !== $settings['separatorStyle'] ? '|' : ':' ) : ''; ?>">
 					<div class="bwf-card-data">
 						<div class="bwf-timer-digit">{hours}</div>
 						<?php if ( $settings['hourLabel'] ) { ?>
@@ -1116,7 +1317,7 @@ class SLINGBLOCKS_Render_Block {
 			<?php } ?>
 			<!-- Minutes  -->
 			<?php if ( ! isset( $settings['fixMinuteEnable'] ) || $settings['fixMinuteEnable'] ) { ?>
-				<div class="bwf-digit-card" bwftype="<?php echo 'inline' !== $countdownStyle ? ( isset( $settings['separatorStyle'] ) && 'dotted' !== $settings['separatorStyle'] ? "|" : ":" ) : ''; ?>">
+				<div class="bwf-digit-card" bwftype="<?php echo 'inline' !== $countdownStyle ? ( isset( $settings['separatorStyle'] ) && 'dotted' !== $settings['separatorStyle'] ? '|' : ':' ) : ''; ?>">
 					<div class="bwf-card-data">
 						<div class="bwf-timer-digit">{minutes}</div>
 						<?php if ( $settings['minuteLabel'] ) { ?>
@@ -1129,7 +1330,7 @@ class SLINGBLOCKS_Render_Block {
 			<?php } ?>
 			<!-- Seconds  -->
 			<?php if ( ! isset( $settings['fixSecEnable'] ) || $settings['fixSecEnable'] ) { ?>
-				<div class="bwf-digit-card" bwftype="<?php echo 'inline' !== $countdownStyle ? ( isset( $settings['separatorStyle'] ) && 'dotted' !== $settings['separatorStyle'] ? "|" : ":" ) : ''; ?>">
+				<div class="bwf-digit-card" bwftype="<?php echo 'inline' !== $countdownStyle ? ( isset( $settings['separatorStyle'] ) && 'dotted' !== $settings['separatorStyle'] ? '|' : ':' ) : ''; ?>">
 					<div class="bwf-card-data">
 						<div class="bwf-timer-digit">{seconds}</div>
 						<?php if ( $settings['secondLabel'] ) { ?>
@@ -1151,7 +1352,7 @@ class SLINGBLOCKS_Render_Block {
 
 			return $output;
 		} catch ( \Throwable $th ) {
-			//throw $th;
+			// throw $th;
 		}
 	}
 }

@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_All_Automation_Contacts extends BWFAN_API_Base {
 
 	public static $ins;
@@ -20,8 +21,8 @@ class BWFAN_API_Get_All_Automation_Contacts extends BWFAN_API_Base {
 
 	/** Customer journey Api call */
 	public function process_api_call() {
-		$offset = ! empty( $this->get_sanitized_arg( 'offset', 'text_field' ) ) ? intval( $this->get_sanitized_arg( 'offset', 'text_field' ) ) : 0;
-		$limit  = ! empty( $this->get_sanitized_arg( 'limit', 'text_field' ) ) ? $this->get_sanitized_arg( 'limit', 'text_field' ) : 25;
+		$offset = ! empty( $this->get_sanitized_arg( 'offset', 'absint' ) ) ? intval( $this->get_sanitized_arg( 'offset', 'absint' ) ) : 0;
+		$limit  = ! empty( $this->get_sanitized_arg( 'limit', 'absint' ) ) ? $this->get_sanitized_arg( 'limit', 'absint' ) : 25;
 		$type   = ! empty( $this->get_sanitized_arg( 'type', 'text_field' ) ) ? $this->get_sanitized_arg( 'type', 'text_field' ) : 'active';
 		$search = ! empty( $this->get_sanitized_arg( 'search', 'text_field' ) ) ? $this->get_sanitized_arg( 'search', 'text_field' ) : '';
 		$cid    = ! empty( $this->get_sanitized_arg( 'contact', 'text_field' ) ) ? intval( $this->get_sanitized_arg( 'contact', 'text_field' ) ) : '';

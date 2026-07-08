@@ -20,6 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Adds styles to the customizer.
  */
 if ( ! class_exists( 'WFACPKirki_Modules_Custom_Sections' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Modules_Custom_Sections {
 
 		/**
@@ -85,7 +86,6 @@ if ( ! class_exists( 'WFACPKirki_Modules_Custom_Sections' ) ) {
 			);
 
 			return array_merge( $section_types, $new_types );
-
 		}
 
 		/**
@@ -105,7 +105,6 @@ if ( ! class_exists( 'WFACPKirki_Modules_Custom_Sections' ) ) {
 			);
 
 			return array_merge( $panel_types, $new_types );
-
 		}
 
 		/**
@@ -117,41 +116,44 @@ if ( ! class_exists( 'WFACPKirki_Modules_Custom_Sections' ) ) {
 		public function include_sections_and_panels() {
 
 			// Sections.
-			$folder_path   = dirname( __FILE__ ) . '/sections/';
+			$folder_path   = __DIR__ . '/sections/';
 			$section_types = apply_filters( 'wfacpkirki_section_types', array() );
 
 			foreach ( $section_types as $id => $class ) {
-				if ( ! class_exists( $class ) ) {
-					$path = wp_normalize_path( $folder_path . 'class-kirki-sections-' . $id . '-section.php' );
-					if ( file_exists( $path ) ) {
-						include_once $path;
-						continue;
-					}
-					$path = str_replace( 'class-kirki-sections-wfacpkirki-', 'class-kirki-sections-', $path );
-					if ( file_exists( $path ) ) {
-						include_once $path;
-					}
+				$id = sanitize_key( $id );
+				if ( empty( $id ) || class_exists( $class ) ) {
+					continue;
+				}
+				$path = wp_normalize_path( $folder_path . 'class-kirki-sections-' . $id . '-section.php' );
+				if ( file_exists( $path ) ) {
+					include_once $path;
+					continue;
+				}
+				$path = str_replace( 'class-kirki-sections-wfacpkirki-', 'class-kirki-sections-', $path );
+				if ( file_exists( $path ) ) {
+					include_once $path;
 				}
 			}
 
 			// Panels.
-			$folder_path = dirname( __FILE__ ) . '/panels/';
+			$folder_path = __DIR__ . '/panels/';
 			$panel_types = apply_filters( 'wfacpkirki_panel_types', array() );
 
 			foreach ( $panel_types as $id => $class ) {
-				if ( ! class_exists( $class ) ) {
-					$path = wp_normalize_path( $folder_path . 'class-kirki-panels-' . $id . '-panel.php' );
-					if ( file_exists( $path ) ) {
-						include_once $path;
-						continue;
-					}
-					$path = str_replace( 'class-kirki-panels-wfacpkirki-', 'class-kirki-panels-', $path );
-					if ( file_exists( $path ) ) {
-						include_once $path;
-					}
+				$id = sanitize_key( $id );
+				if ( empty( $id ) || ! class_exists( $class ) ) {
+					continue;
+				}
+				$path = wp_normalize_path( $folder_path . 'class-kirki-panels-' . $id . '-panel.php' );
+				if ( file_exists( $path ) ) {
+					include_once $path;
+					continue;
+				}
+				$path = str_replace( 'class-kirki-panels-wfacpkirki-', 'class-kirki-panels-', $path );
+				if ( file_exists( $path ) ) {
+					include_once $path;
 				}
 			}
-
 		}
 
 		/**
@@ -163,13 +165,16 @@ if ( ! class_exists( 'WFACPKirki_Modules_Custom_Sections' ) ) {
 		public function enqueue_scrips() {
 
 			wp_enqueue_style( 'wfacpkirki-custom-sections', trailingslashit( WFACPKirki::$url ) . 'modules/custom-sections/sections.css', array(), WFACP_VERSION );
-			wp_enqueue_script( 'wfacpkirki-custom-sections', trailingslashit( WFACPKirki::$url ) . 'modules/custom-sections/sections.js', array(
-				'jquery',
-				'customize-base',
-				'customize-controls'
-			), WFACP_VERSION );
-
+			wp_enqueue_script(
+				'wfacpkirki-custom-sections',
+				trailingslashit( WFACPKirki::$url ) . 'modules/custom-sections/sections.js',
+				array(
+					'jquery',
+					'customize-base',
+					'customize-controls',
+				),
+				WFACP_VERSION
+			);
 		}
-
 	}
 }

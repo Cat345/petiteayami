@@ -6,10 +6,11 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Avada' ) ) {
 	/**
 	 * Class WFOCU_Compatibility_With_Avada
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Avada {
 
 		public function __construct() {
-			add_filter( 'elementor/frontend/builder_content_data', [ $this, 'remove_avada_parse_elementor_content' ], 8, 2 );
+			add_filter( 'elementor/frontend/builder_content_data', array( $this, 'remove_avada_parse_elementor_content' ), 8, 2 );
 		}
 
 		public function is_enable() {

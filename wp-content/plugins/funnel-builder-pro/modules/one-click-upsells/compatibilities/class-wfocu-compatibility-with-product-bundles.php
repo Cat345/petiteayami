@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Product_Bundles {
 		public $accepted_ids = array();
 

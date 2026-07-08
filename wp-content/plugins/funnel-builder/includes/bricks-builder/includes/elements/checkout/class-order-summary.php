@@ -10,6 +10,7 @@ use FunnelKit\Bricks\Elements\Element;
 use WFACP_Common;
 
 if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
+	#[\AllowDynamicProperties]
 	class Order_Summary extends Element {
 		public $category = 'funnelkit';
 		public $name     = 'wfacp-order-summary';

@@ -45,10 +45,12 @@ class CustomPostQueryType
             : [];
 
         $operators = [];
+        $operatorArgs = [];
 
         foreach ($taxonomies as $taxonomy) {
             if ($taxonomy->hierarchical) {
-                $operators[strtr($taxonomy->name, '-', '_') . '_include_children'] = [
+                $field = strtr($taxonomy->name, '-', '_') . '_include_children';
+                $operators[$field] = [
                     'description' =>
                         end($taxonomies) === $taxonomy
                             ? trans(
@@ -69,8 +71,10 @@ class CustomPostQueryType
                         ]) => 'only',
                     ],
                 ];
+                $operatorArgs[$field] = ['type' => 'String', 'defaultValue' => null];
             }
-            $operators[strtr($taxonomy->name, '-', '_') . '_operator'] = [
+            $field = strtr($taxonomy->name, '-', '_') . '_operator';
+            $operators[$field] = [
                 'description' =>
                     end($taxonomies) === $taxonomy && !$taxonomy->hierarchical
                         ? trans(
@@ -91,6 +95,7 @@ class CustomPostQueryType
                     ]) => 'NOT IN',
                 ],
             ];
+            $operatorArgs[$field] = ['type' => 'String', 'defaultValue' => 'IN'];
         }
 
         return [
@@ -174,7 +179,7 @@ class CustomPostQueryType
                                 'type' => 'Boolean',
                             ],
                         ],
-                        array_map(fn() => ['type' => 'String', 'defaultValue' => 'IN'], $operators),
+                        $operatorArgs,
                     ),
 
                     'metadata' => [
@@ -521,7 +526,7 @@ class CustomPostQueryType
                                 'type' => 'Boolean',
                             ],
                         ],
-                        array_map(fn() => ['type' => 'String', 'defaultValue' => 'IN'], $operators),
+                        $operatorArgs,
                     ),
                     'metadata' => [
                         'label' => trans('Custom %post_types%', ['%post_types%' => $type->label]),

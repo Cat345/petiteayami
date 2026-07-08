@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * https://woocommerce.com/products/force-sells/
@@ -9,15 +13,15 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Force_Sells' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_WC_Force_Sells {
 		public function __construct() {
-			add_filter( 'wfacp_show_item_quantity', [ $this, 'do_not_display' ], 10, 2 );
-			add_filter( 'wfacp_show_you_save_text', [ $this, 'do_not_display' ], 10, 2 );
-			add_filter( 'wfacp_mini_cart_enable_delete_item', [ $this, 'do_not_display' ], 10, 2 );
-			add_filter( 'wfacp_display_quantity_increment', [ $this, 'do_not_display' ], 10, 2 );
-			add_filter( 'wfacp_enable_delete_item', [ $this, 'do_not_display' ], 10, 2 );
-			add_filter( 'wfacp_show_undo_message_for_item', [ $this, 'do_not_undo' ], 10, 2 );
-			add_filter( 'wfacp_exclude_product_cart_count', [ $this, 'do_not_undo' ], 10, 2 );
-			add_filter( 'wfacp_show_item_quantity_placeholder', [ $this, 'display_item_quantity' ], 10, 3 );
-			add_filter( 'wfacp_delete_item_from_order_summary', [ $this, 'do_not_display_order_summary' ], 10, 3 );
+			add_filter( 'wfacp_show_item_quantity', array( $this, 'do_not_display' ), 10, 2 );
+			add_filter( 'wfacp_show_you_save_text', array( $this, 'do_not_display' ), 10, 2 );
+			add_filter( 'wfacp_mini_cart_enable_delete_item', array( $this, 'do_not_display' ), 10, 2 );
+			add_filter( 'wfacp_display_quantity_increment', array( $this, 'do_not_display' ), 10, 2 );
+			add_filter( 'wfacp_enable_delete_item', array( $this, 'do_not_display' ), 10, 2 );
+			add_filter( 'wfacp_show_undo_message_for_item', array( $this, 'do_not_undo' ), 10, 2 );
+			add_filter( 'wfacp_exclude_product_cart_count', array( $this, 'do_not_undo' ), 10, 2 );
+			add_filter( 'wfacp_show_item_quantity_placeholder', array( $this, 'display_item_quantity' ), 10, 3 );
+			add_filter( 'wfacp_delete_item_from_order_summary', array( $this, 'do_not_display_order_summary' ), 10, 3 );
 		}
 
 		public static function is_enable() {
@@ -48,7 +52,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Force_Sells' ) ) {
 		public function display_item_quantity( $cart_item ) {
 			if ( isset( $cart_item['forced_by'] ) ) {
 				?>
-                <span><?php echo $cart_item['quantity']; ?></span>
+				<span><?php echo $cart_item['quantity']; ?></span>
 				<?php
 			}
 		}

@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Model_Message_Unsubscribe extends BWFAN_Model {
 	static $primary_key = 'ID';
 
@@ -31,28 +32,34 @@ class BWFAN_Model_Message_Unsubscribe extends BWFAN_Model {
 	 */
 	private static function prepare_message_unsubscribe_sql( $data ) {
 		global $wpdb;
-		$where      = '';
-		$count      = count( $data );
-		$i          = 0;
+		$where      = array();
+		$args       = array();
 		$table_name = $wpdb->prefix . 'bwfan_message_unsubscribe';
 
 		foreach ( $data as $key => $value ) {
-			$i ++;
+			$column = '`' . str_replace( '`', '``', $key ) . '`';
 
-			if ( 'string' === gettype( $value ) ) {
-				$where .= '`' . $key . '` = ' . "'" . $value . "'";
-			} elseif ( is_array( $value ) ) {
-				$where .= '`' . $key . "` IN ('" . implode( "','", $value ) . "')";
+			if ( is_array( $value ) ) {
+				if ( empty( $value ) ) {
+					continue;
+				}
+				$placeholders = implode( ',', array_fill( 0, count( $value ), '%s' ) );
+				$where[]      = $column . ' IN (' . $placeholders . ')';
+				foreach ( $value as $v ) {
+					$args[] = $v;
+				}
+			} elseif ( is_int( $value ) ) {
+				$where[] = $column . ' = %d';
+				$args[]  = $value;
 			} else {
-				$where .= '`' . $key . '` = ' . $value;
-			}
-
-			if ( $i < $count ) {
-				$where .= ' AND ';
+				$where[] = $column . ' = %s';
+				$args[]  = $value;
 			}
 		}
 
-		return 'SELECT * FROM ' . $table_name . " WHERE $where";
+		$query = 'SELECT * FROM ' . $table_name . ' WHERE ' . implode( ' AND ', $where );
+
+		return empty( $args ) ? $query : $wpdb->prepare( $query, ...$args ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	/**
@@ -68,26 +75,23 @@ class BWFAN_Model_Message_Unsubscribe extends BWFAN_Model {
 		}
 
 		global $wpdb;
-		$where      = '';
-		$count      = count( $data );
-		$i          = 0;
+		$where      = array();
+		$args       = array();
 		$table_name = $wpdb->prefix . 'bwfan_message_unsubscribe';
 
 		foreach ( $data as $key => $value ) {
-			$i ++;
-
-			if ( 'string' === gettype( $value ) ) {
-				$where .= '`' . $key . '` = ' . "'" . $value . "'";
+			$column = '`' . str_replace( '`', '``', $key ) . '`';
+			if ( is_int( $value ) ) {
+				$where[] = $column . ' = %d';
 			} else {
-				$where .= '`' . $key . '` = ' . $value;
+				$where[] = $column . ' = %s';
 			}
-
-			if ( $i < $count ) {
-				$where .= ' AND ';
-			}
+			$args[] = $value;
 		}
 
-		return $wpdb->query( 'DELETE FROM ' . $table_name . " WHERE $where" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$query = 'DELETE FROM ' . $table_name . ' WHERE ' . implode( ' AND ', $where );
+
+		return $wpdb->query( $wpdb->prepare( $query, ...$args ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	/**

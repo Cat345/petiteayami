@@ -2,15 +2,14 @@
 /**
  * Plugin Name: SlingBlocks – Gutenberg Blocks by FunnelKit (Formerly WooFunnels)
  * Description: A minimalist Gutenberg Block Plugin that extends Gutenberg to provide page building capabilities.
- * Version: 1.7.0
+ * Version: 1.8.1
  * Text Domain: slingblocks
  * Plugin URI: https://funnelkit.com/
  * Author: FunnelKit (formerly WooFunnels)
  * Author URI: https://funnelkit.com
  * Domain Path: /languages
  * Requires at least: 5.6
- * Tested up to: 6.8.1
- * Requires PHP: 7.2
+ * Requires PHP: 7.4
  *
  * @package slingblocks
  */
@@ -23,6 +22,8 @@ if ( ! class_exists( 'SLINGBLOCKS' ) ) {
 	 * SLINGBLOCKS
 	 */
 	class SLINGBLOCKS {
+
+		const DEFAULT_FONT_MAX_LENGTH = 100;
 
 		/**
 		 * __construct
@@ -57,17 +58,17 @@ if ( ! class_exists( 'SLINGBLOCKS' ) ) {
 			$this->load_require_files();
 
 			add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_assets' ) );
+			add_action( 'enqueue_block_assets', array( $this, 'enqueue_block_editor_styles' ) );
 			add_action( 'init', array( $this, 'init_loaded' ), 1 );
-			add_filter( 'admin_body_class', [ $this, 'slb_blocks_admin_body_class' ] );
-			add_action( 'admin_footer', [ $this, 'bwf_render_default_font' ] );
+			add_filter( 'admin_body_class', array( $this, 'slb_blocks_admin_body_class' ) );
 
 			/** Add theme classes for compatibility detection. */
 			add_action( 'body_class', array( $this, 'bwf_body_class_theme_compatibility' ) );
 			if ( ! is_admin() ) {
 				add_action( 'wp_head', array( $this, 'load_page_template_style' ) );
-				add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts_front' ),9999 );
+				add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts_front' ), 9999 );
 				add_filter( 'template_include', array( $this, 'wp_template_include' ), 11 /* After Plugins/WooCommerce */ );
-				require_once( plugin_dir_path( __FILE__ ) . 'font/fonts.php' );
+				require_once plugin_dir_path( __FILE__ ) . 'font/fonts.php';
 			}
 
 			/** Load compatibilities */
@@ -77,13 +78,13 @@ if ( ! class_exists( 'SLINGBLOCKS' ) ) {
 		public function bwf_body_class_theme_compatibility( $classes ) {
 			if ( defined( 'ASTRA_THEME_VERSION' ) ) {
 				$classes[] = 'slingblocks--is-astra-theme';
-			} else if ( class_exists( 'Blocksy_Translations_Manager' ) ) {
+			} elseif ( class_exists( 'Blocksy_Translations_Manager' ) ) {
 				$classes[] = 'slingblocks--is-blocksy-theme';
-			} else if ( defined( 'NEVE_VERSION' ) ) {
+			} elseif ( defined( 'NEVE_VERSION' ) ) {
 				$classes[] = 'slingblocks--is-neve-theme';
-			} else if ( defined( 'KADENCE_VERSION' ) ) {
+			} elseif ( defined( 'KADENCE_VERSION' ) ) {
 				$classes[] = 'slingblocks--is-kadence-theme';
-			} else if ( class_exists( 'Storefront' ) ) {
+			} elseif ( class_exists( 'Storefront' ) ) {
 				$classes[] = 'slingblocks--is-storefront-theme';
 			}
 
@@ -91,7 +92,7 @@ if ( ! class_exists( 'SLINGBLOCKS' ) ) {
 		}
 
 		public function load_require_files() {
-			//load necessary files
+			// load necessary files
 			require_once SLINGBLOCKS_PLUGIN_FILE . 'includes/functions.php';
 			require_once SLINGBLOCKS_PLUGIN_FILE . 'includes/class-slingblocks-css.php';
 			require_once SLINGBLOCKS_PLUGIN_FILE . 'includes/class-slingblocks-frontend-css.php';
@@ -115,16 +116,41 @@ if ( ! class_exists( 'SLINGBLOCKS' ) ) {
 
 		public function init_loaded() {
 			// Register Gutenberg Block Meta for default font
-			register_post_meta( '', 'bwfblock_default_font', array(
-				'show_in_rest' => true,
-				'single'       => true,
-				'type'         => 'string',
-			) );
-
+			register_post_meta(
+				'',
+				'bwfblock_default_font',
+				array(
+					'show_in_rest'      => true,
+					'single'            => true,
+					'type'              => 'string',
+					'sanitize_callback' => array( $this, 'sanitize_default_font' ),
+					'auth_callback'     => array( $this, 'auth_default_font_meta' ),
+				)
+			);
 
 			// Add Custom Template
 			add_filter( 'theme_post_templates', array( $this, 'wp_add_page_templates' ) );
 			add_filter( 'theme_page_templates', array( $this, 'wp_add_page_templates' ) );
+		}
+
+		/**
+		 * Restrict default-font meta to a safe font-name shape so the value
+		 * cannot break out of the CSS `font-family:` declaration or inject
+		 * extra query parameters into the Google Fonts URL.
+		 */
+		public function sanitize_default_font( $value ) {
+			if ( ! is_scalar( $value ) ) {
+				return '';
+			}
+			$value = preg_replace( '/[^A-Za-z0-9 ,-]/', '', trim( (string) $value ) );
+			return mb_substr( $value, 0, self::DEFAULT_FONT_MAX_LENGTH );
+		}
+
+		/**
+		 * Gate REST writes to the default-font meta to users who can edit the post.
+		 */
+		public function auth_default_font_meta( $allowed, $meta_key, $post_id ) {
+			return current_user_can( 'edit_post', $post_id );
 		}
 
 		// Add class in editor body
@@ -133,16 +159,16 @@ if ( ! class_exists( 'SLINGBLOCKS' ) ) {
 			if ( 'post' == $screen->base ) {
 				global $post;
 				$template_file   = get_post_meta( $post->ID, '_wp_page_template', true );
-				$template_canvas = [
-					'slb-template-canvas', //slingblock canvas
+				$template_canvas = array(
+					'slb-template-canvas', // slingblock canvas
 					'wflp-canvas.php', // funnel landing canvas
-					'wfoty-canvas.php' //funnel Optin thankyou canvas
-				];
-				$template_boxed  = [
-					'slb-template-boxed', //slingblock boxed
+					'wfoty-canvas.php', // funnel Optin thankyou canvas
+				);
+				$template_boxed  = array(
+					'slb-template-boxed', // slingblock boxed
 					'wflp-boxed.php', // funnel landing boxed
-					'wfoty-boxed.php' //funnel Optin thankyou boxed
-				];
+					'wfoty-boxed.php', // funnel Optin thankyou boxed
+				);
 
 				if ( in_array( $template_file, $template_canvas ) ) {
 					$classes .= ' slb-editor-width-canvas';
@@ -156,10 +182,10 @@ if ( ! class_exists( 'SLINGBLOCKS' ) ) {
 		}
 
 		public function wp_add_page_templates( $page_templates ) {
-			$slb_templates = [
+			$slb_templates = array(
 				'slb-template-boxed'  => esc_html__( 'Sling Block Boxed', SLINGBLOCKS_I18N ),
 				'slb-template-canvas' => esc_html__( 'Sling Block Canvas', SLINGBLOCKS_I18N ),
-			];
+			);
 
 			return array_merge( $page_templates, $slb_templates );
 		}
@@ -181,12 +207,15 @@ if ( ! class_exists( 'SLINGBLOCKS' ) ) {
 		 * @return array updated categories.
 		 */
 		public function add_block_categories( $categories ) {
-			return array_merge( array(
+			return array_merge(
 				array(
-					'slug'  => 'slingblocks',
-					'title' => esc_html__( 'SlingBlocks', SLINGBLOCKS_I18N ),
+					array(
+						'slug'  => 'slingblocks',
+						'title' => esc_html__( 'SlingBlocks', SLINGBLOCKS_I18N ),
+					),
 				),
-			), $categories );
+				$categories
+			);
 		}
 
 		/**
@@ -221,33 +250,63 @@ if ( ! class_exists( 'SLINGBLOCKS' ) ) {
 			$deps       = array_merge( $deps, array( 'fontawesome-shims-js', 'fontawesome-svg-js' ) );
 			$version    = $assets['version'];
 
-			$script_deps = array_filter( $deps, function ( $dep ) {
-				return ! is_null( $dep ) && false === strpos( $dep, 'css' );
-			} );
+			$script_deps = array_filter(
+				$deps,
+				function ( $dep ) {
+					return ! is_null( $dep ) && false === strpos( $dep, 'css' );
+				}
+			);
 
-			wp_enqueue_script( 'fontawesome-shims-js', plugin_dir_url( __FILE__ ) . 'font/fontawesome-v4-shims.min.js', // mapping between fa-v4 and fa-v5 naming
-				null, null, true );
-			wp_enqueue_script( 'fontawesome-svg-js', plugin_dir_url( __FILE__ ) . 'font/fontawesome.min.js', // get fontawesome svg from js by FontAwesome.icon object
-				null, null, true );
+			wp_enqueue_script(
+				'fontawesome-shims-js',
+				plugin_dir_url( __FILE__ ) . 'font/fontawesome-v4-shims.min.js', // mapping between fa-v4 and fa-v5 naming
+				null,
+				null,
+				true
+			);
+			wp_enqueue_script(
+				'fontawesome-svg-js',
+				plugin_dir_url( __FILE__ ) . 'font/fontawesome.min.js', // get fontawesome svg from js by FontAwesome.icon object
+				null,
+				null,
+				true
+			);
 
 			wp_enqueue_script( 'slingblocks-editor', $editor_dir . $js_path, $script_deps, $version, true );
 			$slingblocksfonts_path       = __DIR__ . '/font/gfonts-array.php';
 			$slingblocksfont_names_path  = __DIR__ . '/font/gfonts-names-array.php';
 			$slingblockssystem_font_path = __DIR__ . '/font/standard-fonts.php';
 			wp_enqueue_script( 'web-font', plugin_dir_url( __FILE__ ) . 'font/webfont.js', array(), true );
-			wp_localize_script( 'slingblocks-editor', 'slingblocks', array(
-				'i18n'                        => SLINGBLOCKS_I18N,
-				'slingblocks_g_fonts'         => file_exists( $slingblocksfonts_path ) ? include $slingblocksfonts_path : array(),
-				'slingblocks_g_font_names'    => file_exists( $slingblocksfont_names_path ) ? include $slingblocksfont_names_path : array(),
-				'slingblockssystem_font_path' => file_exists( $slingblockssystem_font_path ) ? include $slingblockssystem_font_path : array(),
-				'wp_version'                  => $GLOBALS['wp_version']
-			) );
-			// Enqueue our plugin Css.
-			wp_enqueue_style( 'slingblocks-editor', $editor_dir . $style_path, array(), $version );
-
+			wp_localize_script(
+				'slingblocks-editor',
+				'slingblocks',
+				array(
+					'i18n'                        => SLINGBLOCKS_I18N,
+					'slingblocks_g_fonts'         => file_exists( $slingblocksfonts_path ) ? include $slingblocksfonts_path : array(),
+					'slingblocks_g_font_names'    => file_exists( $slingblocksfont_names_path ) ? include $slingblocksfont_names_path : array(),
+					'slingblockssystem_font_path' => file_exists( $slingblockssystem_font_path ) ? include $slingblockssystem_font_path : array(),
+					'wp_version'                  => $GLOBALS['wp_version'],
+				)
+			);
 			if ( function_exists( 'wp_set_script_translations' ) ) {
 				wp_set_script_translations( 'slingblocks-editor', SLINGBLOCKS_I18N );
 			}
+		}
+
+		/**
+		 * Enqueue editor styles via enqueue_block_assets so they load
+		 * properly inside the iframe editor (API v3 / WordPress 6.3+).
+		 */
+		public function enqueue_block_editor_styles() {
+			if ( ! is_admin() ) {
+				return;
+			}
+
+			$app_name   = 'slingblocks-editor';
+			$editor_dir = ( defined( 'SLINGBLOCKS_REACT_ENVIRONMENT' ) && 0 == SLINGBLOCKS_REACT_ENVIRONMENT ) ? SLINGBLOCKS_REACT_DEV_URL : plugin_dir_url( __FILE__ ) . 'dist';
+			$style_path = "/$app_name.css";
+
+			wp_enqueue_style( 'slingblocks-editor', $editor_dir . $style_path, array(), SLINGBLOCKS_VERSION );
 
 			/**
 			 * default : 980px
@@ -257,17 +316,33 @@ if ( ! class_exists( 'SLINGBLOCKS' ) ) {
 				$boxed_tmpt_width = "body.slb-editor-width-boxed .editor-post-title__block, body.slb-editor-width-boxed .editor-default-block-appender, body.slb-editor-width-boxed .block-editor-block-list__block, body.slb-editor-width-boxed .block-editor-default-block-appender, body.slb-editor-width-boxed .wp-block{ max-width: $tmpt_boxed_width !important}";
 				wp_add_inline_style( 'slingblocks-editor', $boxed_tmpt_width );
 			}
-		}
 
-		public function bwf_render_default_font() {
+			/**
+			 * Default font for the editor — injected as inline style so it works
+			 * inside the iframe editor (WordPress 6.3+).
+			 */
 			global $post;
-			if ( ! $post instanceof WP_Post ) {
-				return;
-			}
+			if ( $post instanceof WP_Post ) {
+				$default_font = get_post_meta( $post->ID, 'bwfblock_default_font', true );
+				if ( ! empty( $default_font ) ) {
+					$font_css = '.editor-styles-wrapper, .editor-styles-wrapper p, .editor-styles-wrapper h1, .editor-styles-wrapper h2, .editor-styles-wrapper h3, .editor-styles-wrapper h4, .editor-styles-wrapper h5, .editor-styles-wrapper h6, .editor-styles-wrapper ul, .editor-styles-wrapper li { font-family:' . esc_html( $default_font ) . ' }';
+					wp_add_inline_style( 'slingblocks-editor', $font_css );
 
-			$default_font = get_post_meta( $post->ID, 'bwfblock_default_font', true );
-			if ( ! empty( $default_font ) ) {
-				echo "<style id='bwfblock-default-font'>#editor .editor-styles-wrapper, #editor .editor-styles-wrapper p, #editor .editor-styles-wrapper h1, #editor .editor-styles-wrapper h2, #editor .editor-styles-wrapper h3, #editor .editor-styles-wrapper h4, #editor .editor-styles-wrapper h5, #editor .editor-styles-wrapper h6, #editor .editor-styles-wrapper ul, #editor .editor-styles-wrapper li { font-family:" . esc_html( $default_font ) . " }</style>";
+					// Enqueue Google Fonts stylesheet — this gets baked into the iframe's
+					// __unstableResolvedAssets so it persists without JS re-injection.
+					$system_fonts = file_exists( __DIR__ . '/font/standard-fonts.php' ) ? include __DIR__ . '/font/standard-fonts.php' : array();
+					$is_system    = false;
+					foreach ( $system_fonts as $sf ) {
+						if ( isset( $sf['value'] ) && $sf['value'] === $default_font ) {
+							$is_system = true;
+							break;
+						}
+					}
+					if ( ! $is_system ) {
+						$font_param = str_replace( ' ', '+', $default_font );
+						wp_enqueue_style( 'slingblocks-gfont-default', 'https://fonts.googleapis.com/css?family=' . $font_param . '&display=swap', array(), null );
+					}
+				}
 			}
 		}
 
@@ -275,7 +350,7 @@ if ( ! class_exists( 'SLINGBLOCKS' ) ) {
 		 * Enqueue Front Style.
 		 */
 		public function wp_enqueue_scripts_front() {
-			//Check if page is is_singular
+			// Check if page is is_singular
 			if ( ! is_singular() ) {
 				return;
 			}
@@ -303,7 +378,7 @@ if ( ! class_exists( 'SLINGBLOCKS' ) ) {
 		 * Load slingblock template inline style
 		 */
 		public function load_page_template_style() {
-			//Check if page is is_singular
+			// Check if page is is_singular
 			if ( ! is_singular() ) {
 				return;
 			}
@@ -331,15 +406,18 @@ if ( ! class_exists( 'SLINGBLOCKS' ) ) {
 
 			/** Plugins loaded hook */
 			foreach ( glob( $dir . '/plugins_loaded/class-*.php' ) as $_field_filename ) {
-				require_once( $_field_filename );
+				require_once $_field_filename;
 			}
 
 			/** After Setup theme hook */
-			add_action( 'after_setup_theme', function () use ( $dir ) {
-				foreach ( glob( $dir . '/after_setup_theme/class-*.php' ) as $_field_filename ) {
-					require_once( $_field_filename );
+			add_action(
+				'after_setup_theme',
+				function () use ( $dir ) {
+					foreach ( glob( $dir . '/after_setup_theme/class-*.php' ) as $_field_filename ) {
+						require_once $_field_filename;
+					}
 				}
-			} );
+			);
 		}
 	}
 

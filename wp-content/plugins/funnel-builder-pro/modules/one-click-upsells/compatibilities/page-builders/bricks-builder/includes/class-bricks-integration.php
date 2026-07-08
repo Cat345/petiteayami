@@ -5,6 +5,7 @@ namespace WfocuFunnelKit;
 use WFOCU_Common;
 use WFFN_Thank_You_WC_Pages;
 if ( ! class_exists( '\WfocuFunnelKit\Bricks_Integration' ) ) {
+	#[\AllowDynamicProperties]
 	final class Bricks_Integration {
 		/**
 		 * Indicates whether the integration is registered or not.
@@ -24,9 +25,10 @@ if ( ! class_exists( '\WfocuFunnelKit\Bricks_Integration' ) ) {
 
 		/**
 		 * contain all loaded elements
+		 *
 		 * @var array
 		 */
-		private static $load_elements = [];
+		private static $load_elements = array();
 
 		/**
 		 * Private constructor to prevent direct instantiation.
@@ -35,7 +37,6 @@ if ( ! class_exists( '\WfocuFunnelKit\Bricks_Integration' ) ) {
 			$this->define_constants();
 			add_action( 'after_setup_theme', array( $this, 'init' ) );
 			add_filter( 'option_bricks_global_settings', array( $this, 'setup_supported_post_types' ) );
-
 		}
 
 		/**
@@ -57,7 +58,7 @@ if ( ! class_exists( '\WfocuFunnelKit\Bricks_Integration' ) ) {
 		 * Sets the local variable with the given name and ID.
 		 *
 		 * @param string $name The name of the local variable.
-		 * @param int $id The ID of the local variable.
+		 * @param int    $id The ID of the local variable.
 		 *
 		 * @return void
 		 */
@@ -237,7 +238,7 @@ if ( ! class_exists( '\WfocuFunnelKit\Bricks_Integration' ) ) {
 		/**
 		 * Checks if there are any shortcodes in the content and renders them if present.
 		 *
-		 * @param string $content The content to check for shortcodes.
+		 * @param string   $content The content to check for shortcodes.
 		 * @param \WP_Post $post The post object.
 		 *
 		 * @return string The modified content with the rendered shortcodes.
@@ -375,7 +376,6 @@ if ( ! class_exists( '\WfocuFunnelKit\Bricks_Integration' ) ) {
 				update_post_meta( $module_id, '_wp_page_template', 'default' );
 
 			}
-
 		}
 	}
 
@@ -388,6 +388,6 @@ if ( ! class_exists( '\WfocuFunnelKit\Bricks_Integration' ) ) {
 		return Bricks_Integration::get_instance();
 	}
 
-// Calls the bricks_integration function.
+	// Calls the bricks_integration function.
 	bricks_integration();
 }

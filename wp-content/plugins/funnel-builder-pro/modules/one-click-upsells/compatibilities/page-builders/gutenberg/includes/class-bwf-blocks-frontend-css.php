@@ -16,6 +16,7 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 	 *
 	 * @category class
 	 */
+	#[\AllowDynamicProperties]
 	class BWF_Blocks_Upsell_Frontend_CSS {
 		/**
 		 * Instance of this class
@@ -74,9 +75,9 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 		/**
 		 * Render Inline CSS helper function
 		 *
-		 * @param array $css the css for each rendered block.
+		 * @param array  $css the css for each rendered block.
 		 * @param string $style_id the unique id for the rendered style.
-		 * @param bool $in_content the bool for whether or not it should run in content.
+		 * @param bool   $in_content the bool for whether or not it should run in content.
 		 */
 		public function render_inline_css( $css, $style_id, $in_content = false ) {
 			if ( ! is_admin() ) {
@@ -90,7 +91,7 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 		}
 
 		/**
-		 * Gets the parsed blocks, need to use this becuase wordpress 5 doesn't seem to include gutenberg_parse_blocks
+		 * Gets the parsed blocks, need to use this becuase WordPress 5 doesn't seem to include gutenberg_parse_blocks
 		 *
 		 * @param string $content string of page/post content.
 		 */
@@ -212,7 +213,7 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 						}
 					}
 
-					if ( in_array( $block['blockName'], [ 'bwfblocks/accept-button', 'bwfblocks/reject-button', 'bwfblocks/accept-link', 'bwfblocks/reject-link' ], true ) ) {
+					if ( in_array( $block['blockName'], array( 'bwfblocks/accept-button', 'bwfblocks/reject-button', 'bwfblocks/accept-link', 'bwfblocks/reject-link' ), true ) ) {
 						if ( isset( $block['attrs'] ) && is_array( $block['attrs'] ) ) {
 							$blockattr = $block['attrs'];
 							if ( isset( $blockattr['uniqueID'] ) ) {
@@ -266,9 +267,9 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 		}
 
 		/**
-		 * @param mixed $attr
+		 * @param mixed  $attr
 		 * @param string $indexkey - check whether indexkey is set in $attr[] array or not
-		 * @param mixed $default - function return default value which you passed as a 3rd parameter eg. you need 'inherit' value when $indexkey value is true
+		 * @param mixed  $default - function return default value which you passed as a 3rd parameter eg. you need 'inherit' value when $indexkey value is true
 		 *
 		 * @return void
 		 */
@@ -278,10 +279,8 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 				if ( isset( $attr[ $indexkey ] ) ) {
 					$value = $attr[ $indexkey ];
 				}
-			} else {
-				if ( isset( $attr[ $indexkey ] ) && isset( $attr[ $indexkey ][ $screen ] ) ) {
+			} elseif ( isset( $attr[ $indexkey ] ) && isset( $attr[ $indexkey ][ $screen ] ) ) {
 					$value = $attr[ $indexkey ][ $screen ];
-				}
 			}
 
 			return ! is_null( $default_val ) && ! empty( $value ) ? $default_val : $value;
@@ -301,7 +300,7 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 			$selector_wrapper = 'body .bwf-btn-wrap.bwf-' . $unique_id;
 
 			$screens = array( 'desktop', 'tablet', 'mobile' );
-			$button  = $this->has_attr( $attr, 'button' ) ?? [];
+			$button  = $this->has_attr( $attr, 'button' ) ?? array();
 
 			$icon_space = $this->has_attr( $button, 'iconSpace' );
 			if ( $button && $icon_space ) {
@@ -383,7 +382,6 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 
 				// }
 
-
 				if ( 'desktop' !== $screen ) {
 					$css->stop_media_query();
 				}
@@ -392,7 +390,6 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 			$custom_css = $this->has_attr( $attr, 'bwfBlockCSS' );
 
 			return $css->custom_css( $custom_css, $selector_wrapper . ' .bwf-btn' )->css_output();
-
 		}
 
 		/**
@@ -473,7 +470,7 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 				$css->add_property( 'font', $this->has_attr( $attr, 'fontHover', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'textHover', $screen ) );
 
-				//Price
+				// Price
 				// $css->set_selector( "{$selector_wrapper} .bwf-offer" );
 				// $css->add_property( 'text', $this->has_attr( $attr, 'regularPriceText', $screen ) );
 
@@ -498,7 +495,6 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 				$css->add_property( 'font', $this->has_attr( $attr, 'regularPriceFontHover', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'regularPriceTextHover', $screen ) );
 
-
 				/**
 				 * Offer Price
 				 */
@@ -516,7 +512,7 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 				$css->add_property( 'font', $this->has_attr( $attr, 'secondaryFontHover', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'secondaryTextHover', $screen ) );
 
-				//Price
+				// Price
 				$css->set_selector( "{$selector_wrapper} .wfocu-sale-price" );
 				$css->add_property( 'color', $this->has_attr( $attr, 'offerPriceColor', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'offerPriceLineHeight', $screen ), true );
@@ -603,7 +599,6 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 				$css->add_property( 'font', $this->has_attr( $attr, 'recurringTotalPriceFontHover', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'recurringTotalPriceTextHover', $screen ) );
 
-
 				if ( 'desktop' === $screen ) {
 					if ( ! $this->has_attr( $attr, 'layoutStyle' ) || 'column' === $this->has_attr( $attr, 'layoutStyle' ) ) {
 						$css->set_selector( "{$selector_wrapper}" );
@@ -615,7 +610,6 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 						$css->add_property( 'display', 'inline-block' );
 						$css->add_property( 'width', 'auto' );
 					}
-
 				}
 
 				if ( 'desktop' !== $screen ) {
@@ -626,7 +620,6 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 			$custom_css = $this->has_attr( $attr, 'bwfBlockCSS' );
 
 			return $css->custom_css( $custom_css, '.wfocu-price-wrapper.bwf-' . $unique_id )->css_output();
-
 		}
 
 		/**
@@ -728,7 +721,6 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 			$custom_css = $this->has_attr( $attr, 'bwfBlockCSS' );
 
 			return $css->custom_css( $custom_css, '.wfocu-price-wrapper.bwf-' . $unique_id )->css_output();
-
 		}
 
 		/**
@@ -784,7 +776,6 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 				$css->add_property( 'background', $this->has_attr( $attr, 'backgroundHover', $screen ) );
 				$css->add_property( 'box-shadow', $this->has_attr( $attr, 'boxShadowHover', $screen ) );
 
-
 				/**
 				 * Offer Price
 				 */
@@ -810,7 +801,6 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 			$custom_css = $this->has_attr( $attr, 'bwfBlockCSS' );
 
 			return $css->custom_css( $custom_css, '.wfocu-price-wrapper.bwf-' . $unique_id )->css_output();
-
 		}
 
 		/**
@@ -891,7 +881,6 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 			$custom_css = $this->has_attr( $attr, 'bwfBlockCSS' );
 
 			return $css->custom_css( $custom_css, '.wfocu-price-wrapper.bwf-' . $unique_id )->css_output();
-
 		}
 
 		/**
@@ -933,7 +922,6 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 				$css->add_property( 'border', $this->has_attr( $attr, 'borderHover', $screen ) );
 				$css->add_property( 'background', $this->has_attr( $attr, 'backgroundHover', $screen ) );
 				$css->add_property( 'box-shadow', $this->has_attr( $attr, 'boxShadowHover', $screen ) );
-
 
 				$css->set_selector( "{$selector_wrapper} table.variations" );
 				$textval = $this->has_attr( $attr, 'alignment', $screen );
@@ -993,7 +981,6 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 					}
 				}
 
-
 				if ( 'desktop' !== $screen ) {
 					$css->stop_media_query();
 				}
@@ -1002,7 +989,6 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 			$custom_css = $this->has_attr( $attr, 'bwfBlockCSS' );
 
 			return $css->custom_css( $custom_css, '.wfocu-price-wrapper.bwf-' . $unique_id )->css_output();
-
 		}
 
 		/**
@@ -1057,7 +1043,6 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 			$custom_css = $this->has_attr( $attr, 'bwfBlockCSS' );
 
 			return $css->custom_css( $custom_css, '.wfocu-price-wrapper.bwf-' . $unique_id )->css_output();
-
 		}
 	}
 

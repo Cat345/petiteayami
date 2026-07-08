@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+#[\AllowDynamicProperties]
 abstract class BWFAN_DB_Tables_Base {
 	public $table_name = '';
 	public $db_errors = '';
@@ -87,9 +88,15 @@ abstract class BWFAN_DB_Tables_Base {
 	}
 
 	/**
-	 * Check table collation and convert to utf8mb4 if not and return errors if any
+	 * Align the table and its text columns with WordPress's configured collation.
 	 *
-	 * @return array|bool
+	 * Converts when the current collation differs from $wpdb->collate — covers both
+	 * the legacy latin1/utf8 → utf8mb4 upgrade AND same-family drift (e.g.
+	 * utf8mb4_unicode_ci vs utf8mb4_unicode_520_ci) that triggers "Illegal mix of
+	 * collations" on cross-table predicates. If $wpdb->collate is not configured,
+	 * skips the conversion rather than running an ALTER with an empty COLLATE.
+	 *
+	 * @return array|bool Array of error strings, true on success, false if table is missing.
 	 */
 	public function check_table_collation() {
 		global $wpdb;
@@ -100,28 +107,106 @@ abstract class BWFAN_DB_Tables_Base {
 			return false;
 		}
 
-		$safe_table_name = esc_sql( $table_name );
+		$safe_table_name   = esc_sql( $table_name );
+		$target_charset    = $wpdb->charset;
+		$target_collate    = $wpdb->has_cap( 'collation' ) ? $wpdb->collate : '';
+		$current_collation = isset( $table_data['Collation'] ) ? (string) $table_data['Collation'] : '';
+		$db_errors         = [];
 
-		if ( isset( $table_data['Collation'] ) && ! str_contains( $table_data['Collation'], 'utf8mb4' ) ) {
-			$wpdb->query( $wpdb->prepare( "ALTER TABLE `{$safe_table_name}` CONVERT TO CHARACTER SET %s COLLATE %s", $wpdb->charset, $wpdb->collate ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+		if ( empty( $target_collate ) ) {
+			/** No configured target — don't risk ALTER ... COLLATE '' */
+			return true;
 		}
 
-		$columns   = $wpdb->get_results( "SHOW FULL COLUMNS FROM `{$safe_table_name}`", ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$db_errors = [];
+		$needs_convert    = $current_collation !== $target_collate;
+		$convert_success  = false;
+
+		if ( $needs_convert ) {
+			$wpdb->query( $wpdb->prepare( "ALTER TABLE `{$safe_table_name}` CONVERT TO CHARACTER SET %s COLLATE %s", $target_charset, $target_collate ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+			if ( ! empty( $wpdb->last_error ) ) {
+				$db_errors[] = "Error converting `{$table_name}` to {$target_collate}: " . $wpdb->last_error;
+			} else {
+				$convert_success = true;
+			}
+		}
+
+		/**
+		 * CONVERT TO ... COLLATE normalizes every text column in one shot, so the
+		 * per-column sweep is only needed when CONVERT TO failed or was skipped
+		 * because the table header already matched (but individual columns might
+		 * still be out of sync via column-level overrides).
+		 */
+		if ( $convert_success ) {
+			return true;
+		}
+
+		$columns = $wpdb->get_results( "SHOW FULL COLUMNS FROM `{$safe_table_name}`", ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( ! is_array( $columns ) ) {
+			$db_errors[] = ! empty( $wpdb->last_error )
+				? "Error fetching column metadata for `{$table_name}`: " . $wpdb->last_error
+				: "Error fetching column metadata for `{$table_name}`.";
+
+			return $db_errors;
+		}
 		foreach ( $columns as $column ) {
-			if ( empty( $column['Collation'] ) || str_contains( $column['Collation'], 'utf8mb4' ) ) {
+			$column_collation = isset( $column['Collation'] ) ? (string) $column['Collation'] : '';
+
+			/** Skip non-text columns — they report an empty Collation. */
+			if ( empty( $column_collation ) ) {
 				continue;
 			}
-			$column_type = $column['Type'];
-			$field       = $column['Field'];
 
-			$safe_table_name  = esc_sql( $table_name );
+			/** Column already aligned with the target collation. */
+			if ( $column_collation === $target_collate ) {
+				continue;
+			}
+
+			$extra = isset( $column['Extra'] ) ? (string) $column['Extra'] : '';
+
+			/**
+			 * Skip generated / virtual columns — their definition needs
+			 * GENERATED ALWAYS AS (...) and can't be safely round-tripped
+			 * through a plain MODIFY COLUMN.
+			 */
+			if ( stripos( $extra, 'generated' ) !== false || stripos( $extra, 'virtual' ) !== false || stripos( $extra, 'stored' ) !== false ) {
+				continue;
+			}
+
+			$field            = $column['Field'];
 			$safe_field       = esc_sql( $field );
-			$safe_column_type = esc_sql( $column_type );
-			$query            = $wpdb->prepare( "ALTER TABLE `{$safe_table_name}` MODIFY COLUMN `{$safe_field}` {$safe_column_type} CHARACTER SET %s COLLATE %s", $wpdb->charset, $wpdb->collate ); //phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+			$safe_column_type = esc_sql( $column['Type'] );
+
+			/**
+			 * MODIFY COLUMN is a full column redefinition — anything we omit
+			 * silently reverts to SQL defaults, dropping NOT NULL / DEFAULT /
+			 * COMMENT. Rebuild the definition from SHOW FULL COLUMNS so the
+			 * existing constraints survive the collation change.
+			 */
+			$is_nullable = isset( $column['Null'] ) && 'YES' === strtoupper( (string) $column['Null'] );
+			$null_clause = $is_nullable ? ' NULL' : ' NOT NULL';
+
+			$default_clause = '';
+			if ( array_key_exists( 'Default', $column ) && null !== $column['Default'] ) {
+				$default_value = (string) $column['Default'];
+				/** CURRENT_TIMESTAMP is an expression, not a literal — don't quote it. */
+				if ( 0 === strcasecmp( $default_value, 'CURRENT_TIMESTAMP' ) ) {
+					$default_clause = ' DEFAULT CURRENT_TIMESTAMP';
+				} else {
+					$default_clause = " DEFAULT '" . esc_sql( $default_value ) . "'";
+				}
+			} elseif ( $is_nullable ) {
+				$default_clause = ' DEFAULT NULL';
+			}
+
+			$comment_clause = '';
+			if ( ! empty( $column['Comment'] ) ) {
+				$comment_clause = " COMMENT '" . esc_sql( (string) $column['Comment'] ) . "'";
+			}
+
+			$query = $wpdb->prepare( "ALTER TABLE `{$safe_table_name}` MODIFY COLUMN `{$safe_field}` {$safe_column_type} CHARACTER SET %s COLLATE %s{$null_clause}{$default_clause}{$comment_clause}", $target_charset, $target_collate ); //phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			if ( ! empty( $wpdb->last_error ) ) {
-				$db_errors[] = $wpdb->last_error;
+				$db_errors[] = "Error altering `{$table_name}`.`{$field}` to {$target_collate}: " . $wpdb->last_error;
 			}
 		}
 

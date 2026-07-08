@@ -21,9 +21,11 @@ $is_style3_upsell_enabled = $is_preview || ( $is_upsells_enabled && 'style3' ===
 $is_style4_upsell_enabled = $is_preview || ( $is_upsells_enabled && 'style4' === $cart_settings['upsell_style'] );
 $is_style5_upsell_enabled = $is_preview || ( $is_upsells_enabled && 'style5' === $cart_settings['upsell_style'] );
 
-$has_zero_state = '';
+$has_zero_state  = '';
+$cart_has_items  = true;
 if ( ! $is_preview && ! is_null( WC()->cart ) && WC()->cart->is_empty() ) {
 	$has_zero_state = 'has-zero-state';
+	$cart_has_items = false;
 }
 $slider_footer_class = ( ! $is_upsells_enabled || $is_style1_upsell_enabled || $is_style2_upsell_enabled || $is_style3_upsell_enabled ) ? 'fkcart-pb-16' : '';
 $slider_body_class   = '';
@@ -88,9 +90,9 @@ do_action( 'fkcart_before_modal_container', $front );
                     <!-- END: Cart Items -->
 
                     <!-- START: Upsell Style -->
-					<?php $is_style1_upsell_enabled && fkcart_get_template_part( 'cart/upsell-style1' ) ?>
-					<?php $is_style2_upsell_enabled && fkcart_get_template_part( 'cart/upsell-style2' ) ?>
-					<?php $is_style3_upsell_enabled && fkcart_get_template_part( 'cart/upsell-style3' ) ?>
+					<?php $cart_has_items && $is_style1_upsell_enabled && fkcart_get_template_part( 'cart/upsell-style1' ) ?>
+					<?php $cart_has_items && $is_style2_upsell_enabled && fkcart_get_template_part( 'cart/upsell-style2' ) ?>
+					<?php $cart_has_items && $is_style3_upsell_enabled && fkcart_get_template_part( 'cart/upsell-style3' ) ?>
                     <!-- END: Upsell Style -->
                 </div>
 				<?php do_action( 'fkcart_after_body', $front ); ?>
@@ -99,7 +101,7 @@ do_action( 'fkcart_before_modal_container', $front );
             <div class="fkcart-slider-footer <?php echo esc_attr( $slider_footer_class ) ?>">
 
                 <!-- START: Coupon Area -->
-				<?php $coupon_enable && fkcart_get_template_part( 'cart/coupon-box' ) ?>
+				<?php $cart_has_items && $coupon_enable && fkcart_get_template_part( 'cart/coupon-box' ) ?>
                 <!-- END: Coupon Area -->
 
 
@@ -110,7 +112,7 @@ do_action( 'fkcart_before_modal_container', $front );
 
                 <div class="fkcart_summary_cta">
                     <!-- START: Order Summary -->
-					<?php fkcart_get_template_part( 'cart/order-summary' ); ?>
+					<?php $cart_has_items && fkcart_get_template_part( 'cart/order-summary' ); ?>
                     <!-- END: Order Summary -->
 
                     <!-- START: CTA -->
@@ -120,8 +122,8 @@ do_action( 'fkcart_before_modal_container', $front );
 
                 <!-- START: Upsell Style -->
                 <div class="fkcart-below-checkout-upsell">
-					<?php $is_style4_upsell_enabled && fkcart_get_template_part( 'cart/upsell-style1' ) ?>
-					<?php $is_style5_upsell_enabled && fkcart_get_template_part( 'cart/upsell-style2' ) ?>
+					<?php $cart_has_items && $is_style4_upsell_enabled && fkcart_get_template_part( 'cart/upsell-style1' ) ?>
+					<?php $cart_has_items && $is_style5_upsell_enabled && fkcart_get_template_part( 'cart/upsell-style2' ) ?>
                 </div>
 
 				<?php if ( $special_addon_enabled ) : ?>

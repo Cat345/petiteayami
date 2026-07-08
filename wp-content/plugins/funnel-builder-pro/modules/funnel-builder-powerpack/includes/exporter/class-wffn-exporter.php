@@ -1,11 +1,12 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Handles the operations and usage of actions in optin pages
  * Class WFFN_Optin_Actions
  */
 if ( ! class_exists( 'WFFN_Exporter' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Exporter {
 
 		/**
@@ -20,6 +21,7 @@ if ( ! class_exists( 'WFFN_Exporter' ) ) {
 
 		/**
 		 * Step classes prefix
+		 *
 		 * @var string
 		 */
 		public $class_prefix = 'WFFN_Export_';
@@ -36,7 +38,7 @@ if ( ! class_exists( 'WFFN_Exporter' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -76,7 +78,6 @@ if ( ! class_exists( 'WFFN_Exporter' ) ) {
 			}
 
 			$this->exporters[ $export_action::get_slug() ] = $export_action;
-
 		}
 
 		/**
@@ -85,7 +86,7 @@ if ( ! class_exists( 'WFFN_Exporter' ) ) {
 		public function load_exporters() {
 			// load all the trigger files automatically
 			foreach ( glob( plugin_dir_path( WFFN_PRO_PLUGIN_FILE ) . 'includes/exporter/export-actions/class-*.php' ) as $export_action_file_name ) {
-				require_once( $export_action_file_name ); //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+				require_once $export_action_file_name; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 			}
 		}
 
@@ -101,9 +102,9 @@ if ( ! class_exists( 'WFFN_Exporter' ) ) {
 					array(
 						'key'     => 'fid',
 						'value'   => $funnel_id,
-						'compare' => '='
-					)
-				)
+						'compare' => '=',
+					),
+				),
 			);
 			if ( '' !== $limit ) {
 				$args['posts_per_page'] = $limit;
@@ -113,7 +114,7 @@ if ( ! class_exists( 'WFFN_Exporter' ) ) {
 			}
 			$query_result = new WP_Query( $args );
 
-			$result = [];
+			$result = array();
 			if ( $query_result->have_posts() ) {
 				if ( $query_result->have_posts() ) {
 					foreach ( $query_result->posts as $p ) {
@@ -122,10 +123,10 @@ if ( ! class_exists( 'WFFN_Exporter' ) ) {
 				}
 			}
 
-			return [
+			return array(
 				'data'  => $result,
 				'total' => $query_result->found_posts,
-			];
+			);
 		}
 
 		public function get_export_post_meta( $export_id, $is_export_status = false ) {
@@ -136,12 +137,11 @@ if ( ! class_exists( 'WFFN_Exporter' ) ) {
 			$type   = get_post_meta( $export_id, 'export_type', true );
 			$status = get_post_meta( $export_id, 'status', true );
 
-
 			if ( true === $is_export_status && isset( $status ) && true === wffn_string_to_bool( $status ) ) {
 				$exporter = WFFN_Pro_Core()->exporter->get_integration_object( $type );
 				$exporter->wffn_export( $export_id );
 			}
-			$result    = [];
+			$result    = array();
 			$post_meta = get_post_meta( $export_id );
 
 			if ( is_array( $post_meta ) && count( $post_meta ) > 0 ) {
@@ -151,7 +151,6 @@ if ( ! class_exists( 'WFFN_Exporter' ) ) {
 				foreach ( $post_meta as $meta_key => $value ) {
 					$result[ $meta_key ] = isset( $value[0] ) ? $value[0] : '';
 				}
-
 			}
 
 			return $result;
@@ -175,7 +174,7 @@ if ( ! class_exists( 'WFFN_Exporter' ) ) {
 
 			if ( ! empty( $data ) ) {
 				$stat = $this->delete_export( $export_id );
-				$temp = ! empty( $data['meta'] ) ? json_decode( $data['meta'], true ) : [];
+				$temp = ! empty( $data['meta'] ) ? json_decode( $data['meta'], true ) : array();
 				if ( isset( $temp['file'] ) && file_exists( WFFN_PRO_EXPORT_DIR . '/' . $temp['file'] ) ) {
 					wp_delete_file( WFFN_PRO_EXPORT_DIR . '/' . $temp['file'] );
 				}

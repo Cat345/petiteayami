@@ -38,8 +38,7 @@ if (!\class_exists('FSVendor\WPDesk_Tracker_Factory_Prefixed')) {
          */
         private function build_tracker($basename)
         {
-            $sender = \apply_filters('wpdesk/tracker/sender/' . $basename, new WPDesk_Tracker_Sender_Wordpress_To_WPDesk());
-            $sender = new WPDesk_Tracker_Sender_Logged($sender instanceof \WPDesk_Tracker_Sender ? $sender : new WPDesk_Tracker_Sender_Wordpress_To_WPDesk(), $this->logger);
+            $sender = new WPDesk_Tracker_Sender_Logged(new WPDesk_Tracker_Sender_Resolver($basename), $this->logger);
             $tracker = new WPDesk_Tracker($basename, $sender);
             $tracker->add_data_provider(new WPDesk_Tracker_Data_Provider_Gateways());
             $tracker->add_data_provider(new WPDesk_Tracker_Data_Provider_Identification());

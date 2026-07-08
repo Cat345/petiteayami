@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -7,7 +11,7 @@ if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
  */
 if ( isset( $data['is_added_cart'] ) && isset( $data['whats_included'] ) && ! isset( WC()->cart->removed_cart_contents[ $data['is_added_cart'] ] ) ) {
 	?>
-    <div class="wfacp_product_switcher_description" data-item-key="<?php echo $data['item_key']; ?>">
+	<div class="wfacp_product_switcher_description" data-item-key="<?php echo $data['item_key']; ?>">
 		<?php
 		$title = apply_filters( 'wfacp_whats_included_title', $data['title'], $data, $data['is_added_cart'] );
 		if ( isset( $title ) && ! empty( $title ) ) {
@@ -19,6 +23,6 @@ if ( isset( $data['is_added_cart'] ) && isset( $data['whats_included'] ) && ! is
 			echo '<div class="wfacp_description">' . apply_filters( 'wfacp_the_content', $whats_included, $data ) . '</div>';
 		}
 		?>
-    </div>
+	</div>
 	<?php
 }

@@ -22,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class ModuleRegistry {
 
 	/**
@@ -39,18 +40,18 @@ class ModuleRegistry {
 	 * @since 1.0.0
 	 * @var array
 	 */
-	private static $modules = [
-		'MiniCart' => [
+	private static $modules = array(
+		'MiniCart'     => array(
 			'namespace' => 'WFACP\Modules\MiniCart',
 			'class'     => 'MiniCart',
 			'dir'       => 'MiniCart',
-		],
-		'CheckoutForm' => [
+		),
+		'CheckoutForm' => array(
 			'namespace' => 'WFACP\Modules\CheckoutForm',
 			'class'     => 'CheckoutForm',
 			'dir'       => 'CheckoutForm',
-		],
-	];
+		),
+	);
 
 	/**
 	 * Register all modules with dependency tree.

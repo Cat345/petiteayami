@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Output_Field_Typography' ) ) {
 	/**
 	 * Output overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Output_Field_Typography extends WFOCUKirki_Output {
 
 		/**
@@ -71,7 +72,7 @@ if ( ! class_exists( 'WFOCUKirki_Output_Field_Typography' ) ) {
 					$font_weight = ( in_array( $font_weight, array( '', 'regular' ), true ) ) ? '400' : $font_weight;
 
 					// Is this italic?
-					$is_italic                                                                   = ( ! is_null( $value['variant'] ) && false !== strpos( $value['variant'], 'italic' ) );
+					$is_italic = ( ! is_null( $value['variant'] ) && false !== strpos( $value['variant'], 'italic' ) );
 					$this->styles[ $output['media_query'] ][ $output['element'] ]['font-weight'] = $font_weight;
 					if ( $is_italic ) {
 						$this->styles[ $output['media_query'] ][ $output['element'] ]['font-style'] = 'italic';
@@ -82,14 +83,17 @@ if ( ! class_exists( 'WFOCUKirki_Output_Field_Typography' ) ) {
 				$property_value = $this->process_property_value( $property, $value[ $property ] );
 				if ( 'font-family' === $property ) {
 					$value['font-backup'] = ( isset( $value['font-backup'] ) ) ? $value['font-backup'] : '';
-					$property_value       = $this->process_property_value( $property, array(
-						$value['font-family'],
-						$value['font-backup'],
-					) );
+					$property_value       = $this->process_property_value(
+						$property,
+						array(
+							$value['font-family'],
+							$value['font-backup'],
+						)
+					);
 				}
-				$property                                                                  = ( isset( $output['choice'] ) && isset( $output['property'] ) ) ? $output['property'] : $property;
-				$property_value                                                            = ( is_array( $property_value ) && isset( $property_value[0] ) ) ? $property_value[0] : $property_value;
-				$this->styles[ $output['media_query'] ][ $output['element'] ][ $property ] = $output['prefix'] . $property_value . $output['suffix'];
+				$property       = ( isset( $output['choice'] ) && isset( $output['property'] ) ) ? $output['property'] : $property;
+				$property_value = ( is_array( $property_value ) && isset( $property_value[0] ) ) ? $property_value[0] : $property_value;
+				$this->styles[ $output['media_query'] ][ $output['element'] ][ $property ] = $output['prefix'] . self::sanitize_css_value( $property_value ) . $output['suffix'];
 			}
 		}
 	}

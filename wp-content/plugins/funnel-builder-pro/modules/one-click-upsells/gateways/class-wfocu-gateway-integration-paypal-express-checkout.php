@@ -10,7 +10,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 	#[AllowDynamicProperties]
 	class WFOCU_Gateway_Integration_Paypal_Express_Checkout extends WFOCU_Gateway {
 		protected static $ins = null;
-		protected $key = 'ppec_paypal';
+		protected $key        = 'ppec_paypal';
 		public $parameters;
 		protected $last_response;
 		public $button_max_count = 0;
@@ -66,12 +66,11 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 			add_filter( 'woocommerce_get_checkout_order_received_url', array( $this, 'maybe_init_funnel_and_redirect_to_offer' ), 999, 2 );
 
 			$this->refund_supported = true;
-
 		}
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -139,7 +138,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 
 							$ITEMAMT += $product_data['args']['total'];
 
-							$item_loop ++;
+							++$item_loop;
 						}
 					}
 				}
@@ -165,8 +164,8 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 								$token = $get_order->get_meta( '_ppec_billing_agreement_id' );
 								if ( ! empty( $token ) ) {
 
-									//saving meta by our own
-									//do not need to rely over shutdown
+									// saving meta by our own
+									// do not need to rely over shutdown
 									$get_order->update_meta_data( '_ppec_billing_agreement_id', $token );
 									$get_order->save_meta_data();
 								}
@@ -197,7 +196,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 		 *
 		 * @return string Billing agreement description
 		 * @since 1.2.0
-		 *
 		 */
 		protected function _get_billing_agreement_description() {
 			/* translators: placeholder is blogname */
@@ -245,11 +243,13 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 			try {
 
 				$client = wc_gateway_ppec()->client;
-				$params = $client->get_do_reference_transaction_params( array(
-					'reference_id' => $this->get_token( $order ),
-					'amount'       => 0,
-					'order_id'     => WFOCU_WC_Compatibility::get_order_id( $order ),
-				) );
+				$params = $client->get_do_reference_transaction_params(
+					array(
+						'reference_id' => $this->get_token( $order ),
+						'amount'       => 0,
+						'order_id'     => WFOCU_WC_Compatibility::get_order_id( $order ),
+					)
+				);
 
 				if ( false === $order->has_shipping_address() ) {
 					unset( $params['SHIPTONAME'] );
@@ -376,11 +376,10 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 		 * Format prices.
 		 *
 		 * @param float|int $price
-		 * @param int $decimals Optional. The number of decimal points.
+		 * @param int       $decimals Optional. The number of decimal points.
 		 *
 		 * @return string
 		 * @since 2.2.12
-		 *
 		 */
 		private function price_format( $price, $decimals = 2 ) {
 			return number_format( $price, $decimals, '.', '' );
@@ -424,124 +423,124 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 
 			?>
 
-            <script src="https://www.paypalobjects.com/api/checkout.js"></script> <?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-            <script>
+			<script src="https://www.paypalobjects.com/api/checkout.js"></script> <?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+			<script>
 
-                (
-                    function ($) {
-                        "use strict";
+				(
+					function ($) {
+						"use strict";
 
-                        var $wcc_ppec = {
-                            paypalBucket: null,
-                            init: function () {
-                                var getButtonsMax = <?php echo $this->button_max_count; ?>;
-                                var getButtons = [];
-                                for (var i = 0; i <= getButtonsMax; i++) {
-                                    getButtons.push('wfocu_paypal_only_' + i);
-                                }
-                                var getShElems = document.getElementsByClassName('wfocu_paypal_in_context_btn');
+						var $wcc_ppec = {
+							paypalBucket: null,
+							init: function () {
+								var getButtonsMax = <?php echo $this->button_max_count; ?>;
+								var getButtons = [];
+								for (var i = 0; i <= getButtonsMax; i++) {
+									getButtons.push('wfocu_paypal_only_' + i);
+								}
+								var getShElems = document.getElementsByClassName('wfocu_paypal_in_context_btn');
 
-                                for (var key in getShElems) {
-                                    getButtons.push(getShElems[key]);
-                                }
-                                window.paypalCheckoutReady = function () {
-                                    paypal.checkout.setup(
-                                        '<?php echo esc_js( $this->get_payer_id() ); ?>',
-                                        {
-                                            environment: '<?php echo esc_js( $environment ); ?>',
-                                            buttons: getButtons,
-                                            locale: '<?php echo esc_js( $this->get_paypal_locale() ); ?>',
+								for (var key in getShElems) {
+									getButtons.push(getShElems[key]);
+								}
+								window.paypalCheckoutReady = function () {
+									paypal.checkout.setup(
+										'<?php echo esc_js( $this->get_payer_id() ); ?>',
+										{
+											environment: '<?php echo esc_js( $environment ); ?>',
+											buttons: getButtons,
+											locale: '<?php echo esc_js( $this->get_paypal_locale() ); ?>',
 
-                                            click: function () {
+											click: function () {
 
-                                                if (0 == $wcc_ppec.paypalBucket.getTotal()) {
-                                                    wfocu_paypal_standard_paypal_in_transaction_checkout_process($wcc_ppec, $, paypal);
-                                                    return;
-                                                }
-                                                $wcc_ppec.paypalBucket.swal.hide();
-                                                paypal.checkout.initXO();
-
-
-                                                if (null !== $wcc_ppec.paypalBucket.ShippingCall) {
-
-                                                    $wcc_ppec.paypalBucket.ShippingCall.done(function (data) {
-                                                        wfocu_paypal_standard_paypal_in_transaction_checkout_process($wcc_ppec, $, paypal)
-
-                                                    });
-
-                                                    $wcc_ppec.paypalBucket.ShippingCall.fail(function (data) {
-                                                        wfocu_paypal_standard_paypal_in_transaction_checkout_process($wcc_ppec, $, paypal)
-
-                                                    });
-
-                                                } else {
-                                                    wfocu_paypal_standard_paypal_in_transaction_checkout_process($wcc_ppec, $, paypal)
-                                                }
-                                            }
-
-                                        }
-                                    );
-                                }
-                            }
-                        };
+												if (0 == $wcc_ppec.paypalBucket.getTotal()) {
+													wfocu_paypal_standard_paypal_in_transaction_checkout_process($wcc_ppec, $, paypal);
+													return;
+												}
+												$wcc_ppec.paypalBucket.swal.hide();
+												paypal.checkout.initXO();
 
 
-                        $(document).on('wfocuBucketCreated', function (e, Bucket) {
-                            $wcc_ppec.init();
-                            $wcc_ppec.paypalBucket = Bucket;
+												if (null !== $wcc_ppec.paypalBucket.ShippingCall) {
 
-                        });
+													$wcc_ppec.paypalBucket.ShippingCall.done(function (data) {
+														wfocu_paypal_standard_paypal_in_transaction_checkout_process($wcc_ppec, $, paypal)
 
-                        $(document).on('wfocuBucketConfirmationRendered', function (e, Bucket) {
-                            $wcc_ppec.init();
-                            $wcc_ppec.paypalBucket = Bucket;
+													});
 
-                        });
-                        $(document).on('wfocu_external', function (e, Bucket) {
-                            Bucket.inOfferTransaction = true;
+													$wcc_ppec.paypalBucket.ShippingCall.fail(function (data) {
+														wfocu_paypal_standard_paypal_in_transaction_checkout_process($wcc_ppec, $, paypal)
 
-                        });
+													});
 
-                        $(document).on('wfocuBucketLinksConverted', function (e, Bucket) {
-                            $wcc_ppec.init();
-                            $wcc_ppec.paypalBucket = Bucket;
+												} else {
+													wfocu_paypal_standard_paypal_in_transaction_checkout_process($wcc_ppec, $, paypal)
+												}
+											}
 
-                        });
-
-                        function wfocu_paypal_standard_paypal_in_transaction_checkout_process($wcc_ppec, $, paypal) {
-                            var getBucketData = $wcc_ppec.paypalBucket.getBucketSendData();
-                            var postData = $.extend(getBucketData, {action: 'wfocu_front_create_express_checkout_token_ppec'});
+										}
+									);
+								}
+							}
+						};
 
 
-                            var action = $.post(wfocu_vars.wc_ajax_url.toString().replace('%%endpoint%%', 'wfocu_front_create_express_checkout_token_ppec'), postData);
+						$(document).on('wfocuBucketCreated', function (e, Bucket) {
+							$wcc_ppec.init();
+							$wcc_ppec.paypalBucket = Bucket;
 
-                            action.done(function (data) {
+						});
 
-                                if (typeof data.token === "undefined") {
-                                    paypal.checkout.closeFlow();
-                                    if (typeof data.processed !== "undefined") {
-                                        $wcc_ppec.paypalBucket.swal.show({'text': wfocu_vars.messages.offer_success_message_pop, 'type': 'success'});
-                                        window.location = data.processed_data.redirect_url;
-                                        return;
-                                    }
-                                    $wcc_ppec.paypalBucket.swal.show({'text': wfocu_vars.messages.offer_msg_pop_failure, 'type': 'warning'});
-                                    if (typeof data.response !== "undefined" && typeof data.response.redirect_url !== 'undefined') {
+						$(document).on('wfocuBucketConfirmationRendered', function (e, Bucket) {
+							$wcc_ppec.init();
+							$wcc_ppec.paypalBucket = Bucket;
 
-                                        setTimeout(function () {
-                                            window.location = data.response.redirect_url;
-                                        }, 1500);
-                                    }
-                                }
-                                paypal.checkout.startFlow(data.token);
-                            });
+						});
+						$(document).on('wfocu_external', function (e, Bucket) {
+							Bucket.inOfferTransaction = true;
 
-                            action.fail(function () {
-                                paypal.checkout.closeFlow();
-                            });
-                        }
-                    }
-                )(jQuery);
-            </script>
+						});
+
+						$(document).on('wfocuBucketLinksConverted', function (e, Bucket) {
+							$wcc_ppec.init();
+							$wcc_ppec.paypalBucket = Bucket;
+
+						});
+
+						function wfocu_paypal_standard_paypal_in_transaction_checkout_process($wcc_ppec, $, paypal) {
+							var getBucketData = $wcc_ppec.paypalBucket.getBucketSendData();
+							var postData = $.extend(getBucketData, {action: 'wfocu_front_create_express_checkout_token_ppec'});
+
+
+							var action = $.post(wfocu_vars.wc_ajax_url.toString().replace('%%endpoint%%', 'wfocu_front_create_express_checkout_token_ppec'), postData);
+
+							action.done(function (data) {
+
+								if (typeof data.token === "undefined") {
+									paypal.checkout.closeFlow();
+									if (typeof data.processed !== "undefined") {
+										$wcc_ppec.paypalBucket.swal.show({'text': wfocu_vars.messages.offer_success_message_pop, 'type': 'success'});
+										window.location = data.processed_data.redirect_url;
+										return;
+									}
+									$wcc_ppec.paypalBucket.swal.show({'text': wfocu_vars.messages.offer_msg_pop_failure, 'type': 'warning'});
+									if (typeof data.response !== "undefined" && typeof data.response.redirect_url !== 'undefined') {
+
+										setTimeout(function () {
+											window.location = data.response.redirect_url;
+										}, 1500);
+									}
+								}
+								paypal.checkout.startFlow(data.token);
+							});
+
+							action.fail(function () {
+								paypal.checkout.closeFlow();
+							});
+						}
+					}
+				)(jQuery);
+			</script>
 			<?php
 		}
 
@@ -569,7 +568,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 		}
 
 		public function create_express_checkout_token() {
-
+			check_ajax_referer( 'wfocu_front_charge', 'nonce' );
 
 			$get_current_offer      = WFOCU_Core()->data->get( 'current_offer' );
 			$get_current_offer_meta = WFOCU_Core()->offers->get_offer_meta( $get_current_offer );
@@ -585,31 +584,37 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 					$get_package = WFOCU_Core()->data->get( '_upsell_package' );
 					if ( $get_package && 0 === WFOCU_Common::get_amount_for_comparisons( $get_package['total'] ) && true === apply_filters( 'wfocu_allow_free_upsells', true ) ) {
 						$data = WFOCU_Core()->process_offer->_handle_upsell_charge( true );
-						wp_send_json( array(
-							'result'         => 'success',
-							'processed'      => true,
-							'processed_data' => $data
-						) );
+						wp_send_json(
+							array(
+								'result'         => 'success',
+								'processed'      => true,
+								'processed_data' => $data,
+							)
+						);
 					}
 					// First we need to request an express checkout token for setting up a billing agreement, to do that, we need to pull details of the transaction from the PayPal Standard args and massage them into the Express Checkout params
-					$response = $this->set_express_checkout( array(
-						'currency'    => WFOCU_WC_Compatibility::get_order_currency( $get_order ),
-						'return_url'  => $this->get_callback_url( 'wfocu_paypal_return' ),
-						'cancel_url'  => $this->get_callback_url( 'cancel_url' ),
-						'notify_url'  => $this->get_callback_url( 'notify_url' ),
-						'order'       => $get_order,
-						'no_shipping' => WFOCU_Core()->process_offer->package_needs_shipping() ? 0 : 1,
-					) );
+					$response = $this->set_express_checkout(
+						array(
+							'currency'    => WFOCU_WC_Compatibility::get_order_currency( $get_order ),
+							'return_url'  => $this->get_callback_url( 'wfocu_paypal_return' ),
+							'cancel_url'  => $this->get_callback_url( 'cancel_url' ),
+							'notify_url'  => $this->get_callback_url( 'notify_url' ),
+							'order'       => $get_order,
+							'no_shipping' => WFOCU_Core()->process_offer->package_needs_shipping() ? 0 : 1,
+						)
+					);
 					WFOCU_Core()->log->log( 'Result For setExpressCheckout: ' . print_r( $response, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 					if ( isset( $response['TOKEN'] ) && '' !== $response['TOKEN'] ) {
 						WFOCU_Core()->data->set( 'token', $response['TOKEN'], 'paypal' );
 						WFOCU_Core()->data->set( 'upsell_package', WFOCU_Core()->data->get( '_upsell_package' ), 'paypal' );
 						WFOCU_Core()->data->save( 'paypal' );
-						wp_send_json( array(
-							'result' => 'success',
-							'token'  => $response['TOKEN'],
-						) );
+						wp_send_json(
+							array(
+								'result' => 'success',
+								'token'  => $response['TOKEN'],
+							)
+						);
 					} else {
 						$get_error_str = $this->get_api_error( $response );
 						$get_order->add_order_note( sprintf( __( 'Offer payment failed. Reason: %s', 'woofunnels-upstroke-one-click-upsell' ), $get_error_str ) );
@@ -625,11 +630,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 					$this->handle_api_error( $order_note, $order_note, $get_order, true );
 				}
 			}
-			wp_send_json( array(
-				'result'   => 'error',
-				'response' => $response,
-			) );
-
+			wp_send_json(
+				array(
+					'result'   => 'error',
+					'response' => $response,
+				)
+			);
 		}
 
 		/**
@@ -738,19 +744,21 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 
 			$this->set_method( 'SetExpressCheckout' );
 
-			$this->add_parameters( array(
+			$this->add_parameters(
+				array(
 
-				'RETURNURL'   => $args['return_url'],
-				'CANCELURL'   => $args['cancel_url'],
-				'PAGESTYLE'   => $args['page_style'],
-				'BRANDNAME'   => $args['brand_name'],
-				'LANDINGPAGE' => 'Billing',
+					'RETURNURL'    => $args['return_url'],
+					'CANCELURL'    => $args['cancel_url'],
+					'PAGESTYLE'    => $args['page_style'],
+					'BRANDNAME'    => $args['brand_name'],
+					'LANDINGPAGE'  => 'Billing',
 
-				'ADDROVERRIDE' => $args['addressoverride'],
-				'NOSHIPPING'   => $args['no_shipping'],
+					'ADDROVERRIDE' => $args['addressoverride'],
+					'NOSHIPPING'   => $args['no_shipping'],
 
-				'MAXAMT' => $args['maximum_amount'],
-			) );
+					'MAXAMT'       => $args['maximum_amount'],
+				)
+			);
 
 			// if we have an order, the request is to create a subscription/process a payment (not just check if the PayPal account supports Reference Transactions)
 			if ( isset( $args['order'] ) ) {
@@ -765,7 +773,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 
 			$this->clean_params();
 			$this->add_parameters( $set_express_checkout_params );
-
 		}
 
 		/**
@@ -787,7 +794,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 		/**
 		 * Add a parameter
 		 *
-		 * @param string $key
+		 * @param string     $key
 		 * @param string|int $value
 		 *
 		 * @since 2.0
@@ -813,11 +820,10 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 		 * Set up the payment details for a DoExpressCheckoutPayment or DoReferenceTransaction request
 		 *
 		 * @param WC_Order $order order object
-		 * @param string $type the type of transaction for the payment
-		 * @param bool $use_deprecated_params whether to use deprecated PayPal NVP parameters (required for DoReferenceTransaction API calls)
+		 * @param string   $type the type of transaction for the payment
+		 * @param bool     $use_deprecated_params whether to use deprecated PayPal NVP parameters (required for DoReferenceTransaction API calls)
 		 *
 		 * @since 2.0.9
-		 *
 		 */
 		protected function add_payment_details_parameters( WC_Order $order, $type, $use_deprecated_params = false ) {
 
@@ -856,7 +862,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 			$item_count = 0;
 			// add individual order items
 			foreach ( $order_items as $item ) {
-				$this->add_line_item_parameters( $item, $item_count ++, $use_deprecated_params );
+				$this->add_line_item_parameters( $item, $item_count++, $use_deprecated_params );
 			}
 			/**
 			 * When shipping amount is a negative number, means user opted for free shipping offer
@@ -864,38 +870,45 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 			 */
 
 			if ( ( isset( $offer_package['shipping'] ) && isset( $offer_package['shipping']['diff'] ) ) && 0 > $offer_package['shipping']['diff']['cost'] ) {
-				$this->add_payment_parameters( array(
-					'AMT'              => $total_amount,
-					'CURRENCYCODE'     => WFOCU_WC_Compatibility::get_order_currency( $order ),
-					'ITEMAMT'          => $this->round( $order_subtotal ),
-					'SHIPPINGAMT'      => 0,
-					'SHIPDISCAMT'      => ( isset( $offer_package['shipping'] ) && isset( $offer_package['shipping']['diff'] ) ) ? $offer_package['shipping']['diff']['cost'] : 0,
-					'INVNUM'           => $this->get_wc_gateway()->get_option( 'invoice_prefix' ) . $this->get_order_number( $order ),
-					'PAYMENTACTION'    => $type,
-					'PAYMENTREQUESTID' => WFOCU_WC_Compatibility::get_order_id( $order ),
-					'TAXAMT'           => ( isset( $offer_package['taxes'] ) ) ? $offer_package['taxes'] : 0,
-					'CUSTOM'           => wp_json_encode( array(
-						'_wfocu_o_id'       => $this->get_wc_gateway()->get_option( 'invoice_prefix' ) . $this->get_order_number( $order ),
-						'_wfocu_session_id' => WFOCU_Core()->data->get_transient_key(),
-					) ),
-				) );
+				$this->add_payment_parameters(
+					array(
+						'AMT'              => $total_amount,
+						'CURRENCYCODE'     => WFOCU_WC_Compatibility::get_order_currency( $order ),
+						'ITEMAMT'          => $this->round( $order_subtotal ),
+						'SHIPPINGAMT'      => 0,
+						'SHIPDISCAMT'      => ( isset( $offer_package['shipping'] ) && isset( $offer_package['shipping']['diff'] ) ) ? $offer_package['shipping']['diff']['cost'] : 0,
+						'INVNUM'           => $this->get_wc_gateway()->get_option( 'invoice_prefix' ) . $this->get_order_number( $order ),
+						'PAYMENTACTION'    => $type,
+						'PAYMENTREQUESTID' => WFOCU_WC_Compatibility::get_order_id( $order ),
+						'TAXAMT'           => ( isset( $offer_package['taxes'] ) ) ? $offer_package['taxes'] : 0,
+						'CUSTOM'           => wp_json_encode(
+							array(
+								'_wfocu_o_id'       => $this->get_wc_gateway()->get_option( 'invoice_prefix' ) . $this->get_order_number( $order ),
+								'_wfocu_session_id' => WFOCU_Core()->data->get_transient_key(),
+							)
+						),
+					)
+				);
 			} else {
-				$this->add_payment_parameters( array(
-					'AMT'              => $total_amount,
-					'CURRENCYCODE'     => WFOCU_WC_Compatibility::get_order_currency( $order ),
-					'ITEMAMT'          => $this->round( $order_subtotal ),
-					'SHIPPINGAMT'      => ( isset( $offer_package['shipping'] ) && isset( $offer_package['shipping']['diff'] ) ) ? $offer_package['shipping']['diff']['cost'] : 0,
-					'INVNUM'           => $this->get_wc_gateway()->get_option( 'invoice_prefix' ) . $this->get_order_number( $order ),
-					'PAYMENTACTION'    => $type,
-					'PAYMENTREQUESTID' => WFOCU_WC_Compatibility::get_order_id( $order ),
-					'TAXAMT'           => ( isset( $offer_package['taxes'] ) ) ? $offer_package['taxes'] : 0,
-					'CUSTOM'           => wp_json_encode( array(
-						'_wfocu_o_id'       => $this->get_wc_gateway()->get_option( 'invoice_prefix' ) . $this->get_order_number( $order ),
-						'_wfocu_session_id' => WFOCU_Core()->data->get_transient_key(),
-					) ),
-				) );
+				$this->add_payment_parameters(
+					array(
+						'AMT'              => $total_amount,
+						'CURRENCYCODE'     => WFOCU_WC_Compatibility::get_order_currency( $order ),
+						'ITEMAMT'          => $this->round( $order_subtotal ),
+						'SHIPPINGAMT'      => ( isset( $offer_package['shipping'] ) && isset( $offer_package['shipping']['diff'] ) ) ? $offer_package['shipping']['diff']['cost'] : 0,
+						'INVNUM'           => $this->get_wc_gateway()->get_option( 'invoice_prefix' ) . $this->get_order_number( $order ),
+						'PAYMENTACTION'    => $type,
+						'PAYMENTREQUESTID' => WFOCU_WC_Compatibility::get_order_id( $order ),
+						'TAXAMT'           => ( isset( $offer_package['taxes'] ) ) ? $offer_package['taxes'] : 0,
+						'CUSTOM'           => wp_json_encode(
+							array(
+								'_wfocu_o_id'       => $this->get_wc_gateway()->get_option( 'invoice_prefix' ) . $this->get_order_number( $order ),
+								'_wfocu_session_id' => WFOCU_Core()->data->get_transient_key(),
+							)
+						),
+					)
+				);
 			}
-
 		}
 
 		/**
@@ -905,7 +918,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 		 *
 		 * The description is automatically truncated to the 127 char limit.
 		 *
-		 * @param array $item cart or order item
+		 * @param array       $item cart or order item
 		 * @param \WC_Product $product product data
 		 *
 		 * @return string
@@ -921,17 +934,15 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 			}
 
 			return html_entity_decode( $item_desc, ENT_NOQUOTES, 'UTF-8' );
-
 		}
 
 		/**
 		 * Round a float
 		 *
 		 * @param float $number
-		 * @param int $precision Optional. The number of decimal digits to round to.
+		 * @param int   $precision Optional. The number of decimal digits to round to.
 		 *
 		 * @since 2.0.9
-		 *
 		 */
 		private function round( $number, $precision = 2 ) {
 			return round( (float) $number, $precision );
@@ -943,7 +954,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 		 * with `L_PAYMENTREQUEST_0_` for convenience and readability
 		 *
 		 * @param array $params
-		 * @param int $item_count current item count
+		 * @param int   $item_count current item count
 		 *
 		 * @since 2.0
 		 */
@@ -960,6 +971,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 
 		/**
 		 * Tell the system to run without a token or not
+		 *
 		 * @return bool
 		 */
 
@@ -993,12 +1005,14 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 		 */
 		public function populate_credentials( $api_username, $api_password, $api_signature, $api_version ) {
 
-			$this->add_parameters( array(
-				'USER'      => $api_username,
-				'PWD'       => $api_password,
-				'SIGNATURE' => $api_signature,
-				'VERSION'   => $api_version,
-			) );
+			$this->add_parameters(
+				array(
+					'USER'      => $api_username,
+					'PWD'       => $api_password,
+					'SIGNATURE' => $api_signature,
+					'VERSION'   => $api_version,
+				)
+			);
 		}
 
 		/**
@@ -1210,7 +1224,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 		 * @param string $token
 		 *
 		 * @see WFOCU_Gateway_Integration_PayPal_Standard::get_express_checkout_details()
-		 *
 		 */
 		public function get_express_checkout_args( $token ) {
 
@@ -1227,7 +1240,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 			// any non-success ACK is considered an error, see
 			// https://developer.paypal.com/docs/classic/api/NVPAPIOverview/#id09C2F0K30L7
 			return ( 'Success' !== $this->get_value_from_response( $response, 'ACK' ) && 'SuccessWithWarning' !== $this->get_value_from_response( $response, 'ACK' ) );
-
 		}
 
 		public function get_value_from_response( $response, $key ) {
@@ -1273,12 +1285,11 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 			$get_offer_settings = WFOCU_Core()->data->get( '_current_offer_data' );
 			$current_action     = current_action();
 			if ( ( ( false === $get_offer_settings->settings->ask_confirmation && 'wfocu_front_buy_button_attributes' === $current_action ) || ( true === $get_offer_settings->settings->ask_confirmation && 'wfocu_front_confirmation_button_attributes' === $current_action ) ) ) {
-				$this->button_max_count ++;
+				++$this->button_max_count;
 				$attributes['id'] = 'wfocu_paypal_only_' . $iteration;
 			}
 
 			return $attributes;
-
 		}
 
 		/**
@@ -1324,7 +1335,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 						}
 					}
 					if ( isset( $result->L_LONGMESSAGE0 ) ) {
-						WFOCU_Core()->log->log( "Paypal Express checkout refund error message: " . print_r( $result->L_LONGMESSAGE0, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+						WFOCU_Core()->log->log( 'Paypal Express checkout refund error message: ' . print_r( $result->L_LONGMESSAGE0, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 					}
 				}
 
@@ -1410,7 +1421,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 		 *
 		 * @return object
 		 * @since 2.2.0
-		 *
 		 */
 		protected function get_parsed_response( $raw_response_body ) {
 
@@ -1462,7 +1472,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 			foreach ( $params as $key => $val ) {
 				$this->add_parameter( $key, $val );
 			}
-
 		}
 
 		/**
@@ -1545,7 +1554,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 		 * 4. If order contains funnel_id as meta to ensure that upstroke funnel ran/running on this order
 		 *
 		 * @param WC_Order $order
-		 * @param array $posted
+		 * @param array    $posted
 		 */
 		public function handle_ipn( $order, $posted ) {
 			if ( ! in_array( $posted['txn_type'], array( 'cart', 'express_checkout' ), true ) || 'completed' !== strtolower( $posted['payment_status'] ) || ! $this->is_enabled( $order ) ) {
@@ -1559,7 +1568,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 			if ( empty( $get_meta_funnel_id ) ) {
 				return;
 			}
-			WFOCU_Core()->log->log( 'Order #' . $order->get_id() . " :: Prevent IPN to process" );
+			WFOCU_Core()->log->log( 'Order #' . $order->get_id() . ' :: Prevent IPN to process' );
 			exit;
 		}
 
@@ -1571,9 +1580,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Paypal_Express_Checkout' ) ) {
 				} else {
 					wc_gateway_ppec_save_transaction_data( $new_order, $this->last_response, 'PAYMENTINFO_0_' );
 				}
-
 			}
-
 		}
 	}
 

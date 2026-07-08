@@ -115,8 +115,65 @@ class PartnersEndpoint
     {
         $cached = $this->cache->get(self::SELLER_STATUS_CACHE_KEY);
         if ($cached instanceof SellerStatus) {
-            return $cached;
+            /**
+             * Filters the seller status object before it is returned.
+             *
+             * @param SellerStatus $status The seller status (from cache or API).
+             */
+            return apply_filters('woocommerce_paypal_payments_seller_status', $cached);
         }
+        /*
+         * Back off if a recent failure was registered, to avoid hammering the
+         * merchant-integrations endpoint on persistent errors (e.g. a 403). The
+         * window matches the success cache TTL, and is anchored to the last real
+         * API failure since add_failure() is only written in
+         * fetch_seller_status_from_api() on a non-200 response.
+         */
+        if ($this->failure_registry->has_failure_in_timeframe(FailureRegistry::SELLER_STATUS_KEY, self::SELLER_STATUS_CACHE_TTL)) {
+            return $this->handle_seller_status_failure(new RuntimeException('Seller status recently failed; backing off the merchant-integrations endpoint.'));
+        }
+        try {
+            $status = $this->fetch_seller_status_from_api();
+        } catch (RuntimeException $exception) {
+            return $this->handle_seller_status_failure($exception);
+        }
+        $this->cache->set(self::SELLER_STATUS_CACHE_KEY, $status, self::SELLER_STATUS_CACHE_TTL);
+        return apply_filters('woocommerce_paypal_payments_seller_status', $status);
+    }
+    /**
+     * Handles a seller status failure by applying the configured fallback, or
+     * re-throwing when no fallback is provided.
+     *
+     * @param RuntimeException $exception The exception describing the failure.
+     * @return SellerStatus
+     * @throws RuntimeException When no fallback is configured.
+     */
+    private function handle_seller_status_failure(RuntimeException $exception): SellerStatus
+    {
+        /**
+         * Provides a fallback SellerStatus when the API call fails.
+         *
+         * Return a SellerStatus instance to use as fallback instead of
+         * throwing. Return null to let the exception propagate.
+         *
+         * @param SellerStatus|null $fallback Default null (no fallback).
+         */
+        $fallback = apply_filters('woocommerce_paypal_payments_seller_status_fallback', null);
+        if ($fallback instanceof SellerStatus) {
+            $this->logger->log('info', 'Seller status API failed, using configured fallback.', array('error' => $exception->getMessage()));
+            $this->cache->set(self::SELLER_STATUS_CACHE_KEY, $fallback, self::SELLER_STATUS_CACHE_TTL);
+            return apply_filters('woocommerce_paypal_payments_seller_status', $fallback);
+        }
+        throw $exception;
+    }
+    /**
+     * Fetches the seller status from the PayPal API.
+     *
+     * @return SellerStatus
+     * @throws RuntimeException When request could not be fulfilled.
+     */
+    private function fetch_seller_status_from_api(): SellerStatus
+    {
         $url = trailingslashit($this->host) . 'v1/customer/partners/' . $this->partner_id . '/merchant-integrations/' . $this->merchant_id;
         $bearer = $this->bearer->bearer();
         $args = array('method' => 'GET', 'headers' => array('Authorization' => 'Bearer ' . $bearer->token(), 'Content-Type' => 'application/json'));
@@ -136,9 +193,7 @@ class PartnersEndpoint
             throw $error;
         }
         $this->failure_registry->clear_failures(FailureRegistry::SELLER_STATUS_KEY);
-        $status = $this->seller_status_factory->from_paypal_response($json);
-        $this->cache->set(self::SELLER_STATUS_CACHE_KEY, $status, self::SELLER_STATUS_CACHE_TTL);
-        return $status;
+        return $this->seller_status_factory->from_paypal_response($json);
     }
     /**
      * Clears the cached seller status response, forcing a fresh API call

@@ -3,14 +3,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 if ( ! class_exists( 'WFOCU_Template_Group_Divi' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Template_Group_Divi extends WFOCU_Template_Group {
 		public $allow_empty_template = true;
-		public $prefix = 'divi';
-		public $listing_index = 2;
+		public $prefix               = 'divi';
+		public $listing_index        = 2;
 
 		public function __construct() {
 			parent::__construct();
-			add_action( 'divi_extensions_init', [ $this, 'init_extension' ] );
+			add_action( 'divi_extensions_init', array( $this, 'init_extension' ) );
 		}
 
 		public function get_nice_name() {
@@ -33,9 +34,12 @@ if ( ! class_exists( 'WFOCU_Template_Group_Divi' ) ) {
 				if ( empty( $temp_val ) ) {
 					continue;
 				}
-				$temp_val = wp_parse_args( $temp_val, array(
-					'path' => $this->get_template_divi(),
-				) );
+				$temp_val = wp_parse_args(
+					$temp_val,
+					array(
+						'path' => $this->get_template_divi(),
+					)
+				);
 				WFOCU_Core()->template_loader->register_template( $temp_key, $temp_val );
 			}
 		}
@@ -47,25 +51,33 @@ if ( ! class_exists( 'WFOCU_Template_Group_Divi' ) ) {
 		}
 
 		public function get_edit_link() {
-			return add_query_arg( [
-				'p'         => '{{offer_id}}',
-				'et_fb'     => '1',
-				'PageSpeed' => 'off',
-			], site_url() );
+			return add_query_arg(
+				array(
+					'p'         => '{{offer_id}}',
+					'et_fb'     => '1',
+					'PageSpeed' => 'off',
+				),
+				site_url()
+			);
 		}
 
 		public function get_preview_link() {
-			return add_query_arg( [
-				'p' => '{{offer_id}}',
-			], site_url() );
+			return add_query_arg(
+				array(
+					'p' => '{{offer_id}}',
+				),
+				site_url()
+			);
 		}
 
 
 		public function update_template( $template, $offer, $offer_settings ) {
-			wp_update_post( [
-				'ID'           => $offer,
-				'post_content' => '',
-			] );
+			wp_update_post(
+				array(
+					'ID'           => $offer,
+					'post_content' => '',
+				)
+			);
 
 			delete_post_meta( $offer, '_elementor_edit_mode' );
 			delete_post_meta( $offer, '_fl_builder_enabled' );
@@ -73,7 +85,6 @@ if ( ! class_exists( 'WFOCU_Template_Group_Divi' ) ) {
 			if ( $this->if_current_template_is_empty( $template ) ) {
 				return;
 			}
-
 
 			$response = WFOCU_Common::check_builder_status( 'divi' );
 			if ( true === $response['found'] && empty( $response['error'] ) ) {
@@ -108,16 +119,16 @@ if ( ! class_exists( 'WFOCU_Template_Group_Divi' ) ) {
 			if ( wp_doing_ajax() ) {
 
 				$post_type = WFOCU_Common::get_offer_post_type_slug();
-				if ( isset( $_REQUEST['action'] ) && "et_fb_get_saved_templates" == $_REQUEST['action'] && isset( $_REQUEST['et_post_type'] ) && $post_type !== $_REQUEST['et_post_type'] ) {
+				if ( isset( $_REQUEST['action'] ) && 'et_fb_get_saved_templates' == $_REQUEST['action'] && isset( $_REQUEST['et_post_type'] ) && $post_type !== $_REQUEST['et_post_type'] ) {
 					return;
 				}
 
-				if ( isset( $_REQUEST['action'] ) && "et_fb_update_builder_assets" == $_REQUEST['action'] && isset( $_REQUEST['et_post_type'] ) && $post_type !== $_REQUEST['et_post_type'] ) {
+				if ( isset( $_REQUEST['action'] ) && 'et_fb_update_builder_assets' == $_REQUEST['action'] && isset( $_REQUEST['et_post_type'] ) && $post_type !== $_REQUEST['et_post_type'] ) {
 					return;
 				}
 
 				$post_id = 0;
-				if ( isset( $_REQUEST['action'] ) && "heartbeat" == $_REQUEST['action'] && isset( $_REQUEST['data'] ) ) {
+				if ( isset( $_REQUEST['action'] ) && 'heartbeat' == $_REQUEST['action'] && isset( $_REQUEST['data'] ) ) {
 					if ( isset( $_REQUEST['data']['et'] ) ) {
 						$post_id = $_REQUEST['data']['et']['post_id'];
 
@@ -138,12 +149,9 @@ if ( ! class_exists( 'WFOCU_Template_Group_Divi' ) ) {
 				}
 			}
 
-
 			include __DIR__ . '/class-wfocu-divi-extension.php';
-
 		}
-
 	}
 
-	WFOCU_Core()->template_loader->register_group( new WFOCU_Template_Group_Divi, 'divi' );
+	WFOCU_Core()->template_loader->register_group( new WFOCU_Template_Group_Divi(), 'divi' );
 }

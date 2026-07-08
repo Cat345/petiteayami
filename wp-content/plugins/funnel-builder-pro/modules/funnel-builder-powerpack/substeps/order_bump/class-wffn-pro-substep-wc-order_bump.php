@@ -1,15 +1,16 @@
 <?php //phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class contains all the Order bump related funnel functionality
  * Class WFFN_Pro_Substep_WC_Order_Bump
  */
 if ( ! class_exists( 'WFFN_Pro_Substep_WC_Order_Bump' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Pro_Substep_WC_Order_Bump extends WFFN_Pro_Substep {
 
 		private static $ins = null;
-		public $slug = 'wc_order_bump';
+		public $slug        = 'wc_order_bump';
 
 		/**
 		 * WFFN_Pro_Substep_WC_Order_Bump constructor.
@@ -23,7 +24,7 @@ if ( ! class_exists( 'WFFN_Pro_Substep_WC_Order_Bump' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -35,7 +36,7 @@ if ( ! class_exists( 'WFFN_Pro_Substep_WC_Order_Bump' ) ) {
 		 * @return array
 		 */
 		public function maybe_get_ab_variants( $control_id ) {
-			$variants = [];
+			$variants = array();
 			$args     = array(
 				'post_type'      => WFOB_Common::get_bump_post_type_slug(),
 				'post_status'    => array( 'publish', 'draft' ),
@@ -44,9 +45,9 @@ if ( ! class_exists( 'WFFN_Pro_Substep_WC_Order_Bump' ) ) {
 					array(
 						'key'     => '_bwf_ab_variation_of',
 						'compare' => '=',
-						'value'   => $control_id
-					)
-				)
+						'value'   => $control_id,
+					),
+				),
 			);
 			$q        = new WP_Query( $args );
 			if ( $q->found_posts > 0 ) {
@@ -57,8 +58,6 @@ if ( ! class_exists( 'WFFN_Pro_Substep_WC_Order_Bump' ) ) {
 
 			return $variants;
 		}
-
-
 	}
 
 	if ( class_exists( 'WFFN_Pro_Core' ) && class_exists( 'WFOB_Core' ) ) {

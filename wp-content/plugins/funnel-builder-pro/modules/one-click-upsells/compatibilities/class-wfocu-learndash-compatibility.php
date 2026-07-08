@@ -1,14 +1,18 @@
 <?php
 if ( ! class_exists( 'WFOCU_LearnDash_Compatibility' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_LearnDash_Compatibility {
 
 		public function __construct() {
 			add_filter( 'wfocu_offer_product_types', array( $this, 'add_course_in_product_type_support' ), 10, 1 );
-			add_action( 'plugins_loaded', function () {
-				if ( $this->is_enable() ) {
-					add_action( 'wfocu_offer_accepted_and_processed', array( $this, 'maybe_create_learn_dash_user' ), 999, 4 );
+			add_action(
+				'plugins_loaded',
+				function () {
+					if ( $this->is_enable() ) {
+						add_action( 'wfocu_offer_accepted_and_processed', array( $this, 'maybe_create_learn_dash_user' ), 999, 4 );
+					}
 				}
-			} );
+			);
 		}
 
 		public function is_enable() {
@@ -54,8 +58,6 @@ if ( ! class_exists( 'WFOCU_LearnDash_Compatibility' ) ) {
 				}
 			}
 		}
-
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_LearnDash_Compatibility(), 'wfocu_learndash_compatibility' );

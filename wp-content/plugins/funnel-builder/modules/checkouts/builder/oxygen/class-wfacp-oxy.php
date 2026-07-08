@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFACP_OXY' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_OXY {
 		private static $ins          = null;
 		private $is_oxy              = false;
@@ -46,10 +47,6 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 			add_filter( 'wfacp_post', array( $this, 'check_current_page_is_aero_page' ) );
 			add_action( 'wfacp_template_load', array( $this, 'load_oxy_abs_class' ), 10, 2 );
 			add_action( 'oxygen_enqueue_frontend_scripts', array( $this, 'enable_self_page_css' ) );
-		}
-
-		private function importer() {
-			add_action( 'wp_loaded', array( $this, 'load_oxy_importer' ), 150 );
 		}
 
 		public function load_oxy_importer() {

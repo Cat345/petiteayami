@@ -12,6 +12,7 @@ if ( ! class_exists( 'WC_Report_wfob_by_date' ) ) {
 	 * @subpackage    WC_Report_bumps_By_Date
 	 * @category    Class
 	 */
+	#[\AllowDynamicProperties]
 	class WC_Report_wfob_by_date extends WC_Admin_Report {
 
 		/**
@@ -27,7 +28,13 @@ if ( ! class_exists( 'WC_Report_wfob_by_date' ) ) {
 		 *
 		 * @var stdClass
 		 */
-		private $report_data = [ 'accepted' => [], 'rejected' => [], 'conversion' => [], 'revenue' => [], 'average_revenue' => 0 ];
+		private $report_data = array(
+			'accepted'        => array(),
+			'rejected'        => array(),
+			'conversion'      => array(),
+			'revenue'         => array(),
+			'average_revenue' => 0,
+		);
 
 		/**
 		 * Get report data.
@@ -45,14 +52,12 @@ if ( ! class_exists( 'WC_Report_wfob_by_date' ) ) {
 				$this->report_data->{$first_key}->{$date}->date  = $date;
 				$this->report_data->{$first_key}->{$date}->count = 0;
 			}
-
 		}
 
 		/**
 		 * Get all data needed for this report and store in the class.
 		 */
 		private function query_report_data() {
-
 
 			global $wpdb;
 
@@ -61,9 +66,7 @@ if ( ! class_exists( 'WC_Report_wfob_by_date' ) ) {
 			$time           = strtotime( '23 hours 59 minutes', $this->end_date );
 			$this->end_date = $time;
 			$end_date       = date( 'Y-m-d H:i:s', $this->end_date );
-			$where          = "where `date` >= '{$start_date}' AND `date` <='{$end_date}'";
-			$sql            = "select * from {$wpdb->wfob_stats} {$where}";
-			$results        = $wpdb->get_results( $sql, ARRAY_A );
+			$results        = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->wfob_stats} WHERE \`date\` >= %s AND \`date\` <= %s", $start_date, $end_date ), ARRAY_A );
 
 			$this->report_data                  = new stdClass();
 			$this->report_data->bump_views      = 0;
@@ -78,19 +81,17 @@ if ( ! class_exists( 'WC_Report_wfob_by_date' ) ) {
 			$this->report_data->revenue         = new stdClass();
 			$this->report_data->average_revenue = 0;
 
-
-			$static_data = [
+			$static_data = array(
 				'no_accepted'     => 0,
 				'no_rejected'     => 0,
 				'conversion_rate' => 0,
 				'total_revenue'   => 0,
-			];
+			);
 
 			if ( ! empty( $results ) ) {
 				foreach ( $results as $result ) {
 
 					$date = $result['date'];
-
 
 					$this->add_default_property( 'daily_views', $date );
 					$this->add_default_property( 'accepted', $date );
@@ -113,7 +114,6 @@ if ( ! class_exists( 'WC_Report_wfob_by_date' ) ) {
 						$this->report_data->revenue->{$date}->count += $result['total'];
 					}
 
-
 					$accepted_bumps = $this->report_data->accepted->{$date}->count;
 					$rejected_bumps = $this->report_data->rejected->{$date}->count;
 
@@ -127,11 +127,9 @@ if ( ! class_exists( 'WC_Report_wfob_by_date' ) ) {
 				$this->report_data->conversion_rate = number_format( $this->report_data->conversion_rate, 2 );
 			}
 
-
 			$this->report_data = apply_filters( 'woocommerce_admin_order_bump_report_data', $this->report_data );
 
 			return $this->report_data;
-
 		}
 
 		/**
@@ -170,7 +168,6 @@ if ( ! class_exists( 'WC_Report_wfob_by_date' ) ) {
 				'color'            => $this->chart_colours['rejected'],
 				'highlight_series' => 2,
 			);
-
 
 			$legend[] = array(
 				'title'       => sprintf( __( '%s Conversion rates in this period', 'woofunnels-order-bump' ), '<strong>' . $data->conversion_rate . '%</strong>' ),
@@ -218,17 +215,17 @@ if ( ! class_exists( 'WC_Report_wfob_by_date' ) ) {
 		public function get_export_button() {
 			$current_range = ! empty( $_GET['range'] ) ? sanitize_text_field( $_GET['range'] ) : '7day';
 			?>
-            <a
-                href="#"
-                download="report-<?php echo esc_attr( $current_range ); ?>-<?php echo date_i18n( 'Y-m-d', current_time( 'timestamp' ) ); ?>.csv"
-                class="export_csv"
-                data-export="chart"
-                data-xaxes="<?php esc_attr_e( 'Date', 'woofunnels-order-bump' ); ?>"
-                data-exclude_series=""
-                data-groupby="<?php echo $this->chart_groupby; ?>"
-            >
+			<a
+				href="#"
+				download="report-<?php echo esc_attr( $current_range ); ?>-<?php echo date_i18n( 'Y-m-d', current_time( 'timestamp' ) ); ?>.csv"
+				class="export_csv"
+				data-export="chart"
+				data-xaxes="<?php esc_attr_e( 'Date', 'woofunnels-order-bump' ); ?>"
+				data-exclude_series=""
+				data-groupby="<?php echo $this->chart_groupby; ?>"
+			>
 				<?php _e( 'Export CSV', 'woocommerce' ); ?>
-            </a>
+			</a>
 			<?php
 		}
 
@@ -259,7 +256,6 @@ if ( ! class_exists( 'WC_Report_wfob_by_date' ) ) {
 			$conversion = $this->prepare_chart_data( $this->report_data->conversion, 'date', 'count', $this->chart_interval, $this->start_date, $this->chart_groupby );
 			$revenue    = $this->prepare_chart_data( $this->report_data->revenue, 'date', 'count', $this->chart_interval, $this->start_date, $this->chart_groupby );
 
-
 			// Encode in json format
 			$chart_data = array(
 				'views'      => array_values( $views ),
@@ -269,159 +265,158 @@ if ( ! class_exists( 'WC_Report_wfob_by_date' ) ) {
 				'revenue'    => array_values( $revenue ),
 			);
 
-
 			// 3rd party filtering of report data
 			$chart_data = apply_filters( 'woocommerce_admin_order_bump_report_chart_data', $chart_data );
 
 			?>
-            <div class="chart-container">
-                <div class="chart-placeholder main"></div>
-            </div>
-            <script type="text/javascript">
+			<div class="chart-container">
+				<div class="chart-placeholder main"></div>
+			</div>
+			<script type="text/javascript">
 
-                var main_chart;
+				var main_chart;
 
-                jQuery(function () {
-                    var bumps_data = jQuery.parseJSON('<?php echo json_encode( $chart_data ); ?>');
-                    var drawGraph = function (highlight) {
-                        var series = [
-                            {
-                                label: "<?php echo esc_js( __( 'Bumps Triggered', 'woofunnels-order-bump' ) ); ?>",
-                                data: bumps_data.views,
-                                color: '<?php echo $this->chart_colours['views']; ?>',
-                                yaxis: 2,
-                                bars: {
-                                    fillColor: '<?php echo $this->chart_colours['views']; ?>',
-                                    fill: true,
-                                    show: true,
-                                    lineWidth: 3,
-                                    order: 0,
-                                    barWidth: <?php echo $this->barwidth; ?>* 0.25,
-                                    align: 'center'
-                                },
-                                shadowSize: 0,
-                                hoverable: true,
-                            },
-                            {
-                                label: "<?php echo esc_js( __( 'Accepted', 'woofunnels-order-bump' ) ); ?>",
-                                data: bumps_data.accepted,
-                                color: '<?php echo $this->chart_colours['accepted']; ?>',
-                                yaxis: 2,
-                                bars: {
-                                    fillColor: '<?php echo $this->chart_colours['accepted']; ?>',
-                                    fill: true,
-                                    show: true,
-                                    lineWidth: 3,
-                                    order: 1,
-                                    barWidth: <?php echo $this->barwidth; ?>* 0.25,
-                                    align: 'center'
-                                },
-                                shadowSize: 0,
-                                hoverable: true,
-                            },
-                            {
-                                label: "<?php echo esc_js( __( 'Rejected', 'woofunnels-order-bump' ) ); ?>",
-                                data: bumps_data.rejected,
-                                color: '<?php echo $this->chart_colours['rejected']; ?>',
-                                yaxis: 2,
-                                bars: {
-                                    fillColor: '<?php echo $this->chart_colours['rejected']; ?>',
-                                    fill: true,
-                                    show: true,
-                                    lineWidth: 3,
-                                    order: 2,
-                                    barWidth: <?php echo $this->barwidth; ?>* 0.25,
-                                    align: 'center'
-                                },
-                                shadowSize: 0,
-                                hoverable: true,
-                            },
-                            {
-                                label: "<?php echo esc_js( __( 'Revenue', 'woofunnels-order-bump' ) ); ?>",
-                                data: bumps_data.revenue,
-                                yaxis: 1,
-                                color: '<?php echo $this->chart_colours['revenue']; ?>',
-                                points: {show: true, radius: 5, lineWidth: 2, fillColor: '#fff', fill: true},
-                                lines: {show: true, lineWidth: 5, fill: false},
-                                shadowSize: 0,
-                            }
-                        ];
+				jQuery(function () {
+					var bumps_data = jQuery.parseJSON('<?php echo json_encode( $chart_data ); ?>');
+					var drawGraph = function (highlight) {
+						var series = [
+							{
+								label: "<?php echo esc_js( __( 'Bumps Triggered', 'woofunnels-order-bump' ) ); ?>",
+								data: bumps_data.views,
+								color: '<?php echo $this->chart_colours['views']; ?>',
+								yaxis: 2,
+								bars: {
+									fillColor: '<?php echo $this->chart_colours['views']; ?>',
+									fill: true,
+									show: true,
+									lineWidth: 3,
+									order: 0,
+									barWidth: <?php echo $this->barwidth; ?>* 0.25,
+									align: 'center'
+								},
+								shadowSize: 0,
+								hoverable: true,
+							},
+							{
+								label: "<?php echo esc_js( __( 'Accepted', 'woofunnels-order-bump' ) ); ?>",
+								data: bumps_data.accepted,
+								color: '<?php echo $this->chart_colours['accepted']; ?>',
+								yaxis: 2,
+								bars: {
+									fillColor: '<?php echo $this->chart_colours['accepted']; ?>',
+									fill: true,
+									show: true,
+									lineWidth: 3,
+									order: 1,
+									barWidth: <?php echo $this->barwidth; ?>* 0.25,
+									align: 'center'
+								},
+								shadowSize: 0,
+								hoverable: true,
+							},
+							{
+								label: "<?php echo esc_js( __( 'Rejected', 'woofunnels-order-bump' ) ); ?>",
+								data: bumps_data.rejected,
+								color: '<?php echo $this->chart_colours['rejected']; ?>',
+								yaxis: 2,
+								bars: {
+									fillColor: '<?php echo $this->chart_colours['rejected']; ?>',
+									fill: true,
+									show: true,
+									lineWidth: 3,
+									order: 2,
+									barWidth: <?php echo $this->barwidth; ?>* 0.25,
+									align: 'center'
+								},
+								shadowSize: 0,
+								hoverable: true,
+							},
+							{
+								label: "<?php echo esc_js( __( 'Revenue', 'woofunnels-order-bump' ) ); ?>",
+								data: bumps_data.revenue,
+								yaxis: 1,
+								color: '<?php echo $this->chart_colours['revenue']; ?>',
+								points: {show: true, radius: 5, lineWidth: 2, fillColor: '#fff', fill: true},
+								lines: {show: true, lineWidth: 5, fill: false},
+								shadowSize: 0,
+							}
+						];
 
-                        if (highlight !== 'undefined' && series[highlight]) {
-                            highlight_series = series[highlight];
+						if (highlight !== 'undefined' && series[highlight]) {
+							highlight_series = series[highlight];
 
-                            highlight_series.color = '#9c5d90';
+							highlight_series.color = '#9c5d90';
 
-                            if (highlight_series.bars) {
-                                highlight_series.bars.fillColor = '#9c5d90';
-                            }
+							if (highlight_series.bars) {
+								highlight_series.bars.fillColor = '#9c5d90';
+							}
 
-                            if (highlight_series.lines) {
-                                highlight_series.lines.lineWidth = 5;
-                            }
-                        }
+							if (highlight_series.lines) {
+								highlight_series.lines.lineWidth = 5;
+							}
+						}
 
-                        main_chart = jQuery.plot(
-                            jQuery('.chart-placeholder.main'),
-                            series,
-                            {
-                                legend: {
-                                    show: false
-                                },
-                                grid: {
-                                    color: '#aaa',
-                                    borderColor: 'transparent',
-                                    borderWidth: 0,
-                                    hoverable: true
-                                },
-                                xaxes: [{
-                                    color: '#aaa',
-                                    position: "bottom",
-                                    tickColor: 'transparent',
-                                    mode: "time",
-                                    timeformat: "<?php echo ( 'day' === $this->chart_groupby ) ? '%d %b' : '%b'; ?>",
-                                    monthNames: <?php echo json_encode( array_values( $wp_locale->month_abbrev ) ); ?>,
-                                    tickLength: 1,
-                                    minTickSize: [1, "<?php echo $this->chart_groupby; ?>"],
-                                    font: {
-                                        color: "#aaa"
-                                    }
-                                }],
-                                yaxes: [
-                                    {
-                                        min: 0,
-                                        minTickSize: 1,
-                                        tickDecimals: 0,
-                                        color: '#d4d9dc',
-                                        font: {color: "#aaa"}
-                                    },
-                                    {
-                                        position: "right",
-                                        min: 0,
-                                        tickDecimals: 2,
-                                        alignTicksWithAxis: 1,
-                                        color: 'transparent',
-                                        font: {color: "#aaa"}
-                                    }
-                                ],
-                            }
-                        );
+						main_chart = jQuery.plot(
+							jQuery('.chart-placeholder.main'),
+							series,
+							{
+								legend: {
+									show: false
+								},
+								grid: {
+									color: '#aaa',
+									borderColor: 'transparent',
+									borderWidth: 0,
+									hoverable: true
+								},
+								xaxes: [{
+									color: '#aaa',
+									position: "bottom",
+									tickColor: 'transparent',
+									mode: "time",
+									timeformat: "<?php echo ( 'day' === $this->chart_groupby ) ? '%d %b' : '%b'; ?>",
+									monthNames: <?php echo json_encode( array_values( $wp_locale->month_abbrev ) ); ?>,
+									tickLength: 1,
+									minTickSize: [1, "<?php echo $this->chart_groupby; ?>"],
+									font: {
+										color: "#aaa"
+									}
+								}],
+								yaxes: [
+									{
+										min: 0,
+										minTickSize: 1,
+										tickDecimals: 0,
+										color: '#d4d9dc',
+										font: {color: "#aaa"}
+									},
+									{
+										position: "right",
+										min: 0,
+										tickDecimals: 2,
+										alignTicksWithAxis: 1,
+										color: 'transparent',
+										font: {color: "#aaa"}
+									}
+								],
+							}
+						);
 
-                        jQuery('.chart-placeholder').resize();
-                    }
+						jQuery('.chart-placeholder').resize();
+					}
 
-                    drawGraph();
+					drawGraph();
 
-                    jQuery('.highlight_series').hover(
-                        function () {
-                            drawGraph(jQuery(this).data('series'));
-                        },
-                        function () {
-                            drawGraph();
-                        }
-                    );
-                });
-            </script>
+					jQuery('.highlight_series').hover(
+						function () {
+							drawGraph(jQuery(this).data('series'));
+						},
+						function () {
+							drawGraph();
+						}
+					);
+				});
+			</script>
 			<?php
 		}
 	}

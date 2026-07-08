@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Input_Time' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Input_Time extends wfob_Input_Text {
 
 		public function __construct() {
@@ -15,8 +16,7 @@ if ( ! class_exists( 'wfob_Input_Time' ) ) {
 				$field['id'] = sanitize_title( $field['id'] );
 			}
 
-			echo '<input placeholder="For eg: 23:59" name="' . $field['name'] . '" type="text" id="' . esc_attr( $field['id'] ) . '" class="wfob-time-picker-field' . esc_attr( $field['class'] ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . $value . '" />';
+			echo '<input placeholder="For eg: 23:59" name="' . $field['name'] . '" type="text" id="' . esc_attr( $field['id'] ) . '" class="wfob-time-picker-field' . esc_attr( $field['class'] ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $value ) . '" />';
 		}
-
 	}
 }

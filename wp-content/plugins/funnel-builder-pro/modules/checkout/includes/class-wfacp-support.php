@@ -6,13 +6,13 @@ if ( ! class_exists( 'WFACP_WooFunnels_Support' ) ) {
 
 		public static $_instance = null;
 		/** Can't be change this further, as is used for license activation */
-		public $full_name = 'FunnelKit Checkout';
+		public $full_name         = 'FunnelKit Checkout';
 		public $is_license_needed = true;
 		/**
 		 * @var WooFunnels_License_check
 		 */
 		public $license_instance;
-		protected $slug = 'woofunnels-aero-checkout';
+		protected $slug             = 'woofunnels-aero-checkout';
 		protected $encoded_basename = '';
 
 		public function __construct() {
@@ -21,7 +21,6 @@ if ( ! class_exists( 'WFACP_WooFunnels_Support' ) ) {
 
 			add_action( 'wfacp_page_right_content', array( $this, 'wfacp_options_page_right_content' ), 10 );
 
-
 			add_action( 'admin_menu', array( $this, 'add_menus' ), 81 );
 			add_filter( 'woofunnels_plugins_license_needed', array( $this, 'add_license_support' ), 10 );
 			add_action( 'init', array( $this, 'init_licensing' ), 12 );
@@ -29,14 +28,18 @@ if ( ! class_exists( 'WFACP_WooFunnels_Support' ) ) {
 			add_action( 'woofunnels_licenses_submitted', array( $this, 'process_licensing_form' ) );
 			add_action( 'woofunnels_deactivate_request', array( $this, 'maybe_process_deactivation' ) );
 
-
-			add_filter( 'woofunnels_default_reason_' . WFACP_PLUGIN_BASENAME, function () {
-				return 1;
-			} );
-			add_filter( 'woofunnels_default_reason_default', function () {
-				return 1;
-			} );
-
+			add_filter(
+				'woofunnels_default_reason_' . WFACP_PLUGIN_BASENAME,
+				function () {
+					return 1;
+				}
+			);
+			add_filter(
+				'woofunnels_default_reason_default',
+				function () {
+					return 1;
+				}
+			);
 		}
 
 		/**
@@ -44,7 +47,7 @@ if ( ! class_exists( 'WFACP_WooFunnels_Support' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null == self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -53,7 +56,7 @@ if ( ! class_exists( 'WFACP_WooFunnels_Support' ) ) {
 
 		public function wfacp_options_page_right_content() {
 
-			$notifications_list = [];
+			$notifications_list = array();
 			if ( class_exists( 'WooFunnels_Notifications' ) ) {
 
 				$notifications_list = WooFunnels_Notifications::get_instance()->get_all_notifications();
@@ -62,73 +65,87 @@ if ( ! class_exists( 'WFACP_WooFunnels_Support' ) ) {
 
 			if ( is_array( $notifications_list ) && count( $notifications_list ) > 0 ) {
 				?>
-                <div class="postbox wfacp_side_content wfacp_allow_panel_close wf_notification_list_wrap">
-                    <button type="button" class="handlediv">
-                        <span class="toggle-indicator"></span>
-                    </button>
-                    <h3 class="hndle"><span>FunnelKit Checkout Alert(s)</span></h3>
+				<div class="postbox wfacp_side_content wfacp_allow_panel_close wf_notification_list_wrap">
+					<button type="button" class="handlediv">
+						<span class="toggle-indicator"></span>
+					</button>
+					<h3 class="hndle"><span>FunnelKit Checkout Alert(s)</span></h3>
 					<?php
 					WooFunnels_Notifications::get_instance()->get_notification_html( $notifications_list );
 					?>
-                </div>
+				</div>
 				<?php
 			}
 			?>
 
-            <div class="postbox wfacp_side_content wfacp_allow_panel_close">
-                <button type="button" class="handlediv">
-                    <span class="toggle-indicator"></span>
-                </button>
-                <h3 class="hndle"><span>Must Read Links</span></h3>
-                <div class="inside">
+			<div class="postbox wfacp_side_content wfacp_allow_panel_close">
+				<button type="button" class="handlediv">
+					<span class="toggle-indicator"></span>
+				</button>
+				<h3 class="hndle"><span>Must Read Links</span></h3>
+				<div class="inside">
 					<?php
-					$support_link    = add_query_arg( array(
-						'utm_source'   => 'wfacp-pro',
-						'utm_medium'   => 'banner-click',
-						'utm_campaign' => 'resource',
-						'utm_term'     => 'support',
-					), 'https://funnelkit.com/support' );
-					$getting_started = add_query_arg( array(
-						'utm_source'   => 'wfacp-pro',
-						'utm_medium'   => 'text-click',
-						'utm_campaign' => 'resource',
-						'utm_term'     => 'getting-started',
-					), 'https://funnelkit.com/docs/checkout-pages/getting-started/' );
+					$support_link    = add_query_arg(
+						array(
+							'utm_source'   => 'wfacp-pro',
+							'utm_medium'   => 'banner-click',
+							'utm_campaign' => 'resource',
+							'utm_term'     => 'support',
+						),
+						'https://funnelkit.com/support'
+					);
+					$getting_started = add_query_arg(
+						array(
+							'utm_source'   => 'wfacp-pro',
+							'utm_medium'   => 'text-click',
+							'utm_campaign' => 'resource',
+							'utm_term'     => 'getting-started',
+						),
+						'https://funnelkit.com/docs/checkout-pages/getting-started/'
+					);
 
-					$first_checkout  = add_query_arg( array(
-						'utm_source'   => 'wfacp-pro',
-						'utm_medium'   => 'text-click',
-						'utm_campaign' => 'resource',
-						'utm_term'     => 'creating-first-checkout-page',
-					), 'https://funnelkit.com/docs/checkout-pages/getting-started/creating-first-checkout-page/' );
-					$global_checkout = add_query_arg( array(
-						'utm_source'   => 'wfacp-pro',
-						'utm_medium'   => 'text-click',
-						'utm_campaign' => 'resource',
-						'utm_term'     => 'global-checkout-page',
-					), 'https://funnelkit.com/docs/checkout-pages/getting-started/replace-default-checkout' );
-					$doc_link        = add_query_arg( array(
-						'utm_source'   => 'wfacp-pro',
-						'utm_medium'   => 'text-click',
-						'utm_campaign' => 'resource',
-						'utm_term'     => 'documentation',
-					), 'https://funnelkit.com/docs/checkout-pages/' );
+					$first_checkout  = add_query_arg(
+						array(
+							'utm_source'   => 'wfacp-pro',
+							'utm_medium'   => 'text-click',
+							'utm_campaign' => 'resource',
+							'utm_term'     => 'creating-first-checkout-page',
+						),
+						'https://funnelkit.com/docs/checkout-pages/getting-started/creating-first-checkout-page/'
+					);
+					$global_checkout = add_query_arg(
+						array(
+							'utm_source'   => 'wfacp-pro',
+							'utm_medium'   => 'text-click',
+							'utm_campaign' => 'resource',
+							'utm_term'     => 'global-checkout-page',
+						),
+						'https://funnelkit.com/docs/checkout-pages/getting-started/replace-default-checkout'
+					);
+					$doc_link        = add_query_arg(
+						array(
+							'utm_source'   => 'wfacp-pro',
+							'utm_medium'   => 'text-click',
+							'utm_campaign' => 'resource',
+							'utm_term'     => 'documentation',
+						),
+						'https://funnelkit.com/docs/checkout-pages/'
+					);
 
 					?>
-                    <p>Before you start building the Checkout Pages, visit these 3 important links.</p>
-                    <ul class="wfacp-list-dec">
-                        <li><a href="<?php echo $getting_started; ?>" target="_blank">Getting Started</a></li>
+					<p>Before you start building the Checkout Pages, visit these 3 important links.</p>
+					<ul class="wfacp-list-dec">
+						<li><a href="<?php echo $getting_started; ?>" target="_blank">Getting Started</a></li>
 
-                        <li><a href="<?php echo $first_checkout; ?>" target="_blank">Create First Checkout Page</a></li>
-                        <li><a href="<?php echo $global_checkout; ?>" target="_blank">Setup Page as Global Checkout Page</a></li>
-                    </ul>
-                    <p>Unable to find answers?<br/><a href="<?php echo $doc_link; ?>" target="_blank">Read Documentation</a></p>
-                    <p>Still need Help? We will be happy to answer.</p>
-                    <p align="center"><a class="button button-primary" href="<?php echo $support_link; ?>" target="_blank">Contact Support</a></p>
-                </div>
-            </div>
+						<li><a href="<?php echo $first_checkout; ?>" target="_blank">Create First Checkout Page</a></li>
+						<li><a href="<?php echo $global_checkout; ?>" target="_blank">Setup Page as Global Checkout Page</a></li>
+					</ul>
+					<p>Unable to find answers?<br/><a href="<?php echo $doc_link; ?>" target="_blank">Read Documentation</a></p>
+					<p>Still need Help? We will be happy to answer.</p>
+					<p align="center"><a class="button button-primary" href="<?php echo $support_link; ?>" target="_blank">Contact Support</a></p>
+				</div>
+			</div>
 			<?php
-
 		}
 
 		/**
@@ -157,9 +174,9 @@ if ( ! class_exists( 'WFACP_WooFunnels_Support' ) ) {
 				echo $header_ins->render();
 			}
 			?>
-            <div class="woofunnels_licenses_wrapper">
+			<div class="woofunnels_licenses_wrapper">
 				<?php WooFunnels_dashboard::load_page(); ?>
-            </div>
+			</div>
 			<?php
 		}
 
@@ -219,7 +236,7 @@ if ( ! class_exists( 'WFACP_WooFunnels_Support' ) ) {
 					$data = array(
 						'plugin_slug' => WFACP_PLUGIN_BASENAME,
 						'plugin_name' => WFACP_FULL_NAME,
-						//	'email'       => $plugins[ $this->encoded_basename ]['data_extra']['license_email'],
+						// 'email'       => $plugins[ $this->encoded_basename ]['data_extra']['license_email'],
 						'license_key' => $plugins[ $this->encoded_basename ]['data_extra']['api_key'],
 						'product_id'  => $this->full_name,
 						'version'     => WFACP_VERSION,
@@ -228,18 +245,17 @@ if ( ! class_exists( 'WFACP_WooFunnels_Support' ) ) {
 					$this->license_instance->start_updater();
 				}
 			}
-
 		}
 
 		public function process_licensing_form( $posted_data ) {
 
 			if ( isset( $posted_data['license_keys'][ $this->encoded_basename ] ) ) {
 				$key = $posted_data['license_keys'][ $this->encoded_basename ]['key'];
-				//	$email = $posted_data['license_keys'][ $this->encoded_basename ]['email'];
+				// $email = $posted_data['license_keys'][ $this->encoded_basename ]['email'];
 				$data = array(
 					'plugin_slug' => WFACP_PLUGIN_BASENAME,
 					'plugin_name' => WFACP_FULL_NAME,
-					//'email'       => $email,
+					// 'email'       => $email,
 
 					'license_key' => $key,
 					'product_id'  => $this->full_name,
@@ -281,7 +297,6 @@ if ( ! class_exists( 'WFACP_WooFunnels_Support' ) ) {
 			}
 
 			return true;
-
 		}
 
 		public function maybe_handle_license_activation_wizard() {
@@ -301,7 +316,7 @@ if ( ! class_exists( 'WFACP_WooFunnels_Support' ) ) {
 					WFACP_Wizard::set_license_state( true );
 					do_action( 'wfacp_license_activated', 'woofunnels-aero-checkout' );
 					if ( filter_input( INPUT_POST, '_redirect_link' ) !== null ) {
-						wp_redirect( filter_input( INPUT_POST, '_redirect_link' ) );
+						wp_safe_redirect( wp_validate_redirect( filter_input( INPUT_POST, '_redirect_link' ), admin_url() ) );
 					}
 				} else {
 					WFACP_Wizard::set_license_state( false );

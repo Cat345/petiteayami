@@ -7,6 +7,7 @@ if ( ! class_exists( 'WFOCU_Templates_Retriever' ) ) {
 	 * Class to retrieve templates json file
 	 * Class WFOCU_Templates_Retriever
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Templates_Retriever {
 
 		/** @var null */
@@ -28,7 +29,7 @@ if ( ! class_exists( 'WFOCU_Templates_Retriever' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -67,8 +68,7 @@ if ( ! class_exists( 'WFOCU_Templates_Retriever' ) ) {
 
 			$templates = WooFunnels_Dashboard::get_all_templates();
 
-			return isset( $templates['upsell'][ $group ] ) ? $templates['upsell'][ $group ] : [];
-
+			return isset( $templates['upsell'][ $group ] ) ? $templates['upsell'][ $group ] : array();
 		}
 
 

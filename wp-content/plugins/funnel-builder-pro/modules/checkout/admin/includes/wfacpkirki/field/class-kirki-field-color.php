@@ -12,7 +12,12 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Color' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Field_Color extends WFACPKirki_Field {
 
 		/**
@@ -39,7 +44,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Color' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-color';
-
 		}
 
 		/**
@@ -86,7 +90,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Color' ) ) {
 				return;
 			}
 			$this->sanitize_callback = array( 'WFACPKirki_Sanitize_Values', 'color' );
-
 		}
 	}
 }

@@ -4,16 +4,17 @@ if ( ! class_exists( 'wfob_Rule_Base' ) ) {
 	/**
 	 * Base class for a Conditional_Content rule.
 	 */
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Base {
 
 		public function __construct( $name ) {
-
 		}
 
 		/**
 		 * Get's the list of possibile values for the rule.
 		 *
 		 * Override to return the correct list of possibile values for your rule object.
+		 *
 		 * @return array
 		 */
 		public function get_possible_rule_values() {
@@ -57,13 +58,12 @@ if ( ! class_exists( 'wfob_Rule_Base' ) ) {
 		 * Helper function to wrap the return value from is_match and apply filters or other modifications in sub classes.
 		 *
 		 * @param boolean $result The result that should be returned.
-		 * @param array $rule_data The array config object for the current rule.
+		 * @param array   $rule_data The array config object for the current rule.
 		 *
 		 * @return boolean
 		 */
 		public function return_is_match( $result, $rule_data ) {
 			return apply_filters( 'wfob_rules_is_match', $result, $rule_data );
 		}
-
 	}
 }

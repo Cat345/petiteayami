@@ -14,6 +14,7 @@ if ( ! class_exists( 'WFOCUKirki_Modules_Webfonts_Local' ) ) {
 	/**
 	 * Manages the way Google Fonts are enqueued.
 	 */
+	#[\AllowDynamicProperties]
 	final class WFOCUKirki_Modules_Webfonts_Local {
 
 		/**

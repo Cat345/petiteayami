@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Split_Path_Traversal_Controller extends BWFAN_Base_Step_Controller {
 
 	public $current_step_type = null;
@@ -167,17 +168,12 @@ class BWFAN_Split_Path_Traversal_Controller extends BWFAN_Base_Step_Controller {
 		}
 		$data = [];
 		foreach ( $links as $link ) {
-			if ( isset( $link['source'] ) && isset( $link['target'] ) && isset( $mapArr[ $link['source'] ] ) ) {
-				$data[ $link['source'] ][] = [
-					'target' => $link['target'],
-				];
+			if ( ! isset( $link['source'], $link['target'] ) ) {
 				continue;
 			}
-			if ( isset( $link['target'] ) ) {
-				$data[ $link['source'] ][] = [
-					'target' => $link['target'],
-				];
-			}
+			$data[ $link['source'] ][] = [
+				'target' => $link['target'],
+			];
 		}
 
 		return $data;

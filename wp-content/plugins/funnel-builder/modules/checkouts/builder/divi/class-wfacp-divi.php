@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFACP_DIVI' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_DIVI {
 		private static $ins           = null;
 		private static $front_locals  = array();

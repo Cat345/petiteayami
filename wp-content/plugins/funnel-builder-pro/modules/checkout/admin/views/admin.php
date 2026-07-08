@@ -10,9 +10,9 @@ if ( class_exists( 'WFFN_Header' ) ) {
     $header_ins->set_level_2_post_title( '<span class="bwfan_header_title">Checkout</span>' );
     ob_start();
     ?>
-        <a href="<?php echo admin_url( 'admin.php?page=wfacp&section=export' ); ?>" class="page-title-action button button-large"><?php _e( 'Export', 'woofunnels-aero-checkout' ); ?></a>&ensp;
-        <a href="<?php echo admin_url( 'admin.php?page=wfacp&section=import' ); ?>" class="page-title-action button button-large"><?php _e( 'Import', 'woofunnels-aero-checkout' ); ?></a>&ensp;
-        <a href="javascript:void(0)" class="page-title-action button button-large button-primary" data-izimodal-open="#modal-checkout-page" data-iziModal-title="Create New Checkout page" data-izimodal-transitionin="fadeInDown"><?php _e( 'Add New', 'woofunnels-aero-checkout' ); ?></a>
+        <a href="<?php echo admin_url( 'admin.php?page=wfacp&section=export' ); ?>" class="page-title-action button button-large"><?php esc_html_e( 'Export', 'woofunnels-aero-checkout' ); ?></a>&ensp;
+        <a href="<?php echo admin_url( 'admin.php?page=wfacp&section=import' ); ?>" class="page-title-action button button-large"><?php esc_html_e( 'Import', 'woofunnels-aero-checkout' ); ?></a>&ensp;
+        <a href="javascript:void(0)" class="page-title-action button button-large button-primary" data-izimodal-open="#modal-checkout-page" data-iziModal-title="Create New Checkout page" data-izimodal-transitionin="fadeInDown"><?php esc_html_e( 'Add New', 'woofunnels-aero-checkout' ); ?></a>
     <?php
     $checkout_actions = ob_get_contents();
     ob_end_clean();
@@ -29,10 +29,10 @@ if ( class_exists( 'WFFN_Header' ) ) {
 			<div class="wfacp_clear_30"></div>
 			<div class="wfacp_clear_20"></div>
 			<div class="wfacp_head_bar">
-				<div class="wfacp_bar_head"><?php _e( 'Checkouts', 'woofunnels-aero-checkout' ); ?></div>
-				<a href="javascript:void(0)" class="page-title-action button button-large button-primary" data-izimodal-open="#modal-checkout-page" data-iziModal-title="Create New Checkout page" data-izimodal-transitionin="fadeInDown"><?php _e( 'Add New', 'woofunnels-aero-checkout' ); ?></a>&ensp;
-				<a href="<?php echo admin_url( 'admin.php?page=wfacp&section=import' ); ?>" class="page-title-action button button-large"><?php _e( 'Import', 'woofunnels-aero-checkout' ); ?></a>&ensp;
-				<a href="<?php echo admin_url( 'admin.php?page=wfacp&section=export' ); ?>" class="page-title-action button button-large"><?php _e( 'Export', 'woofunnels-aero-checkout' ); ?></a>&ensp;
+				<div class="wfacp_bar_head"><?php esc_html_e( 'Checkouts', 'woofunnels-aero-checkout' ); ?></div>
+				<a href="javascript:void(0)" class="page-title-action button button-large button-primary" data-izimodal-open="#modal-checkout-page" data-iziModal-title="Create New Checkout page" data-izimodal-transitionin="fadeInDown"><?php esc_html_e( 'Add New', 'woofunnels-aero-checkout' ); ?></a>&ensp;
+				<a href="<?php echo admin_url( 'admin.php?page=wfacp&section=import' ); ?>" class="page-title-action button button-large"><?php esc_html_e( 'Import', 'woofunnels-aero-checkout' ); ?></a>&ensp;
+				<a href="<?php echo admin_url( 'admin.php?page=wfacp&section=export' ); ?>" class="page-title-action button button-large"><?php esc_html_e( 'Export', 'woofunnels-aero-checkout' ); ?></a>&ensp;
 			</div>
 		<?php } ?>
 
@@ -42,7 +42,7 @@ if ( class_exists( 'WFFN_Header' ) ) {
                     <div class="wfacp_page_left_wrap">
                         <form method="GET">
                             <input type="hidden" name="page" value="wfacp"/>
-                            <input type="hidden" name="status" value="<?php echo( isset( $_GET['status'] ) ? $_GET['status'] : '' ); ?>"/>
+                            <input type="hidden" name="status" value="<?php echo esc_attr( isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>"/>
 							<?php
 							$this->wfacp_pages_table->render_trigger_nav();
 							$this->wfacp_pages_table->search_box( 'Search' );

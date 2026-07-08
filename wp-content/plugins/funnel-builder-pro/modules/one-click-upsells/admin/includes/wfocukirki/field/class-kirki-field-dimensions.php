@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Dimensions' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Dimensions extends WFOCUKirki_Field {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Dimensions' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-dimensions';
-
 		}
 
 		/**
@@ -38,7 +38,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Dimensions' ) ) {
 				return;
 			}
 			$this->sanitize_callback = array( $this, 'sanitize' );
-
 		}
 
 		/**
@@ -58,7 +57,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Dimensions' ) ) {
 			}
 
 			return $value;
-
 		}
 
 		/**

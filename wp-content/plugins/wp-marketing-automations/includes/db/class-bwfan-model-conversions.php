@@ -2,12 +2,17 @@
 
 if ( ! class_exists( 'BWFAN_Model_Conversions' ) && BWFAN_Common::is_pro_3_0() ) {
 
+	#[\AllowDynamicProperties]
 	class BWFAN_Model_Conversions extends BWFAN_Model {
 		static $primary_key = 'ID';
 
 		public static function get_conversions_by_source_type( $source_id, $source_type = 1, $limit = 0, $offset = 25 ) {
 			global $wpdb;
 			$table       = self::_table();
+			$source_id   = absint( $source_id );
+			$source_type = absint( $source_type );
+			$limit       = absint( $limit );
+			$offset      = absint( $offset );
 			$query       = "SELECT bwc.* FROM $table as bwc JOIN {$wpdb->prefix}posts as p ON bwc.wcid=p.ID WHERE bwc.oid = $source_id AND bwc.otype=$source_type ORDER BY bwc.wcid DESC LIMIT $limit OFFSET $offset";
 			$conversions = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			if ( empty( $conversions ) ) {
@@ -128,7 +133,7 @@ if ( ! class_exists( 'BWFAN_Model_Conversions' ) && BWFAN_Common::is_pro_3_0() )
 				$group_by       = "GROUP BY " . $interval_group;
 				$order_by       = ' time_interval ';
 			}
-			$base_query = "SELECT  count(ID) as conversions, SUM(wctotal) as revenue $interval_query FROM `" . $table . "` WHERE 1=1 AND oid = $aid AND otype = 1 AND `" . $date_col . "` >= '" . $start_date . "' AND `" . $date_col . "` <= '" . $end_date . "'" . $group_by . " ORDER BY " . $order_by . " ASC";
+			$base_query = "SELECT  count(ID) as conversions, SUM(wctotal) as revenue $interval_query FROM `" . $table . "` WHERE 1=1 AND oid = " . absint( $aid ) . " AND otype = 1 AND " . $wpdb->prepare( "`$date_col` >= %s AND `$date_col` <= %s", $start_date, $end_date ) . $group_by . " ORDER BY " . $order_by . " ASC";
 
 			return $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}

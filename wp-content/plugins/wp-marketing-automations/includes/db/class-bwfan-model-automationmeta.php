@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Model_Automationmeta extends BWFAN_Model {
 	static $primary_key = 'ID';
 

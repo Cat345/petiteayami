@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+#[\AllowDynamicProperties]
 class BWFAN_WC_Product_Short_Description extends BWFAN_Merge_Tag {
 
 	private static $instance = null;
@@ -35,7 +40,7 @@ class BWFAN_WC_Product_Short_Description extends BWFAN_Merge_Tag {
 		$product = BWFAN_Merge_Tag_Loader::get_data( 'product' );
 
 		if ( ! $product instanceof WC_Product ) {
-			return $this->parse_shortcode_output( $product_link, $attr );
+			return $this->parse_shortcode_output( '', $attr );
 		}
 
 		$product_short_des = $product->get_short_description();

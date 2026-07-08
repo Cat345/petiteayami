@@ -4,6 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 if ( ! class_exists( 'WFOB_Compatibility_With_Finale_WC_Sale_Countdown_Timer' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_Finale_WC_Sale_Countdown_Timer {
 		public function __construct() {
 			add_action( 'wfob_layout_style', array( $this, 'wcct_dynamic_css_print' ), 55 );

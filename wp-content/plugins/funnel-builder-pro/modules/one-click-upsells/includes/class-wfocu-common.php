@@ -4,6 +4,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 	 * Class WFOCU_Common
 	 * Handles Common Functions For Admin as well as front end interface
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Common {
 
 
@@ -2208,7 +2209,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 				$order_table      = $wpdb->prefix . 'wc_orders';
 				$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
 
-				$where[]   = "AND type='{$args['post_type']}'";
+				$where[]   = "AND type='" . esc_sql( $args['post_type'] ) . "'";
 				$sql_query = "SELECT orders.id as ID  FROM {$order_table} as orders";
 				if ( ! empty( $meta ) ) {
 					$sql_query .= " JOIN {$order_meta_table} as meta ON orders.id=meta.order_id";
@@ -2221,21 +2222,29 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 							},
 							$args['status']
 						);
-						$stasuses_in    = implode( ',', $args['status'] );
+						$stasuses_in    = implode(
+							',',
+							array_map(
+								function ( $s ) {
+									return "'" . esc_sql( $s ) . "'";
+								},
+								$args['status']
+							)
+						);
 						$where[]        = "AND orders.status IN ({$stasuses_in})";
 					} else {
 						$stasuses_in = 'wc-' . $args['status'];
-						$where[]     = "AND orders.status = '{$stasuses_in}'";
+						$where[]     = "AND orders.status = '" . esc_sql( $stasuses_in ) . "'";
 					}
 				}
 				if ( isset( $args['customer'] ) ) {
-					$where[] = "AND orders.billing_email= '{$args['customer']}'";
+					$where[] = "AND orders.billing_email= '" . esc_sql( $args['customer'] ) . "'";
 				}
 				$order = ' order by orders.date_created_gmt desc';
 			} else {
 				$order_table      = $wpdb->posts;
 				$order_meta_table = $wpdb->postmeta;
-				$where[]          = "AND orders.post_type='{$args['post_type']}'";
+				$where[]          = "AND orders.post_type='" . esc_sql( $args['post_type'] ) . "'";
 				$sql_query        = "SELECT orders.ID as ID  FROM {$order_table} as orders";
 
 				if ( isset( $args['status'] ) ) {
@@ -2246,11 +2255,19 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 							},
 							$args['status']
 						);
-						$stasuses_in    = implode( ',', $args['status'] );
+						$stasuses_in    = implode(
+							',',
+							array_map(
+								function ( $s ) {
+									return "'" . esc_sql( $s ) . "'";
+								},
+								$args['status']
+							)
+						);
 						$where[]        = "AND orders.post_status IN ({$stasuses_in})";
 					} else {
 						$stasuses_in = 'wc-' . $args['status'];
-						$where[]     = "AND orders.post_status = '{$stasuses_in}'";
+						$where[]     = "AND orders.post_status = '" . esc_sql( $stasuses_in ) . "'";
 					}
 				}
 				$order = ' order by orders.post_date_gmt desc';
@@ -2268,25 +2285,26 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 			if ( ! empty( $meta ) ) {
 				if ( isset( $meta['key'] ) ) {
-					$where[] = "AND meta.meta_key = '{$meta['key']}'";
+					$where[] = "AND meta.meta_key = '" . esc_sql( $meta['key'] ) . "'";
 				}
 
 				if ( isset( $meta['value'] ) ) {
 					$operator = $meta['operator'] ?? '=';
+					$operator = in_array( $operator, array( '=', '!=', '<', '>', '<=', '>=', 'LIKE' ), true ) ? $operator : '=';
 					if ( true === $meta['value'] ) {// Specical Handling
 						$operator      = '!=';
 						$meta['value'] = '';
 					}
 
-					$where[] = "AND meta.meta_value {$operator} '{$meta['value']}'";
+					$where[] = "AND meta.meta_value {$operator} '" . esc_sql( $meta['value'] ) . "'";
 				}
 			}
 
 			$sql_query .= ' where ' . implode( ' ', $where );
 			$sql_query .= ' ' . $order;
-			$limit      = $args['limit'] ?? 100;
-			$paged      = $args['paged'] ?? 0;
-			$offset     = $args['offset'] ?? 0;
+			$limit      = absint( $args['limit'] ?? 100 );
+			$paged      = absint( $args['paged'] ?? 0 );
+			$offset     = absint( $args['offset'] ?? 0 );
 			$paged      = ( $paged > 0 ) ? ( $paged - 1 ) : $paged;
 			if ( isset( $args['offset'] ) ) {
 				$sql_query .= ' LIMIT ' . $offset . ', ' . $limit;

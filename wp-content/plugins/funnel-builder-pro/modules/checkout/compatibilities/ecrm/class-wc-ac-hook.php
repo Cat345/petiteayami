@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * WC-AC Hook by Matthew Treherne
@@ -11,32 +15,30 @@ if ( ! class_exists( 'WFACP_WC_AC_Hook' ) ) {
 
 		public function __construct() {
 
-
 			/* Register Add field */
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
 			add_filter( 'wfacp_html_fields_wc_ac_hook', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'display_field' ], 999, 2 );
+			add_action( 'process_wfacp_html', array( $this, 'display_field' ), 999, 2 );
 			/* Assign Object */
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'action' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'action' ) );
 			/* internal css for plugin */
-			add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
+			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
 
 			/* prevent third party fields and wrapper*/
 
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
-
 		}
 
 
 		public function add_field( $fields ) {
-			$fields['wc_ac_hook'] = [
+			$fields['wc_ac_hook'] = array(
 				'type'       => 'wfacp_html',
-				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wc_ac_hook' ],
+				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wc_ac_hook' ),
 				'id'         => 'wc_ac_hook',
 				'field_type' => 'wc_ac_hook',
 				'label'      => __( 'WC AC Hook', 'woofunnels-aero-checkout' ),
 
-			];
+			);
 
 			return $fields;
 		}
@@ -52,11 +54,11 @@ if ( ! class_exists( 'WFACP_WC_AC_Hook' ) ) {
 			}
 
 			?>
-            <div class="wfacp_wc_ac_hook" id="wfacp_wc_ac_hook">
+			<div class="wfacp_wc_ac_hook" id="wfacp_wc_ac_hook">
 				<?php
 				$this->instance->marketing_checkout_field( WC()->checkout() );
 				?>
-            </div>
+			</div>
 			<?php
 		}
 
@@ -68,19 +70,17 @@ if ( ! class_exists( 'WFACP_WC_AC_Hook' ) ) {
 				return;
 			}
 
-			$bodyClass = "body ";
-			$px        = $instance->get_template_type_px() . "px";
+			$bodyClass = 'body ';
+			$px        = $instance->get_template_type_px() . 'px';
 			if ( 'pre_built' !== $instance->get_template_type() ) {
-				$bodyClass = "body #wfacp-e-form ";
-				$px        = "7px";
+				$bodyClass = 'body #wfacp-e-form ';
+				$px        = '7px';
 			}
 
-
-			$cssHtml = "<style>";
+			$cssHtml  = '<style>';
 			$cssHtml .= $bodyClass . "#wfacp_wc_ac_hook{padding-left:$px;padding-right:$px;clear:both;}";
-			$cssHtml .= "</style>";
+			$cssHtml .= '</style>';
 			echo $cssHtml;
-
 		}
 	}
 

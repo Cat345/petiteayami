@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfocu_Input_Select' ) ) {
+	#[\AllowDynamicProperties]
 	class wfocu_Input_Select {
 
 		public function __construct() {
@@ -11,7 +12,7 @@ if ( ! class_exists( 'wfocu_Input_Select' ) ) {
 				'allow_null'    => 0,
 				'choices'       => array(),
 				'default_value' => '',
-				'class'         => ''
+				'class'         => '',
 			);
 		}
 
@@ -20,7 +21,6 @@ if ( ! class_exists( 'wfocu_Input_Select' ) ) {
 			$field          = array_merge( $this->defaults, $field );
 			$field['value'] = $value;
 			$optgroup       = false;
-
 
 			// determine if choices are grouped (2 levels of array)
 			if ( is_array( $field['choices'] ) ) {
@@ -43,7 +43,6 @@ if ( ! class_exists( 'wfocu_Input_Select' ) ) {
 				}
 			}
 
-
 			if ( is_null( $field['value'] ) ) {
 				$field['value'] = '';
 			}
@@ -52,7 +51,7 @@ if ( ! class_exists( 'wfocu_Input_Select' ) ) {
 
 			$multiple = '';
 			if ( $field['multiple'] ) {
-				$multiple      = ' multiple="multiple" size="5" ';
+				$multiple       = ' multiple="multiple" size="5" ';
 				$field['name'] .= '[]';
 			}
 
@@ -92,6 +91,5 @@ if ( ! class_exists( 'wfocu_Input_Select' ) ) {
 
 			echo '</select>';
 		}
-
 	}
 }

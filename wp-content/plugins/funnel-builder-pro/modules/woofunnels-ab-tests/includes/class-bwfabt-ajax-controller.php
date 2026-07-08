@@ -14,7 +14,13 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 			 * Backend AJAX actions
 			 */
 			if ( is_admin() && BWFABT_Core()->role->user_access( 'funnel', 'write' ) ) {
-				self::handle_admin_ajax();
+				$is_admin_enabled = ! class_exists( 'WFFN_Pro_AB_Support' )
+					|| ! method_exists( 'WFFN_Pro_AB_Support', 'is_admin_enabled' )
+					|| WFFN_Pro_AB_Support::is_admin_enabled();
+
+				if ( $is_admin_enabled ) {
+					self::handle_admin_ajax();
+				}
 			}
 		}
 
@@ -47,15 +53,15 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 			check_admin_referer( 'bwfabt_add_new_experiment', '_nonce' );
 
 			$experiment_data                    = array();
-			$experiment_data['title']           = isset( $_POST['experiment_name'] ) ? bwfabt_clean( $_POST['experiment_name'] ) : '';
-			$experiment_data['status']          = isset( $_POST['status'] ) ? bwfabt_clean( $_POST['status'] ) : '1';
-			$experiment_data['desc']            = isset( $_POST['experiment_desc'] ) ? bwfabt_clean( $_POST['experiment_desc'] ) : '';
-			$experiment_data['type']            = isset( $_POST['experiment_type'] ) ? bwfabt_clean( $_POST['experiment_type'] ) : '';
-			$experiment_data['control']         = isset( $_POST['experiment_control'] ) ? bwfabt_clean( $_POST['experiment_control'] ) : '';
-			$experiment_data['date_added']      = isset( $_POST['date_added'] ) ? bwfabt_clean( $_POST['date_added'] ) : BWFABT_Core()->get_dataStore()->now();
-			$experiment_data['date_started']    = isset( $_POST['date_started'] ) ? bwfabt_clean( $_POST['date_started'] ) : '0000-00-00 00:00';
-			$experiment_data['last_reset_date'] = isset( $_POST['last_reset_date'] ) ? bwfabt_clean( $_POST['last_reset_date'] ) : '0000-00-00 00:00';
-			$experiment_data['date_completed']  = isset( $_POST['date_completed'] ) ? bwfabt_clean( $_POST['date_completed'] ) : '0000-00-00 00:00';
+			$experiment_data['title']           = isset( $_POST['experiment_name'] ) ? bwfabt_clean( $_POST['experiment_name'] ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$experiment_data['status']          = isset( $_POST['status'] ) ? bwfabt_clean( $_POST['status'] ) : '1'; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$experiment_data['desc']            = isset( $_POST['experiment_desc'] ) ? bwfabt_clean( $_POST['experiment_desc'] ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$experiment_data['type']            = isset( $_POST['experiment_type'] ) ? bwfabt_clean( $_POST['experiment_type'] ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$experiment_data['control']         = isset( $_POST['experiment_control'] ) ? bwfabt_clean( $_POST['experiment_control'] ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$experiment_data['date_added']      = isset( $_POST['date_added'] ) ? bwfabt_clean( $_POST['date_added'] ) : BWFABT_Core()->get_dataStore()->now(); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$experiment_data['date_started']    = isset( $_POST['date_started'] ) ? bwfabt_clean( $_POST['date_started'] ) : '0000-00-00 00:00'; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$experiment_data['last_reset_date'] = isset( $_POST['last_reset_date'] ) ? bwfabt_clean( $_POST['last_reset_date'] ) : '0000-00-00 00:00'; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$experiment_data['date_completed']  = isset( $_POST['date_completed'] ) ? bwfabt_clean( $_POST['date_completed'] ) : '0000-00-00 00:00'; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			$resp = array(
 				'status' => false,
@@ -123,8 +129,8 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 
 		public static function page_search() {
 			check_admin_referer( 'bwfabt_page_search', '_nonce' );
-			$term = ( isset( $_POST['term'] ) && bwfabt_clean( $_POST['term'] ) ) ? stripslashes( bwfabt_clean( $_POST['term'] ) ) : '';//phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$type = isset( $_POST['type'] ) ? bwfabt_clean( $_POST['type'] ) : '';//phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$term = ( isset( $_POST['term'] ) && bwfabt_clean( $_POST['term'] ) ) ? stripslashes( bwfabt_clean( $_POST['term'] ) ) : '';//phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$type = isset( $_POST['type'] ) ? bwfabt_clean( $_POST['type'] ) : '';//phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			$result = array(
 				'status'   => false,
@@ -151,7 +157,7 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 
 		public static function get_experiment_controls() {
 			check_admin_referer( 'bwfabt_get_experiment_controls', '_nonce' );
-			$type = isset( $_POST['type'] ) ? bwfabt_clean( $_POST['type'] ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$type = isset( $_POST['type'] ) ? bwfabt_clean( $_POST['type'] ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			if ( empty( $type ) ) {
 				wp_send_json( array(
@@ -174,7 +180,7 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 		public static function delete_experiment() {
 			check_admin_referer( 'bwfabt_delete_experiment', '_nonce' );
 			$deleted       = false;
-			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0;
+			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			if ( $experiment_id > 0 ) {
 				$experiment = BWFABT_Core()->admin->get_experiment( $experiment_id );
 				$type       = $experiment->get_type();
@@ -195,12 +201,12 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 		public static function update_experiment() {
 			check_admin_referer( 'bwfabt_update_experiment', '_nonce' );
 
-			$experiment_id = isset( $_POST['experiment_id'] ) ? absint( bwfabt_clean( $_POST['experiment_id'] ) ) : 0;
+			$experiment_id = isset( $_POST['experiment_id'] ) ? absint( bwfabt_clean( $_POST['experiment_id'] ) ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			$experiment_data          = array();
 			$experiment_data['id']    = $experiment_id;
-			$experiment_data['title'] = isset( $_POST['experiment_name'] ) ? bwfabt_clean( $_POST['experiment_name'] ) : '';
-			$experiment_data['desc']  = isset( $_POST['experiment_desc'] ) ? bwfabt_clean( $_POST['experiment_desc'] ) : '';
+			$experiment_data['title'] = isset( $_POST['experiment_name'] ) ? bwfabt_clean( $_POST['experiment_name'] ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$experiment_data['desc']  = isset( $_POST['experiment_desc'] ) ? bwfabt_clean( $_POST['experiment_desc'] ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			$resp = array(
 				'status' => false,
@@ -241,10 +247,10 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 			check_admin_referer( 'bwfabt_add_variant', '_nonce' );
 
 			$variant_data                  = array();
-			$variant_data['experiment_id'] = isset( $_POST['experiment_id'] ) ? absint( bwfabt_clean( $_POST['experiment_id'] ) ) : 0;
-			$variant_data['variant_title'] = isset( $_POST['variant_title'] ) ? bwfabt_clean( $_POST['variant_title'] ) : '';
-			$variant_data['variant_desc']  = isset( $_POST['variant_desc'] ) ? bwfabt_clean( $_POST['variant_desc'] ) : '';
-			$variant_data['traffic']       = isset( $_POST['traffic'] ) ? bwfabt_clean( $_POST['traffic'] ) : "0.00";
+			$variant_data['experiment_id'] = isset( $_POST['experiment_id'] ) ? absint( bwfabt_clean( $_POST['experiment_id'] ) ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$variant_data['variant_title'] = isset( $_POST['variant_title'] ) ? bwfabt_clean( $_POST['variant_title'] ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$variant_data['variant_desc']  = isset( $_POST['variant_desc'] ) ? bwfabt_clean( $_POST['variant_desc'] ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$variant_data['traffic']       = isset( $_POST['traffic'] ) ? bwfabt_clean( $_POST['traffic'] ) : "0.00"; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$variant_data['control']       = false;
 
 			$experiment_id = $variant_data['experiment_id'];
@@ -321,8 +327,8 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 			check_admin_referer( 'bwfabt_duplicate_variant', '_nonce' );
 
 			$variant_data                  = array();
-			$variant_data['variant_id']    = $variant_id = isset( $_POST['variant_id'] ) ? bwfabt_clean( $_POST['variant_id'] ) : 0;
-			$variant_data['experiment_id'] = $experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0;
+			$variant_data['variant_id']    = $variant_id = isset( $_POST['variant_id'] ) ? bwfabt_clean( $_POST['variant_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$variant_data['experiment_id'] = $experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			$resp = array(
 				'status'     => false,
@@ -379,7 +385,7 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 					);
 					$resp['variant_order'] = count( $experiment->get_variants() ) - 1;
 					$resp['status']        = true;
-					$resp['msg']           = sprintf( __( 'Variant "%s" duplicated successfully. New Variant is: %s', 'woofunnels-ab-tests' ), $get_controller->get_variant_title( $variant_id ), $get_controller->get_variant_title( $new_variant_id ) );
+					$resp['msg']           = sprintf( __( 'Variant "%1$s" duplicated successfully. New Variant is: %2$s', 'woofunnels-ab-tests' ), $get_controller->get_variant_title( $variant_id ), $get_controller->get_variant_title( $new_variant_id ) );
 					$resp['redirect_url']  = add_query_arg( array(
 						'page'    => 'bwf_ab_tests',
 						'section' => 'variants',
@@ -397,8 +403,8 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 		public static function delete_variant() {
 			check_admin_referer( 'bwfabt_delete_variant', '_nonce' );
 			$deleted       = false;
-			$variant_id    = isset( $_POST['variant_id'] ) ? bwfabt_clean( $_POST['variant_id'] ) : 0;
-			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0;
+			$variant_id    = isset( $_POST['variant_id'] ) ? bwfabt_clean( $_POST['variant_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			$resp = array(
 				'status'       => false,
@@ -445,8 +451,8 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 		public static function update_traffic() {
 			check_admin_referer( 'bwfabt_update_traffic', '_nonce' );
 			$updated       = false;
-			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0;
-			$traffics      = isset( $_POST['traffics'] ) ? array_map( 'bwfabt_clean', $_POST['traffics'] ) : array();
+			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$traffics      = isset( $_POST['traffics'] ) ? array_map( 'bwfabt_clean', $_POST['traffics'] ) : array(); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			$resp = array(
 				'status'   => false,
@@ -484,7 +490,7 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 		public static function start_experiment() {
 			check_admin_referer( 'bwfabt_start_experiment', '_nonce' );
 			$success       = false;
-			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0;
+			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			$resp = array(
 				'status' => $success,
@@ -522,7 +528,7 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 		 */
 		public static function check_readiness() {
 			check_admin_referer( 'bwfabt_check_readiness', '_nonce' );
-			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0;
+			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			$resp = array(
 				'status'           => true,
@@ -588,7 +594,7 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 		public static function stop_experiment() {
 			check_admin_referer( 'bwfabt_stop_experiment', '_nonce' );
 			$success       = false;
-			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0;
+			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			$resp = array(
 				'status' => $success,
@@ -619,7 +625,8 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 				BWFABT_Core()->admin->log( "Experiment paused $experiment_id in stop experiment. Response: " . print_r( $resp, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				wp_send_json( $resp );
 			}
-			$resp['reason'] = __( "Success:  $success.", 'woofunnels-ab-tests' );
+			/* translators: %s: success message */
+			$resp['reason'] = sprintf( __( 'Success: %s.', 'woofunnels-ab-tests' ), $success );
 			BWFABT_Core()->admin->log( "Experiment pause result for $experiment_id in stop experiment. Response: " . print_r( $resp, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			wp_send_json( $resp );
 		}
@@ -630,8 +637,8 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 		public static function draft_variant() {
 			check_admin_referer( 'bwfabt_draft_variant', '_nonce' );
 			$removed       = false;
-			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0;
-			$variant_id    = isset( $_POST['variant_id'] ) ? bwfabt_clean( $_POST['variant_id'] ) : 0;
+			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$variant_id    = isset( $_POST['variant_id'] ) ? bwfabt_clean( $_POST['variant_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			$resp = array(
 				'status'     => false,
@@ -688,8 +695,8 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 		public static function publish_variant() {
 			check_admin_referer( 'bwfabt_publish_variant', '_nonce' );
 			$publish       = false;
-			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0;
-			$variant_id    = isset( $_POST['variant_id'] ) ? bwfabt_clean( $_POST['variant_id'] ) : 0;
+			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$variant_id    = isset( $_POST['variant_id'] ) ? bwfabt_clean( $_POST['variant_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			$resp = array(
 				'status'     => false,
@@ -724,8 +731,8 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 		public static function choose_winner() {
 			check_admin_referer( 'bwfabt_choose_winner', '_nonce' );
 			$selected      = false; //winner is chosen flag
-			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0;
-			$winner_id     = isset( $_POST['winner'] ) ? bwfabt_clean( $_POST['winner'] ) : 0;
+			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$winner_id     = isset( $_POST['winner'] ) ? bwfabt_clean( $_POST['winner'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			$resp = array(
 				'status'    => false,
@@ -784,7 +791,8 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 									$deleted = $get_controller->delete_variant( $control_variant, $experiment, false ); //Only unset from experiment but don't delete actual post
 
 									if ( false === $deleted ) {
-										$resp['reason'] = __( "Unable to delete the old control variant $control_id", 'woofunnels-ab-tests' );
+										/* translators: %d: control variant ID */
+									$resp['reason'] = sprintf( __( 'Unable to delete the old control variant %d', 'woofunnels-ab-tests' ), $control_id );
 										wp_send_json( $resp );
 									}
 
@@ -793,7 +801,8 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 
 								$draft = $get_controller->draft_variant( $experiment, $variantid );
 								if ( false === $draft ) {
-									$resp['reason'] = __( "Unable to draft the variant $variantid", 'woofunnels-ab-tests' );
+									/* translators: %d: variant ID */
+								$resp['reason'] = sprintf( __( 'Unable to draft the variant %d', 'woofunnels-ab-tests' ), $variantid );
 								}
 							}
 							$get_controller->copy_control_data_to_new_control( array( 'control_id' => $control_id ), $new_variant_id );
@@ -822,7 +831,7 @@ if ( ! class_exists( 'BWFABT_AJAX_Controller' ) ) {
 		 */
 		public static function reset_stats() {
 			check_admin_referer( 'bwfabt_reset_stats', '_nonce' );
-			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0;
+			$experiment_id = isset( $_POST['experiment_id'] ) ? bwfabt_clean( $_POST['experiment_id'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$success       = false;
 
 			$resp = array(

@@ -1,5 +1,9 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFOB_Compatibility_Subscription' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_Subscription {
 		private static $instance;
 
@@ -15,8 +19,8 @@ if ( ! class_exists( 'WFOB_Compatibility_Subscription' ) ) {
 		}
 
 		private function __construct() {
-			add_filter( 'wfob_show_product_price', [ $this, 'stop_printing_price' ], 10, 2 );
-			add_filter( 'wfob_show_product_price_placeholder', [ $this, 'display_price' ], 10, 4 );
+			add_filter( 'wfob_show_product_price', array( $this, 'stop_printing_price' ), 10, 2 );
+			add_filter( 'wfob_show_product_price_placeholder', array( $this, 'display_price' ), 10, 4 );
 		}
 
 		/**
@@ -61,7 +65,6 @@ if ( ! class_exists( 'WFOB_Compatibility_Subscription' ) ) {
 				} else {
 					$price_html = wc_format_sale_price( $main_product_price, $price_html );
 				}
-
 			}
 
 			return $price_html;

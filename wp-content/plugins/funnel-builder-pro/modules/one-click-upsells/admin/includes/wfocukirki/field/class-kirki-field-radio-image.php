@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Radio_Image' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Radio_Image extends WFOCUKirki_Field_Radio {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Radio_Image' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-radio-image';
-
 		}
 	}
 }

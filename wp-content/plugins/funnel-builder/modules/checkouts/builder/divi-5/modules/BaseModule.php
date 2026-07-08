@@ -28,6 +28,7 @@ use ET\Builder\Packages\ModuleLibrary\ModuleRegistration;
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 abstract class BaseModule implements DependencyInterface {
 
 	/**

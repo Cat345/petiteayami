@@ -1,9 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'WFACP_PYS_Compatibility' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_PYS_Compatibility {
 		public function __construct() {
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'dequeue_pys_js' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'dequeue_pys_js' ) );
 		}
 
 		public function dequeue_pys_js() {

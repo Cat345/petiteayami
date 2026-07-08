@@ -24,6 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 2.0.0
  */
+#[\AllowDynamicProperties]
 class Checkout_Field_Rules extends WP_REST_Controller {
 
 	private static $ins  = null;

@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 if ( ! class_exists( 'WFOCU_Mollie_Helper_Compat' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Mollie_Helper_Compat {
 
 		public static function get_plugin_id( $container ) {
@@ -32,8 +33,6 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper_Compat' ) ) {
 			} else {
 				return $container->get( 'settings.settings_helper' );
 			}
-
-
 		}
 
 		public static function get_payment_factory( $container ) {
@@ -43,8 +42,6 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper_Compat' ) ) {
 			} else {
 				return $container->get( PaymentFactory::class );
 			}
-
-
 		}
 
 		public static function get_data_helper( $container ) {
@@ -54,8 +51,6 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper_Compat' ) ) {
 			} else {
 				return $container->get( 'settings.data_helper' );
 			}
-
-
 		}
 
 		public static function get_api_helper( $container ) {
@@ -65,15 +60,13 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper_Compat' ) ) {
 			} else {
 				return $container->get( 'SDK.api_helper' );
 			}
-
-
 		}
 
 		public static function get_api_client( $container, $testmode ) {
 			if ( is_null( $container ) ) {
 				return Mollie_WC_Plugin::getApiHelper()->getApiClient( $testmode );
 			} else {
-				return WFOCU_Mollie_Helper_Compat::get_api_helper( $container )->getApiClient( WFOCU_Mollie_Helper_Compat::get_settings_helper( $container )->getApiKey() );
+				return self::get_api_helper( $container )->getApiClient( self::get_settings_helper( $container )->getApiKey() );
 			}
 		}
 
@@ -84,8 +77,6 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper_Compat' ) ) {
 			} else {
 				return $container->get( MollieObject::class );
 			}
-
-
 		}
 
 
@@ -96,8 +87,6 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper_Compat' ) ) {
 			} else {
 				$container->get( 'SDK.HttpResponse' )->setHttpResponseCode( $code );
 			}
-
-
 		}
 
 		public static function onWebhookAction( $container, $gateway ) {
@@ -109,10 +98,29 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper_Compat' ) ) {
 				$orderService->setGateway( $gateway );
 				$orderService->onWebhookAction();
 			}
-
-
 		}
 
+		/**
+		 * Returns the WebhookHandler instance from the container (Mollie >= 8.1.4).
+		 * Returns null for older Mollie versions that don't have this class.
+		 *
+		 * @param mixed $container
+		 * @return \Mollie\WooCommerce\Payment\Webhooks\WebhookHandler|null
+		 */
+		public static function get_webhook_handler( $container ) {
+			if ( is_null( $container ) ) {
+				return null;
+			}
 
+			if ( ! class_exists( 'Mollie\\WooCommerce\\Payment\\Webhooks\\WebhookHandler' ) ) {
+				return null;
+			}
+
+			try {
+				return $container->get( \Mollie\WooCommerce\Payment\Webhooks\WebhookHandler::class );
+			} catch ( \Throwable $e ) {
+				return null;
+			}
+		}
 	}
 }

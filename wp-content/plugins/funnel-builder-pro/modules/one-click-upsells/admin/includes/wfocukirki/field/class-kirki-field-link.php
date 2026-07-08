@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Link' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Link extends WFOCUKirki_Field_URL {
 	}
 }

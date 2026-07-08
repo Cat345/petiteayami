@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFFN_Compatibility_Enfold_Theme
  */
 if ( ! class_exists( 'WFFN_Compatibility_Enfold_Theme' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_Enfold_Theme {
 
 		public function __construct() {
@@ -63,7 +64,6 @@ if ( ! class_exists( 'WFFN_Compatibility_Enfold_Theme' ) ) {
 
 			return $supported_post_types;
 		}
-
 	}
 
 	WFFN_Plugin_Compatibilities::register( new WFFN_Compatibility_Enfold_Theme(), 'enfold_theme' );

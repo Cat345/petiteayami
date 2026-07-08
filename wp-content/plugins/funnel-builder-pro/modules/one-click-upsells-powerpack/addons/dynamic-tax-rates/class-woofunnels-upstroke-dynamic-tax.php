@@ -6,6 +6,7 @@ defined( 'ABSPATH' ) || exit;
  */
 if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Tax' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WooFunnels_UpStroke_Dynamic_Tax {
 
 		public static $instance;
@@ -38,7 +39,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Tax' ) ) {
 					'tax_exempt' => false,
 				);
 			}
-			add_filter('woocommerce_is_cart', '__return_true');
+			add_filter( 'woocommerce_is_cart', '__return_true' );
 			// Set customer location for tax calculation
 			list( $country, $state, $city, $postcode ) = $location;
 
@@ -53,16 +54,16 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Tax' ) ) {
 
 			// Add products to cart for tax calculation
 			foreach ( $products as $index => $product ) {
-				$product_id   = $product['product_id'];
-				$qty          = $product['qty'];
-				$variation_id = isset( $product['variation_id'] ) ? $product['variation_id'] : 0;
-				$offer_key    = isset( $product['offer_key'] ) ? $product['offer_key'] : null;
-				$price        = isset( $product['price'] ) ? (float) $product['price'] : 0;
+				$product_id     = $product['product_id'];
+				$qty            = $product['qty'];
+				$variation_id   = isset( $product['variation_id'] ) ? $product['variation_id'] : 0;
+				$offer_key      = isset( $product['offer_key'] ) ? $product['offer_key'] : null;
+				$price          = isset( $product['price'] ) ? (float) $product['price'] : 0;
 				$cart_item_data = array();
 
 				// Track the mapping between cart position and offer key
 				if ( $offer_key ) {
-					$key_mapping[ $cart_position ] = $offer_key;
+					$key_mapping[ $cart_position ]     = $offer_key;
 					$cart_item_data['wfocu_offer_key'] = $offer_key;
 				}
 				if ( $price > 0 ) {

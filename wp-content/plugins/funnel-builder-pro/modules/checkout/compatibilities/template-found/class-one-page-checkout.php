@@ -1,9 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'WFACP_Compatibility_PP_one_page_checkout' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_PP_one_page_checkout {
 		public function __construct() {
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'remove_actions' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'remove_actions' ) );
 		}
 
 		public function remove_actions() {

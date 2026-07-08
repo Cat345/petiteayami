@@ -179,7 +179,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 			}
 			global $wpdb;
 
-			self::$get_saved_pages = $wpdb->get_results( "SELECT `ID`, `post_title`, `post_type` FROM `{$wpdb->prefix}posts` WHERE `post_type` = '" . WFACP_Common::get_post_type_slug() . "' AND `post_title` != '' AND `post_status` = 'publish' ORDER BY `post_title` ASC", ARRAY_A );
+			self::$get_saved_pages = $wpdb->get_results( $wpdb->prepare( "SELECT `ID`, `post_title`, `post_type` FROM `{$wpdb->prefix}posts` WHERE `post_type` = %s AND `post_title` != '' AND `post_status` = 'publish' ORDER BY `post_title` ASC", WFACP_Common::get_post_type_slug() ), ARRAY_A );
 
 			return self::$get_saved_pages;
 		}

@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Repeater' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Repeater extends WFACPKirki_Field {
@@ -33,7 +37,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Repeater' ) ) {
 		protected function set_type() {
 
 			$this->type = 'repeater';
-
 		}
 
 		/**
@@ -46,7 +49,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Repeater' ) ) {
 			// Force using refresh mode.
 			// Currently the repeater control does not support postMessage.
 			$this->transport = 'refresh';
-
 		}
 
 
@@ -63,7 +65,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Repeater' ) ) {
 				return;
 			}
 			$this->sanitize_callback = array( $this, 'sanitize' );
-
 		}
 
 		/**
@@ -167,7 +168,7 @@ if ( ! class_exists( 'WFACPKirki_Field_Repeater' ) ) {
 								$subfield_value = esc_attr( $subfield_value );
 								break;
 							case 'textarea':
-								$subfield_value = html_entity_decode( wp_kses_post( $subfield_value ) );
+								$subfield_value = html_entity_decode( wp_kses_post( $subfield_value ), ENT_QUOTES | ENT_HTML401 );
 
 						} // End switch().
 					} // End if().

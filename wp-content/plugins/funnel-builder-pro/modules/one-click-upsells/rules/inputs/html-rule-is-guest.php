@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'wfocu_Input_Html_Rule_Is_Guest' ) ) {
+	#[\AllowDynamicProperties]
 	class wfocu_Input_Html_Rule_Is_Guest {
 		public function __construct() {
 			// vars
@@ -9,7 +10,7 @@ if ( ! class_exists( 'wfocu_Input_Html_Rule_Is_Guest' ) ) {
 			$this->defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 		}
 
@@ -17,6 +18,5 @@ if ( ! class_exists( 'wfocu_Input_Html_Rule_Is_Guest' ) ) {
 
 			esc_html_e( 'This Funnel will initiate on guest orders.', 'woofunnels-upstroke-one-click-upsell' );
 		}
-
 	}
 }

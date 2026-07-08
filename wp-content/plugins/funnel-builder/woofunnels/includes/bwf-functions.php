@@ -1,5 +1,21 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
+
+if ( ! function_exists( 'bwf_safe_unserialize' ) ) {
+	/**
+	 * Safely unserialize data, disallowing object instantiation to prevent
+	 * PHP Object Injection via POP chains.
+	 */
+	function bwf_safe_unserialize( $data ) {
+		if ( ! is_serialized( $data ) ) {
+			return $data;
+		}
+		return unserialize( $data, array( 'allowed_classes' => false ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
+	}
+}
 if ( ! function_exists( 'bwf_get_remote_rest_args' ) ) {
 	/**
 	 * Get wp remote post arguments
@@ -13,8 +29,9 @@ if ( ! function_exists( 'bwf_get_remote_rest_args' ) ) {
 		return apply_filters( 'bwf_get_remote_rest_args', [
 			'method'    => $method,
 			'body'      => $data,
-			'timeout'   => 0.01,
-			'sslverify' => false,
+			'timeout'   => 1,
+			'blocking'  => false,
+			'sslverify' => true,
 		] );
 	}
 }
@@ -165,7 +182,7 @@ if ( ! function_exists( 'bwf_save_queries' ) ) {
 			$queries[] = [ $q[0], $q[2] ];
 		}
 
-		$message = print_r( $queries, true );
+		$message = print_r( $queries, true ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 		$file_name  = sanitize_title( $file_name );
 		$logger_obj = BWF_Logger::get_instance();
@@ -197,23 +214,7 @@ if ( ! function_exists( 'bwf_generate_random_bytes' ) ) {
 	 * @return string
 	 */
 	function bwf_generate_random_bytes( $count ) {
-		$output = '';
-		$state  = microtime();
-		if ( function_exists( 'getmypid' ) ) {
-			$state .= getmypid();
-		}
-		if ( strlen( $output ) < $count ) {
-			$output = '';
-			for ( $i = 0; $i < $count; $i += 16 ) {
-				$state = md5( microtime() . $state );
-
-				$output .= md5( $state, true );
-
-			}
-			$output = substr( $output, 0, $count );
-		}
-
-		return $output;
+		return random_bytes( absint( $count ) );
 	}
 }
 

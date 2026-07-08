@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFTY_Rule_Day' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Day extends WFTY_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -10,8 +11,8 @@ if ( ! class_exists( 'WFTY_Rule_Day' ) ) {
 		public function get_possible_rule_operators() {
 
 			$operators = array(
-				'==' => __( "is", 'funnel-builder-powerpack' ),
-				'!=' => __( "is not", 'funnel-builder-powerpack' ),
+				'==' => __( 'is', 'funnel-builder-powerpack' ),
+				'!=' => __( 'is not', 'funnel-builder-powerpack' ),
 			);
 
 			return $operators;
@@ -61,12 +62,12 @@ if ( ! class_exists( 'WFTY_Rule_Day' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Current Day %s %s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_day_title( $rule['condition'] ) );
+			return sprintf( __( 'Current Day %1$s %2$s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_day_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Date' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Date extends WFTY_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -76,12 +77,12 @@ if ( ! class_exists( 'WFTY_Rule_Date' ) ) {
 
 		public function get_possible_rule_operators() {
 			$operators = array(
-				'==' => __( "is equal to", 'funnel-builder-powerpack' ),
-				'!=' => __( "is not equal to", 'funnel-builder-powerpack' ),
-				'>'  => __( "is greater than", 'funnel-builder-powerpack' ),
-				'<'  => __( "is less than", 'funnel-builder-powerpack' ),
-				'>=' => __( "is greater or equal to", 'funnel-builder-powerpack' ),
-				'=<' => __( "is less or equal to", 'funnel-builder-powerpack' )
+				'==' => __( 'is equal to', 'funnel-builder-powerpack' ),
+				'!=' => __( 'is not equal to', 'funnel-builder-powerpack' ),
+				'>'  => __( 'is greater than', 'funnel-builder-powerpack' ),
+				'<'  => __( 'is less than', 'funnel-builder-powerpack' ),
+				'>=' => __( 'is greater or equal to', 'funnel-builder-powerpack' ),
+				'=<' => __( 'is less or equal to', 'funnel-builder-powerpack' ),
 			);
 
 			return $operators;
@@ -95,44 +96,35 @@ if ( ! class_exists( 'WFTY_Rule_Date' ) ) {
 
 			$result = false;
 
-
 			if ( isset( $rule_data['condition'] ) && isset( $rule_data['operator'] ) ) {
-
 
 				$dateTime = new DateTime();
 				$dateTime->setTimestamp( current_time( 'timestamp' ) );
 
-
 				switch ( $rule_data['operator'] ) {
-					case '==' :
-
+					case '==':
 						$result = ( $rule_data['condition'] ) === $dateTime->format( 'Y-m-d' );
 
 						break;
-					case '!=' :
-
+					case '!=':
 						$result = ( $rule_data['condition'] ) !== $dateTime->format( 'Y-m-d' );
 
 						break;
 
-					case '>' :
-
+					case '>':
 						$result = $dateTime->getTimestamp() > strtotime( $rule_data['condition'] );
 
 						break;
 
-					case '<' :
-
+					case '<':
 						$result = $dateTime->getTimestamp() < strtotime( $rule_data['condition'] );
 
 						break;
 
-					case '=<' :
-
+					case '=<':
 						$result = $dateTime->getTimestamp() <= strtotime( $rule_data['condition'] );
 						break;
-					case '>=' :
-
+					case '>=':
 						$result = $dateTime->getTimestamp() >= strtotime( $rule_data['condition'] );
 
 						break;
@@ -148,13 +140,13 @@ if ( ! class_exists( 'WFTY_Rule_Date' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Current Date %s %s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), date_i18n( get_option( 'date_format' ), strtotime( $rule['condition'] ) ) );
+			return sprintf( __( 'Current Date %1$s %2$s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), date_i18n( get_option( 'date_format' ), strtotime( $rule['condition'] ) ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Time' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Time extends WFTY_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -164,12 +156,12 @@ if ( ! class_exists( 'WFTY_Rule_Time' ) ) {
 
 		public function get_possible_rule_operators() {
 			$operators = array(
-				'==' => __( "is equal to", 'funnel-builder-powerpack' ),
-				'!=' => __( "is not equal to", 'funnel-builder-powerpack' ),
-				'>'  => __( "is greater than", 'funnel-builder-powerpack' ),
-				'<'  => __( "is less than", 'funnel-builder-powerpack' ),
-				'>=' => __( "is greater or equal to", 'funnel-builder-powerpack' ),
-				'=<' => __( "is less or equal to", 'funnel-builder-powerpack' )
+				'==' => __( 'is equal to', 'funnel-builder-powerpack' ),
+				'!=' => __( 'is not equal to', 'funnel-builder-powerpack' ),
+				'>'  => __( 'is greater than', 'funnel-builder-powerpack' ),
+				'<'  => __( 'is less than', 'funnel-builder-powerpack' ),
+				'>=' => __( 'is greater or equal to', 'funnel-builder-powerpack' ),
+				'=<' => __( 'is less or equal to', 'funnel-builder-powerpack' ),
 			);
 
 			return $operators;
@@ -183,11 +175,9 @@ if ( ! class_exists( 'WFTY_Rule_Time' ) ) {
 
 			$result = false;
 
-
 			if ( isset( $rule_data['condition'] ) && isset( $rule_data['operator'] ) && $rule_data['condition'] ) {
 
-
-				$parsetime = explode( ":", $rule_data['condition'] );
+				$parsetime = explode( ':', $rule_data['condition'] );
 				if ( is_array( $parsetime ) && count( $parsetime ) !== 2 ) {
 					return $this->return_is_match( $result, $rule_data );
 				}
@@ -200,36 +190,30 @@ if ( ! class_exists( 'WFTY_Rule_Time' ) ) {
 				$timestamp = $dateTime->getTimestamp();
 
 				switch ( $rule_data['operator'] ) {
-					case '==' :
-
+					case '==':
 						$result = $timestamp_current === $timestamp;
 
 						break;
-					case '!=' :
-
+					case '!=':
 						$result = $timestamp_current !== $timestamp;
 
 						break;
 
-					case '>' :
-
+					case '>':
 						$result = $timestamp_current > $timestamp;
 
 						break;
 
-					case '<' :
-
+					case '<':
 						$result = $timestamp_current < $timestamp;
 
 						break;
 
-					case '=<' :
-
+					case '=<':
 						$result = $timestamp_current <= $timestamp;
 
 						break;
-					case '>=' :
-
+					case '>=':
 						$result = $timestamp_current >= $timestamp;
 
 						break;
@@ -241,13 +225,11 @@ if ( ! class_exists( 'WFTY_Rule_Time' ) ) {
 			}
 
 			return $this->return_is_match( $result, $rule_data );
-
 		}
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Current Time %s %s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), date_i18n( get_option( 'time_format' ), strtotime( $rule['condition'] ) ) );
+			return sprintf( __( 'Current Time %1$s %2$s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), date_i18n( get_option( 'time_format' ), strtotime( $rule['condition'] ) ) );
 		}
-
 	}
 }

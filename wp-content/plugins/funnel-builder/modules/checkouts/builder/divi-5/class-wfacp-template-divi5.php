@@ -11,6 +11,7 @@ if ( ! class_exists( 'WFACP_Template_Divi5' ) ) {
 	 * CRITICAL: This extends WFACP_Divi_Template which contains all the necessary filters and actions
 	 * including header/footer handling, content wrapping, and other Divi-specific functionality.
 	 */
+	#[\AllowDynamicProperties]
 	class WFACP_Template_Divi5 extends WFACP_Divi_Template {
 
 		private static $ins = null;

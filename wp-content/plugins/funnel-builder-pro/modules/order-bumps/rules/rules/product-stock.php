@@ -2,6 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'wfob_Rule_product_stock_status' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_product_stock_status extends wfob_Rule_Base {
 
 		public function __construct() {

@@ -16,6 +16,7 @@ if ( ! class_exists( 'WFFN_Installation_Config_Pro' ) ) {
 	/**
 	 * Class WFFN_Installation_Config_Pro
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_Installation_Config_Pro {
 
 		/**
@@ -119,15 +120,15 @@ if ( ! class_exists( 'WFFN_Installation_Config_Pro' ) ) {
 			// Note: Version is not collected here as it's already tracked in active_plugins array
 
 			// Pro Settings - Group Pro-specific settings together
-			$pro_settings = array();
-			$track_utms = $this->get_setting( 'track_utms', false );
+			$pro_settings                                 = array();
+			$track_utms                                   = $this->get_setting( 'track_utms', false );
 			$pro_settings['first_party_tracking_enabled'] = $this->is_enabled( $track_utms );
 			if ( ! empty( $pro_settings ) ) {
 				$data['pro_settings'] = $pro_settings;
 			}
 
 			// One Click Upsells Settings (wfocu_global_settings) - Group all upsell settings together
-			$wfocu_settings = $this->get_option( 'wfocu_global_settings', array() );
+			$wfocu_settings  = $this->get_option( 'wfocu_global_settings', array() );
 			$upsell_settings = array();
 
 			if ( ! empty( $wfocu_settings ) ) {
@@ -166,9 +167,12 @@ if ( ! class_exists( 'WFFN_Installation_Config_Pro' ) ) {
 				// Filter saved gateways to only include those that are currently available
 				// This removes gateways that were previously enabled but are no longer available (e.g., Mollie plugin deactivated)
 				if ( ! empty( $available_gateways ) && ! empty( $saved_gateways ) ) {
-					$saved_gateways = array_filter( $saved_gateways, function ( $gateway ) use ( $available_gateways ) {
-						return in_array( $gateway, $available_gateways, true );
-					} );
+					$saved_gateways = array_filter(
+						$saved_gateways,
+						function ( $gateway ) use ( $available_gateways ) {
+							return in_array( $gateway, $available_gateways, true );
+						}
+					);
 					$saved_gateways = array_values( $saved_gateways ); // Re-index array
 				} elseif ( empty( $available_gateways ) ) {
 					// If we can't determine available gateways, return empty array to avoid tracking stale data
@@ -178,7 +182,7 @@ if ( ! class_exists( 'WFFN_Installation_Config_Pro' ) ) {
 				$upsell_settings['gateways_enabled'] = array_values( $saved_gateways ); // Return array of currently available gateway IDs
 
 				// Test gateway enabled
-				$test_gateway = isset( $wfocu_settings['gateway_test'] ) && is_array( $wfocu_settings['gateway_test'] ) ? $wfocu_settings['gateway_test'] : array();
+				$test_gateway                            = isset( $wfocu_settings['gateway_test'] ) && is_array( $wfocu_settings['gateway_test'] ) ? $wfocu_settings['gateway_test'] : array();
 				$upsell_settings['test_gateway_enabled'] = ! empty( $test_gateway );
 
 				// PayPal reference transactions
@@ -191,10 +195,10 @@ if ( ! class_exists( 'WFFN_Installation_Config_Pro' ) ) {
 				$upsell_settings['ttl_funnel_minutes'] = isset( $wfocu_settings['ttl_funnel'] ) ? absint( $wfocu_settings['ttl_funnel'] ) : 0;
 
 				// Email settings
-				$upsell_settings['email_on_start'] = isset( $wfocu_settings['send_processing_mail_on'] ) && 'start' === $wfocu_settings['send_processing_mail_on'];
-				$upsell_settings['email_on_end'] = isset( $wfocu_settings['send_processing_mail_on'] ) && 'end' === $wfocu_settings['send_processing_mail_on'];
+				$upsell_settings['email_on_start']       = isset( $wfocu_settings['send_processing_mail_on'] ) && 'start' === $wfocu_settings['send_processing_mail_on'];
+				$upsell_settings['email_on_end']         = isset( $wfocu_settings['send_processing_mail_on'] ) && 'end' === $wfocu_settings['send_processing_mail_on'];
 				$upsell_settings['email_no_batch_start'] = isset( $wfocu_settings['send_processing_mail_on_no_batch'] ) && 'start' === $wfocu_settings['send_processing_mail_on_no_batch'];
-				$upsell_settings['email_no_batch_end'] = isset( $wfocu_settings['send_processing_mail_on_no_batch_cancel'] ) && 'end' === $wfocu_settings['send_processing_mail_on_no_batch_cancel'];
+				$upsell_settings['email_no_batch_end']   = isset( $wfocu_settings['send_processing_mail_on_no_batch_cancel'] ) && 'end' === $wfocu_settings['send_processing_mail_on_no_batch_cancel'];
 
 				// Treat variable as simple
 				$upsell_settings['treat_variable_as_simple'] = isset( $wfocu_settings['treat_variable_as_simple'] ) ? $this->is_enabled( $wfocu_settings['treat_variable_as_simple'] ) : false;
@@ -209,11 +213,11 @@ if ( ! class_exists( 'WFFN_Installation_Config_Pro' ) ) {
 			}
 
 			// Order Bumps Settings (_wfob_global_settings) - Group order bump settings together
-			$wfob_settings = $this->get_option( '_wfob_global_settings', array() );
+			$wfob_settings       = $this->get_option( '_wfob_global_settings', array() );
 			$order_bump_settings = array();
 			if ( ! empty( $wfob_settings ) ) {
 				// Number of bumps per checkout - Correct key: number_bump_per_checkout
-				$number_bumps = isset( $wfob_settings['number_bump_per_checkout'] ) ? $wfob_settings['number_bump_per_checkout'] : '';
+				$number_bumps                               = isset( $wfob_settings['number_bump_per_checkout'] ) ? $wfob_settings['number_bump_per_checkout'] : '';
 				$order_bump_settings['number_per_checkout'] = ! empty( $number_bumps ) ? absint( $number_bumps ) : 0;
 			}
 			if ( ! empty( $order_bump_settings ) ) {
@@ -221,9 +225,9 @@ if ( ! class_exists( 'WFFN_Installation_Config_Pro' ) ) {
 			}
 
 			// Optin Settings - Check both Lite (wffn_op_settings) and Pro (wfop_global_settings)
-			$wffn_op_settings = $this->get_option( 'wffn_op_settings', array() );
-			$wfop_settings = $this->get_option( 'wfop_global_settings', array() );
-			$optin_settings = array();
+			$wffn_op_settings  = $this->get_option( 'wffn_op_settings', array() );
+			$wfop_settings     = $this->get_option( 'wfop_global_settings', array() );
+			$optin_settings    = array();
 			$recaptcha_enabled = false;
 
 			// Always include optin/recaptcha_enabled if either Lite or Pro settings exist
@@ -244,7 +248,7 @@ if ( ! class_exists( 'WFFN_Installation_Config_Pro' ) ) {
 			}
 
 			// Checkout Settings (_wfacp_global_settings) - Group checkout settings together
-			$wfacp_settings = $this->get_option( '_wfacp_global_settings', array() );
+			$wfacp_settings    = $this->get_option( '_wfacp_global_settings', array() );
 			$checkout_settings = array();
 			if ( ! empty( $wfacp_settings ) ) {
 				// Shipping method ascending order - Correct key: wfacp_set_shipping_method
@@ -299,4 +303,3 @@ if ( ! class_exists( 'WFFN_Installation_Config_Pro' ) ) {
 		}
 	}
 }
-

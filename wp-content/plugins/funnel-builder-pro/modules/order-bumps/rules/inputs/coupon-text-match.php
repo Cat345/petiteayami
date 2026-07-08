@@ -1,11 +1,11 @@
 <?php
 if ( ! class_exists( 'wfob_Input_Coupon_Text_Match' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Input_Coupon_Text_Match {
 
 		public function __construct() {
 			// vars
 			$this->type = 'Coupon_Text_Match';
-
 
 			$this->defaults = array(
 				'id'            => 'coupon_text_match',
@@ -13,7 +13,7 @@ if ( ! class_exists( 'wfob_Input_Coupon_Text_Match' ) ) {
 				'allow_null'    => 0,
 				'default_value' => '',
 				'class'         => 'coupon_text_match',
-				'placeholder'   => __( 'Enter the search key...', 'woofunnels-order-bump' )
+				'placeholder'   => __( 'Enter the search key...', 'woofunnels-order-bump' ),
 			);
 		}
 

@@ -8,6 +8,7 @@
 /**
  * Test Notification API class
  */
+#[\AllowDynamicProperties]
 class BWFAN_API_Send_Test_Notification extends BWFAN_API_Base {
 	/**
 	 * BWFAN_API_Base obj

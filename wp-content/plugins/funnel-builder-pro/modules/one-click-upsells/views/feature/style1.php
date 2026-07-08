@@ -42,8 +42,8 @@ if ( true === $feat_override_global ) {
             <div class="wfocu-col-md-12">
 				<?php if ( ! empty( $sec_heading ) || ! empty( $sec_sub_heading ) ) { ?>
                     <div class="wfocu-section-headings">
-						<?php echo $sec_heading ? '<div class="wfocu-heading">' . $sec_heading . '</div>' : ''; ?>
-						<?php echo $sec_sub_heading ? '<div class="wfocu-sub-heading wfocu-max-845">' . $sec_sub_heading . '</div>' : ''; ?>
+						<?php echo $sec_heading ? '<div class="wfocu-heading">' . wp_kses_post( $sec_heading ) . '</div>' : ''; ?>
+						<?php echo $sec_sub_heading ? '<div class="wfocu-sub-heading wfocu-max-845">' . wp_kses_post( $sec_sub_heading ) . '</div>' : ''; ?>
                     </div>
 				<?php } ?>
             </div>
@@ -62,7 +62,7 @@ if ( true === $feat_override_global ) {
 										?>
                                         <li>
                                             <span class="wfocu-check-icon"><img src="<?php echo WFOCU_PLUGIN_URL; ?>/admin/assets/img/check-icon.svg" alt="" class="wfocu-svgIcon skip-lazy"/></span>
-											<?php echo $freason ? '<span class="wfocu-feat-text">' . $freason . '</span>' : ''; ?>
+											<?php echo $freason ? '<span class="wfocu-feat-text">' . wp_kses_post( $freason ) . '</span>' : ''; ?>
                                         </li>
 										<?php
 									}
@@ -77,7 +77,7 @@ if ( true === $feat_override_global ) {
 		<?php if ( $additional_text != '' ) { ?>
             <div class="wfocu-row">
                 <div class="wfocu-col-md-12">
-                    <div class="wfocu-content-area <?php echo $additional_text_align; ?> wfocu-max-1024">
+                    <div class="wfocu-content-area <?php echo esc_attr( $additional_text_align ); ?> wfocu-max-1024">
 						<?php echo apply_filters( 'wfocu_the_content', $additional_text ); ?>
                     </div>
                 </div>

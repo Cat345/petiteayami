@@ -273,7 +273,7 @@ if ( ! class_exists( 'WooFunnels_Contacts_Background_Updater' ) ) {
 
 			$batch       = new stdClass();
 			$batch->key  = $query->$column;
-			$batch->data = array_filter( (array) maybe_unserialize( $query->$value_column ) );
+			$batch->data = array_filter( (array) bwf_safe_unserialize( $query->$value_column ) );
 
 			return $batch;
 		}

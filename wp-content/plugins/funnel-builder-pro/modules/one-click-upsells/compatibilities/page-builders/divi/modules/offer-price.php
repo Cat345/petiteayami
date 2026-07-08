@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Offer_Price' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Offer_Price extends WFOCU_Divi_HTML_BLOCK {
 
 		public function __construct() {

@@ -148,6 +148,7 @@ final class BWFAN_CF7_Form_Submit extends BWFAN_Event {
                     data: {
                         action: 'bwfan_get_cf7_form_fields',
                         id: selected_id,
+                        _wpnonce: "<?php echo esc_attr( wp_create_nonce( 'bwfan-action-admin' ) ); ?>",
                     },
                     success: function (response) {
                         jQuery(".bwfan-cf7-forms-map .bwfan_spinner").addClass('bwfan_hide');
@@ -206,7 +207,8 @@ final class BWFAN_CF7_Form_Submit extends BWFAN_Event {
 	}
 
 	public function bwfan_get_cf7_form_fields() {
-		$form_id = absint( sanitize_text_field( $_POST['id'] ) ); // WordPress.CSRF.NonceVerification.NoNonceVerification
+		BWFAN_Common::check_nonce();
+		$form_id = absint( sanitize_text_field( $_POST['id'] ) );
 		$fields  = [];
 		if ( ! empty( $form_id ) ) {
 			$fields = $this->get_form_fields( $form_id );

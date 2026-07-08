@@ -24,6 +24,7 @@ if ( ! class_exists( 'WP_Customize_Code_Editor_Control' ) ) {
 	/**
 	 * Adds a warning message instead of the control.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Code extends WFOCUKirki_Control_Base {
 
 		/**
@@ -44,5 +45,6 @@ if ( ! class_exists( 'WP_Customize_Code_Editor_Control' ) ) {
 	/**
 	 * Adds a "code" control, alias of the WP_Customize_Code_Editor_Control class.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Code extends WP_Customize_Code_Editor_Control {}
 }

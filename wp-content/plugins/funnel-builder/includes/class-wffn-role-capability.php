@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFFN_Role_Capability
  */
 if ( ! class_exists( 'WFFN_Role_Capability' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Role_Capability {
 
 		private static $ins = null;
@@ -17,7 +18,7 @@ if ( ! class_exists( 'WFFN_Role_Capability' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -25,6 +26,7 @@ if ( ! class_exists( 'WFFN_Role_Capability' ) ) {
 
 		/**
 		 * check if user have funnel capabilities access
+		 *
 		 * @param $cap
 		 * @param $access
 		 *
@@ -68,7 +70,7 @@ if ( ! class_exists( 'WFFN_Role_Capability' ) ) {
 						$funnel_user[ $role_name ] = array(
 							'menu'      => array( 'read', 'write' ),
 							'funnel'    => array( 'read', 'write' ),
-							'analytics' => array( 'read', 'write' )
+							'analytics' => array( 'read', 'write' ),
 						);
 					}
 				}
@@ -90,7 +92,6 @@ if ( ! class_exists( 'WFFN_Role_Capability' ) ) {
 
 			return false;
 		}
-
 	}
 
 	if ( class_exists( 'WFFN_Core' ) ) {

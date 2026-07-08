@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Code' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Code extends WFOCUKirki_Field {
 
 		/**
@@ -114,7 +115,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Code' ) ) {
 			// It is the responsibility of the theme/plugin that registers this field
 			// to properly apply any necessary filtering.
 			$this->sanitize_callback = array( 'WFOCUKirki_Sanitize_Values', 'unfiltered' );
-
 		}
 	}
 }

@@ -214,7 +214,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 						$template->get_mobile_mini_cart( $this->form_data );
 						echo '</div>';
 					}
-
 				}
 
 				echo "<div class='" . implode( ' ', array( 'wfacp-form', $label_position ) ) . "'>";
@@ -235,129 +234,129 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			WFACP_Common::set_session( 'wfacp_min_cart_widgets', array() );
 		}
 
-	public function get_ajax_exchange_keys() {
-		$keys = WFACP_Common::$exchange_keys;
-		$form_id = null;
+		public function get_ajax_exchange_keys() {
+			$keys    = WFACP_Common::$exchange_keys;
+			$form_id = null;
 
-		if ( is_array( $keys ) && ! empty( $keys ) && isset( $keys['divi'] ) && isset( $keys['divi']['wfacp_form'] ) ) {
-			$form_id = $keys['divi']['wfacp_form'];
-		} else {
-			// FALLBACK: During AJAX calls, exchange_keys may not be set
-			// Try to find the widget_id from session by checking common patterns
-			
-			// Method 1: Check if we stored widget_id in a known session key
-			if ( class_exists( '\WFACP_Common' ) && method_exists( '\WFACP_Common', 'get_session' ) ) {
-				// Try common widget_id patterns
-				$possible_widget_ids = [
-					'wfacp/checkout-form-0',
-					'wfacp/checkout-form-1',
-					'wfacp/checkout-form-2',
-				];
-				
-				foreach ( $possible_widget_ids as $possible_id ) {
-					$test_session = WFACP_Common::get_session( $possible_id );
-					if ( is_array( $test_session ) && ! empty( $test_session ) && isset( $test_session['order_summary_enable_product_image'] ) ) {
-						$form_id = $possible_id;
-						break;
+			if ( is_array( $keys ) && ! empty( $keys ) && isset( $keys['divi'] ) && isset( $keys['divi']['wfacp_form'] ) ) {
+				$form_id = $keys['divi']['wfacp_form'];
+			} else {
+				// FALLBACK: During AJAX calls, exchange_keys may not be set
+				// Try to find the widget_id from session by checking common patterns
+
+				// Method 1: Check if we stored widget_id in a known session key
+				if ( class_exists( '\WFACP_Common' ) && method_exists( '\WFACP_Common', 'get_session' ) ) {
+					// Try common widget_id patterns
+					$possible_widget_ids = array(
+						'wfacp/checkout-form-0',
+						'wfacp/checkout-form-1',
+						'wfacp/checkout-form-2',
+					);
+
+					foreach ( $possible_widget_ids as $possible_id ) {
+						$test_session = WFACP_Common::get_session( $possible_id );
+						if ( is_array( $test_session ) && ! empty( $test_session ) && isset( $test_session['order_summary_enable_product_image'] ) ) {
+							$form_id = $possible_id;
+							break;
+						}
+					}
+
+					// Method 2: Try to get from WooCommerce session if stored
+					if ( ! $form_id && function_exists( 'WC' ) && WC()->session ) {
+						$stored_widget_id = WC()->session->get( 'wfacp_divi_widget_id' );
+						if ( ! empty( $stored_widget_id ) ) {
+							$form_id = $stored_widget_id;
+						}
 					}
 				}
-				
-				// Method 2: Try to get from WooCommerce session if stored
-				if ( ! $form_id && function_exists( 'WC' ) && WC()->session ) {
-					$stored_widget_id = WC()->session->get( 'wfacp_divi_widget_id' );
-					if ( ! empty( $stored_widget_id ) ) {
-						$form_id = $stored_widget_id;
+			}
+
+			if ( $form_id ) {
+				$session_data = WFACP_Common::get_session( $form_id );
+
+				// CRITICAL: Always load from session if session data exists, regardless of existing form_data
+				// This ensures that even if form_data is empty or partially set, we load the complete data from session
+				// The session is the source of truth for Divi 5 modules
+				if ( is_array( $session_data ) && ! empty( $session_data ) ) {
+					// Define Order Summary fields that must be preserved from session
+					$order_summary_fields = array(
+						'order_summary_enable_product_image',
+						'order_summary_field_enable_strike_through_price',
+						'order_summary_field_enable_low_stock_trigger',
+						'order_summary_field_low_stock_message',
+						'order_summary_field_enable_saving_price_message',
+						'order_summary_field_saving_price_message',
+					);
+
+					// Define Collapsible Order Summary fields that must be preserved from session
+					$collapsible_order_summary_fields = array(
+						'enable_callapse_order_summary',
+						'enable_callapse_order_summary_tablet',
+						'enable_callapse_order_summary_phone',
+						'order_summary_enable_product_image_collapsed',
+						'enable_order_field_collapsed',
+						'enable_order_field_collapsed_tablet',
+						'enable_order_field_collapsed_phone',
+						'cart_collapse_title',
+						'cart_expanded_title',
+						'collapse_enable_coupon',
+						'collapse_enable_coupon_collapsible',
+						'collapse_coupon_button_text',
+						'collapse_order_quantity_switcher',
+						'collapse_order_delete_item',
+						'collapsible_mini_cart_enable_strike_through_price',
+						'collapsible_mini_cart_enable_low_stock_trigger',
+						'collapsible_mini_cart_low_stock_message',
+						'collapsible_mini_cart_enable_saving_price_message',
+						'collapsible_mini_cart_saving_price_message',
+					);
+
+					// Store Order Summary fields from session before merge (if they exist)
+					$preserved_order_summary_fields = array();
+					foreach ( $order_summary_fields as $field_key ) {
+						if ( isset( $session_data[ $field_key ] ) ) {
+							$preserved_order_summary_fields[ $field_key ] = $session_data[ $field_key ];
+						}
 					}
+
+					// Store Collapsible Order Summary fields from session before merge (if they exist)
+					$preserved_collapsible_fields = array();
+					foreach ( $collapsible_order_summary_fields as $field_key ) {
+						if ( isset( $session_data[ $field_key ] ) ) {
+							$preserved_collapsible_fields[ $field_key ] = $session_data[ $field_key ];
+						}
+					}
+
+					// Check if form_data is empty (null, false, empty array, or array with no keys)
+					$is_form_data_empty = empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 );
+
+					if ( $is_form_data_empty ) {
+						// form_data is empty, load from session
+						$this->form_data = $session_data;
+					} else {
+						// form_data has some data, merge: session data is base, existing form_data overrides
+						$this->form_data = array_merge( $session_data, $this->form_data );
+					}
+
+					// CRITICAL: Always restore Order Summary fields from session after merge
+					// This ensures these fields persist during AJAX calls, even if form_data had different values
+					foreach ( $preserved_order_summary_fields as $field_key => $field_value ) {
+						$this->form_data[ $field_key ] = $field_value;
+					}
+
+					// CRITICAL: Always restore Collapsible Order Summary fields from session after merge
+					// This ensures these fields persist during AJAX calls, matching Order Summary behavior
+					foreach ( $preserved_collapsible_fields as $field_key => $field_value ) {
+						$this->form_data[ $field_key ] = $field_value;
+					}
+				}
+
+				if ( isset( $keys['divi']['order_summary'] ) ) {
+					$mini_cart_form_id    = $keys['divi']['order_summary'];
+					$this->mini_cart_data = WFACP_Common::get_session( $mini_cart_form_id );
 				}
 			}
 		}
-
-		if ( $form_id ) {
-			$session_data = WFACP_Common::get_session( $form_id );
-
-			// CRITICAL: Always load from session if session data exists, regardless of existing form_data
-			// This ensures that even if form_data is empty or partially set, we load the complete data from session
-			// The session is the source of truth for Divi 5 modules
-			if ( is_array( $session_data ) && ! empty( $session_data ) ) {
-				// Define Order Summary fields that must be preserved from session
-				$order_summary_fields = [
-					'order_summary_enable_product_image',
-					'order_summary_field_enable_strike_through_price',
-					'order_summary_field_enable_low_stock_trigger',
-					'order_summary_field_low_stock_message',
-					'order_summary_field_enable_saving_price_message',
-					'order_summary_field_saving_price_message',
-				];
-				
-				// Define Collapsible Order Summary fields that must be preserved from session
-				$collapsible_order_summary_fields = [
-					'enable_callapse_order_summary',
-					'enable_callapse_order_summary_tablet',
-					'enable_callapse_order_summary_phone',
-					'order_summary_enable_product_image_collapsed',
-					'enable_order_field_collapsed',
-					'enable_order_field_collapsed_tablet',
-					'enable_order_field_collapsed_phone',
-					'cart_collapse_title',
-					'cart_expanded_title',
-					'collapse_enable_coupon',
-					'collapse_enable_coupon_collapsible',
-					'collapse_coupon_button_text',
-					'collapse_order_quantity_switcher',
-					'collapse_order_delete_item',
-					'collapsible_mini_cart_enable_strike_through_price',
-					'collapsible_mini_cart_enable_low_stock_trigger',
-					'collapsible_mini_cart_low_stock_message',
-					'collapsible_mini_cart_enable_saving_price_message',
-					'collapsible_mini_cart_saving_price_message',
-				];
-				
-				// Store Order Summary fields from session before merge (if they exist)
-				$preserved_order_summary_fields = [];
-				foreach ( $order_summary_fields as $field_key ) {
-					if ( isset( $session_data[ $field_key ] ) ) {
-						$preserved_order_summary_fields[ $field_key ] = $session_data[ $field_key ];
-					}
-				}
-				
-				// Store Collapsible Order Summary fields from session before merge (if they exist)
-				$preserved_collapsible_fields = [];
-				foreach ( $collapsible_order_summary_fields as $field_key ) {
-					if ( isset( $session_data[ $field_key ] ) ) {
-						$preserved_collapsible_fields[ $field_key ] = $session_data[ $field_key ];
-					}
-				}
-				
-				// Check if form_data is empty (null, false, empty array, or array with no keys)
-				$is_form_data_empty = empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 );
-
-				if ( $is_form_data_empty ) {
-					// form_data is empty, load from session
-					$this->form_data = $session_data;
-				} else {
-					// form_data has some data, merge: session data is base, existing form_data overrides
-					$this->form_data = array_merge( $session_data, $this->form_data );
-				}
-				
-				// CRITICAL: Always restore Order Summary fields from session after merge
-				// This ensures these fields persist during AJAX calls, even if form_data had different values
-				foreach ( $preserved_order_summary_fields as $field_key => $field_value ) {
-					$this->form_data[ $field_key ] = $field_value;
-				}
-				
-				// CRITICAL: Always restore Collapsible Order Summary fields from session after merge
-				// This ensures these fields persist during AJAX calls, matching Order Summary behavior
-				foreach ( $preserved_collapsible_fields as $field_key => $field_value ) {
-					$this->form_data[ $field_key ] = $field_value;
-				}
-			}
-
-			if ( isset( $keys['divi']['order_summary'] ) ) {
-				$mini_cart_form_id    = $keys['divi']['order_summary'];
-				$this->mini_cart_data = WFACP_Common::get_session( $mini_cart_form_id );
-			}
-		}
-	}
 
 		public function get_localize_data() {
 			$data                          = parent::get_localize_data();
@@ -366,57 +365,57 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			return $data;
 		}
 
-	protected function get_field_css_ready( $template_slug, $field_index ) {
+		protected function get_field_css_ready( $template_slug, $field_index ) {
 
-		if ( '' == $field_index ) {
-			return '';
-		}
-		
-		// CRITICAL: Ensure form_data is loaded from session if empty
-		// This handles cases where get_field_css_ready is called before get_ajax_exchange_keys
-		if ( empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 ) ) {
-			$keys = WFACP_Common::$exchange_keys;
-			if ( ! empty( $keys ) && is_array( $keys ) && isset( $keys['divi']['wfacp_form'] ) ) {
-				$form_id = $keys['divi']['wfacp_form'];
-				$session_data = WFACP_Common::get_session( $form_id );
-				if ( is_array( $session_data ) && ! empty( $session_data ) ) {
-					$this->form_data = $session_data;
-				}
-			} else {
-				// Fallback: Try to get from WooCommerce session
-				if ( function_exists( 'WC' ) && WC()->session ) {
-					$stored_widget_id = WC()->session->get( 'wfacp_divi_widget_id' );
-					if ( ! empty( $stored_widget_id ) ) {
-						$session_data = WFACP_Common::get_session( $stored_widget_id );
-						if ( is_array( $session_data ) && ! empty( $session_data ) ) {
-							$this->form_data = $session_data;
+			if ( '' == $field_index ) {
+				return '';
+			}
+
+			// CRITICAL: Ensure form_data is loaded from session if empty
+			// This handles cases where get_field_css_ready is called before get_ajax_exchange_keys
+			if ( empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 ) ) {
+				$keys = WFACP_Common::$exchange_keys;
+				if ( ! empty( $keys ) && is_array( $keys ) && isset( $keys['divi']['wfacp_form'] ) ) {
+					$form_id      = $keys['divi']['wfacp_form'];
+					$session_data = WFACP_Common::get_session( $form_id );
+					if ( is_array( $session_data ) && ! empty( $session_data ) ) {
+						$this->form_data = $session_data;
+					}
+				} else {
+					// Fallback: Try to get from WooCommerce session
+					if ( function_exists( 'WC' ) && WC()->session ) {
+						$stored_widget_id = WC()->session->get( 'wfacp_divi_widget_id' );
+						if ( ! empty( $stored_widget_id ) ) {
+							$session_data = WFACP_Common::get_session( $stored_widget_id );
+							if ( is_array( $session_data ) && ! empty( $session_data ) ) {
+								$this->form_data = $session_data;
+							}
 						}
 					}
 				}
 			}
-		}
-		
-		$field_key_index    = 'wfacp_' . $template_slug . '_' . $field_index . '_field';
-		$field_custom_class = 'wfacp_' . $template_slug . '_' . $field_index . '_field_class';
-		
-		$class_value = '';
-		$custom_class_value = '';
-		
-		if ( isset( $this->form_data[ $field_key_index ] ) ) {
-			$class_value = $this->form_data[ $field_key_index ];
-		}
-		
-		if ( isset( $this->form_data[ $field_custom_class ] ) && ! empty( $this->form_data[ $field_custom_class ] ) ) {
-			$custom_class_value = $this->form_data[ $field_custom_class ];
-		}
-		
-		if ( ! empty( $class_value ) ) {
-			$result = trim( $class_value . ' ' . $custom_class_value );
-			return $result;
-		}
 
-		return '';
-	}
+			$field_key_index    = 'wfacp_' . $template_slug . '_' . $field_index . '_field';
+			$field_custom_class = 'wfacp_' . $template_slug . '_' . $field_index . '_field_class';
+
+			$class_value        = '';
+			$custom_class_value = '';
+
+			if ( isset( $this->form_data[ $field_key_index ] ) ) {
+				$class_value = $this->form_data[ $field_key_index ];
+			}
+
+			if ( isset( $this->form_data[ $field_custom_class ] ) && ! empty( $this->form_data[ $field_custom_class ] ) ) {
+				$custom_class_value = $this->form_data[ $field_custom_class ];
+			}
+
+			if ( ! empty( $class_value ) ) {
+				$result = trim( $class_value . ' ' . $custom_class_value );
+				return $result;
+			}
+
+			return '';
+		}
 
 
 		public function payment_heading() {
@@ -427,14 +426,14 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			return parent::payment_heading();
 		}
 
-	public function payment_sub_heading() {
+		public function payment_sub_heading() {
 
-		if ( isset( $this->form_data['wfacp_payment_method_subheading'] ) ) {
-			return trim( $this->form_data['wfacp_payment_method_subheading'] );
+			if ( isset( $this->form_data['wfacp_payment_method_subheading'] ) ) {
+				return trim( $this->form_data['wfacp_payment_method_subheading'] );
+			}
+
+			return parent::payment_sub_heading();
 		}
-
-		return parent::payment_sub_heading();
-	}
 
 		public function get_payment_desc() {
 
@@ -546,7 +545,7 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 		 * were not sent in the request (e.g. mini-cart-only layout or AJAX without form).
 		 */
 		public function add_checkout_fragments( $fragments ) {
-			$fragments = parent::add_checkout_fragments( $fragments );
+			$fragments        = parent::add_checkout_fragments( $fragments );
 			$min_cart_key     = 'wfacp_mini_cart_widgets_' . $this->get_template_type();
 			$min_cart_widgets = WFACP_Common::get_session( $min_cart_key );
 			if ( ! empty( $min_cart_widgets ) ) {
@@ -586,43 +585,43 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			return $fields;
 		}
 
-	public function display_order_summary_thumb( $status ) {
-		// CRITICAL: Ensure form_data is loaded from session before checking settings
-		// This ensures Order Summary fields are available when the filter is called
-		if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_enable_product_image'] ) ) {
-			$this->get_ajax_exchange_keys();
+		public function display_order_summary_thumb( $status ) {
+			// CRITICAL: Ensure form_data is loaded from session before checking settings
+			// This ensures Order Summary fields are available when the filter is called
+			if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_enable_product_image'] ) ) {
+				$this->get_ajax_exchange_keys();
+			}
+
+			if ( isset( $this->form_data['order_summary_enable_product_image'] ) && 'on' === trim( $this->form_data['order_summary_enable_product_image'] ) ) {
+				$status = true;
+			}
+
+			return $status;
 		}
 
-		if ( isset( $this->form_data['order_summary_enable_product_image'] ) && 'on' === trim( $this->form_data['order_summary_enable_product_image'] ) ) {
-			$status = true;
+		public function display_order_summary_thumb_collapsed() {
+			// CRITICAL: Ensure form_data is loaded from session before checking settings
+			// This ensures Collapsible Order Summary fields are available when the filter is called
+			if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_enable_product_image_collapsed'] ) ) {
+				$this->get_ajax_exchange_keys();
+			}
+
+			$status = false;
+			if ( isset( $this->form_data['order_summary_enable_product_image_collapsed'] ) && 'on' === trim( $this->form_data['order_summary_enable_product_image_collapsed'] ) ) {
+				$status = true;
+			}
+
+			return $status;
 		}
-
-		return $status;
-	}
-
-	public function display_order_summary_thumb_collapsed() {
-		// CRITICAL: Ensure form_data is loaded from session before checking settings
-		// This ensures Collapsible Order Summary fields are available when the filter is called
-		if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_enable_product_image_collapsed'] ) ) {
-			$this->get_ajax_exchange_keys();
-		}
-
-		$status = false;
-		if ( isset( $this->form_data['order_summary_enable_product_image_collapsed'] ) && 'on' === trim( $this->form_data['order_summary_enable_product_image_collapsed'] ) ) {
-			$status = true;
-		}
-
-		return $status;
-	}
 
 		/* Override the order summary section */
 
-	public function add_fragment_order_summary( $fragments ) {
-		// CRITICAL: Ensure form_data is loaded from session before processing fragments
-		// This ensures Order Summary fields persist during AJAX fragment updates
-		$this->get_ajax_exchange_keys();
+		public function add_fragment_order_summary( $fragments ) {
+			// CRITICAL: Ensure form_data is loaded from session before processing fragments
+			// This ensures Order Summary fields persist during AJAX fragment updates
+			$this->get_ajax_exchange_keys();
 
-		$input_data = $this->form_data;
+			$input_data = $this->form_data;
 			if ( isset( $this->checkout_fields['advanced'] ) && isset( $this->checkout_fields['advanced']['order_summary'] ) ) {
 				ob_start();
 				include WFACP_BUILDER_DIR . '/customizer/templates/layout_9/views/template-parts/main-order-summary.php';
@@ -666,23 +665,23 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			return $fragments;
 		}
 
-	public function layout_order_summary( $field, $key, $args, $value ) {
+		public function layout_order_summary( $field, $key, $args, $value ) {
 
-		if ( 'order_summary' === $key ) {
-			// CRITICAL: Prevent duplicate rendering of order summary
-			// If order summary has already been rendered, skip rendering again
-			static $order_summary_rendered = false;
-			if ( $order_summary_rendered ) {
-				return;
+			if ( 'order_summary' === $key ) {
+				// CRITICAL: Prevent duplicate rendering of order summary
+				// If order summary has already been rendered, skip rendering again
+				static $order_summary_rendered = false;
+				if ( $order_summary_rendered ) {
+					return;
+				}
+
+				WC()->session->set( 'wfacp_order_summary_' . WFACP_Common::get_id(), $args );
+				include WFACP_BUILDER_DIR . '/customizer/templates/layout_9/views/template-parts/main-order-summary.php';
+
+				// Mark as rendered to prevent duplicates
+				$order_summary_rendered = true;
 			}
-
-			WC()->session->set( 'wfacp_order_summary_' . WFACP_Common::get_id(), $args );
-			include WFACP_BUILDER_DIR . '/customizer/templates/layout_9/views/template-parts/main-order-summary.php';
-
-			// Mark as rendered to prevent duplicates
-			$order_summary_rendered = true;
 		}
-	}
 
 		public function get_divi_localize_data() {
 			$localData = array();
@@ -730,78 +729,78 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			return ( isset( $this->form_data['collapse_enable_coupon'] ) && $this->form_data['collapse_enable_coupon'] == 'on' );
 		}
 
-	public function collapse_enable_coupon_collapsible() {
-		// CRITICAL: If form_data is empty, try to load from session
-		// This handles the case where the hook didn't fire or fired on a different instance
-		if ( empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 ) ) {
-			$keys = WFACP_Common::$exchange_keys;
-			if ( ! empty( is_array( $keys ) ) && isset( $keys['divi']['wfacp_form'] ) ) {
-				$form_id = $keys['divi']['wfacp_form'];
-				$session_data = WFACP_Common::get_session( $form_id );
-				if ( is_array( $session_data ) && ! empty( $session_data ) ) {
-					$this->form_data = $session_data;
+		public function collapse_enable_coupon_collapsible() {
+			// CRITICAL: If form_data is empty, try to load from session
+			// This handles the case where the hook didn't fire or fired on a different instance
+			if ( empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 ) ) {
+				$keys = WFACP_Common::$exchange_keys;
+				if ( ! empty( is_array( $keys ) ) && isset( $keys['divi']['wfacp_form'] ) ) {
+					$form_id      = $keys['divi']['wfacp_form'];
+					$session_data = WFACP_Common::get_session( $form_id );
+					if ( is_array( $session_data ) && ! empty( $session_data ) ) {
+						$this->form_data = $session_data;
+					}
 				}
 			}
+
+			$value  = isset( $this->form_data['collapse_enable_coupon_collapsible'] ) ? $this->form_data['collapse_enable_coupon_collapsible'] : 'off';
+			$result = ( $value === 'on' || $value === true || $value === 'yes' || $value === '1' || $value === 1 );
+
+			return $result;
 		}
 
-		$value = isset( $this->form_data['collapse_enable_coupon_collapsible'] ) ? $this->form_data['collapse_enable_coupon_collapsible'] : 'off';
-		$result = ( $value === 'on' || $value === true || $value === 'yes' || $value === '1' || $value === 1 );
 
-		return $result;
-	}
-
-
-	public function collapse_order_quantity_switcher() {
-		// CRITICAL: If form_data is empty, try to load from session
-		// This handles the case where the hook didn't fire or fired on a different instance
-		if ( empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 ) ) {
-			$keys = WFACP_Common::$exchange_keys;
-			if ( ! empty( is_array( $keys ) ) && isset( $keys['divi']['wfacp_form'] ) ) {
-				$form_id = $keys['divi']['wfacp_form'];
-				$session_data = WFACP_Common::get_session( $form_id );
-				if ( is_array( $session_data ) && ! empty( $session_data ) ) {
-					$this->form_data = $session_data;
+		public function collapse_order_quantity_switcher() {
+			// CRITICAL: If form_data is empty, try to load from session
+			// This handles the case where the hook didn't fire or fired on a different instance
+			if ( empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 ) ) {
+				$keys = WFACP_Common::$exchange_keys;
+				if ( ! empty( is_array( $keys ) ) && isset( $keys['divi']['wfacp_form'] ) ) {
+					$form_id      = $keys['divi']['wfacp_form'];
+					$session_data = WFACP_Common::get_session( $form_id );
+					if ( is_array( $session_data ) && ! empty( $session_data ) ) {
+						$this->form_data = $session_data;
+					}
 				}
 			}
+
+			// CRITICAL: Check if form_data exists and has the setting
+			// Return true only if explicitly set to 'on', false otherwise
+			if ( ! isset( $this->form_data['collapse_order_quantity_switcher'] ) ) {
+				return false;
+			}
+			$value = $this->form_data['collapse_order_quantity_switcher'];
+			// Handle both string 'on'/'off' and boolean true/false
+			$result = ( $value === 'on' || $value === true || $value === 'yes' || $value === '1' || $value === 1 );
+
+			return $result;
 		}
 
-		// CRITICAL: Check if form_data exists and has the setting
-		// Return true only if explicitly set to 'on', false otherwise
-		if ( ! isset( $this->form_data['collapse_order_quantity_switcher'] ) ) {
-			return false;
-		}
-		$value = $this->form_data['collapse_order_quantity_switcher'];
-		// Handle both string 'on'/'off' and boolean true/false
-		$result = ( $value === 'on' || $value === true || $value === 'yes' || $value === '1' || $value === 1 );
-
-		return $result;
-	}
-
-	public function collapse_order_delete_item() {
-		// CRITICAL: If form_data is empty, try to load from session
-		// This handles the case where the hook didn't fire or fired on a different instance
-		if ( empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 ) ) {
-			$keys = WFACP_Common::$exchange_keys;
-			if ( ! empty( is_array( $keys ) ) && isset( $keys['divi']['wfacp_form'] ) ) {
-				$form_id = $keys['divi']['wfacp_form'];
-				$session_data = WFACP_Common::get_session( $form_id );
-				if ( is_array( $session_data ) && ! empty( $session_data ) ) {
-					$this->form_data = $session_data;
+		public function collapse_order_delete_item() {
+			// CRITICAL: If form_data is empty, try to load from session
+			// This handles the case where the hook didn't fire or fired on a different instance
+			if ( empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 ) ) {
+				$keys = WFACP_Common::$exchange_keys;
+				if ( ! empty( is_array( $keys ) ) && isset( $keys['divi']['wfacp_form'] ) ) {
+					$form_id      = $keys['divi']['wfacp_form'];
+					$session_data = WFACP_Common::get_session( $form_id );
+					if ( is_array( $session_data ) && ! empty( $session_data ) ) {
+						$this->form_data = $session_data;
+					}
 				}
 			}
-		}
 
-		// CRITICAL: Check if form_data exists and has the setting
-		// Return true only if explicitly set to 'on', false otherwise
-		if ( ! isset( $this->form_data['collapse_order_delete_item'] ) ) {
-			return false;
-		}
-		$value = $this->form_data['collapse_order_delete_item'];
-		// Handle both string 'on'/'off' and boolean true/false
-		$result = ( $value === 'on' || $value === true || $value === 'yes' || $value === '1' || $value === 1 );
+			// CRITICAL: Check if form_data exists and has the setting
+			// Return true only if explicitly set to 'on', false otherwise
+			if ( ! isset( $this->form_data['collapse_order_delete_item'] ) ) {
+				return false;
+			}
+			$value = $this->form_data['collapse_order_delete_item'];
+			// Handle both string 'on'/'off' and boolean true/false
+			$result = ( $value === 'on' || $value === true || $value === 'yes' || $value === '1' || $value === 1 );
 
-		return $result;
-	}
+			return $result;
+		}
 
 		public function get_mobile_mini_cart_expand_title() {
 			if ( isset( $this->form_data['cart_expanded_title'] ) && '' !== $this->form_data['cart_expanded_title'] ) {
@@ -953,8 +952,8 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 									step="<?php echo $steps_count_here; ?>">
 									<div class="wfacp-order2StepNumber"><?php echo $count; ?></div>
 									<div class="wfacp-order2StepHeaderText">
-										<div class="wfacp-order2StepTitle wfacp-order2StepTitleS1 wfacp_tcolor"><?php echo $value['heading']; ?></div>
-										<div class="wfacp-order2StepSubTitle wfacp-order2StepSubTitleS1 wfacp_tcolor"><?php echo $value['subheading']; ?></div>
+										<div class="wfacp-order2StepTitle wfacp-order2StepTitleS1 wfacp_tcolor"><?php echo esc_html( $value['heading'] ); ?></div>
+										<div class="wfacp-order2StepSubTitle wfacp-order2StepSubTitleS1 wfacp_tcolor"><?php echo esc_html( $value['subheading'] ); ?></div>
 									</div>
 								</div>
 								<?php
@@ -992,7 +991,7 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 
 						$active = apply_filters( 'wfacp_layout_9_active_progress_bar', $active, $step );
 
-						echo "<li class='wfacp_step_$key wfacp_bred $active $step' step='$step' ><a href='javascript:void(0)' class='wfacp_step_text_have' data-text='" . sanitize_title( $value ) . "'>$value</a> </li>";
+						echo "<li class='wfacp_step_" . esc_attr( $key ) . " wfacp_bred $active $step' step='" . esc_attr( $step ) . "' ><a href='javascript:void(0)' class='wfacp_step_text_have' data-text='" . esc_attr( sanitize_title( $value ) ) . "'>" . esc_html( $value ) . '</a> </li>';
 					}
 					do_action( 'wfacp_after_breadcrumb' );
 					echo '</ul></div></div></div>';
@@ -1068,7 +1067,7 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 						echo "<li class='wfacp_step_$key wfacp_bred $bread_visited $active $step' step='$step'>";
 						?>
 						<a href='javascript:void(0)' class="<?php echo $text_class; ?> wfacp_breadcrumb_link"
-							data-text="<?php echo sanitize_title( $value ); ?>"><?php echo $value; ?></a>
+							data-text="<?php echo esc_attr( sanitize_title( $value ) ); ?>"><?php echo esc_html( $value ); ?></a>
 						<?php
 
 						echo '</li>';
@@ -1265,30 +1264,30 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 		}
 
 
-	public function wfacp_collapsible_order_summary_content() {
-		// Prevent duplicate rendering - use static flag to ensure this only renders once per request
-		// CRITICAL: In Divi 5 REST API context, use global variable to prevent duplicates across all instances
-		// The hook can fire multiple times in Divi 5 REST API, so we need a single global flag
-		$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
+		public function wfacp_collapsible_order_summary_content() {
+			// Prevent duplicate rendering - use static flag to ensure this only renders once per request
+			// CRITICAL: In Divi 5 REST API context, use global variable to prevent duplicates across all instances
+			// The hook can fire multiple times in Divi 5 REST API, so we need a single global flag
+			$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
 
-		if ( $is_divi5 ) {
-			// Divi 5: Use a single global flag (not keyed by instance) to prevent ANY duplicate rendering
-			global $wfacp_rendered_collapsible_summary_once;
-			if ( isset( $wfacp_rendered_collapsible_summary_once ) && $wfacp_rendered_collapsible_summary_once === true ) {
-				return; // Already rendered in this request (Divi 5)
+			if ( $is_divi5 ) {
+				// Divi 5: Use a single global flag (not keyed by instance) to prevent ANY duplicate rendering
+				global $wfacp_rendered_collapsible_summary_once;
+				if ( isset( $wfacp_rendered_collapsible_summary_once ) && $wfacp_rendered_collapsible_summary_once === true ) {
+					return; // Already rendered in this request (Divi 5)
+				}
+				$wfacp_rendered_collapsible_summary_once = true;
+			} else {
+				// Divi 4: Use static flag (original behavior)
+				static $rendered = false;
+				if ( $rendered ) {
+					return;
+				}
+				$rendered = true;
 			}
-			$wfacp_rendered_collapsible_summary_once = true;
-		} else {
-			// Divi 4: Use static flag (original behavior)
-			static $rendered = false;
-			if ( $rendered ) {
-				return;
-			}
-			$rendered = true;
+
+			include WFACP_BUILDER_DIR . '/customizer/templates/layout_9/views/template-parts/order-summary.php';
 		}
-
-		include WFACP_BUILDER_DIR . '/customizer/templates/layout_9/views/template-parts/order-summary.php';
-	}
 
 		public function display_image_in_collapsible_order_summary() {
 
@@ -1495,33 +1494,33 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 		 *
 		 * @return mixed
 		 */
-	public function order_summary_field_enable_strike_through_price() {
-		// CRITICAL: Ensure form_data is loaded from session before checking settings
-		// This ensures Order Summary fields are available when the filter is called
-		if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_field_enable_strike_through_price'] ) ) {
-			$this->get_ajax_exchange_keys();
+		public function order_summary_field_enable_strike_through_price() {
+			// CRITICAL: Ensure form_data is loaded from session before checking settings
+			// This ensures Order Summary fields are available when the filter is called
+			if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_field_enable_strike_through_price'] ) ) {
+				$this->get_ajax_exchange_keys();
+			}
+
+			if ( isset( $this->form_data['order_summary_field_enable_strike_through_price'] ) && 'on' == $this->form_data['order_summary_field_enable_strike_through_price'] ) {
+				return true;
+			}
+
+			return false;
 		}
 
-		if ( isset( $this->form_data['order_summary_field_enable_strike_through_price'] ) && 'on' == $this->form_data['order_summary_field_enable_strike_through_price'] ) {
-			return true;
+		public function collapsible_mini_cart_enable_strike_through_price() {
+			// CRITICAL: Ensure form_data is loaded from session before checking settings
+			// This ensures Collapsible Order Summary fields are available when the filter is called
+			if ( empty( $this->form_data ) || ! isset( $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) ) {
+				$this->get_ajax_exchange_keys();
+			}
+
+			if ( isset( $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) && 'on' == $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) {
+				return true;
+			}
+
+			return false;
 		}
-
-		return false;
-	}
-
-	public function collapsible_mini_cart_enable_strike_through_price() {
-		// CRITICAL: Ensure form_data is loaded from session before checking settings
-		// This ensures Collapsible Order Summary fields are available when the filter is called
-		if ( empty( $this->form_data ) || ! isset( $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) ) {
-			$this->get_ajax_exchange_keys();
-		}
-
-		if ( isset( $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) && 'on' == $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) {
-			return true;
-		}
-
-		return false;
-	}
 
 		public function mini_cart_enable_strike_through_price() {
 			if ( isset( $this->mini_cart_data['mini_cart_enable_strike_through_price'] ) && 'on' == $this->mini_cart_data['mini_cart_enable_strike_through_price'] ) {
@@ -1551,106 +1550,106 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			}
 		}
 
-	public function order_summary_field_after_product_title( $_product ) {
-		// CRITICAL: Ensure form_data is loaded from session before checking settings
-		// This ensures Order Summary fields are available when the hook fires
-		if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_field_enable_low_stock_trigger'] ) ) {
-			$this->get_ajax_exchange_keys();
-		}
+		public function order_summary_field_after_product_title( $_product ) {
+			// CRITICAL: Ensure form_data is loaded from session before checking settings
+			// This ensures Order Summary fields are available when the hook fires
+			if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_field_enable_low_stock_trigger'] ) ) {
+				$this->get_ajax_exchange_keys();
+			}
 
-		if ( isset( $this->form_data['order_summary_field_enable_low_stock_trigger'] ) && 'on' == $this->form_data['order_summary_field_enable_low_stock_trigger'] && isset( $this->form_data['order_summary_field_low_stock_message'] ) ) {
-			$stock_quantity = $_product->get_stock_quantity();
+			if ( isset( $this->form_data['order_summary_field_enable_low_stock_trigger'] ) && 'on' == $this->form_data['order_summary_field_enable_low_stock_trigger'] && isset( $this->form_data['order_summary_field_low_stock_message'] ) ) {
+				$stock_quantity = $_product->get_stock_quantity();
 
-			if ( $stock_quantity !== null ) {
-				// CRITICAL: Prevent duplicate output ONLY in Divi 5 REST API context
-				// Check if Divi 5 is enabled - only apply deduplication for Divi 5
-				// Divi 4 behavior remains unchanged (no deduplication needed)
-				$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
+				if ( $stock_quantity !== null ) {
+					// CRITICAL: Prevent duplicate output ONLY in Divi 5 REST API context
+					// Check if Divi 5 is enabled - only apply deduplication for Divi 5
+					// Divi 4 behavior remains unchanged (no deduplication needed)
+					$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
 
-				if ( $is_divi5 ) {
-					// Divi 5: Use global variable to prevent duplicates across instances
-					global $wfacp_rendered_stock_messages;
-					if ( ! isset( $wfacp_rendered_stock_messages ) ) {
-						$wfacp_rendered_stock_messages = [];
-					}
+					if ( $is_divi5 ) {
+						// Divi 5: Use global variable to prevent duplicates across instances
+						global $wfacp_rendered_stock_messages;
+						if ( ! isset( $wfacp_rendered_stock_messages ) ) {
+							$wfacp_rendered_stock_messages = array();
+						}
 
-					// Use product ID + cart item key as cache key for better deduplication
-					// This ensures each product in cart gets its own message, but prevents duplicates
-					$product_id = $_product->get_id();
-					$cart_item_key = '';
-					if ( function_exists( 'WC' ) && WC()->cart ) {
-						foreach ( WC()->cart->get_cart() as $key => $item ) {
-							if ( isset( $item['product_id'] ) && $item['product_id'] == $product_id ) {
-								$cart_item_key = $key;
-								break;
+						// Use product ID + cart item key as cache key for better deduplication
+						// This ensures each product in cart gets its own message, but prevents duplicates
+						$product_id    = $_product->get_id();
+						$cart_item_key = '';
+						if ( function_exists( 'WC' ) && WC()->cart ) {
+							foreach ( WC()->cart->get_cart() as $key => $item ) {
+								if ( isset( $item['product_id'] ) && $item['product_id'] == $product_id ) {
+									$cart_item_key = $key;
+									break;
+								}
 							}
 						}
+						$cache_key = 'order_summary_stock_' . $product_id . '_' . $cart_item_key;
+
+						if ( isset( $wfacp_rendered_stock_messages[ $cache_key ] ) ) {
+							return; // Already rendered for this product in Divi 5
+						}
+
+						$wfacp_rendered_stock_messages[ $cache_key ] = true; // Mark as rendered for Divi 5
 					}
-					$cache_key = 'order_summary_stock_' . $product_id . '_' . $cart_item_key;
 
-					if ( isset( $wfacp_rendered_stock_messages[ $cache_key ] ) ) {
-						return; // Already rendered for this product in Divi 5
+					$status = $this->get_low_stock_status( $_product, $stock_quantity );
+
+					// Only show low stock message if current stock is less than or equal to low stock threshold
+					if ( true === $status ) {
+						echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['order_summary_field_low_stock_message'] ) . '</div>';
+					}
+				}
+			}
+		}
+
+		public function collapsible_mini_cart_field_after_product_title( $_product ) {
+			// CRITICAL: Ensure form_data is loaded from session before checking settings
+			// This ensures Collapsible Order Summary fields are available when the hook fires
+			if ( empty( $this->form_data ) || ! isset( $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] ) ) {
+				$this->get_ajax_exchange_keys();
+			}
+
+			// CRITICAL: Prevent duplicate output ONLY in Divi 5 REST API context
+			// Check if Divi 5 is enabled - only apply deduplication for Divi 5
+			// Divi 4 behavior remains unchanged (no deduplication needed)
+			$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
+
+			if ( $is_divi5 ) {
+				// Divi 5: Use global variable to prevent duplicates across instances
+				global $wfacp_rendered_stock_messages;
+				if ( ! isset( $wfacp_rendered_stock_messages ) ) {
+					$wfacp_rendered_stock_messages = array();
+				}
+
+				// Use product object hash as cache key for Divi 5
+				$product_hash = spl_object_hash( $_product );
+				$cache_key    = 'stock_' . $product_hash;
+
+				if ( isset( $wfacp_rendered_stock_messages[ $cache_key ] ) ) {
+					return; // Already rendered for this product object in Divi 5
+				}
+			}
+
+			if ( isset( $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] ) && 'on' == $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] && isset( $this->form_data['collapsible_mini_cart_low_stock_message'] ) ) {
+
+				$stock_quantity = $_product->get_stock_quantity();
+
+				if ( $stock_quantity !== null ) {
+					if ( $is_divi5 ) {
+						$wfacp_rendered_stock_messages[ $cache_key ] = true; // Mark as rendered for Divi 5
 					}
 
-					$wfacp_rendered_stock_messages[ $cache_key ] = true; // Mark as rendered for Divi 5
-				}
+					$status = $this->get_low_stock_status( $_product, $stock_quantity );
 
-				$status = $this->get_low_stock_status( $_product, $stock_quantity );
-
-				// Only show low stock message if current stock is less than or equal to low stock threshold
-				if ( true === $status ) {
-					echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['order_summary_field_low_stock_message'] ) . '</div>';
+					// Only show low stock message if current stock is less than or equal to low stock threshold
+					if ( true === $status ) {
+						echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['collapsible_mini_cart_low_stock_message'] ) . '</div>';
+					}
 				}
 			}
 		}
-	}
-
-	public function collapsible_mini_cart_field_after_product_title( $_product ) {
-		// CRITICAL: Ensure form_data is loaded from session before checking settings
-		// This ensures Collapsible Order Summary fields are available when the hook fires
-		if ( empty( $this->form_data ) || ! isset( $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] ) ) {
-			$this->get_ajax_exchange_keys();
-		}
-
-		// CRITICAL: Prevent duplicate output ONLY in Divi 5 REST API context
-		// Check if Divi 5 is enabled - only apply deduplication for Divi 5
-		// Divi 4 behavior remains unchanged (no deduplication needed)
-		$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
-
-		if ( $is_divi5 ) {
-			// Divi 5: Use global variable to prevent duplicates across instances
-			global $wfacp_rendered_stock_messages;
-			if ( ! isset( $wfacp_rendered_stock_messages ) ) {
-				$wfacp_rendered_stock_messages = [];
-			}
-
-			// Use product object hash as cache key for Divi 5
-			$product_hash = spl_object_hash( $_product );
-			$cache_key = 'stock_' . $product_hash;
-
-			if ( isset( $wfacp_rendered_stock_messages[ $cache_key ] ) ) {
-				return; // Already rendered for this product object in Divi 5
-			}
-		}
-
-		if ( isset( $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] ) && 'on' == $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] && isset( $this->form_data['collapsible_mini_cart_low_stock_message'] ) ) {
-
-			$stock_quantity = $_product->get_stock_quantity();
-
-			if ( $stock_quantity !== null ) {
-				if ( $is_divi5 ) {
-					$wfacp_rendered_stock_messages[ $cache_key ] = true; // Mark as rendered for Divi 5
-				}
-
-				$status = $this->get_low_stock_status( $_product, $stock_quantity );
-
-				// Only show low stock message if current stock is less than or equal to low stock threshold
-				if ( true === $status ) {
-					echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['collapsible_mini_cart_low_stock_message'] ) . '</div>';
-				}
-			}
-		}
-	}
 
 		public function get_low_stock_status( $_product, $stock_quantity ) {
 
@@ -1694,53 +1693,53 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			}
 		}
 
-	public function order_summary_field_saving_price() {
-		// CRITICAL: Ensure form_data is loaded from session before checking settings
-		// This ensures Order Summary fields are available when the hook fires
-		if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_field_enable_saving_price_message'] ) ) {
-			$this->get_ajax_exchange_keys();
-		}
-
-		if ( isset( $this->form_data['order_summary_field_enable_saving_price_message'] ) && 'on' == $this->form_data['order_summary_field_enable_saving_price_message'] && isset( $this->form_data['order_summary_field_saving_price_message'] ) ) {
-			// CRITICAL: Prevent duplicate output ONLY in Divi 5 REST API context
-			// Check if Divi 5 is enabled - only apply deduplication for Divi 5
-			$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
-
-			if ( $is_divi5 ) {
-				// Divi 5: Use global variable to prevent duplicates across instances
-				global $wfacp_rendered_saving_prices;
-				if ( ! isset( $wfacp_rendered_saving_prices ) ) {
-					$wfacp_rendered_saving_prices = [];
-				}
-
-				// Use a more specific cache key that includes context
-				// This allows the message to render once per Order Summary instance per request
-				$cache_key = 'order_summary_saving_' . md5( 'order_summary_' . ( function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_hash() : '' ) );
-
-				if ( isset( $wfacp_rendered_saving_prices[ $cache_key ] ) ) {
-					return; // Already rendered for this context in Divi 5
-				}
-				
-				$wfacp_rendered_saving_prices[ $cache_key ] = true; // Mark as rendered for Divi 5
+		public function order_summary_field_saving_price() {
+			// CRITICAL: Ensure form_data is loaded from session before checking settings
+			// This ensures Order Summary fields are available when the hook fires
+			if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_field_enable_saving_price_message'] ) ) {
+				$this->get_ajax_exchange_keys();
 			}
-			
-			$price_message = $this->form_data['order_summary_field_saving_price_message'];
-			WFACP_Common::display_save_price( $price_message );
-		}
-	}
 
-	public function collapsible_mini_cart_saving_price() {
-		// CRITICAL: Ensure form_data is loaded from session before checking settings
-		// This ensures Collapsible Order Summary fields are available when the hook fires
-		if ( empty( $this->form_data ) || ! isset( $this->form_data['collapsible_mini_cart_enable_saving_price_message'] ) ) {
-			$this->get_ajax_exchange_keys();
+			if ( isset( $this->form_data['order_summary_field_enable_saving_price_message'] ) && 'on' == $this->form_data['order_summary_field_enable_saving_price_message'] && isset( $this->form_data['order_summary_field_saving_price_message'] ) ) {
+				// CRITICAL: Prevent duplicate output ONLY in Divi 5 REST API context
+				// Check if Divi 5 is enabled - only apply deduplication for Divi 5
+				$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
+
+				if ( $is_divi5 ) {
+					// Divi 5: Use global variable to prevent duplicates across instances
+					global $wfacp_rendered_saving_prices;
+					if ( ! isset( $wfacp_rendered_saving_prices ) ) {
+						$wfacp_rendered_saving_prices = array();
+					}
+
+					// Use a more specific cache key that includes context
+					// This allows the message to render once per Order Summary instance per request
+					$cache_key = 'order_summary_saving_' . md5( 'order_summary_' . ( function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_hash() : '' ) );
+
+					if ( isset( $wfacp_rendered_saving_prices[ $cache_key ] ) ) {
+						return; // Already rendered for this context in Divi 5
+					}
+
+					$wfacp_rendered_saving_prices[ $cache_key ] = true; // Mark as rendered for Divi 5
+				}
+
+				$price_message = $this->form_data['order_summary_field_saving_price_message'];
+				WFACP_Common::display_save_price( $price_message );
+			}
 		}
 
-		if ( isset( $this->form_data['collapsible_mini_cart_enable_saving_price_message'] ) && 'on' == $this->form_data['collapsible_mini_cart_enable_saving_price_message'] && isset( $this->form_data['collapsible_mini_cart_saving_price_message'] ) ) {
-			$price_message = $this->form_data['collapsible_mini_cart_saving_price_message'];
-			WFACP_Common::display_save_price( $price_message );
+		public function collapsible_mini_cart_saving_price() {
+			// CRITICAL: Ensure form_data is loaded from session before checking settings
+			// This ensures Collapsible Order Summary fields are available when the hook fires
+			if ( empty( $this->form_data ) || ! isset( $this->form_data['collapsible_mini_cart_enable_saving_price_message'] ) ) {
+				$this->get_ajax_exchange_keys();
+			}
+
+			if ( isset( $this->form_data['collapsible_mini_cart_enable_saving_price_message'] ) && 'on' == $this->form_data['collapsible_mini_cart_enable_saving_price_message'] && isset( $this->form_data['collapsible_mini_cart_saving_price_message'] ) ) {
+				$price_message = $this->form_data['collapsible_mini_cart_saving_price_message'];
+				WFACP_Common::display_save_price( $price_message );
+			}
 		}
-	}
 
 		public function enable_order_field_collapsed_by_default( $device = 'desktop' ) {
 			$field_key = 'enable_order_field_collapsed';

@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Output_Property_Font_Family' ) ) {
 	/**
 	 * Output overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Output_Property_Font_Family extends WFOCUKirki_Output_Property {
 
 		/**
@@ -62,7 +63,9 @@ if ( ! class_exists( 'WFOCUKirki_Output_Property_Font_Family' ) ) {
 			if ( ! is_null( $family ) && false !== strpos( $family, ' ' ) && false === strpos( $family, '"' ) ) {
 				$this->value = '"' . $family . '"';
 			}
-			$this->value = html_entity_decode( $family, ENT_QUOTES );
+			$family = html_entity_decode( $family, ENT_QUOTES );
+			// Escape any characters that could break out of a CSS string context.
+			$this->value = str_replace( array( '"', "'", '\\', "\n", "\r" ), array( '\\"', "\\'", '\\\\', '', '' ), $family );
 		}
 	}
 }

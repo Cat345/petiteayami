@@ -101,7 +101,7 @@ if ( ! class_exists( 'BWFABT_Report_Thank_You' ) ) {
 				$date_query = ' AND ( ' . rtrim( $date_query, " OR " ) . ') ';
 			}
 
-			$query = "SELECT * FROM {table_name} WHERE `object_id` IN (" . esc_sql( implode( ',', $query_variant_ids ) ) . ") AND type=15 " . $date_query;
+			$query = "SELECT * FROM {table_name} WHERE `object_id` IN (" . implode( ',', array_map( 'absint', $query_variant_ids ) ) . ") AND type=15 " . $date_query;
 			$data  = WFCO_Model_Report_views::get_results( $query );
 
 			$ty_views    = array();

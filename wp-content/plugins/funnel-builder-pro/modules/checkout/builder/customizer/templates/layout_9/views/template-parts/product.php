@@ -7,7 +7,7 @@ if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
  */
 
 
-$product = [];
+$product = array();
 if ( isset( $this->customizer_fields_data['wfacp_product'] ) ) {
 	$product = $this->customizer_fields_data['wfacp_product'];
 }
@@ -52,9 +52,9 @@ if ( isset( $product['product_data']['product_layouts'] ) && $product['product_d
 		$heading_fs_tablet  = $data['heading_section']['heading_fs']['tablet'];
 		$heading_fs_mobile  = $data['heading_section']['heading_fs']['mobile'];
 		?>
-        <h2 class="wfacp-list-title wfacp_section_title <?php echo $align_text . ' ' . $font_weight; ?>">
-			<?php echo $data['heading_section']['heading']; ?>
-        </h2>
+		<h2 class="wfacp-list-title wfacp_section_title <?php echo $align_text . ' ' . $font_weight; ?>">
+			<?php echo esc_html( $data['heading_section']['heading'] ); ?>
+		</h2>
 		<?php
 	}
 	?>
@@ -66,19 +66,16 @@ if ( isset( $product['product_data']['product_layouts'] ) && $product['product_d
 
 
 		?>
-        <div class="wfacp-prodct-image-wrap">
+		<div class="wfacp-prodct-image-wrap">
 
-            <img class="wfacp-prodct-image" src="<?php echo $product['product_data']['product_image'] ? $product['product_data']['product_image'] : $no_logo_img; ?>" alt="<?php bloginfo( 'name' ); ?>" title="<?php bloginfo( 'name' ); ?>"/>
+			<img class="wfacp-prodct-image" src="<?php echo $product['product_data']['product_image'] ? $product['product_data']['product_image'] : $no_logo_img; ?>" alt="<?php bloginfo( 'name' ); ?>" title="<?php bloginfo( 'name' ); ?>"/>
 
-        </div>
+		</div>
 		<?php
 	}
 	?>
 
-    <div class="wfacp-prodct-detail-left">
-        <div class="wfacp-customize-text"><?php echo apply_filters( 'wfacp_the_content', $product['product_data']['desc'] ); ?></div>
-    </div>
+	<div class="wfacp-prodct-detail-left">
+		<div class="wfacp-customize-text"><?php echo apply_filters( 'wfacp_the_content', $product['product_data']['desc'] ); ?></div>
+	</div>
 </div>
-<?php
-
-?>

@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'WFFN_CartFlows_Compatibility' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_CartFlows_Compatibility {
 		public function __construct() {
 			add_action( 'template_redirect', array( $this, 'maybe_unhook' ), - 1 );
@@ -16,7 +17,6 @@ if ( ! class_exists( 'WFFN_CartFlows_Compatibility' ) ) {
 				return;
 			}
 			WFFN_Common::remove_actions( 'template_redirect', 'Cartflows_Checkout_Markup', 'global_checkout_template_redirect' );
-
 		}
 	}
 
@@ -24,4 +24,3 @@ if ( ! class_exists( 'WFFN_CartFlows_Compatibility' ) ) {
 		WFFN_Plugin_Compatibilities::register( new WFFN_CartFlows_Compatibility(), 'cf' );
 	}
 }
-

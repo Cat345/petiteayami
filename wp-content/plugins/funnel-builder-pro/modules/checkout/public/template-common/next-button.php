@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -13,7 +17,7 @@ if ( $current_action === 'two_step' ) {
 
 $change_next_btn = apply_filters( 'wfacp_change_next_btn_' . $current_action, 'Next', $current_action );
 
-$btnClass       = [ 'wfacp-two-step-erap', 'wfacp-next-btn-wrap' ];
+$btnClass       = array( 'wfacp-two-step-erap', 'wfacp-next-btn-wrap' );
 $alignmentclass = '';
 if ( isset( $formData['form_data']['btn_details']['talign'] ) ) {
 	$alignmentclass = $formData['form_data']['btn_details']['talign'];
@@ -36,14 +40,14 @@ if ( isset( $formData['form_data']['btn_details']['width'] ) ) {
 
 
 	do_action( 'wfacp_before_next_button', $current_action );
-	do_action( 'wfacp_before_step_next_button_' . $current_action ,$current_action);
+	do_action( 'wfacp_before_step_next_button_' . $current_action, $current_action );
 	?>
-    <button type="button" class="button button-primary wfacp_next_page_button" data-next-step="<?php echo $next_action; ?>" data-current-step='<?php echo $current_action; ?>' value="<?php _e( 'Next Step', 'woofunnels-aero-checkout' ); ?>" data-text="<?php echo $data_text ?>">
+	<button type="button" class="button button-primary wfacp_next_page_button" data-next-step="<?php echo $next_action; ?>" data-current-step='<?php echo $current_action; ?>' value="<?php _e( 'Next Step', 'woofunnels-aero-checkout' ); ?>" data-text="<?php echo $data_text; ?>">
 		<?php _e( $change_next_btn, 'woofunnels-aero-checkout' ); ?>
-    </button>
+	</button>
 	<?php
 	do_action( 'wfacp_after_next_button', $current_action );
-	do_action( 'wfacp_after_step_next_button_' . $current_action ,$current_action);
+	do_action( 'wfacp_after_step_next_button_' . $current_action, $current_action );
 
 	if ( isset( $formData['form_data']['breadcrumb_before']['enable_cart'] ) && true === $formData['form_data']['breadcrumb_before']['enable_cart'] ) {
 
@@ -53,10 +57,10 @@ if ( isset( $formData['form_data']['btn_details']['width'] ) ) {
 			$cart_name = __( '« Return to Cart', 'woofunnels-aero-checkout' );
 			if ( isset( $formData['form_data']['breadcrumb_before']['enable_cart_text'] ) && $formData['form_data']['breadcrumb_before']['enable_cart_text'] != '' ) {
 				$enable_cart_text = esc_html( $formData['form_data']['breadcrumb_before']['enable_cart_text'] );
-				if ( "Cart" === $enable_cart_text ) {
+				if ( 'Cart' === $enable_cart_text ) {
 					$cart_name = __( '« Return to ' . $enable_cart_text, 'woofunnels-aero-checkout' );
 				} else {
-					$cart_name = "<span>«</span> " . esc_html( $formData['form_data']['breadcrumb_before']['enable_cart_text'] );
+					$cart_name = '<span>«</span> ' . esc_html( $formData['form_data']['breadcrumb_before']['enable_cart_text'] );
 				}
 			}
 
@@ -64,12 +68,12 @@ if ( isset( $formData['form_data']['btn_details']['width'] ) ) {
 
 			?>
 
-            <div class="btm_btn_sec wfacp_back_cart_link">
-                <div class="wfacp-back-btn-wrap">
+			<div class="btm_btn_sec wfacp_back_cart_link">
+				<div class="wfacp-back-btn-wrap">
 
-                    <a href="<?php echo apply_filters( 'wfacp_return_to_cart_link', $cartURL ); ?>"><?php echo( $cartName ); ?></a>
-                </div>
-            </div>
+					<a href="<?php echo apply_filters( 'wfacp_return_to_cart_link', $cartURL ); ?>"><?php echo( $cartName ); ?></a>
+				</div>
+			</div>
 
 			<?php
 		}

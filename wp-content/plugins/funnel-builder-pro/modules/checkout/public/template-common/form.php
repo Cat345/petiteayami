@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -195,11 +199,11 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 							?>
 							<div class="wfacp-section wfacp-hg-by-box <?php echo esc_attr( $section_wrapper_classes ); ?>" data-field-count="<?php echo count( $fields ); ?>">
 								<div class="wfacp_internal_form_wrap wfacp-comm-title <?php echo $instance->get_heading_title_class(); ?>">
-									<h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class(); ?>"><?php echo $section['name']; ?></h2>
+									<h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class(); ?>"><?php echo esc_html( wp_strip_all_tags( $section['name'] ) ); ?></h2>
 									<?php
 									if ( isset( $section['sub_heading'] ) && '' != $section['sub_heading'] ) {
 										?>
-										<h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $section['sub_heading']; ?></h4>
+										<h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo esc_html( wp_strip_all_tags( $section['sub_heading'] ) ); ?></h4>
 										<?php
 									}
 									?>

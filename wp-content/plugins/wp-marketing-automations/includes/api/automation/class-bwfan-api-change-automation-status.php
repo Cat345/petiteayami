@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Change_Automation_Status extends BWFAN_API_Base {
 	public static $ins;
 
@@ -26,7 +27,7 @@ class BWFAN_API_Change_Automation_Status extends BWFAN_API_Base {
 	}
 
 	public function process_api_call() {
-		$a_cid = $this->get_sanitized_arg( 'contact_automation_id', 'text_field' );
+		$a_cid = absint( $this->get_sanitized_arg( 'contact_automation_id', 'text_field' ) );
 
 		if ( empty( $a_cid ) ) {
 			return $this->error_response( [], __( 'Automation contact ID is missing', 'wp-marketing-automations' ) );
@@ -60,14 +61,14 @@ class BWFAN_API_Change_Automation_Status extends BWFAN_API_Base {
 				break;
 			case 're_run' === $to:
 				global $wpdb;
-				$query        = " SELECT `ID`,`cid`,`aid`,`trail`,`event`,`data` FROM {$wpdb->prefix}bwfan_automation_complete_contact WHERE `ID` = '$a_cid' ";
+				$query        = $wpdb->prepare( "SELECT `ID`,`cid`,`aid`,`trail`,`event`,`data` FROM {$wpdb->prefix}bwfan_automation_complete_contact WHERE `ID` = %d", $a_cid );
 				$query_result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				BWFAN_Common::insert_automations( $query_result );
 				$result = true;
 				break;
 			case 'startbegin' === $to:
 				global $wpdb;
-				$query        = " SELECT `ID`,`cid`,`aid`,`trail` FROM {$wpdb->prefix}bwfan_automation_contact WHERE `ID` = '$a_cid'";
+				$query        = $wpdb->prepare( "SELECT `ID`,`cid`,`aid`,`trail` FROM {$wpdb->prefix}bwfan_automation_contact WHERE `ID` = %d", $a_cid );
 				$query_result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$trails       = array_column( $query_result, 'trail' );
 				BWFAN_Common::update_automation_status( array( $a_cid ), 1, $trails, current_time( 'timestamp', 1 ), true );

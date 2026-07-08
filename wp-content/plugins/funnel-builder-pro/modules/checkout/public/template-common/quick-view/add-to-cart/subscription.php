@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Subscription Product Add to Cart
  *
@@ -40,41 +44,43 @@ if ( isset( $wfacp_qv_data['cart_key'] ) && '' != $wfacp_qv_data['cart_key'] ) {
 }
 
 if ( ! $product->is_in_stock() ) : ?>
-    <link itemprop="availability" href="http://schema.org/OutOfStock">
+	<link itemprop="availability" href="http://schema.org/OutOfStock">
 <?php else : ?>
 
-    <link itemprop="availability" href="http://schema.org/InStock">
+	<link itemprop="availability" href="http://schema.org/InStock">
 
 	<?php do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 
 	<?php if ( ! $product->is_purchasable() && 0 != $user_id && 'no' != wcs_get_product_limitation( $product ) && wcs_is_product_limited_for_user( $product, $user_id ) ) : ?>
 		<?php $resubscribe_link = wcs_get_users_resubscribe_link_for_product( $product->get_id() ); ?>
 		<?php if ( ! empty( $resubscribe_link ) && 'any' == wcs_get_product_limitation( $product ) && wcs_user_has_subscription( $user_id, $product->get_id(), wcs_get_product_limitation( $product ) ) && ! wcs_user_has_subscription( $user_id, $product->get_id(), 'active' ) && ! wcs_user_has_subscription( $user_id, $product->get_id(), 'on-hold' ) ) : // customer has an inactive subscription, maybe offer the renewal button ?>
-            <a href="<?php echo esc_url( $resubscribe_link ); ?>" class="button product-resubscribe-link"><?php esc_html_e( 'Resubscribe', 'woocommerce-subscriptions' ); ?></a>
+			<a href="<?php echo esc_url( $resubscribe_link ); ?>" class="button product-resubscribe-link"><?php esc_html_e( 'Resubscribe', 'woocommerce-subscriptions' ); ?></a>
 		<?php else : ?>
-            <p class="limited-subscription-notice notice"><?php esc_html_e( 'You have an active subscription to this product already.', 'woocommerce-subscriptions' ); ?></p>
+			<p class="limited-subscription-notice notice"><?php esc_html_e( 'You have an active subscription to this product already.', 'woocommerce-subscriptions' ); ?></p>
 		<?php endif; ?>
 	<?php else : ?>
-        <form class="cart" method="post" enctype='multipart/form-data'>
+		<form class="cart" method="post" enctype='multipart/form-data'>
 
 			<?php do_action( 'woocommerce_before_add_to_cart_button' ); ?>
 
-            <input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>"/>
+			<input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>"/>
 
 			<?php
 			if ( ! $product->is_sold_individually() ) {
-				woocommerce_quantity_input( array(
-					'min_value' => apply_filters( 'woocommerce_quantity_input_min', 1, $product ),
-					'max_value' => apply_filters( 'woocommerce_quantity_input_max', $product->backorders_allowed() ? '' : $product->get_stock_quantity(), $product ),
-				) );
+				woocommerce_quantity_input(
+					array(
+						'min_value' => apply_filters( 'woocommerce_quantity_input_min', 1, $product ),
+						'max_value' => apply_filters( 'woocommerce_quantity_input_max', $product->backorders_allowed() ? '' : $product->get_stock_quantity(), $product ),
+					)
+				);
 			}
 			?>
 
-            <button type="button" name="wfacp_update" class="wfacp_single_add_to_cart_button button alt" id="wfacp_update_item"><?php echo $btn_name; ?></button>
+			<button type="button" name="wfacp_update" class="wfacp_single_add_to_cart_button button alt" id="wfacp_update_item"><?php echo $btn_name; ?></button>
 
 			<?php do_action( 'woocommerce_after_add_to_cart_button' ); ?>
 
-        </form>
+		</form>
 	<?php endif; ?>
 
 	<?php do_action( 'woocommerce_after_add_to_cart_form' ); ?>

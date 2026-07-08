@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Allows for great manipulation using the field's "choices" argumnent.
  */
 if ( ! class_exists( 'WFACPKirki_Control_Generic' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Generic extends WFACPKirki_Control_Base {
 
 		/**

@@ -16,12 +16,13 @@ if ( ! class_exists( 'WC_Gateway_WFOCU_Test' ) ) {
 	 * @class        WC_Gateway_WFOCU_Test
 	 * @extends        WC_Payment_Gateway
 	 */
+	#[\AllowDynamicProperties]
 	class WC_Gateway_WFOCU_Test extends WC_Payment_Gateway {
 
 		/**
 		 * Constructor for the gateway.
 		 */
-		public $instructions = '';
+		public $instructions       = '';
 		public $enable_for_methods = array();
 		public $enable_for_virtual = true;
 
@@ -52,7 +53,6 @@ if ( ! class_exists( 'WC_Gateway_WFOCU_Test' ) ) {
 			);
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 			add_action( 'woocommerce_scheduled_subscription_payment_' . $this->id, array( $this, 'process_renewal_payment' ), 10, 2 );
-
 		}
 
 		/**
@@ -91,9 +91,7 @@ if ( ! class_exists( 'WC_Gateway_WFOCU_Test' ) ) {
 
 			$is_gateway_on = WFOCU_Core()->data->get_option( 'gateway_test' );
 
-
 			if ( is_array( $is_gateway_on ) && count( $is_gateway_on ) > 0 && 'yes' === $is_gateway_on[0] ) {
-
 
 				if ( ( defined( 'JETPACK__VERSION' ) && true === current_user_can( 'manage_options' ) ) || true === current_user_can( 'manage_woocommerce' ) ) {
 
@@ -115,7 +113,7 @@ if ( ! class_exists( 'WC_Gateway_WFOCU_Test' ) ) {
 		 * @return array
 		 */
 		public function process_payment( $order_id ) {
-				
+
 				$order = wc_get_order( $order_id );
 
 			$order->payment_complete();
@@ -145,6 +143,5 @@ if ( ! class_exists( 'WC_Gateway_WFOCU_Test' ) ) {
 
 			return true;
 		}
-
 	}
 }

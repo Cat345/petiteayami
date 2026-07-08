@@ -12,7 +12,12 @@
 /**
  * Output overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Output_Field_Background' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Output_Field_Background extends WFACPKirki_Output {
 
 		/**
@@ -25,12 +30,15 @@ if ( ! class_exists( 'WFACPKirki_Output_Field_Background' ) ) {
 		 */
 		protected function process_output( $output, $value ) {
 
-			$output = wp_parse_args( $output, array(
+			$output = wp_parse_args(
+				$output,
+				array(
 					'media_query' => 'global',
 					'element'     => 'body',
 					'prefix'      => '',
 					'suffix'      => '',
-				) );
+				)
+			);
 
 			foreach ( array( 'background-image', 'background-color', 'background-repeat', 'background-position', 'background-size', 'background-attachment' ) as $property ) {
 

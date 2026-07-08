@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Palette' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Palette extends WFOCUKirki_Field_Radio {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Palette' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-palette';
-
 		}
 	}
 }

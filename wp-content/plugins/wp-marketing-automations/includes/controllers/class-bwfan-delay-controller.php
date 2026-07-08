@@ -249,7 +249,9 @@ class BWFAN_Delay_Controller extends BWFAN_Base_Step_Controller {
 		/** checking for daymonth and then adding 1 year to date if time has passed */
 		if ( isset( $this->data['occurrence'] ) && 'daymonth' === $this->data['occurrence'] ) {
 			$datetime->setDate( date( 'Y', $current_timestamp ), $datetime->format( 'm' ), $datetime->format( 'd' ) );
-			if ( $datetime->getTimestamp() < $current_timestamp ) {
+			/** When "Jump to step if time has passed" is enabled, keep the past timestamp so process_wait() can honor the jump instead of rolling forward a year */
+			$skip_enabled = isset( $this->data['enable_step_skip'] ) && ! empty( $this->data['enable_step_skip'] );
+			if ( $datetime->getTimestamp() < $current_timestamp && false === $skip_enabled ) {
 				$datetime->modify( '+1 year' );
 			}
 		}

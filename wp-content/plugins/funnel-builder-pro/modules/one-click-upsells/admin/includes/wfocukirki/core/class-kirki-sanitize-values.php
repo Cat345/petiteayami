@@ -19,6 +19,7 @@ if ( ! class_exists( 'WFOCUKirki_Sanitize_Values' ) ) {
 	/**
 	 * A simple wrapper class for static methods.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Sanitize_Values {
 
 		/**
@@ -70,7 +71,7 @@ if ( ! class_exists( 'WFOCUKirki_Sanitize_Values' ) ) {
 		 * @see absint() https://developer.wordpress.org/reference/functions/absint/
 		 * @see get_post_status() https://developer.wordpress.org/reference/functions/get_post_status/
 		 *
-		 * @param int $page_id Page ID.
+		 * @param int                  $page_id Page ID.
 		 * @param WP_Customize_Setting $setting Setting instance.
 		 *
 		 * @return int|string Page ID if the page is published; otherwise, the setting default.

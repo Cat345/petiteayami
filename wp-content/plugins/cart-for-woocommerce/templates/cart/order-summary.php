@@ -31,9 +31,9 @@ $shipping_tax_calculation_text = isset( $settings['shipping_tax_calculation_text
                             <span>
                                 <?php
                                 if ( fkcart_is_preview() ) {
-	                                echo $coupon['code'];
+	                                echo esc_html( $coupon['code'] );
                                 } else {
-	                                echo apply_filters( 'woocommerce_cart_totals_coupon_label', $coupon['code'], isset( $coupon['instance'] ) ? $coupon['instance'] : '' );
+	                                echo wp_kses_post( apply_filters( 'woocommerce_cart_totals_coupon_label', $coupon['code'], isset( $coupon['instance'] ) ? $coupon['instance'] : '' ) );
                                 }
                                 ?>
                             </span>
@@ -100,7 +100,7 @@ $shipping_tax_calculation_text = isset( $settings['shipping_tax_calculation_text
 		if ( $tax_enabled || $shipping_enabled ) {
 			?>
             <div class="fkcart-summary-line-item">
-                <div class="fkcart-summary-text fkcart-shipping-tax-calculation-text"><?php echo $shipping_tax_calculation_text ?></div>
+                <div class="fkcart-summary-text fkcart-shipping-tax-calculation-text"><?php echo wp_kses_post( $shipping_tax_calculation_text ) ?></div>
             </div>
 		<?php } ?>
 

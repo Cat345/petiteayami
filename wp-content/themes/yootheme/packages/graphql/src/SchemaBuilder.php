@@ -129,10 +129,8 @@ class SchemaBuilder
 
     /**
      * @param array<string, mixed> $config
-     *
-     * @return string
      */
-    public function printSchema(array $config = [])
+    public function printSchema(array $config = []): string
     {
         return SchemaPrinter::doPrint($this->buildSchema($config));
     }
@@ -447,10 +445,8 @@ class SchemaBuilder
      *
      * @param mixed $value
      * @param int   $indent
-     *
-     * @return string
      */
-    protected function exportValue($value, $indent = 0)
+    protected function exportValue($value, $indent = 0): string
     {
         if (is_array($value)) {
             $array = [];

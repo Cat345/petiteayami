@@ -61,7 +61,10 @@ class ElementTransform
         $builder = $params['builder'];
         $path = $params['path'];
 
-        if (!empty($node->props['image_svg_inline']) && !empty($node->props['image_svg_animate'])) {
+        $svgAnimation =
+            !empty($node->props['image_svg_inline']) && !empty($node->props['image_svg_animate']);
+
+        if ($svgAnimation) {
             $node->props['image_svg_inline'] = [
                 'stroke-animation: true; attributes: uk-scrollspy-class:uk-animation-stroke',
             ];
@@ -77,7 +80,7 @@ class ElementTransform
                     ? ['uk-animation-{0}' => $value]
                     : true);
         } else {
-            if (!empty($node->props['image_svg_inline'])) {
+            if ($svgAnimation) {
                 $attr = 'uk-scrollspy';
                 $value = ['target: [uk-scrollspy-class];'];
             }

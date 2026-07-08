@@ -184,7 +184,7 @@ trait RenderCallbackTrait {
 						'class' => 'wfocu-widget-container',
 					),
 					'childrenSanitizer' => 'et_core_esc_previously',
-					'children'          => do_shortcode( html_entity_decode( $short_description ) ),
+					'children'          => do_shortcode( html_entity_decode( $short_description, ENT_QUOTES | ENT_HTML401 ) ),
 				)
 			);
 

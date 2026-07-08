@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
@@ -18,16 +22,20 @@ if ( isset( $wfacp_qv_data['cart_key'] ) && '' != $wfacp_qv_data['cart_key'] ) {
 do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 
 <form class="cart grouped_form" action="<?php echo esc_url( apply_filters( 'woocommerce_add_to_cart_form_action', $product->get_permalink() ) ); ?>" method="post" enctype='multipart/form-data'>
-    <table cellspacing="0" class="woocommerce-grouped-product-list group_table">
-        <tbody>
+	<table cellspacing="0" class="woocommerce-grouped-product-list group_table">
+		<tbody>
 		<?php
 		$quantites_required      = false;
 		$previous_post           = $post;
-		$grouped_product_columns = apply_filters( 'woocommerce_grouped_product_columns', array(
-			'quantity',
-			'label',
-			'price',
-		), $product );
+		$grouped_product_columns = apply_filters(
+			'woocommerce_grouped_product_columns',
+			array(
+				'quantity',
+				'label',
+				'price',
+			),
+			$product
+		);
 
 		foreach ( $grouped_products as $grouped_product_child ) {
 			/**
@@ -55,13 +63,15 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 						} else {
 							do_action( 'woocommerce_before_add_to_cart_quantity' );
 
-							woocommerce_quantity_input( array(
-								'input_name'  => 'quantity[' . $grouped_product_child->get_id() . ']',
-								'input_value' => isset( $_POST['quantity'][ $grouped_product_child->get_id() ] ) ? wc_stock_amount( wc_clean( wp_unslash( $_POST['quantity'][ $grouped_product_child->get_id() ] ) ) ) : 0,
-								// WPCS: CSRF ok, input var okay, sanitization ok.
-								'min_value'   => apply_filters( 'woocommerce_quantity_input_min', 0, $grouped_product_child ),
-								'max_value'   => apply_filters( 'woocommerce_quantity_input_max', $grouped_product_child->get_max_purchase_quantity(), $grouped_product_child ),
-							) );
+							woocommerce_quantity_input(
+								array(
+									'input_name'  => 'quantity[' . $grouped_product_child->get_id() . ']',
+									'input_value' => isset( $_POST['quantity'][ $grouped_product_child->get_id() ] ) ? wc_stock_amount( wc_clean( wp_unslash( $_POST['quantity'][ $grouped_product_child->get_id() ] ) ) ) : 0,
+									// WPCS: CSRF ok, input var okay, sanitization ok.
+									'min_value'   => apply_filters( 'woocommerce_quantity_input_min', 0, $grouped_product_child ),
+									'max_value'   => apply_filters( 'woocommerce_quantity_input_max', $grouped_product_child->get_max_purchase_quantity(), $grouped_product_child ),
+								)
+							);
 
 							do_action( 'woocommerce_after_add_to_cart_quantity' );
 						}
@@ -69,7 +79,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 						$value = ob_get_clean();
 						break;
 					case 'label':
-						$value = '<label for="product-' . esc_attr( $grouped_product_child->get_id() ) . '">';
+						$value  = '<label for="product-' . esc_attr( $grouped_product_child->get_id() ) . '">';
 						$value .= $grouped_product_child->is_visible() ? '<a href="' . esc_url( apply_filters( 'woocommerce_grouped_product_list_link', $grouped_product_child->get_permalink(), $grouped_product_child->get_id() ) ) . '">' . $grouped_product_child->get_name() . '</a>' : $grouped_product_child->get_name();
 						$value .= '</label>';
 						break;
@@ -91,16 +101,16 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 		$post = $previous_post; // WPCS: override ok.
 		setup_postdata( $post );
 		?>
-        </tbody>
-    </table>
+		</tbody>
+	</table>
 
-    <input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>"/>
+	<input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>"/>
 
 	<?php if ( $quantites_required ) : ?>
 
 		<?php do_action( 'woocommerce_before_add_to_cart_button' ); ?>
 
-        <button type="button" class="single_add_to_cart_button button alt"><?php echo $btn_name; ?></button>
+		<button type="button" class="single_add_to_cart_button button alt"><?php echo $btn_name; ?></button>
 
 		<?php do_action( 'woocommerce_after_add_to_cart_button' ); ?>
 

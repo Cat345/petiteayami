@@ -5,6 +5,7 @@
  */
 if ( ! class_exists( 'WFFN_Stripe_Admin_Controller' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFFN_Stripe_Admin_Controller {
 
 		private static $instance = null;

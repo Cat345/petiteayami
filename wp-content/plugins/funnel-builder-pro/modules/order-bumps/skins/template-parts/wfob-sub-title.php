@@ -1,1 +1,1 @@
-<div class="wfob_l3_c_sub_head"><?php echo $sub_title ?></div>
+<div class="wfob_l3_c_sub_head"><?php echo wp_kses_post( $sub_title ); ?></div>

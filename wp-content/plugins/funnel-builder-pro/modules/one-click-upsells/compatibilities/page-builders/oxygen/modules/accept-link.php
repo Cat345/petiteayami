@@ -1,11 +1,12 @@
 <?php
 if ( ! class_exists( 'WFOCU_Oxy_Accept_Link' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Oxy_Accept_Link extends WFOCU_Oxy_HTML_BLOCK {
-		public $slug = 'wfocu_accept_link';
+		public $slug  = 'wfocu_accept_link';
 		protected $id = 'wfocu_accept_link';
 
 		public function __construct() {
-			$this->name = __( "WF Accept Link" );
+			$this->name = __( 'WF Accept Link' );
 			parent::__construct();
 		}
 
@@ -16,11 +17,9 @@ if ( ! class_exists( 'WFOCU_Oxy_Accept_Link' ) ) {
 			$this->typography_settings();
 			$this->spacing_setting();
 			$this->border_setting();
-
 		}
 
 		public function text_settings() {
-
 
 			$offer_id        = WFOCU_Core()->template_loader->get_offer_id();
 			$products        = array();
@@ -36,8 +35,6 @@ if ( ! class_exists( 'WFOCU_Oxy_Accept_Link' ) ) {
 			}
 			$this->add_select( $tab_id, 'selected_product', __( 'Product', 'woofunnels-upstroke-one-click-upsell' ), $product_options, key( $product_options ) );
 			$this->add_text( $tab_id, 'text', __( 'Accept Offer', 'woofunnels-upstroke-one-click-upsell' ), __( 'Accept this offer', 'woofunnels-upstroke-one-click-upsell' ) );
-
-
 		}
 
 		public function color_settings() {
@@ -54,13 +51,12 @@ if ( ! class_exists( 'WFOCU_Oxy_Accept_Link' ) ) {
 
 			$tab_id = $this->add_tab( __( 'Typography', 'woofunnels-upstroke-one-click-upsell' ) );
 			$this->add_heading( $tab_id, __( 'Title Typography' ) );
-			$default = [
+			$default = array(
 				'font_size' => '16',
-			];
+			);
 
 			$this->add_text_alignments( $tab_id, $this->slug . '_alignment', '.wfocu-button-wrapper .wfocu-wfocu-accept', '', 'center' );
 			$this->custom_typography( $tab_id, $this->slug . '_typography', '.wfocu-button-wrapper .wfocu-wfocu-accept', '', $default );
-
 		}
 
 		private function spacing_setting() {
@@ -69,8 +65,6 @@ if ( ! class_exists( 'WFOCU_Oxy_Accept_Link' ) ) {
 			$this->add_heading( $tab_id, __( 'Margin & Padding', 'woofunnels-upstroke-one-click-upsell' ) );
 			$this->add_margin( $tab_id, $this->slug . '_text_margin', '.wfocu-button-wrapper .wfocu-wfocu-accept' );
 			$this->add_padding( $tab_id, $this->slug . '_text_padding', '.wfocu-button-wrapper .wfocu-wfocu-accept' );
-
-
 		}
 
 		public function border_setting() {
@@ -81,7 +75,6 @@ if ( ! class_exists( 'WFOCU_Oxy_Accept_Link' ) ) {
 
 			$this->add_heading( $tab_id, __( 'Border Hover Color', 'woofunnels-upstroke-one-click-upsell' ) );
 			$this->add_border_color( $tab_id, $this->slug . '_hover_border_color', '.wfocu-button-wrapper .wfocu-wfocu-accept:hover', '#89e047', __( 'Border Color', 'woofunnels-upstroke-one-click-upsell' ) );
-
 		}
 
 		public function html( $settings, $defaults, $content ) {//phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
@@ -91,16 +84,16 @@ if ( ! class_exists( 'WFOCU_Oxy_Accept_Link' ) ) {
 
 			$text = isset( $settings['text'] ) ? $settings['text'] : '';
 			?>
-            <div class="wfocu-button-wrapper">
-                <a class="wfocu-wfocu-accept wfocu_upsell" href="javascript:void(0);" data-key="<?php echo esc_attr( $product_key ) ?>"><?php echo wp_kses_post( $text ) ?></a>
-            </div>
+			<div class="wfocu-button-wrapper">
+				<a class="wfocu-wfocu-accept wfocu_upsell" href="javascript:void(0);" data-key="<?php echo esc_attr( $product_key ); ?>"><?php echo wp_kses_post( $text ); ?></a>
+			</div>
 			<?php
 		}
 
 
 		public function defaultCSS() {
 
-			$defaultCSS = "
+			$defaultCSS = '
 			  .wfocu-button-wrapper .wfocu-wfocu-accept {
                 display: block;
                 border-style: none;
@@ -118,15 +111,11 @@ if ( ! class_exists( 'WFOCU_Oxy_Accept_Link' ) ) {
                 border-color: #89e047;
             }
             
-		";
+		';
 
 			return $defaultCSS;
-
-
 		}
-
-
 	}
 
-	return new WFOCU_Oxy_Accept_Link;
+	return new WFOCU_Oxy_Accept_Link();
 }

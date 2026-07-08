@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Multicheck' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Multicheck extends WFACPKirki_Field {
@@ -24,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Multicheck' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-multicheck';
-
 		}
 
 		/**
@@ -40,7 +43,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Multicheck' ) ) {
 				return;
 			}
 			$this->sanitize_callback = array( $this, 'sanitize' );
-
 		}
 
 		/**
@@ -53,7 +55,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Multicheck' ) ) {
 			$value = ( ! is_array( $value ) ) ? explode( ',', $value ) : $value;
 
 			return ( ! empty( $value ) ) ? array_map( 'sanitize_text_field', $value ) : array();
-
 		}
 	}
 }

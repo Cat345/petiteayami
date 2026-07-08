@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * FluentCRM Pro  by Fluent CRM version 2.8.45
@@ -7,40 +11,36 @@
 if ( ! class_exists( 'WFACP_FluentPro' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_FluentPro {
-		public $instance = null;
+		public $instance     = null;
 		public $field_return = false;
 
 		public function __construct() {
 
-
 			/* Register Add field */
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
 			add_filter( 'wfacp_html_fields_wfacp_fluent_wc_subscription_checkbox', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'display_field' ], 999, 2 );
+			add_action( 'process_wfacp_html', array( $this, 'display_field' ), 999, 2 );
 
 			/* Assign Object */
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'action' ], 99999 );
-			add_action( 'wfacp_before_process_checkout_template_loader', [ $this, 'action' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'action' ), 99999 );
+			add_action( 'wfacp_before_process_checkout_template_loader', array( $this, 'action' ) );
 
 			/* default classes */
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 999, 2 );
-			add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
-			add_filter( 'wfacp_print_advanced_custom_fields', [ $this, 'do_not_print_third_party' ], 99, 2 );
-
-
+			add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 999, 2 );
+			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
+			add_filter( 'wfacp_print_advanced_custom_fields', array( $this, 'do_not_print_third_party' ), 99, 2 );
 		}
 
 		public function add_field( $fields ) {
 
-
-			$fields['wfacp_fluent_wc_subscription_checkbox'] = [
+			$fields['wfacp_fluent_wc_subscription_checkbox'] = array(
 				'type'       => 'wfacp_html',
-				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_fluent_wc_subscription_checkbox' ],
+				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_fluent_wc_subscription_checkbox' ),
 				'id'         => 'wfacp_fluent_wc_subscription_checkbox',
 				'field_type' => 'wfacp_fluent_wc_subscription_checkbox',
 				'label'      => __( 'FluentCRM', 'woofunnels-aero-checkout' ),
 
-			];
+			);
 
 			return $fields;
 		}
@@ -51,9 +51,7 @@ if ( ! class_exists( 'WFACP_FluentPro' ) ) {
 				return;
 			}
 
-
 			$this->instance = WFACP_Common::remove_actions( 'woocommerce_checkout_billing', 'FluentCampaign\App\Services\Integrations\WooCommerce\WooInit', 'addSubscribeBox' );
-
 
 			if ( is_null( $this->instance ) ) {
 				$this->instance = WFACP_Common::remove_actions( 'woocommerce_before_order_notes', 'FluentCampaign\App\Services\Integrations\WooCommerce\WooInit', 'addSubscribeBox' );
@@ -63,8 +61,6 @@ if ( ! class_exists( 'WFACP_FluentPro' ) ) {
 				$this->field_return = true;
 				$this->instance     = WFACP_Common::remove_actions( 'woocommerce_checkout_fields', 'FluentCampaign\App\Services\Integrations\WooCommerce\WooInit', 'addSubscribeBox' );
 			}
-
-
 		}
 
 		public function is_enable() {
@@ -74,19 +70,16 @@ if ( ! class_exists( 'WFACP_FluentPro' ) ) {
 
 		public function display_field( $field, $key ) {
 
-
 			if ( ! $this->is_enable() || empty( $key ) || 'wfacp_fluent_wc_subscription_checkbox' !== $key || ! $this->instance instanceof FluentCampaign\App\Services\Integrations\WooCommerce\WooInit ) {
 				return '';
 			}
 
-
 			?>
-            <div class="wfacp_fluent_wc_subscription_checkbox" id="wfacp_fluent_wc_subscription_checkbox">
+			<div class="wfacp_fluent_wc_subscription_checkbox" id="wfacp_fluent_wc_subscription_checkbox">
 				<?php
 
-
 				if ( true === $this->field_return ) {
-					$fields = $this->instance->addSubscribeBox( [] );
+					$fields = $this->instance->addSubscribeBox( array() );
 					if ( is_array( $fields['order'] ) && count( $fields['order'] ) > 0 ) {
 						foreach ( $fields['order'] as $index => $field ) {
 							woocommerce_form_field( $index, $field );
@@ -97,34 +90,29 @@ if ( ! class_exists( 'WFACP_FluentPro' ) ) {
 				}
 
 				?>
-            </div>
+			</div>
 			<?php
-
 		}
 
 
 		public function add_default_wfacp_styling( $args, $key ) {
 
-
 			if ( ! $this->is_enable() || 'wfacp_fluent_wc_subscription_checkbox' !== $key ) {
 				return $args;
 			}
 
-
 			if ( isset( $args['type'] ) && 'checkbox' !== $args['type'] ) {
 
-				$args['input_class'] = array_merge( [ 'wfacp-form-control' ], $args['input_class'] );
-				$args['label_class'] = array_merge( [ 'wfacp-form-control-label' ], $args['label_class'] );
-				$args['class']       = array_merge( [ 'wfacp-form-control-wrapper wfacp-col-full' ], $args['class'] );
-				$args['cssready']    = [ 'wfacp-col-full' ];
-
+				$args['input_class'] = array_merge( array( 'wfacp-form-control' ), $args['input_class'] );
+				$args['label_class'] = array_merge( array( 'wfacp-form-control-label' ), $args['label_class'] );
+				$args['class']       = array_merge( array( 'wfacp-form-control-wrapper wfacp-col-full' ), $args['class'] );
+				$args['cssready']    = array( 'wfacp-col-full' );
 
 			} else {
 
-				$args['class']    = array_merge( [ 'wfacp-form-control-wrapper wfacp-col-full ' ], $args['class'] );
-				$args['cssready'] = [ 'wfacp-col-full' ];
+				$args['class']    = array_merge( array( 'wfacp-form-control-wrapper wfacp-col-full ' ), $args['class'] );
+				$args['cssready'] = array( 'wfacp-col-full' );
 			}
-
 
 			return $args;
 		}
@@ -135,38 +123,33 @@ if ( ! class_exists( 'WFACP_FluentPro' ) ) {
 			if ( ! $this->is_enable() || ! $instance instanceof WFACP_Template_Common ) {
 				return;
 			}
-			$bodyClass = "body ";
-			$px        = $instance->get_template_type_px() . "px";
+			$bodyClass = 'body ';
+			$px        = $instance->get_template_type_px() . 'px';
 			if ( 'pre_built' !== $instance->get_template_type() ) {
-				$bodyClass = "body #wfacp-e-form ";
-				$px        = "7px";
+				$bodyClass = 'body #wfacp-e-form ';
+				$px        = '7px';
 			}
 
-			$cssHtml = "<style>";
-			$cssHtml .= $bodyClass . "#wfacp_fluent_wc_subscription_checkbox {clear:both;}";
+			$cssHtml  = '<style>';
+			$cssHtml .= $bodyClass . '#wfacp_fluent_wc_subscription_checkbox {clear:both;}';
 
 			if ( ! empty( $px ) ) {
 				$cssHtml .= $bodyClass . "#wfacp_fluent_wc_subscription_checkbox p {padding:0 $px;}";
 				$cssHtml .= $bodyClass . "#wfacp_fluent_wc_subscription_checkbox p {padding:0 $px;}";
 			}
 
-			$cssHtml .= "</style>";
+			$cssHtml .= '</style>';
 			echo $cssHtml;
-
-
 		}
 
 		public function do_not_print_third_party( $field, $key ) {
 
 			if ( strpos( $key, 'fc_woo' ) !== false ) {
-				return [];
+				return array();
 			}
-
 
 			return $field;
 		}
-
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_FluentPro(), 'wfacp-fluentcampaign-pro' );

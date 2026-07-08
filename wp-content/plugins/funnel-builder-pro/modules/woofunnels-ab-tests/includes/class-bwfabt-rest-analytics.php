@@ -164,7 +164,7 @@ if ( ! class_exists( 'BWFABT_REST_Analytics' ) ) {
 				return $result;
 			}
 
-			$step_ids   = esc_sql( implode( ',', $variants ) );
+			$step_ids   = implode( ',', array_map( 'absint', $variants ) );
 			$start_date = esc_sql( $start_date );
 			$end_date   = esc_sql( $end_date );
 

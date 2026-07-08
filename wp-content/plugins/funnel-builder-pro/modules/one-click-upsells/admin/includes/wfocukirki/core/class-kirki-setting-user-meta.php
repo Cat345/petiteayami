@@ -13,6 +13,7 @@ if ( ! class_exists( 'WFOCUKirki_Setting_User_Meta' ) ) {
 	 * @since 3.0.0
 	 * @see WP_Customize_Setting
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Setting_User_Meta extends WP_Customize_Setting {
 
 		/**

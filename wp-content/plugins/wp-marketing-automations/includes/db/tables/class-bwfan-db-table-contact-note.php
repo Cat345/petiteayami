@@ -5,6 +5,7 @@
  */
 
 if ( ! class_exists( 'BWFAN_DB_Table_Contact_Note' ) && BWFAN_Common::is_pro_3_0() ) {
+	#[\AllowDynamicProperties]
 	class BWFAN_DB_Table_Contact_Note extends BWFAN_DB_Tables_Base {
 		public $table_name = 'bwfan_contact_note';
 

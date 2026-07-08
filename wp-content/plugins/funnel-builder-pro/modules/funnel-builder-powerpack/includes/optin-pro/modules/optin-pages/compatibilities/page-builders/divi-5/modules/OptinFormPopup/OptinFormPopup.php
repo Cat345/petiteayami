@@ -45,6 +45,7 @@ foreach ( $traits as $trait_file ) {
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class OptinFormPopup extends BaseModule {
 	use RenderCallbackTrait;
 	use ModuleClassnamesTrait;

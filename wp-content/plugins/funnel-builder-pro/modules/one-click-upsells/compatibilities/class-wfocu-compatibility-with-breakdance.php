@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFOCU_Compatibility_With_BreakDance_Builder
  */
 if ( ! class_exists( 'WFOCU_Compatibility_With_BreakDance_Builder' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_BreakDance_Builder {
 
 		public function __construct() {
@@ -40,7 +41,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_BreakDance_Builder' ) ) {
 
 			return $body_class;
 		}
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_BreakDance_Builder(), 'bd_builder' );

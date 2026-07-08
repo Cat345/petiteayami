@@ -29,7 +29,7 @@ if ( isset( $data['advance_setting']['rbox_border_type'] ) && $data['advance_set
 
 <div class="<?php echo $section_key . ' ' . $rbox_border_type; ?> div_wrap_sec">
 
-    <!--   Assurance-->
+	<!--   Assurance-->
 	<?php
 	if ( is_array( $data['assurance_data']['list'] ) && count( $data['assurance_data']['list'] ) > 0 ) {
 
@@ -41,18 +41,18 @@ if ( isset( $data['advance_setting']['rbox_border_type'] ) && $data['advance_set
 
 			?>
 
-            <div class="wfacp-information-container">
+			<div class="wfacp-information-container">
 
-                <div class="wfacp-comm-inner-inf <?php echo $borderEnableClass; ?>">
+				<div class="wfacp-comm-inner-inf <?php echo $borderEnableClass; ?>">
 					<?php
 					if ( $hide_title != 1 && isset( $val['mwidget_heading'] ) ) {
 						?>
 
-                        <h2 class="wfacp-sidebar-text loop_head_sec wfacp_section_title  <?php echo $align_text . ' ' . $font_weight; ?>"><?php echo $val['mwidget_heading']; ?></h2>
+						<h2 class="wfacp-sidebar-text loop_head_sec wfacp_section_title  <?php echo $align_text . ' ' . $font_weight; ?>"><?php echo esc_html( $val['mwidget_heading'] ); ?></h2>
 						<?php
 					}
 					?>
-                    <div class="wfacp_mwidget_wrap wfacp_clearfix">
+					<div class="wfacp_mwidget_wrap wfacp_clearfix">
 						<?php
 						$wfacp_img_cls = '';
 						if ( isset( $section_mwidget_listw ) && $section_mwidget_listw == 1 ) {
@@ -68,9 +68,9 @@ if ( isset( $data['advance_setting']['rbox_border_type'] ) && $data['advance_set
 							if ( $mwidget_image != '' ) {
 								$wfacp_img_cls = 'wfacp_assurance_active';
 								?>
-                                <div class="wfacp-assurance_img">
-                                    <img src="<?php echo $mwidget_image; ?>" alt="">
-                                </div>
+								<div class="wfacp-assurance_img">
+									<img src="<?php echo $mwidget_image; ?>" alt="">
+								</div>
 								<?php
 							}
 						}
@@ -80,23 +80,23 @@ if ( isset( $data['advance_setting']['rbox_border_type'] ) && $data['advance_set
 						if ( isset( $val['mwidget_content'] ) ) {
 							$content = $val['mwidget_content'];
 							?>
-                            <div class="wfacp-sidebar-text <?php echo $wfacp_img_cls; ?>">
+							<div class="wfacp-sidebar-text <?php echo $wfacp_img_cls; ?>">
 								<?php echo apply_filters( 'wfacp_the_content', $content ); ?>
-                            </div>
+							</div>
 							<?php
 						}
 						?>
-                    </div>
+					</div>
 
 
-                    <!-- 30_day -->
-                </div>
-            </div>
+					<!-- 30_day -->
+				</div>
+			</div>
 			<?php
 		}
 	}
 	?>
-    <!--   Assurance Closed -->
+	<!--   Assurance Closed -->
 </div>
 
 

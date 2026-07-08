@@ -9,11 +9,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 use WFFN_Optin_Form_Controller_Custom_Form;
 
 if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
+	#[\AllowDynamicProperties]
 	class Optin_Form extends \Bricks\Element {
 		public $category = 'funnelkit';
-		public $name = 'wffn-optin-form';
-		public $icon = 'ti-layout-cta-left';
-		public $scripts = array( 'triggerPhoneFieldReload' );
+		public $name     = 'wffn-optin-form';
+		public $icon     = 'ti-layout-cta-left';
+		public $scripts  = array( 'triggerPhoneFieldReload' );
 
 		/**
 		 * Retrieves the label for the "Optin Form" element.
@@ -188,23 +189,23 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 			);
 
 			$this->controls['label_spacing'] = array(
-				'group'    => 'styleForm',
-				'label'    => esc_html__( 'Label' ),
-				'type'     => 'slider',
-				'css'      => array(
+				'group'   => 'styleForm',
+				'label'   => esc_html__( 'Label' ),
+				'type'    => 'slider',
+				'css'     => array(
 					array(
 						'property' => 'margin-top',
 						'selector' => '.bwfac_form_sec .wfop_input_cont',
 					),
 				),
-				'units'    => array(
+				'units'   => array(
 					'px' => array(
 						'min'  => 0,
 						'max'  => 60,
 						'step' => 1,
 					),
 				),
-				'default'  => '0px',
+				'default' => '0px',
 			);
 
 			$this->controls['separatorLabel'] = array(
@@ -214,11 +215,11 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 			);
 
 			$this->controls['label_color'] = array(
-				'group'    => 'styleForm',
-				'label'    => esc_html__( 'Text' ),
-				'type'     => 'color',
-				'inline'   => true,
-				'css'      => array(
+				'group'  => 'styleForm',
+				'label'  => esc_html__( 'Text' ),
+				'type'   => 'color',
+				'inline' => true,
+				'css'    => array(
 					array(
 						'property' => 'color',
 						'selector' => '.bwfac_form_sec > label, .bwfac_form_sec .wfop_input_cont > label',
@@ -227,10 +228,10 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 			);
 
 			$this->controls['mark_required_color'] = array(
-				'group'    => 'styleForm',
-				'label'    => esc_html__( 'Asterisk' ),
-				'type'     => 'color',
-				'css'      => array(
+				'group' => 'styleForm',
+				'label' => esc_html__( 'Asterisk' ),
+				'type'  => 'color',
+				'css'   => array(
 					array(
 						'property' => 'color',
 						'selector' => '.bwfac_form_sec > label > span, .bwfac_form_sec .wfop_input_cont > label > span',
@@ -239,17 +240,17 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 			);
 
 			$this->controls['label_typography'] = array(
-				'group'    => 'styleForm',
-				'label'    => esc_html__( 'Typography' ),
-				'type'     => 'typography',
-				'exclude'  => array( 'color' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
-				'css'      => array(
+				'group'   => 'styleForm',
+				'label'   => esc_html__( 'Typography' ),
+				'type'    => 'typography',
+				'exclude' => array( 'color' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
+				'css'     => array(
 					array(
 						'property' => 'typography',
 						'selector' => '.bwfac_form_sec > label, .bwfac_form_sec .wfop_input_cont > label',
 					),
 				),
-				'inline'   => true,
+				'inline'  => true,
 			);
 
 			$this->controls['separatorInput'] = array(
@@ -559,14 +560,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 		 *
 		 * @return void
 		 * @since 1.0.0
-		 *
 		 */
 		public function render() {
 			$settings                       = $this->settings;
 			$settings['button_border_size'] = 0;
 
-			$wrapper_class = 'bricks-form-fields-wrapper';
-			$show_labels   = isset( $settings['show_labels'] ) ? true : false;
+			$wrapper_class  = 'bricks-form-fields-wrapper';
+			$show_labels    = isset( $settings['show_labels'] ) ? true : false;
 			$wrapper_class .= $show_labels ? '' : ' wfop_hide_label';
 
 			$optinPageId    = WFOPP_Core()->optin_pages->get_optin_id();
@@ -580,7 +580,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 			}
 
 			?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 				<?php
 				$custom_form = WFOPP_Core()->form_controllers->get_integration_object( 'form' );
 				if ( $custom_form instanceof WFFN_Optin_Form_Controller_Custom_Form ) {
@@ -588,7 +588,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 					$custom_form->_output_form( $wrapper_class, $optin_fields, $optinPageId, $optin_settings, 'inline', $settings );
 				}
 				?>
-            </div>
+			</div>
 			<?php
 		}
 	}

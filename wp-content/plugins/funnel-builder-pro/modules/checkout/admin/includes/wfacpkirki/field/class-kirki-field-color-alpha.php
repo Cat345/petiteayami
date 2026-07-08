@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Color_Alpha' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Color_Alpha extends WFACPKirki_Field_Color {
@@ -27,7 +31,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Color_Alpha' ) ) {
 				$this->choices = array();
 			}
 			$this->choices['alpha'] = true;
-
 		}
 	}
 }

@@ -34,7 +34,7 @@ trait RestApiTrait {
 	public static function register_rest_routes(): void {
 		add_action(
 			'rest_api_init',
-			function() {
+			function () {
 				self::do_register_rest_routes();
 			}
 		);
@@ -51,41 +51,40 @@ trait RestApiTrait {
 		register_rest_route(
 			'wfacp/v1',
 			'/mini-cart/render',
-			[
+			array(
 				'methods'             => 'POST',
 				'callback'            => [ MiniCart::class, 'rest_render_callback' ],
 				'permission_callback' => function() {
-					// Allow in Visual Builder context
-					return current_user_can( 'edit_posts' );
+					return current_user_can( 'manage_woocommerce' );
 				},
-				'args'                => [
-					'attrs'   => [
+				'args'                => array(
+					'attrs'   => array(
 						'required' => false,
 						'type'     => 'object',
-						'default'  => [],
-					],
-					'id'      => [
+						'default'  => array(),
+					),
+					'id'      => array(
 						'required' => false,
 						'type'     => 'string',
 						'default'  => '',
-					],
-					'post_id' => [
+					),
+					'post_id' => array(
 						'required' => false,
 						'type'     => 'integer',
 						'default'  => 0,
-					],
-					'_t'      => [
+					),
+					'_t'      => array(
 						'required' => false,
 						'type'     => 'string',
 						'default'  => '',
-					],
-					'_rid'     => [
+					),
+					'_rid'    => array(
 						'required' => false,
 						'type'     => 'string',
 						'default'  => '',
-					],
-				],
-			]
+					),
+				),
+			)
 		);
 	}
 
@@ -100,12 +99,12 @@ trait RestApiTrait {
 		// Try to get params from JSON body first (POST requests)
 		$json_params = $request->get_json_params();
 		if ( ! empty( $json_params ) ) {
-			$attrs   = $json_params['attrs'] ?? [];
+			$attrs   = $json_params['attrs'] ?? array();
 			$id      = $json_params['id'] ?? '';
 			$post_id = $json_params['post_id'] ?? 0;
 		} else {
 			// Fallback to regular params
-			$attrs   = $request->get_param( 'attrs' ) ?? [];
+			$attrs   = $request->get_param( 'attrs' ) ?? array();
 			$id      = $request->get_param( 'id' ) ?? '';
 			$post_id = $request->get_param( 'post_id' ) ?? 0;
 		}
@@ -114,7 +113,7 @@ trait RestApiTrait {
 		// Divi Visual Builder often sends edited page ID (post/page), not checkout CPT ID.
 		$wfacp_post_id = 0;
 
-		$resolve_checkout_post_id = static function( array $candidates ): int {
+		$resolve_checkout_post_id = static function ( array $candidates ): int {
 			foreach ( $candidates as $candidate ) {
 				$candidate_id = absint( $candidate );
 				if ( $candidate_id <= 0 ) {
@@ -130,7 +129,7 @@ trait RestApiTrait {
 			return 0;
 		};
 
-		$candidates = [];
+		$candidates = array();
 
 		// Prioritize explicit checkout context from Divi.
 		if ( isset( $_REQUEST['et_wfacp_id'] ) ) {
@@ -160,13 +159,15 @@ trait RestApiTrait {
 
 		// Fallback: get latest published checkout for preview.
 		if ( $wfacp_post_id === 0 ) {
-			$fallback_posts = get_posts( [
-				'post_type'      => 'wfacp_checkout',
-				'post_status'    => 'publish',
-				'posts_per_page' => 1,
-				'orderby'        => 'date',
-				'order'          => 'DESC',
-			] );
+			$fallback_posts = get_posts(
+				array(
+					'post_type'      => 'wfacp_checkout',
+					'post_status'    => 'publish',
+					'posts_per_page' => 1,
+					'orderby'        => 'date',
+					'order'          => 'DESC',
+				)
+			);
 
 			if ( ! empty( $fallback_posts ) ) {
 				$wfacp_post_id = absint( $fallback_posts[0]->ID );
@@ -211,24 +212,24 @@ trait RestApiTrait {
 
 		// Ensure attrs is an array
 		if ( ! is_array( $attrs ) ) {
-			$attrs = [];
+			$attrs = array();
 		}
 
 		// Create parsed block array
-		$parsed_block = [
-			'blockName'  => 'wfacp/mini-cart',
-			'attrs'      => $attrs,
-			'innerHTML'  => '',
-			'innerContent' => [],
-			'id'         => $id ?: 'wfacp_order_summary_widget',
-			'orderIndex' => 0,
-		];
+		$parsed_block = array(
+			'blockName'    => 'wfacp/mini-cart',
+			'attrs'        => $attrs,
+			'innerHTML'    => '',
+			'innerContent' => array(),
+			'id'           => $id ?: 'wfacp_order_summary_widget',
+			'orderIndex'   => 0,
+		);
 
 		// Create block type object
-		$block_type = (object) [
+		$block_type = (object) array(
 			'name'     => 'wfacp/mini-cart',
 			'category' => 'module',
-		];
+		);
 
 		// Create a proper WP_Block object
 		// WP_Block constructor: __construct( array $parsed_block, array $available_context = [] )
@@ -236,7 +237,7 @@ trait RestApiTrait {
 
 		// Set block_type property using reflection (since it's not directly settable)
 		$reflection = new \ReflectionClass( $block );
-		$property = $reflection->getProperty( 'block_type' );
+		$property   = $reflection->getProperty( 'block_type' );
 		$property->setAccessible( true );
 		$property->setValue( $block, $block_type );
 
@@ -250,21 +251,21 @@ trait RestApiTrait {
 				'',
 				$block,
 				$elements,
-				[]
+				array()
 			);
 
 			return new \WP_REST_Response(
-				[
+				array(
 					'success' => true,
 					'html'    => $html,
-				],
+				),
 				200
 			);
 		} catch ( \Exception $e ) {
 			return new \WP_Error(
 				'render_failed',
 				'Failed to render MiniCart: ' . $e->getMessage(),
-				[ 'status' => 500 ]
+				array( 'status' => 500 )
 			);
 		}
 	}

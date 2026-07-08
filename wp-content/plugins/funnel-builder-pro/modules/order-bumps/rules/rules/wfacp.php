@@ -7,6 +7,7 @@
  * Time: 10:43 AM
  */
 if ( ! class_exists( 'wfob_Rule_wfacp_page' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_wfacp_page extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -46,9 +47,9 @@ if ( ! class_exists( 'wfob_Rule_wfacp_page' ) ) {
 			if ( ! is_null( $post ) && ! wp_doing_ajax() ) {
 				$wfacp_id = $post->ID;
 			}
-//		if ( 0 == $wfacp_id && count( WFOB_Core()->public->posted_data ) > 0 && isset( WFOB_Core()->public->posted_data['wfacp_embed_form_page_id'] ) ) {
-//			$wfacp_id = absint( WFOB_Core()->public->posted_data['wfacp_embed_form_page_id'] );
-//		}
+			// if ( 0 == $wfacp_id && count( WFOB_Core()->public->posted_data ) > 0 && isset( WFOB_Core()->public->posted_data['wfacp_embed_form_page_id'] ) ) {
+			// $wfacp_id = absint( WFOB_Core()->public->posted_data['wfacp_embed_form_page_id'] );
+			// }
 			if ( 0 == $wfacp_id && count( WFOB_Core()->public->posted_data ) > 0 && isset( WFOB_Core()->public->posted_data['_wfacp_post_id'] ) ) {
 				$wfacp_id = absint( WFOB_Core()->public->posted_data['_wfacp_post_id'] );
 			}
@@ -66,6 +67,5 @@ if ( ! class_exists( 'wfob_Rule_wfacp_page' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }

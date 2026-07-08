@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 abstract class BWFAN_Step_Run_Controller {
 	public $step_id = 0;
 	public $step_data = array();

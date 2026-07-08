@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Link' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Link extends WFACPKirki_Field_URL {

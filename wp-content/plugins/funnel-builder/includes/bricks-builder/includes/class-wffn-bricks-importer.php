@@ -5,6 +5,7 @@ namespace FunnelKit;
 use WFFN_Import_Export;
 use WFFN_Template_Importer;
 if ( ! class_exists( '\FunnelKit\WFFN_Bricks_Importer' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Bricks_Importer implements \WFFN_Import_Export {
 		public function __construct() {
 			add_action( 'woofunnels_module_template_removed', array( $this, 'delete_bricks_data' ) );
@@ -68,6 +69,10 @@ if ( ! class_exists( '\FunnelKit\WFFN_Bricks_Importer' ) ) {
 			if ( isset( $template_data['pageSettings'] ) ) {
 				update_post_meta( $post_id, BRICKS_DB_PAGE_SETTINGS, $template_data['pageSettings'] );
 			}
+
+			// STEP: Validate content before saving
+			require_once WFFN_PLUGIN_DIR . '/includes/class-wffn-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			$elements = \WFFN_Content_Validator::validate_bricks_content( $elements );
 
 			// STEP: Save final template elements
 			$elements = \Bricks\Helpers::sanitize_bricks_data( $elements );

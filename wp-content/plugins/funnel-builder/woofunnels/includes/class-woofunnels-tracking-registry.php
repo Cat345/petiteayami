@@ -22,6 +22,7 @@ if ( ! class_exists( 'WooFunnels_Tracking_Registry' ) ) {
 	 * Class WooFunnels_Tracking_Registry
 	 * @deprecated Use WooFunnels_Usage_Registry instead
 	 */
+	#[\AllowDynamicProperties]
 	class WooFunnels_Tracking_Registry extends WooFunnels_Usage_Registry {
 		// All methods inherited from WooFunnels_Usage_Registry
 	}

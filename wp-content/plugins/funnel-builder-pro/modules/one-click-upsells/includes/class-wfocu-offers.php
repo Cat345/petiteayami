@@ -4,6 +4,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 	 * Create,show,delete,edit and manages the process related to offers in the plugin.
 	 * Class WFOCU_Offers
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Offers {
 
 		const INVALIDATION_PRODUCT_IN_ORDER         = 1;
@@ -1225,6 +1226,19 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 			if ( count( $package['products'] ) > 1 ) {
 				return $package;
 			}
+
+			/**
+			 * Skip modify price logic for Sublium subscription products.
+			 * Sublium plan prices (installment/recurring) are already set correctly by the frontend JS
+			 * via the wfocu_additem_price filter. Overriding with WC product price would charge full price
+			 * instead of the installment amount.
+			 */
+			foreach ( $package['products'] as $check_product ) {
+				if ( isset( $check_product['args']['variation']['_sublium_data'] ) && ! empty( $check_product['args']['variation']['_sublium_data'] ) ) {
+					return $package;
+				}
+			}
+
 			foreach ( $package['products'] as &$product ) {
 
 				if ( ( 'variable' === $product['_offer_data']->type || 'variable-subscription' === $product['_offer_data']->type ) ) {
@@ -1473,7 +1487,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 
 				global $wpdb;
 
-				$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$get_offer" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id = %d", absint( $get_offer ) ) );
 
 				if ( ! empty( $post_meta_all ) ) {
 					$sql_query_selects = array();
@@ -1485,15 +1499,17 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 							continue;
 						}
 
-						$meta_key   = esc_sql( $meta_key );
-						$meta_value = esc_sql( $meta_info->meta_value );
-
-						$sql_query_selects[] = "( $offer_id_new, '$meta_key', '$meta_value')"; // db call ok; no-cache ok; WPCS: unprepared SQL ok.
+						$sql_query_selects[] = array( (int) $offer_id_new, $meta_key, $meta_info->meta_value );
 					}
 
-					$sql_query_meta_val = implode( ',', $sql_query_selects );
-					$wpdb->query( $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta ) );//phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared
-
+					if ( ! empty( $sql_query_selects ) ) {
+						$placeholders = implode( ', ', array_fill( 0, count( $sql_query_selects ), '(%d, %s, %s)' ) );
+						$values       = array();
+						foreach ( $sql_query_selects as $row ) {
+							array_push( $values, $row[0], $row[1], $row[2] );
+						}
+						$wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value) VALUES $placeholders", ...$values ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+					}
 				}
 
 				do_action( 'wfocu_offer_duplicated', $offer_id_new, $get_offer );

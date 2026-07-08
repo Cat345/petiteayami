@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
  * Smart detection: If checkout pro already registered a FunnelKit tab
  * (fk_checkout_redirect), we inject into that panel instead of creating a new one.
  */
+#[\AllowDynamicProperties]
 class WFFN_Product_Tab_Addon {
 
 	private static $ins          = null;
@@ -428,6 +429,5 @@ class WFFN_Product_Tab_Addon {
 		</script>
 		<?php
 	}
-
 }
 

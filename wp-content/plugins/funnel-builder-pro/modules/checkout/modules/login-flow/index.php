@@ -2,6 +2,10 @@
 
 namespace FunnelKit\Checkout\Modules\Login_Flow;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Main
  *
@@ -9,6 +13,7 @@ namespace FunnelKit\Checkout\Modules\Login_Flow;
  * Implemented as a singleton to ensure only one instance exists at a time.
  */
 if ( ! class_exists( '\FunnelKit\Checkout\Modules\Login_Flow\Main' ) ) {
+	#[\AllowDynamicProperties]
 	class Main {
 		private static $instance;
 		private $smart_login = array();

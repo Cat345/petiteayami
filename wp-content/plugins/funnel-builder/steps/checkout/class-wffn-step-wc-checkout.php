@@ -304,7 +304,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 
 						global $wpdb;
 
-						$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=%s", $checkout_page_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+						$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=%s", $checkout_page_id ) );
 
 						if ( ! empty( $post_meta_all ) ) {
 							$sql_query_selects = array();
@@ -1085,6 +1085,8 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 
 			return;
 		}
-		WFFN_Core()->steps->register( WFFN_Step_WC_Checkout::get_instance() );
+		if ( is_object( WFFN_Core()->steps ) && method_exists( WFFN_Core()->steps, 'register' ) ) {
+			WFFN_Core()->steps->register( WFFN_Step_WC_Checkout::get_instance() );
+		}
 	}
 }

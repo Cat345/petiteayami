@@ -1,12 +1,11 @@
 <?php
 if ( ! class_exists( 'WFOCU_Ultimate_Membership_PRO_Compatibility' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Ultimate_Membership_PRO_Compatibility {
 
 		public function __construct() {
 
-
 			add_action( 'init', array( $this, 'maybe_unhook_and_rehook' ) );
-
 		}
 
 		public function is_enable() {
@@ -21,7 +20,6 @@ if ( ! class_exists( 'WFOCU_Ultimate_Membership_PRO_Compatibility' ) ) {
 			if ( ! $this->is_enable() ) {
 				return;
 			}
-
 
 			global $wp_filter;
 			$obj = null;
@@ -44,12 +42,10 @@ if ( ! class_exists( 'WFOCU_Ultimate_Membership_PRO_Compatibility' ) ) {
 			}
 
 			if ( null !== $obj ) {
-				add_action( 'woocommerce_order_status_completed', array( $obj, 'create_order' ), 9 ); /// INSERT ORDER, LEVEL
+				add_action( 'woocommerce_order_status_completed', array( $obj, 'create_order' ), 9 ); // INSERT ORDER, LEVEL
 
 			}
 		}
-
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Ultimate_Membership_PRO_Compatibility(), 'wfocu_ult_mem_pro' );

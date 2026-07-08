@@ -15,6 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @author UpStroke
  */
 if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Session_Handler {
 
 		private static $ins = null;

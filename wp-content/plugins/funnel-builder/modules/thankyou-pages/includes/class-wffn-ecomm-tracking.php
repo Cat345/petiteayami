@@ -641,7 +641,11 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 						'advanced'       => $advanced,
 						'content_ids'    => $content_ids,
 						'content_name'   => $content_name,
-						'category_name'  => array_map( 'html_entity_decode', $category_names ),
+						'category_name'  => array_map(
+							static function ( $v ) {
+								return html_entity_decode( $v, ENT_QUOTES | ENT_HTML401 ); },
+							$category_names
+						),
 						'num_qty'        => $num_qty,
 						'additional'     => $this->purchase_custom_aud_params( $order ),
 						'transaction_id' => $get_order_id,
@@ -703,7 +707,14 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 						'currency'         => BWF_WC_Compatibility::get_order_currency( $order ),
 						'value'            => $this->get_total_order_value( $order, 'order' ),
 						'content_name'     => implode( ', ', $content_name ),
-						'content_category' => implode( ', ', array_map( 'html_entity_decode', $category_names ) ),
+						'content_category' => implode(
+							', ',
+							array_map(
+								static function ( $v ) {
+									return html_entity_decode( $v, ENT_QUOTES | ENT_HTML401 ); },
+								$category_names
+							)
+						),
 						'advanced'         => $tiktok_advanced,
 					)
 				);
@@ -916,7 +927,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			foreach (
 				$terms as $term
 			) {
-				$results[] = html_entity_decode( $term->name );
+				$results[] = html_entity_decode( $term->name, ENT_QUOTES | ENT_HTML401 );
 			}
 
 			if ( $implode ) {
@@ -1097,7 +1108,11 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 					'advanced'         => $advanced,
 					'content_ids'      => $content_ids,
 					'content_name'     => $content_name,
-					'category_name'    => array_map( 'html_entity_decode', $category_names ),
+					'category_name'    => array_map(
+						static function ( $v ) {
+							return html_entity_decode( $v, ENT_QUOTES | ENT_HTML401 ); },
+						$category_names
+					),
 					'num_qty'          => $num_qty,
 					'additional'       => $this->purchase_custom_aud_params( $order ),
 					'transaction_id'   => $order_id,
@@ -1379,6 +1394,17 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 				if ( isset( $wp->query_vars['order-received'] ) ) {
 					$order_id  = absint( $wp->query_vars['order-received'] );
 					$get_order = wc_get_order( $order_id );
+
+					/**
+					 * is_order_received_page() does NOT validate the order key, so on the native
+					 * WooCommerce order-received page we resolve the order straight from the URL.
+					 * Mirror WooCommerce's own key check before exposing the order (and its billing
+					 * PII via advanced matching) so order ids can't be enumerated to leak customer data.
+					 */
+					$request_key = isset( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public order-received page, key acts as the authorization token.
+					if ( $get_order instanceof WC_Order && ( empty( $request_key ) || ! hash_equals( (string) $get_order->get_order_key(), $request_key ) ) ) {
+						return false;
+					}
 				}
 			}
 

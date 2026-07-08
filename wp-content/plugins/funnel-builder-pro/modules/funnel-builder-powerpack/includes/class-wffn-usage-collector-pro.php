@@ -15,6 +15,7 @@ if ( ! class_exists( 'WFFN_Usage_Collector_Pro' ) && class_exists( 'WooFunnels_U
 	/**
 	 * Class WFFN_Usage_Collector_Pro
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_Usage_Collector_Pro extends WooFunnels_Usage_Collector_Abstract {
 
 		/**
@@ -101,8 +102,6 @@ if ( ! class_exists( 'WFFN_Usage_Collector_Pro' ) && class_exists( 'WooFunnels_U
 					new WFFN_WooCommerce_Usage_Pro();
 				}
 			}
-
-
 
 			// Load Lite WooCommerce Usage Collector class (for async tracking)
 			// This class extends WooFunnels_Usage_Collector_Abstract and registers with WooFunnels_Usage_Registry
@@ -210,7 +209,7 @@ if ( ! class_exists( 'WFFN_Usage_Collector_Pro' ) && class_exists( 'WooFunnels_U
 				}
 				if ( class_exists( 'WFFN_Installation_Config' ) ) {
 					$lite_installation_config = new WFFN_Installation_Config();
-					$lite_installation       = $lite_installation_config->collect();
+					$lite_installation        = $lite_installation_config->collect();
 				}
 
 				if ( ! class_exists( 'WFFN_Feature' ) ) {
@@ -367,4 +366,3 @@ if ( ! class_exists( 'WFFN_Usage_Collector_Pro' ) && class_exists( 'WooFunnels_U
 
 	// Register collector via filter hook (lazy registration - only when class is loaded)
 }
-

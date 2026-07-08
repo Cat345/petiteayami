@@ -1,7 +1,95 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 	static $primary_key = 'ID';
+
+	/**
+	 * Override BWFAN_Model::update() to retry on InnoDB deadlocks.
+	 *
+	 * `wp_bwfan_automation_contact` rows are written from up to 5 concurrent
+	 * Action Scheduler workers (controller progression, claim release, status
+	 * sweeps, goal updates), which causes recurring deadlocks under load.
+	 * Retry up to 3 times with 100/200/300ms backoff; non-deadlock errors
+	 * return immediately. Other models keep the abstract's raw $wpdb->update.
+	 *
+	 * @param array $data
+	 * @param array $where
+	 * @return int|false Rows affected, or false on non-deadlock failure / retry exhaustion.
+	 */
+	public static function update( $data, $where ) {
+		global $wpdb;
+
+		$table       = self::_table();
+		$max_retries = 3;
+
+		for ( $attempt = 0; $attempt <= $max_retries; $attempt++ ) {
+			if ( $attempt > 0 ) {
+				BWFAN_Common::log_test_data( 'BWFAN: Deadlock on automation_contact update, retry attempt ' . $attempt . ' of ' . $max_retries, 'fka-db-deadlock', true );
+				usleep( $attempt * 100000 );
+			}
+
+			/** Suppress wpdb's native error logging; deadlocks are handled here and logged via fka-db-deadlock. last_error stays populated for detection below. */
+			$suppress = $wpdb->suppress_errors( true );
+			$result   = $wpdb->update( $table, $data, $where ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.PreparedSQL
+			$wpdb->suppress_errors( $suppress );
+
+			if ( false !== $result || ! self::is_deadlock_error( $wpdb->last_error ) ) {
+				/** Re-surface genuine (non-deadlock) failures that wpdb would normally have logged, unless an outer context already suppressed errors. */
+				if ( false === $result && ! $suppress && '' !== $wpdb->last_error ) {
+					$wpdb->print_error( $wpdb->last_error ); //phpcs:ignore
+				}
+
+				return $result;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Override BWFAN_Model::insert() to retry on InnoDB deadlocks.
+	 *
+	 * The contact-queueing INSERT (BWFAN_Event::handle_automation_run_v2) runs
+	 * synchronously inside the WC payment transaction and competes for row/index
+	 * locks on `wp_bwfan_automation_contact`, producing recurring deadlocks under
+	 * concurrent checkout load. The abstract insert is a bare $wpdb->insert with
+	 * no retry, so a deadlocked INSERT is silently dropped and the contact never
+	 * enters the automation. Retry up to 3 times with 100/200/300ms backoff;
+	 * non-deadlock errors return immediately. Mirrors self::update().
+	 *
+	 * @param array $data
+	 * @return int|false Rows inserted, or false on non-deadlock failure / retry exhaustion.
+	 */
+	public static function insert( $data ) {
+		global $wpdb;
+
+		$table       = self::_table();
+		$max_retries = 3;
+
+		for ( $attempt = 0; $attempt <= $max_retries; $attempt++ ) {
+			if ( $attempt > 0 ) {
+				BWFAN_Common::log_test_data( 'BWFAN: Deadlock on automation_contact insert, retry attempt ' . $attempt . ' of ' . $max_retries, 'fka-db-deadlock', true );
+				usleep( $attempt * 100000 );
+			}
+
+			/** Suppress wpdb's native error logging; deadlocks are handled here and logged via fka-db-deadlock. last_error stays populated for detection below. */
+			$suppress = $wpdb->suppress_errors( true );
+			$result   = $wpdb->insert( $table, $data ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.PreparedSQL
+			$wpdb->suppress_errors( $suppress );
+
+			if ( false !== $result || ! self::is_deadlock_error( $wpdb->last_error ) ) {
+				/** Re-surface genuine (non-deadlock) failures that wpdb would normally have logged, unless an outer context already suppressed errors. */
+				if ( false === $result && ! $suppress && '' !== $wpdb->last_error ) {
+					$wpdb->print_error( $wpdb->last_error ); //phpcs:ignore
+				}
+
+				return $result;
+			}
+		}
+
+		return false;
+	}
 
 	public static function get_data( $id ) {
 		global $wpdb;
@@ -86,11 +174,11 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 
 	public static function get_contacts_journey( $aid, $search = '', $limit = 10, $offset = 0, $contact_with_count = false, $more_data = false, $status = '', $where = '', $cid = 0 ) {
 		if ( ! empty( $aid ) ) {
-			$where .= " AND cc.aid = $aid ";
+			$where .= " AND cc.aid = " . absint( $aid ) . " ";
 		}
 
 		if ( ! empty( $cid ) ) {
-			$where .= " AND cc.cid = $cid ";
+			$where .= " AND cc.cid = " . absint( $cid ) . " ";
 		}
 		$order_by = "ORDER BY cc.c_date DESC ";
 
@@ -106,7 +194,7 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 				$order_by = " ORDER BY cc.e_time ASC ";
 			} else {
 				$status = self::get_status( $status );
-				$where  .= " AND cc.status = $status";
+				$where  .= " AND cc.status = " . intval( $status );
 			}
 		}
 
@@ -158,9 +246,10 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 	public static function get_contacts( $where, $search, $limit, $offset, $more_data, $status = '', $only_total = false, $order_by = '' ) {
 		global $wpdb;
 		$table_name = self::_table();
-		$limit      = " LIMIT $limit OFFSET $offset";
+		$limit      = " LIMIT " . absint( $limit ) . " OFFSET " . absint( $offset );
 		if ( ! empty( $search ) ) {
-			$where .= " AND ( c.f_name LIKE '%$search%' OR c.l_name LIKE '%$search%' OR c.email LIKE '%$search%' )";
+			$like   = '%' . $wpdb->esc_like( $search ) . '%';
+			$where .= $wpdb->prepare( " AND ( c.f_name LIKE %s OR c.l_name LIKE %s OR c.email LIKE %s )", $like, $like, $like );
 		}
 
 		if ( true === $only_total ) {
@@ -221,8 +310,8 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		$join    = '';
 		if ( is_array( $aid ) ) {
 			$columns = " cc.aid, ";
-			$aids    = implode( "', '", $aid );
-			$where   .= " AND cc.aid IN ('$aids')";
+			$aids    = implode( ',', array_map( 'absint', $aid ) );
+			$where   .= " AND cc.aid IN ($aids)";
 		}
 
 		if ( empty( $where ) && absint( $aid ) > 0 ) {
@@ -332,17 +421,18 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		global $wpdb;
 		$table_name = self::_table();
 
-		$where = "aid = %d";
 		if ( is_array( $aid ) ) {
-			$aid         = array_map( 'absint', $aid );
+			$aid = array_filter( array_map( 'absint', $aid ) );
+			if ( empty( $aid ) ) {
+				return 0;
+			}
 			$placeholder = implode( ',', array_fill( 0, count( $aid ), '%d' ) );
-			$where       = $wpdb->prepare( "aid IN ($placeholder)", $aid );
-			$aid         = [];
+			$query       = $wpdb->prepare( "DELETE FROM $table_name WHERE aid IN ($placeholder)", $aid );
+		} else {
+			$query = $wpdb->prepare( "DELETE FROM $table_name WHERE aid = %d", intval( $aid ) );
 		}
 
-		$query = " DELETE FROM $table_name WHERE $where";
-
-		return $wpdb->query( $wpdb->prepare( $query, $aid ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	public static function get_row_by_trail_id( $trail_id ) {
@@ -400,7 +490,7 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 			$order_by       = ' time_interval ';
 		}
 
-		$base_query = "SELECT  count(ID) as contact_counts" . $interval_query . "  FROM `" . $table . "` WHERE 1=1 AND aid = $aid AND `" . $date_col . "` >= '" . $start_date . "' AND `" . $date_col . "` <= '" . $end_date . "' AND aid = $aid " . $group_by . " ORDER BY " . $order_by . " ASC";
+		$base_query = "SELECT  count(ID) as contact_counts" . $interval_query . "  FROM `" . $table . "` WHERE 1=1 AND aid = " . absint( $aid ) . " AND " . $wpdb->prepare( "`$date_col` >= %s AND `$date_col` <= %s", $start_date, $end_date ) . " AND aid = " . absint( $aid ) . " " . $group_by . " ORDER BY " . $order_by . " ASC";
 
 		$contact_counts = $wpdb->get_results( $base_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 

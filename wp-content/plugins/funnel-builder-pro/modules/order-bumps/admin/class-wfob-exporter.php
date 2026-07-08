@@ -1,17 +1,24 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFOB_Exporter' ) ) {
 	/**
 	 * Class WFOB_Exporter
 	 * Handles Exporting of Order Bumbs into JSON Downloadable File
 	 */
+	#[\AllowDynamicProperties]
 	class WFOB_Exporter {
 
 		private static $ins = null;
 
 		public function __construct() {
-			add_action( 'admin_init', [ $this, 'maybe_export' ] );
-			add_action( 'admin_init', [ $this, 'maybe_export_single' ] );
+			$is_admin_enabled = ! class_exists( 'WFFN_Pro_Bump_Support' )
+				|| ! method_exists( 'WFFN_Pro_Bump_Support', 'is_admin_enabled' )
+				|| WFFN_Pro_Bump_Support::is_admin_enabled();
+			if ( ! $is_admin_enabled ) {
+				return;
+			}
+			add_action( 'admin_init', array( $this, 'maybe_export' ) );
+			add_action( 'admin_init', array( $this, 'maybe_export_single' ) );
 		}
 
 		/**
@@ -19,7 +26,7 @@ if ( ! class_exists( 'WFOB_Exporter' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -28,17 +35,17 @@ if ( ! class_exists( 'WFOB_Exporter' ) ) {
 		public function maybe_export( $posted_data = null ) {
 			$skip_nonce = false;
 
-			if ( null == $posted_data ) {
-				$posted_data = bwf_clean( $_POST );
+			if ( null === $posted_data ) {
+				$posted_data = bwf_clean( $_POST ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 			} else {
 				$skip_nonce = true;
 			}
 
-			if ( empty( $posted_data['wfob-action'] ) || 'export' != $posted_data['wfob-action'] ) {
+			if ( empty( $posted_data['wfob-action'] ) || 'export' !== $posted_data['wfob-action'] ) {
 				return;
 			}
 
-			if ( ! wp_verify_nonce( $_POST['wfob-action-nonce'], 'wfob-action-nonce' ) && false === $skip_nonce ) {
+			if ( ! wp_verify_nonce( isset( $_POST['wfob-action-nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['wfob-action-nonce'] ) ) : '', 'wfob-action-nonce' ) && false === $skip_nonce ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				return;
 			}
 
@@ -54,12 +61,12 @@ if ( ! class_exists( 'WFOB_Exporter' ) ) {
 			);
 
 			$query_result = new WP_Query( $args );
-			$bump_posts   = [];
+			$bump_posts   = array();
 			if ( $query_result instanceof WP_Query && $query_result->have_posts() ) {
 				$bump_posts = $query_result->posts;
 			}
 
-			$bumps_to_export = [];
+			$bumps_to_export = array();
 			foreach ( $bump_posts as $post_key => $post ) {
 				$bumps_to_export[ $post_key ] = $this->get_bump_array_for_json( $post->ID );
 			}
@@ -69,7 +76,7 @@ if ( ! class_exists( 'WFOB_Exporter' ) ) {
 			nocache_headers();
 
 			header( 'Content-Type: application/json; charset=utf-8' );
-			header( 'Content-Disposition: attachment; filename=wfob-funnels-export-' . date( 'm-d-Y' ) . '.json' );
+			header( 'Content-Disposition: attachment; filename=wfob-funnels-export-' . gmdate( 'm-d-Y' ) . '.json' );
 			header( 'Expires: 0' );
 
 			echo wp_json_encode( $bumps_to_export );
@@ -83,7 +90,7 @@ if ( ! class_exists( 'WFOB_Exporter' ) ) {
 				return;
 			}
 
-			$bump_json                = [];
+			$bump_json                = array();
 			$bump_json['id']          = $id;
 			$bump_json['title']       = get_the_title( $id );
 			$bump_json['post_status'] = $post->post_status;
@@ -91,12 +98,12 @@ if ( ! class_exists( 'WFOB_Exporter' ) ) {
 			$selected_products        = WFOB_Common::get_bump_products( $id );
 			$bump_json['design_data'] = WFOB_Common::get_design_data_meta( $id );
 			if ( empty( $bump_json['design_data'] ) ) {
-				$bump_json['design_data'] = [];
+				$bump_json['design_data'] = array();
 			}
 
-			$design_json_data = json_encode( $bump_json['design_data'] );
+			$design_json_data = wp_json_encode( $bump_json['design_data'] );
 			if ( is_array( $selected_products ) && count( $selected_products ) > 0 ) {
-				$products = [];
+				$products = array();
 				foreach ( $selected_products as $key => $values ) {
 					$unique_key = uniqid( 'wfob_' );
 					if ( ! empty( $design_json_data ) ) {
@@ -111,13 +118,12 @@ if ( ! class_exists( 'WFOB_Exporter' ) ) {
 
 			$bump_json['settings'] = get_post_meta( $id, '_wfob_settings', true );
 			if ( ! is_array( $bump_json['settings'] ) ) {
-				$bump_json['settings'] = [];
+				$bump_json['settings'] = array();
 			}
-
 
 			$bump_json['rules'] = get_post_meta( $id, '_wfob_rules', true );
 			if ( ! is_array( $bump_json['rules'] ) || empty( $bump_json['rules'] ) ) {
-				$bump_json['rules'] = [];
+				$bump_json['rules'] = array();
 			}
 
 			return $bump_json;
@@ -126,13 +132,13 @@ if ( ! class_exists( 'WFOB_Exporter' ) ) {
 		public function maybe_export_single( $posted_data = null ) {
 			$skip_nonce = false;
 
-			if ( null == $posted_data ) {
-				$posted_data = bwf_clean( $_POST );
+			if ( null === $posted_data ) {
+				$posted_data = bwf_clean( $_POST ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 			} else {
 				$skip_nonce = true;
 			}
 
-			if ( empty( $posted_data['action'] ) || 'wfob-export' != $posted_data['action'] ) {
+			if ( empty( $posted_data['action'] ) || 'wfob-export' !== $posted_data['action'] ) {
 				return;
 			}
 
@@ -145,20 +151,18 @@ if ( ! class_exists( 'WFOB_Exporter' ) ) {
 				return;
 			}
 
-			$bumps_to_export    = [];
+			$bumps_to_export    = array();
 			$bumps_to_export[0] = $this->get_bump_array_for_json( $posted_data['id'] );
 			$bumps_to_export    = apply_filters( 'wfob_export_data', $bumps_to_export );
 
 			nocache_headers();
 
 			header( 'Content-Type: application/json; charset=utf-8' );
-			header( 'Content-Disposition: attachment; filename=wfob-funnels-export-' . date( 'm-d-Y' ) . '.json' );
+			header( 'Content-Disposition: attachment; filename=wfob-funnels-export-' . gmdate( 'm-d-Y' ) . '.json' );
 			header( 'Expires: 0' );
 
 			echo wp_json_encode( $bumps_to_export );
 			exit;
-
-
 		}
 	}
 

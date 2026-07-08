@@ -651,9 +651,10 @@ if ( isset( $css['cart_opener'] ) && ! empty( $css['cart_opener'] ) ) {
 if ( ! empty( $wfocu_css_output ) ) {
 	$font_css = '';
 	if ( isset( $this->selected_font_family ) && ! empty( $this->selected_font_family ) ) {
-		$font_url = 'https://fonts.googleapis.com/css?family=' . $this->selected_font_family;
-		echo "<link href='" . $font_url . "' rel=stylesheet>";
-		$font_css = 'body, body p, h1, h2, h3, h4, h5, h6, .wfocu-progressbar-style1 .wfocu-pstep, .wfocu-progressbar-style2 .wfocu-current-step-text, .wfocu-progressbar-style2 .wfocu-current-step-text{font-family:"' . $this->selected_font_family . '"}';
+		$font_url = 'https://fonts.googleapis.com/css?family=' . rawurlencode( $this->selected_font_family );
+		echo '<link href="' . esc_url( $font_url ) . '" rel="stylesheet">'; //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- conditional inline load required
+		$safe_family = esc_attr( $this->selected_font_family );
+		$font_css    = 'body, body p, h1, h2, h3, h4, h5, h6, .wfocu-progressbar-style1 .wfocu-pstep, .wfocu-progressbar-style2 .wfocu-current-step-text, .wfocu-progressbar-style2 .wfocu-current-step-text{font-family:"' . $safe_family . '"}';
 	}
 	echo "<style>\n";
 	echo $font_css;
@@ -673,8 +674,8 @@ if ( ! empty( $wfocu_css_output ) ) {
 /** CSS Media Query Output */
 if ( ! empty( $wfocu_media_css_output ) ) {
 	echo "<style>\n";
-	foreach ( $wfocu_media_css_output as $type => $css ) {
-		switch ( $type ) {
+	foreach ( $wfocu_media_css_output as $media_type => $css ) {
+		switch ( $media_type ) {
 			case 'tablet':
 				echo "\n@media (max-width: 991px) {\n";
 				break;

@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * By WpISMyLife
@@ -17,13 +21,13 @@ if ( ! class_exists( 'WFACP_Compatibility_Buy_Now_btn_WpISMyLife' ) ) {
 		public function remove_action() {
 			$this->instance = WFACP_Common::remove_actions( 'woocommerce_is_checkout', 'Buy_Now_Woo\Plugin', 'woocommerce_is_checkout' );
 			if ( $this->instance instanceof Buy_Now_Woo\Plugin ) {
-				add_action( 'wp', [ $this, 'attach_action' ] );
+				add_action( 'wp', array( $this, 'attach_action' ) );
 			}
 		}
 
 		public function attach_action() {
 			if ( $this->instance instanceof Buy_Now_Woo\Plugin ) {
-				add_filter( 'woocommerce_is_checkout', [ $this->instance, 'woocommerce_is_checkout' ] );
+				add_filter( 'woocommerce_is_checkout', array( $this->instance, 'woocommerce_is_checkout' ) );
 			}
 		}
 	}

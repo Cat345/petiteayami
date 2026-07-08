@@ -6,20 +6,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'WFOCU_Logger' ) ) {
 	/**
 	 * Class WFOCU_Logger
+	 *
 	 * @package UpStroke
 	 * @author WooFunnels
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Logger {
 
 		private static $ins = null;
-		public $wc_logger = null;
+		public $wc_logger   = null;
 
 		public function __construct() {
 		}
 
 		public static function get_instance() {
 			if ( self::$ins === null ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -40,7 +42,6 @@ if ( ! class_exists( 'WFOCU_Logger' ) ) {
 
 				}
 			}
-
 		}
 
 		public function get_postfix() {
@@ -54,8 +55,6 @@ if ( ! class_exists( 'WFOCU_Logger' ) ) {
 
 			return $postfix;
 		}
-
-
 	}
 
 	if ( class_exists( 'WFOCU_Logger' ) ) {

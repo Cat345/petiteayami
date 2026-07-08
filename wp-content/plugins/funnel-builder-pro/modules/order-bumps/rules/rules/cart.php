@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Rule_Cart_Total_Full' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Total_Full extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -71,6 +72,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Total_Full' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Total' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Total extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -146,6 +148,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Total' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Product' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Product extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -221,6 +224,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Product' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Category' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Category extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -348,6 +352,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Category' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_tags' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_tags extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -476,6 +481,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_tags' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Items_Count' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Items_Count extends wfob_Rule_Base {
 		private $items_count = 0;
 
@@ -546,6 +552,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Items_Count' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Per_Item_Count' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Per_Item_Count extends wfob_Rule_Base {
 		private $items_count = 0;
 
@@ -620,6 +627,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Per_Item_Count' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Item_Count' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Item_Count extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -690,6 +698,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Item_Count' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Item_Type' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Item_Type extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -802,6 +811,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Item_Type' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Coupons' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Coupons extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -887,6 +897,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Coupons' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Payment_Gateway' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Payment_Gateway extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -960,6 +971,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Payment_Gateway' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Shipping_Country' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Shipping_Country extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -1024,6 +1036,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Shipping_Country' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Billing_Country' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Billing_Country extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -1088,6 +1101,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Billing_Country' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Shipping_Method' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Shipping_Method extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -1166,6 +1180,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Shipping_Method' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Item' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Item extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -1259,6 +1274,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Item' ) ) {
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Sublium' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Cart_Sublium extends wfob_Rule_Base {
 
 		public function __construct() {
@@ -1281,19 +1297,20 @@ if ( ! class_exists( 'wfob_Rule_Cart_Sublium' ) ) {
 		/**
 		 * Get products that have FunnelKit payment plans
 		 *
-		 * @param int $limit Number of products to return (-1 for all)
+		 * @param int    $limit Number of products to return (-1 for all)
 		 * @param string $post_status Product status to include (default: 'publish')
 		 *
 		 * @return array Array of product options with plan details
 		 */
 		function get_posts_with_subliumplan_data( $limit = - 1, $post_status = 'publish' ) {
 			global $wpdb;
-			$output   = [];
+			$output   = array();
 			$meta_key = '_sublium_wcs_plan_data';
 
 			try {
 				// Prepare and execute SQL query
-				$sql = $wpdb->prepare( "SELECT
+				$sql = $wpdb->prepare(
+					"SELECT
 						p.ID as ID,
 						p.post_title as title,
 						pm.meta_value AS sublium_plan_data
@@ -1306,18 +1323,21 @@ if ( ! class_exists( 'wfob_Rule_Cart_Sublium' ) ) {
 						AND p.post_status = %s
 						AND p.post_type = 'product'
 					ORDER BY
-						p.post_title ASC", $meta_key, $post_status );
+						p.post_title ASC",
+					$meta_key,
+					$post_status
+				);
 
 				// Add limit if specified
 				if ( $limit > 0 ) {
-					$sql .= $wpdb->prepare( " LIMIT %d", $limit );
+					$sql .= $wpdb->prepare( ' LIMIT %d', $limit );
 				}
 
-				// Get the results
-				$products = $wpdb->get_results( $sql );
+				// $sql is composed entirely of $wpdb->prepare() fragments above (meta_key/post_status bound %s, optional LIMIT bound %d); tables are $wpdb->posts/postmeta.
+				$products = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 				if ( empty( $products ) ) {
-					return [];
+					return array();
 				}
 
 				// Process each product's plans
@@ -1344,7 +1364,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Sublium' ) ) {
 							}
 
 							$plan_id = $plan_data['id'];
-							$plan    = \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_id ,$wc_product);
+							$plan    = \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_id, $wc_product );
 
 							if ( ! $plan ) {
 								continue;
@@ -1355,11 +1375,11 @@ if ( ! class_exists( 'wfob_Rule_Cart_Sublium' ) ) {
 
 							$output[ $option_key ] = $option_value;
 						}
-					} catch ( \Exception|\Error $e ) {
+					} catch ( \Exception | \Error $e ) {
 						error_log( sprintf( 'Sublium Rule: Error processing product #%d: %s', $product->ID, $e->getMessage() ) );
 					}
 				}
-			} catch ( \Exception|\Error $e ) {
+			} catch ( \Exception | \Error $e ) {
 				error_log( sprintf( 'Sublium Rule: Database error: %s', $e->getMessage() ) );
 			}
 
@@ -1384,7 +1404,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Sublium' ) ) {
 		/**
 		 * Check if the rule matches the current environment
 		 *
-		 * @param array $rule_data Rule configuration
+		 * @param array  $rule_data Rule configuration
 		 * @param string $env Environment (cart or order)
 		 *
 		 * @return bool Whether rule matches
@@ -1400,7 +1420,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Sublium' ) ) {
 				return $this->return_is_match( false, $rule_data );
 			}
 
-			$condition = isset( $rule_data['condition']['categories'] ) ? $rule_data['condition']['categories'] : [];
+			$condition = isset( $rule_data['condition']['categories'] ) ? $rule_data['condition']['categories'] : array();
 			$result    = false;
 
 			switch ( $type ) {
@@ -1450,7 +1470,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Sublium' ) ) {
 				}
 			}
 
-
 			return array_unique( $all_terms );
 		}
 
@@ -1474,10 +1493,10 @@ if ( ! class_exists( 'wfob_Rule_Cart_Sublium' ) ) {
 
 			return $product_id;
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Order_Coupon_Text_Match' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Rule_Order_Coupon_Text_Match extends wfob_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 

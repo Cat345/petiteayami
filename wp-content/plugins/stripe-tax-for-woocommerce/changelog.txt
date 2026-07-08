@@ -1,5 +1,27 @@
 *** Stripe Tax - Sales tax automation for WooCommerce ***
 
+2026-07-06 - version 2.0.5
+* Fixed tax reversals silently failing when refunds were issued by amount instead of quantity.
+* Fixed unbounded growth of persistent object cache groups.
+* Fixed tax calculations being triggered when adding a fee to a Tax Exempt order from the WooCommerce admin page.
+* Fixed an unnecessary /tax/calculation request when the shipping address "line1" field is populated but not included in the request sent to the Stripe API on the WooCommerce admin page.
+* Fixed partial order refunds from the WooCommerce admin page incorrectly reversing the full tax transaction.
+* Display taxes before paying when using Express Checkout.
+
+2026-06-11 - version 2.0.4
+* Fixed unnecessary secondary /tax/calculations request for non-taxable fees
+* Fixed incorrect discounts caused by inconsistent tax-inclusive recalculations
+* Fixed fee refunds incorrectly triggering full order reversals instead of partial reversals
+* Delayed tax calculation until sufficient address information is available for countries with uniform VAT rates across regions
+* Fixed distinct tax jurisdictions with identical tax rates being merged into a single WooCommerce tax line
+* Fixed Stripe Tax not being correctly applied to Express Checkout orders
+
+2026-05-05 - version 2.0.3
+* Reduced excessive calls to the /v1/tax/settings endpoint.
+* Changed tax calculation logic to avoid using store address as initial fallback, reducing unnecessary API calls
+* Fixed unbounded growth of stripe_tax_for_wc_calculate_tax table
+* Fixed issue where partial reversals sent incorrect amounts for tax-inclusive line items
+
 2026-04-07 - version 2.0.2
 * Reduced excessive calls to the /v1/tax/settings endpoint to improve performance.
 * Extended validation coverage for tax location handling.

@@ -3,14 +3,15 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
-include_once __DIR__ . '/class-wffn-export-contact.php';
+require_once __DIR__ . '/class-wffn-export-contact.php';
 /**
  * Class WFFN_Export_Contact
  */
 if ( ! class_exists( 'WFFN_Export_Contact_Global' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Export_Contact_Global extends WFFN_Export_Contact {
 		protected static $slug = 'global_contacts';
-		private static $ins = null;
+		private static $ins    = null;
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
@@ -35,8 +36,6 @@ if ( ! class_exists( 'WFFN_Export_Contact_Global' ) ) {
 		public function action_hook() {
 			return self::$ACTION_HOOK;
 		}
-
-
 	}
 
 	if ( class_exists( 'WFFN_Pro_Core' ) ) {

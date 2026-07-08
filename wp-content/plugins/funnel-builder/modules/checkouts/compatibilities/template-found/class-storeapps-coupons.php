@@ -3,6 +3,7 @@
  * WooCommerce Smart Coupons by StoreApps v.9.54.0
  */
 if ( ! class_exists( 'WFACP_Storeapps_Coupons' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_Storeapps_Coupons {
 		/**
 		 * Constructor

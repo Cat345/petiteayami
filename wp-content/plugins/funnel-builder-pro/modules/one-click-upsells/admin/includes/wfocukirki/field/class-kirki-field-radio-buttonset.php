@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Radio_Buttonset' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Radio_Buttonset extends WFOCUKirki_Field_Radio {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Radio_Buttonset' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-radio-buttonset';
-
 		}
 	}
 }

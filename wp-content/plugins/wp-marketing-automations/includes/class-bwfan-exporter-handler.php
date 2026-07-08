@@ -2,6 +2,7 @@
 
 use BWFAN\Exporter\Base;
 
+#[\AllowDynamicProperties]
 class BWFAN_Exporter_Handler {
 	/**
 	 * Class instance

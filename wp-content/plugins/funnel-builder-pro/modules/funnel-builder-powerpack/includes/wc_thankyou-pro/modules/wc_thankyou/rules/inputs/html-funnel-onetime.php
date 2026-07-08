@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfty_Input_Funnel_OneTime' ) ) {
+	#[\AllowDynamicProperties]
 	class wfty_Input_Funnel_OneTime {
 		public function __construct() {
 			// vars
@@ -8,7 +9,7 @@ if ( ! class_exists( 'wfty_Input_Funnel_OneTime' ) ) {
 			$this->defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 		}
 
@@ -16,6 +17,5 @@ if ( ! class_exists( 'wfty_Input_Funnel_OneTime' ) ) {
 
 			_e( 'Run this funnel only if the user hasn\'t visited it yet.', 'funnel-builder-powerpack' );
 		}
-
 	}
 }

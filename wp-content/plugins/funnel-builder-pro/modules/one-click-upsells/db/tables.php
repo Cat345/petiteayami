@@ -4,6 +4,7 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 	/**
 	 * Class WFOCU_DB_Tables
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_DB_Tables {
 
 		/**
@@ -37,7 +38,6 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 		 * WFOCU_DB_Tables constructor.
 		 *
 		 * @since 1.5.1
-		 *
 		 */
 		public function __construct() {
 		}
@@ -61,7 +61,6 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 
 				call_user_func( array( $this, str_replace( $search, '', $table ) ) );
 			}
-
 		}
 
 		/**
@@ -69,7 +68,6 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 		 *
 		 * @return array
 		 * @since 1.5.4
-		 *
 		 */
 		public function get_missing_tables() {
 			return $this->missing_tables;
@@ -82,9 +80,7 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 		 */
 		protected function find_missing_tables() {
 
-
 			return $this->get_tables_list();
-
 		}
 
 		/**
@@ -92,7 +88,6 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 		 *
 		 * @return array
 		 * @since 1.5.1
-		 *
 		 */
 		protected function get_tables_list() {
 
@@ -126,7 +121,7 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 			if ( $wpdb->has_cap( 'collation' ) ) {
 				$collate = $wpdb->get_charset_collate();
 			}
-			$values_table = "CREATE TABLE `" . $wpdb->prefix . "wfocu_session` (
+			$values_table = 'CREATE TABLE `' . $wpdb->prefix . 'wfocu_session` (
 				`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 				`order_id` bigint(20) NOT NULL,
 				`email` varchar(100) NOT NULL,
@@ -138,7 +133,7 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 				PRIMARY KEY (`id`),
 				KEY `order_id` (`order_id`),
 				KEY `email` (`email`)
-                ) " . $collate . ";";
+                ) ' . $collate . ';';
 
 			dbDelta( $values_table );
 		}
@@ -159,7 +154,7 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 			if ( $wpdb->has_cap( 'collation' ) ) {
 				$collate = $wpdb->get_charset_collate();
 			}
-			$values_table = "CREATE TABLE `" . $wpdb->prefix . "wfocu_event` (
+			$values_table = 'CREATE TABLE `' . $wpdb->prefix . "wfocu_event` (
 				`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 				`sess_id` bigint(20) NOT NULL,
 				`object_type` varchar(12) NOT NULL DEFAULT '',
@@ -171,7 +166,7 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 				KEY `object_type` (`object_type`),
 				KEY `object_id` (`object_id`),
 				KEY `action_type_id` (`action_type_id`)
-                ) " . $collate . ";";
+                ) " . $collate . ';';
 
 			dbDelta( $values_table );
 		}
@@ -193,7 +188,7 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 			if ( $wpdb->has_cap( 'collation' ) ) {
 				$collate = $wpdb->get_charset_collate();
 			}
-			$values_table = "CREATE TABLE `" . $wpdb->prefix . "wfocu_events` (
+			$values_table = 'CREATE TABLE `' . $wpdb->prefix . "wfocu_events` (
 				`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 				`order_id` bigint(20) NOT NULL,
 				`useremail` varchar(200) NOT NULL,
@@ -207,7 +202,7 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 				KEY `object_type` (`object_type`),
 				KEY `object_id` (`object_id`),
 				KEY `action_type_id` (`action_type_id`)
-                ) " . $collate . ";";
+                ) " . $collate . ';';
 
 			dbDelta( $values_table );
 		}
@@ -239,7 +234,6 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
             ) ' . $collate . ';';
 
 			dbDelta( $meta_table );
-
 		}
 
 
@@ -259,18 +253,15 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 			if ( $wpdb->has_cap( 'collation' ) ) {
 				$collate = $wpdb->get_charset_collate();
 			}
-			$meta_table = "CREATE TABLE `" . $wpdb->prefix . "wfocu_event_meta` (
+			$meta_table = 'CREATE TABLE `' . $wpdb->prefix . "wfocu_event_meta` (
 			`meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			`event_id` bigint(20) unsigned NOT NULL DEFAULT '0',
 			`meta_key` varchar(50) DEFAULT NULL,    
 			`meta_value` longtext,
 			PRIMARY KEY (`meta_id`)
-            ) " . $collate . ";";
+            ) " . $collate . ';';
 
 			dbDelta( $meta_table );
-
 		}
-
-
 	}
 }

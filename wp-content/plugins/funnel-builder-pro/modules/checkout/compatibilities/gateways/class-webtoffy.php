@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Compatibility  for 'PayPal Express Checkout Payment Gateway for WooCommerce ( Basic )' plugin
@@ -8,7 +12,7 @@ if ( ! class_exists( 'WFACP_EH_PAYPAL_Express' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_EH_PAYPAL_Express {
 		public function __construct() {
-			add_action( 'woocommerce_checkout_create_order', [ $this, 'update_custom_fields' ], 10, 2 );
+			add_action( 'woocommerce_checkout_create_order', array( $this, 'update_custom_fields' ), 10, 2 );
 		}
 
 		/**
@@ -26,7 +30,6 @@ if ( ! class_exists( 'WFACP_EH_PAYPAL_Express' ) ) {
 			}
 			WFACP_Common::update_aero_custom_fields( $order, $posted_data );
 		}
-
 	}
 
 	new WFACP_EH_PAYPAL_Express();

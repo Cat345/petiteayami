@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Automation_Recipients extends BWFAN_API_Base {
 	public static $ins;
 	private $aid = 0;

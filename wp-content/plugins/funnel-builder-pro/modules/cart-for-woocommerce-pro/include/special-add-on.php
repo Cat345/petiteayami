@@ -2,6 +2,10 @@
 
 namespace FKCart\Pro;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( '\FKCart\Pro\Special_Add_On' ) ) {
 	#[\AllowDynamicProperties]
 	class Special_Add_On {
@@ -77,11 +81,15 @@ if ( ! class_exists( '\FKCart\Pro\Special_Add_On' ) ) {
 				$product                                     = \wc_get_product( $special_addon_product_id );
 				$custom_data['_fkcart_spl_addon']            = true;
 				$custom_data['_fkcart_spl_addon_product_id'] = $special_addon_product_id;
+				remove_action( 'woocommerce_add_to_cart', [ \FKCart\Includes\Front::get_instance(), 'add_to_cart_trigger' ], -10 );
+
 				if ( method_exists( '\FKCart\Includes\Data', 'get_variation_product_type' ) && in_array( $product->get_type(), \FKCart\Includes\Data::get_variation_product_type() ) ) {
 					$success = $this->handle_variable_product( $product );
 				} else {
 					$success = WC()->cart->add_to_cart( $special_addon_product_id, 1, 0, array(), $custom_data );
 				}
+				add_action( 'woocommerce_add_to_cart', [ \FKCart\Includes\Front::get_instance(), 'add_to_cart_trigger' ], -10 );
+
 				if ( ! empty( $success ) ) {
 					WC()->session->set( '_fkcart_spl_addon_product_id', $special_addon_product_id );
 					WC()->session->set( '_fkcart_spl_addon_product_cart_key', $success );
@@ -176,7 +184,9 @@ if ( ! class_exists( '\FKCart\Pro\Special_Add_On' ) ) {
 				if ( $_POST['fkcart_spl_product_action'] == 'fkcart_add_spl_addon' ) {
 					$custom_data['_fkcart_spl_addon']            = true;
 					$custom_data['_fkcart_spl_addon_product_id'] = $product_id;
+					remove_action( 'woocommerce_add_to_cart', [ \FKCart\Includes\Front::get_instance(), 'add_to_cart_trigger' ], -10 );
 					$success                                     = WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $attributes, $custom_data );
+					add_action( 'woocommerce_add_to_cart', [ \FKCart\Includes\Front::get_instance(), 'add_to_cart_trigger' ], -10 );
 					/**
 					 * When add to cart not done
 					 */

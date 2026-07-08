@@ -5,22 +5,31 @@ if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 $instance     = wfacp_template();
 $current_open = $instance->get_current_open_step();
 $count        = $instance->get_step_count();
+if ( ! isset( $template_type ) ) {
+	$template_type = $instance->get_template_type();
+}
+if ( ! isset( $current_step ) ) {
+	$current_step = $instance->get_current_step();
+}
+if ( ! isset( $selected_template_slug ) ) {
+	$selected_template_slug = $instance->get_template_slug();
+}
 
 echo '<style>';
 
 if ( $template_type == 'elementor' && $template_type != 'elementor-minimalist-step-2' ) {
 	?>
-    body.wfacpef_page #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-section.wfacp_order_coupon_box,
-    body.wfacpef_page #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-section.wfacp_order_summary_box {
-    margin-bottom: 0;
-    }
+	body.wfacpef_page #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-section.wfacp_order_coupon_box,
+	body.wfacpef_page #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-section.wfacp_order_summary_box {
+	margin-bottom: 0;
+	}
 	<?php
 }
 if ( $count > 1 ) {
 	?>
-    .wfacp_page.<?php echo $template_type; ?> {
-    display: none;
-    }
+	.wfacp_page.<?php echo $template_type; ?> {
+	display: none;
+	}
 	<?php
 }
 ?>
@@ -47,16 +56,16 @@ if ( ! WFACP_Common::is_theme_builder() ) {
 
 if ( 'single_step' !== $current_open ) {
 	?>
-    .wfacp_page.<?php echo $current_open ?> {
-    display: block;
-    }
+	.wfacp_page.<?php echo sanitize_html_class( $current_open ); ?> {
+	display: block;
+	}
 
 	<?php
 } else {
 	?>
-    .wfacp_page.single_step {
-    display: block;
-    }
+	.wfacp_page.single_step {
+	display: block;
+	}
 
 	<?php
 }
@@ -122,10 +131,10 @@ padding: 0 0 10px;
 padding: 0 0 15px;
 }
 body.wfacp_do_not_show_block .blockUI.blockOverlay{
-    display: none !important;
+	display: none !important;
 }
 #wfacp_checkout_form.checkout.processing .blockUI.blockOverlay{
-    display: block !important;
+	display: block !important;
 }
 #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content {
 border-top: none;
@@ -136,16 +145,16 @@ if ( WFACP_Common::is_cart_is_virtual() ) {
 	if ( 'pre_built' == $instance->get_template_type() ) {
 
 		?>
-        #shipping_same_as_billing_field {
-        display: none;
-        }
+		#shipping_same_as_billing_field {
+		display: none;
+		}
 		<?php
 
 	} else {
 		?>
-        #wfacp-e-form  #shipping_same_as_billing_field {
-        display: none;
-        }
+		#wfacp-e-form  #shipping_same_as_billing_field {
+		display: none;
+		}
 		<?php
 	}
 }
@@ -154,28 +163,28 @@ $aero_version = WFACP_Common::get_checkout_page_version();
 $asterisk     = get_option( 'woocommerce_checkout_highlight_required_fields', 'yes' );
 
 if ( version_compare( $aero_version, '1.9.3.2', '<=' ) || wc_string_to_bool( $asterisk ) ) {
-	echo "body .wfacp_main_form.woocommerce label.wfacp-form-control-label abbr.required{ display: inline;}";
+	echo 'body .wfacp_main_form.woocommerce label.wfacp-form-control-label abbr.required{ display: inline;}';
 }
 
 
 if ( WFACP_Core()->pay->is_order_pay() ) {
 	?>
-    body.wfacp_main_wrapper.woocommerce-order-pay header.wfacp-header.wfacp_header {
-    margin-bottom: 50px !important;
-    }
-    body.wfacp_main_wrapper.woocommerce-order-pay .woocommerce-form-login-toggle {
-    display: none;
-    }
+	body.wfacp_main_wrapper.woocommerce-order-pay header.wfacp-header.wfacp_header {
+	margin-bottom: 50px !important;
+	}
+	body.wfacp_main_wrapper.woocommerce-order-pay .woocommerce-form-login-toggle {
+	display: none;
+	}
 
 
-    body.wfacp_main_wrapper.woocommerce-order-pay  .wfacp-login-wrapper .woocommerce-form-login {
-    display: block !important;
-    margin-top: 10px;
-    }
+	body.wfacp_main_wrapper.woocommerce-order-pay  .wfacp-login-wrapper .woocommerce-form-login {
+	display: block !important;
+	margin-top: 10px;
+	}
 
-    body.wfacp_main_wrapper.woocommerce-order-pay .woocommerce-info {
-    color: #737373;
-    }
+	body.wfacp_main_wrapper.woocommerce-order-pay .woocommerce-info {
+	color: #737373;
+	}
 
 	<?php
 }
@@ -183,100 +192,100 @@ echo '</style>';
 do_action( 'wfacp_internal_css', $selected_template_slug );
 ?>
 <style>
-    .loader {
-        color: #fff;
-        position: fixed;
-        box-sizing: border-box;
-        left: -9999px;
-        top: -9999px;
-        width: 0;
-        height: 0;
-        overflow: hidden;
-        z-index: 999999;
+	.loader {
+		color: #fff;
+		position: fixed;
+		box-sizing: border-box;
+		left: -9999px;
+		top: -9999px;
+		width: 0;
+		height: 0;
+		overflow: hidden;
+		z-index: 999999;
 
-    }
+	}
 
-    .loader:after,
-    .loader:before {
-        box-sizing: border-box;
+	.loader:after,
+	.loader:before {
+		box-sizing: border-box;
 
-    }
+	}
 
-    .loader.is-active {
-        background-color: rgba(0, 0, 0, 0.85);
-        width: 100%;
-        height: 100%;
-        left: 0;
-        top: 0;
-    }
+	.loader.is-active {
+		background-color: rgba(0, 0, 0, 0.85);
+		width: 100%;
+		height: 100%;
+		left: 0;
+		top: 0;
+	}
 
-    .loader.is-active:after,
-    .loader.is-active:before {
-        display: block;
-    }
+	.loader.is-active:after,
+	.loader.is-active:before {
+		display: block;
+	}
 
-    .blockUI:before {
+	.blockUI:before {
 
-        display: none;
-    }
-
-
-    @keyframes rotation {
-        0% {
-            transform: rotate(0);
-        }
-        to {
-            transform: rotate(359deg);
-        }
-    }
+		display: none;
+	}
 
 
-    .loader[data-text]:before {
-        position: fixed;
-        left: 0;
-        top: 50%;
-        color: currentColor;
-
-        text-align: center;
-        width: 100%;
-        font-size: 14px;
-    }
-
-    .loader[data-text=""]:before {
-        content: "Loading";
-    }
-
-    .loader[data-text]:not([data-text=""]):before {
-        content: attr(data-text);
-    }
+	@keyframes rotation {
+		0% {
+			transform: rotate(0);
+		}
+		to {
+			transform: rotate(359deg);
+		}
+	}
 
 
-    .loader-default[data-text]:before {
-        top: calc(50% - 63px);
-    }
+	.loader[data-text]:before {
+		position: fixed;
+		left: 0;
+		top: 50%;
+		color: currentColor;
 
-    .loader-default:after {
-        content: "";
-        position: fixed;
-        width: 48px;
-        height: 48px;
-        border: 8px solid #fff;
-        border-left-color: transparent;
-        border-radius: 50%;
-        top: calc(50% - 24px);
-        left: calc(50% - 24px);
-        animation: rotation 1s linear infinite;
+		text-align: center;
+		width: 100%;
+		font-size: 14px;
+	}
 
-    }
+	.loader[data-text=""]:before {
+		content: "Loading";
+	}
+
+	.loader[data-text]:not([data-text=""]):before {
+		content: attr(data-text);
+	}
 
 
-    .wfacp_firefox_android .pac-container .pac-item:first-child {
-        margin-top: 20px;
-    }
+	.loader-default[data-text]:before {
+		top: calc(50% - 63px);
+	}
 
-    span.wfacp_input_error_msg {
-        color: red;
-        font-size: 13px;
-    }
+	.loader-default:after {
+		content: "";
+		position: fixed;
+		width: 48px;
+		height: 48px;
+		border: 8px solid #fff;
+		border-left-color: transparent;
+		border-radius: 50%;
+		top: calc(50% - 24px);
+		left: calc(50% - 24px);
+		animation: rotation 1s linear infinite;
+
+	}
+
+
+	.wfacp_firefox_android .pac-container .pac-item:first-child {
+		margin-top: 20px;
+	}
+
+	span.wfacp_input_error_msg {
+		color: red;
+		font-size: 13px;
+	}
 
 </style>

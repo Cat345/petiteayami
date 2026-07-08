@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Text' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Text extends WFOCUKirki_Field_WFOCUKirki_Generic {
 
 		/**
@@ -26,7 +27,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Text' ) ) {
 			}
 			$this->choices['element'] = 'input';
 			$this->choices['type']    = 'text';
-
 		}
 
 		/**
@@ -42,7 +42,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Text' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'esc_textarea';
-
 		}
 	}
 }

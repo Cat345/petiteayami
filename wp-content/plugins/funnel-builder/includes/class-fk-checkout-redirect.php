@@ -4,6 +4,7 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'FK_Checkout_Redirect' ) ) {
 
+	#[\AllowDynamicProperties]
 	class FK_Checkout_Redirect {
 
 		const LOG_SOURCE = 'fk-checkout-redirect';
@@ -64,7 +65,6 @@ if ( ! class_exists( 'FK_Checkout_Redirect' ) ) {
 		 * @return int Resolved checkout page ID.
 		 */
 		public function resolve_checkout_from_cart( $checkout_page_id ) {
-			
 
 			// Layer 1 — in-memory: free for all repeat calls within the same request.
 			if ( null !== $this->resolved_step_cache ) {

@@ -9,6 +9,7 @@ if ( ! class_exists( 'WFOCU_Plugin_Integration_Econt' ) ) {
 	 * Skips funnel re-decision when Econt triggers update_checkout for shipping cost (econt.js:1310).
 	 * That call re-runs maybe_decide_funnel_on_fragments → setup_funnel(), causing preview=true.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Plugin_Integration_Econt {
 
 		public function __construct() {

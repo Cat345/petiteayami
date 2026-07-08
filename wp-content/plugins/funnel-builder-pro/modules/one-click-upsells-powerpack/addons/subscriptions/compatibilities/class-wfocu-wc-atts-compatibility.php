@@ -1,8 +1,10 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 /**
  * compatibility for all thing subscription plugin
  */
 if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_WC_ATTS_Compatibility {
 
 		public function __construct() {
@@ -21,7 +23,6 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 			add_shortcode( 'wfocu_subscription_plans_list', array( $this, 'subscription_plans_list_shortcode' ) );
 			add_filter( 'wfocu_assets_styles', array( $this, 'add_styles' ) );
 			add_filter( 'wfocu_customize_recurring_price', array( $this, 'update_recurring_price' ), 10, 3 );
-
 		}
 
 		public function is_enable() {
@@ -44,7 +45,7 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 		 */
 		public function get_product_price( $scheme_option, $offer_option, $product, $sub_price_html ) {
 
-			$args = [];
+			$args = array();
 
 			if ( is_array( $scheme_option ) && isset( $scheme_option['pricing_mode'] ) ) {
 				if ( $scheme_option['pricing_mode'] === 'override' ) {
@@ -73,10 +74,10 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 
 						$quantity      = ( isset( $offer_option->quantity ) && $offer_option->quantity > 0 ) ? $offer_option->quantity : 1;
 						$shipping_cost = ( isset( $offer_option->shipping_cost_flat ) && $offer_option->shipping_cost_flat > 0 ) ? $offer_option->shipping_cost_flat : 0;
-						if ( true === in_array( $offer_option->discount_type, [ 'percentage_on_sale', 'fixed_on_sale' ], true ) ) {
+						if ( true === in_array( $offer_option->discount_type, array( 'percentage_on_sale', 'fixed_on_sale' ), true ) ) {
 							$sale_price = WFOCU_Common::apply_discount( $sale_price, $offer_option );
 						}
-						if ( true === in_array( $offer_option->discount_type, [ 'fixed_on_reg', 'percentage_on_reg' ], true ) ) {
+						if ( true === in_array( $offer_option->discount_type, array( 'fixed_on_reg', 'percentage_on_reg' ), true ) ) {
 							$regular_price = WFOCU_Common::apply_discount( $regular_price, $offer_option );
 						}
 
@@ -108,13 +109,10 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 						$args['org_sale_price']    = $org_sale_price;
 
 					}
-
 				}
-
 			}
 
 			return $args;
-
 		}
 
 
@@ -137,7 +135,6 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 				return;
 			}
 
-
 			$hidden = false;
 
 			/**
@@ -150,10 +147,13 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 				$hidden = true;
 			}
 
-
 			if ( empty( $product_key ) ) {
-				$get_offer_id = ( isset( $_REQUEST['offer_id'] ) ) ? $_REQUEST['offer_id'] : WFOCU_Core()->data->get( 'current_offer' );//phpcs:ignore
-				$offer_data   = WFOCU_Core()->offers->get_offer_meta( $get_offer_id );
+				// Prefer the server-side session value; fall back to REQUEST only when the session has nothing.
+				$get_offer_id = WFOCU_Core()->data->get( 'current_offer' );
+				if ( empty( $get_offer_id ) && isset( $_REQUEST['offer_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					$get_offer_id = absint( $_REQUEST['offer_id'] );
+				}
+				$offer_data = WFOCU_Core()->offers->get_offer_meta( $get_offer_id );
 
 				if ( ! empty( $offer_data ) ) {
 
@@ -176,40 +176,43 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 
 			?>
 
-            <div class="wfocu-subs-product-attr-wrapper">
-                <form class="wfocu_subs_plan_selector_form" data-key="<?php echo $product_key; ?>">
-                    <div class="wfocu_subs_plan_selector_wrap" data-key="<?php echo $product_key; ?>">
-                        <div class="wcsatt-options-wrapper wcsatt-options-wrapper-flat wcsatt-options-wrapper-text open " data-sign_up_text="Sign up now">
-							<?php if ( $hidden ) {
-								foreach ( $options as $option ) { ?>
-                                    <input type="hidden" name="wfocu_convert_to_sub" data-custom="<?php echo esc_attr( json_encode( $option['data'] ) ); ?>" data-price="<?php echo esc_attr( $option['price'] ); ?>" value="<?php echo esc_attr( $option['value'] ); ?>" class="wfocu_convert_sub_hidden">
-                                    <div style="margin:12px 0;" class="<?php echo esc_attr( $option['class'] ) . '-details'; ?>"><?php echo $option['description']; ?></div>
+			<div class="wfocu-subs-product-attr-wrapper">
+				<form class="wfocu_subs_plan_selector_form" data-key="<?php echo esc_attr( $product_key ); ?>">
+					<div class="wfocu_subs_plan_selector_wrap" data-key="<?php echo esc_attr( $product_key ); ?>">
+						<div class="wcsatt-options-wrapper wcsatt-options-wrapper-flat wcsatt-options-wrapper-text open " data-sign_up_text="Sign up now">
+							<?php
+							if ( $hidden ) {
+								foreach ( $options as $option ) {
+									?>
+									<input type="hidden" name="wfocu_convert_to_sub" data-custom="<?php echo esc_attr( json_encode( $option['data'] ) ); ?>" data-price="<?php echo esc_attr( $option['price'] ); ?>" value="<?php echo esc_attr( $option['value'] ); ?>" class="wfocu_convert_sub_hidden">
+									<div style="margin:12px 0;" class="<?php echo esc_attr( $option['class'] ) . '-details'; ?>"><?php echo wp_kses_post( $option['description'] ); ?></div>
 									<?php
 								}
-							} else { ?>
+							} else {
+								?>
 
 								<?php if ( ! empty( $text ) ) { ?>
-                                    <div class="wcsatt-options-product-prompt wcsatt-options-product-prompt-flat wcsatt-options-product-prompt-text wcsatt-options-product-prompt--visible" data-prompt_type="text">
-                                        <div class="wcsatt-options-prompt-text"><?php echo $text; ?></div>
-                                    </div>
+									<div class="wcsatt-options-product-prompt wcsatt-options-product-prompt-flat wcsatt-options-product-prompt-text wcsatt-options-product-prompt--visible" data-prompt_type="text">
+										<div class="wcsatt-options-prompt-text"><?php echo esc_html( $text ); ?></div>
+									</div>
 								<?php } ?>
-                                <div class="wcsatt-options-product-wrapper">
-                                    <ul class="wcsatt-options-product wcsatt-options-product--">
+								<div class="wcsatt-options-product-wrapper">
+									<ul class="wcsatt-options-product wcsatt-options-product--">
 										<?php foreach ( $options as $option ) { ?>
-                                            <li class="<?php echo esc_attr( $option['class'] ); ?>">
-                                                <label>
-                                                    <input type="radio" name="wfocu_convert_to_sub" data-custom="<?php echo esc_attr( json_encode( $option['data'] ) ); ?>" data-price="<?php echo esc_attr( $option['price'] ); ?>" value="<?php echo esc_attr( $option['value'] ); ?>" <?php checked( $option['selected'], true, true ); ?>>
-                                                    <span class="<?php echo esc_attr( $option['class'] ) . '-details'; ?>"><?php echo $option['description']; ?></span>
-                                                </label>
-                                            </li>
+											<li class="<?php echo esc_attr( $option['class'] ); ?>">
+												<label>
+													<input type="radio" name="wfocu_convert_to_sub" data-custom="<?php echo esc_attr( json_encode( $option['data'] ) ); ?>" data-price="<?php echo esc_attr( $option['price'] ); ?>" value="<?php echo esc_attr( $option['value'] ); ?>" <?php checked( $option['selected'], true, true ); ?>>
+													<span class="<?php echo esc_attr( $option['class'] ) . '-details'; ?>"><?php echo wp_kses_post( $option['description'] ); ?></span>
+												</label>
+											</li>
 										<?php } ?>
-                                    </ul>
-                                </div>
+									</ul>
+								</div>
 							<?php } ?>
-                        </div>
-                    </div>
-                </form>
-            </div>
+						</div>
+					</div>
+				</form>
+			</div>
 			<?php
 		}
 
@@ -248,27 +251,24 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 						$offer_data = WFOCU_Core()->template_loader->product_data;
 
 					} else {
-						$get_offer_id = ( isset( $_REQUEST['offer_id'] ) ) ? $_REQUEST['offer_id'] : WFOCU_Core()->data->get( 'current_offer' ); //phpcs:ignore
-
+						$get_offer_id = WFOCU_Core()->data->get( 'current_offer' );
+						if ( empty( $get_offer_id ) && isset( $_REQUEST['offer_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+							$get_offer_id = absint( $_REQUEST['offer_id'] );
+						}
 						$offer_data = WFOCU_Core()->offers->get_offer_meta( $get_offer_id );
 					}
-
-
 				}
-				$default_scheme    = '';
-				$org_regular_price = '';
-				$org_sale_price    = '';
-				$main_product_rg_price=$product->get_regular_price();
-				if($product instanceof WC_Product_Variable) {
+				$default_scheme        = '';
+				$org_regular_price     = '';
+				$org_sale_price        = '';
+				$main_product_rg_price = $product->get_regular_price();
+				if ( $product instanceof WC_Product_Variable ) {
 					$org_regular_price = $product->get_variation_regular_price( 'max' );
 					$org_sale_price    = $product->get_variation_price( 'max' );
-					if(absint($main_product_rg_price)===0) {
+					if ( absint( $main_product_rg_price ) === 0 ) {
 						$main_product_rg_price = $product->get_price();
 					}
-
 				}
-
-
 
 				// Filter default key.
 
@@ -285,7 +285,7 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 						'selected'          => 'one_time' === $default_scheme,
 						'org_regular_price' => $org_regular_price,
 						'org_sale_price'    => $org_sale_price,
-						'data'              => [],
+						'data'              => array(),
 					);
 				}
 
@@ -307,22 +307,20 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 						if ( isset( $options[0]['selected'] ) ) {
 							$options[0]['selected'] = 'one_time' === $default_scheme;
 						}
-
 					}
 
 					if ( true === $is_front ) {
 						if ( ! isset( $offer_data->schemes ) || ! isset( $offer_data->schemes->{$product_key} ) ) {
-							$subscription_schemes = [];
-							$options              = [];
+							$subscription_schemes = array();
+							$options              = array();
 						} else {
-							if ( ! array_key_exists( "one_time", $offer_data->schemes->{$product_key} ) ) {
-								$options = [];
+							if ( ! array_key_exists( 'one_time', $offer_data->schemes->{$product_key} ) ) {
+								$options = array();
 							}
 							$subscription_schemes = array_intersect_key( $subscription_schemes, $offer_data->schemes->{$product_key} );
 
 						}
 					}
-
 				}
 
 				// Subscription options.
@@ -333,18 +331,15 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 
 				foreach ( $subscription_schemes as $subscription_scheme ) {
 
-
 					$option_price_html_args = array(
 						'context'         => 'radio',
-						'append_discount' => true
+						'append_discount' => true,
 					);
-
 
 					$scheme_key       = $subscription_scheme->get_key();
 					$is_base_scheme   = $base_scheme->get_key() === $scheme_key;
 					$price            = number_format( (float) WCS_ATT_Product_Prices::get_price( $product, $scheme_key ), 2, '.', '' );
 					$has_price_filter = $subscription_scheme->has_price_filter();
-
 
 					/**
 					 * 'wcsatt_single_product_subscription_option_price_html_args' filter
@@ -358,7 +353,6 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 					 * @param WC_Product $product
 					 * @param WC_Product|null $parent_product
 					 */
-
 
 					$is_nyp = class_exists( 'WCS_ATT_Integration_NYP' ) && WC_Name_Your_Price_Helpers::is_nyp( $product );
 
@@ -374,7 +368,7 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 
 						$price_data = $this->get_product_price( $subscription_scheme->get_data(), $offer_option, $product, $sub_price_html );
 
-						//WFFN_Common::pr($price_data);
+						// WFFN_Common::pr($price_data);
 						if ( is_array( $price_data ) && count( $price_data ) > 0 ) {
 							$sub_price_html    = $price_data['price_html'];
 							$price             = $price_data['price'];
@@ -390,41 +384,47 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 					$option_data = array(
 						'discount_from_regular' => apply_filters( 'wcsatt_discount_from_regular', false ),
 						'option_has_price'      => false,
-						'subscription_scheme'   => array_merge( $subscription_scheme->get_data(), array(
-							'is_prorated'      => WCS_ATT_Sync::is_first_payment_prorated( $product, $scheme_key ),
-							'is_base'          => $is_base_scheme,
-							'has_price_filter' => $has_price_filter
-						) ),
+						'subscription_scheme'   => array_merge(
+							$subscription_scheme->get_data(),
+							array(
+								'is_prorated'      => WCS_ATT_Sync::is_first_payment_prorated( $product, $scheme_key ),
+								'is_base'          => $is_base_scheme,
+								'has_price_filter' => $has_price_filter,
+							)
+						),
 					);
 
 					$parent_product = null;
 
 					$option_data = apply_filters( 'wcsatt_single_product_subscription_option_data', $option_data, $subscription_scheme, $product, $parent_product );
 
-					$option_data = array_filter( $option_data, function ( $value, $key ) {
-						return strpos( $key, '_html' ) === false;
-					}, ARRAY_FILTER_USE_BOTH );
+					$option_data = array_filter(
+						$option_data,
+						function ( $value, $key ) {
+							return strpos( $key, '_html' ) === false;
+						},
+						ARRAY_FILTER_USE_BOTH
+					);
 
 					$option = array(
 						'class'             => 'subscription-option',
 						'value'             => $scheme_key,
-						'description'       => html_entity_decode( $sub_price_html ),
+						'description'       => html_entity_decode( $sub_price_html, ENT_QUOTES | ENT_HTML401 ),
 						'data'              => $option_data,
 						'price'             => $price,
 						'selected'          => $scheme_key === $default_scheme,
-						'org_regular_price' => $org_regular_price>0?$org_regular_price:$main_product_rg_price,
-						'org_sale_price'    => $org_sale_price>0?$org_sale_price:$product->get_price(),
+						'org_regular_price' => $org_regular_price > 0 ? $org_regular_price : $main_product_rg_price,
+						'org_sale_price'    => $org_sale_price > 0 ? $org_sale_price : $product->get_price(),
 					);
 
 					$options[] = $option;
 				}
 
 				return $options;
-			} catch ( Error|Exception $e ) {
+			} catch ( Error | Exception $e ) {
 
-				return [];
+				return array();
 			}
-
 		}
 
 		/**
@@ -438,43 +438,43 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 			}
 
 			?>
-            <script>
-                jQuery(document).ready(function () {
-                    wfocuCommons.addFilter('wfocu_additem_data', set_custom_data);
-                    wfocuCommons.addFilter('wfocu_additem_price', set_price);
+			<script>
+				jQuery(document).ready(function () {
+					wfocuCommons.addFilter('wfocu_additem_data', set_custom_data);
+					wfocuCommons.addFilter('wfocu_additem_price', set_price);
 
-                    function set_custom_data(extraData, key, getVariationID) {
-                        if (jQuery('.wfocu_subs_plan_selector_form[data-key=' + key + ']').length > 0) {
-                            let subs_val = '.wfocu_subs_plan_selector_form[data-key=' + key + '] input[name="wfocu_convert_to_sub"].wfocu_convert_sub_hidden';
-                            if (jQuery(subs_val).length > 0) {
-                                subs_val = jQuery(subs_val);
-                            } else {
-                                subs_val = jQuery('.wfocu_subs_plan_selector_form[data-key=' + key + '] input[name="wfocu_convert_to_sub"]:checked');
-                            }
-                            if (subs_val && typeof subs_val.val() !== 'undefined' && subs_val.val() !== '') {
-                                extraData.push('_convert_sub_plan=' + subs_val.val());
-                                extraData.push('_convert_sub_plan_data=' + subs_val.attr('data-custom'));
-                            }
-                        }
-                        return extraData;
-                    }
+					function set_custom_data(extraData, key, getVariationID) {
+						if (jQuery('.wfocu_subs_plan_selector_form[data-key=' + key + ']').length > 0) {
+							let subs_val = '.wfocu_subs_plan_selector_form[data-key=' + key + '] input[name="wfocu_convert_to_sub"].wfocu_convert_sub_hidden';
+							if (jQuery(subs_val).length > 0) {
+								subs_val = jQuery(subs_val);
+							} else {
+								subs_val = jQuery('.wfocu_subs_plan_selector_form[data-key=' + key + '] input[name="wfocu_convert_to_sub"]:checked');
+							}
+							if (subs_val && typeof subs_val.val() !== 'undefined' && subs_val.val() !== '') {
+								extraData.push('_convert_sub_plan=' + subs_val.val());
+								extraData.push('_convert_sub_plan_data=' + subs_val.attr('data-custom'));
+							}
+						}
+						return extraData;
+					}
 
-                    function set_price(getPrice, key, getVariationID) {
-                        if (jQuery('.wfocu_subs_plan_selector_form[data-key=' + key + ']').length > 0) {
-                            let subs_val = '.wfocu_subs_plan_selector_form[data-key=' + key + '] input[name="wfocu_convert_to_sub"].wfocu_convert_sub_hidden';
-                            if (jQuery(subs_val).length > 0) {
-                                subs_val = jQuery(subs_val);
-                            } else {
-                                subs_val = jQuery('.wfocu_subs_plan_selector_form[data-key=' + key + '] input[name="wfocu_convert_to_sub"]:checked');
-                            }
-                            if (subs_val && typeof subs_val.val() !== 'undefined' && subs_val.val() !== '' && subs_val.val() !== 'one_time') {
-                                getPrice = parseFloat(subs_val.attr('data-price'));
-                            }
-                        }
-                        return getPrice;
-                    }
-                });
-            </script>
+					function set_price(getPrice, key, getVariationID) {
+						if (jQuery('.wfocu_subs_plan_selector_form[data-key=' + key + ']').length > 0) {
+							let subs_val = '.wfocu_subs_plan_selector_form[data-key=' + key + '] input[name="wfocu_convert_to_sub"].wfocu_convert_sub_hidden';
+							if (jQuery(subs_val).length > 0) {
+								subs_val = jQuery(subs_val);
+							} else {
+								subs_val = jQuery('.wfocu_subs_plan_selector_form[data-key=' + key + '] input[name="wfocu_convert_to_sub"]:checked');
+							}
+							if (subs_val && typeof subs_val.val() !== 'undefined' && subs_val.val() !== '' && subs_val.val() !== 'one_time') {
+								getPrice = parseFloat(subs_val.attr('data-price'));
+							}
+						}
+						return getPrice;
+					}
+				});
+			</script>
 			<?php
 		}
 
@@ -492,7 +492,6 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 			}
 
 			return $args;
-
 		}
 
 		/**
@@ -524,7 +523,6 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 			}
 
 			return $is;
-
 		}
 
 		/**
@@ -557,7 +555,14 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 		 */
 		public function subs_product_search( $str = '' ) {
 
-			$term = empty( $str ) ? ( isset( $_REQUEST['term'] ) ) ? stripslashes( wc_clean( $_REQUEST['term'] ) ) : '' : $str;
+			if ( $str !== 'get_data' ) {
+				check_ajax_referer( 'search_subs_products', 'security' );
+				if ( ! current_user_can( 'edit_shop_orders' ) ) {
+					wp_send_json( array() );
+				}
+			}
+
+			$term = empty( $str ) ? ( isset( $_REQUEST['term'] ) ) ? stripslashes( wc_clean( $_REQUEST['term'] ) ) : '' : $str; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if ( $str === 'get_data' ) {
 				$term = '';
 			}
@@ -581,7 +586,6 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 										$products[ $key ] = $product_name . ' - (' . strip_tags( $option['description'] ) . ')';
 									}
 								}
-
 							}
 						}
 					}
@@ -595,63 +599,60 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 			}
 
 			wp_send_json( $products );
-
 		}
 
 		/**
 		 * List all scheme plan in admin screen
-		 *
 		 */
 		public function list_schemes_admin_offer() {
 
 			?>
-            <div v-if="product.vars_subs_count>0" class="have_scheme">
-				<?php _e( "{{product.vars_subs_count}} Subscriptions plans <a class='have_scheme_expand'>(Expand</a> / <a class='have_scheme_close'>Close)</a> ", 'woofunnels-upstroke-power-pack' ) ?>
-            </div>
-            <table width="100%" class="scheme_products" id="scheme_product_id" v-bind:data-index="index" v-if="product.vars_subs_count>0" border="1">
-                <thead>
-                <tr>
-                    <th>
-                        <input type="checkbox" v-on:change="disable_enable_scheme(index,$event)" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes_enable]'" class="disable_enable_scheme">
-                    </th>
-                    <th><?php _e( 'Default', 'woofunnels-upstroke-power-pack' ); ?></th>
-                    <th><?php _e( 'Attributes', 'woofunnels-upstroke-power-pack' ); ?></th>
-                    <th><?php _e( 'Price', 'woofunnels-upstroke-power-pack' ); ?></th>
-                    <th><?php _e( 'Discount', 'woofunnels-upstroke-power-pack' ); ?></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="(scheme, var_index) in product.schemes" v-bind:id="scheme.vid" class="product_scheme_row">
-                    <td>
-                        <input type="checkbox" v-model="scheme.is_enable" v-on:change="disable_enable_scheme_row(index,$event,var_index)" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes]['+var_index+'][is_enable]'" class="scheme_check" v-bind:data-scheme="var_index">
-                    </td>
-                    <td>
-                        <input type="radio" v-model="scheme.default_scheme" name="'offers['+current_offer_id+'][products]['+index+'][default_scheme]'" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][default_scheme]'" v-bind:value="var_index" v-bind:data-scheme="var_index" class="default_scheme">
-                    </td>
-                    <td>
-                        <div class="variation_attributes">
-                            <p v-for="(attr_i ,attribute) in scheme.attributes"> {{attribute}} : {{attr_i}}</p>
-                        </div>
-                    </td>
-                    <td>
-                        <div class=" product_options">
-                            <p v-if="typeof scheme.value !== 'undefined' && scheme.value == 'one_time'"><span v-html="scheme.description"></span></p>
-                            <p v-else><span v-bind:class="'wfocu_of_price_subs_'+index+'_'+var_index" v-html="scheme.description"></span></p>
-                        </div>
-                    </td>
-                    <td>
-                        <input v-if="typeof scheme.value !== 'undefined' && scheme.value == 'one_time'" name="scheme_discount" v-model="products[index].schemes[var_index].discount_amount" type="number" step="0.01" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes]['+var_index+'][discount_amount]'" readonly class="scheme_discount" oninput="this.value = Math.abs(this.value)" v-on:keyup="update_offer_price($event,index)">
-                        <input v-else name="scheme_discount" v-model="products[index].schemes[var_index].discount_amount" type="number" step="0.01" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes]['+var_index+'][discount_amount]'" v-bind:data-scheme="var_index" :readonly="(!scheme.is_enable)" class="scheme_discount" oninput="this.value = Math.abs(this.value)" v-on:keyup="update_offer_price($event,index)">
-                        <!-- This Hidden input placed here just to make sure the vue instance update himself on change of the modal data -->
-                        <input style="display:none;" name="hidden_v" disabled v-model="hidden_v" type="number" step="0.01">
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+			<div v-if="product.vars_subs_count>0" class="have_scheme">
+				<?php _e( "{{product.vars_subs_count}} Subscriptions plans <a class='have_scheme_expand'>(Expand</a> / <a class='have_scheme_close'>Close)</a> ", 'woofunnels-upstroke-power-pack' ); ?>
+			</div>
+			<table width="100%" class="scheme_products" id="scheme_product_id" v-bind:data-index="index" v-if="product.vars_subs_count>0" border="1">
+				<thead>
+				<tr>
+					<th>
+						<input type="checkbox" v-on:change="disable_enable_scheme(index,$event)" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes_enable]'" class="disable_enable_scheme">
+					</th>
+					<th><?php _e( 'Default', 'woofunnels-upstroke-power-pack' ); ?></th>
+					<th><?php _e( 'Attributes', 'woofunnels-upstroke-power-pack' ); ?></th>
+					<th><?php _e( 'Price', 'woofunnels-upstroke-power-pack' ); ?></th>
+					<th><?php _e( 'Discount', 'woofunnels-upstroke-power-pack' ); ?></th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr v-for="(scheme, var_index) in product.schemes" v-bind:id="scheme.vid" class="product_scheme_row">
+					<td>
+						<input type="checkbox" v-model="scheme.is_enable" v-on:change="disable_enable_scheme_row(index,$event,var_index)" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes]['+var_index+'][is_enable]'" class="scheme_check" v-bind:data-scheme="var_index">
+					</td>
+					<td>
+						<input type="radio" v-model="scheme.default_scheme" name="'offers['+current_offer_id+'][products]['+index+'][default_scheme]'" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][default_scheme]'" v-bind:value="var_index" v-bind:data-scheme="var_index" class="default_scheme">
+					</td>
+					<td>
+						<div class="variation_attributes">
+							<p v-for="(attr_i ,attribute) in scheme.attributes"> {{attribute}} : {{attr_i}}</p>
+						</div>
+					</td>
+					<td>
+						<div class=" product_options">
+							<p v-if="typeof scheme.value !== 'undefined' && scheme.value == 'one_time'"><span v-html="scheme.description"></span></p>
+							<p v-else><span v-bind:class="'wfocu_of_price_subs_'+index+'_'+var_index" v-html="scheme.description"></span></p>
+						</div>
+					</td>
+					<td>
+						<input v-if="typeof scheme.value !== 'undefined' && scheme.value == 'one_time'" name="scheme_discount" v-model="products[index].schemes[var_index].discount_amount" type="number" step="0.01" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes]['+var_index+'][discount_amount]'" readonly class="scheme_discount" oninput="this.value = Math.abs(this.value)" v-on:keyup="update_offer_price($event,index)">
+						<input v-else name="scheme_discount" v-model="products[index].schemes[var_index].discount_amount" type="number" step="0.01" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes]['+var_index+'][discount_amount]'" v-bind:data-scheme="var_index" :readonly="(!scheme.is_enable)" class="scheme_discount" oninput="this.value = Math.abs(this.value)" v-on:keyup="update_offer_price($event,index)">
+						<!-- This Hidden input placed here just to make sure the vue instance update himself on change of the modal data -->
+						<input style="display:none;" name="hidden_v" disabled v-model="hidden_v" type="number" step="0.01">
+					</td>
+				</tr>
+				</tbody>
+			</table>
 
 
 			<?php
-
 		}
 
 		/**
@@ -736,7 +737,6 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 			$output->schemes = $schemes;
 
 			return $output;
-
 		}
 
 		/**
@@ -759,7 +759,6 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 					$get_plans = $this->get_subscription_products_options( $pro->get_id(), $offer_data );
 
 					if ( is_array( $get_plans ) && count( $get_plans ) > 0 ) {
-
 
 						$first_scheme             = null;
 						$scheme_save[ $hash_key ] = array();
@@ -789,17 +788,15 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 							}
 							$scheme_options->attributes = $attributes;
 
-
 							$scheme_options->discount_amount = 0;
 							$scheme_options->discount_type   = 'percentage_on_reg';
 
-
 							if ( is_null( $first_scheme ) ) {
-								$first_scheme                                           = true;
-								$scheme_options->default_scheme                         = $plan['value'];
-								$offer_data->fields->{$hash_key}->default_scheme        = $scheme_id;
-								$offer_data->fields->{$hash_key}->schemes_enable        = true;
-								$scheme_save[ $hash_key ][ $scheme_id ]                 = new stdClass();
+								$first_scheme                                    = true;
+								$scheme_options->default_scheme                  = $plan['value'];
+								$offer_data->fields->{$hash_key}->default_scheme = $scheme_id;
+								$offer_data->fields->{$hash_key}->schemes_enable = true;
+								$scheme_save[ $hash_key ][ $scheme_id ]          = new stdClass();
 								$scheme_save[ $hash_key ][ $scheme_id ]->disount_amount = 0;
 								$scheme_save[ $hash_key ][ $scheme_id ]->value          = $scheme_id;
 
@@ -810,13 +807,11 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 
 						}
 					}
-
 				}
 			}
 
 			$offer_meta_data     = WFOCU_Core()->offers->get_offer( $offer_id );
 			$offer_data->schemes = ( isset( $offer_meta_data ) && isset( $offer_meta_data->schemes ) ) ? $offer_meta_data->schemes : new stdClass();
-
 
 			if ( count( $schemes ) > 0 ) {
 				$output->schemes = new stdClass();
@@ -839,7 +834,6 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 			WFOCU_Common::update_offer( $offer_id, $offer_data, $funnel_id );
 
 			return $output;
-
 		}
 
 		/**
@@ -869,9 +863,6 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 							$description_text = preg_replace( '/<del.*?<\/del>/', '', $plan['description'] );
 							$description_text = preg_replace( '/<ins>.*?<\/ins>/', '', $description_text );
 
-
-
-
 							$scheme_id                           = $plan['value'];
 							$scheme_options                      = array();
 							$scheme_options['value']             = $scheme_id;
@@ -879,7 +870,6 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 							$scheme_options['org_regular_price'] = $plan['org_regular_price'];
 							$scheme_options['org_sale_price']    = $plan['org_sale_price'];
 							$scheme_options['description_text']  = $description_text;
-
 
 							$scheme_options['is_enable'] = true;
 							$attributes                  = array();
@@ -898,14 +888,12 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 							}
 							$scheme_options['attributes'] = $attributes;
 
-
 							$scheme_options['discount_amount'] = 0;
 							$scheme_options['discount_type']   = 'percentage_on_reg';
 
-
 							if ( is_null( $first_scheme ) ) {
-								$first_scheme                                             = true;
-								$scheme_options['default_scheme']                         = $plan['value'];
+								$first_scheme                     = true;
+								$scheme_options['default_scheme'] = $plan['value'];
 								$scheme_save[ $hash_key ][ $scheme_id ]['disount_amount'] = 0;
 								$scheme_save[ $hash_key ][ $scheme_id ]['value']          = $scheme_id;
 
@@ -916,13 +904,10 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 
 						}
 					}
-
 				}
 			}
 
-
 			return $schemes;
-
 		}
 
 		/**
@@ -964,7 +949,7 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 			if ( ! empty( $offers ) && ! empty( $offers['products'] ) && count( $offers['products'] ) > 0 ) {
 				$offers_setting->schemes = new stdClass();
 				foreach ( $offers['products'] as $pro ) {
-					$hash_key                = $pro['id'];
+					$hash_key = $pro['id'];
 					if ( isset( $pro['schemes'] ) && count( $pro['schemes'] ) > 0 ) {
 						$offers_setting->schemes->{$hash_key} = array();
 						foreach ( $pro['schemes'] as $scheme_id => $settings ) {
@@ -982,7 +967,6 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 			}
 
 			return $offers_setting;
-
 		}
 
 		/**
@@ -1016,9 +1000,12 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 		public function subscription_plans_list_shortcode( $attr ) {
 
 			$data = WFOCU_Core()->data->get( '_current_offer_data' );
-			$attr = shortcode_atts( array(
-				'key' => 1,
-			), $attr );
+			$attr = shortcode_atts(
+				array(
+					'key' => 1,
+				),
+				$attr
+			);
 
 			if ( ! isset( $data->products ) ) {
 				return '';
@@ -1066,10 +1053,8 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 				}
 			}
 
-
 			return $amount;
 		}
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_WC_ATTS_Compatibility(), 'wfocu_wc_atts' );

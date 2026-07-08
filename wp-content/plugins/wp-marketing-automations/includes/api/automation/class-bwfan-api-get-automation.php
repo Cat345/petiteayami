@@ -5,6 +5,7 @@
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Automation extends BWFAN_API_Base {
 
 	public static $ins;

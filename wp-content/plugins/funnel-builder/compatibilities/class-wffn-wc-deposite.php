@@ -10,12 +10,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 if ( ! class_exists( 'WFFN_Compatibility_WC_Deposit' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_WC_Deposit {
 		public function __construct() {
-			add_filter( 'wfty_maybe_update_order', [ $this, 'maybe_wc_deposit_order' ] );
+			add_filter( 'wfty_maybe_update_order', array( $this, 'maybe_wc_deposit_order' ) );
 
-			//update order for funnel tacking meta box
-			add_filter( 'bwf_tracking_insert_order', [ $this, 'maybe_wc_deposit_order' ] );
+			// update order for funnel tacking meta box
+			add_filter( 'bwf_tracking_insert_order', array( $this, 'maybe_wc_deposit_order' ) );
 		}
 
 		public function is_enable() {

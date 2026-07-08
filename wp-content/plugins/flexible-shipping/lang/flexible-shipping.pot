@@ -2,21 +2,21 @@
 # This file is distributed under the same license as the Flexible Shipping plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Flexible Shipping 6.6.2\n"
+"Project-Id-Version: Flexible Shipping 6.8.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/flexible-shipping\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-04-21T14:34:13+00:00\n"
+"POT-Creation-Date: 2026-07-01T12:58:11+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: flexible-shipping\n"
 
 #. Plugin Name of the plugin
 #: flexible-shipping.php:3
-#: classes/class-flexible-shipping-plugin.php:382
+#: classes/class-flexible-shipping-plugin.php:385
 #: classes/table-rate/class-wpdesk-flexible-shipping-multilingual.php:48
 #: classes/table-rate/class-wpdesk-flexible-shipping-multilingual.php:51
 #: classes/table-rate/class-wpdesk-flexible-shipping-multilingual.php:54
@@ -24,10 +24,10 @@ msgstr ""
 #: classes/table-rate/settings/flexible-shipping.php:16
 #: classes/table-rate/settings/flexible-shipping.php:32
 #: classes/table-rate/shipping-method.php:97
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:179
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:180
 #: src/WPDesk/FS/TableRate/ShippingMethod/Duplicate/DuplicateAction.php:76
 #: src/WPDesk/FS/TableRate/ShippingMethod/Duplicate/DuplicateScript.php:67
-#: src/WPDesk/FS/TableRate/ShippingMethodSingle.php:63
+#: src/WPDesk/FS/TableRate/ShippingMethodSingle.php:73
 #: vendor_prefixed/wpdesk/wp-wpdesk-fs-compatibility/src/PluginCompatibilityChecker.php:94
 msgid "Flexible Shipping"
 msgstr ""
@@ -52,24 +52,24 @@ msgstr ""
 msgid "https://octol.io/fs-author"
 msgstr ""
 
-#: classes/class-flexible-shipping-plugin.php:604
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:20
+#: classes/class-flexible-shipping-plugin.php:608
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:25
 #: vendor_prefixed/wpdesk/wp-wpdesk-fs-compatibility/src/PluginCompatibilityChecker.php:97
 msgid "Flexible Shipping PRO"
 msgstr ""
 
 #. Translators: link.
-#: classes/class-flexible-shipping-plugin.php:849
+#: classes/class-flexible-shipping-plugin.php:853
 #, php-format
 msgid "How can We make Flexible Shipping better for you? %1$sJust write to us.%2$s"
 msgstr ""
 
-#: classes/class-flexible-shipping-plugin.php:932
+#: classes/class-flexible-shipping-plugin.php:936
 #: vendor_prefixed/wpdesk/wp-builder/src/Plugin/AbstractPlugin.php:188
 msgid "Settings"
 msgstr ""
 
-#: classes/class-flexible-shipping-plugin.php:940
+#: classes/class-flexible-shipping-plugin.php:944
 msgid "Buy PRO"
 msgstr ""
 
@@ -143,7 +143,7 @@ msgstr ""
 
 #: classes/table-rate/settings/flexible-shipping.php:23
 #: classes/table-rate/shipping-method.php:88
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:55
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:56
 msgid "Enable/Disable"
 msgstr ""
 
@@ -197,7 +197,7 @@ msgid "A group of Flexible Shipping methods - useful to organize numerous shippi
 msgstr ""
 
 #: classes/table-rate/shipping-method.php:90
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:58
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:59
 msgid "Enable this shipment method"
 msgstr ""
 
@@ -206,7 +206,7 @@ msgid "Shipping Title"
 msgstr ""
 
 #: classes/table-rate/shipping-method.php:96
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:64
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:65
 msgid "This controls the title which the user sees during checkout."
 msgstr ""
 
@@ -247,7 +247,7 @@ msgid "Shipping method %s updated."
 msgstr ""
 
 #: classes/table-rate/shipping-method.php:568
-#: src/WPDesk/FS/TableRate/ShippingMethodSingle.php:275
+#: src/WPDesk/FS/TableRate/ShippingMethodSingle.php:455
 msgid "Shipping cost added."
 msgstr ""
 
@@ -280,18 +280,18 @@ msgid "Title"
 msgstr ""
 
 #: classes/table-rate/views/html-shipping-method-settings.php:15
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:145
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:146
 msgid "Visibility"
 msgstr ""
 
 #: classes/table-rate/views/html-shipping-method-settings.php:16
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:152
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:153
 msgid "Default"
 msgstr ""
 
 #: classes/table-rate/views/html-shipping-method-settings.php:17
 #: src/WPDesk/FS/Shipment/views/html-orders-filter-form.php:13
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:207
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:209
 #: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:101
 #: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/views/filter-form.php:14
 msgid "Integration"
@@ -318,7 +318,7 @@ msgid "yes"
 msgstr ""
 
 #: classes/table-rate/views/html-shipping-method-settings.php:63
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:148
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:149
 msgid "Show only for logged in users"
 msgstr ""
 
@@ -373,7 +373,7 @@ msgid "More resources"
 msgstr ""
 
 #: classes/table-rate/views/html-shipping-settings-advanced.php:45
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:222
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:224
 msgid "General Settings"
 msgstr ""
 
@@ -645,20 +645,32 @@ msgid "Shipping configuration"
 msgstr ""
 
 #: src/WPDesk/FS/Info/WooCommerceABCPL.php:45
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:231
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:233
 msgid "Free Shipping"
 msgstr ""
 
-#: src/WPDesk/FS/Newsletter/views/newsletter-form.php:6
+#: src/WPDesk/FS/Newsletter/views/newsletter-form.php:12
+msgid "Ready to optimize your WooCommerce shipping setup?"
+msgstr ""
+
+#: src/WPDesk/FS/Newsletter/views/newsletter-form.php:15
+msgid "Get actionable recommendations based on real checkout issues, missing rates, abandoned carts, and shipping configuration gaps. Be the first to access Shipping Analytics PRO."
+msgstr ""
+
+#: src/WPDesk/FS/Newsletter/views/newsletter-form.php:20
+msgid "Get FREE early access"
+msgstr ""
+
+#: src/WPDesk/FS/Newsletter/views/newsletter-form.php:25
 msgid "Sign up for our newsletter"
 msgstr ""
 
-#: src/WPDesk/FS/Newsletter/views/newsletter-form.php:8
+#: src/WPDesk/FS/Newsletter/views/newsletter-form.php:27
 msgid "Email:"
 msgstr ""
 
 #. Translators: link
-#: src/WPDesk/FS/Newsletter/views/newsletter-form.php:17
+#: src/WPDesk/FS/Newsletter/views/newsletter-form.php:36
 #, php-format
 msgid "I’d like to receive exclusive tips, updates, and special offers from Octolize by email. I can unsubscribe at any time. %1$sPrivacy Policy%2$s"
 msgstr ""
@@ -766,8 +778,8 @@ msgstr ""
 
 #: src/WPDesk/FS/Plugin/PluginLinks.php:26
 #: vendor_prefixed/wpdesk/wp-builder/src/Plugin/AbstractPlugin.php:181
-#: assets-src/rules-settings/js/components/rules-settings.js:582
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:583
+#: assets/js/rules-settings.js:137
 msgid "Support"
 msgstr ""
 
@@ -1045,13 +1057,14 @@ msgid "No shipping method handled by Flexible Shipping found in the %1$s shippin
 msgstr ""
 
 #. Translators: amount with currency.
-#: src/WPDesk/FS/TableRate/FreeShipping/FreeShippingNoticeGenerator.php:175
+#: src/WPDesk/FS/TableRate/FreeShipping/FreeShippingNoticeGenerator.php:174
+#: src/WPDesk/FS/TableRate/FreeShipping/FreeShippingNoticeGenerator.php:194
 #: src/WPDesk/FS/TableRate/FreeShipping/NoticeTextSettings.php:44
 #, php-format
 msgid "You only need %1$s more to get free shipping!"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/FreeShipping/FreeShippingNoticeGenerator.php:195
+#: src/WPDesk/FS/TableRate/FreeShipping/FreeShippingNoticeGenerator.php:212
 msgid "Continue shopping"
 msgstr ""
 
@@ -1060,7 +1073,7 @@ msgid "LFFS notice text"
 msgstr ""
 
 #: src/WPDesk/FS/TableRate/FreeShipping/NoticeTextSettings.php:45
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:122
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:123
 msgid "Display the notice with the amount left for free shipping"
 msgstr ""
 
@@ -1457,153 +1470,153 @@ msgstr ""
 msgid "special action"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:40
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:41
 #: src/WPDesk/FS/TableRate/ShippingMethod/RateCalculator.php:385
 msgid "Free"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:62
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:63
 msgid "Method Title"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:71
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:72
 msgid "Method Description"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:73
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:74
 msgid "This controls method description which the user sees during checkout."
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:79
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:80
 msgid "Method Logo"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:81
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:82
 msgid "Choose an image from the media library to display after the shipping method description in checkout."
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:89
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:90
 msgid "Free shipping threshold"
 msgstr ""
 
 #. Translators: bolds.
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:94
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:95
 #, php-format
 msgid "Enter a minimum threshold value which once reached will result in granting your customers the free shipping. It will be applied, as long as this shipping method will be available and its configured shipping cost calculation conditions are met. Example: If the %1$sFree shipping threshold%2$s is set to $200, and your price-based shipping cost calculation rules end at $199.99, you need to configure one more rule - %1$sWhen: Price - is from $200 - cost is $0%2$s to cover the range above the %1$sFree shipping threshold%2$s value."
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:102
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:103
 msgid "Free Shipping Label"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:105
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:106
 msgid "Enter the text for the additional shipping method's label which will be displayed once the free shipping is triggered or calculated."
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:110
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:111
 #, php-format
 msgid "Learn %1$show to customize the displayed notice &rarr;%2$s"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:116
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:117
 msgid "Please mind that if you use any additional plugins to split the shipment into packages, the 'Left to free shipping notice' will not be displayed."
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:119
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:120
 msgid "'Left for free shipping' notice (LFFS)"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:127
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:128
 msgid "Rules Calculation"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:129
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:130
 msgid "Select how rules will be calculated. If you choose \"sum\" the rules order is important."
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:136
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:137
 msgid "Cart Calculation"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:140
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:141
 msgid "Choose Package value to exclude virtual products from rules calculation."
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:155
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:156
 msgid "Check the box to set this option as the default selected choice on the cart page."
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:159
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:160
 msgid "FS Debug Mode"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:162
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:163
 msgid "Enable FS Debug Mode"
 msgstr ""
 
 #. Translators: documentation link.
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:165
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:166
 #, php-format
 msgid "Enable FS debug mode to verify the shipping methods' configuration, check which one was used and how the shipping cost was calculated as well as identify any possible mistakes. %1$sLearn more how the Debug Mode works →%2$s"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:176
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:177
 #: src/WPDesk/FS/TableRate/ShippingMethodsIntegration/SettingsFields.php:139
 msgid "Shipping Cost Calculation Rules"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:198
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:200
 #: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/SpecialAction/None.php:20
 #: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/BasedOnOptions.php:20
 #: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/Settings/IntegrationSettingsImplementation.php:40
 msgid "None"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:202
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:204
 msgid "Shipping Integration"
 msgstr ""
 
 #. Translators: strong and link.
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:235
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:237
 #, php-format
 msgid "Specify when the free shipping should be available to your customers. You can use the %1$sFree shipping threshold%2$s option below or/and you can also set up the free shipping resulting directly from the Flexible Shipping cost calculation rules. %3$sLearn how to configure the free shipping coming from the cost calculation rules &rarr;%4$s"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:246
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:248
 msgid "Free Shipping Requires"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:249
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:251
 msgid "Minimum order value"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:250
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:252
 msgid "Minimum item quantity (PRO)"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:251
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:253
 msgid "Free shipping coupon (PRO)"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:252
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:254
 msgid "Free shipping coupon or minimum order amount (PRO) "
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:253
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:255
 msgid "Free shipping coupon and minimum order amount (PRO)"
 msgstr ""
 
 #. Translators: link.
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:257
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:259
 #, php-format
 msgid "Compare the %1$sdifferences between Flexible Shipping FREE and PRO &rarr;%2$s"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:268
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:270
 msgid "Cost Calculation"
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:276
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:278
 msgid "Advanced Options"
 msgstr ""
 
@@ -1648,8 +1661,8 @@ msgid "%1$s%2$s%3$s shipping method duplication error. Please try again later."
 msgstr ""
 
 #: src/WPDesk/FS/TableRate/ShippingMethod/Duplicate/DuplicateScript.php:68
-#: assets-src/rules-settings/js/components/rules-settings.js:530
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:531
+#: assets/js/rules-settings.js:137
 msgid "Duplicate"
 msgstr ""
 
@@ -1780,14 +1793,32 @@ msgstr ""
 msgid "Choose whether the shipping cost defined in the rules table should be inclusive or exclusive of tax."
 msgstr ""
 
-#: src/WPDesk/FS/TableRate/ShippingMethodSingle.php:64
+#: src/WPDesk/FS/TableRate/ShippingMethodSingle.php:74
 msgid "A single Flexible Shipping method."
 msgstr ""
 
 #. Translators: docs link.
-#: src/WPDesk/FS/TableRate/ShippingMethodSingle.php:68
+#: src/WPDesk/FS/TableRate/ShippingMethodSingle.php:78
 #, php-format
 msgid "A single Flexible Shipping method. Learn %1$show to configure FS shipping method &rarr;%2$s"
+msgstr ""
+
+#. Translators: documentation link opening tag, closing tag, free shipping threshold amount, zero cost amount.
+#: src/WPDesk/FS/TableRate/ShippingMethodSingle.php:230
+#, php-format
+msgid "Upewnij się, że zakres od progu darmowej wysyłki wzwyż jest również pokryty odpowiednią regułą w tabeli poniżej, np. KIEDY: Cena jest od %3$s do [puste], koszt wynosi %4$s.<br />%1$sDowiedz się, jak skonfigurować próg darmowej wysyłki w regułach obliczania kosztów →%2$s"
+msgstr ""
+
+#. Translators: documentation link opening tag, closing tag, free shipping threshold amount, zero cost amount.
+#: src/WPDesk/FS/TableRate/ShippingMethodSingle.php:240
+#, php-format
+msgid "Make sure the range from the free shipping threshold upwards is also covered by the corresponding rule in the table below, e.g. WHEN: Price is from %3$s to [empty], rule cost is %4$s.<br />%1$sLearn how to configure the free shipping threshold in the cost calculation rules →%2$s"
+msgstr ""
+
+#. Translators: code tag opening, code tag closing.
+#: src/WPDesk/FS/TableRate/ShippingMethodSingle.php:396
+#, php-format
+msgid "The LFFS notice text contains an invalid placeholder format. Use %1$s%%1$s%2$s to display the amount left for free shipping."
 msgstr ""
 
 #: src/WPDesk/FS/TableRate/ShippingMethodsIntegration/OrderMetaData.php:38
@@ -2215,229 +2246,241 @@ msgid ""
 "Extensions"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/Plugin.php:122
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/Plugin.php:160
 msgid "Buy bundle →"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/Plugin.php:122
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/Plugin.php:160
 msgid "Buy plugin →"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:20
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:25
 msgid "The best and the most powerful Table Rate shipping plugin for WooCommerce. Define the shipping rules based on numerous conditions and configure even the most complex shipping scenarios with ease."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:23
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:29
+msgid "Shipping Analytics PRO"
+msgstr ""
+
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:29
+msgid "Get actionable recommendations based on real checkout issues, missing rates, abandoned carts, and shipping configuration gaps. Be the first to try it out!"
+msgstr ""
+
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:29
+msgid "Get early access →"
+msgstr ""
+
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:30
 msgid "All Plugins Bundle"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:23
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:30
 msgid "Grab a pack of all Octolize plugins as a cut-price tailor-made limited offer for developers, agencies and freelancers. Move the WooCommerce shipping to a whole new level. No strings attached, each plugin's 25‑sites subscription included."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:26
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:33
 msgid "Complete UPS Integration Bundle"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:26
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:33
 msgid "Connect your WooCommerce store with your UPS account, offer your customers real-time shipping rates and generate printable shipping labels for each placed order."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:29
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:36
 msgid "Advanced DPD UK Integration Bundle"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:29
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:36
 msgid "Integrate your WooCommerce store with your DPD UK account, customize the UK locations and automate the whole order processing including generating and printing the shipping labels."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:32
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:39
 msgid "Flexible Shipping Bundle"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:32
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:39
 msgid "Fully customize the shipping cost in your shop, define its calculation rules based on numerous conditions, hide and display the shipping methods and divide orders into separate packages."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:35
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:42
 msgid "Live Rates Bundle"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:35
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:42
 msgid "Serve your customers the UPS, FedEx, DHL Express or USPS shipping methods with automatically calculated rates and use multiple conditions to display them according to your terms and needs."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:38
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:45
 msgid "UPS Live Rates and Access Points PRO"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:38
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:45
 msgid "WooCommerce UPS integration packed with many advanced features. Display the dynamically calculated live rates for UPS shipping methods and adjust them to your needs."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:41
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:48
 msgid "FedEx WooCommerce Live Rates PRO"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:41
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:48
 msgid "Enable the FedEx live rates for international delivery and integrate it with your shop in less than 5 minutes. Save your time and money – let the shipping cost be calculated automatically."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:44
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:51
 msgid "USPS Live Rates PRO"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:44
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:51
 msgid "Serve your customers the automatically and real-time calculated USPS shipping rates. Add the handling fees, insurance and adjust them to your needs with just a few clicks."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:47
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:54
 msgid "Flexible Shipping Import / Export"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:47
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:54
 msgid "Use the CSV files to import or export your shipping methods. Edit, update, move or backup the ready configurations and shipping scenarios."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:50
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:57
 #: vendor_prefixed/wpdesk/wp-wpdesk-fs-compatibility/src/PluginCompatibilityChecker.php:100
 msgid "Flexible Shipping Locations"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:50
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:57
 msgid "Calculate the shipping cost based on location. Define your own custom locations, use the WooCommerce defaults or the ones created by 3rd party plugins."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:53
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:60
 msgid "Distance Based Shipping Rates"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:53
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:60
 msgid "Offer shipping rates based on Distance or Total Travel Time calculated by Google Distance Matrix API and don't overpay for shipping."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:56
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:63
 msgid "Pickup Points PRO WooCommerce Plugin"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:56
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:63
 msgid "Provide your customers with multiple carriers' pickup points at the checkout and let them choose the preferred one to collect their order from."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:59
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:66
 msgid "Shipping Cost on Product Page PRO"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:59
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:66
 msgid "Let your customers calculate and see the shipping cost on product pages based on the entered shipping destination and cart contents. Decide how and when exactly you want the shipping cost calculator to display."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:62
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:69
 msgid "Flexible Shipping Box Packing"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:62
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:69
 msgid "Use the advanced box packing WooCommerce algorithm to fit the ordered products into your shipping boxes the most optimal way. Configure the shipping cost based on the type and number of the used shipping boxes."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:65
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:72
 msgid "Shipping Packages"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:65
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:72
 msgid "Split the WooCommerce cart content into multiple packages based on various conditions like shipping class."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:68
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:75
 msgid "Multi Vendor Shipping"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:68
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:75
 msgid "Define precisely the shipping cost calculation rules for each Vendor / Product Author in your marketplace or multivendor store."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:71
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:78
 msgid "Delivery Date Picker"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:71
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:78
 msgid "Let your customers choose a convenient delivery date for the ordered products and make the shipping cost dependent on the date they choose."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:74
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:81
 msgid "DPD UK & DPD Local"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:74
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:81
 msgid "Ship your DPD orders faster with advanced DPD UK & DPD Local WooCommerce integration. Gather shipping details, download printable shipping labels and track parcels - everything is automated."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:77
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:84
 msgid "Flexible Printing"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:77
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:84
 msgid "Automate your shipping process. Print the shipping labels on thermal printers via PrintNode service. Let the labels be printed automatically the same time the order is placed."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:80
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:87
 msgid "UPS Labels and Tracking"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:80
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:87
 msgid "Create the shipments, generate the printable UPS shipping labels for the placed orders and track the parcels directly from your WooCommerce store."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:83
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:90
 msgid "DHL Express Live Rates PRO"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:83
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:90
 msgid "WooCommerce DHL Express integration packed with many advanced features. Display the dynamically calculated live rates for DHL Express shipping methods and adjust them to your needs."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:86
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:93
 msgid "Canada Post WooCommerce Plugin - Live Rates PRO"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:86
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:93
 msgid "Offer your customers the Canada Post services with real-time calculated shipping rates. Add the handling fees, insurance and adjust them to your needs with just a few clicks."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:89
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:96
 msgid "Royal Mail WooCommerce - Live Rates PRO"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:89
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:96
 msgid "Let your customers choose the Royal Mail shipping methods with the real-time calculated shipping rates. Add the handling fees, insurance and adjust them to your needs in no time."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:92
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:99
 msgid "Conditional Shipping Methods"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:92
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:99
 msgid "Conditionally display and hide the shipping methods in your WooCommerce store. Define the rules when the specific shipping methods, e.g., live rates should be available to pick and when not to."
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:117
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:128
 #: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/views/html-shipping-extensions-page.php:32
 msgid "All"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:117
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:128
 msgid "Bundles"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:117
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:128
 msgid "Live Rates"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:117
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:128
 msgid "Customizable Rates"
 msgstr ""
 
-#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:117
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:128
 msgid "Shipping Labels"
 msgstr ""
 
@@ -3199,23 +3242,23 @@ msgstr ""
 
 #: assets-src/rules-settings/js/components/html-woo-select.js:40
 #: assets-src/rules-settings/js/components/html-woo-select.js:241
-#: assets/js/rules-settings.js:132
+#: assets/js/rules-settings.js:137
 msgid "Enter 3 or more characters"
 msgstr ""
 
 #: assets-src/rules-settings/js/components/html-woo-select.js:245
-#: assets/js/rules-settings.js:132
+#: assets/js/rules-settings.js:137
 msgid "searching..."
 msgstr ""
 
 #: assets-src/rules-settings/js/components/html-woo-select.js:254
 #: assets-src/rules-settings/js/components/html-woo-select.js:260
-#: assets/js/rules-settings.js:132
+#: assets/js/rules-settings.js:137
 msgid "Value not found"
 msgstr ""
 
 #: assets-src/rules-settings/js/components/html-woo-select.js:278
-#: assets/js/rules-settings.js:132
+#: assets/js/rules-settings.js:137
 #, js-format
 msgid "Missing Id: %s"
 msgstr ""
@@ -3278,163 +3321,163 @@ msgstr ""
 msgid "Use selected scenario"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:361
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:362
+#: assets/js/rules-settings.js:137
 #, js-format
 msgid "Invalid rules table config! JSON parse failed with message: %s"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:362
-#: assets-src/rules-settings/js/components/rules-settings.js:388
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:363
+#: assets-src/rules-settings/js/components/rules-settings.js:389
+#: assets/js/rules-settings.js:137
 msgid "Invalid rules table config!"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:400
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:401
+#: assets/js/rules-settings.js:137
 msgid "Rules table successfully pasted."
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:408
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:409
+#: assets/js/rules-settings.js:137
 msgid "Rules table successfully imported."
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:415
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:416
+#: assets/js/rules-settings.js:137
 msgid "Rules table configuration successfully used."
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:454
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:455
+#: assets/js/rules-settings.js:137
 msgid "Conditions"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:455
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:456
+#: assets/js/rules-settings.js:137
 msgid "Costs"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:458
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:459
+#: assets/js/rules-settings.js:137
 msgid "Special action"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:482
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:483
+#: assets/js/rules-settings.js:137
 msgid "You can"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:486
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:487
+#: assets/js/rules-settings.js:137
 msgid "save time with AI ✦"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:486
-#: assets-src/rules-settings/js/components/rules-settings.js:491
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:487
+#: assets-src/rules-settings/js/components/rules-settings.js:492
+#: assets/js/rules-settings.js:137
 msgid "or"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:490
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:491
+#: assets/js/rules-settings.js:137
 msgid "add the first rule"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:493
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:494
+#: assets/js/rules-settings.js:137
 msgid "use one of the ready-made scenarios"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:504
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:505
+#: assets/js/rules-settings.js:137
 msgid "Add rule"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:510
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:511
+#: assets/js/rules-settings.js:137
 msgid "Selected rules:"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:520
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:521
+#: assets/js/rules-settings.js:137
 msgid "Delete"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:541
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:542
+#: assets/js/rules-settings.js:137
 msgid "Rules table"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:546
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:547
+#: assets/js/rules-settings.js:137
 msgid "Paste JSON from clipboard"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:551
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:552
+#: assets/js/rules-settings.js:137
 msgid "Import JSON file"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:556
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:557
+#: assets/js/rules-settings.js:137
 msgid "Save JSON file"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:560
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:561
+#: assets/js/rules-settings.js:137
 msgid "Use ready-made scenarios"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:601
-#: assets-src/rules-settings/js/components/rules-settings.js:612
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:602
+#: assets-src/rules-settings/js/components/rules-settings.js:613
+#: assets/js/rules-settings.js:137
 msgid "Save time with AI ✦"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:662
-#: assets-src/rules-settings/js/components/rules-settings.js:671
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:663
+#: assets-src/rules-settings/js/components/rules-settings.js:672
+#: assets/js/rules-settings.js:137
 msgid "PRO Features"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:665
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:666
+#: assets/js/rules-settings.js:137
 msgid "Tick this checkbox to display the features and shipping cost calculation conditions coming with the plugin's PRO version."
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:677
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:678
+#: assets/js/rules-settings.js:137
 msgid "Show the options available in the PRO version."
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:681
-#: assets/js/rules-settings.js:132
+#: assets-src/rules-settings/js/components/rules-settings.js:682
+#: assets/js/rules-settings.js:137
 msgid "Learn more about PRO version →"
 msgstr ""
 
 #: assets-src/rules-settings/js/components/single-condition.js:245
-#: assets/js/rules-settings.js:132
+#: assets/js/rules-settings.js:137
 msgid "and"
 msgstr ""
 
 #: assets-src/rules-settings/js/components/single-condition.js:247
-#: assets/js/rules-settings.js:132
+#: assets/js/rules-settings.js:137
 msgid "When"
 msgstr ""
 
 #: assets-src/rules-settings/js/components/validate_rules_table_config.js:15
-#: assets/js/rules-settings.js:132
+#: assets/js/rules-settings.js:137
 msgid "Rules table configuration is missing."
 msgstr ""
 
 #: assets-src/rules-settings/js/components/validate_rules_table_config.js:19
-#: assets/js/rules-settings.js:132
+#: assets/js/rules-settings.js:137
 msgid "Invalid conditions in rule."
 msgstr ""
 
 #: assets-src/rules-settings/js/components/validate_rules_table_config.js:32
-#: assets/js/rules-settings.js:132
+#: assets/js/rules-settings.js:137
 msgid "Special actions are available only in the Flexible Shipping PRO plugin!"
 msgstr ""
 

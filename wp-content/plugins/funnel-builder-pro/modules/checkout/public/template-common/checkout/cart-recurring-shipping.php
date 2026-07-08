@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Recurring Shipping Methods Display
  *
@@ -12,18 +16,21 @@ if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
 if ( 1 < count( $available_methods ) ) { ?>
-	<?php foreach ( $available_methods as $method ) {
+	<?php
+	foreach ( $available_methods as $method ) {
 		$checked = checked( $method->id, $chosen_method, false );
 		if ( '' !== $checked ) {
 			?>
-            <tr class="shipping recurring-total <?php echo esc_attr( $recurring_cart_key ); ?>">
-                <th><?php
-					echo "<span>" . wp_kses_post( $package_name ) . "</span>";
+			<tr class="shipping recurring-total <?php echo esc_attr( $recurring_cart_key ); ?>">
+				<th>
+				<?php
+					echo '<span>' . wp_kses_post( $package_name ) . '</span>';
 					echo '<small>&nbsp;' . sprintf( __( 'via %s', 'woocommerce' ), WFACP_Common::shipping_method_label( $method ) ) . '</small>';
-					?>
-                </th>
-                <td data-title="<?php echo esc_attr( $package_name ); ?>">
-					<?php if ( $method->get_cost() == 0 ) {
+				?>
+				</th>
+				<td data-title="<?php echo esc_attr( $package_name ); ?>">
+					<?php
+					if ( $method->get_cost() == 0 ) {
 						echo '<span>' . _e( 'Free', 'woocommerce' ) . '</span>';
 					} else {
 						echo wc_price( $method->get_cost() );
@@ -32,8 +39,8 @@ if ( 1 < count( $available_methods ) ) { ?>
 						echo '<p class="woocommerce-shipping-contents"><small>' . $package_details . '</small></p>';
 					}
 					?>
-                </td>
-            </tr>
+				</td>
+			</tr>
 			<?php
 		}
 	}

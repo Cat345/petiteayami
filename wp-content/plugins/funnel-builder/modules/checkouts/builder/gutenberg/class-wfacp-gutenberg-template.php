@@ -204,7 +204,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 					echo '</div>';
 
 				}
-				echo "<div class='" . implode( ' ', array( 'wfacp-form', $label_position ) ) . "'>";
+				echo "<div class='" . esc_attr( implode( ' ', array( 'wfacp-form', $label_position ) ) ) . "'>";
 
 			}
 		}
@@ -553,7 +553,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 						$step    = ( isset( $steps_arr[ $key ] ) ) ? $steps_arr[ $key ] : '';
 						$active  = apply_filters( 'wfacp_layout_9_active_progress_bar', $active, $step );
 						$p_class = 'wfacp_step_' . $key . ' wfacp_bred ' . $bread_visited . ' ' . $active . ' ' . $step;
-						echo "<li class='" . esc_attr( $p_class ) . "' step='" . esc_attr( $step ) . "' ><a href='javascript:void(0)' class='wfacp_step_text_have' data-text='" . esc_attr( sanitize_title( $value ) ) . "'>wp_kses_post($value)</a> </li>";//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo "<li class='" . esc_attr( $p_class ) . "' step='" . esc_attr( $step ) . "' ><a href='javascript:void(0)' class='wfacp_step_text_have' data-text='" . esc_attr( sanitize_title( $value ) ) . "'>" . wp_kses_post( $value ) . '</a> </li>';//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					}
 					do_action( 'wfacp_after_breadcrumb' );
 					echo '</ul></div></div></div>';
@@ -733,7 +733,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 					$last_step = 'two_step';
 				}
 				if ( $back_btn_text !== '' ) {
-					$output .= "<div class='place_order_back_btn wfacp_none_class '><a class='wfacp_back_page_button' data-next-step='" . $last_step . "' data-current-step='" . $this->current_step . "' href='javascript:void(0)'>" . __( $back_btn_text, 'woofunnels-aero-checkout' ) . '</a> </div>';//phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
+					$output .= "<div class='place_order_back_btn wfacp_none_class '><a class='wfacp_back_page_button' data-next-step='" . esc_attr( $last_step ) . "' data-current-step='" . esc_attr( $this->current_step ) . "' href='javascript:void(0)'>" . esc_html( $back_btn_text ) . '</a> </div>'; // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText,WordPress.WP.I18n.TextDomainMismatch
 				}
 			}
 			$output .= '</div>';
@@ -827,7 +827,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			if ( isset( $_COOKIE['wfacp_gutenberg_open_page'] ) && wp_doing_ajax() ) {
 				$cookie            = sanitize_text_field( wp_unslash( $_COOKIE['wfacp_gutenberg_open_page'] ) );
 				$parts             = explode( '@', $cookie );
-				$current_open_step = $parts[1];
+				$current_open_step = isset( $parts[1] ) ? sanitize_html_class( $parts[1] ) : '';
 				if ( ! empty( $current_open_step ) && 'single_step' !== $current_open_step ) {
 					$this->set_current_open_step( $current_open_step );
 					add_filter( 'wfacp_el_bread_crumb_active_class_key', array( $this, 'set_breadcrumb' ), 10, 2 );

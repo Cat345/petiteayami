@@ -1,13 +1,17 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  *
  * Remove JetPack Notes JS
  */
 
-#[AllowDynamicProperties] 
- class WFACP_Compatibility_JetPack {
+#[AllowDynamicProperties]
+class WFACP_Compatibility_JetPack {
 	public function __construct() {
-		add_action( 'wp_loaded', [ $this, 'remove_action' ] );
+		add_action( 'wp_loaded', array( $this, 'remove_action' ) );
 	}
 
 	public function remove_action() {
@@ -17,9 +21,12 @@
 	}
 }
 
-add_action( 'plugins_loaded', function () {
-	if ( ! class_exists( 'Jetpack' ) ) {
-		return;
+add_action(
+	'plugins_loaded',
+	function () {
+		if ( ! class_exists( 'Jetpack' ) ) {
+			return;
+		}
+		new WFACP_Compatibility_JetPack();
 	}
-	new WFACP_Compatibility_JetPack();
-} );
+);

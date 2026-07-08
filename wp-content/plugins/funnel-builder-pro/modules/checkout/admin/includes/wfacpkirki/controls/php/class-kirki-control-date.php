@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * A simple date control, using jQuery UI.
  */
 if ( ! class_exists( 'WFACPKirki_Control_Date' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Control_Date extends WFACPKirki_Control_Base {
 
 		/**
@@ -40,13 +41,13 @@ if ( ! class_exists( 'WFACPKirki_Control_Date' ) ) {
 		 */
 		protected function content_template() {
 			?>
-            <label>
-                <# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
-                <# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
-                <div class="customize-control-content">
-                    <input {{{ data.inputAttrs }}} class="datepicker" type="text" id="{{ data.id }}" value="{{ data.value }}" {{{ data.link }}}/>
-                </div>
-            </label>
+			<label>
+				<# if ( data.label ) { #><span class="customize-control-title">{{{ data.label }}}</span><# } #>
+				<# if ( data.description ) { #><span class="description customize-control-description">{{{ data.description }}}</span><# } #>
+				<div class="customize-control-content">
+					<input {{{ data.inputAttrs }}} class="datepicker" type="text" id="{{ data.id }}" value="{{ data.value }}" {{{ data.link }}}/>
+				</div>
+			</label>
 			<?php
 		}
 	}

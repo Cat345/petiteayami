@@ -1,15 +1,17 @@
 <?php
 
 namespace WfocuFunnelKit;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 if ( ! class_exists( '\WfocuFunnelKit\Reject_Button' ) ) {
 
+	#[\AllowDynamicProperties]
 	class Reject_Button extends \Bricks\Element {
 		public $category = 'funnelkit';
-		public $name = 'wfocu-offer-reject-button';
-		public $icon = 'wfocu-icon-button_no';
+		public $name     = 'wfocu-offer-reject-button';
+		public $icon     = 'wfocu-icon-button_no';
 
 		/**
 		 * Retrieves the label for the Reject Button element.
@@ -78,7 +80,7 @@ if ( ! class_exists( '\WfocuFunnelKit\Reject_Button' ) ) {
 					array(
 						'selector' => '.bricks-button',
 						'property' => 'align-self',
-					)
+					),
 				),
 			);
 
@@ -240,13 +242,13 @@ if ( ! class_exists( '\WfocuFunnelKit\Reject_Button' ) ) {
 			 *
 			 * @since 1.0.0
 			 */ ?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <div style="display:flex;flex-direction:column;" <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                    <a <?php echo $this->render_attributes( 'button' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<div style="display:flex;flex-direction:column;" <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+					<a <?php echo $this->render_attributes( 'button' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 						<?php $this->render_button_text(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                    </a>
-                </div>
-            </div>
+					</a>
+				</div>
+			</div>
 			<?php
 		}
 
@@ -260,21 +262,25 @@ if ( ! class_exists( '\WfocuFunnelKit\Reject_Button' ) ) {
 
 			$this->set_attribute( 'content-wrapper', 'class', 'bricks-button-content-wrapper' );
 			$this->set_attribute( 'text', 'class', 'bricks-button-text' );
-			$this->set_attribute( 'icon-align', 'class', array(
+			$this->set_attribute(
+				'icon-align',
+				'class',
+				array(
 					'bricks-button-icon',
 					'bricks-button-icon-align-' . $icon_position,
-				) );
+				)
+			);
 
 			?>
-            <span style="width:100%;" <?php echo $this->render_attributes( 'content-wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<span style="width:100%;" <?php echo $this->render_attributes( 'content-wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 			<?php if ( $icon && $icon_position === 'left' ) : ?>
-                <span <?php echo $this->render_attributes( 'icon-align' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<span <?php echo $this->render_attributes( 'icon-align' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 					<?php echo $icon; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</span>
 			<?php endif; ?>
 			<span <?php echo $this->render_attributes( 'text' ); ?>><?php echo $settings['text']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 			<?php if ( $icon && $icon_position === 'right' ) : ?>
-                <span <?php echo $this->render_attributes( 'icon-align' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<span <?php echo $this->render_attributes( 'icon-align' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 					<?php echo $icon; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</span>
 			<?php endif; ?>

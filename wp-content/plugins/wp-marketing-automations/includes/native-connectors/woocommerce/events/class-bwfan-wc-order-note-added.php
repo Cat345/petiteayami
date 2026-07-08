@@ -5,6 +5,7 @@
  * This class work only for admin created note `not for checkout order not field`
  * Class BWFAN_WC_Order_Note_Added\
  */
+#[\AllowDynamicProperties]
 final class BWFAN_WC_Order_Note_Added extends BWFAN_Event {
 	private static $instance = null;
 	public $order_id = null;

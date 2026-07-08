@@ -176,7 +176,7 @@ if ( isset( $data['product']->variations_data ) && isset( $data['product']->vari
 		if ( true === $highlight_product ) {
 			?>
             <div class="wfocu-best-badge">
-                <span><?php echo $hl_pblock_badge_text; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped  ?></span>
+                <span><?php echo esc_html( $hl_pblock_badge_text ); ?></span>
             </div>
 		<?php } ?>
         <div class="wfocu-list-block-cell-left">

@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Syntax_Merge_Tags' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Syntax_Merge_Tags {
 
 		public static $threshold_to_date = 30;
@@ -18,27 +19,27 @@ if ( ! class_exists( 'WFOCU_Syntax_Merge_Tags' ) ) {
 		public static function maybe_parse_merge_tags( $content = '', $helper_data = false ) {
 			$get_all = self::get_all_tags();
 
-			//iterating over all the merge tags
+			// iterating over all the merge tags
 			if ( $get_all && is_array( $get_all ) && count( $get_all ) > 0 ) {
 				foreach ( $get_all as $tag ) {
 					$matches = array();
 					$re      = sprintf( '/\{{%s(.*?)\}}/', $tag );
 					$str     = $content;
 
-					//trying to find match w.r.t current tag
+					// trying to find match w.r.t current tag
 					preg_match_all( $re, $str, $matches );
 
-					//if match found
+					// if match found
 					if ( $matches && is_array( $matches ) && count( $matches ) > 0 ) {
 
 						if ( ! isset( $matches[0] ) ) {
 							return;
 						}
 
-						//iterate over the found matches
+						// iterate over the found matches
 						foreach ( $matches[0] as $exact_match ) {
 
-							//preserve old match
+							// preserve old match
 							$old_match = $exact_match;
 
 							$extra_attributes = '';
@@ -46,7 +47,7 @@ if ( ! class_exists( 'WFOCU_Syntax_Merge_Tags' ) ) {
 								$extra_attributes = " helper_data='" . serialize( $helper_data ) . "'"; //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 							}
 
-							//replace the current tag with the square brackets [shortcode compatible]
+							// replace the current tag with the square brackets [shortcode compatible]
 							$exact_match = str_replace( '{{' . $tag, '[wfocu_' . $tag . $extra_attributes, $exact_match );
 
 							$exact_match = str_replace( '}}', ']', $exact_match );
@@ -64,16 +65,18 @@ if ( ! class_exists( 'WFOCU_Syntax_Merge_Tags' ) ) {
 			$tags = array();
 
 			return $tags;
-
 		}
 
 
 		public static function highlight( $attr ) {
-			$attr = shortcode_atts( array(
-				'color'   => '#777777',
-				'text'    => '',
-				'classes' => '',
-			), $attr );
+			$attr = shortcode_atts(
+				array(
+					'color'   => '#777777',
+					'text'    => '',
+					'classes' => '',
+				),
+				$attr
+			);
 
 			if ( $attr && ! empty( $attr['text'] ) ) {
 
@@ -82,8 +85,6 @@ if ( ! class_exists( 'WFOCU_Syntax_Merge_Tags' ) ) {
 
 			return '';
 		}
-
-
 	}
 
 }

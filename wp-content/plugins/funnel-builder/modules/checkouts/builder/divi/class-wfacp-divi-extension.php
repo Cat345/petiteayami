@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFACP_Divi_Extension' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_Divi_Extension extends DiviExtension {
 
 		/**
@@ -9,7 +10,7 @@ if ( ! class_exists( 'WFACP_Divi_Extension' ) ) {
 		 *
 		 * @var string
 		 */
-		public $gettext_domain = 'woofunnels-aero-checkout';
+		public $gettext_domain          = 'woofunnels-aero-checkout';
 		public static $field_color_type = 'color';
 
 		/**
@@ -31,14 +32,14 @@ if ( ! class_exists( 'WFACP_Divi_Extension' ) ) {
 
 		private $module_path = '';
 
-		public $modules_instance = [];
+		public $modules_instance    = array();
 		private $builder_setup_done = false;
 
 		/**
 		 * WFACP_Divi_Extension constructor.
 		 *
 		 * @param string $name
-		 * @param array $args
+		 * @param array  $args
 		 */
 		public function __construct( $name = 'woofunnels-aero-checkout', $args = array() ) {
 			$this->version        = WFACP_VERSION;
@@ -77,12 +78,12 @@ if ( ! class_exists( 'WFACP_Divi_Extension' ) ) {
 
 
 		private function get_modules() {
-			$modules = [
-				'checkout_form' => [
+			$modules = array(
+				'checkout_form' => array(
 					'name' => __( 'Checkout Form', 'funnel-builder' ),
 					'path' => $this->module_path . 'class-divi-form.php',
-				]
-			];
+				),
+			);
 
 			return apply_filters( 'wfacp_divi_modules', $modules, $this );
 		}
@@ -126,5 +127,5 @@ if ( ! class_exists( 'WFACP_Divi_Extension' ) ) {
 		}
 	}
 
-	new WFACP_Divi_Extension;
+	new WFACP_Divi_Extension();
 }

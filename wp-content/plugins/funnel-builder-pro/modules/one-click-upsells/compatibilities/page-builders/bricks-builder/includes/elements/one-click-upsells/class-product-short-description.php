@@ -1,6 +1,7 @@
 <?php
 
 namespace WfocuFunnelKit;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
@@ -8,10 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 use WC_Product;
 
 if ( ! class_exists( '\WfocuFunnelKit\Product_Short_Description' ) ) {
+	#[\AllowDynamicProperties]
 	class Product_Short_Description extends \Bricks\Element {
 		public $category = 'funnelkit';
-		public $name = 'wfocu-short-description';
-		public $icon = 'wfocu-icon-product_description';
+		public $name     = 'wfocu-short-description';
+		public $icon     = 'wfocu-icon-product_description';
 
 		/**
 		 * Retrieves the label for the "Product Short Description" element.
@@ -103,7 +105,6 @@ if ( ! class_exists( '\WfocuFunnelKit\Product_Short_Description' ) ) {
 		 *
 		 * @return void
 		 * @since 1.0.0
-		 *
 		 */
 		public function render() {
 			$settings = $this->settings;
@@ -143,9 +144,9 @@ if ( ! class_exists( '\WfocuFunnelKit\Product_Short_Description' ) ) {
 				return;
 			}
 			?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 				<?php echo $short_description; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-            </div>
+			</div>
 			<?php
 		}
 	}

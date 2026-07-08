@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * * @extends WP_REST_Controller
  */
 if ( ! class_exists( 'WFACP_REST_Funnels' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_REST_Funnels extends WP_REST_Controller {
 
 		public static $_instance = null;
@@ -632,7 +633,7 @@ if ( ! class_exists( 'WFACP_REST_Funnels' ) ) {
 				// Create Checkout Page.
 				if ( isset( $posted_data['wfacp_name'] ) && $posted_data['wfacp_name'] !== '' ) {
 					$post                = array();
-					$post['post_title']  = $_POST['wfacp_name'];
+					$post['post_title']  = sanitize_text_field( wp_unslash( $_POST['wfacp_name'] ) );
 					$post['post_type']   = WFACP_Common::get_post_type_slug();
 					$post['post_status'] = 'publish';
 					$post['post_name']   = isset( $posted_data['post_name'] ) ? $posted_data['post_name'] : $posted_data['post_title'];

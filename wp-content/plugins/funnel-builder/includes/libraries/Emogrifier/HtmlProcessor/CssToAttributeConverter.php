@@ -14,6 +14,7 @@ namespace Pelago\Emogrifier\HtmlProcessor;
  *
  * @author Oliver Klee <github@oliverklee.de>
  */
+#[\AllowDynamicProperties]
 class CssToAttributeConverter extends AbstractHtmlProcessor {
 	/**
 	 * This multi-level array contains simple mappings of CSS properties to
@@ -23,30 +24,30 @@ class CssToAttributeConverter extends AbstractHtmlProcessor {
 	 *
 	 * @var mixed[][]
 	 */
-	private $cssToHtmlMap = [
-		'background-color' => [
+	private $cssToHtmlMap = array(
+		'background-color' => array(
 			'attribute' => 'bgcolor',
-		],
-		'text-align'       => [
+		),
+		'text-align'       => array(
 			'attribute' => 'align',
-			'nodes'     => [ 'p', 'div', 'td' ],
-			'values'    => [ 'left', 'right', 'center', 'justify' ],
-		],
-		'float'            => [
+			'nodes'     => array( 'p', 'div', 'td' ),
+			'values'    => array( 'left', 'right', 'center', 'justify' ),
+		),
+		'float'            => array(
 			'attribute' => 'align',
-			'nodes'     => [ 'table', 'img' ],
-			'values'    => [ 'left', 'right' ],
-		],
-		'border-spacing'   => [
+			'nodes'     => array( 'table', 'img' ),
+			'values'    => array( 'left', 'right' ),
+		),
+		'border-spacing'   => array(
 			'attribute' => 'cellspacing',
-			'nodes'     => [ 'table' ],
-		],
-	];
+			'nodes'     => array( 'table' ),
+		),
+	);
 
 	/**
 	 * @var string[][]
 	 */
-	private static $parsedCssCache = [];
+	private static $parsedCssCache = array();
 
 	/**
 	 * Maps the CSS from the style nodes to visual HTML attributes.
@@ -98,11 +99,11 @@ class CssToAttributeConverter extends AbstractHtmlProcessor {
 			return self::$parsedCssCache[ $cssDeclarationsBlock ];
 		}
 
-		$properties   = [];
+		$properties   = array();
 		$declarations = \preg_split( '/;(?!base64|charset)/', $cssDeclarationsBlock );
 
 		foreach ( $declarations as $declaration ) {
-			$matches = [];
+			$matches = array();
 			if ( ! \preg_match( '/^([A-Za-z\\-]+)\\s*:\\s*(.+)$/s', \trim( $declaration ), $matches ) ) {
 				continue;
 			}
@@ -122,7 +123,7 @@ class CssToAttributeConverter extends AbstractHtmlProcessor {
 	 * This method maps CSS styles to HTML attributes and adds those to the
 	 * node.
 	 *
-	 * @param string[] $styles the new CSS styles taken from the global styles to be applied to this node
+	 * @param string[]    $styles the new CSS styles taken from the global styles to be applied to this node
 	 * @param \DOMElement $node node to apply styles to
 	 *
 	 * @return void
@@ -140,8 +141,8 @@ class CssToAttributeConverter extends AbstractHtmlProcessor {
 	 *
 	 * This method maps a CSS rule to HTML attributes and adds those to the node.
 	 *
-	 * @param string $property the name of the CSS property to map
-	 * @param string $value the value of the style rule to map
+	 * @param string      $property the name of the CSS property to map
+	 * @param string      $value the value of the style rule to map
 	 * @param \DOMElement $node node to apply styles to
 	 *
 	 * @return void
@@ -155,8 +156,8 @@ class CssToAttributeConverter extends AbstractHtmlProcessor {
 	/**
 	 * Looks up the CSS property in the mapping table and maps it if it matches the conditions.
 	 *
-	 * @param string $property the name of the CSS property to map
-	 * @param string $value the value of the style rule to map
+	 * @param string      $property the name of the CSS property to map
+	 * @param string      $value the value of the style rule to map
 	 * @param \DOMElement $node node to apply styles to
 	 *
 	 * @return bool true if the property can be mapped using the simple mapping table
@@ -181,8 +182,8 @@ class CssToAttributeConverter extends AbstractHtmlProcessor {
 	/**
 	 * Maps CSS properties that need special transformation to an HTML attribute.
 	 *
-	 * @param string $property the name of the CSS property to map
-	 * @param string $value the value of the style rule to map
+	 * @param string      $property the name of the CSS property to map
+	 * @param string      $value the value of the style rule to map
 	 * @param \DOMElement $node node to apply styles to
 	 *
 	 * @return void
@@ -209,7 +210,7 @@ class CssToAttributeConverter extends AbstractHtmlProcessor {
 
 	/**
 	 * @param \DOMElement $node node to apply styles to
-	 * @param string $value the value of the style rule to map
+	 * @param string      $value the value of the style rule to map
 	 *
 	 * @return void
 	 */
@@ -225,8 +226,8 @@ class CssToAttributeConverter extends AbstractHtmlProcessor {
 
 	/**
 	 * @param \DOMElement $node node to apply styles to
-	 * @param string $value the value of the style rule to map
-	 * @param string $property the name of the CSS property to map
+	 * @param string      $value the value of the style rule to map
+	 * @param string      $property the name of the CSS property to map
 	 *
 	 * @return void
 	 */
@@ -242,7 +243,7 @@ class CssToAttributeConverter extends AbstractHtmlProcessor {
 
 	/**
 	 * @param \DOMElement $node node to apply styles to
-	 * @param string $value the value of the style rule to map
+	 * @param string      $value the value of the style rule to map
 	 *
 	 * @return void
 	 */
@@ -259,7 +260,7 @@ class CssToAttributeConverter extends AbstractHtmlProcessor {
 
 	/**
 	 * @param \DOMElement $node node to apply styles to
-	 * @param string $value the value of the style rule to map
+	 * @param string      $value the value of the style rule to map
 	 *
 	 * @return void
 	 */
@@ -295,7 +296,7 @@ class CssToAttributeConverter extends AbstractHtmlProcessor {
 	private function parseCssShorthandValue( $value ) {
 		$values = \preg_split( '/\\s+/', $value );
 
-		$css           = [];
+		$css           = array();
 		$css['top']    = $values[0];
 		$css['right']  = ( \count( $values ) > 1 ) ? $values[1] : $css['top'];
 		$css['bottom'] = ( \count( $values ) > 2 ) ? $values[2] : $css['top'];

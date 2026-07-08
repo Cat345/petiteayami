@@ -2,6 +2,8 @@
 
 namespace FSVendor\Octolize\ShippingExtensions\Plugin;
 
+use FSVendor\Octolize\ShippingExtensions\DateRange;
+use FSVendor\Octolize\ShippingExtensions\TimedUpdate;
 use JsonSerializable;
 /**
  * .
@@ -34,20 +36,45 @@ class Plugin implements JsonSerializable
      */
     private $urls;
     /**
+     * @var string|null
+     */
+    private $button_label;
+    /**
+     * @var string|null
+     */
+    private $button_class;
+    /**
+     * @var DateRange|null
+     */
+    private $visibility_period;
+    /**
+     * @var TimedUpdate|null
+     */
+    private $timed_update;
+    /**
      * @param string $plugin_name .
      * @param string $description .
      * @param string $icon .
      * @param string $plugin_file .
      * @param string $category .
      * @param string $plugin_url .
+     * @param string|null $group .
+     * @param string|null $button_label .
+     * @param string|null $button_class .
+     * @param DateRange|null $visibility_period .
+     * @param TimedUpdate|null $timed_update .
      */
-    public function __construct(string $plugin_name, string $description, string $icon, string $plugin_file, string $category, string $plugin_url)
+    public function __construct(string $plugin_name, string $description, string $icon, string $plugin_file, string $category, string $plugin_url, ?string $group = null, ?string $button_label = null, ?string $button_class = null, ?DateRange $visibility_period = null, ?TimedUpdate $timed_update = null)
     {
         $this->plugin_name = $plugin_name;
         $this->description = $description;
         $this->icon = $icon;
         $this->plugin_file = $plugin_file;
         $this->category = $category;
+        $this->button_label = $button_label;
+        $this->button_class = $button_class;
+        $this->visibility_period = $visibility_period;
+        $this->timed_update = $timed_update;
         $this->add_url($plugin_url, self::DEFAULT_LOCALE);
     }
     /**
@@ -110,15 +137,26 @@ class Plugin implements JsonSerializable
     {
         return $this->plugin_file;
     }
+    public function is_visible(): bool
+    {
+        return $this->visibility_period === null || $this->visibility_period->is_active();
+    }
+    public function get_timed_update(): ?TimedUpdate
+    {
+        return $this->timed_update;
+    }
     /**
      * @return array
      */
     public function jsonSerialize(): array
     {
-        return ['category' => $this->get_category(), 'icon' => $this->get_icon(), 'name' => $this->get_plugin_name(), 'description' => $this->get_description(), 'plugin_url' => $this->get_plugin_url(), 'buy_plugin_label' => $this->prepare_buy_plugin_label()];
+        return ['category' => $this->get_category(), 'icon' => $this->get_icon(), 'name' => $this->get_plugin_name(), 'description' => $this->get_description(), 'plugin_url' => $this->get_plugin_url(), 'buy_plugin_label' => $this->prepare_buy_plugin_label(), 'button_class' => $this->button_class];
     }
     private function prepare_buy_plugin_label(): string
     {
+        if ($this->button_label !== null) {
+            return $this->button_label;
+        }
         return $this->category === PluginFactory::get_categories()[PluginFactory::CATEGORY_BUNDLES] ? __('Buy bundle →', 'flexible-shipping') : __('Buy plugin →', 'flexible-shipping');
     }
 }

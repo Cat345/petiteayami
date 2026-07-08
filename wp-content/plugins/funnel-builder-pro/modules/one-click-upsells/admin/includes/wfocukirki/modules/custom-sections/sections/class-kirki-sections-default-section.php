@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Sections_Default_Section' ) ) {
 	/**
 	 * Default Section.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Sections_Default_Section extends WP_Customize_Section {
 
 		/**
@@ -21,6 +22,5 @@ if ( ! class_exists( 'WFOCUKirki_Sections_Default_Section' ) ) {
 		 * @var string
 		 */
 		public $type = 'wfocukirki-default';
-
 	}
 }

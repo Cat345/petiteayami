@@ -1,6 +1,11 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 if ( ! class_exists( 'BWFAN_WC_Order_number' ) ) {
 
+	#[\AllowDynamicProperties]
 	class BWFAN_WC_Order_number extends BWFAN_Merge_Tag {
 
 		private static $instance = null;

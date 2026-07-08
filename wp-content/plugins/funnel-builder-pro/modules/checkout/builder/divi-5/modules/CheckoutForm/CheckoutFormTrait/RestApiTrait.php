@@ -34,7 +34,7 @@ trait RestApiTrait {
 	public static function register_rest_routes(): void {
 		add_action(
 			'rest_api_init',
-			function() {
+			function () {
 				self::do_register_rest_routes();
 			}
 		);
@@ -55,8 +55,7 @@ trait RestApiTrait {
 						'methods'             => 'POST',
 						'callback'            => [ CheckoutForm::class, 'rest_render_callback' ],
 						'permission_callback' => function() {
-							// Allow in Visual Builder context
-							return current_user_can( 'edit_posts' );
+							return current_user_can( 'manage_woocommerce' );
 						},
 						'args'                => [
 							'attrs'   => [
@@ -103,25 +102,25 @@ trait RestApiTrait {
 				register_rest_route(
 					'wfacp/v1',
 					'/checkout-form/fields',
-					[
+					array(
 						'methods'             => 'GET',
 						'callback'            => [ CheckoutForm::class, 'rest_get_field_structure' ],
 						'permission_callback' => function() {
-							return current_user_can( 'edit_posts' );
+							return current_user_can( 'manage_woocommerce' );
 						},
-						'args'                => [
-							'post_id' => [
-								'required' => false,
-								'type'     => 'integer',
-								'default'  => 0,
+						'args'                => array(
+							'post_id' => array(
+								'required'          => false,
+								'type'              => 'integer',
+								'default'           => 0,
 								'sanitize_callback' => 'absint',
-								'validate_callback' => function( $value ) {
+								'validate_callback' => function ( $value ) {
 									// SECURITY: Ensure post_id is non-negative
 									return is_numeric( $value ) && $value >= 0;
 								},
-							],
-						],
-					]
+							),
+						),
+					)
 				);
 	}
 
@@ -137,12 +136,12 @@ trait RestApiTrait {
 		// Try to get params from JSON body first (POST requests)
 		$json_params = $request->get_json_params();
 		if ( ! empty( $json_params ) && is_array( $json_params ) ) {
-			$attrs   = is_array( $json_params['attrs'] ?? null ) ? $json_params['attrs'] : [];
+			$attrs   = is_array( $json_params['attrs'] ?? null ) ? $json_params['attrs'] : array();
 			$id      = sanitize_text_field( $json_params['id'] ?? '' );
 			$post_id = isset( $json_params['post_id'] ) ? absint( $json_params['post_id'] ) : 0;
 		} else {
 			// Fallback to regular params
-			$attrs   = is_array( $request->get_param( 'attrs' ) ) ? $request->get_param( 'attrs' ) : [];
+			$attrs   = is_array( $request->get_param( 'attrs' ) ) ? $request->get_param( 'attrs' ) : array();
 			$id      = sanitize_text_field( $request->get_param( 'id' ) ?? '' );
 			$post_id = absint( $request->get_param( 'post_id' ) ?? 0 );
 		}
@@ -152,7 +151,7 @@ trait RestApiTrait {
 		// Resolve candidate IDs and only accept IDs of post_type `wfacp_checkout`.
 		$wfacp_post_id = 0;
 
-		$resolve_checkout_post_id = static function( array $candidates ): int {
+		$resolve_checkout_post_id = static function ( array $candidates ): int {
 			foreach ( $candidates as $candidate ) {
 				$candidate_id = absint( $candidate );
 				if ( $candidate_id <= 0 ) {
@@ -168,7 +167,7 @@ trait RestApiTrait {
 			return 0;
 		};
 
-		$candidates = [];
+		$candidates = array();
 
 		// Prioritize explicit checkout context from Divi.
 		if ( isset( $_REQUEST['et_wfacp_id'] ) ) {
@@ -199,16 +198,18 @@ trait RestApiTrait {
 		// Method 6: Fallback - get any published WFACP checkout page for preview
 		// SCALABILITY: Only use fallback in Visual Builder context to avoid unnecessary queries
 		if ( $wfacp_post_id === 0 ) {
-			$fallback_posts = get_posts( [
-				'post_type'      => 'wfacp_checkout',
-				'post_status'    => 'publish',
-				'posts_per_page' => 1,
-				'orderby'        => 'date',
-				'order'          => 'DESC',
-				'no_found_rows'  => true, // SCALABILITY: Skip count query for better performance
-				'update_post_meta_cache' => false, // SCALABILITY: Skip meta cache for better performance
-				'update_post_term_cache' => false, // SCALABILITY: Skip term cache for better performance
-			] );
+			$fallback_posts = get_posts(
+				array(
+					'post_type'              => 'wfacp_checkout',
+					'post_status'            => 'publish',
+					'posts_per_page'         => 1,
+					'orderby'                => 'date',
+					'order'                  => 'DESC',
+					'no_found_rows'          => true, // SCALABILITY: Skip count query for better performance
+					'update_post_meta_cache' => false, // SCALABILITY: Skip meta cache for better performance
+					'update_post_term_cache' => false, // SCALABILITY: Skip term cache for better performance
+				)
+			);
 
 			if ( ! empty( $fallback_posts ) ) {
 				$wfacp_post_id = absint( $fallback_posts[0]->ID );
@@ -257,34 +258,33 @@ trait RestApiTrait {
 
 		// Ensure attrs is an array
 		if ( ! is_array( $attrs ) ) {
-			$attrs = [];
+			$attrs = array();
 		}
-		
 
 		// Create parsed block array
 		// SECURITY: Sanitize block ID
-		$block_id = ! empty( $id ) ? sanitize_text_field( $id ) : 'wfacp_checkout_form_widget';
-		$parsed_block = [
-			'blockName'  => 'wfacp/checkout-form',
-			'attrs'      => $attrs,
-			'innerHTML'  => '',
-			'innerContent' => [],
-			'id'         => $block_id,
-			'orderIndex' => 0,
-		];
+		$block_id     = ! empty( $id ) ? sanitize_text_field( $id ) : 'wfacp_checkout_form_widget';
+		$parsed_block = array(
+			'blockName'    => 'wfacp/checkout-form',
+			'attrs'        => $attrs,
+			'innerHTML'    => '',
+			'innerContent' => array(),
+			'id'           => $block_id,
+			'orderIndex'   => 0,
+		);
 
 		// Create block type object
-		$block_type = (object) [
+		$block_type = (object) array(
 			'name'     => 'wfacp/checkout-form',
 			'category' => 'module',
-		];
+		);
 
 		// Create a proper WP_Block object
 		$block = new \WP_Block( $parsed_block );
 
 		// Set block_type property using reflection (since it's not directly settable)
 		$reflection = new \ReflectionClass( $block );
-		$property = $reflection->getProperty( 'block_type' );
+		$property   = $reflection->getProperty( 'block_type' );
 		$property->setAccessible( true );
 		$property->setValue( $block, $block_type );
 
@@ -298,30 +298,30 @@ trait RestApiTrait {
 				'',
 				$block,
 				$elements,
-				[]
+				array()
 			);
 
 			// CRITICAL: Add cache-busting headers to prevent Visual Builder preview from using cached responses
 			// This ensures that when attributes change, the preview updates immediately
 			$response = new \WP_REST_Response(
-				[
+				array(
 					'success' => true,
 					'html'    => $html,
-				],
+				),
 				200
 			);
-			
+
 			// Prevent caching of the preview response
 			$response->header( 'Cache-Control', 'no-cache, no-store, must-revalidate' );
 			$response->header( 'Pragma', 'no-cache' );
 			$response->header( 'Expires', '0' );
-			
+
 			return $response;
 		} catch ( \Exception $e ) {
 			return new \WP_Error(
 				'render_failed',
 				'Failed to render CheckoutForm',
-				[ 'status' => 500 ]
+				array( 'status' => 500 )
 			);
 		}
 	}
@@ -362,16 +362,18 @@ trait RestApiTrait {
 			}
 
 			if ( $is_visual_builder ) {
-				$fallback_posts = get_posts( [
-					'post_type'      => 'wfacp_checkout',
-					'post_status'    => 'publish',
-					'posts_per_page' => 1,
-					'orderby'        => 'date',
-					'order'          => 'DESC',
-					'no_found_rows'  => true, // SCALABILITY: Skip count query
-					'update_post_meta_cache' => false, // SCALABILITY: Skip meta cache
-					'update_post_term_cache' => false, // SCALABILITY: Skip term cache
-				] );
+				$fallback_posts = get_posts(
+					array(
+						'post_type'              => 'wfacp_checkout',
+						'post_status'            => 'publish',
+						'posts_per_page'         => 1,
+						'orderby'                => 'date',
+						'order'                  => 'DESC',
+						'no_found_rows'          => true, // SCALABILITY: Skip count query
+						'update_post_meta_cache' => false, // SCALABILITY: Skip meta cache
+						'update_post_term_cache' => false, // SCALABILITY: Skip term cache
+					)
+				);
 
 				if ( ! empty( $fallback_posts ) ) {
 					$wfacp_post_id = absint( $fallback_posts[0]->ID );
@@ -383,7 +385,7 @@ trait RestApiTrait {
 			return new \WP_Error(
 				'no_template',
 				'No checkout template found',
-				[ 'status' => 404 ]
+				array( 'status' => 404 )
 			);
 		}
 
@@ -393,7 +395,7 @@ trait RestApiTrait {
 			return new \WP_Error(
 				'invalid_post',
 				'Invalid checkout template',
-				[ 'status' => 404 ]
+				array( 'status' => 404 )
 			);
 		}
 
@@ -402,7 +404,7 @@ trait RestApiTrait {
 			return new \WP_Error(
 				'access_denied',
 				'Access denied',
-				[ 'status' => 403 ]
+				array( 'status' => 403 )
 			);
 		}
 
@@ -422,7 +424,7 @@ trait RestApiTrait {
 			return new \WP_Error(
 				'no_template',
 				'Template not found',
-				[ 'status' => 404 ]
+				array( 'status' => 404 )
 			);
 		}
 
@@ -434,19 +436,19 @@ trait RestApiTrait {
 			return new \WP_Error(
 				'fieldsets_error',
 				'Failed to get fieldsets: ' . $e->getMessage(),
-				[ 'status' => 500 ]
+				array( 'status' => 500 )
 			);
 		}
-		
-		$step_count = $template->get_step_count();
+
+		$step_count    = $template->get_step_count();
 		$template_slug = $template->get_slug();
 
 		// Build sections array with default field classes (matching Divi 4 logic)
 		// SECURITY: Ensure all data is safe (fieldsets come from template, should be safe)
 		$template_cls = $template->get_template_fields_class();
-		$default_cls = $template->default_css_class();
-		
-		$sections = [];
+		$default_cls  = $template->default_css_class();
+
+		$sections = array();
 		if ( is_array( $fieldsets ) ) {
 			// Matching Divi 4 structure: foreach ( $steps as $step_key => $fieldsets )
 			// Then: foreach ( $fieldsets as $section_key => $section_data )
@@ -455,65 +457,65 @@ trait RestApiTrait {
 				if ( ! is_array( $step_fieldsets ) ) {
 					continue;
 				}
-				
+
 				// $step_fieldsets is an array of sections (matching Divi 4: foreach ( $fieldsets as $section_key => $section_data ) )
 				foreach ( $step_fieldsets as $section_key => $section ) {
 					if ( ! is_array( $section ) ) {
 						continue;
 					}
-					
+
 					// Skip sections without fields (matching Divi 4 logic)
 					if ( empty( $section['fields'] ) || ! is_array( $section['fields'] ) ) {
 						continue;
 					}
-						
+
 						// Process fields and add default class information (matching Divi 4 register_fields logic)
-						$processed_fields = [];
-						if ( is_array( $section['fields'] ?? [] ) ) {
-							foreach ( $section['fields'] as $field ) {
-								if ( ! is_array( $field ) || ! isset( $field['id'] ) ) {
-									continue;
-								}
-								
-								$field_key = $field['id'];
-								$field_data = $field;
-								
-								// Get default class (matching Divi 4: $template_cls[ $field_key ]['class'] or $default_cls['class'])
-								if ( isset( $template_cls[ $field_key ] ) && isset( $template_cls[ $field_key ]['class'] ) ) {
-									$field_data['default_class'] = $template_cls[ $field_key ]['class'];
-								} else {
-									$field_data['default_class'] = $default_cls['class'] ?? 'wfacp-col-full';
-								}
-								
-								// Override for HTML fields (matching Divi 4 logic)
-								if ( isset( $field['type'] ) && 'wfacp_html' === $field['type'] ) {
-									$field_data['default_class'] = 'wfacp-col-full';
-								}
-								
-								$processed_fields[] = $field_data;
+						$processed_fields = array();
+					if ( is_array( $section['fields'] ?? array() ) ) {
+						foreach ( $section['fields'] as $field ) {
+							if ( ! is_array( $field ) || ! isset( $field['id'] ) ) {
+								continue;
 							}
+
+							$field_key  = $field['id'];
+							$field_data = $field;
+
+							// Get default class (matching Divi 4: $template_cls[ $field_key ]['class'] or $default_cls['class'])
+							if ( isset( $template_cls[ $field_key ] ) && isset( $template_cls[ $field_key ]['class'] ) ) {
+								$field_data['default_class'] = $template_cls[ $field_key ]['class'];
+							} else {
+								$field_data['default_class'] = $default_cls['class'] ?? 'wfacp-col-full';
+							}
+
+							// Override for HTML fields (matching Divi 4 logic)
+							if ( isset( $field['type'] ) && 'wfacp_html' === $field['type'] ) {
+								$field_data['default_class'] = 'wfacp-col-full';
+							}
+
+							$processed_fields[] = $field_data;
 						}
-						
-					$sections[] = [
-						'step_key' => sanitize_key( $step_key ),
+					}
+
+					$sections[] = array(
+						'step_key'    => sanitize_key( $step_key ),
 						'section_key' => sanitize_key( $section_key ),
-						'name' => sanitize_text_field( $section['name'] ?? '' ),
-						'fields' => $processed_fields,
-					];
+						'name'        => sanitize_text_field( $section['name'] ?? '' ),
+						'fields'      => $processed_fields,
+					);
 				}
 			}
 		}
 
 		// Get class options (for field class dropdowns)
-		$class_options = [];
+		$class_options = array();
 		if ( class_exists( '\WFACP_Common' ) ) {
 			// Get from filter or default options
-			$default_class_options = [
-				'wfacp-col-full' => 'Full',
-				'wfacp-col-left-half' => 'One Half',
+			$default_class_options = array(
+				'wfacp-col-full'       => 'Full',
+				'wfacp-col-left-half'  => 'One Half',
 				'wfacp-col-left-third' => 'One Third',
-				'wfacp-col-two-third' => 'Two Third',
-			];
+				'wfacp-col-two-third'  => 'Two Third',
+			);
 			try {
 				$class_options = apply_filters( 'wfacp_widget_fields_classes', $default_class_options, array(), $default_class_options );
 			} catch ( \Throwable $e ) {
@@ -528,13 +530,13 @@ trait RestApiTrait {
 		// SECURITY: Sanitize template_slug
 		$template_slug = sanitize_text_field( $template_slug ?? '' );
 
-		$response_data = [
-			'template_slug' => $template_slug,
-			'step_count' => absint( $step_count ),
-			'sections' => $sections,
-			'excluded_fields' => class_exists( '\WFACP_Common' ) ? \WFACP_Common::get_html_excluded_field() : [],
-			'class_options' => $class_options,
-		];
+		$response_data = array(
+			'template_slug'   => $template_slug,
+			'step_count'      => absint( $step_count ),
+			'sections'        => $sections,
+			'excluded_fields' => class_exists( '\WFACP_Common' ) ? \WFACP_Common::get_html_excluded_field() : array(),
+			'class_options'   => $class_options,
+		);
 
 		return new \WP_REST_Response( $response_data, 200 );
 	}

@@ -3,20 +3,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 if ( ! class_exists( 'WFOCU_Template_Group' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Template_Group {
 		public $current_template;
 		public $allow_empty_template = false;
-		public $prefix = '';
+		public $prefix               = '';
 
 		public function __construct() {
 			$this->process_url();
-			add_action( 'wfocu_offer_duplicated', [ $this, 'maybe_cleanup_template_cache' ], 10 );
-			add_action( 'wfocu_offer_updated', [ $this, 'maybe_cleanup_template_cache_on_update' ], 10, 3 );
+			add_action( 'wfocu_offer_duplicated', array( $this, 'maybe_cleanup_template_cache' ), 10 );
+			add_action( 'wfocu_offer_updated', array( $this, 'maybe_cleanup_template_cache_on_update' ), 10, 3 );
 		}
 
 		public function process_url() {
 			if ( isset( $_REQUEST['page'] ) && 'upstroke' === $_REQUEST['page'] && isset( $_REQUEST['edit'] ) && $_REQUEST['edit'] > 0 ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				add_action( 'init', [ $this, 'load_templates' ] );
+				add_action( 'init', array( $this, 'load_templates' ) );
 			}
 		}
 
@@ -30,13 +31,12 @@ if ( ! class_exists( 'WFOCU_Template_Group' ) ) {
 
 				WFOCU_Core()->template_loader->register_template( $temp_key, $temp_val );
 			}
-
 		}
 
 		public function get_remote_templates() {
 
 			$templates       = WFOCU_Core()->template_retriever->get_detailed_template( $this->get_slug() );
-			$group_templates = [];
+			$group_templates = array();
 			if ( is_array( $templates ) && count( $templates ) > 0 ) {
 				$group_templates = $templates;
 			}
@@ -49,11 +49,12 @@ if ( ! class_exists( 'WFOCU_Template_Group' ) ) {
 		}
 
 		public function local_templates() {
-			return [];
+			return array();
 		}
 
 		/**
 		 * Sets up template instance and associate data to it.
+		 *
 		 * @return mixed
 		 */
 		public function set_up_template() {
@@ -72,7 +73,6 @@ if ( ! class_exists( 'WFOCU_Template_Group' ) ) {
 							return WFOCU_Core()->template_loader->template_ins;
 						}
 						$locate_template = $this->get_template_path( WFOCU_Core()->template_loader->template, WFOCU_Core()->template_loader->offer_data );
-
 
 						if ( ! empty( $locate_template ) && file_exists( $locate_template ) ) {
 							WFOCU_Core()->template_loader->template_ins     = include_once $locate_template;    // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
@@ -113,11 +113,12 @@ if ( ! class_exists( 'WFOCU_Template_Group' ) ) {
 		}
 
 		public function maybe_import() {
-			//do something
+			// do something
 		}
 
 		/**
 		 * Collect all the templates and return their names as list to the caller
+		 *
 		 * @return array
 		 */
 		public function get_templates() {
@@ -132,6 +133,7 @@ if ( ! class_exists( 'WFOCU_Template_Group' ) ) {
 
 		/**
 		 * Get empty template configuration
+		 *
 		 * @return array
 		 */
 		public function get_empty_template() {
@@ -201,7 +203,5 @@ if ( ! class_exists( 'WFOCU_Template_Group' ) ) {
 		public function get_template_path() {
 			return false;
 		}
-
-
 	}
 }

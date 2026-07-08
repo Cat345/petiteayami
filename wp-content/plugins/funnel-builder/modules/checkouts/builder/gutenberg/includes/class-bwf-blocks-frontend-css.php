@@ -16,6 +16,7 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 	 *
 	 * @category class
 	 */
+	#[\AllowDynamicProperties]
 	class WFACP_Blocks_Frontend_CSS {
 		/**
 		 * Instance of this class

@@ -1,14 +1,14 @@
 <?php
 if ( ! class_exists( 'WFOB_Compatibility_With_Aelia_CS' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_With_Aelia_CS {
 
 		public function __construct() {
-			add_filter( 'wfob_product_raw_data', [ $this, 'wfob_product_raw_data' ], 10, 2 );
-			add_filter( 'wfob_discount_regular_price_data', [ $this, 'wfob_discount_regular_price_data' ] );
-			add_filter( 'wfob_discount_price_data', [ $this, 'wfob_discount_price_data' ] );
-			add_filter( 'wfob_product_switcher_price_data', [ $this, 'wfob_product_switcher_price_data' ], 10, 2 );
-			add_filter( 'wfob_discount_amount_data', [ $this, 'wfob_discount_amount_data' ], 10, 2 );
-
+			add_filter( 'wfob_product_raw_data', array( $this, 'wfob_product_raw_data' ), 10, 2 );
+			add_filter( 'wfob_discount_regular_price_data', array( $this, 'wfob_discount_regular_price_data' ) );
+			add_filter( 'wfob_discount_price_data', array( $this, 'wfob_discount_price_data' ) );
+			add_filter( 'wfob_product_switcher_price_data', array( $this, 'wfob_product_switcher_price_data' ), 10, 2 );
+			add_filter( 'wfob_discount_amount_data', array( $this, 'wfob_discount_amount_data' ), 10, 2 );
 		}
 
 		/**
@@ -71,7 +71,6 @@ if ( ! class_exists( 'WFOB_Compatibility_With_Aelia_CS' ) ) {
 			}
 
 			return $this->get_price_in_currency( $price );
-
 		}
 
 		public function is_enable() {
@@ -121,7 +120,6 @@ if ( ! class_exists( 'WFOB_Compatibility_With_Aelia_CS' ) ) {
 			}
 
 			return $discount_amount;
-
 		}
 
 		public function wfob_product_raw_data( $raw_data, $product ) {
@@ -136,8 +134,8 @@ if ( ! class_exists( 'WFOB_Compatibility_With_Aelia_CS' ) ) {
 			$instance = Aelia\WC\CurrencySwitcher\WC27\WC_Aelia_CurrencyPrices_Manager::instance();
 			$currency = $instance->get_selected_currency();
 
-			$product_sale_prices_in_currency    = [];
-			$product_regular_prices_in_currency = [];
+			$product_sale_prices_in_currency    = array();
+			$product_regular_prices_in_currency = array();
 			// for variation type product
 			if ( in_array( $product->get_type(), WFOB_Common::get_variation_product_type() ) ) {
 
@@ -165,7 +163,6 @@ if ( ! class_exists( 'WFOB_Compatibility_With_Aelia_CS' ) ) {
 				if ( '' !== $product_regular_prices_in_currency ) {
 					$product_regular_prices_in_currency = json_decode( $product_regular_prices_in_currency, true );
 				}
-
 			}
 
 			$regular_price = isset( $product_regular_prices_in_currency[ $currency ] ) ? $product_regular_prices_in_currency[ $currency ] : null;
@@ -173,8 +170,8 @@ if ( ! class_exists( 'WFOB_Compatibility_With_Aelia_CS' ) ) {
 
 			if ( ! is_null( $regular_price ) ) {
 
-				remove_action( 'wfob_discount_regular_price_data', [ $this, 'wfob_discount_regular_price_data' ] );
-				remove_action( 'wfob_discount_price_data', [ $this, 'wfob_discount_price_data' ] );
+				remove_action( 'wfob_discount_regular_price_data', array( $this, 'wfob_discount_regular_price_data' ) );
+				remove_action( 'wfob_discount_price_data', array( $this, 'wfob_discount_price_data' ) );
 
 				$raw_data['regular_price'] = $regular_price;
 				$raw_data['price']         = $regular_price;
@@ -186,7 +183,6 @@ if ( ! class_exists( 'WFOB_Compatibility_With_Aelia_CS' ) ) {
 
 			return $raw_data;
 		}
-
 	}
 
 	new WFOB_Compatibility_With_Aelia_CS();

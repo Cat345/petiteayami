@@ -17,6 +17,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Entity\OrderStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\OrderHelper;
+use WooCommerce\PayPalCommerce\Button\Exception\NonceValidationException;
 use WooCommerce\PayPalCommerce\Button\Exception\RuntimeException;
 use WooCommerce\PayPalCommerce\Button\Helper\Context;
 use WooCommerce\PayPalCommerce\Button\Helper\ThreeDSecure;
@@ -25,6 +26,7 @@ use WooCommerce\PayPalCommerce\Session\SessionHandler;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
 use WooCommerce\PayPalCommerce\Settings\Data\SettingsProvider;
 use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
+use WooCommerce\PayPalCommerce\Webhooks\CustomIds;
 /**
  * Class ApproveOrderEndpoint
  */
@@ -154,6 +156,21 @@ class ApproveOrderEndpoint implements \WooCommerce\PayPalCommerce\Button\Endpoin
             }
             do_action('woocommerce_paypal_payments_approve_order_request_started', $data);
             $order = $this->api_endpoint->order($data['order_id']);
+            $purchase_units = $order->purchase_units();
+            if (!empty($purchase_units)) {
+                $custom_id = $purchase_units[0]->custom_id();
+                $prefix_len = strlen(CustomIds::CUSTOMER_ID_PREFIX);
+                if (strpos($custom_id, CustomIds::CUSTOMER_ID_PREFIX) === 0) {
+                    $order_session_id = substr($custom_id, $prefix_len);
+                    $wc_session = WC()->session;
+                    if ($wc_session instanceof \WC_Session_Handler) {
+                        $current_session_id = (string) $wc_session->get_customer_unique_id();
+                        if ($order_session_id !== $current_session_id) {
+                            throw new RuntimeException(__('Order validation failed.', 'woocommerce-paypal-payments'));
+                        }
+                    }
+                }
+            }
             $payment_source = $order->payment_source();
             if ($payment_source && $payment_source->name() === 'card') {
                 $disabled_cards = $this->settings_provider->disabled_cards();
@@ -187,6 +204,10 @@ class ApproveOrderEndpoint implements \WooCommerce\PayPalCommerce\Button\Endpoin
             $funding_source = $data['funding_source'] ?? null;
             $this->session_handler->replace_funding_source($funding_source);
             $this->session_handler->replace_order($order);
+            // Pin chosen_payment_method to PayPal now so concurrent Store API cart requests can't reset it.
+            if (WC()->session) {
+                WC()->session->set('chosen_payment_method', PayPalGateway::ID);
+            }
             if (apply_filters('woocommerce_paypal_payments_toggle_final_review_checkbox', \false)) {
                 $this->toggle_final_review_enabled_setting();
             }
@@ -198,6 +219,8 @@ class ApproveOrderEndpoint implements \WooCommerce\PayPalCommerce\Button\Endpoin
                 wp_send_json_success(array('order_received_url' => $order_received_url));
             }
             wp_send_json_success();
+        } catch (NonceValidationException $error) {
+            wp_send_json_error(array('message' => $error->getMessage()), 400);
         } catch (Exception $error) {
             $this->logger->error('Order approve failed: ' . $error->getMessage());
             wp_send_json_error(array('name' => $error instanceof PayPalApiException ? $error->name() : '', 'message' => $error->getMessage(), 'code' => $error->getCode(), 'details' => $error instanceof PayPalApiException ? $error->details() : array()));

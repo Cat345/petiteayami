@@ -61,9 +61,10 @@ class PageController
             ->abortIf(!($page = $request->getParam('page')), 400)
             ->abortIf(!($page = base64_decode($page)), 400)
             ->abortIf(!($page = json_decode($page)), 400)
+            ->abortIf(!($post = get_post($page->id)), 400)
             ->abortIf(!current_user_can('edit_post', $page->id), 403, 'Insufficient User Rights.');
 
-        $collision = PostHelper::getCollision(get_post($page->id));
+        $collision = PostHelper::getCollision($post);
 
         if (
             !$request->getParam('overwrite') &&

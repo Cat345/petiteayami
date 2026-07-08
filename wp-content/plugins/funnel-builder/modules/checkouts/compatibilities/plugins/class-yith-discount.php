@@ -8,13 +8,14 @@
  * class WFACP_Compatibility_With_Yith_Discount
  */
 if ( ! class_exists( 'WFACP_Compatibility_With_Yith_Discount' ) ) {
-	class  WFACP_Compatibility_With_Yith_Discount {
+	#[\AllowDynamicProperties]
+	class WFACP_Compatibility_With_Yith_Discount {
 		private $process = false;
 
 		public function __construct() {
-			add_action( 'wfacp_internal_css', [ $this, 'js' ] );
-			add_action( 'woocommerce_checkout_update_order_review', [ $this, 'get_data' ], 5 );
-			add_filter( 'woocommerce_update_order_review_fragments', [ $this, 'unset_fragments' ], 900 );
+			add_action( 'wfacp_internal_css', array( $this, 'js' ) );
+			add_action( 'woocommerce_checkout_update_order_review', array( $this, 'get_data' ), 5 );
+			add_filter( 'woocommerce_update_order_review_fragments', array( $this, 'unset_fragments' ), 900 );
 		}
 
 		public function get_data( $data ) {
@@ -55,26 +56,26 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Yith_Discount' ) ) {
 
 		public function js() {
 			?>
-            <script>
-                window.addEventListener('load', function () {
-                    (function ($) {
-                        wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_update_product_qty', set_custom_data);
-                        wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_update_cart_item_quantity', set_custom_data);
-                        wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_wfacp_restore_cart_item', set_custom_data);
-                        wfacp_frontend.hooks.addAction('wfacp_ajax_response', trigger_checkout);
+			<script>
+				window.addEventListener('load', function () {
+					(function ($) {
+						wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_update_product_qty', set_custom_data);
+						wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_update_cart_item_quantity', set_custom_data);
+						wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_wfacp_restore_cart_item', set_custom_data);
+						wfacp_frontend.hooks.addAction('wfacp_ajax_response', trigger_checkout);
 
-                        function set_custom_data(data) {
-                            data['unset_fragments'] = 'yes';
-                            return data;
-                        }
+						function set_custom_data(data) {
+							data['unset_fragments'] = 'yes';
+							return data;
+						}
 
-                        function trigger_checkout() {
-                            $(document.body).trigger('update_checkout');
-                        }
+						function trigger_checkout() {
+							$(document.body).trigger('update_checkout');
+						}
 
-                    })(jQuery);
-                });
-            </script>
+					})(jQuery);
+				});
+			</script>
 			<?php
 		}
 	}

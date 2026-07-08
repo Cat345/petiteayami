@@ -6,7 +6,7 @@ use YOOtheme\Config;
 use YOOtheme\ConfigObject;
 
 /**
- * @property array<string, object> $types
+ * @property array<string, string> $types
  * @property list<array<string, mixed>> $widgets
  * @property list<string> $positions
  * @property bool  $canCreate
@@ -30,7 +30,7 @@ class WidgetConfig extends ConfigObject
     }
 
     /**
-     * @return array<string, object>
+     * @return array<string, string>
      */
     protected function getTypes(): array
     {

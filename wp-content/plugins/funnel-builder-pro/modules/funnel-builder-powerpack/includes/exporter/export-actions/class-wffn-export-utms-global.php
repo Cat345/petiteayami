@@ -9,10 +9,11 @@ if ( ! class_exists( 'WFFN_Export_UTMs_Global' ) ) {
 	 *
 	 * Exports UTM tracking data to a CSV file, including pagination and search functionality.
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_Export_UTMs_Global extends WFFN_Abstract_Exporter {
 
-		protected static $slug = 'global_utms';
-		private static $ins = null;
+		protected static $slug        = 'global_utms';
+		private static $ins           = null;
 		protected static $ACTION_HOOK = 'bwf_utms';
 
 		public function get_title() {
@@ -44,9 +45,8 @@ if ( ! class_exists( 'WFFN_Export_UTMs_Global' ) ) {
 		 *
 		 * @return array
 		 */
-
 		public function get_columns() {
-			return [
+			return array(
 				'utm_campaign' => __( 'UTM Campaign', 'funnel-builder-powerpack' ),
 				'utm_source'   => __( 'UTM Source', 'funnel-builder-powerpack' ),
 				'utm_medium'   => __( 'UTM Medium', 'funnel-builder-powerpack' ),
@@ -55,7 +55,7 @@ if ( ! class_exists( 'WFFN_Export_UTMs_Global' ) ) {
 				'orders'       => __( 'Orders', 'funnel-builder-powerpack' ),
 				'optins'       => __( 'Opt-ins', 'funnel-builder-powerpack' ),
 				'revenue'      => __( 'Revenue', 'funnel-builder-powerpack' ),
-			];
+			);
 		}
 
 		/**
@@ -66,10 +66,22 @@ if ( ! class_exists( 'WFFN_Export_UTMs_Global' ) ) {
 		 * @return int Total row count after applying filters.
 		 */
 		public function total_rows( $args ) {
-			$filters = isset( $args['filters'] ) ? $args['filters'] : [];
+			$filters = isset( $args['filters'] ) ? $args['filters'] : array();
 			$search  = '';
 			if ( isset( $args['funnel_id'] ) && $args['funnel_id'] > 0 ) {
-				array_push( $filters, [ 'filter' => 'funnels', 'rule' => '', 'data' => [ [ 'id' => $args['funnel_id'], 'label' => '' ] ] ] );
+				array_push(
+					$filters,
+					array(
+						'filter' => 'funnels',
+						'rule'   => '',
+						'data'   => array(
+							array(
+								'id'    => $args['funnel_id'],
+								'label' => '',
+							),
+						),
+					)
+				);
 			}
 			// Extract search term from filters if provided
 			foreach ( $filters as $filter ) {
@@ -79,10 +91,10 @@ if ( ! class_exists( 'WFFN_Export_UTMs_Global' ) ) {
 				}
 			}
 
-			$request = [
+			$request = array(
 				'filters' => $filters,
 				's'       => $search,
-			];
+			);
 
 			$data  = $this->get_utm_data( $request );
 			$count = count( $data );
@@ -96,9 +108,21 @@ if ( ! class_exists( 'WFFN_Export_UTMs_Global' ) ) {
 		 * @return void
 		 */
 		public function export_data() {
-			$filters = isset( $this->export_meta['filters'] ) ? $this->export_meta['filters'] : [];
+			$filters = isset( $this->export_meta['filters'] ) ? $this->export_meta['filters'] : array();
 			if ( isset( $this->export_meta['fid'] ) && $this->export_meta['fid'] > 0 ) {
-				array_push( $filters, [ 'filter' => 'funnels', 'rule' => '', 'data' => [ [ 'id' => $this->export_meta['fid'], 'label' => '' ] ] ] );
+				array_push(
+					$filters,
+					array(
+						'filter' => 'funnels',
+						'rule'   => '',
+						'data'   => array(
+							array(
+								'id'    => $this->export_meta['fid'],
+								'label' => '',
+							),
+						),
+					)
+				);
 			}
 			$page_no = isset( $this->export_meta['page_no'] ) ? $this->export_meta['page_no'] : 1;
 			$limit   = get_option( 'posts_per_page' );
@@ -112,12 +136,12 @@ if ( ! class_exists( 'WFFN_Export_UTMs_Global' ) ) {
 					break;
 				}
 			}
-			$request = [
+			$request = array(
 				'filters' => $filters,
 				's'       => $search,
 				'offset'  => $is_full_export ? null : ( $page_no - 1 ) * $limit,
 				'limit'   => $is_full_export ? null : $limit,
-			];
+			);
 
 			if ( ! empty( $search ) || ! empty( $filters ) ) {
 				$request['offset'] = null;
@@ -125,7 +149,7 @@ if ( ! class_exists( 'WFFN_Export_UTMs_Global' ) ) {
 			}
 
 			$data        = $this->get_utm_data( $request );
-			$mapped_data = array_map( [ $this, 'map_columns' ], $data );
+			$mapped_data = array_map( array( $this, 'map_columns' ), $data );
 
 			$this->data_populated_in_csv( '', $mapped_data );
 		}
@@ -134,16 +158,16 @@ if ( ! class_exists( 'WFFN_Export_UTMs_Global' ) ) {
 		 * Populates the CSV file with provided data.
 		 *
 		 * @param string $utm_id UTM identifier (not used here but kept for consistency).
-		 * @param array $data Array of data rows to write to the CSV.
+		 * @param array  $data Array of data rows to write to the CSV.
 		 *
 		 * @return void
 		 */
 		public function data_populated_in_csv( $utm_id, $data ) {
-			$file  = fopen( WFFN_PRO_EXPORT_DIR . '/' . $this->export_meta['file'], "a" );
+			$file  = fopen( WFFN_PRO_EXPORT_DIR . '/' . $this->export_meta['file'], 'a' );
 			$count = 0;
 			foreach ( $data as $subdata ) {
-				fputcsv( $file, $subdata );
-				$count ++;
+				fputcsv( $file, $subdata, ',', '"', '\\' );
+				++$count;
 			}
 			fclose( $file );
 			$this->current_pos = $this->current_pos + $count;
@@ -157,7 +181,7 @@ if ( ! class_exists( 'WFFN_Export_UTMs_Global' ) ) {
 		 * @return array Mapped data for the CSV row.
 		 */
 		protected function map_columns( $data ) {
-			$return_data = [];
+			$return_data = array();
 			foreach ( $this->get_columns() as $key => $column_name ) {
 				$return_data[ $key ] = $data[ $key ] ?? '-';
 			}
@@ -172,10 +196,13 @@ if ( ! class_exists( 'WFFN_Export_UTMs_Global' ) ) {
 		 *
 		 * @return array Retrieved records for UTM data.
 		 */
-		protected function get_utm_data( $request = [] ) {
-			$request += [ 'offset' => 0, 'limit' => get_option( 'posts_per_page' ) ];
+		protected function get_utm_data( $request = array() ) {
+			$request += array(
+				'offset' => 0,
+				'limit'  => get_option( 'posts_per_page' ),
+			);
 
-			return array_values( WFFN_Conversion_Data::get_instance()->get_global_utm_campaigns( $request )['records'] ?? [] );// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			return array_values( WFFN_Conversion_Data::get_instance()->get_global_utm_campaigns( $request )['records'] ?? array() );// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		}
 	}
 }

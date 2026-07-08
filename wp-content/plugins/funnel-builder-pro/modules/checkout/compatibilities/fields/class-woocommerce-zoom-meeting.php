@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * WooCommerce to Zoom Meetings
@@ -11,13 +15,13 @@ if ( ! class_exists( 'WFACP_Compatibility_WooCommerce_Zoom_By_MB' ) ) {
 	class WFACP_Compatibility_WooCommerce_Zoom_By_MB {
 
 		public function __construct() {
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'actions' ] );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'actions' ) );
 			add_filter( 'wfacp_html_fields_wc_to_zoom_checkout', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'call_fields_hook' ], 999, 3 );
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 99, 2 );
-			add_action( 'wfacp_internal_css', [ $this, 'css' ] );
-			add_filter( 'woocommerce_update_order_review_fragments', [ $this, 'add_fragments' ], 1000 );
+			add_action( 'process_wfacp_html', array( $this, 'call_fields_hook' ), 999, 3 );
+			add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 99, 2 );
+			add_action( 'wfacp_internal_css', array( $this, 'css' ) );
+			add_filter( 'woocommerce_update_order_review_fragments', array( $this, 'add_fragments' ), 1000 );
 
 			/* prevent third party fields and wrapper*/
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
@@ -29,8 +33,6 @@ if ( ! class_exists( 'WFACP_Compatibility_WooCommerce_Zoom_By_MB' ) ) {
 			}
 			remove_action( 'woocommerce_after_order_notes', 'woocommerce_to_zoom_checkout_fields' );
 			remove_action( 'woocommerce_after_order_notes', 'woocommerce_to_zoom_meetings_checkout_fields' );
-
-
 		}
 
 		private function is_enabled() {
@@ -41,14 +43,13 @@ if ( ! class_exists( 'WFACP_Compatibility_WooCommerce_Zoom_By_MB' ) ) {
 			if ( false === $this->is_enabled() ) {
 				return $fields;
 			}
-			$fields['wc_to_zoom_checkout'] = [
+			$fields['wc_to_zoom_checkout'] = array(
 				'type'       => 'wfacp_html',
-				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'deliveryDatePosition' ],
+				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'deliveryDatePosition' ),
 				'id'         => 'wc_to_zoom_checkout',
 				'field_type' => 'wc_to_zoom_checkout',
 				'label'      => __( 'Zoom Meetings', 'woofunnels-aero-checkout' ),
-			];
-
+			);
 
 			return $fields;
 		}
@@ -62,20 +63,19 @@ if ( ! class_exists( 'WFACP_Compatibility_WooCommerce_Zoom_By_MB' ) ) {
 				if ( function_exists( 'woocommerce_to_zoom_checkout_fields' ) ) {
 					woocommerce_to_zoom_checkout_fields( WC()->checkout() );
 				}
-				echo "</div>";
+				echo '</div>';
 			}
 		}
 
 		public function add_default_wfacp_styling( $args, $key ) {
 			if ( ! empty( $key ) && $this->is_enabled() && ( false !== strpos( $key, '-first_name' ) || false !== strpos( $key, '-last_name' ) || false !== strpos( $key, '-email' ) ) ) {
-				$args['input_class'] = array_merge( $args['input_class'], [ 'wfacp-form-control' ] );
-				$args['label_class'] = array_merge( $args['label_class'], [ 'wfacp-form-control-label' ] );
+				$args['input_class'] = array_merge( $args['input_class'], array( 'wfacp-form-control' ) );
+				$args['label_class'] = array_merge( $args['label_class'], array( 'wfacp-form-control-label' ) );
 				if ( false !== strpos( $key, '-email' ) ) {
-					$args['class'] = array_merge( $args['class'], [ 'wfacp-col-full', 'wfacp-form-control-wrapper' ] );
+					$args['class'] = array_merge( $args['class'], array( 'wfacp-col-full', 'wfacp-form-control-wrapper' ) );
 				} else {
-					$args['class'] = array_merge( $args['class'], [ 'wfacp-col-left-half', 'wfacp-form-control-wrapper' ] );
+					$args['class'] = array_merge( $args['class'], array( 'wfacp-col-left-half', 'wfacp-form-control-wrapper' ) );
 				}
-
 			}
 
 			return $args;
@@ -83,36 +83,36 @@ if ( ! class_exists( 'WFACP_Compatibility_WooCommerce_Zoom_By_MB' ) ) {
 
 		public function css() {
 			?>
-            <style>
-                button.woocommerce-to-zoom-meetings-copy-from-billing {
-                    color: #fff;
-                    background: var(--global-palette-btn-bg-hover);
-                    box-shadow: 0px 15px 25px -7px rgba(0, 0, 0, 0.1);
-                    background: rgb(43, 108, 176);
-                    padding: 15px;
-                    margin-left: 14px;
-                    border-radius: 5px;
-                    padding: 0.4em 1em;
-                    border: 0;
-                    line-height: 1.6;
-                }
+			<style>
+				button.woocommerce-to-zoom-meetings-copy-from-billing {
+					color: #fff;
+					background: var(--global-palette-btn-bg-hover);
+					box-shadow: 0px 15px 25px -7px rgba(0, 0, 0, 0.1);
+					background: rgb(43, 108, 176);
+					padding: 15px;
+					margin-left: 14px;
+					border-radius: 5px;
+					padding: 0.4em 1em;
+					border: 0;
+					line-height: 1.6;
+				}
 
-                .zoom-meeting-section {
-                }
+				.zoom-meeting-section {
+				}
 
-                .zoom-meeting-section p {
-                    padding-left: 0;
-                    margin-top: 3px;
-                }
+				.zoom-meeting-section p {
+					padding-left: 0;
+					margin-top: 3px;
+				}
 
-                .zoom-meeting-section {
-                    padding-left: 15px;
-                }
+				.zoom-meeting-section {
+					padding-left: 15px;
+				}
 
-                strong.zoom-meeting-registrant-section {
-                    display: block;
-                }
-            </style>
+				strong.zoom-meeting-registrant-section {
+					display: block;
+				}
+			</style>
 			<?php
 		}
 
@@ -123,7 +123,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WooCommerce_Zoom_By_MB' ) ) {
 
 			ob_start();
 			?>
-            <div class='aero_woocommerce_to_zoom_meetings_checkout_fields'>
+			<div class='aero_woocommerce_to_zoom_meetings_checkout_fields'>
 				<?php
 				if ( function_exists( 'woocommerce_to_zoom_meetings_checkout_fields' ) ) {
 					woocommerce_to_zoom_meetings_checkout_fields( WC()->checkout() );
@@ -132,15 +132,12 @@ if ( ! class_exists( 'WFACP_Compatibility_WooCommerce_Zoom_By_MB' ) ) {
 					woocommerce_to_zoom_checkout_fields( WC()->checkout() );
 				}
 				?>
-            </div>
+			</div>
 			<?php
 			$fragments['.aero_woocommerce_to_zoom_meetings_checkout_fields'] = ob_get_clean();
 
-
 			return $fragments;
 		}
-
-
 	}
 
 	new WFACP_Compatibility_WooCommerce_Zoom_By_MB();

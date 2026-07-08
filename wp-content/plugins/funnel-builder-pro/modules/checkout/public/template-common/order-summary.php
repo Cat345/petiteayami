@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
@@ -90,12 +94,12 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 									</div>
 								<?php } ?>
 
-                                <div class="product-name  <?php echo $hideImageCls; ?> ">
-                                    <span class="wfacp_order_summary_item_name">
-                                    <?php echo apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key ); ?>
-                                    </span>
+								<div class="product-name  <?php echo $hideImageCls; ?> ">
+									<span class="wfacp_order_summary_item_name">
+									<?php echo apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key ); ?>
+									</span>
 									<?php
-                                        do_action('wfacp_order_summary_field_after_product_name',  $cart_item, $cart_item_key );
+										do_action( 'wfacp_order_summary_field_after_product_name', $cart_item, $cart_item_key );
 									echo apply_filters( 'woocommerce_checkout_cart_item_quantity', ' <strong class="product-quantity">' . sprintf( '&times; %s', $cart_item['quantity'] ) . '</strong>', $cart_item, $cart_item_key );
 
 									if ( apply_filters( 'wfacp_allow_woocommerce_after_cart_item_name_order_summary', false, $cart_item, $cart_item_key ) ) {

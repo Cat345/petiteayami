@@ -11,6 +11,7 @@ if ( ! class_exists( 'WFOCU_Product_Images_Widget' ) ) {
 	/**
 	 * Class WFOCU_Product_Images_Widget
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Product_Images_Widget extends \Elementor\Widget_Base {
 
 		/**

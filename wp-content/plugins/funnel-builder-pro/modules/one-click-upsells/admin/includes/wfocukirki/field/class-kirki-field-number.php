@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_Number' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_Number extends WFOCUKirki_Field {
 
 		/**
@@ -22,7 +23,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Number' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfocukirki-number';
-
 		}
 
 		/**
@@ -33,7 +33,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_Number' ) ) {
 		protected function set_sanitize_callback() {
 
 			$this->sanitize_callback = array( $this, 'sanitize' );
-
 		}
 
 		/**
@@ -43,11 +42,14 @@ if ( ! class_exists( 'WFOCUKirki_Field_Number' ) ) {
 		 */
 		protected function set_choices() {
 
-			$this->choices = wp_parse_args( $this->choices, array(
+			$this->choices = wp_parse_args(
+				$this->choices,
+				array(
 					'min'  => - 999999999,
 					'max'  => 999999999,
 					'step' => 1,
-				) );
+				)
+			);
 			// Make sure min, max & step are all numeric.
 			$this->choices['min']  = filter_var( $this->choices['min'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );
 			$this->choices['max']  = filter_var( $this->choices['max'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );

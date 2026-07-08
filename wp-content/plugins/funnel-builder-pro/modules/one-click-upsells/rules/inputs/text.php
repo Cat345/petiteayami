@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfocu_Input_Text' ) ) {
+	#[\AllowDynamicProperties]
 	class wfocu_Input_Text {
 
 		public function __construct() {
@@ -9,7 +10,7 @@ if ( ! class_exists( 'wfocu_Input_Text' ) ) {
 			$this->defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 		}
 
@@ -21,6 +22,5 @@ if ( ! class_exists( 'wfocu_Input_Text' ) ) {
 
 			echo '<input name="' . esc_attr( $field['name'] ) . '" type="text" id="' . esc_attr( $field['id'] ) . '" class="' . esc_attr( $field['class'] ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $value ) . '" />';
 		}
-
 	}
 }

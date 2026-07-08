@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Oxy_Offer_Price' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Oxy_Offer_Price extends WFOCU_Oxy_HTML_BLOCK {
 		public $slug  = 'wfocu_offer_price';
 		protected $id = 'wfocu_offer_price';

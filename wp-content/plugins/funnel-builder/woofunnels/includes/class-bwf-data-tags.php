@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 if ( ! class_exists( 'BWF_Data_Tags' ) ) {
 	#[AllowDynamicProperties]
@@ -65,7 +68,7 @@ if ( ! class_exists( 'BWF_Data_Tags' ) ) {
 				$data = isset( $_GET[ $key ] ) ? bwf_clean( wp_unslash( $_GET[ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for display, nonce verification not required
 			}
 
-			return $data;
+			return esc_html( $data );
 
 		}
 
@@ -79,7 +82,7 @@ if ( ! class_exists( 'BWF_Data_Tags' ) ) {
 				return '';
 			}
 
-			return isset( $_GET[ $attr['key'] ] ) ? bwf_clean( wp_unslash( $_GET[ $attr['key'] ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for display, nonce verification not required
+			return esc_html( isset( $_GET[ $attr['key'] ] ) ? bwf_clean( wp_unslash( $_GET[ $attr['key'] ] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for display, nonce verification not required
 
 		}
 

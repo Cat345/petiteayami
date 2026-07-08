@@ -23,6 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 2.4.0
  */
+#[\AllowDynamicProperties]
 class Section_Visibility {
 
 	/**

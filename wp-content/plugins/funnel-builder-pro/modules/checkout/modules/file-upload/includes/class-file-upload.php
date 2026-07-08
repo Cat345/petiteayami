@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class File_Upload {
 
 	/**
@@ -174,7 +175,7 @@ class File_Upload {
 			esc_html( $accept_label ),
 			esc_html( $max_size )
 		);
-		$meta_label_right    = sprintf(
+		$meta_label_right = sprintf(
 			/* translators: %d: number of allowed files */
 			_n( '%d file allowed', '%d files allowed', $max_files, 'woofunnels-aero-checkout' ),
 			absint( $max_files )
@@ -428,16 +429,16 @@ class File_Upload {
 		$data = array(
 			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 			'i18n'    => array(
-				'uploading'            => __( 'Uploading...', 'woofunnels-aero-checkout' ),
-				'uploadError'          => __( 'Upload failed. Please try again.', 'woofunnels-aero-checkout' ),
-				'invalidType'          => __( 'Invalid file type.', 'woofunnels-aero-checkout' ),
-				'fileTooLarge'         => __( 'This file is too large.', 'woofunnels-aero-checkout' ),
-				'maxFilesReached'      => __( 'Maximum file limit reached.', 'woofunnels-aero-checkout' ),
-				'corruptedFile'        => __( 'This file could not be read. It may be corrupted. Try a different file.', 'woofunnels-aero-checkout' ),
-				'deleteConfirm'        => __( 'Are you sure you want to remove this file?', 'woofunnels-aero-checkout' ),
-				'invalidTypeDetail'    => __( 'Only %1$s files are supported. Try a different file.', 'woofunnels-aero-checkout' ),
-				'fileTooLargeDetail'   => __( 'This file is too large (%1$s). Maximum allowed size is %2$s MB.', 'woofunnels-aero-checkout' ),
-				'maxFilesReachedDetail'=> __( 'You can only upload %s files. Remove one to add another.', 'woofunnels-aero-checkout' ),
+				'uploading'             => __( 'Uploading...', 'woofunnels-aero-checkout' ),
+				'uploadError'           => __( 'Upload failed. Please try again.', 'woofunnels-aero-checkout' ),
+				'invalidType'           => __( 'Invalid file type.', 'woofunnels-aero-checkout' ),
+				'fileTooLarge'          => __( 'This file is too large.', 'woofunnels-aero-checkout' ),
+				'maxFilesReached'       => __( 'Maximum file limit reached.', 'woofunnels-aero-checkout' ),
+				'corruptedFile'         => __( 'This file could not be read. It may be corrupted. Try a different file.', 'woofunnels-aero-checkout' ),
+				'deleteConfirm'         => __( 'Are you sure you want to remove this file?', 'woofunnels-aero-checkout' ),
+				'invalidTypeDetail'     => __( 'Only %1$s files are supported. Try a different file.', 'woofunnels-aero-checkout' ),
+				'fileTooLargeDetail'    => __( 'This file is too large (%1$s). Maximum allowed size is %2$s MB.', 'woofunnels-aero-checkout' ),
+				'maxFilesReachedDetail' => __( 'You can only upload %s files. Remove one to add another.', 'woofunnels-aero-checkout' ),
 			),
 		);
 		?>

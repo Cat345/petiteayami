@@ -14,6 +14,10 @@
  * Please do not use this class directly.
  * You should instead extend it per-field-type.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field {
@@ -242,7 +246,7 @@ if ( ! class_exists( 'WFACPKirki_Field' ) ) {
 		 * @param string $config_id The ID of the config we want to use.
 		 *                             Defaults to "global".
 		 *                             Configs are handled by the WFACPKirki_Config class.
-		 * @param array $args The arguments of the field.
+		 * @param array  $args The arguments of the field.
 		 */
 		public function __construct( $config_id = 'global', $args = array() ) {
 
@@ -332,7 +336,6 @@ if ( ! class_exists( 'WFACPKirki_Field' ) ) {
 
 			// Add the field to the static $fields variable properly indexed.
 			WFACPKirki::$fields[ $this->settings ] = $args;
-
 		}
 
 		/**
@@ -540,7 +543,6 @@ if ( ! class_exists( 'WFACPKirki_Field' ) ) {
 		protected function set_disable_output() {
 
 			$this->disable_output = (bool) $this->disable_output;
-
 		}
 
 		/**

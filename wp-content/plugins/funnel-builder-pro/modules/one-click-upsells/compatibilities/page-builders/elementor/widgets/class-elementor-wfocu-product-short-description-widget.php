@@ -10,6 +10,7 @@ if ( ! class_exists( 'WFOCU_Product_Short_Description_Widget' ) ) {
 	/**
 	 * Class WFOCU_Product_Short_Description_Widget
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Product_Short_Description_Widget extends \Elementor\Widget_Base {
 
 		public function get_name() {
@@ -28,17 +29,18 @@ if ( ! class_exists( 'WFOCU_Product_Short_Description_Widget' ) ) {
 		 * Get widget categories.
 		 *
 		 * Retrieve the list of categories the widget belongs to.
+		 *
 		 * @access public
 		 *
 		 * @return array Widget categories.
 		 */
 		public function get_categories() {
-			return [ 'upstroke' ];
+			return array( 'upstroke' );
 		}
 
 
 		public function get_keywords() {
-			return [ 'woocommerce', 'shop', 'store', 'image', 'product', 'gallery', 'lightbox' ];
+			return array( 'woocommerce', 'shop', 'store', 'image', 'product', 'gallery', 'lightbox' );
 		}
 
 		protected function register_controls() {
@@ -52,72 +54,89 @@ if ( ! class_exists( 'WFOCU_Product_Short_Description_Widget' ) ) {
 				$product_options = array();
 			}
 
-			$this->start_controls_section( 'section_product_desc', [
-				'label' => __( 'Offer Product Description', 'woofunnels-upstroke-one-click-upsell' ),
-				'tab'   => Controls_Manager::TAB_CONTENT,
-			] );
+			$this->start_controls_section(
+				'section_product_desc',
+				array(
+					'label' => __( 'Offer Product Description', 'woofunnels-upstroke-one-click-upsell' ),
+					'tab'   => Controls_Manager::TAB_CONTENT,
+				)
+			);
 
 			foreach ( $products as $key => $product ) {
 				$product_options[ $key ] = $product->data->get_name();
 			}
 
-			$this->add_control( 'selected_product', [
-				'label'   => __( 'Product', 'woofunnels-upstroke-one-click-upsell' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => key( $product_options ),
-				'options' => $product_options,
-			] );
+			$this->add_control(
+				'selected_product',
+				array(
+					'label'   => __( 'Product', 'woofunnels-upstroke-one-click-upsell' ),
+					'type'    => Controls_Manager::SELECT,
+					'default' => key( $product_options ),
+					'options' => $product_options,
+				)
+			);
 
 			do_action( 'wfocu_add_elementor_controls', $this, $offer_id, $products );
 
 			$this->end_controls_section();
 
-			$this->start_controls_section( 'section_product_description_style', [
-				'label' => __( 'Style', 'elementor' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			] );
+			$this->start_controls_section(
+				'section_product_description_style',
+				array(
+					'label' => __( 'Style', 'elementor' ),
+					'tab'   => Controls_Manager::TAB_STYLE,
+				)
+			);
 
-			$this->add_responsive_control( 'text_align', [
-				'label'     => __( 'Alignment', 'elementor' ),
-				'type'      => Controls_Manager::CHOOSE,
-				'options'   => [
-					'left'    => [
-						'title' => __( 'Left', 'elementor' ),
-						'icon'  => 'eicon-text-align-left',
-					],
-					'center'  => [
-						'title' => __( 'Center', 'elementor' ),
-						'icon'  => 'eicon-text-align-center',
-					],
-					'right'   => [
-						'title' => __( 'Right', 'elementor' ),
-						'icon'  => 'eicon-text-align-right',
-					],
-					'justify' => [
-						'title' => __( 'Justified', 'elementor' ),
-						'icon'  => 'eicon-text-align-justify',
-					],
-				],
-				'selectors' => [
-					'{{WRAPPER}}' => 'text-align: {{VALUE}}',
-				],
-			] );
+			$this->add_responsive_control(
+				'text_align',
+				array(
+					'label'     => __( 'Alignment', 'elementor' ),
+					'type'      => Controls_Manager::CHOOSE,
+					'options'   => array(
+						'left'    => array(
+							'title' => __( 'Left', 'elementor' ),
+							'icon'  => 'eicon-text-align-left',
+						),
+						'center'  => array(
+							'title' => __( 'Center', 'elementor' ),
+							'icon'  => 'eicon-text-align-center',
+						),
+						'right'   => array(
+							'title' => __( 'Right', 'elementor' ),
+							'icon'  => 'eicon-text-align-right',
+						),
+						'justify' => array(
+							'title' => __( 'Justified', 'elementor' ),
+							'icon'  => 'eicon-text-align-justify',
+						),
+					),
+					'selectors' => array(
+						'{{WRAPPER}}' => 'text-align: {{VALUE}}',
+					),
+				)
+			);
 
-			$this->add_control( 'text_color', [
-				'label'     => __( 'Text Color', 'elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'default'   => '#414349',
-				'selectors' => [
-					'{{WRAPPER}} .elementor-widget-container' => 'color: {{VALUE}}',
-				],
-			] );
+			$this->add_control(
+				'text_color',
+				array(
+					'label'     => __( 'Text Color', 'elementor' ),
+					'type'      => Controls_Manager::COLOR,
+					'default'   => '#414349',
+					'selectors' => array(
+						'{{WRAPPER}} .elementor-widget-container' => 'color: {{VALUE}}',
+					),
+				)
+			);
 
-			$this->add_group_control( Group_Control_Typography::get_type(), [
-				'name'     => 'text_typography',
-				'label'    => __( 'Typography', 'elementor' ),
-				'selector' => '{{WRAPPER}}',
-			] );
-
+			$this->add_group_control(
+				Group_Control_Typography::get_type(),
+				array(
+					'name'     => 'text_typography',
+					'label'    => __( 'Typography', 'elementor' ),
+					'selector' => '{{WRAPPER}}',
+				)
+			);
 		}
 
 		/**
@@ -140,7 +159,6 @@ if ( ! class_exists( 'WFOCU_Product_Short_Description_Widget' ) ) {
 				return;
 			}
 
-
 			$post_object = get_post( $product->get_id() );
 
 			$description = $post_object->post_excerpt;
@@ -156,10 +174,10 @@ if ( ! class_exists( 'WFOCU_Product_Short_Description_Widget' ) ) {
 				return;
 			}
 			?>
-            <div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
+			<div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
 
 				<?php echo $short_description; // WPCS: XSS ok. ?>
-            </div>
+			</div>
 			<?php
 		}
 	}

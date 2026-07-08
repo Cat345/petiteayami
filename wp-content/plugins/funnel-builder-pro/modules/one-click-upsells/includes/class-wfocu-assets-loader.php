@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Assets_Loader {
 
 		private static $ins = null;

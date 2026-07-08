@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -17,11 +21,11 @@ if ( isset( $data['advance_setting']['rbox_border_type'] ) && $data['advance_set
 
 
 <!--   Below Form Section -->
-<div class="<?php echo $section_key . ' ' . $rbox_border_type; ?> div_wrap_sec wfacp_html_widget">
+<div class="<?php echo esc_attr( $section_key . ' ' . $rbox_border_type ); ?> div_wrap_sec wfacp_html_widget">
 	<?php
 	if ( isset( $data['data'] ) ) {
 		$content = apply_filters( 'wfacp_the_content', $data['data'] );
-		echo sprintf( '<div class="content_wrap">%s</div>', $content );
+		printf( '<div class="content_wrap">%s</div>', $content );
 	}
 
 	?>

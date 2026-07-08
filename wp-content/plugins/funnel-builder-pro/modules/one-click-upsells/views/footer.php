@@ -33,7 +33,7 @@ $template_ins->internal_css['footer_links_fs']    = $f_links_fs;
                 <div class="wfocu-footer-inner">
 					<?php if ( ! empty( $f_text ) ) { ?>
                         <div class="wfocu-footer-text wfocu-text-center">
-							<?php echo $f_text; ?>
+							<?php echo wp_kses_post( $f_text ); ?>
                         </div>
 						<?php
 					}
@@ -47,15 +47,15 @@ $template_ins->internal_css['footer_links_fs']    = $f_links_fs;
                             <ul class="wfocu-clearfix">
 								<?php
 								foreach ( $f_links as $footer_link ) {
-									$name = $footer_link['name'];
-									$link = $footer_link['link'];
+									$footer_link_name = $footer_link['name'];
+									$footer_link_url  = $footer_link['link'];
 
 									?>
-                                    <li><a href="<?php echo $link; ?>" target="_blank"><?php echo $name; ?></a></li>
+                                    <li><a href="<?php echo esc_url( $footer_link_url ); ?>" target="_blank"><?php echo esc_html( $footer_link_name ); ?></a></li>
 									<?php
 
-									unset( $name );
-									unset( $link );
+									unset( $footer_link_name );
+									unset( $footer_link_url );
 								}
 								?>
                             </ul>

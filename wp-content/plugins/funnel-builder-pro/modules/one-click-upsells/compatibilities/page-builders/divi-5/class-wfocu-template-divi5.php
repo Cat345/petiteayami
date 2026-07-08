@@ -8,6 +8,7 @@ if ( ! class_exists( 'WFOCU_Template_Divi5' ) ) {
 	 * This class used as wrapper class for the Divi 5 JSON templates during the rendering of the template
 	 * In woofunnels template design structure every template inherits WFOCU_Template_Common so we need Divi 5 templates to follow the same structure
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Template_Divi5 extends WFOCU_Template_Common {
 
 		private static $ins = null;

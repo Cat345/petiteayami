@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Editor' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Editor extends WFACPKirki_Field {
@@ -36,7 +40,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Editor' ) ) {
 			}
 			$this->choices['element'] = 'textarea';
 			$this->choices['rows']    = '5';
-
 		}
 
 		/**
@@ -52,7 +55,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Editor' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'wp_kses_post';
-
 		}
 	}
 }

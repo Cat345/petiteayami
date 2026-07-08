@@ -1,8 +1,12 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * Class BWF_Ecomm_Tracking_Common
  */
 if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
+	#[\AllowDynamicProperties]
 	class BWF_Ecomm_Tracking_Common {
 		public $api_events    = array();
 		public $gtag_rendered = false;
@@ -21,6 +25,8 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			add_action( 'add_meta_boxes', array( $this, 'add_single_order_meta_box' ), 50, 2 );
 
 			add_action( 'woocommerce_checkout_create_order', array( $this, 'add_tracking_data_in_order_meta' ), 12, 1 );
+			// Block-based checkout (Cart/Checkout blocks via Store API) does not fire
+			add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'add_tracking_data_in_order_meta' ), 12, 1 );
 			add_action( 'wfocu_offer_accepted_and_processed', array( $this, 'insert_tracking_data_in_upsell_order' ), 10, 4 );
 			add_action( 'woocommerce_thankyou', array( $this, 'insert_tracking_data_from_order_meta' ), 9, 1 );
 			add_action( 'woocommerce_order_status_changed', array( $this, 'maybe_insert_pending_tracking_data' ), 9, 4 );
@@ -597,7 +603,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			$funnel_id         = get_post_meta( $step_id, '_bwf_in_funnel', true );
 
 			// Cart checkout: no wfacp_id. Use store checkout first checkout if configured.
-			if ( empty( $step_id ) && class_exists( 'WFFN_Common' ) && ( $store_id = WFFN_Common::get_store_checkout_id() ) > 0 && true === wffn_string_to_bool( WFFN_Core()->get_dB()->get_meta( $store_id, 'status' ) ) ) {
+			if ( empty( $step_id ) && class_exists( 'WFFN_Common' ) && ( $store_id = WFFN_Common::get_store_checkout_id() ) > 0 && true === wffn_string_to_bool( WFFN_Core()->get_dB()->get_meta( $store_id, 'status' ) ) ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.Found
 				$funnel = new WFFN_Funnel( $store_id );
 				if ( wffn_is_valid_funnel( $funnel ) ) {
 					foreach ( $funnel->get_steps() as $step ) {
@@ -630,7 +636,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 			if ( is_array( $bump_data ) && count( $bump_data ) > 0 ) {
 				foreach ( $bump_data as $id => $b_item ) {
-					if ( 1 == absint( $b_item['converted'] ) ) {
+					if ( 1 === absint( $b_item['converted'] ) ) {
 						$bump_total      = floatval( $bump_total ) + floatval( $b_item['total'] );
 						$bump_accepted[] = (string) $id;
 					} else {
@@ -674,6 +680,10 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				// No valid funnel ID found, set to 0 and return
 				$tracking_data['funnel_id'] = 0;
 
+				// Order is not attributable to any funnel -> nothing to insert. Remove the meta so
+				// it stops re-qualifying for this recovery query on every run.
+				$order->delete_meta_data( '_wffn_tracking_data' );
+				$order->save();
 				return;
 			}
 
@@ -685,6 +695,8 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 					// Invalid funnel, set to 0 and return
 					$tracking_data['funnel_id'] = 0;
 
+					$order->delete_meta_data( '_wffn_tracking_data' );
+					$order->save();
 					return;
 				}
 
@@ -697,6 +709,8 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			 * And in this case we no longer need to insert the tracking data
 			 */
 			if ( empty( $tracking_data['funnel_id'] ) ) {
+				$order->delete_meta_data( '_wffn_tracking_data' );
+				$order->save();
 				return;
 			}
 
@@ -941,9 +955,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				return $result;
 			}
 
-			ob_start();
-			include dirname( __DIR__ ) . '/contact/data/contries-timzone.json'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingNonPHPFile.IncludingNonPHPFile
-			$list = ob_get_clean();
+			$list = file_get_contents( dirname( __DIR__ ) . '/contact/data/contries-timzone.json' ); //phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
 			$list = json_decode( $list, true );
 
 			$country_list = wp_list_pluck( $list, 'timezone' );
@@ -1079,12 +1091,12 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 						/**
 						 * remove from reject offer array
 						 */
-						$reject_key = array_search( $o_item['object_id'], $offer_rejected );
+						$reject_key = array_search( $o_item['object_id'], $offer_rejected, true );
 						if ( false !== $reject_key ) {
 							unset( $offer_rejected[ $reject_key ] );
 							$offer_rejected = array_values( $offer_rejected );
 						}
-					} elseif ( 6 == absint( $o_item['action_type_id'] ) ) {
+					} elseif ( 6 === absint( $o_item['action_type_id'] ) ) {
 						$offer_rejected[] = (string) $o_item['object_id'];
 					}
 				}
@@ -1189,7 +1201,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			if ( isset( $get_data['referrer'] ) && '' !== $get_data['referrer'] ) {
 				$data['referrer'] = array(
 					'name'  => __( 'Referrer', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-					'value' => ( is_array( $ref ) && isset( $ref[0] ) ) ? '<a href="' . $ref[0] . '" target="_blank">' . $ref[0] . '</a>' : '',
+					'value' => ( is_array( $ref ) && isset( $ref[0] ) ) ? '<a href="' . esc_url( $ref[0] ) . '" target="_blank">' . esc_html( $ref[0] ) . '</a>' : '',
 				);
 			}
 			if ( isset( $get_data['click_id'] ) ) {
@@ -1250,7 +1262,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 					<div>
 						<span class="bwf-utm-lable"><?php echo esc_html( $item['name'] ) . ': '; ?></span>
-						<span class="bwf-utm-text"><?php echo $item['value']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+						<span class="bwf-utm-text"><?php echo wp_kses_post( $item['value'] ); ?></span>
 					</div>
 
 					<?php
@@ -1329,7 +1341,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 			global $wpdb;
-			$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . $this->conv_table . ' WHERE type= 2 AND source = %1s ', $order_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . $this->conv_table . ' WHERE type= 2 AND source = %1s ', $order_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
 		}
 
 		public function partially_refunded_process( $order_id, $refund_id ) {
@@ -1476,6 +1488,13 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			// Set the start time for the batch process
 			WFOCU_Common::$start_time = time();
 
+			/**
+			 * Only look at recently created orders. Stragglers needing recovery are always
+			 * recent (the cron runs every few minutes); older orders carrying the meta are
+			 * unpaid/orphaned and never match the paid-status filter. Without this bound the
+			 * planner walks the entire orders table by date whenever nothing matches (the
+			 * common steady state), causing multi-second full scans that pile up under load.
+			 */
 			if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 				$order_table      = $wpdb->prefix . 'wc_orders';
 				$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
@@ -1484,6 +1503,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
                                 INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_wffn_tracking_data')
                                 WHERE ord.type = %s
                                 AND ord.status IN ({$status_in})
+                                AND ord.date_created_gmt > ( UTC_TIMESTAMP() - INTERVAL 30 DAY )
                                 ORDER BY ord.date_created_gmt DESC LIMIT 0, 10",
 					'shop_order'
 				);
@@ -1494,6 +1514,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_wffn_tracking_data')
                                 WHERE p.post_type = %s
                                 AND p.post_status IN ({$status_in})
+                                AND p.post_date > ( NOW() - INTERVAL 30 DAY )
                                 ORDER BY p.post_date DESC LIMIT 0, 10",
 					'shop_order'
 				);
@@ -1503,20 +1524,26 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 			if ( ! empty( $query_results ) && is_array( $query_results ) ) {
 
-				$get_orders = array_filter(
+				$get_orders = array_values( array_filter(
 					array_map(
 						function ( $query_instance ) {
 							return wc_get_order( $query_instance->ID );
 						},
 						$query_results
 					)
-				);
+				) );
 
-				$i = 0;
+				/**
+				 * Process each fetched order exactly once. Previously this used a hand-managed
+				 * index with unset()-on-success to terminate, which spun on null (and never
+				 * emptied the array) whenever an order was skipped, burning CPU until the time
+				 * guard tripped. A simple foreach with a time/memory break avoids that entirely.
+				 */
+				foreach ( $get_orders as $order ) {
 
-				while ( ! ( WFOCU_Common::time_exceeded() || WFOCU_Common::memory_exceeded() ) && ! empty( $get_orders ) ) {
-					$order = $get_orders[ $i ] ?? null;
-					++$i;
+					if ( WFOCU_Common::time_exceeded() || WFOCU_Common::memory_exceeded() ) {
+						break;
+					}
 
 					// Skip if the order is invalid
 					if ( empty( $order ) || ! $order instanceof WC_Order ) {
@@ -1527,8 +1554,11 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 						$tracking_data = BWF_WC_Compatibility::get_order_meta( $order, '_wffn_tracking_data' );
 
-						// Skip orders with missing or invalid tracking data
+						// Missing or invalid tracking data can never be processed: remove it so the
+						// order stops re-qualifying for this recovery query on every run.
 						if ( empty( $tracking_data ) || ! is_array( $tracking_data ) ) {
+							$order->delete_meta_data( '_wffn_tracking_data' );
+							$order->save();
 							continue;
 						}
 
@@ -1541,12 +1571,8 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 							$this->insert_data_without_thankyou( $order, $tracking_data );
 						}
 					} catch ( Error | Exception $e ) {
-
 						WFOCU_Core()->log->log( 'Upsell schedule Error occurred on insert funnel analytics - order id #' . $order->get_id() . ' error ' . $e->getMessage() );
 					}
-
-					// Remove the processed order from the array
-					unset( $get_orders[ $i - 1 ] );
 				}
 			}
 
@@ -1556,9 +1582,17 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 		public function maybe_pending_report_data( $status_in ) {
 			try {
 				global $wpdb;
+
 				// run this snippet for recover checkout data
 				if ( class_exists( 'WFACP_Reporting' ) ) {
 
+					/**
+					 * Only scan recently created orders. Like the thank-you recovery above, stragglers
+					 * needing report recovery are always recent (the cron runs every few minutes); older
+					 * orders still carrying this meta are unrecoverable leftovers. Without this bound the
+					 * planner walks the entire orders table by date whenever nothing matches (the common
+					 * steady state), causing multi-second full scans that pile up under load.
+					 */
 					if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 						$order_table      = $wpdb->prefix . 'wc_orders';
 						$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
@@ -1567,6 +1601,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
                                 INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_wfacp_report_data')
                                 WHERE ord.type = %s
                                 AND ord.status IN ({$status_in})
+                                AND ord.date_created_gmt > ( UTC_TIMESTAMP() - INTERVAL 30 DAY )
                                 ORDER BY ord.date_created_gmt DESC LIMIT 0, 10",
 							'shop_order'
 						);
@@ -1577,6 +1612,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_wfacp_report_data')
                                 WHERE p.post_type = %s
                                 AND p.post_status IN ({$status_in})
+                                AND p.post_date > ( NOW() - INTERVAL 30 DAY )
                                 ORDER BY p.post_date DESC LIMIT 0, 10",
 							'shop_order'
 						);
@@ -1622,6 +1658,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
                                 INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_wfob_report_data')
                                 WHERE ord.type = %s
                                 AND ord.status IN ({$status_in})
+                                AND ord.date_created_gmt > ( UTC_TIMESTAMP() - INTERVAL 30 DAY )
                                 ORDER BY ord.date_created_gmt DESC LIMIT 0, 10",
 							'shop_order'
 						);
@@ -1632,12 +1669,14 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_wfob_report_data')
                                 WHERE p.post_type = %s
                                 AND p.post_status IN ({$status_in})
+                                AND p.post_date > ( NOW() - INTERVAL 30 DAY )
                                 ORDER BY p.post_date DESC LIMIT 0, 10",
 							'shop_order'
 						);
 					}
 
 					$ob_results = $wpdb->get_results( $ob_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
 					if ( is_array( $ob_results ) && count( $ob_results ) > 0 ) {
 						$ob_report = WFOB_Reporting::get_instance();
 						foreach ( $ob_results as $ob_result ) {

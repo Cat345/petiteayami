@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * WooCommerce Price Based on Country (Basic)
@@ -10,9 +13,8 @@ if ( ! class_exists( 'WFOB_Product_Price_Based_Country' ) ) {
 	#[AllowDynamicProperties]
 	class WFOB_Product_Price_Based_Country {
 		public function __construct() {
-			add_filter( 'wfob_product_raw_data', [ $this, 'change_price_data' ], 10, 2 );
-			add_filter( 'wfob_product_switcher_price_data', [ $this, 'wfob_product_switcher_price_data' ], 10, 2 );
-
+			add_filter( 'wfob_product_raw_data', array( $this, 'change_price_data' ), 10, 2 );
+			add_filter( 'wfob_product_switcher_price_data', array( $this, 'wfob_product_switcher_price_data' ), 10, 2 );
 		}
 
 		public function change_price_data( $raw_data, $product ) {
@@ -40,7 +42,6 @@ if ( ! class_exists( 'WFOB_Product_Price_Based_Country' ) ) {
 
 			return $price_data;
 		}
-
 	}
 
 	new WFOB_Product_Price_Based_Country();

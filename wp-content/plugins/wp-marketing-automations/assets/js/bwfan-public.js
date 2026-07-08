@@ -26,8 +26,31 @@ var BWFAN_Public;
         checkout_fields_data: {},
         capture_email_xhr: null,
         checkout_fields: [],
+        is_block_checkout: false,
+
+        /**
+         * Translate a WC Blocks DOM id/name to the canonical billing_ / shipping_ key
+         * that insert_abandoned_cart() expects.
+         *   'billing-first-name' -> 'billing_first_name'
+         *   'email'              -> 'billing_email'
+         */
+        bwfan_normalize_field_name: function (raw) {
+            if (!raw || !BWFAN_Public.is_block_checkout) return raw;
+            if (raw === 'email' || raw === 'contact_email' || raw === 'contact-email') return 'billing_email';
+            if (raw.indexOf('billing-') === 0)  return 'billing_'  + raw.substring(8).replace(/-/g, '_');
+            if (raw.indexOf('shipping-') === 0) return 'shipping_' + raw.substring(9).replace(/-/g, '_');
+            return raw;
+        },
 
         init: function () {
+            /** Block checkout shim: swap form scope + selectors when WC Checkout block is active. */
+            this.is_block_checkout = !!(typeof bwfanParamspublic !== 'undefined' && parseInt(bwfanParamspublic._is_block_based_checkout)>0);
+            if (this.is_block_checkout) {
+                var $blockForm = $('div.wp-block-woocommerce-checkout, .wc-block-checkout');
+                if ($blockForm.length) {
+                    this.checkout_form = $blockForm;
+                }
+            }
             this.checkout_fields = [
                 'billing_first_name',
                 'billing_last_name',
@@ -52,6 +75,7 @@ var BWFAN_Public;
                 'ship_to_different_address',
                 'shipping_same_as_billing',
                 'billing_same_as_shipping',
+                'payment_method',
                 'bwfan_birthday_date_mm',
                 'bwfan_birthday_date_dd',
                 'bwfan_birthday_date_yy',
@@ -139,26 +163,43 @@ var BWFAN_Public;
             return value;
         },
         bwfan_capture_email: function () {
-            $(document).on('focusout', '#billing_email', function () {
+            var emailSel = BWFAN_Public.is_block_checkout ? '#billing_email, #email' : '#billing_email';
+            $(document).on('focusout', emailSel, function () {
                     BWFAN_Public.bwfan_get_checkout_data();
                 }
             );
 
             var billing_email = jQuery('#billing_email').val();
-            if (billing_email !== '') {
+            if ((!billing_email || billing_email === '') && BWFAN_Public.is_block_checkout) {
+                billing_email = jQuery('#email').val();
+            }
+            if (billing_email && billing_email !== '') {
                 BWFAN_Public.bwfan_capture_data_on_page_load();
                 BWFAN_Public.bwfan_process_email(billing_email);
             }
         },
         bwfan_get_checkout_data: function () {
             var email = $('#billing_email').val();
-            if (email !== '') {
+            if ((!email || email === '') && BWFAN_Public.is_block_checkout) {
+                email = $('#email').val();
+            }
+            if (email && email !== '') {
                 BWFAN_Public.bwfan_process_email(email);
             }
         },
         bwfan_capture_data_on_page_load: function () {
             $.each(BWFAN_Public.checkout_fields, function (i, field_name) {
                 var $this = $('#' + field_name);
+                /** Block checkout uses kebab-case ids (billing-first-name) and #email for billing_email. */
+                if ((!$this.length || !$this.val()) && BWFAN_Public.is_block_checkout) {
+                    if (field_name === 'billing_email') {
+                        $this = $('#email');
+                    } else if (field_name.indexOf('billing_') === 0) {
+                        $this = $('#billing-' + field_name.substring(8).replace(/_/g, '-'));
+                    } else if (field_name.indexOf('shipping_') === 0) {
+                        $this = $('#shipping-' + field_name.substring(9).replace(/_/g, '-'));
+                    }
+                }
                 BWFAN_Public.checkout_fields_data[field_name] = $this.val();
             });
         },
@@ -191,10 +232,11 @@ var BWFAN_Public;
             BWFAN_Public.checkout_fields_data = checkout_formdata;
         },
         bwfan_captureCheckoutField: function () {
-            var field_name = $(this).attr('name');
+            var field_name = $(this).attr('name') || $(this).attr('id');
             if (!field_name) {
                 return;
             }
+            field_name = BWFAN_Public.bwfan_normalize_field_name(field_name);
 
             var field_value = $(this).val();
 
@@ -222,6 +264,14 @@ var BWFAN_Public;
             // For WooCommerce - shipping same as billing
             if ($('#ship-to-different-address-checkbox').length) {
                 BWFAN_Public.checkout_fields_data['ship_to_different_address'] = $('#ship-to-different-address-checkbox').is(':checked') ? 1 : 0;
+            }
+
+            // For WC Blocks checkout - "use shipping address as billing address" (inverted semantics)
+            if (BWFAN_Public.is_block_checkout) {
+                var $blockSame = $('.wc-block-checkout__use-address-for-billing input[type=checkbox]');
+                if ($blockSame.length) {
+                    BWFAN_Public.checkout_fields_data['ship_to_different_address'] = $blockSame.is(':checked') ? 0 : 1;
+                }
             }
 
             // For AeroCheckout - billing same as shipping
@@ -315,7 +365,58 @@ var BWFAN_Public;
             }
 
             var pushengage_token = await BWFAN_Public.getPushToken();
-            BWFAN_Public.capture_email_xhr = $.post(bwfanParamspublic.wc_ajax_url.toString().replace('%%endpoint%%', 'bwfan_insert_abandoned_cart'), {
+
+            /**
+             * Block checkout: scrape all currently-rendered block inputs into checkout_fields_data
+             * right before POST, so values land even if individual change/input events were missed
+             * (React-controlled inputs sometimes swallow them).
+             */
+            if (BWFAN_Public.is_block_checkout) {
+                $('#email, #contact_email, [name="contact_email"], [id^="billing-"], [id^="shipping-"], textarea[id*="order-notes"]').each(function () {
+                    var raw = $(this).attr('name') || $(this).attr('id');
+                    var key = BWFAN_Public.bwfan_normalize_field_name(raw);
+                    if (!key) return;
+                    var val = ($(this).attr('type') === 'checkbox') ? ($(this).prop('checked') ? 1 : 0) : $(this).val();
+                    if (val !== undefined && val !== null) {
+                        BWFAN_Public.checkout_fields_data[key] = val;
+                    }
+                });
+
+                /** Capture currently-selected block payment method (covers missed change events). */
+                var $payChecked = $('.wp-block-woocommerce-checkout-payment-block input[type=radio]:checked, .wc-block-components-payment-method input[type=radio]:checked').first();
+                if ($payChecked.length && $payChecked.val()) {
+                    BWFAN_Public.checkout_fields_data['payment_method'] = $payChecked.val();
+                }
+
+                /**
+                 * When "use shipping as billing" is checked (block's default), the billing form is
+                 * not rendered. Mirror shipping_* into billing_* so the cart row stores a usable
+                 * billing address for recovery emails / merge tags.
+                 */
+                var $sameAddr = $('.wc-block-checkout__use-address-for-billing input[type=checkbox]');
+                var useSameAddr = ($sameAddr.length === 0) || $sameAddr.is(':checked');
+                if (useSameAddr) {
+                    /**
+                     * Always overwrite billing_* with shipping_* — if the user previously
+                     * unchecked the box, typed billing values, then re-checked, the stale
+                     * billing values must not win. billing_email is independent of the toggle.
+                     */
+                    var fields = BWFAN_Public.checkout_fields_data;
+                    Object.keys(fields).forEach(function (k) {
+                        if (k.indexOf('shipping_') === 0) {
+                            var bk = 'billing_' + k.substring(9);
+                            if (bk === 'billing_email') return;
+                            fields[bk] = fields[k];
+                        }
+                    });
+                }
+            }
+
+            BWFAN_Public.capture_email_xhr = $.ajax({
+                url: bwfanParamspublic.wc_ajax_url.toString().replace('%%endpoint%%', 'bwfan_insert_abandoned_cart'),
+                type: 'POST',
+                global: false,
+                data: {
                     'email': email,
                     'action': 'bwfan_insert_abandoned_cart',
                     'checkout_fields_data': BWFAN_Public.checkout_fields_data,
@@ -326,15 +427,23 @@ var BWFAN_Public;
                     'aerocheckout_page_id': aero_id,
                     'pushengage_token': pushengage_token,
                     '_wpnonce': bwfanParamspublic.ajax_nonce
-                }, function (res) {
+                },
+                success: function (res) {
                     if (parseInt(res.id) > 0 && 0 === $('#bwfan_cart_id').length) {
                         var cartIdHtml = '<input type="hidden" id="bwfan_cart_id" name="bwfan_cart_id" value="' + res.id + '" />';
-                        $('#billing_email_field').after(cartIdHtml);
+                        var $anchor = $('#billing_email_field');
+                        if (!$anchor.length && BWFAN_Public.is_block_checkout) {
+                            $anchor = $('div.wp-block-woocommerce-checkout, .wc-block-checkout').first();
+                        }
+                        if ($anchor.length) {
+                            $anchor.after(cartIdHtml);
+                        }
                         console.log('Cart ID: ' + res.id + ' captured.');
                     }
-                    BWFAN_Public.capture_email_xhr = null;
                 }
-            );
+            }).always(function () {
+                BWFAN_Public.capture_email_xhr = null;
+            });
         },
 
         union_arrays: function (x, y) {
@@ -1076,6 +1185,64 @@ var BWFAN_Public;
         BWFAN_Public.checkout_form.on('click', '.input-checkbox', BWFAN_Public.bwfan_captureCheckoutField);
         BWFAN_Public.checkout_form.on('change', '.input-checkbox', BWFAN_Public.bwfan_captureCheckoutField);
         BWFAN_Public.checkout_form.on('change', '.input-text', BWFAN_Public.bwfan_captureCheckoutField);
+
+        /**
+         * WC Blocks checkout: inputs re-render on every Store API push (cart/shipping/totals),
+         * so direct .on() bindings get detached. Delegate via document instead.
+         * React-controlled text inputs fire 'input' reliably; 'change'/'blur' may be missed.
+         */
+        if (BWFAN_Public.is_block_checkout) {
+            var blockInputs = '#email, #contact_email, [name="contact_email"], [id^="billing-"], [id^="shipping-"], textarea[id*="order-notes"], .wc-block-checkout__use-address-for-billing input[type=checkbox]';
+            $(document).on('change input blur focusout', blockInputs, BWFAN_Public.bwfan_captureCheckoutField);
+
+            /**
+             * "Use same address for billing" toggle has an auto-generated id (e.g. checkbox-control-1)
+             * and no name attribute, so bwfan_captureCheckoutField can't classify it.
+             * Wire a dedicated handler: translate state to ship_to_different_address and re-POST.
+             */
+            var sameAddrSel = '.wc-block-checkout__use-address-for-billing input[type=checkbox]';
+            $(document).on('change', sameAddrSel, function () {
+                var sameAddr = $(this).is(':checked');
+                BWFAN_Public.checkout_fields_data['ship_to_different_address'] = sameAddr ? 0 : 1;
+                /**
+                 * When the user re-checks "use shipping as billing", the block hides the billing
+                 * form so any previously typed billing_* values become unreachable. Drop them so
+                 * the pre-POST mirror (shipping_* -> billing_*) is what lands on the cart row.
+                 */
+                if (sameAddr) {
+                    Object.keys(BWFAN_Public.checkout_fields_data).forEach(function (k) {
+                        if (k.indexOf('billing_') === 0 && k !== 'billing_email') {
+                            delete BWFAN_Public.checkout_fields_data[k];
+                        }
+                    });
+                } else {
+                    Object.keys(BWFAN_Public.checkout_fields_data).forEach(function (k) {
+                        if (k.indexOf('billing_') === 0 && k !== 'billing_email') {
+                            BWFAN_Public.checkout_fields_data[k] = '';
+                        }
+                    });
+                }
+                if (typeof BWFAN_Public.bwfan_get_checkout_data === 'function') {
+                    setTimeout(BWFAN_Public.bwfan_get_checkout_data, 300);
+                }
+            });
+
+            /**
+             * Block payment method radios use auto-generated names (radio-control-X). The radio
+             * value attribute carries the payment gateway slug (cod, bacs, stripe, ...). Map to
+             * canonical `payment_method` key.
+             */
+            var paySel = '.wp-block-woocommerce-checkout-payment-block input[type=radio], .wc-block-components-payment-method input[type=radio]';
+            $(document).on('change', paySel, function () {
+                var val = $(this).val();
+                if (val) {
+                    BWFAN_Public.checkout_fields_data['payment_method'] = val;
+                    if (typeof BWFAN_Public.bwfan_get_checkout_data === 'function') {
+                        setTimeout(BWFAN_Public.bwfan_get_checkout_data, 300);
+                    }
+                }
+            });
+        }
         BWFAN_Public.checkout_form.on('blur focusout', '.input-text', () => {
             // add check update on typing stops
             if (bwfFieldChangeTimer) {
@@ -1091,7 +1258,50 @@ var BWFAN_Public;
         });
 
         var interval = null;
-        $(document).on('blur change', '#billing_email,.input-text,.input-checkbox, select', function () {
+        var globalSel = '#billing_email,.input-text,.input-checkbox, select';
+        var globalEvents = 'blur change';
+        if (BWFAN_Public.is_block_checkout) {
+            globalSel += ', #email, #contact_email, [name="contact_email"], [id^="billing-"], [id^="shipping-"], textarea[id*="order-notes"]';
+            /** React-controlled inputs fire 'input' reliably; blur often missed via delegation. */
+            globalEvents = 'blur change input';
+        }
+        $(document).on(globalEvents, globalSel, function () {
+            var field_name = $(this).attr('name') || $(this).attr('id');
+            if (!field_name) {
+                return;
+            }
+            field_name = BWFAN_Public.bwfan_normalize_field_name(field_name);
+
+            /**
+             * On block checkout the field-cache short-circuit below would always trip,
+             * because bwfan_captureCheckoutField (delegated earlier) has already written
+             * the new value to the cache by the time this handler runs. Skip straight to
+             * the debounced POST in that case.
+             */
+            if (BWFAN_Public.is_block_checkout) {
+                if (BWFAN_Public.checkout_fields.indexOf(field_name) === -1 && field_name !== 'billing_email') {
+                    return;
+                }
+                if (interval !== null) clearTimeout(interval);
+                interval = setTimeout(BWFAN_Public.bwfan_get_checkout_data, 300);
+                return;
+            }
+
+            var field_value = $(this).val();
+
+            /** for checking checkbox fields **/
+            if ($(this).attr('type') == 'checkbox') {
+                field_value = $(this).prop('checked') ? 1 : 0;
+            }
+
+            if (BWFAN_Public.checkout_fields.indexOf(field_name) === -1) {
+                return;
+            }
+
+            if (BWFAN_Public.checkout_fields_data[field_name] === field_value) {
+                return;
+            }
+
             if (interval !== null) {
                 clearTimeout(interval);
             }
@@ -1122,11 +1332,125 @@ var BWFAN_Public;
         }
         updateCartTimeout = setTimeout(function (){
             var email = $('#billing_email').val();
-            if (email !== '') {
+            if ((!email || email === '') && BWFAN_Public && BWFAN_Public.is_block_checkout) {
+                email = $('#email').val();
+            }
+            if (email && email !== '') {
                 BWFAN_Public.bwfan_process_email(email);
             }
         }, 500);
     });
+
+    /**
+     * WC Blocks fires its own store_api_checkout / wc-blocks_checkout_render events on every Store API
+     * push. Re-fire process_email on a debounce so the cart row gets touched on cart/shipping changes.
+     */
+    $(document).on('wc-blocks_checkout_render wc-blocks-checkout-update', function () {
+        if (!BWFAN_Public || !BWFAN_Public.is_block_checkout) return;
+        var email = $('#email').val();
+        if (email && email !== '') {
+            BWFAN_Public.bwfan_process_email(email);
+        }
+    });
+
+    /**
+     * Restore the previously-selected payment method on the block checkout after recovery.
+     *
+     * Modern WC Blocks keeps the active payment method inside the wc/store/payment data store.
+     * React-controlled radios ignore native DOM changes, so we must drive the store directly.
+     * We subscribe to the store so we detect when payment methods have initialized and when
+     * our target becomes active, then stop.
+     */
+    (function () {
+        if (typeof bwfanParamspublic === 'undefined' || parseInt(bwfanParamspublic._is_block_based_checkout) <= 0) return;
+        var slug = bwfanParamspublic.bwfan_restored_payment_method;
+        if (!slug) return;
+
+        var applied = false;
+        var attempts = 0;
+        var MAX_ATTEMPTS = 40;
+
+        var setNativeValue = function (el, value) {
+            var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'checked').set;
+            setter.call(el, value);
+        };
+
+        var tryDataStore = function () {
+            if (!window.wp || !wp.data) return false;
+            try {
+                var paymentStore = wp.data.dispatch('wc/store/payment');
+                var paymentSelect = wp.data.select('wc/store/payment');
+                if (!paymentStore || !paymentSelect) return false;
+
+                if (typeof paymentSelect.paymentMethodsInitialized === 'function' && !paymentSelect.paymentMethodsInitialized()) {
+                    return false;
+                }
+
+                var available = paymentSelect.getAvailablePaymentMethods ? paymentSelect.getAvailablePaymentMethods() : {};
+                if (!available || !Object.prototype.hasOwnProperty.call(available, slug)) {
+                    return false;
+                }
+
+                var active = paymentSelect.getActivePaymentMethod ? paymentSelect.getActivePaymentMethod() : '';
+                if (active === slug) {
+                    applied = true;
+                    return true;
+                }
+
+                if (typeof paymentStore.__internalSetActivePaymentMethod === 'function') {
+                    paymentStore.__internalSetActivePaymentMethod(slug);
+                } else if (typeof paymentStore.setActivePaymentMethod === 'function') {
+                    paymentStore.setActivePaymentMethod(slug);
+                }
+                return true; // dispatched; let subscriber confirm on next tick
+            } catch (e) {
+                return false;
+            }
+        };
+
+        var tryDomFallback = function () {
+            var $radio = $('.wp-block-woocommerce-checkout-payment-block input[type=radio][value="' + slug + '"], .wc-block-components-payment-method input[type=radio][value="' + slug + '"]').first();
+            if ($radio.length && !$radio.is(':checked')) {
+                setNativeValue($radio[0], true);
+                $radio[0].dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        };
+
+        var tick = function () {
+            if (applied || attempts++ > MAX_ATTEMPTS) {
+                if (unsub) unsub();
+                if (poll) clearInterval(poll);
+                return;
+            }
+            var storeHandled = tryDataStore();
+            if (!storeHandled) {
+                tryDomFallback();
+            }
+        };
+
+        var unsub = null;
+        if (window.wp && wp.data && typeof wp.data.subscribe === 'function') {
+            unsub = wp.data.subscribe(function () {
+                if (applied) {
+                    if (unsub) unsub();
+                    return;
+                }
+                try {
+                    var paymentSelect = wp.data.select('wc/store/payment');
+                    if (paymentSelect && typeof paymentSelect.getActivePaymentMethod === 'function') {
+                        if (paymentSelect.getActivePaymentMethod() === slug) {
+                            applied = true;
+                            if (unsub) unsub();
+                            if (poll) clearInterval(poll);
+                        }
+                    }
+                } catch (e) {}
+            }, 'wc/store/payment');
+        }
+
+        $(window).on('load', function () { setTimeout(tick, 300); });
+        var poll = setInterval(tick, 350);
+    })();
     $("#bwfan-tyb-save-btn").on('click', function () {
         var $this = $(this);
         var $parent = $this.parents(".bwfan-tyb-wrap");
@@ -1218,7 +1542,7 @@ var BWFAN_Public;
             broadcast_id: broadcast_id ? broadcast_id : 0,
             form_feed_id: form_feed_id ? form_feed_id : 0,
             sid: sid ? sid : 0,
-            form_not_exist: 1,
+            _nonce: bwfanParamspublic.unsubscribe_nonce,
             one_click: 1,
         },
         success: function (response) {

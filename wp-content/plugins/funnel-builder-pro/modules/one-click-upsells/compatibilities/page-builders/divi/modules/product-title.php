@@ -1,7 +1,8 @@
 <?php
 if ( ! class_exists( 'WFOCU_Product_Title' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Product_Title extends WFOCU_Divi_HTML_BLOCK {
-		private $products = [];
+		private $products = array();
 
 		public function __construct() {
 			$this->ajax = true;
@@ -13,7 +14,7 @@ if ( ! class_exists( 'WFOCU_Product_Title' ) ) {
 			$tab_id = $this->add_tab( __( 'Product Title', 'woofunnels-upstroke-one-click-upsell' ), 5 );
 			$this->add_select( $tab_id, 'selected_product', __( 'Product', 'woofunnels-upstroke-one-click-upsell' ), self::$product_options, key( self::$product_options ) );
 
-			$headings = [
+			$headings = array(
 				'h1'  => 'H1',
 				'h2'  => 'H2',
 				'h3'  => 'H3',
@@ -22,7 +23,7 @@ if ( ! class_exists( 'WFOCU_Product_Title' ) ) {
 				'h6'  => 'H6',
 				'div' => 'div',
 				'p'   => 'p',
-			];
+			);
 
 			$this->add_select( $tab_id, 'header_size', __( 'HTML Tag', 'woofunnels-upstroke-one-click-upsell' ), $headings, 'div' );
 
@@ -32,18 +33,21 @@ if ( ! class_exists( 'WFOCU_Product_Title' ) ) {
 		}
 
 		public function style_field() {
-			$key               = "wfocu_product_title";
+			$key               = 'wfocu_product_title';
 			$tab_id            = $this->add_tab( __( 'Typography', 'woofunnels-upstroke-one-click-upsell' ), 2 );
-			$font_side_default = [ 'default' => '20px', 'unit' => 'px' ];
+			$font_side_default = array(
+				'default' => '20px',
+				'unit'    => 'px',
+			);
 			$default           = '|600|||||||';
-			$this->add_typography( $tab_id, $key . '_typography', '%%order_class%% .wfocu-product-title-wrapper .wfocu-product-title', '', $default, [], $font_side_default );
+			$this->add_typography( $tab_id, $key . '_typography', '%%order_class%% .wfocu-product-title-wrapper .wfocu-product-title', '', $default, array(), $font_side_default );
 
 			$color_id = $this->add_tab( __( 'Colors', 'woofunnels-upstroke-one-click-upsell' ), 2 );
 			$this->add_color( $color_id, $key . '_title_color', '%%order_class%% .wfocu-product-title-wrapper .wfocu-product-title', __( 'Color', 'elementor' ), '#414349' );
 			$this->add_background_color( $color_id, $key . '_title_bg_color', '%%order_class%% .wfocu-product-title-wrapper .wfocu-product-title', 'transparent', __( 'Background Color', 'woofunnels-upstroke-one-click-upsell' ) );
 
 			$border_id    = $this->add_tab( __( 'Border', 'woofunnels-upstroke-one-click-upsell' ), 2 );
-			$default_args = [
+			$default_args = array(
 				'border_type'          => 'none',
 				'border_width_top'     => '1',
 				'border_width_bottom'  => '1',
@@ -54,15 +58,23 @@ if ( ! class_exists( 'WFOCU_Product_Title' ) ) {
 				'border_radius_left'   => '0',
 				'border_radius_right'  => '0',
 				'border_color'         => '#dddddd',
-			];
+			);
 
-			$this->add_border( $border_id, $key . '_border', '%%order_class%%', [], $default_args );
-			$this->add_box_shadow( $border_id, $key . '_box_shadow', '%%order_class%% .wfocu-product-title', [ 'enable' => 'off', 'vertical' => 0, 'color' => '#00B211' ] );
+			$this->add_border( $border_id, $key . '_border', '%%order_class%%', array(), $default_args );
+			$this->add_box_shadow(
+				$border_id,
+				$key . '_box_shadow',
+				'%%order_class%% .wfocu-product-title',
+				array(
+					'enable'   => 'off',
+					'vertical' => 0,
+					'color'    => '#00B211',
+				)
+			);
 
 			$spacing_id = $this->add_tab( __( 'Spacing', 'woofunnels-upstroke-one-click-upsell' ), 2 );
 			$this->add_margin( $spacing_id, $key . '_text_margin', '%%order_class%%' );
 			$this->add_padding( $spacing_id, $key . '_text_padding', '%%order_class%%' );
-
 
 			/**
 			 * @todo Need to add Text Shadow Field
@@ -93,14 +105,12 @@ if ( ! class_exists( 'WFOCU_Product_Title' ) ) {
 			}
 			ob_start();
 			?>
-            <div class="wfocu-product-title-wrapper">
-				<?php echo sprintf( '<%s class="wfocu-product-title">%s</%s>', $this->props['header_size'], $title, $this->props['header_size'] ); ?>
-            </div>
+			<div class="wfocu-product-title-wrapper">
+				<?php printf( '<%s class="wfocu-product-title">%s</%s>', $this->props['header_size'], $title, $this->props['header_size'] ); ?>
+			</div>
 			<?php
 			return ob_get_clean();
 		}
-
-
 	}
 
 	return new WFOCU_Product_Title();

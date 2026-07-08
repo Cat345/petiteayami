@@ -230,7 +230,7 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 
 			// decode special chars
 			foreach ( $terms as $term ) {
-				$results[] = html_entity_decode( $term->name );
+				$results[] = html_entity_decode( $term->name, ENT_QUOTES | ENT_HTML401 );
 			}
 
 			return $results;

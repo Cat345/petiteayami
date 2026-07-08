@@ -10,10 +10,11 @@ use stdClass;
 use WC_Product;
 
 if ( ! class_exists( '\WfocuFunnelKit\Qty_Selector' ) ) {
+	#[\AllowDynamicProperties]
 	class Qty_Selector extends \Bricks\Element {
 		public $category = 'funnelkit';
-		public $name = 'wfocu-qty-selector';
-		public $icon = 'wfocu-icon-quantity';
+		public $name     = 'wfocu-qty-selector';
+		public $icon     = 'wfocu-icon-quantity';
 
 		/**
 		 * Retrieves the label for the Quantity Selector element.
@@ -326,17 +327,23 @@ if ( ! class_exists( '\WfocuFunnelKit\Qty_Selector' ) ) {
 				$funnel_id = get_post_meta( $upsell_id, '_bwf_in_funnel', true );
 
 				if ( ! empty( $funnel_id ) && absint( $funnel_id ) > 0 ) {
-					$products_url = add_query_arg( array(
-						'page'      => 'bwf',
-						'path'      => '/funnel-offer/' . $offer_id . '/product',
-						'funnel_id' => $funnel_id,
-					), admin_url( 'admin.php' ) );
+					$products_url = add_query_arg(
+						array(
+							'page'      => 'bwf',
+							'path'      => '/funnel-offer/' . $offer_id . '/product',
+							'funnel_id' => $funnel_id,
+						),
+						admin_url( 'admin.php' )
+					);
 				} else {
-					$products_url = add_query_arg( array(
-						'page'    => 'upstroke',
-						'section' => 'offers',
-						'edit'    => $upsell_id,
-					), admin_url( 'admin.php' ) );
+					$products_url = add_query_arg(
+						array(
+							'page'    => 'upstroke',
+							'section' => 'offers',
+							'edit'    => $upsell_id,
+						),
+						admin_url( 'admin.php' )
+					);
 				}
 
 				$message = sprintf(
@@ -405,15 +412,15 @@ if ( ! class_exists( '\WfocuFunnelKit\Qty_Selector' ) ) {
 				$this->set_attribute( 'wrapper', 'class', 'bricks-qty-wrapper__block-yes' );
 			}
 			?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 					<?php
 					if ( ! empty( $product_key ) ) {
 						echo do_shortcode( '[wfocu_qty_selector key="' . $product_key . '" label="' . $qty_text . '"]' );
 					}
 					?>
-                </div>
-            </div>
+				</div>
+			</div>
 			<?php
 		}
 	}

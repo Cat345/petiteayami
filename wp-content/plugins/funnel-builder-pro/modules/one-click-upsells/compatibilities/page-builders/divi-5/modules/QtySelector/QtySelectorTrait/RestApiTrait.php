@@ -103,7 +103,7 @@ trait RestApiTrait {
 	 * @param \WP_REST_Request $request REST request object.
 	 * @return int Offer ID or 0 if not found.
 	 */
-	private static function get_offer_id( \WP_REST_Request $request = null ): int {
+	private static function get_offer_id( ?\WP_REST_Request $request = null ): int {
 		$offer_id = 0;
 
 		// First, try to get from request parameters (Visual Builder may pass post_id)
@@ -135,7 +135,7 @@ trait RestApiTrait {
 							'post_type'      => 'wfocu_offer',
 							'name'           => $offer_slug,
 							'posts_per_page' => 1,
-							'post_status'    => 'any',
+							'post_status'    => 'publish',
 						)
 					);
 

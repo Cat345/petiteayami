@@ -1,16 +1,17 @@
 <?php
 if ( ! class_exists( 'WFOCU_Oxy_HTML_BLOCK' ) ) {
+	#[\AllowDynamicProperties]
 	abstract class WFOCU_Oxy_HTML_BLOCK extends WFOCU_Oxy_Field {
 
 		public function __construct() {
 			parent::__construct();
-			add_action( 'template_include', [ $this, 'style' ] );
-			add_action( 'wp_footer', [ $this, 'scripts' ] );
-			add_filter( 'pre_do_shortcode_tag', [ $this, 'pick_data' ], 10, 3 );
+			add_action( 'template_include', array( $this, 'style' ) );
+			add_action( 'wp_footer', array( $this, 'scripts' ) );
+			add_filter( 'pre_do_shortcode_tag', array( $this, 'pick_data' ), 10, 3 );
 		}
 
 		public function options() {
-			return [ 'rebuild_on_dom_change' => true ];
+			return array( 'rebuild_on_dom_change' => true );
 		}
 
 		final public function render( $setting, $defaults, $content ) {
@@ -39,11 +40,9 @@ if ( ! class_exists( 'WFOCU_Oxy_HTML_BLOCK' ) ) {
 		}
 
 		public function scripts() {
-
 		}
 
 		public function style() {
-
 		}
 
 		public function pick_data( $status, $tag, $attr ) {
@@ -57,7 +56,5 @@ if ( ! class_exists( 'WFOCU_Oxy_HTML_BLOCK' ) ) {
 
 			return $status;
 		}
-
-
 	}
 }

@@ -40,6 +40,7 @@ if ( ! class_exists( 'WFOCU_SV_API_Base' ) ) {
 	 *
 	 * @version 2.2.0
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_SV_API_Base {
 
 
@@ -87,7 +88,7 @@ if ( ! class_exists( 'WFOCU_SV_API_Base' ) ) {
 		/**
 		 * Add a parameter
 		 *
-		 * @param string $key
+		 * @param string     $key
 		 * @param string|int $value
 		 *
 		 * @since 2.0
@@ -124,7 +125,6 @@ if ( ! class_exists( 'WFOCU_SV_API_Base' ) ) {
 		 * @return object class instance which implements \SV_WC_API_Response
 		 * @throws Exception
 		 * @since 2.2.0
-		 *
 		 */
 		protected function perform_request( $request ) {
 
@@ -182,7 +182,6 @@ if ( ! class_exists( 'WFOCU_SV_API_Base' ) ) {
 		 *
 		 * @return array|WP_Error
 		 * @since 2.2.0
-		 *
 		 */
 		protected function do_remote_request( $request_uri, $request_args ) {
 
@@ -211,7 +210,6 @@ if ( ! class_exists( 'WFOCU_SV_API_Base' ) ) {
 			 * @param \WFOCU_SV_API_Base class instance
 			 *
 			 * @since 4.1.0
-			 *
 			 */
 			return apply_filters( 'wc_' . $this->get_api_id() . '_api_request_uri', $uri, $this );
 		}
@@ -271,7 +269,6 @@ if ( ! class_exists( 'WFOCU_SV_API_Base' ) ) {
 			 * @param \WFOCU_SV_API_Base class instance
 			 *
 			 * @since 2.2.0
-			 *
 			 */
 			return apply_filters( 'wc_' . $this->get_api_id() . '_http_request_args', $args, $this );
 		}
@@ -332,7 +329,6 @@ if ( ! class_exists( 'WFOCU_SV_API_Base' ) ) {
 		 * @return object request class instance that implements SV_WC_API_Request
 		 * @throws Exception network issues, timeouts, API errors, etc
 		 * @since 2.2.0
-		 *
 		 */
 		protected function handle_response( $response ) {
 
@@ -391,7 +387,6 @@ if ( ! class_exists( 'WFOCU_SV_API_Base' ) ) {
 		 *
 		 * @return object response class instance which implements SV_WC_API_Request
 		 * @since 2.2.0
-		 *
 		 */
 		protected function get_parsed_response( $raw_response_body ) {
 
@@ -574,7 +569,6 @@ if ( ! class_exists( 'WFOCU_SV_API_Base' ) ) {
 		 *
 		 * @return array
 		 * @since 2.2.0
-		 *
 		 */
 		protected function set_response_handler( $handler ) {
 			$this->response_handler = $handler;
@@ -588,7 +582,6 @@ if ( ! class_exists( 'WFOCU_SV_API_Base' ) ) {
 		 *
 		 * @return string
 		 * @since 2.2.0
-		 *
 		 */
 		protected function set_request_header( $name, $value ) {
 
@@ -614,7 +607,6 @@ if ( ! class_exists( 'WFOCU_SV_API_Base' ) ) {
 		 * @param string $content_type
 		 *
 		 * @since 2.2.0
-		 *
 		 */
 		protected function set_request_content_type_header( $content_type ) {
 			$this->request_headers['content-type'] = $content_type;
@@ -626,13 +618,10 @@ if ( ! class_exists( 'WFOCU_SV_API_Base' ) ) {
 		 * @param string $type the request accept type
 		 *
 		 * @since 2.2.0
-		 *
 		 */
 		protected function set_request_accept_header( $type ) {
 			$this->request_headers['accept'] = $type;
 		}
-
-
 	}
 
 

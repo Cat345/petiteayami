@@ -15,6 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 if ( ! class_exists( 'WFFN_Complianz_Compatibility' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFFN_Complianz_Compatibility {
 
 		public function __construct() {

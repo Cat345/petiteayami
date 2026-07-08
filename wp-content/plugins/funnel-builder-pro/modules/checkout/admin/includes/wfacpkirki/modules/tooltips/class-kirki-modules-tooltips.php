@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Adds script for tooltips.
  */
 if ( ! class_exists( 'WFACPKirki_Modules_Tooltips' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Modules_Tooltips {
 
 		/**
@@ -106,7 +107,6 @@ if ( ! class_exists( 'WFACPKirki_Modules_Tooltips' ) ) {
 				'id'      => sanitize_key( $field_id ),
 				'content' => wp_kses_post( $tooltip ),
 			);
-
 		}
 
 		/**
@@ -122,7 +122,6 @@ if ( ! class_exists( 'WFACPKirki_Modules_Tooltips' ) ) {
 			wp_enqueue_script( 'wfacpkirki-tooltip', trailingslashit( WFACPKirki::$url ) . 'modules/tooltips/tooltip.js', array( 'jquery' ), WFACP_VERSION );
 			wp_localize_script( 'wfacpkirki-tooltip', 'wfacpkirkiTooltips', $this->tooltips_content );
 			wp_enqueue_style( 'wfacpkirki-tooltip', trailingslashit( WFACPKirki::$url ) . 'modules/tooltips/tooltip.css', array(), WFACP_VERSION );
-
 		}
 	}
 }

@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use WC_Product;
 
 if ( ! class_exists( '\WfocuFunnelKit\Variation_Selector' ) ) {
+	#[\AllowDynamicProperties]
 	class Variation_Selector extends \Bricks\Element {
 		public $category = 'funnelkit';
 		public $name     = 'wfocu-variation-selector';

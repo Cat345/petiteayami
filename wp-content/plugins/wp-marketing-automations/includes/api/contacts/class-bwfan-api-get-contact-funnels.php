@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Contact_Funnels extends BWFAN_API_Base {
 	public static $ins;
 
@@ -27,8 +28,8 @@ class BWFAN_API_Get_Contact_Funnels extends BWFAN_API_Base {
 		/** checking if search present in params **/
 
 		$contact_id = $this->get_sanitized_arg( 'contact_id', 'key' );
-		$offset     = $this->get_sanitized_arg( 'offset', 'key' );
-		$limit      = $this->get_sanitized_arg( 'limit', 'key' );
+		$offset     = $this->get_sanitized_arg( 'offset', 'absint' );
+		$limit      = $this->get_sanitized_arg( 'limit', 'absint' );
 
 		$offset = empty( $offset ) ? $this->pagination->offset : $offset;
 		$limit  = empty( $offset ) ? $this->pagination->limit : $limit;

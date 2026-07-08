@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 
 
+	#[\AllowDynamicProperties]
 	class WFFN_Step_WC_Upsells extends WFFN_Step {
 
 		private static $ins   = null;
@@ -235,7 +236,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 
 					$meta_selects = array();
 
-					$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$upsell_step_id" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id = %d", absint( $upsell_step_id ) ) );
 
 					if ( is_array( $post_meta_all ) && count( $post_meta_all ) > 0 ) {
 						$meta_selects[] = (object) array(

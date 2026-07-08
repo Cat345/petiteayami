@@ -38,17 +38,16 @@ class SchemaPrinter extends BasePrinter
     protected static function printObject(ObjectType $type, array $options): string
     {
         $interfaces = $type->getInterfaces();
-        $implementedInterfaces =
-            count($interfaces) > 0
-                ? ' implements ' .
-                    implode(
-                        ' & ',
-                        array_map(
-                            fn(InterfaceType $interface): string => $interface->name,
-                            $interfaces,
-                        ),
-                    )
-                : '';
+        $implementedInterfaces = $interfaces
+            ? ' implements ' .
+                implode(
+                    ' & ',
+                    array_map(
+                        fn(InterfaceType $interface): string => $interface->name,
+                        $interfaces,
+                    ),
+                )
+            : '';
 
         return static::printDescription($options, $type) .
             sprintf(

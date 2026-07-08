@@ -1,13 +1,14 @@
 <?php
 if ( ! class_exists( 'WFOCU_Guten_Product_Title' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Guten_Product_Title extends WFOCU_Guten_Field {
-		private $products = [];
-		public $slug = 'wfocu_product_title';
-		protected $id = 'wfocu_product_title';
+		private $products = array();
+		public $slug      = 'wfocu_product_title';
+		protected $id     = 'wfocu_product_title';
 
 		public function __construct() {
 			$this->ajax = true;
-			$this->name = __( "WF Product Title" );
+			$this->name = __( 'WF Product Title' );
 			parent::__construct();
 		}
 
@@ -40,22 +41,20 @@ if ( ! class_exists( 'WFOCU_Guten_Product_Title' ) ) {
 			}
 
 			?>
-            <div class="wfocu-product-title-wrapper">
-				<?php echo sprintf( '<%s class="wfocu-product-title">%s</%s>', $settings['header_size'], $title, $settings['header_size'] );//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-            </div>
+			<div class="wfocu-product-title-wrapper">
+				<?php printf( '<%s class="wfocu-product-title">%s</%s>', $settings['header_size'], $title, $settings['header_size'] );//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			</div>
 			<?php
 		}
 
 		public function defaultCSS() {
 
-			$defaultCSS = "
+			$defaultCSS = '
 		   
-		";
+		';
 
 			return $defaultCSS;
 		}
-
-
 	}
 
 	return new WFOCU_Guten_Product_Title();

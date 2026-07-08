@@ -154,7 +154,14 @@ abstract class BWFAN_API_Base {
 	 * @return bool|array|mixed
 	 */
 	public function get_sanitized_arg( $key = '', $is_a = 'key', $collection = '' ) {
-		$sanitize_method = ( 'bool' === $is_a ? 'rest_sanitize_boolean' : 'sanitize_' . $is_a );
+		if ( 'bool' === $is_a ) {
+			$sanitize_method = 'rest_sanitize_boolean';
+		} elseif ( in_array( $is_a, array( 'absint', 'int', 'integer' ), true ) ) {
+			// Force integer sanitization for numeric args (e.g. pagination limit/offset) to neutralize SQL injection.
+			$sanitize_method = 'absint';
+		} else {
+			$sanitize_method = 'sanitize_' . $is_a;
+		}
 		if ( ! is_array( $collection ) ) {
 			$collection = $this->args;
 		}
@@ -178,7 +185,9 @@ abstract class BWFAN_API_Base {
 	public function rest_permission_callback( WP_REST_Request $request ) {
 		if ( 0 === get_current_user_id() ) {
 			$query_params = $request->get_query_params();
-			if ( isset( $query_params['bwf-nonce'] ) && $query_params['bwf-nonce'] === get_option( 'bwfan_unique_secret', '' ) ) {
+			$expected     = (string) get_option( 'bwfan_unique_secret', '' );
+			$provided     = isset( $query_params['bwf-nonce'] ) ? (string) $query_params['bwf-nonce'] : '';
+			if ( '' !== $expected && hash_equals( $expected, $provided ) ) {
 				return true;
 			}
 		}

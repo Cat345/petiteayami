@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Rule_Day' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Day extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -10,8 +11,8 @@ if ( ! class_exists( 'WFOCU_Rule_Day' ) ) {
 		public function get_possible_rule_operators() {
 
 			$operators = array(
-				'==' => __( "is", 'woofunnels-upstroke-one-click-upsell' ),
-				'!=' => __( "is not", 'woofunnels-upstroke-one-click-upsell' ),
+				'==' => __( 'is', 'woofunnels-upstroke-one-click-upsell' ),
+				'!=' => __( 'is not', 'woofunnels-upstroke-one-click-upsell' ),
 			);
 
 			return $operators;
@@ -61,12 +62,12 @@ if ( ! class_exists( 'WFOCU_Rule_Day' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Current Day %s %s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_day_title( $rule['condition'] ) );
+			return sprintf( __( 'Current Day %1$s %2$s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_day_title( $rule['condition'] ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Date' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Date extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -76,12 +77,12 @@ if ( ! class_exists( 'WFOCU_Rule_Date' ) ) {
 
 		public function get_possible_rule_operators() {
 			$operators = array(
-				'==' => __( "is equal to", 'woofunnels-upstroke-one-click-upsell' ),
-				'!=' => __( "is not equal to", 'woofunnels-upstroke-one-click-upsell' ),
-				'>'  => __( "is greater than", 'woofunnels-upstroke-one-click-upsell' ),
-				'<'  => __( "is less than", 'woofunnels-upstroke-one-click-upsell' ),
-				'>=' => __( "is greater or equal to", 'woofunnels-upstroke-one-click-upsell' ),
-				'=<' => __( "is less or equal to", 'woofunnels-upstroke-one-click-upsell' )
+				'==' => __( 'is equal to', 'woofunnels-upstroke-one-click-upsell' ),
+				'!=' => __( 'is not equal to', 'woofunnels-upstroke-one-click-upsell' ),
+				'>'  => __( 'is greater than', 'woofunnels-upstroke-one-click-upsell' ),
+				'<'  => __( 'is less than', 'woofunnels-upstroke-one-click-upsell' ),
+				'>=' => __( 'is greater or equal to', 'woofunnels-upstroke-one-click-upsell' ),
+				'=<' => __( 'is less or equal to', 'woofunnels-upstroke-one-click-upsell' ),
 			);
 
 			return $operators;
@@ -95,44 +96,35 @@ if ( ! class_exists( 'WFOCU_Rule_Date' ) ) {
 
 			$result = false;
 
-
 			if ( isset( $rule_data['condition'] ) && isset( $rule_data['operator'] ) ) {
-
 
 				$dateTime = new DateTime();
 				$dateTime->setTimestamp( current_time( 'timestamp' ) );
 
-
 				switch ( $rule_data['operator'] ) {
-					case '==' :
-
+					case '==':
 						$result = ( $rule_data['condition'] ) === $dateTime->format( 'Y-m-d' );
 
 						break;
-					case '!=' :
-
+					case '!=':
 						$result = ( $rule_data['condition'] ) !== $dateTime->format( 'Y-m-d' );
 
 						break;
 
-					case '>' :
-
+					case '>':
 						$result = $dateTime->getTimestamp() > strtotime( $rule_data['condition'] );
 
 						break;
 
-					case '<' :
-
+					case '<':
 						$result = $dateTime->getTimestamp() < strtotime( $rule_data['condition'] );
 
 						break;
 
-					case '=<' :
-
+					case '=<':
 						$result = $dateTime->getTimestamp() <= strtotime( $rule_data['condition'] );
 						break;
-					case '>=' :
-
+					case '>=':
 						$result = $dateTime->getTimestamp() >= strtotime( $rule_data['condition'] );
 
 						break;
@@ -148,12 +140,12 @@ if ( ! class_exists( 'WFOCU_Rule_Date' ) ) {
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Current Date %s %s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), date_i18n( get_option( 'date_format' ), strtotime( $rule['condition'] ) ) );
+			return sprintf( __( 'Current Date %1$s %2$s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), date_i18n( get_option( 'date_format' ), strtotime( $rule['condition'] ) ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Time' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Time extends WFOCU_Rule_Base {
 		public $supports = array( 'cart', 'order' );
 
@@ -163,12 +155,12 @@ if ( ! class_exists( 'WFOCU_Rule_Time' ) ) {
 
 		public function get_possible_rule_operators() {
 			$operators = array(
-				'==' => __( "is equal to", 'woofunnels-upstroke-one-click-upsell' ),
-				'!=' => __( "is not equal to", 'woofunnels-upstroke-one-click-upsell' ),
-				'>'  => __( "is greater than", 'woofunnels-upstroke-one-click-upsell' ),
-				'<'  => __( "is less than", 'woofunnels-upstroke-one-click-upsell' ),
-				'>=' => __( "is greater or equal to", 'woofunnels-upstroke-one-click-upsell' ),
-				'=<' => __( "is less or equal to", 'woofunnels-upstroke-one-click-upsell' )
+				'==' => __( 'is equal to', 'woofunnels-upstroke-one-click-upsell' ),
+				'!=' => __( 'is not equal to', 'woofunnels-upstroke-one-click-upsell' ),
+				'>'  => __( 'is greater than', 'woofunnels-upstroke-one-click-upsell' ),
+				'<'  => __( 'is less than', 'woofunnels-upstroke-one-click-upsell' ),
+				'>=' => __( 'is greater or equal to', 'woofunnels-upstroke-one-click-upsell' ),
+				'=<' => __( 'is less or equal to', 'woofunnels-upstroke-one-click-upsell' ),
 			);
 
 			return $operators;
@@ -182,11 +174,9 @@ if ( ! class_exists( 'WFOCU_Rule_Time' ) ) {
 
 			$result = false;
 
-
 			if ( isset( $rule_data['condition'] ) && isset( $rule_data['operator'] ) && $rule_data['condition'] ) {
 
-
-				$parsetime = explode( ":", $rule_data['condition'] );
+				$parsetime = explode( ':', $rule_data['condition'] );
 				if ( is_array( $parsetime ) && count( $parsetime ) !== 2 ) {
 					return $this->return_is_match( $result, $rule_data );
 				}
@@ -199,36 +189,30 @@ if ( ! class_exists( 'WFOCU_Rule_Time' ) ) {
 				$timestamp = $dateTime->getTimestamp();
 
 				switch ( $rule_data['operator'] ) {
-					case '==' :
-
+					case '==':
 						$result = $timestamp_current === $timestamp;
 
 						break;
-					case '!=' :
-
+					case '!=':
 						$result = $timestamp_current !== $timestamp;
 
 						break;
 
-					case '>' :
-
+					case '>':
 						$result = $timestamp_current > $timestamp;
 
 						break;
 
-					case '<' :
-
+					case '<':
 						$result = $timestamp_current < $timestamp;
 
 						break;
 
-					case '=<' :
-
+					case '=<':
 						$result = $timestamp_current <= $timestamp;
 
 						break;
-					case '>=' :
-
+					case '>=':
 						$result = $timestamp_current >= $timestamp;
 
 						break;
@@ -240,13 +224,11 @@ if ( ! class_exists( 'WFOCU_Rule_Time' ) ) {
 			}
 
 			return $this->return_is_match( $result, $rule_data );
-
 		}
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Current Time %s %s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), date_i18n( get_option( 'time_format' ), strtotime( $rule['condition'] ) ) );
+			return sprintf( __( 'Current Time %1$s %2$s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), date_i18n( get_option( 'time_format' ), strtotime( $rule['condition'] ) ) );
 		}
-
 	}
 }

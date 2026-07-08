@@ -7,6 +7,7 @@ if ( ! class_exists( 'WFOCU_MultiProduct' ) ) {
 	/**
 	 * Class WFOCU_MultiProduct
 	 */
+	#[\AllowDynamicProperties]
 	final class WFOCU_MultiProduct {
 		private static $_instance = null;
 

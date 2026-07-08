@@ -12,7 +12,7 @@ class AST
     /**
      * @return array<object>
      */
-    public static function build(Node $node)
+    public static function build(Node $node): array
     {
         $build = [static::class, $node->kind];
 
@@ -22,7 +22,7 @@ class AST
     /**
      * @return array{kind: string, name: Name, arguments: list<Argument>, directives: list<array<string, mixed>>, alias?: Name, selectionSet?: SelectionSet}
      */
-    public static function field(Node $node)
+    public static function field(Node $node): array
     {
         $result = [
             'kind' => 'Field',
@@ -45,7 +45,7 @@ class AST
     /**
      * @return array{kind: string, operation: string, selectionSet: SelectionSet, variableDefinitions: list<array<string, mixed>>, name?: Name}
      */
-    public static function query(Node $node)
+    public static function query(Node $node): array
     {
         $result = [
             'kind' => 'OperationDefinition',
@@ -64,7 +64,7 @@ class AST
     /**
      * @return array{kind: string, definitions: list<array<string, mixed>>}
      */
-    public static function document(Node $node)
+    public static function document(Node $node): array
     {
         return [
             'kind' => 'Document',
@@ -75,7 +75,7 @@ class AST
     /**
      * @return array{kind: string, name: Name, arguments: list<Argument>}
      */
-    public static function directive(Node $node)
+    public static function directive(Node $node): array
     {
         return [
             'kind' => 'Directive',
@@ -85,9 +85,9 @@ class AST
     }
 
     /**
-     * @return Name
+     * @return array{kind: 'Name', value: string}
      */
-    public static function name(string $name)
+    public static function name(string $name): array
     {
         return [
             'kind' => 'Name',
@@ -137,7 +137,7 @@ class AST
      * @param mixed $value
      * @return array{kind: string, name: Name, value: ?array<string, mixed>}
      */
-    public static function objectField(string $name, $value)
+    public static function objectField(string $name, $value): array
     {
         return [
             'kind' => 'ObjectField',
@@ -150,7 +150,7 @@ class AST
      * @param array<string, mixed> $arguments
      * @return list<Argument>
      */
-    public static function arguments(array $arguments)
+    public static function arguments(array $arguments): array
     {
         $result = [];
 
@@ -169,7 +169,7 @@ class AST
      * @param list<Node> $selections
      * @return SelectionSet
      */
-    public static function selections(array $selections)
+    public static function selections(array $selections): array
     {
         $result = [
             'kind' => 'SelectionSet',

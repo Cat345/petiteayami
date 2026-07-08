@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * FOX – Currency Switcher Professional for WooCommerce
  * Realmag777
@@ -9,7 +13,7 @@ if ( ! class_exists( 'WFACP_With_Fox_WOOCS' ) ) {
 	class WFACP_With_Fox_WOOCS {
 
 		public function __construct() {
-			add_filter( 'wfacp_product_switcher_price_data', [ $this, 'wfacp_product_switcher_price_data' ], 15, 2 );
+			add_filter( 'wfacp_product_switcher_price_data', array( $this, 'wfacp_product_switcher_price_data' ), 15, 2 );
 		}
 
 		/**
@@ -34,14 +38,14 @@ if ( ! class_exists( 'WFACP_With_Fox_WOOCS' ) ) {
 
 			global $WOOCS;
 			$currency                  = $WOOCS->current_currency;
-			$regular_price             = $pro->get_meta( "_woocs_regular_price_" . $currency );
-			$sale_price                = $pro->get_meta( "_woocs_sale_price_" . $currency );
+			$regular_price             = $pro->get_meta( '_woocs_regular_price_' . $currency );
+			$sale_price                = $pro->get_meta( '_woocs_sale_price_' . $currency );
 			$price_data['regular_org'] = $this->alter_fixed_amount( $pro->get_regular_price( 'edit' ) );
 			$price_data['price']       = $this->alter_fixed_amount( $pro->get_price( 'edit' ) );
-			if ( ! empty( $regular_price ) && $regular_price >= 0 ) {//Always update variable if product level Regular price is greate or equal to 0
+			if ( ! empty( $regular_price ) && $regular_price >= 0 ) {// Always update variable if product level Regular price is greate or equal to 0
 				$price_data['regular_org'] = $regular_price;
 			}
-			if ( ! empty( $sale_price ) && $sale_price >= 0 ) { //Always update variable if product level Sale price is greate or equal to 0
+			if ( ! empty( $sale_price ) && $sale_price >= 0 ) { // Always update variable if product level Sale price is greate or equal to 0
 				$price_data['price'] = $sale_price;
 			}
 

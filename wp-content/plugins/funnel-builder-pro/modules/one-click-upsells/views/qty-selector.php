@@ -23,13 +23,13 @@ if ( true === apply_filters( 'wfocu_is_show_quantity_selector', $this->offer_dat
 	}
 	?>
     <div class="wfocu-prod-qty-wrapper">
-        <label><?php echo $label; ?> </label>
+        <label><?php echo esc_html( $label ); ?> </label>
 
         <span class="wfocu-select-wrapper">
-					<select class="wfocu-select-qty-input" data-key="<?php echo $product_key; ?>">
+					<select class="wfocu-select-qty-input" data-key="<?php echo esc_attr( $product_key ); ?>">
 
 	<?php for ( $i = 1; $i <= $get_max_qty_decimal; $i ++ ) { ?>
-        <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+        <option value="<?php echo absint( $i ); ?>"><?php echo absint( $i ); ?></option>
 	<?php } ?>
 	 </select>
 				</span>
@@ -37,6 +37,6 @@ if ( true === apply_filters( 'wfocu_is_show_quantity_selector', $this->offer_dat
 	<?php
 } else {
 	?>
-    <input type="hidden" class="wfocu-select-qty-input" data-key="<?php echo $product_key; ?>" value="1"/>
+    <input type="hidden" class="wfocu-select-qty-input" data-key="<?php echo esc_attr( $product_key ); ?>" value="1"/>
 	<?php
 }

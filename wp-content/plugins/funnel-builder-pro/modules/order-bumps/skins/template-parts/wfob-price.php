@@ -1,6 +1,6 @@
 <div class=" wfob_price_container ">
-    <div class="wfob_price">
+	<div class="wfob_price">
 		<?php
-        echo $printed_price; ?>
-    </div>
+		echo wp_kses_post( $printed_price ); ?>
+	</div>
 </div>

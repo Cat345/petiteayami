@@ -30,8 +30,8 @@ if ( is_array( $time_in_mins ) && count( $time_in_mins ) > 0 ) {
 }
 ?>
 <div class="wfocu-countdown-timer-wrap">
-    <div class="wfocu-countdown-timer  wfocu-timer wfocu-countdown-square-ghost <?php echo $show_labels; ?>" data-is-hrs="<?php echo $show_hrs; ?>" data-hrs="<?php echo $ct_label_hrs; ?>" data-mins="<?php echo $ct_label_mins; ?>" data-secs="<?php echo $ct_label_secs; ?>" data-zero-action="<?php echo $ct_action_on_zero; ?>" data-offer-id="<?php echo $current_offer_id; ?>">
-        <div class="wfocu-timer-wrap" data-time-left="<?php echo $time_in_secs; ?>" data-timer-skin="square-ghost">
+    <div class="wfocu-countdown-timer  wfocu-timer wfocu-countdown-square-ghost <?php echo esc_attr( $show_labels ); ?>" data-is-hrs="<?php echo esc_attr( $show_hrs ); ?>" data-hrs="<?php echo esc_attr( $ct_label_hrs ); ?>" data-mins="<?php echo esc_attr( $ct_label_mins ); ?>" data-secs="<?php echo esc_attr( $ct_label_secs ); ?>" data-zero-action="<?php echo esc_attr( $ct_action_on_zero ); ?>" data-offer-id="<?php echo absint( $current_offer_id ); ?>">
+        <div class="wfocu-timer-wrap" data-time-left="<?php echo absint( $time_in_secs ); ?>" data-timer-skin="square-ghost">
         </div>
     </div>
 </div>

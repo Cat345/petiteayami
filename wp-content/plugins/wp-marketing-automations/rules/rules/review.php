@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'BWFAN_Rule_Comment_Count' ) ) {
+	#[\AllowDynamicProperties]
 	class BWFAN_Rule_Comment_Count extends BWFAN_Rule_Base {
 		/**
 		 * BWFAN_Rule_Comment_Count constructor.
@@ -130,6 +131,7 @@ if ( ! class_exists( 'BWFAN_Rule_Comment_Count' ) ) {
 }
 
 if ( ! class_exists( 'BWFAN_Rule_Comment_Products_Cats' ) ) {
+	#[\AllowDynamicProperties]
 	class BWFAN_Rule_Comment_Products_Cats extends BWFAN_Rule_Term_Taxonomy {
 		/**
 		 * BWFAN_Rule_Comment_Products_Cats constructor.

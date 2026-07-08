@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfocu_Input_Html_Rule_Is_Downgrade' ) ) {
+	#[\AllowDynamicProperties]
 	class wfocu_Input_Html_Rule_Is_Downgrade {
 		public function __construct() {
 			// vars
@@ -8,7 +9,7 @@ if ( ! class_exists( 'wfocu_Input_Html_Rule_Is_Downgrade' ) ) {
 			$this->defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 		}
 
@@ -16,6 +17,5 @@ if ( ! class_exists( 'wfocu_Input_Html_Rule_Is_Downgrade' ) ) {
 
 			esc_html_e( 'This Funnel will initiate on orders that have downgraded subscriptions.', 'woofunnels-upstroke-one-click-upsell' );
 		}
-
 	}
 }

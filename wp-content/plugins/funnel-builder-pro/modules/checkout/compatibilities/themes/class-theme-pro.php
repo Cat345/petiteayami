@@ -8,13 +8,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WFACP_Compatibility_With_Theme_PRO' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_Compatibility_With_Theme_PRO {
 		private $shortcode_content = '';
-		private $meta_key = '_cornerstone_data';
+		private $meta_key          = '_cornerstone_data';
 
 		public function __construct() {
-			add_filter( 'wfacp_shortcode_exist', [ $this, 'is_shortcode_exists' ], 10, 2 );
-			add_filter( 'wfacp_detect_shortcode', [ $this, 'send_brick_content' ] );
+			add_filter( 'wfacp_shortcode_exist', array( $this, 'is_shortcode_exists' ), 10, 2 );
+			add_filter( 'wfacp_detect_shortcode', array( $this, 'send_brick_content' ) );
 		}
 
 		public function is_shortcode_exists( $status, $post ) {
@@ -31,7 +32,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_PRO' ) ) {
 			if ( is_null( $post ) || ! $post instanceof WP_Post ) {
 				return false;
 			}
-			$panels_data = get_post_meta( $post->ID );;
+			$panels_data = get_post_meta( $post->ID );
+
 			if ( empty( $panels_data ) ) {
 				return false;
 			}
@@ -56,13 +58,11 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_PRO' ) ) {
 			$shortcode_string = str_replace( '."\".', '', stripslashes( $shortcode_string ) );
 
 			return preg_replace( '/\\\\/', '', $shortcode_string );
-
 		}
 
 		public function send_brick_content( $post_content ) {
 			return ! empty( $this->shortcode_content ) ? $this->shortcode_content : $post_content;
 		}
-
 	}
 
 

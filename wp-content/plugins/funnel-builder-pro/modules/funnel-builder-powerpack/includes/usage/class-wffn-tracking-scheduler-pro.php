@@ -15,6 +15,7 @@ if ( ! class_exists( 'WFFN_Tracking_Scheduler_Pro' ) ) {
 	/**
 	 * Class WFFN_Tracking_Scheduler_Pro
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_Tracking_Scheduler_Pro {
 
 		/**
@@ -111,4 +112,3 @@ if ( ! class_exists( 'WFFN_Tracking_Scheduler_Pro' ) ) {
 	// but before schedule actions might fire
 	add_action( 'init', array( 'WFFN_Tracking_Scheduler_Pro', 'maybe_init' ), 15 );
 }
-

@@ -3,6 +3,7 @@
 /**
  * Autonami Email Preview API class
  */
+#[\AllowDynamicProperties]
 class BWFAN_API_Campaign_Email_Preview extends BWFAN_API_Base {
 
 	public static $ins;

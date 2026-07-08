@@ -1,8 +1,10 @@
 <?php
+defined( 'ABSPATH' ) || exit;
 /**
  * Author Woofunnels.
  */
 if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
+	#[\AllowDynamicProperties]
 	class UpStroke_Subscriptions {
 
 		public static $instance    = null;
@@ -1059,12 +1061,12 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 			$product_key = $data['key'];
 			if ( $product->get_type() === 'variable-subscription' || $product->get_type() === 'subscription_variation' || $product->get_type() === 'subscription' ) {
 				ob_start();
-				echo $html; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo wp_kses_post( $html );
 				$signup_str    = WFOCU_Common::get_option( 'wfocu_product_product_' . $product_key . '_signup_price_label' );
 				$recurring_str = WFOCU_Common::get_option( 'wfocu_product_product_' . $product_key . '_rec_price_label' );
-				echo WFOCU_Common::maybe_parse_merge_tags( '{{product_signup_fee key="' . $product_key . '" signup_label="' . $signup_str . '"}}' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo wp_kses_post( WFOCU_Common::maybe_parse_merge_tags( '{{product_signup_fee key="' . esc_attr( $product_key ) . '" signup_label="' . esc_attr( $signup_str ) . '"}}' ) );
 
-				echo WFOCU_Common::maybe_parse_merge_tags( '{{product_recurring_total_string key="' . $product_key . '" recurring_label="' . $recurring_str . '"}}' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo wp_kses_post( WFOCU_Common::maybe_parse_merge_tags( '{{product_recurring_total_string key="' . esc_attr( $product_key ) . '" recurring_label="' . esc_attr( $recurring_str ) . '"}}' ) );
 				$html = ob_get_clean();
 			}
 
@@ -1227,7 +1229,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 							$html = '';
 							if ( ! empty( $attr['recurring_label'] ) ) {
-								$html = '<div class="recurring_details_wrap" data-key="' . $attr['key'] . '"><span class="recurring_price_label">' . $attr['recurring_label'] . '</span>' . $price . '</div>';
+								$html = '<div class="recurring_details_wrap" data-key="' . esc_attr( $attr['key'] ) . '"><span class="recurring_price_label">' . esc_html( $attr['recurring_label'] ) . '</span>' . $price . '</div>';
 
 							}
 
@@ -1241,7 +1243,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 					}
 
-					return sprintf( '<span class="wfocu_variable_price_sale" data-key="%s" data-info="%s">%s</span>', $attr['key'], $attr['info'], $price );
+					return sprintf( '<span class="wfocu_variable_price_sale" data-key="%s" data-info="%s">%s</span>', esc_attr( $attr['key'] ), esc_attr( $attr['info'] ), $price );
 				}
 			}
 
@@ -1288,7 +1290,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 				}
 
 				if ( ! empty( $attr['recurring_label'] ) ) {
-					$html = '<div class="recurring_details_wrap" data-key="' . $attr['key'] . '"><span class="recurring_price_label">' . $attr['recurring_label'] . '</span>' . $price . '</div>';
+					$html = '<div class="recurring_details_wrap" data-key="' . esc_attr( $attr['key'] ) . '"><span class="recurring_price_label">' . esc_html( $attr['recurring_label'] ) . '</span>' . $price . '</div>';
 				}
 
 				return $html;
@@ -1329,10 +1331,10 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 					if ( $data->products->{$attr['key']}->data->is_type( 'variable-subscription' ) ) {
 						$signup_fee = $data->products->{$attr['key']}->variations_data['prices'][ $data->products->{$attr['key']}->default_variation ]['signup_fee_including_tax'];
 						if ( absint( $signup_fee ) > 0 ) {
-							$html = '<div class="signup_details_wrap" data-key="' . $attr['key'] . '"><span class="signup_price_label">' . $attr['signup_label'] . '</span>' . wc_price( $signup_fee ) . '</div>';
+							$html = '<div class="signup_details_wrap" data-key="' . esc_attr( $attr['key'] ) . '"><span class="signup_price_label">' . esc_html( $attr['signup_label'] ) . '</span>' . wc_price( $signup_fee ) . '</div>';
 
 						} else {
-							$html = '<div class="signup_details_wrap" data-key="' . $attr['key'] . '" style="display: none;"><span class="signup_price_label">' . $attr['signup_label'] . '</span></div>';
+							$html = '<div class="signup_details_wrap" data-key="' . esc_attr( $attr['key'] ) . '" style="display: none;"><span class="signup_price_label">' . esc_html( $attr['signup_label'] ) . '</span></div>';
 
 						}
 
@@ -1349,10 +1351,10 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 				$signup_fee = $data->products->{$attr['key']}->signup_fee_including_tax;
 				if ( absint( $signup_fee ) > 0 ) {
-					$html = '<div class="signup_details_wrap" data-key="' . $attr['key'] . '"><span class="signup_price_label">' . $attr['signup_label'] . '</span>' . wc_price( $signup_fee ) . '</div>';
+					$html = '<div class="signup_details_wrap" data-key="' . esc_attr( $attr['key'] ) . '"><span class="signup_price_label">' . esc_html( $attr['signup_label'] ) . '</span>' . wc_price( $signup_fee ) . '</div>';
 
 				} else {
-					$html = '<div class="signup_details_wrap" data-key="' . $attr['key'] . '" style="display: none;"><span class="signup_price_label">' . $attr['signup_label'] . '</span></div>';
+					$html = '<div class="signup_details_wrap" data-key="' . esc_attr( $attr['key'] ) . '" style="display: none;"><span class="signup_price_label">' . esc_html( $attr['signup_label'] ) . '</span></div>';
 
 				}
 

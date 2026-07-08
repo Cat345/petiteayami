@@ -5,58 +5,64 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 	 * Class wfob_AJAX_Controller
 	 * Handles All the request came from front end or the backend
 	 */
+	#[\AllowDynamicProperties]
 	abstract class WFOB_AJAX_Controller {
 		private static $bump_action_data = '';
-		private static $output_resp = [];
-		private static $gateway_change = [];
+		private static $output_resp      = array();
+		private static $gateway_change   = array();
 
 		public static function init() {
 			/**
 			 * Backend AJAX actions
 			 */
 			if ( is_admin() ) {
-				self::handle_admin_ajax();
+				$is_admin_enabled = ! class_exists( 'WFFN_Pro_Bump_Support' )
+					|| ! method_exists( 'WFFN_Pro_Bump_Support', 'is_admin_enabled' )
+					|| WFFN_Pro_Bump_Support::is_admin_enabled();
+				if ( $is_admin_enabled ) {
+					self::handle_admin_ajax();
+				}
 			}
 			self::handle_public_ajax();
 		}
 
 		public static function handle_admin_ajax() {
-			add_action( 'wp_ajax_wfob_global_save_settings', [ __CLASS__, 'save_global_settings' ] );
-			add_action( 'wp_ajax_wfob_preview_details', [ __CLASS__, 'preview_details' ] );
-			add_action( 'wp_ajax_wfob_create_bump', [ __CLASS__, 'create_bump' ] );
-			add_action( 'wp_ajax_wfob_add_product', [ __CLASS__, 'add_product' ] );
-			add_action( 'wp_ajax_wfob_remove_product', [ __CLASS__, 'remove_product' ] );
-			add_action( 'wp_ajax_wfob_product_search', [ __CLASS__, 'product_search' ] );
-			add_action( 'wp_ajax_wfob_save_products', [ __CLASS__, 'save_products' ] );
-			add_action( 'wp_ajax_wfob_update_rules', [ __CLASS__, 'update_rules' ] );
-			add_action( 'wp_ajax_wfob_save_design', [ __CLASS__, 'save_design' ] );
-			add_action( 'wp_ajax_wfob_save_settings', [ __CLASS__, 'save_settings' ] );
-			add_action( 'wp_ajax_wfob_update_page_status', [ __CLASS__, 'update_page_status' ] );
-			add_action( 'wp_ajax_wfob_make_wpml_duplicate', [ __CLASS__, 'make_wpml_duplicate' ] );
+			add_action( 'wp_ajax_wfob_global_save_settings', array( __CLASS__, 'save_global_settings' ) );
+			add_action( 'wp_ajax_wfob_preview_details', array( __CLASS__, 'preview_details' ) );
+			add_action( 'wp_ajax_wfob_create_bump', array( __CLASS__, 'create_bump' ) );
+			add_action( 'wp_ajax_wfob_add_product', array( __CLASS__, 'add_product' ) );
+			add_action( 'wp_ajax_wfob_remove_product', array( __CLASS__, 'remove_product' ) );
+			add_action( 'wp_ajax_wfob_product_search', array( __CLASS__, 'product_search' ) );
+			add_action( 'wp_ajax_wfob_save_products', array( __CLASS__, 'save_products' ) );
+			add_action( 'wp_ajax_wfob_update_rules', array( __CLASS__, 'update_rules' ) );
+			add_action( 'wp_ajax_wfob_save_design', array( __CLASS__, 'save_design' ) );
+			add_action( 'wp_ajax_wfob_save_settings', array( __CLASS__, 'save_settings' ) );
+			add_action( 'wp_ajax_wfob_update_page_status', array( __CLASS__, 'update_page_status' ) );
+			add_action( 'wp_ajax_wfob_make_wpml_duplicate', array( __CLASS__, 'make_wpml_duplicate' ) );
 		}
 
 		public static function handle_public_ajax() {
-			add_action( 'woocommerce_checkout_update_order_review', [ __CLASS__, 'check_bump_action' ], - 10 );
-			add_action( 'bwf_global_save_settings_wfob', [ __CLASS__, 'update_global_settings_fields' ] );
+			add_action( 'woocommerce_checkout_update_order_review', array( __CLASS__, 'check_bump_action' ), - 10 );
+			add_action( 'bwf_global_save_settings_wfob', array( __CLASS__, 'update_global_settings_fields' ) );
 
 			$endpoints = self::get_available_public_endpoints();
 			foreach ( $endpoints as $action => $function ) {
 				if ( method_exists( __CLASS__, $function ) ) {
-					add_action( 'wc_ajax_' . $action, [ __CLASS__, $function ] );
+					add_action( 'wc_ajax_' . $action, array( __CLASS__, $function ) );
 				}
 			}
 		}
 
 		public static function get_available_public_endpoints() {
-			$endpoints = [
+			$endpoints = array(
 				'wfob_quick_view_ajax' => 'wf_quick_view_ajax',
-			];
+			);
 
 			return $endpoints;
 		}
 
 		public static function get_public_endpoints() {
-			$endpoints        = [];
+			$endpoints        = array();
 			$public_endpoints = self::get_available_public_endpoints();
 			if ( count( $public_endpoints ) > 0 ) {
 				foreach ( $public_endpoints as $key => $function ) {
@@ -77,21 +83,21 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				'status' => false,
 			);
 
-			if ( isset( $_POST['wfob_name'] ) && '' !== $_POST['wfob_name'] ) {
+			if ( isset( $_POST['wfob_name'] ) && '' !== $_POST['wfob_name'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$post                 = array();
-				$post['post_title']   = $_POST['wfob_name'];
+				$post['post_title']   = sanitize_text_field( wp_unslash( $_POST['wfob_name'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$post['post_type']    = WFOB_Common::get_bump_post_type_slug();
 				$post['post_status']  = 'publish';
-				$post['post_name']    = isset( $_POST['post_name'] ) ? $_POST['post_name'] : $_POST['post_title'];
+				$post['post_name']    = isset( $_POST['post_name'] ) ? sanitize_text_field( wp_unslash( $_POST['post_name'] ) ) : ( isset( $_POST['post_title'] ) ? sanitize_text_field( wp_unslash( $_POST['post_title'] ) ) : '' ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$post['post_content'] = '';
 				if ( ! empty( $post ) ) {
-					if ( isset( $_POST['wfob_id'] ) && $_POST['wfob_id'] > 0 ) {
-						$wfob_id = absint( $_POST['wfob_id'] );
-						$data    = [
+					if ( isset( $_POST['wfob_id'] ) && $_POST['wfob_id'] > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+						$wfob_id = absint( $_POST['wfob_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+						$data    = array(
 							'ID'         => $wfob_id,
 							'post_title' => $post['post_title'],
 							'post_name'  => $post['post_name'],
-						];
+						);
 						$status  = wp_update_post( $data );
 						if ( ! is_wp_error( $status ) ) {
 							update_post_meta( $wfob_id, '_wfob_version', WFOB_VERSION );
@@ -111,11 +117,14 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 					if ( 0 !== $wfob_id && ! is_wp_error( $wfob_id ) ) {
 						update_post_meta( $wfob_id, '_wfob_version', WFOB_VERSION );
 						$resp['status']       = true;
-						$resp['redirect_url'] = add_query_arg( array(
-							'page'    => 'wfob',
-							'section' => 'products',
-							'wfob_id' => $wfob_id,
-						), admin_url( 'admin.php' ) );
+						$resp['redirect_url'] = add_query_arg(
+							array(
+								'page'    => 'wfob',
+								'section' => 'products',
+								'wfob_id' => $wfob_id,
+							),
+							admin_url( 'admin.php' )
+						);
 						$resp['msg']          = __( 'Order bump Successfully Created', 'woofunnels-order-bump' );
 					} else {
 						$resp['redirect_url'] = '#';
@@ -129,34 +138,35 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 		public static function check_nonce( $admin = false ) {
 
-
-			$rsp = [
+			$rsp = array(
 				'status' => 'false',
 				'msg'    => 'Invalid Call',
-			];
+			);
 
-
-			if ( true === $admin && false !== WFOB_Core()->role->user_access( 'menu', 'read' ) ) {
-				if ( ! isset( $_REQUEST['wfob_nonce'] ) || ! wp_verify_nonce( $_REQUEST['wfob_nonce'], 'wfob_admin_secure_key' ) ) {
+			if ( true === $admin ) {
+				if ( false === WFOB_Core()->role->user_access( 'menu', 'read' ) ) {
+					wp_send_json( $rsp );
+				}
+				if ( ! isset( $_REQUEST['wfob_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['wfob_nonce'] ) ), 'wfob_admin_secure_key' ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					wp_send_json( $rsp );
 				}
 
 				return;
 			}
 
-			if ( ! isset( $_REQUEST['wfob_nonce'] ) || ! wp_verify_nonce( $_REQUEST['wfob_nonce'], 'wfob_secure_key' ) ) {
+			if ( ! isset( $_REQUEST['wfob_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['wfob_nonce'] ) ), 'wfob_secure_key' ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				wp_send_json( $rsp );
 			}
 		}
 
 		public static function send_resp( $data = array() ) {
 			if ( ! is_array( $data ) ) {
-				$data = [];
+				$data = array();
 			}
 			$data['nonce'] = wp_create_nonce( 'wfob_secure_key' );
 
-			if ( isset( $_REQUEST['wfob_id'] ) && $_REQUEST['wfob_id'] > 0 ) {
-				WFOB_Common::delete_transient( $_REQUEST['wfob_id'] );
+			if ( isset( $_REQUEST['wfob_id'] ) && $_REQUEST['wfob_id'] > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				WFOB_Common::delete_transient( absint( $_REQUEST['wfob_id'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 
 			wp_send_json( $data );
@@ -165,7 +175,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 		public static function product_search() {
 			self::check_nonce( true );
-			$term = wc_clean( empty( $term ) ? stripslashes( $_POST['term'] ) : $term );
+			$term = wc_clean( isset( $_POST['term'] ) ? wp_unslash( $_POST['term'] ) : '' ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 			if ( empty( $term ) ) {
 				wp_die();
 			}
@@ -174,22 +184,28 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			/**
 			 * Products types that are allowed in the offers
 			 */
-			$allowed_types   = apply_filters( 'wfob_offer_product_types', array(
-				'simple',
-				'variable',
-				'course',
-				'variation',
-				'subscription',
-				'variable-subscription',
-				'subscription_variation',
-				'bundle',
-				'yith_bundle',
-				'woosb',
-			) );
+			$allowed_types   = apply_filters(
+				'wfob_offer_product_types',
+				array(
+					'simple',
+					'variable',
+					'course',
+					'variation',
+					'subscription',
+					'variable-subscription',
+					'subscription_variation',
+					'bundle',
+					'yith_bundle',
+					'woosb',
+				)
+			);
 			$product_objects = array_filter( array_map( 'wc_get_product', $ids ), 'wc_products_array_filter_editable' );
-			$product_objects = array_filter( $product_objects, function ( $arr ) use ( $allowed_types ) {
-				return $arr && is_a( $arr, 'WC_Product' ) && in_array( $arr->get_type(), $allowed_types );
-			} );
+			$product_objects = array_filter(
+				$product_objects,
+				function ( $arr ) use ( $allowed_types ) {
+					return $arr && is_a( $arr, 'WC_Product' ) && in_array( $arr->get_type(), $allowed_types, true );
+				}
+			);
 			$products        = array();
 			/**
 			 * @var $product_object WC_Product;
@@ -208,11 +224,11 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			$resp = array(
 				'msg'      => '',
 				'status'   => false,
-				'products' => [],
+				'products' => array(),
 			);
-			if ( isset( $_POST['wfob_id'] ) && count( $_POST['products'] ) > 0 ) {
-				$wfob_id          = absint( $_POST['wfob_id'] );
-				$products         = $_POST['products'];
+			if ( isset( $_POST['wfob_id'] ) && isset( $_POST['products'] ) && count( $_POST['products'] ) > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$wfob_id          = absint( $_POST['wfob_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$products         = wc_clean( wp_unslash( $_POST['products'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$existing_product = WFOB_Common::get_bump_products( $wfob_id );
 				foreach ( $products as $pid ) {
 					$unique_id = uniqid( 'wfob_' );
@@ -228,7 +244,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 							$product_image_url = wp_get_attachment_image_src( $image_id )[0];
 						}
 						$default['image'] = apply_filters( 'wfob_product_image', $product_image_url, $product );
-						if ( '' == $default['image'] ) {
+						if ( '' === $default['image'] ) {
 							$default['image'] = WFOB_PLUGIN_URL . '/admin/assets/img/product_default_icon.jpg';
 						}
 
@@ -238,18 +254,18 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 						$default['parent_product_id']    = $product->get_parent_id();
 						$default['title']                = $product->get_title();
 						$default['is_sold_individually'] = $product->is_sold_individually();
-						if ( in_array( $product_type, WFOB_Common::get_variable_product_type() ) ) {
+						if ( in_array( $product_type, WFOB_Common::get_variable_product_type(), true ) ) {
 							$default['variable'] = 'yes';
 							$default['price']    = $product->get_price_html();
 						} else {
-							if ( in_array( $product_type, WFOB_Common::get_variation_product_type() ) ) {
+							if ( in_array( $product_type, WFOB_Common::get_variation_product_type(), true ) ) {
 								$default['title'] = $product->get_name();
 							}
 							$row_data                 = $product->get_data();
 							$sale_price               = $row_data['sale_price'];
 							$default['price']         = wc_price( $row_data['price'] );
 							$default['regular_price'] = wc_price( $row_data['regular_price'] );
-							if ( '' != $sale_price ) {
+							if ( '' !== $sale_price ) {
 								$default['sale_price'] = wc_price( $sale_price );
 							}
 						}
@@ -266,7 +282,6 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			}
 
 			self::send_resp( $resp );
-
 		}
 
 		public static function remove_product() {
@@ -277,9 +292,9 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				'status' => false,
 				'msg'    => '',
 			);
-			if ( isset( $_POST['wfob_id'] ) && $_POST['wfob_id'] > 0 && isset( $_POST['product_key'] ) && $_POST['product_key'] != '' ) {
-				$wfob_id          = absint( $_POST['wfob_id'] );
-				$product_key      = trim( $_POST['product_key'] );
+			if ( isset( $_POST['wfob_id'] ) && $_POST['wfob_id'] > 0 && isset( $_POST['product_key'] ) && '' !== $_POST['product_key'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$wfob_id          = absint( $_POST['wfob_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$product_key      = sanitize_text_field( wp_unslash( $_POST['product_key'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$existing_product = WFOB_Common::get_bump_products( $wfob_id );
 				if ( isset( $existing_product[ $product_key ] ) ) {
 					unset( $existing_product[ $product_key ] );
@@ -297,13 +312,13 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 			$resp = array(
 				'msg'      => __( 'Changes saved', 'woofunnels-order-bump' ),
-				'products' => [],
+				'products' => array(),
 			);
-			if ( isset( $_POST['products'] ) && count( $_POST['products'] ) > 0 ) {
-				$wfob_id          = $_POST['wfob_id'];
-				$product_settings = isset( $_POST['product_settings'] ) ? ( $_POST['product_settings'] ) : [];
-				$wfob_settings    = isset( $_POST['wfob_settings'] ) ? ( $_POST['wfob_settings'] ) : [];
-				$products         = $_POST['products'];
+			if ( isset( $_POST['products'] ) && isset( $_POST['wfob_id'] ) && count( $_POST['products'] ) > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$wfob_id          = absint( $_POST['wfob_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$product_settings = isset( $_POST['product_settings'] ) ? wc_clean( wp_unslash( $_POST['product_settings'] ) ) : array(); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$wfob_settings    = isset( $_POST['wfob_settings'] ) ? wc_clean( wp_unslash( $_POST['wfob_settings'] ) ) : array(); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$products         = wc_clean( wp_unslash( $_POST['products'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				foreach ( $products as $key => $val ) {
 					if ( isset( $products[ $key ]['variable'] ) ) {
 						$pro                = WFOB_Common::wc_get_product( $products[ $key ]['id'] );
@@ -323,7 +338,6 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			$resp['status'] = true;
 
 			self::send_resp( $resp );
-
 		}
 
 		public static function update_rules() {
@@ -333,10 +347,9 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				'status' => false,
 			);
 
-
-			if ( isset( $_POST['wfob_id'] ) && $_POST['wfob_id'] > 0 && isset( $_POST['wfob_rule'] ) && ! empty( $_POST['wfob_rule'] ) > 0 ) {
-				$bump_id = $_POST['wfob_id'];
-				$rules   = $_POST['wfob_rule'];
+			if ( isset( $_POST['wfob_id'] ) && $_POST['wfob_id'] > 0 && isset( $_POST['wfob_rule'] ) && ! empty( $_POST['wfob_rule'] ) > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$bump_id = absint( $_POST['wfob_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$rules   = wc_clean( wp_unslash( $_POST['wfob_rule'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$post    = get_post( $bump_id );
 
 				if ( ! is_wp_error( $post ) ) {
@@ -358,9 +371,9 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				'status' => false,
 			);
 
-			if ( isset( $_POST['wfob_id'] ) && $_POST['wfob_id'] > 0 && isset( $_POST['settings'] ) && count( $_POST['settings'] ) > 0 ) {
+			if ( isset( $_POST['wfob_id'] ) && $_POST['wfob_id'] > 0 && isset( $_POST['settings'] ) && count( $_POST['settings'] ) > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
 
-				WFOB_Common::update_design_data( $_POST['wfob_id'], $_POST['settings'] );
+				WFOB_Common::update_design_data( absint( $_POST['wfob_id'] ), map_deep( wp_unslash( $_POST['settings'] ), 'sanitize_text_field' ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$resp = array(
 					'msg'    => __( 'Changes saved' ),
 					'status' => true,
@@ -375,9 +388,9 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				'msg'    => '',
 				'status' => false,
 			);
-			if ( isset( $_POST['wfob_id'] ) && $_POST['wfob_id'] > 0 && isset( $_POST['settings'] ) && count( $_POST['settings'] ) > 0 ) {
+			if ( isset( $_POST['wfob_id'] ) && $_POST['wfob_id'] > 0 && isset( $_POST['settings'] ) && count( $_POST['settings'] ) > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
 
-				WFOB_Common::update_setting_data( $_POST['wfob_id'], $_POST['settings'] );
+				WFOB_Common::update_setting_data( absint( $_POST['wfob_id'] ), map_deep( wp_unslash( $_POST['settings'] ), 'sanitize_text_field' ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$resp = array(
 					'msg'    => __( 'Changes saved' ),
 					'status' => true,
@@ -389,20 +402,19 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 		/**
 		 * Save Order Bump global settings
 		 */
-
 		public static function save_global_settings() {
 			self::check_nonce( true );
-			$options = isset( $_POST['settings'] ) ? $_POST['settings'] : 0; //phpcs:ignore
+			$options = isset( $_POST['settings'] ) ? wc_clean( wp_unslash( $_POST['settings'] ) ) : 0; //phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$resp    = self::update_global_settings_fields( $options );
 			self::send_resp( $resp );
 		}
 
 		public static function update_global_settings_fields( $options ) {
 			$options = ( is_array( $options ) && count( $options ) > 0 ) ? wp_unslash( $options ) : 0;
-			$resp    = [
+			$resp    = array(
 				'status' => false,
 				'msg'    => __( 'Settings Saved Successfully', 'woofunnels-order-bump' ),
-			];
+			);
 
 			if ( ! is_array( $options ) || count( $options ) === 0 ) {
 				return $resp;
@@ -421,11 +433,11 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				'msg'    => '',
 				'status' => false,
 			);
-			if ( isset( $_POST['id'] ) && $_POST['id'] > 0 && isset( $_POST['post_status'] ) ) {
-				$args    = [
-					'ID'          => $_POST['id'],
-					'post_status' => 'true' == $_POST['post_status'] ? 'publish' : 'draft',
-				];
+			if ( isset( $_POST['id'] ) && $_POST['id'] > 0 && isset( $_POST['post_status'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$args    = array(
+					'ID'          => absint( $_POST['id'] ), //phpcs:ignore WordPress.Security.NonceVerification.Missing
+					'post_status' => 'true' === $_POST['post_status'] ? 'publish' : 'draft', //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				);
 				$post_id = wp_update_post( $args );
 
 				$resp = array(
@@ -446,7 +458,6 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				if ( ! empty( $bump_action_data ) ) {
 					return;
 				}
-
 			}
 			if ( ! isset( $post_data['wfob_input_bump_global_data'] ) ) {
 				return;
@@ -467,8 +478,9 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			}
 			parse_str( $data, $post_data );
 
-			//self::_check_bump_action_for_global_data( $post_data );
-
+			if ( ! isset( $post_data['woocommerce-process-checkout-nonce'] ) || ! wp_verify_nonce( sanitize_text_field( $post_data['woocommerce-process-checkout-nonce'] ), 'woocommerce-process_checkout' ) ) {
+				return;
+			}
 
 			if ( empty( $post_data ) || ! isset( $post_data['wfob_input_hidden_data'] ) || empty( $post_data['wfob_input_hidden_data'] ) ) {
 				return;
@@ -485,11 +497,11 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			}
 			$bump_global_data = json_decode( isset( $post_data['wfob_input_bump_global_data'] ) ? $post_data['wfob_input_bump_global_data'] : '{}', true );
 			$action           = $bump_action_data['action'];
-			if ( 'add_order_bump' == $action ) {
+			if ( 'add_order_bump' === $action ) {
 				self::$output_resp = self::add_order_bump_order( $bump_action_data );
-			} elseif ( 'remove_order_bump' == $action ) {
+			} elseif ( 'remove_order_bump' === $action ) {
 				self::$output_resp = self::remove_order_bump( $bump_action_data );
-			} elseif ( 'update_quantity' == $action ) {
+			} elseif ( 'update_quantity' === $action ) {
 				self::$output_resp = self::update_quantity( $bump_action_data );
 			}
 			if ( ! empty( $bump_global_data ) ) {
@@ -513,25 +525,24 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			}
 
 			self::$gateway_change = apply_filters( 'wfob_need_payment_gateway_refresh', self::$gateway_change, $available_after_gateways, self::$output_resp, $bump_action_data );
-			add_filter( 'woocommerce_update_order_review_fragments', [ __CLASS__, 'merge_fragments' ], 999 );
+			add_filter( 'woocommerce_update_order_review_fragments', array( __CLASS__, 'merge_fragments' ), 999 );
 		}
 
 		/**
-		 *Try to add or remove order bump items from the cart
+		 * Try to add or remove order bump items from the cart
 		 */
 		public static function check_bump_items( $items ) {
-			$response = [];
+			$response = array();
 			try {
 
-
-				$cart_product_map = [];
+				$cart_product_map = array();
 				foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
 					if ( ! empty( $cart_item['_wfob_product_key'] ) ) {
 						$cart_product_map[ $cart_item['_wfob_product_key'] ] = $cart_item_key;
 					}
 				}
 
-				foreach ( $items as $key => $item ) {
+				foreach ( $items as $item ) {
 					$product_key = $item['product_key'];
 
 					if ( $item['action'] === 'add_order_bump' ) {
@@ -541,7 +552,6 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 								$response[ $product_key ] = $_response;
 							}
 						}
-
 					} elseif ( $item['action'] === 'remove_order_bump' ) {
 						if ( isset( $cart_product_map[ $product_key ] ) ) {
 							$item['cart_key'] = $cart_product_map[ $product_key ];
@@ -551,7 +561,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 						}
 					}
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 
 			}
 
@@ -559,13 +569,12 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 		}
 
 		public static function merge_fragments( $fragments ) {
-			//unset gateway fragment if gateways is not changed
-			if ( false == self::$gateway_change && isset( $fragments['.woocommerce-checkout-payment'] ) ) {
+			// unset gateway fragment if gateways is not changed
+			if ( false === self::$gateway_change && isset( $fragments['.woocommerce-checkout-payment'] ) ) {
 				unset( $fragments['.woocommerce-checkout-payment'] );
 			}
 
-
-			$data                        = [];
+			$data                        = array();
 			$data['action']              = self::$bump_action_data;
 			$data['cart_is_empty']       = WC()->cart->is_empty();
 			$data['cart_total']          = WC()->cart->get_total( 'edit' );
@@ -590,18 +599,20 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			WFOB_Common::set_id( absint( $wfob_id ) );
 			$products         = WFOB_Common::get_bump_products( absint( $wfob_id ) );
 			$product_design   = WFOB_Common::get_design_data_meta( $wfob_id );
-			$session_products = WC()->session->get( 'wfob_added_bump_product', [] );
+			$session_products = WC()->session->get( 'wfob_added_bump_product', array() );
 			$remove_item_key  = ( isset( $post['remove_item_key'] ) ? trim( $post['remove_item_key'] ) : '' );
 			$product_key      = $post['product_key'];
 
-			//do not add to bump product if same bump present in cart.
+			// do not add to bump product if same bump present in cart.
 
 			$contents = WC()->cart->get_cart_contents();
 			if ( empty( $remove_item_key ) ) {
-				$filter_item = array_filter( $contents, function ( $content ) use ( $product_key ) {
-					return ( isset( $content['_wfob_product_key'] ) && ! empty( $product_key ) && $content['_wfob_product_key'] == $product_key );
-				} );
-
+				$filter_item = array_filter(
+					$contents,
+					function ( $content ) use ( $product_key ) {
+						return ( isset( $content['_wfob_product_key'] ) && ! empty( $product_key ) && $content['_wfob_product_key'] === $product_key );
+					}
+				);
 
 				if ( ! empty( $filter_item ) ) {
 					$resp['error']  = '';
@@ -611,9 +622,8 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				}
 			}
 
-
 			do_action( 'wfob_before_add_to_cart', $post );
-			if ( ! isset( $products[ $product_key ] ) || count( $products[ $product_key ] ) == 0 ) {
+			if ( ! isset( $products[ $product_key ] ) || count( $products[ $product_key ] ) === 0 ) {
 				return $resp;
 			}
 
@@ -631,7 +641,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			}
 
 			$product_variation_id = ( isset( $post['variation_id'] ) ? absint( $post['variation_id'] ) : 0 );
-			$attributes           = ( isset( $post['attributes'] ) && is_array( $post['attributes'] ) ) ? $post['attributes'] : [];
+			$attributes           = ( isset( $post['attributes'] ) && is_array( $post['attributes'] ) ) ? $post['attributes'] : array();
 
 			$product    = $products[ $product_key ];
 			$product_id = absint( $product['id'] );
@@ -639,7 +649,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			if ( $posted_qty > 0 ) {
 				$quantity *= $posted_qty;
 			}
-			$custom_data  = [];
+			$custom_data  = array();
 			$variation_id = 0;
 			if ( $product['parent_product_id'] && $product['parent_product_id'] > 0 && $product_variation_id > 0 ) {
 				$product_id   = absint( $product['parent_product_id'] );
@@ -663,14 +673,12 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			if ( $variation_id > 0 ) {
 				// if variation_id found then we fetch attributes of variation from below function
 				$is_found_variation = WFOB_Common::get_first_variation( $product_obj, $variation_id );
-				if ( count( $attributes ) == 0 ) {
+				if ( count( $attributes ) === 0 ) {
 					$attributes = $is_found_variation['attributes'];
 				}
-			} else {
-				if ( isset( $product['variable'] ) ) {
+			} elseif ( isset( $product['variable'] ) ) {
 					$variation_id = absint( $product['default_variation'] );
 					$attributes   = $product['default_variation_attr'];
-				}
 			}
 			if ( $variation_id > 0 ) {
 				$custom_data['wfob_variable_attributes'] = $attributes;
@@ -679,7 +687,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 			$stock_status = WFOB_Common::check_manage_stock( $product_obj, $quantity );
 
-			if ( false == $stock_status ) {
+			if ( false === $stock_status ) {
 
 				$resp['error']  = __( 'Sorry, we do not have enough stock to fulfill your order. Please change quantity and try again. We apologize for any inconvenience caused.', 'woofunnels-order-bump' );
 				$resp['status'] = false;
@@ -689,20 +697,18 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 			$t_k = "product_{$product_key}";
 
-
-			if ( isset( $product_design["{$t_k}_title"] ) && '' != $product_design["{$t_k}_title"] ) {
-				$product['title'] = $product_design["{$t_k}_title"];
+			if ( isset( $product_design[ "{$t_k}_title" ] ) && '' !== $product_design[ "{$t_k}_title" ] ) {
+				$product['title'] = $product_design[ "{$t_k}_title" ];
 			}
 
 			$custom_image_url = '';
-			$featured_image   = wc_string_to_bool( isset( $product_design["{$t_k}_featured_image"] ) ? $product_design["{$t_k}_featured_image"] : 'false' );
-			if ( true == $featured_image && isset( $product_design["{$t_k}_featured_image_options"] ) && ! empty( $product_design["{$t_k}_featured_image_options"] ) ) {
-				$image_options = $product_design["{$t_k}_featured_image_options"];
-				if ( 'custom' == $image_options['type'] && ! empty( $image_options['custom_url'] ) ) {
+			$featured_image   = wc_string_to_bool( isset( $product_design[ "{$t_k}_featured_image" ] ) ? $product_design[ "{$t_k}_featured_image" ] : 'false' );
+			if ( true === $featured_image && isset( $product_design[ "{$t_k}_featured_image_options" ] ) && ! empty( $product_design[ "{$t_k}_featured_image_options" ] ) ) {
+				$image_options = $product_design[ "{$t_k}_featured_image_options" ];
+				if ( 'custom' === $image_options['type'] && ! empty( $image_options['custom_url'] ) ) {
 					$custom_image_url = $image_options['custom_url'];
 				}
 			}
-
 
 			$custom_data['_wfob_product']                 = true;
 			$custom_data['_wfob_product_key']             = $product_key;
@@ -713,11 +719,10 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			$post['product_id']                          = $product_id;
 			$custom_data['_wfob_options']['posted_data'] = $post;
 
-
-			add_filter( 'woocommerce_add_cart_item', [ 'WFOB_Common', 'handle_swap_product' ], 10, 2 );
+			add_filter( 'woocommerce_add_cart_item', array( 'WFOB_Common', 'handle_swap_product' ), 10, 2 );
 			$success = WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $attributes, $custom_data );
 
-			if ( '' == $success || false == $success ) {
+			if ( '' === $success || false === $success ) {
 
 				$resp['error']  = __( 'Sorry, we do not have enough stock to fulfill your order. Please change quantity and try again. We apologize for any inconvenience caused.', 'woofunnels-order-bump' );
 				$resp['status'] = false;
@@ -727,16 +732,15 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			}
 			$post['cart_key'] = $success;
 
-
 			if ( '' !== $success ) {
 				if ( ! isset( $session_products[ $wfob_id ] ) ) {
-					$session_products[ $wfob_id ] = [];
+					$session_products[ $wfob_id ] = array();
 				}
-				$session_products[ $wfob_id ][ $product_key ]             = [];
+				$session_products[ $wfob_id ][ $product_key ]             = array();
 				$session_products[ $wfob_id ][ $product_key ]['cart_key'] = $success;
 				WC()->session->set( 'wfob_added_bump_product', $session_products );
 				do_action( 'wfob_after_add_to_cart', $post );
-				$cart_data                 = [];
+				$cart_data                 = array();
 				$cart_data[ $product_key ] = WFOB_Common::analytics_item( $product_obj, WC()->cart->get_cart_item( $success ) );
 				$cart_data                 = apply_filters( 'wfob_add_bump_order_analytics_data', $cart_data, $product_obj, WC()->cart->get_cart_item( $success ) );
 				$resp                      = array(
@@ -754,7 +758,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				'msg'           => '',
 				'status'        => false,
 				'cart_is_empty' => false,
-				'products'      => [],
+				'products'      => array(),
 			);
 
 			$temp = WFOB_Common::remove_bump_from_cart( $post );
@@ -767,7 +771,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 
 		private static function update_quantity( $post ) {
-			$resp        = [ 'status' => true ];
+			$resp        = array( 'status' => true );
 			$qty         = wc_clean( $post['qty'] );
 			$cart_key    = wc_clean( $post['cart_key'] );
 			$product_key = wc_clean( $post['product_key'] );
@@ -778,7 +782,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 				return $resp;
 			}
-			if ( 0 == $qty ) {
+			if ( 0 === $qty ) {
 				$temp = WFOB_Common::remove_bump_from_cart( $post );
 				if ( ! empty( $temp ) ) {
 					$resp = $temp;
@@ -802,7 +806,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				 */
 				$product_obj  = $cart_item['data'];
 				$stock_status = WFOB_Common::check_manage_stock( $product_obj, $new_quantity );
-				if ( false == $stock_status ) {
+				if ( false === $stock_status ) {
 					$resp['error']    = __( 'Sorry, we do not have enough stock to fulfill your order. Please change quantity and try again. We apologize for any inconvenience caused.', 'woofunnels-aero-checkout' );
 					$resp['qty']      = $cart_item['quantity'];
 					$resp['status']   = false;
@@ -830,18 +834,18 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 		public static function wf_quick_view_ajax() {
 			self::check_nonce();
-			$resp = [
+			$resp = array(
 				'msg'    => '',
 				'status' => false,
-			];
+			);
 
-			if ( isset( $_POST['wfob_id'] ) && $_POST['wfob_id'] > 0 && isset( $_POST['product_id'] ) && $_POST['product_id'] > 0 ) {
-				$wfob_id           = absint( $_POST['wfob_id'] );
-				$item_key          = $_POST['item_key'];
-				$cart_key          = isset( $_POST['cart_key'] ) ? $_POST['cart_key'] : '';
+			if ( isset( $_POST['wfob_id'] ) && $_POST['wfob_id'] > 0 && isset( $_POST['product_id'] ) && $_POST['product_id'] > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$wfob_id           = absint( $_POST['wfob_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$item_key          = sanitize_text_field( wp_unslash( $_POST['item_key'] ?? '' ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$cart_key          = isset( $_POST['cart_key'] ) ? sanitize_text_field( wp_unslash( $_POST['cart_key'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$save_product_list = WFOB_Common::get_bump_products( $wfob_id );
 				if ( isset( $save_product_list[ $item_key ] ) ) {
-					$product_id = absint( $_POST['product_id'] );
+					$product_id = absint( $_POST['product_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 					$params     = array(
 						'p'         => $product_id,
 						'post_type' => array( 'product', 'product_variation' ),
@@ -849,7 +853,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 					$query      = new WP_Query( $params );
 
 					global $wfob_product, $wfob_post, $wfob_qv_data;
-					$wfob_qv_data = $_POST;
+					$wfob_qv_data = array_map( 'sanitize_text_field', wp_unslash( $_POST ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 					if ( $query->have_posts() ) {
 						while ( $query->have_posts() ) {
@@ -863,7 +867,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 							// checking for product is variation or subscription_variation variation
 
-							if ( in_array( $product->get_type(), [ 'variation', 'subscription_variation' ] ) ) {
+							if ( in_array( $product->get_type(), array( 'variation', 'subscription_variation' ), true ) ) {
 
 								// stored child product object to our global variable
 								// using this variable we
@@ -871,16 +875,16 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 								$wfob_post    = $post;
 
 								$parent_id = $product->get_parent_id();
-								$product   = null;
-								$post      = get_post( $parent_id );
-								$product   = wc_get_product( $parent_id );
+								$product   = null; //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+								$post      = get_post( $parent_id ); //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+								$product   = wc_get_product( $parent_id ); //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 								// we set global product  variable to parent product because of child product not description and title of of the product
 								// i am using some woocommerce part like add-to-cart button quantity
-								//this template using Global $product variation
+								// this template using Global $product variation
 							}
 
 							$product->add_meta_data( 'wfob_cart_key', $cart_key );
-							require_once( __DIR__ . '/quick-view/qv-template.php' );
+							require_once __DIR__ . '/quick-view/qv-template.php';
 							$html           = ob_get_clean();
 							$resp['status'] = true;
 							$resp['html']   = $html;
@@ -895,14 +899,14 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 		public static function make_wpml_duplicate() {
 			self::check_nonce( true );
-			$resp = [
+			$resp = array(
 				'msg'    => __( 'Something went wrong', 'woofunnel-order-bump' ),
 				'status' => false,
-			];
-			if ( isset( $_POST['trid'] ) && $_POST['trid'] > 0 && class_exists( 'SitePress' ) && method_exists( 'SitePress', 'get_original_element_id_by_trid' ) ) {
-				$trid          = absint( $_POST['trid'] );
-				$lang          = isset( $_POST['lang'] ) ? trim( $_POST['lang'] ) : '';
-				$language_code = isset( $_POST['language_code'] ) ? trim( $_POST['language_code'] ) : '';
+			);
+			if ( isset( $_POST['trid'] ) && $_POST['trid'] > 0 && class_exists( 'SitePress' ) && method_exists( 'SitePress', 'get_original_element_id_by_trid' ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$trid          = absint( $_POST['trid'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$lang          = isset( $_POST['lang'] ) ? sanitize_text_field( wp_unslash( $_POST['lang'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$language_code = isset( $_POST['language_code'] ) ? sanitize_text_field( wp_unslash( $_POST['language_code'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$lang          = empty( $lang ) ? $language_code : $lang;
 
 				$master_post_id = SitePress::get_original_element_id_by_trid( $trid );
@@ -912,10 +916,13 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 					if ( is_int( $duplicate_id ) && $duplicate_id > 0 ) {
 						WFOB_Common::get_duplicate_data( $duplicate_id, $master_post_id );
 
-						$resp['redirect_url'] = add_query_arg( [
-							'section' => 'rules',
-							'wfob_id' => $duplicate_id,
-						], admin_url( 'admin.php?page=wfob' ) );
+						$resp['redirect_url'] = add_query_arg(
+							array(
+								'section' => 'rules',
+								'wfob_id' => $duplicate_id,
+							),
+							admin_url( 'admin.php?page=wfob' )
+						);
 						$resp['duplicate_id'] = $duplicate_id;
 						$resp['status']       = true;
 					}
@@ -926,36 +933,36 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 		public static function preview_details() {
 			self::check_nonce( true );
-			$resp = [
+			$resp = array(
 				'msg'    => '',
 				'status' => false,
-			];
-			if ( isset( $_POST['wfob_id'] ) && ( $_POST['wfob_id'] ) > 0 ) {
-				$wfob_id            = absint( $_POST['wfob_id'] );
+			);
+			if ( isset( $_POST['wfob_id'] ) && absint( $_POST['wfob_id'] ) > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$wfob_id            = absint( $_POST['wfob_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$post_data          = get_post( $wfob_id );
 				$title              = $post_data->post_title;
 				$post_status        = $post_data->post_status;
 				$guid               = admin_url( 'admin.php?page=wfob&section=rules&wfob_id=' . $wfob_id );
 				$productData        = WFOB_Common::get_bump_products( $wfob_id );
-				$discount_type_keys = [
+				$discount_type_keys = array(
 					'fixed_discount_reg'    => __( 'on Regular Price', 'woofunnels-aero-checkout' ),
 					'fixed_discount_sale'   => __( 'on Sale Price', 'woofunnels-aero-checkout' ),
 					'percent_discount_reg'  => '% on Regular Price',
 					'percent_discount_sale' => '% on Sale Price',
-				];
+				);
 
 				ob_start();
 				?>
-                <div class="wfob-fp-wrap preview_sec product_preview">
+				<div class="wfob-fp-wrap preview_sec product_preview">
 
 					<?php
 					if ( is_array( $productData ) && count( $productData ) > 0 ) {
 						?>
-                        <h3><?php _e( 'Products', 'woocommerce' ) ?></h3>
-                        <div class="wfob-sec">
-                            <div class="wfob-fp-offer-products">
+						<h3><?php esc_html_e( 'Products', 'woocommerce' ); ?></h3>
+						<div class="wfob-sec">
+							<div class="wfob-fp-offer-products">
 								<?php
-								foreach ( $productData as $product_key => $product_val ) {
+								foreach ( $productData as $product_val ) {
 									$discount_type   = $product_val['discount_type'];
 									$discount_amount = $product_val['discount_amount'];
 									$discounted_val  = '';
@@ -974,24 +981,24 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 									if ( '' !== $discounted_val ) {
 										$string .= ' @ ' . $discounted_val;
 									}
-									echo "<p>{$string}</p>";
+									echo '<p>' . esc_html( $string ) . '</p>';
 								}
 								?>
 
-                            </div>
-                        </div>
+							</div>
+						</div>
 						<?php
 					} else {
-						echo '<p class="wfob-fp-offer-products">' . __( 'No Product Associated', 'woofunnels-order-bump' ) . '</p>';
+						echo '<p class="wfob-fp-offer-products">' . esc_html__( 'No Product Associated', 'woofunnels-order-bump' ) . '</p>';
 					}
 					?>
-                </div>
+				</div>
 				<?php
 				$html                = ob_get_clean();
-				$resp                = [
+				$resp                = array(
 					'msg'    => 'Settings Data saved',
 					'status' => true,
-				];
+				);
 				$resp['wfob_id']     = $post_data;
 				$resp['post_name']   = $title;
 				$resp['launch_url']  = $guid;

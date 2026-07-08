@@ -17,6 +17,7 @@ if ( ! class_exists( 'WFOB_Compatibility_WooCommerce_Product_Bundles' ) ) {
 	/**
 	 * Class WFOB_Compatibility_WooCommerce_Product_Bundles
 	 */
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibility_WooCommerce_Product_Bundles {
 
 		/**

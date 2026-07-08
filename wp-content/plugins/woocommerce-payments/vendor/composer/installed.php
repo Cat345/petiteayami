@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'woocommerce/payments',
-        'pretty_version' => 'dev-release/10.7.1',
-        'version' => 'dev-release/10.7.1',
-        'reference' => '16ddb73254304b5a2adf707621a7a0c084017302',
+        'pretty_version' => 'dev-release/10.9.0',
+        'version' => 'dev-release/10.9.0',
+        'reference' => 'a29fdcc6e97bb19d18b5cd2f264264088d9fde60',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -38,9 +38,9 @@
             'dev_requirement' => false,
         ),
         'automattic/jetpack-autoloader' => array(
-            'pretty_version' => 'v5.0.15',
-            'version' => '5.0.15.0',
-            'reference' => 'd5263d6ffa91dc0d0d39b1df54de1e9bb2091364',
+            'pretty_version' => 'v5.0.16',
+            'version' => '5.0.16.0',
+            'reference' => 'd8ae822a35e7431137e860ee60eceedaa745e4d1',
             'type' => 'composer-plugin',
             'install_path' => __DIR__ . '/../automattic/jetpack-autoloader',
             'aliases' => array(),
@@ -149,9 +149,9 @@
             ),
         ),
         'woocommerce/payments' => array(
-            'pretty_version' => 'dev-release/10.7.1',
-            'version' => 'dev-release/10.7.1',
-            'reference' => '16ddb73254304b5a2adf707621a7a0c084017302',
+            'pretty_version' => 'dev-release/10.9.0',
+            'version' => 'dev-release/10.9.0',
+            'reference' => 'a29fdcc6e97bb19d18b5cd2f264264088d9fde60',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

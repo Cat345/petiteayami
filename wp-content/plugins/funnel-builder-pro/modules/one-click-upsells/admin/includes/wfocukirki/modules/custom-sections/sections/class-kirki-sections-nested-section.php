@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Sections_Nested_Section' ) ) {
 	/**
 	 * Nested section.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Sections_Nested_Section extends WP_Customize_Section {
 
 		/**
@@ -41,15 +42,18 @@ if ( ! class_exists( 'WFOCUKirki_Sections_Nested_Section' ) ) {
 		 */
 		public function json() {
 
-			$array = wp_array_slice_assoc( (array) $this, array(
-				'id',
-				'description',
-				'priority',
-				'panel',
-				'type',
-				'description_hidden',
-				'section',
-			) );
+			$array = wp_array_slice_assoc(
+				(array) $this,
+				array(
+					'id',
+					'description',
+					'priority',
+					'panel',
+					'type',
+					'description_hidden',
+					'section',
+				)
+			);
 
 			$array['title']          = html_entity_decode( $this->title, ENT_QUOTES, get_bloginfo( 'charset' ) );
 			$array['content']        = $this->get_content();

@@ -321,7 +321,7 @@ abstract class BWFAN_Action {
 			if ( $this->is_json( $body ) ) {
 				$body = json_decode( $body, true );
 			}
-			$body = maybe_unserialize( $body );
+			$body = bwf_safe_unserialize( $body ); // allowed_classes=false: avoid PHP object injection from remote bodies (FK-010)
 			if ( in_array( $response['response']['code'], $this->allowed_responses, true ) ) {
 				$response_code = 200;
 			} else {

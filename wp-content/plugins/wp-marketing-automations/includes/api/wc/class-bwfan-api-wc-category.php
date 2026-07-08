@@ -5,6 +5,7 @@
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 class BWFAN_Api_Get_WC_Category extends BWFAN_API_Base {
 
 	public static $ins;

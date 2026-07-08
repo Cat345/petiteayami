@@ -27,6 +27,7 @@ foreach ( array( 'RenderCallbackTrait.php', 'ModuleClassnamesTrait.php', 'Module
 	}
 }
 
+#[\AllowDynamicProperties]
 class CustomerDetails extends BaseModule {
 	use RenderCallbackTrait;
 	use ModuleClassnamesTrait;

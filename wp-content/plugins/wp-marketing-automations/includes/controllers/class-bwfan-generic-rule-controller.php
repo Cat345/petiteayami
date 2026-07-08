@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Generic_Rule_Controller {
 
 	protected $data = [];

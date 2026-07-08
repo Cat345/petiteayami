@@ -10,10 +10,15 @@ use FilterEverything\Filter\Pro\XmlPrepare;
 
 class SeoRulesPreview extends XmlPrepare
 {
+
     public function __construct(int $seo_rule_id)
     {
         $this->seo_rule_id = $seo_rule_id;
         $this->error = new \WP_Error();
+
+        if ($this->executeStep('checkPermalinks')) {
+            return $this->error;
+        }
 
         if ($this->executeStep('checkSeoRulesSettings')) {
             return $this->error;

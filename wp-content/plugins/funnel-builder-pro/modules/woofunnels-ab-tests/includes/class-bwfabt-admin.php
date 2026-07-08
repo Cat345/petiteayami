@@ -15,6 +15,44 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 		 * BWFABT_Admin constructor.
 		 */
 		public function __construct() {
+			$get_db_version = get_option( '_bwfabt_db_version', '0.0.0' );
+
+			if ( version_compare( BWFABT_DB_VERSION, $get_db_version, '>' ) ) {
+				add_action( 'admin_init', array( $this, 'check_db_version' ), 9 );
+			}
+
+			/**
+			 * Sets the runtime default for ab_test_override_permalink, which is read by
+			 * frontend URL-rewriting logic (maybe_enable_override_permalink) regardless of
+			 * whether the admin UI is accessible.
+			 */
+			add_filter( 'bwf_general_settings_default_config', function ( $fields ) {
+				$db_options = get_option( 'bwf_gen_config', [] );
+				if ( empty( $db_options ) ) {
+					$fields['ab_test_override_permalink'] = 'yes';
+				} else {
+					$fields['ab_test_override_permalink'] = '';
+				}
+
+				return $fields;
+			} );
+
+			/**
+			 * The "Open Variants on same URL as Original step" checkbox is a frontend-affecting
+			 * global setting and must remain available even when the A/B admin menu is disabled,
+			 * mirroring the bwf_general_settings_default_config filter above. Registered before the
+			 * $is_admin_enabled early-return so it survives the admin-menu gate.
+			 */
+			add_filter( 'bwf_general_settings_fields', array( $this, 'add_permalink_settings' ), 999 );
+
+			$is_admin_enabled = ! class_exists( 'WFFN_Pro_AB_Support' )
+				|| ! method_exists( 'WFFN_Pro_AB_Support', 'is_admin_enabled' )
+				|| WFFN_Pro_AB_Support::is_admin_enabled();
+
+			if ( ! $is_admin_enabled ) {
+				return;
+			}
+
 			add_action( 'admin_menu', array( $this, 'register_admin_menu' ), 100 );
 			add_action( 'load-woofunnels_page_bwf_ab_tests', array( $this, 'setup_experiment' ) );
 			/**
@@ -30,30 +68,9 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 
 				add_action( 'admin_enqueue_scripts', array( $this, 'maybe_register_breadcrumb_nodes' ), 5 );
 			}
-			$get_db_version = get_option( '_bwfabt_db_version', '0.0.0' );
-
-			if ( version_compare( BWFABT_DB_VERSION, $get_db_version, '>' ) ) {
-				add_action( 'admin_init', array( $this, 'check_db_version' ), 9 );
-			}
-			if ( isset( $_GET['page'] ) && 'bwf_ab_tests' === $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			if ( isset( $_GET['page'] ) && 'bwf_ab_tests' === $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				add_action( 'in_admin_header', array( $this, 'maybe_remove_all_notices_on_page' ) );
 			}
-			add_filter( 'bwf_general_settings_fields', array( $this, 'add_permalink_settings' ), 999 );
-			add_filter( 'bwf_general_settings_default_config', function ( $fields ) {
-
-				/**
-				 * We are checking our DB directly here to make sure we keep this settings to no for the existing users
-				 */
-				$db_options = get_option( 'bwf_gen_config', [] );
-				if ( empty( $db_options ) ) {
-					$fields['ab_test_override_permalink'] = 'yes';
-				} else {
-					$fields['ab_test_override_permalink'] = '';
-
-				}
-
-				return $fields;
-			} );
 		}
 
 		/**
@@ -102,22 +119,22 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 				$suffix      = '';
 			}
 
-			wp_enqueue_script( 'bwfabt-admin-ajax', BWFABT_PLUGIN_URL . '/assets/' . $live_or_dev . 'js/bwfabt-ajax.js', [], BWFABT_VERSION_DEV );
+			wp_enqueue_script( 'bwfabt-admin-ajax', BWFABT_PLUGIN_URL . '/assets/' . $live_or_dev . 'js/bwfabt-ajax.js', [], BWFABT_VERSION_DEV, false );
 			/**
 			 * Including izimodal assets
 			 */
 			wp_enqueue_style( 'bwfabt-izimodal', BWFABT_PLUGIN_URL . '/assets/iziModal/iziModal.css', array(), BWFABT_VERSION_DEV );
 			wp_enqueue_style( 'bwfabt-font', BWFABT_PLUGIN_URL . '/assets/' . $live_or_dev . 'css/bwfabt-font' . $suffix . '.css', array(), BWFABT_VERSION_DEV );
-			wp_enqueue_script( 'bwfabt-izimodal', BWFABT_PLUGIN_URL . '/assets/iziModal/iziModal.js', array(), BWFABT_VERSION_DEV );
+			wp_enqueue_script( 'bwfabt-izimodal', BWFABT_PLUGIN_URL . '/assets/iziModal/iziModal.js', array(), BWFABT_VERSION_DEV, false );
 
 			/**
 			 * Including vuejs assets
 			 */
 			wp_enqueue_style( 'bwfabt-vue-multiselect', BWFABT_PLUGIN_URL . '/assets/vuejs/vue-multiselect.min.css', array(), BWFABT_VERSION_DEV );
 			wp_enqueue_script( 'jquery-ui-sortable' );
-			wp_enqueue_script( 'bwfabt-vuejs', BWFABT_PLUGIN_URL . '/assets//vuejs/vue.min.js', array(), '2.6.10' );
-			wp_enqueue_script( 'bwfabt-vue-vfg', BWFABT_PLUGIN_URL . '/assets/vuejs/vfg.min.js', array(), '2.3.4' );
-			wp_enqueue_script( 'bwfabt-vue-multiselect', BWFABT_PLUGIN_URL . '/assets/vuejs/vue-multiselect.min.js', array(), BWFABT_VERSION_DEV );
+			wp_enqueue_script( 'bwfabt-vuejs', BWFABT_PLUGIN_URL . '/assets//vuejs/vue.min.js', array(), '2.6.10', false );
+			wp_enqueue_script( 'bwfabt-vue-vfg', BWFABT_PLUGIN_URL . '/assets/vuejs/vfg.min.js', array(), '2.3.4', false );
+			wp_enqueue_script( 'bwfabt-vue-multiselect', BWFABT_PLUGIN_URL . '/assets/vuejs/vue-multiselect.min.js', array(), BWFABT_VERSION_DEV, false );
 
 			/**
 			 * Including One Click Upsell assets on all OCU pages.
@@ -125,13 +142,13 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 			wp_enqueue_style( 'woocommerce_admin_styles' );
 			wp_enqueue_script( 'wc-backbone-modal' );
 			wp_enqueue_style( 'bwfabt-admin', BWFABT_PLUGIN_URL . '/assets/' . $live_or_dev . 'css/bwfabt-admin' . $suffix . '.css', array(), BWFABT_VERSION_DEV );
-			wp_enqueue_script( 'bwfabt-admin', BWFABT_PLUGIN_URL . '/assets/' . $live_or_dev . 'js/bwfabt-admin' . $suffix . '.js', array(), BWFABT_VERSION_DEV );
+			wp_enqueue_script( 'bwfabt-admin', BWFABT_PLUGIN_URL . '/assets/' . $live_or_dev . 'js/bwfabt-admin' . $suffix . '.js', array(), BWFABT_VERSION_DEV, false );
 
 			if ( $this->is_bwfabt_experiment_page( 'analytics' ) ) {
-				wp_enqueue_script( 'bwfabt-chart-script', BWFABT_PLUGIN_URL . '/assets/' . $live_or_dev . 'js/Chart.js', array(), BWFABT_VERSION_DEV );
+				wp_enqueue_script( 'bwfabt-chart-script', BWFABT_PLUGIN_URL . '/assets/' . $live_or_dev . 'js/Chart.js', array(), BWFABT_VERSION_DEV, false );
 			}
 			if ( $this->is_bwfabt_experiment_page( 'variants' ) ) {
-				wp_enqueue_script( 'bwfabt-circle-progress', BWFABT_PLUGIN_URL . '/assets/' . $live_or_dev . 'js/circle-progress.min.js', array(), BWFABT_VERSION_DEV );
+				wp_enqueue_script( 'bwfabt-circle-progress', BWFABT_PLUGIN_URL . '/assets/' . $live_or_dev . 'js/circle-progress.min.js', array(), BWFABT_VERSION_DEV, false );
 			}
 
 			/**
@@ -229,7 +246,7 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 				'add_experiment'      => array(
 					'default_exp_type' => $default_exp_type,
 					'create'           => __( 'Create New Experiment', 'woofunnels-ab-tests' ),
-					'exp_step'         => ( isset( $_GET['action'] ) && 'create_new' === $_GET['action'] ) ? 2 : 1, // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					'exp_step'         => ( isset( $_GET['action'] ) && 'create_new' === $_GET['action'] ) ? 2 : 1, // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					'existing'         => __( 'An experiment is already running on this original variant. Please select other variant.', 'woofunnels-ab-tests' ),
 					'label_texts'      => array(
 						'experiment_control' => array(
@@ -341,11 +358,11 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 		 * @return bool
 		 */
 		public function is_bwfabt_experiment_page( $section = '' ) {
-			if ( isset( $_GET['page'] ) && $_GET['page'] === 'bwf_ab_tests' && '' === $section ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			if ( isset( $_GET['page'] ) && $_GET['page'] === 'bwf_ab_tests' && '' === $section ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				return true;
 			}
 
-			if ( isset( $_GET['page'] ) && $_GET['page'] === 'bwf_ab_tests' && isset( $_GET['section'] ) && $_GET['section'] === $section ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			if ( isset( $_GET['page'] ) && $_GET['page'] === 'bwf_ab_tests' && isset( $_GET['section'] ) && $_GET['section'] === $section ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				return true;
 			}
 
@@ -357,21 +374,21 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 		 * Adding ab tests listing page
 		 */
 		public function bwf_ab_tests() {
-			if ( isset( $_GET['page'] ) && 'bwf_ab_tests' === $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-				if ( isset( $_GET['section'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			if ( isset( $_GET['page'] ) && 'bwf_ab_tests' === $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				if ( isset( $_GET['section'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-					if ( 'variants' === $_GET['section'] ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					if ( 'variants' === $_GET['section'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						include_once( plugin_dir_path( BWFABT_PLUGIN_FILE ) . '/views/bwfabt-variants-builder-view.php' );
-					} elseif ( 'analytics' === $_GET['section'] ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					} elseif ( 'analytics' === $_GET['section'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						include_once( plugin_dir_path( BWFABT_PLUGIN_FILE ) . '/views/bwfabt-analytics-builder-view.php' );
-					} elseif ( 'settings' === $_GET['section'] ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					} elseif ( 'settings' === $_GET['section'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						include_once( plugin_dir_path( BWFABT_PLUGIN_FILE ) . '/views/bwfabt-settings-builder-view.php' );
 					} else {
 						include_once( plugin_dir_path( BWFABT_PLUGIN_FILE ) . '/views/bwfabt-experiment-builder-view.php' );
 					}
 				} else {
 
-					if ( isset( $_GET['action'] ) && 'create_new' === $_GET['action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					if ( isset( $_GET['action'] ) && 'create_new' === $_GET['action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						include_once( plugin_dir_path( BWFABT_PLUGIN_FILE ) . '/views/bwfabt-new-experiment-view.php' );
 					} else {
 						include_once( plugin_dir_path( BWFABT_PLUGIN_FILE ) . '/views/bwfabt-admin.php' );
@@ -411,14 +428,15 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 		public function get_experiments( $args = array() ) {
 
 			$found_posts = [];
+			global $wpdb;
 
-			$paged      = isset( $_GET['paged'] ) ? absint( bwfabt_clean( $_GET['paged'] ) ) : 0;  // phpcs:ignore WordPress.Security.NonceVerification
-			$search_str = isset( $_GET['s'] ) ? bwfabt_clean( $_GET['s'] ) : '';//phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$paged      = isset( $_GET['paged'] ) ? absint( wp_unslash( $_GET['paged'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$search_str = isset( $_GET['s'] ) ? bwfabt_clean( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			if ( isset( $args['status'] ) ) {
-				$status = bwfabt_clean( $args['status'] );
+				$status = absint( $args['status'] );
 			} else {
-				$status = isset( $_REQUEST['status'] ) ? bwfabt_clean( $_REQUEST['status'] ) : '';  // phpcs:ignore WordPress.Security.NonceVerification
+				$status = isset( $_REQUEST['status'] ) ? absint( wp_unslash( $_REQUEST['status'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 
 			$sql_query = "SELECT id as experiment_id FROM {table_name}";
@@ -426,7 +444,7 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 			$sql_query .= " WHERE 1=1";
 
 			if ( isset( $args['control'] ) ) {
-				$sql_query .= " AND control=" . $args['control'];
+				$sql_query .= $wpdb->prepare( " AND control = %d", absint( $args['control'] ) );
 			}
 
 			$reg_controller_objs = BWFABT_Core()->controllers->get_registered_controller_objects();
@@ -442,16 +460,19 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 				$sql_query .= " AND `type` IN ('" . implode( "','", array_keys( $reg_controller_objs ) ) . "')";
 			}
 
-			if ( ! empty( $status ) ) {
-				$sql_query .= " AND `status` = " . $status;
+			if ( $status > 0 ) {
+				$sql_query .= $wpdb->prepare( " AND `status` = %d", $status );
 			}
 
 			if ( ! empty( $search_str ) ) {
-				$sql_query .= " AND `title` LIKE '%" . $search_str . "%' OR `desc` LIKE '%" . $search_str . "%'";
+				$search_like = '%' . $wpdb->esc_like( $search_str ) . '%';
+				$sql_query  .= $wpdb->prepare( " AND (`title` LIKE %s OR `desc` LIKE %s)", $search_like, $search_like );
 			}
 
 			if ( isset( $args['order'] ) ) {
-				$sql_query = $sql_query . ' ORDER BY experiment_id ' . $args['order'];
+				$allowed_orders = [ 'ASC', 'DESC' ];
+				$order          = in_array( strtoupper( $args['order'] ), $allowed_orders, true ) ? strtoupper( $args['order'] ) : 'DESC';
+				$sql_query     .= ' ORDER BY experiment_id ' . $order;
 			}
 
 			$found_experiments = 0;
@@ -465,9 +486,9 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 				if ( count( $found_experiments ) > $limit ) {
 					$paged = ( $paged > 0 ) ? ( $paged - 1 ) : $paged;
 					if ( isset( $args['offset'] ) ) {
-						$sql_query .= ' LIMIT ' . $args['offset'] . ', ' . $limit;;
+						$sql_query .= ' LIMIT ' . absint( $args['offset'] ) . ', ' . absint( $limit );
 					} else {
-						$sql_query .= ' LIMIT ' . $limit * $paged . ', ' . $limit;
+						$sql_query .= ' LIMIT ' . absint( $limit * $paged ) . ', ' . absint( $limit );
 					}
 				}
 
@@ -652,7 +673,7 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 		 */
 		public function has_filter() {
 
-			if ( $this->is_bwfabt_experiment_page() && isset( $_GET['status'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			if ( $this->is_bwfabt_experiment_page() && isset( $_GET['status'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				return true;
 			}
 
@@ -684,7 +705,7 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 			$unique = [];
 			for ( $i = 0; strtotime( $start_date . ' + ' . $i . 'day' ) <= strtotime( $end_date ); $i ++ ) {
 				$timestamp = strtotime( $start_date . ' + ' . $i . 'day' );
-				$date      = date( $date_format, $timestamp );
+				$date      = gmdate( $date_format, $timestamp );
 
 				//remove the 0 from the week number
 				if ( $interval === 'week' ) {
@@ -837,10 +858,10 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 
 		public function is_tab_active_class( $page ) {
 
-			if ( ! isset( $_GET['section'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			if ( ! isset( $_GET['section'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				return '';
 			}
-			if ( $page !== $_GET['section'] ) { //phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			if ( $page !== $_GET['section'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				return '';
 			}
 
@@ -881,7 +902,7 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 				 * IF we do not have any experiment set against this ID then die here
 				 */
 				if ( empty( $this->experiment->get_title() ) ) {
-					wp_die( esc_html_e( 'No expeirment exist with this id.', 'woofunnels-ab-tests' ) );
+					wp_die( esc_html__( 'Invalid experiment.', 'woofunnels-ab-tests' ) );
 				}
 			} else {
 				$this->experiment = new BWFABT_Experiment( 0 );
@@ -894,17 +915,19 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 		 * @return mixed
 		 */
 		public function add_existing_to_controls( $controls, $type ) {
+			global $wpdb;
 			$control_ids = wp_list_pluck( $controls, 'id' );
 
 			$sql_query = "SELECT control as control_id FROM {table_name}";
 
 			$sql_query .= " WHERE 1=1";
 
-			$sql_query .= " AND `type` = '$type'";
+			$sql_query .= $wpdb->prepare( " AND `type` = %s", $type );
 
 			$sql_query .= " AND `status` != 4";
 
-			$sql_query .= " AND `control` IN (" . implode( ',', $control_ids ) . ")";
+			$safe_control_ids = implode( ',', array_map( 'intval', $control_ids ) );
+			$sql_query       .= " AND `control` IN (" . $safe_control_ids . ")";
 
 			$found_controls    = BWFABT_Core()->get_dataStore()->get_results( $sql_query );
 			$existing_controls = wp_list_pluck( $found_controls, 'control_id' );
@@ -928,16 +951,17 @@ if ( ! class_exists( 'BWFABT_Admin' ) ) {
 		 * @return bool
 		 */
 		public function maybe_existing_control( $control_id, $type ) {
+			global $wpdb;
 
 			$sql_query = "SELECT control as control_id FROM {table_name}";
 
 			$sql_query .= " WHERE 1=1";
 
-			$sql_query .= " AND `type` = '$type'";
+			$sql_query .= $wpdb->prepare( " AND `type` = %s", $type );
 
 			$sql_query .= " AND `status` != 4";
 
-			$sql_query .= " AND `control` = $control_id ";
+			$sql_query .= $wpdb->prepare( " AND `control` = %d", absint( $control_id ) );
 
 			$found_controls = BWFABT_Core()->get_dataStore()->get_results( $sql_query );
 

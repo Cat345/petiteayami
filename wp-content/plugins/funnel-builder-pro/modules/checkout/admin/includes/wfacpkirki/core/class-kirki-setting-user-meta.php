@@ -13,6 +13,10 @@
  * @since 3.0.0
  * @see WP_Customize_Setting
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Setting_User_Meta' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Setting_User_Meta extends WP_Customize_Setting {

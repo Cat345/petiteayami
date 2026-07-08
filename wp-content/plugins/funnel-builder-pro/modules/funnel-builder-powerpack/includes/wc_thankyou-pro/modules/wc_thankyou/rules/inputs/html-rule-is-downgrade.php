@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'wfty_Input_Html_Rule_Is_Downgrade' ) ) {
+	#[\AllowDynamicProperties]
 	class wfty_Input_Html_Rule_Is_Downgrade {
 		public function __construct() {
 			// vars
@@ -8,7 +9,7 @@ if ( ! class_exists( 'wfty_Input_Html_Rule_Is_Downgrade' ) ) {
 			$this->defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 		}
 
@@ -16,6 +17,5 @@ if ( ! class_exists( 'wfty_Input_Html_Rule_Is_Downgrade' ) ) {
 
 			_e( 'This Thank You Page will show up on orders that have downgraded subscriptions.', 'funnel-builder-powerpack' );
 		}
-
 	}
 }

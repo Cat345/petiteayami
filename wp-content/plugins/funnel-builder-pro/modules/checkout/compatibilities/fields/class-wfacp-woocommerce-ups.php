@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Order WooCommerce UPS Shipping Plugin with Print Label
@@ -12,10 +16,10 @@ if ( ! class_exists( 'WFACP_Compatibility_UPS_Shipping_Access_Point' ) ) {
 
 		public function __construct() {
 			/* Register Add field */
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
 			add_filter( 'wfacp_html_fields_ups_woocommerce_access_point', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'call_fields_hook' ], 999, 3 );
-			add_action( 'wfacp_internal_css', [ $this, 'js' ] );
+			add_action( 'process_wfacp_html', array( $this, 'call_fields_hook' ), 999, 3 );
+			add_action( 'wfacp_internal_css', array( $this, 'js' ) );
 
 			/* prevent third party fields and wrapper*/
 
@@ -24,16 +28,16 @@ if ( ! class_exists( 'WFACP_Compatibility_UPS_Shipping_Access_Point' ) ) {
 
 		public function add_field( $fields ) {
 
-			$fields['ups_woocommerce_access_point'] = [
+			$fields['ups_woocommerce_access_point'] = array(
 				'label'       => __( 'Access Point Locations', 'woofunnels-aero-checkout' ),
 				'data_label'  => __( 'Access Point Locations', 'woofunnels-aero-checkout' ),
 				'type'        => 'wfacp_html',
 				'id'          => 'ups_woocommerce_access_point',
 				'field_type'  => 'advanced',
-				'cssready'    => [ 'wfacp-col-full' ],
-				'class'       => [ 'wfacp-form-control-wrapper', 'wfacp-col-full', 'update_totals_on_change' ],
+				'cssready'    => array( 'wfacp-col-full' ),
+				'class'       => array( 'wfacp-form-control-wrapper', 'wfacp-col-full', 'update_totals_on_change' ),
 				'input_class' => 'wfacp-form-control',
-			];
+			);
 
 			return $fields;
 		}
@@ -44,8 +48,8 @@ if ( ! class_exists( 'WFACP_Compatibility_UPS_Shipping_Access_Point' ) ) {
 				$billing_fields = WC()->checkout()->get_checkout_fields( 'billing' );
 				if ( ! empty( $billing_fields ) && isset( $billing_fields['shipping_accesspoint'] ) ) {
 					$field                = $billing_fields['shipping_accesspoint'];
-					$field['class']       = array_merge( $field['class'], [ 'wfacp-form-control-wrapper', 'wfacp-col-full' ] );
-					$field['input_class'] = [ 'wfacp-form-control' ];
+					$field['class']       = array_merge( $field['class'], array( 'wfacp-form-control-wrapper', 'wfacp-col-full' ) );
+					$field['input_class'] = array( 'wfacp-form-control' );
 					$field['label_class'] = 'wfacp-form-control-label';
 					woocommerce_form_field( 'shipping_accesspoint', $field );
 				}
@@ -54,27 +58,26 @@ if ( ! class_exists( 'WFACP_Compatibility_UPS_Shipping_Access_Point' ) ) {
 
 		public function js() {
 			?>
-            <script>
-                window.addEventListener('load', function () {
-                    (function ($) {
-                        $(document.body).on('updated_checkout', function () {
-                            setTimeout(function () {
-                                let accesspoint = $('#shipping_accesspoint');
-                                let accesspoint_field = $('#shipping_accesspoint_field');
-                                if (accesspoint.length > 0) {
-                                    accesspoint.addClass('wfacp-form-control');
-                                    if ('' !== accesspoint.val()) {
-                                        accesspoint_field.addClass('wfacp-anim-wrap');
-                                    }
-                                }
-                            }, 100);
-                        });
-                    })(jQuery);
-                })
-            </script>
+			<script>
+				window.addEventListener('load', function () {
+					(function ($) {
+						$(document.body).on('updated_checkout', function () {
+							setTimeout(function () {
+								let accesspoint = $('#shipping_accesspoint');
+								let accesspoint_field = $('#shipping_accesspoint_field');
+								if (accesspoint.length > 0) {
+									accesspoint.addClass('wfacp-form-control');
+									if ('' !== accesspoint.val()) {
+										accesspoint_field.addClass('wfacp-anim-wrap');
+									}
+								}
+							}, 100);
+						});
+					})(jQuery);
+				})
+			</script>
 			<?php
 		}
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_UPS_Shipping_Access_Point(), 'ups_shipping_access_point' );

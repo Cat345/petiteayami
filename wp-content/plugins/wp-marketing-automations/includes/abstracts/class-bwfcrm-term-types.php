@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'BWFCRM_Term_Type' ) && BWFAN_Common::is_pro_3_0() ) {
+	#[\AllowDynamicProperties]
 	abstract class BWFCRM_Term_Type {
 		public static $TAG = 1;
 		public static $LIST = 2;

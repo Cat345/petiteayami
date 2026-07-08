@@ -12,6 +12,10 @@
 /**
  * Field overrides.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Preset' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Field_Preset extends WFACPKirki_Field_Select {
@@ -24,7 +28,6 @@ if ( ! class_exists( 'WFACPKirki_Field_Preset' ) ) {
 		protected function set_type() {
 
 			$this->type = 'wfacpkirki-select';
-
 		}
 
 		/**

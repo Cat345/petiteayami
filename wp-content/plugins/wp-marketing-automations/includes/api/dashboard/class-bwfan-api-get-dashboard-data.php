@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_API_Get_Dashboard_Data extends BWFAN_API_Base {
 	public static $ins;
 
@@ -46,7 +47,7 @@ class BWFAN_API_Get_Dashboard_Data extends BWFAN_API_Base {
 		}
 
 		/** Check basic worker last run time and status code check */
-		$resp = BWFAN_Common::validate_core_worker( $force );
+		$resp = BWFAN_Common::validate_core_worker( $force, $last_run );
 		if ( isset( $resp['response_code'] ) ) {
 			$new_data['response_code'] = $resp['response_code'];
 		}

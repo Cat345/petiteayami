@@ -2,6 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'WFOB_Rule_Customer_User' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Rule_Customer_User extends WFOB_Rule_Base {
 
 		public function __construct() {
@@ -43,6 +44,7 @@ if ( ! class_exists( 'WFOB_Rule_Customer_User' ) ) {
 	}
 }
 if ( ! class_exists( 'WFOB_Rule_Customer_Role' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Rule_Customer_Role extends WFOB_Rule_Base {
 
 		public function __construct() {
@@ -99,6 +101,7 @@ if ( ! class_exists( 'WFOB_Rule_Customer_Role' ) ) {
 
 }
 if ( ! class_exists( 'WFOB_Rule_Customer_Purchased_Products' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Rule_Customer_Purchased_Products extends WFOB_Rule_Base {
 
 		public $supports = array( 'cart' );
@@ -158,13 +161,11 @@ if ( ! class_exists( 'WFOB_Rule_Customer_Purchased_Products' ) ) {
 					default:
 						$result = false;
 
-
 						break;
 				}
 			}
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }

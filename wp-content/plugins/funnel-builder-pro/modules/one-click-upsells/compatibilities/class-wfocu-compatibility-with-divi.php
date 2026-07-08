@@ -6,6 +6,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Divi' ) ) {
 	/**
 	 * Class WFOCU_Compatibility_With_Divi
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_Divi {
 
 		public function __construct() {
@@ -26,7 +27,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Divi' ) ) {
 			add_filter( 'wfocu_container_attrs', array( $this, 'add_id_for_wfocu_container' ) );
 			add_filter( 'et_builder_add_outer_content_wrap', array( $this, 'maybe_filter' ), 999 );
 			add_action( 'wp_enqueue_scripts', array( $this, 'maybe_handle_jquery_defer' ), 1 );
-			add_action( 'divi_extensions_init', array( $this, 'init_extension' ) );
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_divi_css' ), 10 );
 		}
 
 		public function is_enable() {
@@ -300,12 +301,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Divi' ) ) {
 			}
 		}
 
-		/**
-		 * Fires on divi_extensions_init — registers CSS only when Divi is actually loading.
-		 */
-		public function init_extension() {
-			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_divi_css' ), 10 );
-		}
+
 
 		/**
 		 * Enqueue Divi CSS based on version
@@ -319,7 +315,9 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Divi' ) ) {
 		 */
 		public function enqueue_divi_css() {
 			global $post;
-
+			if (! defined( 'ET_BUILDER_VERSION' ) ) {
+				return;
+			}
 			// Check if we should enqueue CSS
 			$should_enqueue = false;
 
@@ -327,7 +325,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Divi' ) ) {
 			if ( ! is_null( $post ) && $post->post_type === 'wfocu_offer' ) {
 				$should_enqueue = true;
 			}
-
 			// Also enqueue in Visual Builder (for both Divi 4 and Divi 5)
 			if ( function_exists( 'et_core_is_fb_enabled' ) && et_core_is_fb_enabled() ) {
 				$should_enqueue = true;

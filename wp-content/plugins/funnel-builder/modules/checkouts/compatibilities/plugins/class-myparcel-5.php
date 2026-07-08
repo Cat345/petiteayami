@@ -2,20 +2,20 @@
 
 
 if ( ! class_exists( 'WFACP_WooCommerce_MyParcel5' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACP_WooCommerce_MyParcel5 {
 		public function __construct() {
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
-			add_action( 'wffn_rest_checkout_form_actions', [ $this, 'setup_fields' ] );
-			add_action( 'wfacp_after_template_found', [ $this, 'setup_frontend' ] );
-
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
+			add_action( 'wffn_rest_checkout_form_actions', array( $this, 'setup_fields' ) );
+			add_action( 'wfacp_after_template_found', array( $this, 'setup_frontend' ) );
 		}
 
 		public function setup_frontend() {
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_wrapper' ] );
-			add_filter( 'mpwc_checkout_delivery_options_position', [ $this, 'replace_position_hook' ] );
+			add_filter( 'woocommerce_form_field_args', array( $this, 'add_wrapper' ) );
+			add_filter( 'mpwc_checkout_delivery_options_position', array( $this, 'replace_position_hook' ) );
 			add_filter( 'wfacp_html_fields_wfacp_myparcel_delivery_options', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'display_field' ], 999, 2 );
-			add_action( 'wfacp_after_shipping_calculator_field', [ $this, 'print_delivery_options' ] );
+			add_action( 'process_wfacp_html', array( $this, 'display_field' ), 999, 2 );
+			add_action( 'wfacp_after_shipping_calculator_field', array( $this, 'print_delivery_options' ) );
 		}
 
 		public function print_delivery_options() {
@@ -38,40 +38,50 @@ if ( ! class_exists( 'WFACP_WooCommerce_MyParcel5' ) ) {
 
 				$this->separate_fields();
 				$this->separate_fields( 'shipping' );
-			} catch ( Exception|Error $error ) {
+			} catch ( Exception | Error $error ) {
 
 			}
 		}
 
 		private function separate_fields( $type = 'billing' ) {
 
-			new WFACP_Add_Address_Field( 'street_name', array(
-				'label'    => __( 'Street name', 'woocommerce-postnl' ),
-				'cssready' => [ 'wfacp-col-left-third' ],
-				'class'    => apply_filters( 'mpwc_checkout_field_street_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
-				'required' => false, // Only required for NL
-				'priority' => 60,
-			), $type );
+			new WFACP_Add_Address_Field(
+				'street_name',
+				array(
+					'label'    => __( 'Street name', 'woocommerce-postnl' ),
+					'cssready' => array( 'wfacp-col-left-third' ),
+					'class'    => apply_filters( 'mpwc_checkout_field_street_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
+					'required' => false, // Only required for NL
+					'priority' => 60,
+				),
+				$type
+			);
 
-			new WFACP_Add_Address_Field( 'house_number', array(
-				'label'    => __( 'No.', 'woocommerce-postnl' ),
-				'cssready' => [ 'wfacp-col-left-half' ],
-				'class'    => apply_filters( 'mpwc_checkout_field_number_class', array( 'form-row-third', 'wfacp-col-left-half' ) ),
-				'required' => false, // Only required for NL
-				'type'     => 'number',
-				'priority' => 61,
-			), $type );
+			new WFACP_Add_Address_Field(
+				'house_number',
+				array(
+					'label'    => __( 'No.', 'woocommerce-postnl' ),
+					'cssready' => array( 'wfacp-col-left-half' ),
+					'class'    => apply_filters( 'mpwc_checkout_field_number_class', array( 'form-row-third', 'wfacp-col-left-half' ) ),
+					'required' => false, // Only required for NL
+					'type'     => 'number',
+					'priority' => 61,
+				),
+				$type
+			);
 
-			new WFACP_Add_Address_Field( 'house_number_suffix', array(
-				'label'     => __( 'Suffix', 'woocommerce-postnl' ),
-				'cssready'  => [ 'wfacp-col-left-half' ],
-				'class'     => apply_filters( 'mpwc_checkout_field_number_suffix_class', array( 'form-row-third last', 'wfacp-col-left-half' ) ),
-				'required'  => false,
-				'maxlength' => 4,
-				'priority'  => 62,
-			), $type );
-
-
+			new WFACP_Add_Address_Field(
+				'house_number_suffix',
+				array(
+					'label'     => __( 'Suffix', 'woocommerce-postnl' ),
+					'cssready'  => array( 'wfacp-col-left-half' ),
+					'class'     => apply_filters( 'mpwc_checkout_field_number_suffix_class', array( 'form-row-third last', 'wfacp-col-left-half' ) ),
+					'required'  => false,
+					'maxlength' => 4,
+					'priority'  => 62,
+				),
+				$type
+			);
 		}
 
 
@@ -86,13 +96,11 @@ if ( ! class_exists( 'WFACP_WooCommerce_MyParcel5' ) ) {
 				$args['label_class'][] = 'woocommerce-shipping-fields__field-wrapper';
 			}
 
-
 			return $args;
 		}
 
 		public function replace_position_hook( $position ) {
 			return apply_filters( 'wfacp_myparcel_delivery_option_hook', 'wfacp_myparcel_delivery_options', $position, wfacp_template() );
-
 		}
 
 		public function is_enabled() {
@@ -103,13 +111,13 @@ if ( ! class_exists( 'WFACP_WooCommerce_MyParcel5' ) ) {
 			if ( false === $this->is_enabled() ) {
 				return $fields;
 			}
-			$fields['wfacp_myparcel_delivery_options'] = [
+			$fields['wfacp_myparcel_delivery_options'] = array(
 				'type'       => 'wfacp_html',
-				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_myparcel_delivery_options' ],
+				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_myparcel_delivery_options' ),
 				'id'         => 'wfacp_myparcel_delivery_options',
 				'field_type' => 'wfacp_myparcel_delivery_options',
 				'label'      => __( 'MyParcel Delivery Options', 'woofunnels-aero-checkout' ),
-			];
+			);
 
 			return $fields;
 		}
@@ -119,7 +127,7 @@ if ( ! class_exists( 'WFACP_WooCommerce_MyParcel5' ) ) {
 				if ( $key === 'wfacp_myparcel_delivery_options' ) {
 					$this->display_delivery_options();
 				}
-			} catch ( Exception|Error $error ) {
+			} catch ( Exception | Error $error ) {
 
 			}
 		}
@@ -136,9 +144,8 @@ if ( ! class_exists( 'WFACP_WooCommerce_MyParcel5' ) ) {
     margin-right: 5px !important;
 }</style>";
 			do_action( 'wfacp_myparcel_delivery_options' );
-			echo "</div>";
+			echo '</div>';
 		}
-
 	}
 
 	new WFACP_WooCommerce_MyParcel5();

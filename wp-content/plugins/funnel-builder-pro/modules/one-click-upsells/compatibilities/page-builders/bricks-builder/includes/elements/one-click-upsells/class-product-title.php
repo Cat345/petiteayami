@@ -9,10 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 use WC_Product;
 
 if ( ! class_exists( '\WfocuFunnelKit\Product_Title' ) ) {
+	#[\AllowDynamicProperties]
 	class Product_Title extends \Bricks\Element {
 		public $category = 'funnelkit';
-		public $name = 'wfocu-offer-product-title';
-		public $icon = 'wfocu-icon-offer_title';
+		public $name     = 'wfocu-offer-product-title';
+		public $icon     = 'wfocu-icon-offer_title';
 
 		/**
 		 * Retrieves the label for the Product Title element.
@@ -56,7 +57,6 @@ if ( ! class_exists( '\WfocuFunnelKit\Product_Title' ) ) {
 		 */
 		public function set_controls() {
 			$offer_id = WFOCU_Core()->template_loader->get_offer_id();
-
 
 			$products        = array();
 			$product_options = array( '0' => '--No Product--' );
@@ -142,9 +142,9 @@ if ( ! class_exists( '\WfocuFunnelKit\Product_Title' ) ) {
 			$this->set_attribute( 'html_tag', 'class', 'bricks-wfocu-product-title' );
 
 			?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 				<?php printf( '<%1$s %2$s>%3$s</%1$s>', $settings['htmlTag'], $this->render_attributes( 'html_tag' ), $title ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-            </div>
+			</div>
 			<?php
 		}
 	}

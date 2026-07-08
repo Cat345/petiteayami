@@ -1,11 +1,12 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Handles the operations and usage of substeps in funnel
  * Class WFFN_Substeps
  */
 if ( ! class_exists( 'WFFN_Substeps' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Substeps {
 
 		/**
@@ -31,7 +32,7 @@ if ( ! class_exists( 'WFFN_Substeps' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -87,7 +88,7 @@ if ( ! class_exists( 'WFFN_Substeps' ) ) {
 		public function load_substeps() {
 			// load all the trigger files automatically
 			foreach ( glob( plugin_dir_path( WFFN_PLUGIN_FILE ) . 'substeps/*/class-*.php' ) as $substep_file_name ) {
-				require_once( $substep_file_name ); //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+				require_once $substep_file_name; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 			}
 		}
 

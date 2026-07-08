@@ -1,6 +1,7 @@
 <?php
 namespace BWFAN\Importers\AC\Calls;
 
+#[\AllowDynamicProperties]
 class Get_Custom_Fields extends Call {
 	/**
 	 * Get the request endpoint URL.

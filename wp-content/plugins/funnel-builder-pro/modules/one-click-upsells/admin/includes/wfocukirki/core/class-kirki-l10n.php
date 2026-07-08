@@ -13,6 +13,7 @@ if ( ! class_exists( 'WFOCUKirki_L10n' ) ) {
 	/**
 	 * Handles translations
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_L10n {
 
 		/**
@@ -49,7 +50,6 @@ if ( ! class_exists( 'WFOCUKirki_L10n' ) ) {
 			// If we got this far, then WFOCUKirki is embedded in a plugin.
 			// We want the theme's textdomain to handle translations.
 			add_filter( 'override_load_textdomain', array( $this, 'override_load_textdomain' ), 5, 3 );
-
 		}
 
 		/**
@@ -63,7 +63,6 @@ if ( ! class_exists( 'WFOCUKirki_L10n' ) ) {
 				load_textdomain( $this->textdomain, $this->get_path() );
 			}
 			load_plugin_textdomain( $this->textdomain, false, WFOCUKirki::$path . '/languages' );
-
 		}
 
 		/**
@@ -87,7 +86,6 @@ if ( ! class_exists( 'WFOCUKirki_L10n' ) ) {
 			}
 
 			return $found_path;
-
 		}
 
 		/**
@@ -102,13 +100,12 @@ if ( ! class_exists( 'WFOCUKirki_L10n' ) ) {
 				WP_LANG_DIR . '/' . $this->textdomain . '-' . get_locale() . '.mo',
 				WFOCUKirki::$path . '/languages/' . $this->textdomain . '-' . get_locale() . '.mo',
 			);
-
 		}
 
 		/**
 		 * Allows overriding the "wfocukirki" textdomain from a theme.
 		 *
-		 * @param bool $override Whether to override the .mo file loading. Default false.
+		 * @param bool   $override Whether to override the .mo file loading. Default false.
 		 * @param string $domain Text domain. Unique identifier for retrieving translated strings.
 		 * @param string $mofile Path to the MO file.
 		 *
@@ -130,7 +127,6 @@ if ( ! class_exists( 'WFOCUKirki_L10n' ) ) {
 			}
 
 			return $override;
-
 		}
 
 		/**
@@ -155,7 +151,6 @@ if ( ! class_exists( 'WFOCUKirki_L10n' ) ) {
 			}
 
 			return $this->theme_textdomain;
-
 		}
 	}
 }

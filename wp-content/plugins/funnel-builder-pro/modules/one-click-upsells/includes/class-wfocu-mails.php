@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Mails' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Mails {
 
 		private static $ins = null;
@@ -32,7 +33,7 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 			 */
 			add_action( 'wfocu_before_normalize_order_status_to_successful', array( $this, 'maybe_hold_mails_after_processing' ), 10, 2 );
 
-			/**************** CRON SCHEDULE HANDLING ****************************/
+			/**************** CRON SCHEDULE HANDLING */
 
 			/**
 			 * Cron Handler for `fk_fb_every_4_minute`
@@ -73,7 +74,7 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -81,6 +82,7 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 
 		/**
 		 * Adding our custom Email to the WooCommerce Email Framework
+		 *
 		 * @hooked into `woocommerce_email_classes`
 		 *
 		 * @param WC_Email[] $email_classes
@@ -98,6 +100,7 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 
 		/**
 		 * Setting up dynamic events to fire emails at our event in WooCommerce way
+		 *
 		 * @hooked into `woocommerce_email_actions`
 		 *
 		 * @param array $email_actions
@@ -152,7 +155,6 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 				 */
 				if ( 'create_order' === $order_behavior && ( ( 'yes' === $cancel_original && 'end' === WFOCU_Core()->data->get_option( 'send_processing_mail_on_no_batch_cancel' ) ) || ( 'no' === $cancel_original && 'end' === WFOCU_Core()->data->get_option( 'send_processing_mail_on_no_batch' ) ) ) ) {
 
-
 					remove_action( 'woocommerce_order_status_failed_to_processing_notification', array( $wc_mails->emails['WC_Email_Customer_Processing_Order'], 'trigger' ), 10, 2 );
 					remove_action( 'woocommerce_order_status_on-hold_to_processing_notification', array( $wc_mails->emails['WC_Email_Customer_Processing_Order'], 'trigger' ), 10, 2 );
 					remove_action( 'woocommerce_order_status_pending_to_processing_notification', array( $wc_mails->emails['WC_Email_Customer_Processing_Order'], 'trigger' ), 10, 2 );
@@ -165,10 +167,8 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 
 					remove_action( 'woocommerce_order_status_completed_notification', array( $wc_mails->emails['WC_Email_Customer_Completed_Order'], 'trigger' ), 10, 2 );
 
-
 				}
 			}
-
 		}
 
 		/**
@@ -213,7 +213,6 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 			}
 
 			$this->maybe_send_pending_emails( $order_id, $funnel_order_behavior, $cancel_original, $send_processing_mail_on_no_batch, $send_processing_mail_on_no_batch_cancel );
-
 		}
 
 		public function maybe_send_pending_emails( $order, $order_behaviour, $cancel_original, $send_processing_mail_on_no_batch, $send_processing_mail_on_no_batch_cancel ) {
@@ -248,7 +247,6 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 			}
 
 			$get_order->save_meta_data();
-
 		}
 
 
@@ -277,8 +275,6 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 
 					$order->update_meta_data( '_wfocu_status_schedule_for_cb', time() );
 					$order->save_meta_data();
-
-
 
 				}
 
@@ -310,9 +306,9 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 					 * case 1: If batching is on and we have to send mail on start
 					 */
 					if ( 'batching' === $order_behavior && 'end' === WFOCU_Core()->data->get_option( 'send_processing_mail_on' ) ) {
-						/**initiate payment gateways so that they could contribute in emails **/
+						/**initiate payment gateways so that they could contribute in emails */
 						WC()->payment_gateways();
-						$wc_mails         = WC()->mailer();
+						$wc_mails = WC()->mailer();
 						add_action( 'woocommerce_order_status_pending_to_on-hold_notification', array( $wc_mails->emails['WC_Email_Customer_On_Hold_Order'], 'trigger' ), 10, 2 );
 						add_action( 'woocommerce_order_status_failed_to_on-hold_notification', array( $wc_mails->emails['WC_Email_Customer_On_Hold_Order'], 'trigger' ), 10, 2 );
 						add_action( 'woocommerce_order_status_cancelled_to_on-hold_notification', array( $wc_mails->emails['WC_Email_Customer_On_Hold_Order'], 'trigger' ), 10, 2 );
@@ -331,16 +327,21 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 					return;
 				}
 			}
-
 		}
 
 		public function maybe_handle_cron_pending_mails_for_cb() {
 
 			WFOCU_Common::$start_time = time();
-			$get_orders               = WFOCU_Common::wc_get_orders( array(
-				'limit'     => 100,
-				'post_type' => 'shop_order',
-			), [ 'key' => '_wfocu_status_schedule_for_cb', 'value' => true ] );
+			$get_orders               = WFOCU_Common::wc_get_orders(
+				array(
+					'limit'     => 100,
+					'post_type' => 'shop_order',
+				),
+				array(
+					'key'   => '_wfocu_status_schedule_for_cb',
+					'value' => true,
+				)
+			);
 			$i                        = 0;
 			$get_ttl                  = WFOCU_Core()->data->get_option( 'ttl_funnel' );
 			if ( ! empty( $get_orders ) ) {
@@ -360,7 +361,7 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 						$this->maybe_send_pending_email_for_bacs_for_cheque_scheduled( $order->get_id() );
 					}
 					unset( $get_orders[ $i ] );
-					$i ++;
+					++$i;
 				} while ( ! ( WFOCU_Common::time_exceeded() || WFOCU_Common::memory_exceeded() ) && ! empty( $get_orders ) );
 			}
 		}
@@ -386,10 +387,16 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 		public function maybe_handle_cron_pending_mails() {
 
 			WFOCU_Common::$start_time = time();
-			$get_orders               = WFOCU_Common::wc_get_orders( array(
-				'limit'     => 100,
-				'post_type' => 'shop_order',
-			), [ 'key' => '_wfocu_pending_mails', 'value' => true ] );
+			$get_orders               = WFOCU_Common::wc_get_orders(
+				array(
+					'limit'     => 100,
+					'post_type' => 'shop_order',
+				),
+				array(
+					'key'   => '_wfocu_pending_mails',
+					'value' => true,
+				)
+			);
 			$i                        = 0;
 			$get_ttl                  = WFOCU_Core()->data->get_option( 'ttl_funnel' );
 			if ( ! empty( $get_orders ) ) {
@@ -400,7 +407,6 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 						break;
 					}
 					$order = $get_orders[ $i ];
-
 
 					if ( ! $order instanceof WC_Order ) {
 						continue;
@@ -414,7 +420,6 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 						continue;
 					}
 
-
 					list( $order_id, $funnel_order_behavior, $cancel_original, $send_processing_mail_on_no_batch, $send_processing_mail_on_no_batch_cancel, $time ) = array_values( $get_schedule_meta );
 
 					/**
@@ -424,7 +429,7 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 						$this->maybe_send_pending_emails( $order_id, $funnel_order_behavior, $cancel_original, $send_processing_mail_on_no_batch, $send_processing_mail_on_no_batch_cancel );
 					}
 					unset( $get_orders[ $i ] );
-					$i ++;
+					++$i;
 				} while ( ! ( WFOCU_Common::time_exceeded() || WFOCU_Common::memory_exceeded() ) && ! empty( $get_orders ) );
 			}
 		}
@@ -456,7 +461,6 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 				remove_action( 'woocommerce_order_status_completed_notification', array( $wc_mails->emails['WC_Email_Customer_Completed_Order'], 'trigger' ), 10, 2 );
 
 			}
-
 		}
 
 		public function initialize_payment_gateway_before_normalize() {
@@ -465,7 +469,6 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 
 		public function maybe_restrict_emails_on_cancel_refund_expired() {
 
-
 			if ( 'end' === WFOCU_Core()->data->get_option( 'send_processing_mail_on_no_batch_cancel' ) ) {
 				add_filter( 'woocommerce_email_enabled_customer_refunded_order', '__return_false' );
 				add_filter( 'woocommerce_email_enabled_cancelled_order', '__return_false' );
@@ -473,9 +476,7 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 				add_filter( 'woocommerce_email_enabled_wc_memberships_user_membership_ended_email', '__return_false' );
 				add_filter( 'woocommerce_email_enabled_wcs_email_cancelled_subscription', '__return_false' );
 			}
-
 		}
-
 	}
 
 	if ( class_exists( 'WFOCU_Core' ) ) {

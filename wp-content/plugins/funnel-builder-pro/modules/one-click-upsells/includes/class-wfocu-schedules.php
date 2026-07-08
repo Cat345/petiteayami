@@ -3,8 +3,10 @@ if ( ! class_exists( 'WFOCU_Schedules' ) ) {
 	/**
 	 * This class take care of ecommerce tracking setup
 	 * It renders necessary javascript code to fire events as well as creates dynamic data for the tracking
+	 *
 	 * @author woofunnels.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Schedules {
 		private static $ins = null;
 
@@ -32,8 +34,8 @@ if ( ! class_exists( 'WFOCU_Schedules' ) ) {
 		public function get_cron_schedules() {
 			return array(
 				'wfocu_cron_schedule_times' => array(
-					'interval' => ( MINUTE_IN_SECONDS ) *  4 ,
-					'display' => sprintf( __( 'Once Every %d minutes', 'woofunnels-upstroke-one-click-upsell' ),  4  ),
+					'interval' => ( MINUTE_IN_SECONDS ) * 4,
+					'display'  => sprintf( __( 'Once Every %d minutes', 'woofunnels-upstroke-one-click-upsell' ), 4 ),
 				),
 			);
 		}
@@ -47,22 +49,19 @@ if ( ! class_exists( 'WFOCU_Schedules' ) ) {
 					wp_schedule_event( time(), $schedule, $hook );
 				}
 			}
-
 		}
 
 		public function get_frequency_for_schedules() {
-			$schedules_times = [
-				'fk_fb_every_4_minute'  => 'wfocu_cron_schedule_times'
-			];
+			$schedules_times = array(
+				'fk_fb_every_4_minute' => 'wfocu_cron_schedule_times',
+			);
 
 			return $schedules_times;
 		}
-
 	}
 
 
 	if ( class_exists( 'WFOCU_Core' ) ) {
 		WFOCU_Core::register( 'schedules', 'WFOCU_Schedules' );
 	}
-
 }

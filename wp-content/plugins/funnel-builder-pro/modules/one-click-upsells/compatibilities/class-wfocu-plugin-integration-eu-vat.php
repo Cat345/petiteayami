@@ -9,6 +9,7 @@ if ( ! class_exists( 'WFOCU_Plugin_Integration_EU_VAT' ) ) {
 	 *
 	 * @since 1.0.0
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_Plugin_Integration_EU_VAT {
 
 		/**
@@ -34,8 +35,6 @@ if ( ! class_exists( 'WFOCU_Plugin_Integration_EU_VAT' ) ) {
 		public function is_enable() {
 			return class_exists( 'Alg_WC_EU_VAT' ) && function_exists( 'alg_wc_eu_vat' );
 		}
-
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Plugin_Integration_EU_VAT(), 'wfocu_plugin_integration_eu_vat' );

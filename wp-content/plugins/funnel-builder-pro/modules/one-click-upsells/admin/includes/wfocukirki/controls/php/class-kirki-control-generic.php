@@ -18,6 +18,7 @@ if ( ! class_exists( 'WFOCUKirki_Control_Generic' ) ) {
 	 * A generic and pretty abstract control.
 	 * Allows for great manipulation using the field's "choices" argumnent.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Control_Generic extends WFOCUKirki_Control_Base {
 
 		/**

@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFFN_Compatibility_With_Beaver_Builder
  */
 if ( ! class_exists( 'WFFN_Compatibility_With_Beaver_Builder' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_With_Beaver_Builder {
 
 		public function __construct() {
@@ -50,7 +51,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Beaver_Builder' ) ) {
 				return array(
 					'selected'        => 'wp_editor_1',
 					'selected_type'   => 'wp_editor',
-					'template_active' => 'yes'
+					'template_active' => 'yes',
 				);
 			}
 
@@ -60,4 +61,3 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Beaver_Builder' ) ) {
 
 	WFFN_Plugin_Compatibilities::register( new WFFN_Compatibility_With_Beaver_Builder(), 'beaver_builder' );
 }
-

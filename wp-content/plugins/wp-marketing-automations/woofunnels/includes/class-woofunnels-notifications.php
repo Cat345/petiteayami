@@ -384,6 +384,11 @@ if ( ! class_exists( 'WooFunnels_Notifications' ) ) {
 				'msg'     => 'Problem With dismiss',
 			);
 
+			if ( ! current_user_can( 'manage_woocommerce' ) ) {
+				$results['msg'] = __( 'You do not have permission to perform this action.', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				wp_send_json( $results, 403 );
+			}
+
 			check_ajax_referer( 'bwf_notice_dismiss', '_nonce' );
 
 			if ( ( isset( $_POST['noticeGroup'] ) && $_POST['noticeGroup'] !== '' ) && ( isset( $_POST['noticekey'] ) && $_POST['noticekey'] !== '' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification handled by AJAX system

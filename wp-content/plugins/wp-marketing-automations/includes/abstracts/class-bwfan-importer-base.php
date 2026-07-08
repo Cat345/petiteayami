@@ -24,6 +24,7 @@ use WP_User;
  *
  * @since 1.0.0
  */
+#[\AllowDynamicProperties]
 abstract class Importer {
 	const LIMIT = 50;
 	const RECENT_IMPORT_TIME_THRESHOLD = 5; // seconds

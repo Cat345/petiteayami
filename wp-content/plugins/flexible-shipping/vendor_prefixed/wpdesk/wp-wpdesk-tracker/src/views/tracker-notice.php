@@ -10,7 +10,7 @@ if (!\defined('ABSPATH')) {
 <div id="wpdesk_tracker_notice" class="updated notice wpdesk_tracker_notice is-dismissible">
 	<p>
 		<?php 
-$notice_content = \apply_filters('wpdesk_tracker_notice_content', \false, $username, $terms_url);
+$notice_content = \apply_filters_ref_array('wpdesk_tracker_notice_content', [\false, $username, $terms_url]);
 ?>
 		<?php 
 if (empty($notice_content)) {

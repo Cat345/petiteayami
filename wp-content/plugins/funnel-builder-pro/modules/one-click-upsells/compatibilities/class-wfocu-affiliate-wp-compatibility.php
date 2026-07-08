@@ -1,10 +1,12 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 if ( ! class_exists( 'WFOCU_Affiliate_WP_Compatibility' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Affiliate_WP_Compatibility {
 
 		public function __construct() {
 			add_action( 'wfocu_offer_accepted_and_processed', array( $this, 'wfocu_add_affiliate_on_order' ), 10, 5 );
-
 		}
 
 		public function is_enable() {
@@ -21,7 +23,7 @@ if ( ! class_exists( 'WFOCU_Affiliate_WP_Compatibility' ) ) {
 			}
 
 			if ( class_exists( 'Affiliate_WP_WooCommerce' ) ) {
-				$obj = new Affiliate_WP_WooCommerce;
+				$obj = new Affiliate_WP_WooCommerce();
 				if ( ! empty( $new_order ) && is_object( $new_order ) ) {
 					$order_id = $new_order->get_id();
 					$obj->add_pending_referral( $order_id );
@@ -31,26 +33,28 @@ if ( ! class_exists( 'WFOCU_Affiliate_WP_Compatibility' ) ) {
 					$existing     = affiliate_wp()->referrals->get_by( 'reference', $order_id, 'woocommerce' );
 					$affiliate_id = $obj->get_affiliate_id( $order_id );
 					if ( ! is_null( $existing ) ) {
-						affiliate_wp()->referrals->update_referral( $existing->referral_id, array(
-							'amount'       => $this->get_amount( wc_get_order( $order_id ), $affiliate_id, $obj ),
-							'reference'    => $order_id,
-							'description'  => $existing->description,
-							'campaign'     => $existing->campaign,
-							'affiliate_id' => $affiliate_id,
-							'visit_id'     => $existing->visit_id,
-							'order_total'  => $order->get_total(),
-							'customer'     => $obj->get_customer( $order_id ),
-							'context'      => 'woocommerce',
-						) );
+						affiliate_wp()->referrals->update_referral(
+							$existing->referral_id,
+							array(
+								'amount'       => $this->get_amount( wc_get_order( $order_id ), $affiliate_id, $obj ),
+								'reference'    => $order_id,
+								'description'  => $existing->description,
+								'campaign'     => $existing->campaign,
+								'affiliate_id' => $affiliate_id,
+								'visit_id'     => $existing->visit_id,
+								'order_total'  => $order->get_total(),
+								'customer'     => $obj->get_customer( $order_id ),
+								'context'      => 'woocommerce',
+							)
+						);
 					}
 				}
 			}
-
 		}
 
 		/**
 		 * @param WC_Order $order
-		 * @param Integer $affiliate_id
+		 * @param Integer  $affiliate_id
 		 *
 		 * @return mixed|void
 		 */
@@ -93,7 +97,7 @@ if ( ! class_exists( 'WFOCU_Affiliate_WP_Compatibility' ) ) {
 					$shipping      = 0;
 
 					if ( $cart_shipping > 0 && ! affiliate_wp()->settings->get( 'exclude_shipping' ) ) {
-						$shipping      = $cart_shipping / count( $items );
+						$shipping       = $cart_shipping / count( $items );
 						$product_total += $shipping;
 					}
 
@@ -124,7 +128,6 @@ if ( ! class_exists( 'WFOCU_Affiliate_WP_Compatibility' ) ) {
 			 * @param \Affiliate_WP_WooCommerce $this WooCommerce integration class instance.
 			 *
 			 * @since 2.4.4
-			 *
 			 */
 			$amount = apply_filters( 'affwp_woocommerce_add_pending_referral_amount', $amount, $order->get_id(), $affiliate_id, $this );
 

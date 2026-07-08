@@ -1,5 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 if ( ! class_exists( 'WFOCU_Compatibility_With_GeneratePress' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_GeneratePress {
 
 		public function __construct() {
@@ -7,8 +10,8 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_GeneratePress' ) ) {
 			if ( ! $this->is_enable() ) {
 				return;
 			}
-			add_action( 'customize_register', [ $this, 'wfocu_temp_remove_controls' ], 1500 );
-			add_action( 'customize_register', [ $this, 'wfocu_temp_remove_theme_helper_controls' ], 1 );
+			add_action( 'customize_register', array( $this, 'wfocu_temp_remove_controls' ), 1500 );
+			add_action( 'customize_register', array( $this, 'wfocu_temp_remove_theme_helper_controls' ), 1 );
 		}
 
 		/**
@@ -45,7 +48,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_GeneratePress' ) ) {
 
 			return true;
 		}
-
 	}
 
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_GeneratePress(), 'generatepress' );

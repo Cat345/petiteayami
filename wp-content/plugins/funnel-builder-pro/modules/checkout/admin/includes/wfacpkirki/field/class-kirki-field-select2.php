@@ -14,7 +14,12 @@
  * In older versions of WFACPKirki there was a separate 'select2' field.
  * This exists here just for compatibility purposes.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Field_Select2' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Field_Select2 extends WFACPKirki_Field_Select {
 	}
 }

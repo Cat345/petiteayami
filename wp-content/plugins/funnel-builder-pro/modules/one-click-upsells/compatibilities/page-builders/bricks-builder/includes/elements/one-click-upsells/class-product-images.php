@@ -1,6 +1,7 @@
 <?php
 
 namespace WfocuFunnelKit;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
@@ -8,11 +9,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 use WC_Product;
 
 if ( ! class_exists( '\WfocuFunnelKit\Product_Images' ) ) {
+	#[\AllowDynamicProperties]
 	class Product_Images extends \Bricks\Element {
 		public $category = 'funnelkit';
-		public $name = 'wfocu-product-images';
-		public $icon = 'wfocu-icon-product_gallery';
-		public $scripts = array( 'runFlickityInitialization' );
+		public $name     = 'wfocu-product-images';
+		public $icon     = 'wfocu-icon-product_gallery';
+		public $scripts  = array( 'runFlickityInitialization' );
 
 		/**
 		 * Retrieves the label for the "Product Images" element.
@@ -255,7 +257,6 @@ if ( ! class_exists( '\WfocuFunnelKit\Product_Images' ) ) {
 		 *
 		 * @return void
 		 * @since 1.0.0
-		 *
 		 */
 		public function render() {
 			$settings = $this->settings;
@@ -263,7 +264,7 @@ if ( ! class_exists( '\WfocuFunnelKit\Product_Images' ) ) {
 			$this->set_attribute( '_root', 'class', 'bricks-element' );
 
 			?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 				<?php
 
 				if ( isset( $settings['selectedProduct'] ) ) {
@@ -330,13 +331,16 @@ if ( ! class_exists( '\WfocuFunnelKit\Product_Images' ) ) {
 						wp_enqueue_style( 'flickity-common' );
 						if ( ! empty( $main_img ) ) {
 
-							WFOCU_Core()->template_loader->get_template_part( 'product/slider', array(
-								'key'     => $product_key,
-								'gallery' => $gallery,
-								'product' => $product_obj,
-								'title'   => '',
-								'style'   => 2,
-							) );
+							WFOCU_Core()->template_loader->get_template_part(
+								'product/slider',
+								array(
+									'key'     => $product_key,
+									'gallery' => $gallery,
+									'product' => $product_obj,
+									'title'   => '',
+									'style'   => 2,
+								)
+							);
 						}
 					}
 				}
@@ -345,45 +349,45 @@ if ( ! class_exists( '\WfocuFunnelKit\Product_Images' ) ) {
 					wp_enqueue_style( 'flickity' );
 					wp_enqueue_style( 'flickity-common' );
 					?>
-                    <div class="bricks-widget-container">
-                        <div class="wfocu-product-gallery ">
-                            <div class="wfocu-product-carousel wfocu-product-image-single ">
-                                <div class="wfocu-carousel-cell">
-                                    <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                                </div>
-                            </div>
-                        </div>
+					<div class="bricks-widget-container">
+						<div class="wfocu-product-gallery ">
+							<div class="wfocu-product-carousel wfocu-product-image-single ">
+								<div class="wfocu-carousel-cell">
+									<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+								</div>
+							</div>
+						</div>
 						<?php if ( isset( $settings['sliderEnabled'] ) ) { ?>
-                            <div class="wfocu-product-carousel-nav wfocu-product-thumbnails" data-flickity='{"asNavFor":".wfocu-product-carousel-nav","contain":true,"pageDots":false,"imagesLoaded":true}'>
-                                <div class="wfocu-thumb-col is-nav-selected">
-                                    <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                                </div>
-                                <div class="wfocu-thumb-col">
-                                    <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                                </div>
-                                <div class="wfocu-thumb-col">
-                                    <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                                </div>
-                                <div class="wfocu-thumb-col">
-                                    <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                                </div>
-                                <div class="wfocu-thumb-col">
-                                    <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                                </div>
-                                <div class="wfocu-thumb-col">
-                                    <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                                </div>
-                            </div>
+							<div class="wfocu-product-carousel-nav wfocu-product-thumbnails" data-flickity='{"asNavFor":".wfocu-product-carousel-nav","contain":true,"pageDots":false,"imagesLoaded":true}'>
+								<div class="wfocu-thumb-col is-nav-selected">
+									<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+								</div>
+								<div class="wfocu-thumb-col">
+									<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+								</div>
+								<div class="wfocu-thumb-col">
+									<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+								</div>
+								<div class="wfocu-thumb-col">
+									<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+								</div>
+								<div class="wfocu-thumb-col">
+									<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+								</div>
+								<div class="wfocu-thumb-col">
+									<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+								</div>
+							</div>
 							<?php
 
 						}
 						?>
-                    </div>
+					</div>
 					<?php
 				}
 
 				?>
-            </div>
+			</div>
 			<?php
 		}
 	}

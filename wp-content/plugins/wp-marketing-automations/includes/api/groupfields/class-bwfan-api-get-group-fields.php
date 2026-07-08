@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Api_Get_Group_Fields extends BWFAN_API_Base {
 
 	public static $ins;

@@ -1,6 +1,7 @@
 <?php
 
 if ( ! class_exists( 'BWFAN_Model_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
+	#[\AllowDynamicProperties]
 	class BWFAN_Model_Fields extends BWFAN_Model {
 		private static $fields_cache_by_slug = [];
 
@@ -16,7 +17,7 @@ if ( ! class_exists( 'BWFAN_Model_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 		 */
 		static function get_field_by_id( $id ) {
 			global $wpdb;
-			$query     = "SELECT * from {table_name} where ID = $id ";
+			$query     = $wpdb->prepare( "SELECT * from {table_name} where ID = %d ", $id );
 			$fielddata = self::get_results( $query );
 			$fielddata = is_array( $fielddata ) && ! empty( $fielddata ) ? $fielddata[0] : array();
 			if ( isset( $fielddata['meta'] ) ) {
@@ -32,11 +33,11 @@ if ( ! class_exists( 'BWFAN_Model_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			$query .= " WHERE 1=1";
 
-			! empty( $mode ) && $query .= " AND mode = $mode";
-			! empty( $vmode ) && $query .= " AND vmode = $vmode";
-			! empty( $searchable ) && $query .= " AND search = $searchable";
+			! empty( $mode ) && $query .= $wpdb->prepare( " AND mode = %d", $mode );
+			! empty( $vmode ) && $query .= $wpdb->prepare( " AND vmode = %d", $vmode );
+			! empty( $searchable ) && $query .= $wpdb->prepare( " AND search = %d", $searchable );
 
-			$group_id > 0 ? $query .= " AND fg.ID = $group_id" : $query .= " AND (EXISTS (SELECT 1 FROM {$wpdb->prefix}bwfan_field_groups WHERE cf.gid=ID) OR cf.gid=0 )";
+			$group_id > 0 ? $query .= $wpdb->prepare( " AND fg.ID = %d", $group_id ) : $query .= " AND (EXISTS (SELECT 1 FROM {$wpdb->prefix}bwfan_field_groups WHERE cf.gid=ID) OR cf.gid=0 )";
 
 			$fields = self::get_results( $query );
 

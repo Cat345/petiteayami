@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Output_Field_Multicolor' ) ) {
 	/**
 	 * Output overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Output_Field_Multicolor extends WFOCUKirki_Output {
 
 		/**
@@ -48,7 +49,7 @@ if ( ! class_exists( 'WFOCUKirki_Output_Field_Multicolor' ) ) {
 				$output['suffix'] = ( isset( $output['suffix'] ) ) ? $output['suffix'] : '';
 
 				// Create the styles.
-				$this->styles[ $output['media_query'] ][ $output['element'] ][ $property ] = $sub_value . $output['suffix'];
+				$this->styles[ $output['media_query'] ][ $output['element'] ][ $property ] = sanitize_hex_color( $sub_value ) . $output['suffix'];
 
 			}
 		}

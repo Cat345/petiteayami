@@ -2,8 +2,8 @@
 if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 	/**
 	 * Base class for database interactions via custom table.
-	 *
 	 */
+	#[\AllowDynamicProperties]
 	abstract class WFOCU_DB_Base {
 
 		/**
@@ -89,7 +89,6 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 		 *
 		 * @return string
 		 * @since 1.3.5
-		 *
 		 */
 		public function get_table_name( $meta = false ) {
 			global $wpdb;
@@ -107,7 +106,6 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 		 *
 		 * @return array
 		 * @since 1.3.5
-		 *
 		 */
 		public function get_fields() {
 
@@ -123,7 +121,6 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 				 * @param string $table_name Name of table
 				 *
 				 * @since 1.4.0
-				 *
 				 */
 				$fields['meta_fields'] = apply_filters( 'wfocu_db_meta_fields', array_keys( $this->meta_fields ), $this->get_table_name( true ) );
 
@@ -139,7 +136,6 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 		 *
 		 * @return bool|int|null
 		 * @since 1.3.5
-		 *
 		 */
 		public function create( array $data ) {
 
@@ -200,12 +196,11 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 		/**
 		 *  Save a row
 		 *
-		 * @param array $data Row data to save
+		 * @param array      $data Row data to save
 		 * @param bool|false $meta
 		 *
 		 * @return bool|int|null
 		 * @since 1.3.5
-		 *
 		 */
 		protected function save( array $data, $meta = false ) {
 			if ( $meta && ! $this->has_meta ) {
@@ -237,7 +232,6 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 		 *
 		 * @return bool
 		 * @since 1.3.5
-		 *
 		 */
 		public function delete( $id ) {
 			global $wpdb;
@@ -269,9 +263,9 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 			$args = $args;
 			$args = wp_parse_args( $args, $default_args );
 
-			$data           = [];
-			$where          = [];
-			$where_meta     = [];
+			$data           = array();
+			$where          = array();
+			$where_meta     = array();
 			$query_type     = 'get_row';
 			$group_by       = '';
 			$order_by       = '';
@@ -359,11 +353,11 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 				$joins['session_key'] = "LEFT JOIN {$wpdb->prefix}wfocu_session AS session ON ( events.sess_id = session.id )";
 			}
 
-			if ( isset( $args['event_join'] ) && $event_join ) { //To join event table with session table
+			if ( isset( $args['event_join'] ) && $event_join ) { // To join event table with session table
 				$joins['event_key'] = "LEFT JOIN {$wpdb->prefix}wfocu_event AS event ON ( event.sess_id = events.id )";
 			}
 
-			if ( isset( $args['meta_join'] ) && $meta_join ) { //To join event meta table with join of session table and event table
+			if ( isset( $args['meta_join'] ) && $meta_join ) { // To join event meta table with join of session table and event table
 				$joins['emeta_key'] = "LEFT JOIN {$wpdb->prefix}wfocu_event_meta AS event_meta ON ( event.id = event_meta.event_id )";
 			}
 
@@ -374,7 +368,7 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 
 				switch ( $type ) {
 					case 'meta':
-						$joins["meta_{$key}"] = "{$join_type} JOIN {$wpdb->prefix}wfocu_event_meta AS events_meta_{$key} ON ( events.ID = events_meta_{$key}.event_id AND events_meta_{$key}.meta_key = '{$raw_key}' )";
+						$joins[ "meta_{$key}" ] = "{$join_type} JOIN {$wpdb->prefix}wfocu_event_meta AS events_meta_{$key} ON ( events.ID = events_meta_{$key}.event_id AND events_meta_{$key}.meta_key = '" . esc_sql( $raw_key ) . "' )";
 						break;
 
 				}
@@ -389,7 +383,7 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 					$key       = sanitize_key( is_array( $value['meta_key'] ) ? $value['meta_key'][0] . '_array' : $value['meta_key'] );
 
 					// If we have a where clause for meta, join the postmeta table
-					$joins["meta_{$key}"] = "{$join_type} JOIN {$wpdb->prefix}wfocu_event_meta AS events_meta_{$key} ON ( events.ID = events_meta_{$key}.event_id )";
+					$joins[ "meta_{$key}" ] = "{$join_type} JOIN {$wpdb->prefix}wfocu_event_meta AS events_meta_{$key} ON ( events.ID = events_meta_{$key}.event_id )";
 
 				}
 			}
@@ -420,19 +414,22 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 						continue;
 					}
 
+					$where_value = '';
+
 					$key = sanitize_key( is_array( $value['meta_key'] ) ? $value['meta_key'][0] . '_array' : $value['meta_key'] );
 
 					if ( strtolower( $value['operator'] ) === 'in' || strtolower( $value['operator'] ) === 'not in' ) {
 
 						if ( is_array( $value['meta_value'] ) ) {
-							$value['meta_value'] = implode( "','", $value['meta_value'] );  //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-						}
-
-						if ( ! empty( $value['meta_value'] ) ) {
-							$where_value = "{$value['operator']} ('{$value['meta_value']}')";
+							$value['meta_value'] = implode( "','", array_map( 'esc_sql', $value['meta_value'] ) );  //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+							if ( ! empty( $value['meta_value'] ) ) {
+								$where_value = "{$value['operator']} ('{$value['meta_value']}')";
+							}
+						} elseif ( ! empty( $value['meta_value'] ) ) {
+							$where_value = "{$value['operator']} ('" . esc_sql( $value['meta_value'] ) . "')";
 						}
 					} else {
-						$where_value = "{$value['operator']} '{$value['meta_value']}'";
+						$where_value = "{$value['operator']} '" . esc_sql( $value['meta_value'] ) . "'";
 					}
 
 					if ( ! empty( $where_value ) ) {
@@ -441,9 +438,9 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 						}
 
 						if ( is_array( $value['meta_key'] ) ) {
-							$query['where'] .= " ( events_meta_{$key}.meta_key   IN ('" . implode( "','", $value['meta_key'] ) . "')";
+							$query['where'] .= " ( events_meta_{$key}.meta_key   IN ('" . implode( "','", array_map( 'esc_sql', $value['meta_key'] ) ) . "')";
 						} else {
-							$query['where'] .= " ( events_meta_{$key}.meta_key   = '{$value['meta_key']}'";
+							$query['where'] .= " ( events_meta_{$key}.meta_key   = '" . esc_sql( $value['meta_key'] ) . "'";
 						}
 
 						$query['where'] .= " AND events_meta_{$key}.meta_value {$where_value} )";
@@ -458,17 +455,20 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 
 				foreach ( $where as $value ) {
 
+					$where_value = '';
+
 					if ( strtolower( $value['operator'] ) === 'in' || strtolower( $value['operator'] ) === 'not in' ) {
 
 						if ( is_array( $value['value'] ) ) {
-							$value['value'] = implode( "','", $value['value'] );
-						}
-
-						if ( ! empty( $value['value'] ) ) {
-							$where_value = "{$value['operator']} ('{$value['value']}')";
+							$value['value'] = implode( "','", array_map( 'esc_sql', $value['value'] ) );
+							if ( ! empty( $value['value'] ) ) {
+								$where_value = "{$value['operator']} ('{$value['value']}')";
+							}
+						} elseif ( ! empty( $value['value'] ) ) {
+							$where_value = "{$value['operator']} ('" . esc_sql( $value['value'] ) . "')";
 						}
 					} else {
-						$where_value = "{$value['operator']} '{$value['value']}'";
+						$where_value = "{$value['operator']} '" . esc_sql( $value['value'] ) . "'";
 					}
 
 					if ( ! empty( $where_value ) ) {
@@ -510,7 +510,6 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 
 			$query_results = array();
 
-
 			$cached_results = $woofunnels_cache_object->get_cache( $cache_key, 'upstroke-reports' );
 
 			if ( isset( $cached_results[ $query_hash ] ) && ! $debug && ! $nocache ) {
@@ -524,10 +523,10 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 				}
 
 				if ( $debug || $nocache || ( ( is_array( $query_results ) || is_object( $query_results ) ) && count( $query_results ) === 0 ) || ! isset( $cached_results[ $query_hash ] ) ) {
-					$wpdb->query( 'SET SESSION SQL_BIG_SELECTS=1' );  //db call ok; no-cache ok; WPCS: unprepared SQL ok.
+					$wpdb->query( 'SET SESSION SQL_BIG_SELECTS=1' );  // db call ok; no-cache ok; WPCS: unprepared SQL ok.
 					$query_results = $wpdb->$query_type( $query );
 					if ( ! is_array( $cached_results ) ) {
-						$cached_results = [];
+						$cached_results = array();
 					}
 					$cached_results[ $query_hash ] = $query_results;
 					$woofunnels_transient_obj->set_transient( $cache_key, $cached_results, 21600, 'upstroke-reports' );
@@ -538,19 +537,17 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 			$result = $query_results;
 
 			return $result;
-
 		}
 
 
 		/**
 		 * Get meta rows from DB
 		 *
-		 * @param int|array $id ID of entry, or an array of IDs.
+		 * @param int|array   $id ID of entry, or an array of IDs.
 		 * @param string|bool $key Optional. If false, the default all the metas are returned.  Use name of key to get one specific key.
 		 *
 		 * @return array|null|object
 		 * @since 1.3.5
-		 *
 		 */
 		public function get_meta( $id, $key = false ) {
 			if ( ! $this->has_meta ) {
@@ -560,13 +557,14 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 			global $wpdb;
 			$table_name = $this->get_table_name( true );
 			if ( is_array( $id ) ) {
-				$sql = "SELECT * FROM $table_name WHERE`$this->index` IN(" . $this->escape_array( $id ) . ')';  //db call ok; no-cache ok; WPCS: unprepared SQL ok.
+				$sql = "SELECT * FROM $table_name WHERE`$this->index` IN(" . $this->escape_array( $id ) . ')';  // db call ok; no-cache ok; WPCS: unprepared SQL ok.
 			} else {
 
-				$sql = $wpdb->prepare( "SELECT * FROM $table_name WHERE `event_id` = %d", absint( $id ) );  //db call ok; no-cache ok; WPCS: unprepared SQL ok.
+				$sql = $wpdb->prepare( "SELECT * FROM $table_name WHERE `event_id` = %d", absint( $id ) );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table_name is get_table_name(true) = $wpdb->prefix + literal + '_meta'; value bound %d.
 			}
 
-			$results = $wpdb->get_results( $sql, ARRAY_A );
+			// $sql is a $wpdb->prepare() result (scalar branch) or an escape_array() %d-bound numeric IN-list (array branch); $table_name/$this->index are trusted identifiers.
+			$results = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 			if ( ! empty( $results ) && is_string( $key ) ) {
 				return $this->reduce_meta( $results, $key );
@@ -602,7 +600,6 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 		 *
 		 * @return bool
 		 * @since 1.3.5
-		 *
 		 */
 		protected function valid_field( $field, $type = 'primary' ) {
 			switch ( $type ) {
@@ -627,7 +624,6 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 					return false;
 					break;
 			}
-
 		}
 
 		/**
@@ -639,7 +635,6 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 		 *
 		 * @return string
 		 * @since 1.3.5
-		 *
 		 */
 		protected function escape_array( array $array ) {
 			global $wpdb;
@@ -661,7 +656,6 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 		 *
 		 * @return mixed
 		 * @since 1.3.5
-		 *
 		 */
 		protected function add_meta_to_record( array $meta, array $data ) {
 			if ( ! $this->has_meta ) {
@@ -678,19 +672,6 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 		}
 
 		/**
-		 * @return int|null
-		 */
-		public function highest_id() {
-			global $wpdb;
-			$table_name = $this->get_table_name();
-			$results    = $wpdb->get_results( "SELECT max(ID) FROM {$table_name}", ARRAY_N );  //db call ok; no-cache ok; WPCS: unprepared SQL ok.
-			if ( is_array( $results ) && isset( $results[0], $results[0][0] ) ) {
-				return $results[0][0];
-			}
-
-		}
-
-		/**
 		 * Query by meta key
 		 *
 		 * @param string $key Meta key to query by
@@ -698,7 +679,6 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 		 *
 		 * @return array|null
 		 * @since 1.4.5
-		 *
 		 */
 		protected function query_meta( $key, $value ) {
 			if ( ! $this->has_meta ) {
@@ -707,11 +687,11 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 
 			global $wpdb;
 			$table = $this->get_table_name( true );
-			$sql   = $wpdb->prepare( "SELECT * FROM {$table} WHERE  `meta_key` = %s AND `meta_value` = %s ", $key, $value );  //db call ok; no-cache ok; WPCS: unprepared SQL ok.
-			$r     = $wpdb->get_results( $sql, ARRAY_A );  //db call ok; no-cache ok; WPCS: unprepared SQL ok.
+
+			// {$table} is a trusted identifier ($wpdb->prefix + class table name + '_meta'); meta_key/meta_value bound via %s.
+			$r = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} WHERE `meta_key` = %s AND `meta_value` = %s", $key, $value ), ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 			return $r;
-
 		}
 
 		public function add_meta( $id, $key, $value ) {
@@ -728,6 +708,5 @@ if ( ! class_exists( 'WFOCU_DB_Base' ) ) {
 
 			$this->save( $_meta_row, true );
 		}
-
 	}
 }

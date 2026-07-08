@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 final class BWFAN_WP_Integration extends BWFAN_Integration {
 
 	private static $ins = null;

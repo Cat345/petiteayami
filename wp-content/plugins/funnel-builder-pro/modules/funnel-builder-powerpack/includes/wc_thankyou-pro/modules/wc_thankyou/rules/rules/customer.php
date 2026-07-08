@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFTY_Rule_Is_First_Order' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Is_First_Order extends WFTY_Rule_Base {
 
 		public $supports = array( 'order' );
@@ -28,22 +29,24 @@ if ( ! class_exists( 'WFTY_Rule_Is_First_Order' ) ) {
 			$order         = wc_get_order( $order_id );
 			$billing_email = $order->get_billing_email();
 
-
 			if ( class_exists( 'WFOCU_Common' ) && method_exists( 'WFOCU_Common', 'wc_get_orders' ) ) {
-				$orders = WFOCU_Common::wc_get_orders( array(
-					'customer'  => $billing_email,
-					'limit'     => 2,
-					'return'    => 'ids',
-					'post_type' => 'shop_order'
-				) );
+				$orders = WFOCU_Common::wc_get_orders(
+					array(
+						'customer'  => $billing_email,
+						'limit'     => 2,
+						'return'    => 'ids',
+						'post_type' => 'shop_order',
+					)
+				);
 			} else {
-				$orders = wc_get_orders( array(
-					'customer' => $billing_email,
-					'limit'    => 2,
-					'return'   => 'ids',
-				) );
+				$orders = wc_get_orders(
+					array(
+						'customer' => $billing_email,
+						'limit'    => 2,
+						'return'   => 'ids',
+					)
+				);
 			}
-
 
 			if ( ! isset( $rule_data['condition'] ) ) {
 				$rule_data['condition'] = 'yes';
@@ -60,11 +63,11 @@ if ( ! class_exists( 'WFTY_Rule_Is_First_Order' ) ) {
 
 			return sprintf( __( 'Is First order of a customer. ', 'funnel-builder-powerpack' ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Customer_User' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Customer_User extends WFTY_Rule_Base {
 		public $supports = array( 'order' );
 
@@ -110,6 +113,7 @@ if ( ! class_exists( 'WFTY_Rule_Customer_User' ) ) {
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Customer_Role' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Customer_Role extends WFTY_Rule_Base {
 
 		public $supports = array( 'order' );
@@ -162,22 +166,21 @@ if ( ! class_exists( 'WFTY_Rule_Customer_Role' ) ) {
 				}
 			}
 
-
 			if ( $rule_data['operator'] === 'in' ) {
 				return wffn_string_to_bool( $count );
 			} else {
 				return ! wffn_string_to_bool( $count );
 			}
-
 		}
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Customer role %s %s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_user_role_title( $rule['condition'] ) );
+			return sprintf( __( 'Customer role %1$s %2$s', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ), $this->get_user_role_title( $rule['condition'] ) );
 		}
 	}
 }
 if ( ! class_exists( 'WFTY_Rule_Is_Guest' ) ) {
+	#[\AllowDynamicProperties]
 	class WFTY_Rule_Is_Guest extends WFTY_Rule_Base {
 		public $supports = array( 'order' );
 
@@ -208,14 +211,11 @@ if ( ! class_exists( 'WFTY_Rule_Is_Guest' ) ) {
 			}
 
 			return true;
-
 		}
 
 		public function get_nice_string( $rule ) {
 
 			return sprintf( __( 'Customer %s a guest user.', 'funnel-builder-powerpack' ), $this->get_operators_string( $rule['operator'] ) );
 		}
-
-
 	}
 }

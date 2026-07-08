@@ -14,6 +14,7 @@ use WFCO_Common;
 use WP_Error;
 
 
+#[\AllowDynamicProperties]
 class Mailchimp_Importer extends Importer implements Autoresponder_Importer_Interface {
 
 	protected $import_type = 'mailchimp';

@@ -1,6 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'wfob_Input_Cart_Product_Select' ) ) {
+	#[\AllowDynamicProperties]
 	class wfob_Input_Cart_Product_Select {
 		public function __construct() {
 			// vars
@@ -23,18 +24,18 @@ if ( ! class_exists( 'wfob_Input_Cart_Product_Select' ) ) {
 
 			?>
 
-            <table style="width:100%;">
-                <tr>
-                    <td style="width:32px;"><?php _e( 'Quantity', 'woofunnels-order-bump' ); ?></td>
-                    <td><?php _e( 'Products', 'woofunnels-order-bump' ); ?></td>
-                </tr>
-                <tr>
-                    <td style="width:32px; vertical-align:top;">
-                        <input type="text" id="<?php echo $field['id']; ?>_qty" name="<?php echo $field['name']; ?>[qty]" value="<?php echo isset( $value['qty'] ) ? $value['qty'] : 1; ?>"/>
+			<table style="width:100%;">
+				<tr>
+					<td style="width:32px;"><?php _e( 'Quantity', 'woofunnels-order-bump' ); ?></td>
+					<td><?php _e( 'Products', 'woofunnels-order-bump' ); ?></td>
+				</tr>
+				<tr>
+					<td style="width:32px; vertical-align:top;">
+						<input type="text" id="<?php echo $field['id']; ?>_qty" name="<?php echo $field['name']; ?>[qty]" value="<?php echo isset( $value['qty'] ) ? $value['qty'] : 1; ?>"/>
 
-                    </td>
-                    <td>
-                        <select id="<?php echo $field['id']; ?>" name="<?php echo $field['name']; ?>[products][]" class="ajax_chosen_select_products" multiple="multiple" data-placeholder="<?php _e( 'Search for a product&hellip;', 'woocommerce' ); ?>">
+					</td>
+					<td>
+						<select id="<?php echo $field['id']; ?>" name="<?php echo $field['name']; ?>[products][]" class="ajax_chosen_select_products" multiple="multiple" data-placeholder="<?php _e( 'Search for a product&hellip;', 'woocommerce' ); ?>">
 							<?php
 							$current     = isset( $value['products'] ) ? $value['products'] : array();
 							$product_ids = ! empty( $current ) ? array_map( 'absint', $current ) : null;
@@ -52,15 +53,13 @@ if ( ! class_exists( 'wfob_Input_Cart_Product_Select' ) ) {
 								}
 							}
 							?>
-                        </select>
-                    </td>
-                </tr>
-            </table>
+						</select>
+					</td>
+				</tr>
+			</table>
 
 
 			<?php
-
 		}
-
 	}
 }

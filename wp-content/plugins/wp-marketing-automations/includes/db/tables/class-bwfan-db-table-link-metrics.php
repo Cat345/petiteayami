@@ -5,6 +5,7 @@
  */
 
 if ( ! class_exists( 'BWFAN_DB_Table_Link_Metrics' ) ) {
+	#[\AllowDynamicProperties]
 	class BWFAN_DB_Table_Link_Metrics extends BWFAN_DB_Tables_Base {
 		public $table_name = 'bwfan_link_metrics';
 

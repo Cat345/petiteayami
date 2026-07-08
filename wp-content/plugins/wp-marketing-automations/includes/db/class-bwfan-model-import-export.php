@@ -2,6 +2,7 @@
 
 if ( ( defined( 'BWFAN_PRO_VERSION' ) && version_compare( BWFAN_PRO_VERSION, '3.7.0', '>=' ) && ! class_exists( 'BWFAN_Model_Import_Export' )) || ! bwfan_is_autonami_pro_active() ) {
 
+	#[\AllowDynamicProperties]
 	class BWFAN_Model_Import_Export extends BWFAN_Model {
 		/** Status 1: In-Progress, 2: Failed, 3: Success */
 

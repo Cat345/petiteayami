@@ -10,10 +10,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 if ( ! class_exists( 'WFFN_Compatibility_Pixel_COG' ) ) {
+	#[\AllowDynamicProperties]
 	class WFFN_Compatibility_Pixel_COG {
 		public function __construct() {
-			add_filter( 'wffn_add_to_cart_tracking_price', [ $this, 'maybe_cog_price' ], 10, 6 );
-			add_filter( 'wffn_purchase_ecommerce_pixel_tracking_value', [ $this, 'cog_total_purchase' ], 10, 4 );
+			add_filter( 'wffn_add_to_cart_tracking_price', array( $this, 'maybe_cog_price' ), 10, 6 );
+			add_filter( 'wffn_purchase_ecommerce_pixel_tracking_value', array( $this, 'cog_total_purchase' ), 10, 4 );
 		}
 
 		public function is_enable() {
@@ -58,7 +59,10 @@ if ( ! class_exists( 'WFFN_Compatibility_Pixel_COG' ) ) {
 		 * @return float
 		 */
 		public function get_cog_product_value( $product, $quantity, $price ) {
-			$args = array( 'qty' => $quantity, 'price' => $price );
+			$args = array(
+				'qty'   => $quantity,
+				'price' => $price,
+			);
 			if ( get_option( '_pixel_cog_tax_calculating' ) === 'no' ) {
 				$amount = wc_get_price_excluding_tax( $product, $args );
 			} else {
@@ -89,34 +93,32 @@ if ( ! class_exists( 'WFFN_Compatibility_Pixel_COG' ) ) {
 			$cost_type    = get_post_meta( $product->get_id(), '_pixel_cost_of_goods_cost_type', true );
 			$product_cost = get_post_meta( $product->get_id(), '_pixel_cost_of_goods_cost_val', true );
 
-			if ( ! $product_cost && $product->is_type( "variation" ) ) {
+			if ( ! $product_cost && $product->is_type( 'variation' ) ) {
 				$cost_type    = get_post_meta( $product->get_parent_id(), '_pixel_cost_of_goods_cost_type', true );
 				$product_cost = get_post_meta( $product->get_parent_id(), '_pixel_cost_of_goods_cost_val', true );
 			}
 
-
 			if ( $product_cost ) {
 				$cog = array(
 					'type' => $cost_type,
-					'val'  => $product_cost
+					'val'  => $product_cost,
 				);
 			} else {
 				$cog_term_val = $this->get_product_cost_by_cat( $product->get_id() );
 				if ( $cog_term_val ) {
 					$cog = array(
 						'type' => $this->get_product_type_by_cat( $product->get_id() ),
-						'val'  => $cog_term_val
+						'val'  => $cog_term_val,
 					);
 				} else {
 					$cog = array(
 						'type' => get_option( '_pixel_cost_of_goods_cost_type' ),
-						'val'  => get_option( '_pixel_cost_of_goods_cost_val' )
+						'val'  => get_option( '_pixel_cost_of_goods_cost_val' ),
 					);
 				}
 			}
 
 			return $cog;
-
 		}
 
 		/**
@@ -163,13 +165,13 @@ if ( ! class_exists( 'WFFN_Compatibility_Pixel_COG' ) ) {
 			$cat_isset    = 0;
 			$isWithoutTax = get_option( '_pixel_cog_tax_calculating' ) === 'no';
 
-			$shipping    = $order->get_shipping_total( "edit" );
+			$shipping    = $order->get_shipping_total( 'edit' );
 			$order_total = $order->get_total( 'edit' ) - $shipping;
 
 			if ( $isWithoutTax ) {
 				$order_total -= $order->get_total_tax( 'edit' );
 			} else {
-				$order_total -= $order->get_shipping_tax( "edit" );
+				$order_total -= $order->get_shipping_tax( 'edit' );
 			}
 
 			foreach ( $order->get_items() as $item_id => $item ) {
@@ -182,13 +184,15 @@ if ( ! class_exists( 'WFFN_Compatibility_Pixel_COG' ) ) {
 				$cost_type    = get_post_meta( $product->get_id(), '_pixel_cost_of_goods_cost_type', true );
 				$product_cost = get_post_meta( $product->get_id(), '_pixel_cost_of_goods_cost_val', true );
 
-				if ( ! $product_cost && $product->is_type( "variation" ) ) {
+				if ( ! $product_cost && $product->is_type( 'variation' ) ) {
 					$cost_type    = get_post_meta( $product->get_parent_id(), '_pixel_cost_of_goods_cost_type', true );
 					$product_cost = get_post_meta( $product->get_parent_id(), '_pixel_cost_of_goods_cost_val', true );
 				}
 
-
-				$args = array( 'qty' => 1, 'price' => $product->get_price() );
+				$args = array(
+					'qty'   => 1,
+					'price' => $product->get_price(),
+				);
 				$qlt  = $item['quantity'];
 
 				if ( $isWithoutTax ) {
@@ -218,7 +222,6 @@ if ( ! class_exists( 'WFFN_Compatibility_Pixel_COG' ) ) {
 			}
 
 			return $order_total - $cost;
-
 		}
 
 		/**
@@ -253,7 +256,7 @@ if ( ! class_exists( 'WFFN_Compatibility_Pixel_COG' ) ) {
 			foreach ( $term_list as $term_id ) {
 				$cost[ $term_id ] = array(
 					get_term_meta( $term_id, '_pixel_cost_of_goods_cost_val', true ),
-					get_term_meta( $term_id, '_pixel_cost_of_goods_cost_type', true )
+					get_term_meta( $term_id, '_pixel_cost_of_goods_cost_type', true ),
 				);
 			}
 			if ( empty( $cost ) ) {
@@ -265,7 +268,6 @@ if ( ! class_exists( 'WFFN_Compatibility_Pixel_COG' ) ) {
 				return $max[1];
 			}
 		}
-
 	}
 
 

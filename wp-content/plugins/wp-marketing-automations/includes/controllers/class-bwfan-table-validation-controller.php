@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Table_Validation_Controller {
 
 	public static $tables = [

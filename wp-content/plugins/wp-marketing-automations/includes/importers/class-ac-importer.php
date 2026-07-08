@@ -13,6 +13,7 @@ use WFCO_Common;
 use WP_Error;
 
 
+#[\AllowDynamicProperties]
 class AC_Importer extends Importer implements Autoresponder_Importer_Interface {
 
 	protected $import_type = 'ac';

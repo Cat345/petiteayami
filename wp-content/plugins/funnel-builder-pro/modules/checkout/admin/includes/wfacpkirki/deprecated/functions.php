@@ -51,6 +51,6 @@ if ( ! function_exists( 'wfacpkirki_get_brightness' ) ) {
 
 if ( ! function_exists( 'WFACPKirki' ) ) {
 	function WFACPKirki() {
-		return wfacpclass-kirki;
+		return WFACPKirki_Toolkit::get_instance();
 	}
 }

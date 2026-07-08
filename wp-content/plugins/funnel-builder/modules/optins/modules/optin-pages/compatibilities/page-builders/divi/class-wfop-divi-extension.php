@@ -10,7 +10,7 @@ if ( ! class_exists( 'WFOP_Divi_Extension' ) ) {
 		 *
 		 * @var string
 		 */
-		public $gettext_domain = 'wffn-woofunnels-op-divi';
+		public $gettext_domain          = 'wffn-woofunnels-op-divi';
 		public static $field_color_type = 'color';
 
 		/**
@@ -33,27 +33,25 @@ if ( ! class_exists( 'WFOP_Divi_Extension' ) ) {
 
 		private $module_path = '';
 
-		public $modules_instance = [];
+		public $modules_instance    = array();
 		private $builder_setup_done = false;
 
 		/**
 		 * WFOP_Divi_Extension constructor.
 		 *
 		 * @param string $name
-		 * @param array $args
+		 * @param array  $args
 		 */
 		public function __construct( $name = 'woofunnels-op-divi', $args = array() ) {
 			$this->plugin_dir     = plugin_dir_path( __FILE__ );
 			$this->module_path    = $this->plugin_dir . 'modules/';
 			$this->plugin_dir_url = plugin_dir_url( __FILE__ );
 			parent::__construct( $name, $args );
-			add_filter( 'et_theme_builder_template_layouts', [ $this, 'disable_header_footer' ], 99 );
-
+			add_filter( 'et_theme_builder_template_layouts', array( $this, 'disable_header_footer' ), 99 );
 		}
 
 		protected function _enqueue_bundles() {
 			$this->enqueue_module_js();
-
 		}
 
 		public function wp_hook_enqueue_scripts() {
@@ -66,23 +64,29 @@ if ( ! class_exists( 'WFOP_Divi_Extension' ) ) {
 			if ( ! WFOPP_Core()->optin_pages->is_wfop_page() ) {
 				return;
 			}
-			wp_enqueue_script( 'flickity', WFFN_PLUGIN_URL . '/assets/flickity/flickity.pkgd.js', [], true );
-			wp_enqueue_style( "{$this->name}-wfop-divi", "{$this->plugin_dir_url}css/divi.css", [], $this->version );
+			wp_enqueue_script( 'flickity', WFFN_PLUGIN_URL . '/assets/flickity/flickity.pkgd.js', array(), true );
+			wp_enqueue_style( "{$this->name}-wfop-divi", "{$this->plugin_dir_url}css/divi.css", array(), $this->version );
 			if ( et_core_is_fb_enabled() ) {
-				wp_enqueue_script( "{$this->name}-builder-bundle", "{$this->plugin_dir_url}scripts/loader.min.js", [ 'react-dom' ], $this->version, true );
+				wp_enqueue_script( "{$this->name}-builder-bundle", "{$this->plugin_dir_url}scripts/loader.min.js", array( 'react-dom' ), $this->version, true );
+				wp_localize_script(
+					"{$this->name}-builder-bundle",
+					'wfop_divi_data',
+					array(
+						'nonce' => wp_create_nonce( 'wfop_divi_ajax' ),
+					)
+				);
 			}
 			do_action( 'wfop_divi_module_js' );
-
 		}
 
 
 		private function get_modules() {
-			$modules = [
-				'optin_form' => [
+			$modules = array(
+				'optin_form' => array(
 					'name' => __( 'WF Optin Form', 'funnel-builder' ),
 					'path' => $this->module_path . 'optin-form.php',
-				]
-			];
+				),
+			);
 
 			return apply_filters( 'wffn_op_divi_modules', $modules, $this );
 		}
@@ -125,7 +129,6 @@ if ( ! class_exists( 'WFOP_Divi_Extension' ) ) {
 					$this->builder_setup_done = true;
 				}
 			}
-
 		}
 
 		public function disable_header_footer( $layouts ) {
@@ -133,7 +136,6 @@ if ( ! class_exists( 'WFOP_Divi_Extension' ) ) {
 			if ( ! isset( $_GET['et_fb'] ) || ! defined( 'ET_THEME_BUILDER_HEADER_LAYOUT_POST_TYPE' ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				return $layouts;
 			}
-
 
 			if ( is_null( $post ) || $post->post_type !== WFOPP_Core()->optin_pages->get_post_type_slug() ) {
 				return $layouts;
@@ -151,8 +153,7 @@ if ( ! class_exists( 'WFOP_Divi_Extension' ) ) {
 
 			return $layouts;
 		}
-
 	}
 
-	new WFOP_Divi_Extension;
+	new WFOP_Divi_Extension();
 }

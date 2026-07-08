@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 final class BWFAN_WP_Source extends BWFAN_Source {
 	private static $instance = null;
 

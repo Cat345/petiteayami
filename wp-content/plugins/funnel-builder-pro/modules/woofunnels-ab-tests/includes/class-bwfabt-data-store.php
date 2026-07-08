@@ -84,42 +84,47 @@ if ( ! class_exists( 'BWFABT_Data_Store' ) ) {
 
 		public function get_specific_rows( $where_key, $where_value ) {
 			global $wpdb;
-			$query = "SELECT * FROM " . self::_table() . " WHERE $where_key = '$where_value'";
+			$table    = self::_table();
+			$safe_key = sanitize_key( $where_key );
+			$query    = $wpdb->prepare( "SELECT * FROM `{$table}` WHERE `{$safe_key}` = %s", $where_value ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 			if ( isset( self::$query_res[ md5( $query ) ] ) ) {
 				return self::$query_res[ md5( $query ) ];
 			}
-			$results                          = $wpdb->get_results( "SELECT * FROM " . self::_table() . " WHERE $where_key = '$where_value'", ARRAY_A );
+			$results                          = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			self::$query_res[ md5( $query ) ] = $results;
 
-			return $results;
+		return $results;
 		}
 
 		public function get_specific_columns( $column_names, $where_pairs ) {
 			global $wpdb;
+			$table     = self::_table();
 			$sql_query = "SELECT ";
 
 			if ( is_array( $column_names ) && count( $column_names ) > 0 ) {
 				foreach ( $column_names as $column_name => $column_alias ) {
-					$sql_query .= "$column_name as $column_alias ";
+					$sql_query .= sanitize_key( $column_name ) . " as " . sanitize_key( $column_alias ) . " ";
 				}
 			}
 
-			$sql_query .= "FROM " . self::_table();
+			$sql_query .= "FROM `{$table}`"; //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 			if ( is_array( $where_pairs ) && count( $where_pairs ) > 0 ) {
 				$sql_query .= " WHERE 1 = 1";
 				foreach ( $where_pairs as $where_key => $where_value ) {
-					$sql_query .= " AND " . $where_key . " = '$where_value'";
+					$sql_query .= $wpdb->prepare( " AND `" . sanitize_key( $where_key ) . "` = %s", $where_value ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				}
 			}
 
-			$results = $wpdb->get_row( $sql_query, ARRAY_A );
+			$results = $wpdb->get_row( $sql_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			return $results;
 		}
 
 		public function get_specific_column( $column_name, $where_pairs ) {
+			global $wpdb;
+			$table     = self::_table();
 			$key       = is_array( $where_pairs ) ? implode( '_', $where_pairs ) : $where_pairs;
 			$cache_key = 'bwfabt_get_specific_column' . $key;
 			$get_id    = $this->get_cache_data( $cache_key );
@@ -128,16 +133,17 @@ if ( ! class_exists( 'BWFABT_Data_Store' ) ) {
 				return $get_id;
 			}
 
-			$sql_query = "SELECT $column_name FROM " . self::_table();
+			$safe_col  = sanitize_key( $column_name );
+			$sql_query = "SELECT `{$safe_col}` FROM `{$table}`"; //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 			if ( is_array( $where_pairs ) && count( $where_pairs ) > 0 ) {
 				$sql_query .= " WHERE 1 = 1";
 				foreach ( $where_pairs as $where_key => $where_value ) {
-					$sql_query .= " AND " . $where_key . " = '$where_value'";
+					$sql_query .= $wpdb->prepare( " AND `" . sanitize_key( $where_key ) . "` = %s", $where_value ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				}
 			}
-			global $wpdb;
-			$get_id = $wpdb->get_var( $sql_query );
+
+			$get_id = $wpdb->get_var( $sql_query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			if ( ! empty( $key ) ) {
 				$id = ( null === $get_id ) ? 0 : $get_id;
 				$this->set_cache_data( $cache_key, $id );
@@ -164,7 +170,8 @@ if ( ! class_exists( 'BWFABT_Data_Store' ) ) {
 		}
 
 		public function get_active_experiment_for_control( $control_id ) {
-			$sql_query = "SELECT * FROM {table_name} WHERE `status` != " . BWFABT_Experiment::STATUS_COMPLETE . " AND `control`=" . $control_id;
+			global $wpdb;
+			$sql_query = $wpdb->prepare( "SELECT * FROM {table_name} WHERE `status` != %d AND `control` = %d", BWFABT_Experiment::STATUS_COMPLETE, absint( $control_id ) );
 
 			$active_test = self::get_results( $sql_query );
 
@@ -172,7 +179,10 @@ if ( ! class_exists( 'BWFABT_Data_Store' ) ) {
 		}
 
 		public function get_experiment_by_control_id( $control_id, $order_by = 'ASC' ) {
-			$sql_query = "SELECT * FROM {table_name} WHERE 1 = 1 AND `control`=" . $control_id . " ORDER BY id " . $order_by;
+			global $wpdb;
+			$allowed_orders = [ 'ASC', 'DESC' ];
+			$order          = in_array( strtoupper( $order_by ), $allowed_orders, true ) ? strtoupper( $order_by ) : 'ASC';
+			$sql_query      = $wpdb->prepare( "SELECT * FROM {table_name} WHERE 1 = 1 AND `control` = %d ORDER BY id " . $order, absint( $control_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 			$active_test = self::get_results( $sql_query );
 
@@ -217,8 +227,8 @@ if ( ! class_exists( 'BWFABT_Data_Store' ) ) {
 
 			$experiment    = [];
 			$update_data   = [];
-			$experiment_id = $args['entity_id'];
-			$query         = "SELECT activity, control, status FROM {table_name} WHERE id = " . $experiment_id;
+			$experiment_id = absint( $args['entity_id'] );
+			$query         = "SELECT activity, control, status FROM {table_name} WHERE id = " . $experiment_id; //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$results       = $this->get_results( $query );
 			$get_data      = isset( $results[0] ) ? $results[0] : [];
 			/**
@@ -231,13 +241,13 @@ if ( ! class_exists( 'BWFABT_Data_Store' ) ) {
 			}
 			if ( isset( $args['type'] ) && absint( $control_id ) > 0 ) {
 				$experiment_status = isset( $get_data['status'] ) ? absint( $get_data['status'] ) : BWFABT_Experiment::STATUS_DRAFT;
-				
+
 				// Check experiment status instead of activity type
 				// Only experiments with STATUS_START (2) are considered active
 				// STATUS_DRAFT (1), STATUS_PAUSE (3), STATUS_COMPLETE (4) are not active
 				$is_active = ( BWFABT_Experiment::STATUS_START === $experiment_status );
 				$experiment_status_meta = $is_active ? '' : 'not_active';
-				
+
 				update_post_meta( $control_id, '_experiment_status', $experiment_status_meta );
 			}
 
@@ -289,7 +299,7 @@ if ( ! class_exists( 'BWFABT_Data_Store' ) ) {
 		 */
 		public function get_experiment_time_chunk( $experiment_id ) {
 			// Query the database to get experiment activity data
-			$query    = 'SELECT activity FROM {table_name} WHERE `id` = ' . $experiment_id;
+			$query    = 'SELECT activity FROM {table_name} WHERE `id` = ' . absint( $experiment_id ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$get_data = $this->get_row( $query );
 			$result   = [];
 			$default  = [];

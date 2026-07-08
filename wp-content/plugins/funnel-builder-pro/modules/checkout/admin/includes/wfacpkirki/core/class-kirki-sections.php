@@ -13,6 +13,10 @@
 /**
  * Additional tweaks for sections.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Sections' ) ) {
 	#[AllowDynamicProperties]
 	class WFACPKirki_Sections {
@@ -44,7 +48,7 @@ if ( ! class_exists( 'WFACPKirki_Sections' ) ) {
 				}
 			}
 			if ( ! empty( $css ) ) {
-				echo '<style>' . esc_attr( $css ) . '</style>';
+				echo '<style>' . esc_html( $css ) . '</style>';
 			}
 		}
 	}

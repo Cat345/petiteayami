@@ -15,7 +15,12 @@
  *
  * @since 3.0.28
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFACPKirki_Modules_CSS_Vars' ) ) {
+	#[\AllowDynamicProperties]
 	class WFACPKirki_Modules_CSS_Vars {
 
 		/**

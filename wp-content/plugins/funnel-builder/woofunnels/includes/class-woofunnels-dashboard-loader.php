@@ -1,4 +1,8 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName.InvalidClassFileName -- legacy filename kept for back-compat
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * This class is a mail loader class for dashboard page , controls and sets up all the necessary actions
@@ -8,7 +12,7 @@
  */
 
 
-define( 'BWF_VERSION', '1.10.12.78' );
+define( 'BWF_VERSION', '1.10.12.80' );
 define( 'BWF_DB_VERSION', '1.0.6' );
 if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 	#[AllowDynamicProperties]
@@ -518,7 +522,7 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 
 
 			self::$loader_url = WooFunnel_Loader::$ultimate_path;
-			$selected         = null !== sanitize_text_field( filter_input( INPUT_GET, 'tab', FILTER_UNSAFE_RAW ) ) ? sanitize_text_field( filter_input( INPUT_GET, 'tab', FILTER_UNSAFE_RAW ) ) : 'plugins';
+			$selected         = null !== sanitize_text_field( filter_input( INPUT_GET, 'tab', FILTER_DEFAULT ) ) ? sanitize_text_field( filter_input( INPUT_GET, 'tab', FILTER_DEFAULT ) ) : 'plugins'; // phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
 
 			self::$selected = $selected;
 
@@ -628,7 +632,7 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 		 * Hooked over 'woofunnels_tabs_modal_support'. <br/>
 		 * @return mixed false on failure and data on success
 		 */
-		public static function woofunnels_support_data( $data ) {
+		public static function woofunnels_support_data( $data ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 			//getting plugins list and tabs data
 			$get_list = array();
 
@@ -649,7 +653,7 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 		 * Hooked over 'woofunnels_tabs_modal_logs'. <br/>
 		 * @return mixed false on failure and data on success
 		 */
-		public static function woofunnels_logs_data( $data ) {
+		public static function woofunnels_logs_data( $data ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 			//getting plugins list and tabs data
 			$get_list = array();
 
@@ -665,7 +669,7 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 		}
 
 		public static function show_right_area() {
-			if ( wp_verify_nonce( filter_input( INPUT_GET, '_nonce', FILTER_UNSAFE_RAW ), 'bwf_tools_action' ) && isset( $_GET['woofunnels_transient'] ) && ( 'clear' === sanitize_text_field( wp_unslash( $_GET['woofunnels_transient'] ) ) ) ) {
+			if ( wp_verify_nonce( filter_input( INPUT_GET, '_nonce', FILTER_DEFAULT ), 'bwf_tools_action' ) && isset( $_GET['woofunnels_transient'] ) && ( 'clear' === sanitize_text_field( wp_unslash( $_GET['woofunnels_transient'] ) ) ) ) { // phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
 				$woofunnels_transient_obj = WooFunnels_Transient::get_instance();
 				$woofunnels_transient_obj->delete_force_transients();
 				$message = __( 'All Plugins transients cleared.', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
@@ -863,7 +867,7 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 
 
 		public static function index_templates() {
-			$get_templates = filter_input( INPUT_GET, 'wffn_parse_template', FILTER_UNSAFE_RAW );
+			$get_templates = filter_input( INPUT_GET, 'wffn_parse_template', FILTER_DEFAULT ); // phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
 
 			if ( 'yes' === $get_templates && current_user_can( 'manage_options' ) ) {
 				self::get_all_templates( true );
@@ -920,7 +924,7 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 		}
 
 		public static function fetch_template_json() {
-			if ( 'yes' === filter_input( INPUT_GET, 'activated', FILTER_UNSAFE_RAW ) ) {
+			if ( 'yes' === filter_input( INPUT_GET, 'activated', FILTER_DEFAULT ) && current_user_can( 'manage_options' ) ) { // phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
 				flush_rewrite_rules(); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.flush_rewrite_rules_flush_rewrite_rules
 				self::get_all_templates();
 			}

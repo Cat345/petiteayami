@@ -1,5 +1,6 @@
 <?php
 if ( ! class_exists( 'WFOCU_Rule_Is_First_Order' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Is_First_Order extends WFOCU_Rule_Base {
 
 		public $supports = array( 'order' );
@@ -28,12 +29,14 @@ if ( ! class_exists( 'WFOCU_Rule_Is_First_Order' ) ) {
 			$order         = wc_get_order( $order_id );
 			$billing_email = WFOCU_WC_Compatibility::get_order_data( $order, 'billing_email' );
 
-			$orders = WFOCU_Common::wc_get_orders( array(
-				'customer'  => $billing_email,
-				'limit'     => 2,
-				'return'    => 'ids',
-				'post_type' => 'shop_order',
-			) );
+			$orders = WFOCU_Common::wc_get_orders(
+				array(
+					'customer'  => $billing_email,
+					'limit'     => 2,
+					'return'    => 'ids',
+					'post_type' => 'shop_order',
+				)
+			);
 
 			if ( ! isset( $rule_data['condition'] ) ) {
 				$rule_data['condition'] = 'yes';
@@ -50,11 +53,11 @@ if ( ! class_exists( 'WFOCU_Rule_Is_First_Order' ) ) {
 
 			return sprintf( __( 'Is First order of a customer. ', 'woofunnels-upstroke-one-click-upsell' ) );
 		}
-
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Customer_User' ) ) {
 
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Customer_User extends WFOCU_Rule_Base {
 		public $supports = array( 'order' );
 
@@ -100,6 +103,7 @@ if ( ! class_exists( 'WFOCU_Rule_Customer_User' ) ) {
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Customer_Role' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Customer_Role extends WFOCU_Rule_Base {
 
 		public $supports = array( 'order' );
@@ -152,22 +156,21 @@ if ( ! class_exists( 'WFOCU_Rule_Customer_Role' ) ) {
 				}
 			}
 
-
 			if ( $rule_data['operator'] === 'in' ) {
 				return wc_string_to_bool( $count );
 			} else {
 				return ! wc_string_to_bool( $count );
 			}
-
 		}
 
 		public function get_nice_string( $rule ) {
 
-			return sprintf( __( 'Customer role %s %s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_user_role_title( $rule['condition'] ) );
+			return sprintf( __( 'Customer role %1$s %2$s', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['operator'] ), $this->get_user_role_title( $rule['condition'] ) );
 		}
 	}
 }
 if ( ! class_exists( 'WFOCU_Rule_Is_Guest' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOCU_Rule_Is_Guest extends WFOCU_Rule_Base {
 		public $supports = array( 'order' );
 
@@ -198,14 +201,11 @@ if ( ! class_exists( 'WFOCU_Rule_Is_Guest' ) ) {
 			}
 
 			return true;
-
 		}
 
 		public function get_nice_string( $rule ) {
 
 			return sprintf( __( 'Customer %s a guest user.', 'woofunnels-upstroke-one-click-upsell' ), $this->get_operators_string( $rule['condition'] ) );
 		}
-
-
 	}
 }

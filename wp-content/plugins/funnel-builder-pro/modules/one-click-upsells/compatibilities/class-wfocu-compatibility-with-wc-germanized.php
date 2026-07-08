@@ -5,6 +5,7 @@
 if ( ! class_exists( 'WFOCU_Compatibility_With_WC_Germanized' ) ) {
 
 
+	#[\AllowDynamicProperties]
 	class WFOCU_Compatibility_With_WC_Germanized {
 
 		public function __construct() {
@@ -36,7 +37,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_WC_Germanized' ) ) {
 
 			return false;
 		}
-
 	}
 	WFOCU_Plugin_Compatibilities::register( new WFOCU_Compatibility_With_WC_Germanized(), 'wc_germanized' );
 }

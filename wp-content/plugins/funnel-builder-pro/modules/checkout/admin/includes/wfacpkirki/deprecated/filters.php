@@ -1,6 +1,10 @@
 <?php
 // @codingStandardsIgnoreFile
 
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 add_filter( 'wfacpkirki_config', function( $args ) {
 	return apply_filters( 'wfacpkirki/config', $args );
 }, 99 );

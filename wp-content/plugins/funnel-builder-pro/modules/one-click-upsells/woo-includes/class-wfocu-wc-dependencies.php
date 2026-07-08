@@ -4,6 +4,7 @@ if ( ! class_exists( 'WFOCU_WC_Dependencies' ) ) {
 	 * WC Dependency Checker
 	 * Checks if WooCommerce is enabled
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_WC_Dependencies {
 
 		private static $active_plugins;
@@ -25,6 +26,5 @@ if ( ! class_exists( 'WFOCU_WC_Dependencies' ) ) {
 
 			return in_array( 'woocommerce/woocommerce.php', self::$active_plugins ) || array_key_exists( 'woocommerce/woocommerce.php', self::$active_plugins );
 		}
-
 	}
 }

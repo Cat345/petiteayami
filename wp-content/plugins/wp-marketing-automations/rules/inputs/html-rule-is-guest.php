@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class bwfan_Input_Html_Rule_Is_Guest {
 	public function __construct() {
 		// vars

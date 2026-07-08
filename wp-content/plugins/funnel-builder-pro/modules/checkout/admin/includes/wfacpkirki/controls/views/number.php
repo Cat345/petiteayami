@@ -9,6 +9,10 @@
  * @since       3.0.27
  */
 
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 <#
 data = _.defaults( data, {

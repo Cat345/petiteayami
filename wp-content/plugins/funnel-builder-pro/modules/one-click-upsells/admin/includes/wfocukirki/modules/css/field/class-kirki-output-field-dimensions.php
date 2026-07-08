@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Output_Field_Dimensions' ) ) {
 	/**
 	 * Output overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Output_Field_Dimensions extends WFOCUKirki_Output {
 
 		/**
@@ -24,13 +25,16 @@ if ( ! class_exists( 'WFOCUKirki_Output_Field_Dimensions' ) ) {
 		 */
 		protected function process_output( $output, $value ) {
 
-			$output = wp_parse_args( $output, array(
+			$output = wp_parse_args(
+				$output,
+				array(
 					'element'     => '',
 					'property'    => '',
 					'media_query' => 'global',
 					'prefix'      => '',
 					'suffix'      => '',
-				) );
+				)
+			);
 
 			if ( ! is_array( $value ) ) {
 				return;
@@ -49,7 +53,7 @@ if ( ! class_exists( 'WFOCUKirki_Output_Field_Dimensions' ) ) {
 				if ( ! is_null( $output['property'] ) && false !== strpos( $output['property'], '%%' ) ) {
 					$property = str_replace( '%%', $key, $output['property'] );
 				}
-				$this->styles[ $output['media_query'] ][ $output['element'] ][ $property ] = $output['prefix'] . $this->process_property_value( $property, $value[ $key ] ) . $output['suffix'];
+				$this->styles[ $output['media_query'] ][ $output['element'] ][ $property ] = $output['prefix'] . self::sanitize_css_value( $this->process_property_value( $property, $value[ $key ] ) ) . $output['suffix'];
 			}
 		}
 	}

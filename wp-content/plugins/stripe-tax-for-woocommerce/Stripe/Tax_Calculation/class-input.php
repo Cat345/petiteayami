@@ -218,10 +218,15 @@ class Input extends Data {
 					$tax_location['city']     = $customer_or_order->get_shipping_city();
 				}
 
-				$tax_location['line1'] = $customer_or_order->get_shipping_address_1();
-				$tax_location['line2'] = $customer_or_order->get_shipping_address_2();
+				if ( ! isset( $tax_location['line1'] ) || '' === trim( (string) $tax_location['line1'] ) ) {
+					$tax_location['line1'] = $customer_or_order->get_shipping_address_1();
+				}
 
-				$tax_location['source'] = static::ADDRESS_SOURCE_SHIPPING;
+				if ( ! isset( $tax_location['line2'] ) || '' === trim( (string) $tax_location['line2'] ) ) {
+					$tax_location['line2'] = $customer_or_order->get_shipping_address_2();
+				}
+
+					$tax_location['source'] = static::ADDRESS_SOURCE_SHIPPING;
 
 				break;
 
@@ -230,22 +235,24 @@ class Input extends Data {
 				$tax_location['state']    = $customer_or_order->get_billing_state();
 				$tax_location['postcode'] = $customer_or_order->get_billing_postcode();
 				$tax_location['city']     = $customer_or_order->get_billing_city();
-				$tax_location['line1']    = $customer_or_order->get_billing_address_1();
-				$tax_location['line2']    = $customer_or_order->get_billing_address_2();
+				$tax_location['line1']    = isset( $tax_location['line1'] )
+					? (string) $tax_location['line1']
+					: $customer_or_order->get_billing_address_1();
+				$tax_location['line2']    = isset( $tax_location['line2'] )
+					? (string) $tax_location['line2']
+					: $customer_or_order->get_billing_address_2();
 
 				$tax_location['source'] = static::ADDRESS_SOURCE_BILLING;
 
 				break;
 
 			case 'base':
-				$shop_location = wc_get_base_location();
-
-				$tax_location['city']     = get_option( 'woocommerce_store_city' );
-				$tax_location['postcode'] = get_option( 'woocommerce_store_postcode' );
-				$tax_location['country']  = $shop_location['country'];
-				$tax_location['state']    = $shop_location['state'];
-				$tax_location['line1']    = get_option( 'woocommerce_store_address' );
-				$tax_location['line2']    = get_option( 'woocommerce_store_address_2' );
+				$tax_location['city']     = '';
+				$tax_location['postcode'] = '';
+				$tax_location['country']  = '';
+				$tax_location['state']    = '';
+				$tax_location['line1']    = '';
+				$tax_location['line2']    = '';
 
 				$tax_location['source'] = static::ADDRESS_SOURCE_SHIPPING;
 
@@ -284,6 +291,10 @@ class Input extends Data {
 		if ( 'CA' === $country && ( '' === $postcode || '' === $state ) ) {
 			throw new Input_Exception( 'Invalid tax location address' );
 		}
+
+		if ( '' === $postcode && '' === $state ) {
+			throw new Input_Exception( 'Invalid tax location address' );
+		}
 	}
 
 	/**
@@ -319,6 +330,7 @@ class Input extends Data {
 	 * @param object $input_source The source object used to determine shipping cost.
 	 */
 	public static function get_taxable_shipping_cost_amount( $input_source ) {
+		// @phpstan-ignore-next-line
 		return static::get_shipping_cost_amount_by_taxability( $input_source, true );
 	}
 
@@ -328,6 +340,7 @@ class Input extends Data {
 	 * @param object $input_source The source object used to determine shipping cost.
 	 */
 	public static function get_non_taxable_shipping_cost_amount( $input_source ) {
+		// @phpstan-ignore-next-line
 		return static::get_shipping_cost_amount_by_taxability( $input_source, false );
 	}
 

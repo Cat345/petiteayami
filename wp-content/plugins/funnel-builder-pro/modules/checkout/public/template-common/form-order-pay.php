@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -13,9 +17,9 @@ $totalStepCount = $instance->get_step_count();
 $stepClassName  = 'wfacp_single_step_form';
 $stepMultiClass = 'wfacp_single_step_form';
 if ( $totalStepCount > 1 && $totalStepCount == 2 ) {
-	$stepMultiClass = "wfacp_two_step";
+	$stepMultiClass = 'wfacp_two_step';
 } else {
-	$stepMultiClass = "wfacp_three_step";
+	$stepMultiClass = 'wfacp_three_step';
 }
 if ( $totalStepCount > 1 ) {
 	$stepClassName = 'wfacp_single_multi_form';
@@ -23,10 +27,10 @@ if ( $totalStepCount > 1 ) {
 do_action( 'wfacp_before_form' );
 
 $is_global_checkout_f = WFACP_Core()->public->is_checkout_override();
-$global_cls           = "";
+$global_cls           = '';
 
 
-$form_class = [];
+$form_class = array();
 if ( ! empty( $stepClassName ) ) {
 	$form_class[] = $stepClassName;
 }
@@ -34,10 +38,10 @@ if ( ! empty( $stepMultiClass ) ) {
 	$form_class[] = $stepMultiClass;
 }
 if ( $is_global_checkout_f === true ) {
-	$form_class[] = "wfacp_global_checkout_wrap";
+	$form_class[] = 'wfacp_global_checkout_wrap';
 }
 $pay = WFACP_Core()->pay;
-remove_filter( 'woocommerce_get_checkout_url', [ WFACP_Core()->public, 'woocommerce_get_checkout_url' ], 99999 );
+remove_filter( 'woocommerce_get_checkout_url', array( WFACP_Core()->public, 'woocommerce_get_checkout_url' ), 99999 );
 ?>
 <div class="wfacp_main_form woocommerce <?php echo implode( ' ', $form_class ); ?>">
 	<?php
@@ -46,7 +50,7 @@ remove_filter( 'woocommerce_get_checkout_url', [ WFACP_Core()->public, 'woocomme
 	$current_step           = $instance->get_current_step();
 	$selected_template_slug = $instance->get_template_slug();
 	$template_type          = $instance->get_template_type();
-	include __DIR__ . '/form_internal_css.php';
+	require __DIR__ . '/form_internal_css.php';
 
 
 	do_action( 'before_woocommerce_pay' );
@@ -67,7 +71,7 @@ remove_filter( 'woocommerce_get_checkout_url', [ WFACP_Core()->public, 'woocomme
 			// Logged out customer does not have permission to pay for this order.
 			if ( ! current_user_can( 'pay_for_order', $order_id ) && ! is_user_logged_in() ) {
 				echo '<div class="woocommerce-info">' . esc_html__( 'Please log in to your account below to continue to the payment form.', 'woocommerce' ) . '</div>';
-				//	woocommerce_login_form( array( 'redirect' => $order->get_checkout_payment_url() ) );
+				// woocommerce_login_form( array( 'redirect' => $order->get_checkout_payment_url() ) );
 				include WFACP_TEMPLATE_COMMON . '/checkout/form-login.php';
 				$print_form = false;
 			}
@@ -138,11 +142,13 @@ remove_filter( 'woocommerce_get_checkout_url', [ WFACP_Core()->public, 'woocomme
 					}
 				}
 
-				WC()->customer->set_props( array(
-					'billing_country'  => $order->get_billing_country() ? $order->get_billing_country() : null,
-					'billing_state'    => $order->get_billing_state() ? $order->get_billing_state() : null,
-					'billing_postcode' => $order->get_billing_postcode() ? $order->get_billing_postcode() : null,
-				) );
+				WC()->customer->set_props(
+					array(
+						'billing_country'  => $order->get_billing_country() ? $order->get_billing_country() : null,
+						'billing_state'    => $order->get_billing_state() ? $order->get_billing_state() : null,
+						'billing_postcode' => $order->get_billing_postcode() ? $order->get_billing_postcode() : null,
+					)
+				);
 				WC()->customer->save();
 
 				$available_gateways = WC()->payment_gateways->get_available_payment_gateways();
@@ -168,24 +174,24 @@ remove_filter( 'woocommerce_get_checkout_url', [ WFACP_Core()->public, 'woocomme
 				}
 
 				?>
-                <form id="order_review" method="post">
-                    <div class="checkout woocommerce-checkout">
-                        <div class="wfacp-left-panel wfacp_page">
-                            <div class="wfacp-section wfacp-hg-by-box" data-field-count="1">
-                                <div class="wfacp_internal_form_wrap wfacp-comm-title <?php echo $instance->get_heading_title_class() ?>">
-                                    <h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class(); ?>"><?php echo $instance->get_order_pay_summary_heading(); ?></h2>
-                                </div>
-                                <div class="wfacp-comm-form-detail clearfix">
-                                    <div class="wfacp-row">
+				<form id="order_review" method="post">
+					<div class="checkout woocommerce-checkout">
+						<div class="wfacp-left-panel wfacp_page">
+							<div class="wfacp-section wfacp-hg-by-box" data-field-count="1">
+								<div class="wfacp_internal_form_wrap wfacp-comm-title <?php echo $instance->get_heading_title_class(); ?>">
+									<h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class(); ?>"><?php echo $instance->get_order_pay_summary_heading(); ?></h2>
+								</div>
+								<div class="wfacp-comm-form-detail clearfix">
+									<div class="wfacp-row">
 										<?php
 										$instance->get_order_pay_summary( $order );
 										?>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="wfacp-section wfacp_payment form_section_your_order_0_<?php echo $selected_template_slug; ?> wfacp-section-titlex wfacp-hg-by-box">
-                            <div style="clear: both;"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="wfacp-section wfacp_payment form_section_your_order_0_<?php echo $selected_template_slug; ?> wfacp-section-titlex wfacp-hg-by-box">
+							<div style="clear: both;"></div>
 							<?php
 							// Divi 5: Only display heading section if at least one of heading or subheading has content
 							// Check if we're using Divi 5 template
@@ -194,28 +200,28 @@ remove_filter( 'woocommerce_get_checkout_url', [ WFACP_Core()->public, 'woocomme
 								// Divi 5: Conditional rendering
 								if ( ! empty( $payment_methods_heading ) || ! empty( $payment_methods_sub_heading ) ) {
 									?>
-                            <div class="wfacp-comm-title <?php echo $border_cls; ?>">
-								<?php if ( ! empty( $payment_methods_heading ) ) { ?>
-                                <h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class() ?> "><?php echo $payment_methods_heading; ?></h2>
+							<div class="wfacp-comm-title <?php echo $border_cls; ?>">
+									<?php if ( ! empty( $payment_methods_heading ) ) { ?>
+								<h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class(); ?> "><?php echo $payment_methods_heading; ?></h2>
 								<?php } ?>
-								<?php if ( ! empty( $payment_methods_sub_heading ) ) { ?>
-                                <h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
+									<?php if ( ! empty( $payment_methods_sub_heading ) ) { ?>
+								<h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
 								<?php } ?>
-                            </div>
-							<?php
+							</div>
+									<?php
 								}
 							} else {
 								// Divi 4 and other builders: Always show heading section
 								?>
-                            <div class="wfacp-comm-title <?php echo $border_cls; ?>">
-                                <h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class() ?> "><?php echo $payment_methods_heading; ?></h2>
-                                <h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
-                            </div>
+							<div class="wfacp-comm-title <?php echo $border_cls; ?>">
+								<h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class(); ?> "><?php echo $payment_methods_heading; ?></h2>
+								<h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
+							</div>
 							<?php } ?>
-                            <div class="woocommerce-checkout-review-order wfacp-oder-detail clearfix">
-                                <div id="payment">
+							<div class="woocommerce-checkout-review-order wfacp-oder-detail clearfix">
+								<div id="payment">
 									<?php if ( $order->needs_payment() ) : ?>
-                                        <ul class="wc_payment_methods payment_methods methods">
+										<ul class="wc_payment_methods payment_methods methods">
 											<?php
 											if ( ! empty( $available_gateways ) ) {
 												foreach ( $available_gateways as $gateway ) {
@@ -225,10 +231,10 @@ remove_filter( 'woocommerce_get_checkout_url', [ WFACP_Core()->public, 'woocomme
 												echo '<li class="woocommerce-notice woocommerce-notice--info woocommerce-info">' . apply_filters( 'woocommerce_no_available_payment_methods_message', esc_html__( 'Sorry, it seems that there are no available payment methods for your location. Please contact us if you require assistance or wish to make alternate arrangements.', 'woocommerce' ) ) . '</li>'; // @codingStandardsIgnoreLine
 											}
 											?>
-                                        </ul>
+										</ul>
 									<?php endif; ?>
-                                    <div class="form-row">
-                                        <input type="hidden" name="woocommerce_pay" value="1"/>
+									<div class="form-row">
+										<input type="hidden" name="woocommerce_pay" value="1"/>
 										<input type="hidden" name="_wfacp_post_id" value="<?php echo WFACP_Common::get_id(); ?>"/>
 										<?php wc_get_template( 'checkout/terms.php' ); ?>
 										<?php do_action( 'woocommerce_pay_order_before_submit' ); ?>
@@ -236,12 +242,12 @@ remove_filter( 'woocommerce_get_checkout_url', [ WFACP_Core()->public, 'woocomme
 										?>
 										<?php do_action( 'woocommerce_pay_order_after_submit' ); ?>
 										<?php wp_nonce_field( 'woocommerce-pay', 'woocommerce-pay-nonce' ); ?>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
 				<?php
 			}
 		} catch ( Exception $e ) {

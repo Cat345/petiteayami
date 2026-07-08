@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFOCUKirki_Field_URL' ) ) {
 	/**
 	 * Field overrides.
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCUKirki_Field_URL extends WFOCUKirki_Field_WFOCUKirki_Generic {
 
 		/**
@@ -26,7 +27,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_URL' ) ) {
 			}
 			$this->choices['element'] = 'input';
 			$this->choices['type']    = 'text';
-
 		}
 
 		/**
@@ -42,7 +42,6 @@ if ( ! class_exists( 'WFOCUKirki_Field_URL' ) ) {
 				return;
 			}
 			$this->sanitize_callback = 'esc_url_raw';
-
 		}
 	}
 }

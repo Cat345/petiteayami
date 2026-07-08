@@ -1275,13 +1275,30 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 			$method_name = 'onWebhook' . ucfirst( $payment->status );
 			remove_action( 'woocommerce_pre_payment_complete', array( WFOCU_Core()->public, 'maybe_setup_upsell' ), 99 );
 
-			if ( method_exists( $payment_object, $method_name ) ) {
-				WFOCU_Core()->log->log( "Mollie: method $method_name exists for order id: $order_id" );
+			/**
+			 * Mollie >= 8.1.4 moved onWebhook* methods out of MollieObject into a dedicated
+			 * WebhookHandler class. The new signature requires $payment_object as a 4th argument.
+			 * Older versions still have these methods on the payment object itself (3 args).
+			 */
+			$webhook_handler = WFOCU_Mollie_Helper_Compat::get_webhook_handler( WFOCU_Mollie_Helper::instance()->container );
+
+			if ( $webhook_handler && method_exists( $webhook_handler, $method_name ) ) {
+				WFOCU_Core()->log->log( "Mollie: dispatching $method_name via WebhookHandler for order id: $order_id" );
+				$webhook_handler->{$method_name}( $order, $payment, $payment_method_title, $payment_object );
+			} elseif ( method_exists( $payment_object, $method_name ) ) {
+				// Mollie < 8.1.4: method lives on the payment object, 3-arg signature.
+				WFOCU_Core()->log->log( "Mollie: dispatching $method_name on payment_object for order id: $order_id" );
 				$payment_object->{$method_name}( $order, $payment, $payment_method_title );
 			} else {
-				WFOCU_Core()->log->log( "Mollie: method $method_name doesn\'t exist for order id: $order_id" );
+				WFOCU_Core()->log->log( "Mollie: method $method_name not found for order id: $order_id" );
 				$payment_id = $payment->id . ( $payment->mode === 'test' ? ( ' - ' . __( 'test mode', 'mollie-payments-for-woocommerce' ) ) : '' );
-				$order->add_order_note( sprintf( /* translators: Placeholder 1: payment method title, placeholder 2: payment status, placeholder 3: payment ID */ __( '%1$s payment %2$s (%3$s), not processed.', 'mollie-payments-for-woocommerce' ), $this->get_wc_gateway()->method_title, $payment->status, $payment_id ) );
+				$order->add_order_note( sprintf(
+					/* translators: Placeholder 1: payment method title, placeholder 2: payment status, placeholder 3: payment ID */
+					__( '%1$s payment %2$s (%3$s), not processed.', 'mollie-payments-for-woocommerce' ),
+					$this->get_wc_gateway()->method_title,
+					$payment->status,
+					$payment_id
+				) );
 			}
 		}
 
@@ -1334,7 +1351,11 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 										window.location = data.redirect_url;
 									} else if (data.status === false) {
 										Bucket.swal.show({'text': wfocu_vars.messages.offer_msg_pop_failure, 'type': 'warning'});
-										window.location = wfocu_vars.redirect_url + '&ec=payment_failed';
+										if (typeof data.redirect_url !== 'undefined') {
+											window.location = data.redirect_url;
+										} else if (typeof wfocu_vars.order_received_url !== 'undefined') {
+											window.location = wfocu_vars.order_received_url + '&ec=payment_failed';
+										}
 									}
 									if (data.msg === true) {
 										Bucket.swal.show({

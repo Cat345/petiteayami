@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @todo things to do
@@ -97,7 +100,7 @@ if ( ! class_exists( 'WooFunnels_AS_DS' ) ) {
 			add_action( 'admin_init', [ $this, 'maybe_set_bwf_ct_worker' ], 9 );
 
 			/** Registering custom schedule */
-			add_filter( 'cron_schedules', [ $this, 'add_cron_schedule' ] );
+			add_filter( 'cron_schedules', [ $this, 'add_cron_schedule' ] ); // phpcs:ignore WordPress.WP.CronInterval.CronSchedulesInterval
 		}
 
 		/**
@@ -199,6 +202,14 @@ if ( ! class_exists( 'WooFunnels_AS_DS' ) ) {
 				return;
 			}
 
+			/** Rate-limit the worker endpoint. Loopback URL is unauthenticated; this caps how often it can swap the datastore and drain the queue. */
+			if ( self::is_worker_rate_limited() ) {
+				wp_send_json( array(
+					'msg'  => 'rate_limited',
+					'time' => date_i18n( 'Y-m-d H:i:s' ),
+				), 429 );
+			}
+
 			if ( ! class_exists( 'BWF_AS' ) ) {
 				return;
 			}
@@ -211,6 +222,29 @@ if ( ! class_exists( 'WooFunnels_AS_DS' ) ) {
 
 			/** Set unique key */
 			self::$unique = time();
+		}
+
+		/**
+		 * Returns true if the previous worker run is within the rate-limit window.
+		 * Window is filterable via `bwf_worker_rate_limit_window`; default 20 seconds.
+		 * Returning a non-positive number from the filter disables the limit.
+		 *
+		 * @return bool
+		 */
+		public static function is_worker_rate_limited() {
+			if ( ! function_exists( 'bwf_options_get' ) ) {
+				return false;
+			}
+			$last_run = absint( bwf_options_get( 'fk_core_worker_let', '', 0 ) );
+			if ( $last_run <= 0 ) {
+				return false;
+			}
+			$window = (int) apply_filters( 'bwf_worker_rate_limit_window', 20 );
+			if ( $window <= 0 ) {
+				return false;
+			}
+
+			return ( time() - $last_run ) < $window;
 		}
 
 		/**
@@ -257,25 +291,17 @@ if ( ! class_exists( 'WooFunnels_AS_DS' ) ) {
 		 *
 		 * @param WP_REST_Request $request
 		 */
-		public function rest_worker_callback( WP_REST_Request $request ) {
+		public function rest_worker_callback( WP_REST_Request $request ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 			/** Update execution time */
 			if ( function_exists( 'bwf_options_update' ) ) {
 				bwf_options_update( 'fk_core_worker_let', time() );
 			}
 
 			$this->worker_as_run();
+			$resp = [];
 			$resp['msg']       = 'success';
 			$resp['time']      = date_i18n( 'Y-m-d H:i:s' );
 			$resp['datastore'] = get_class( ActionScheduler_Store::instance() );
-
-			$path = filter_input( INPUT_GET, 'path' );
-			if ( ! empty( $path ) && 1 === intval( $path ) ) {
-				$obj             = new ReflectionClass( 'ActionScheduler_QueueRunner' );
-				$resp['as-path'] = $obj->getFileName();
-
-				$obj               = new ReflectionClass( 'BWF_Logger' );
-				$resp['core-path'] = $obj->getFileName();
-			}
 
 			/** Logs */
 			if ( ( defined( 'BWF_CHECK_CRON_SCHEDULE' ) && true === BWF_CHECK_CRON_SCHEDULE ) || true === apply_filters( 'bwf_check_cron_schedule_logging', false ) ) {
@@ -496,7 +522,7 @@ function bwf_unschedule_actions( $hook, $args = array(), $group = '' ) {
 
 	$action_ids = BWF_AS_Actions_Crud::find_actions( $arr );
 	if ( false === $action_ids ) {
-		_doing_it_wrong( __FUNCTION__, __( 'No actions found for data: ', 'woofunnels' ) . print_r( $arr, true ), BWF_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch
+		_doing_it_wrong( __FUNCTION__, __( 'No actions found for data: ', 'woofunnels' ) . print_r( $arr, true ), BWF_VERSION ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch, WordPress.PHP.DevelopmentFunctions.error_log_print_r
 	}
 
 	BWF_AS_Actions_Crud::delete_actions( $action_ids );

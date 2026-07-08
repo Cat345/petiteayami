@@ -21,13 +21,13 @@ if ( ! class_exists( 'WFOCU_WC_Email_Updated_Order_Admin' ) ) :
 	 * @package     WooCommerce/Classes/Emails
 	 * @extends     WC_Email
 	 */
+	#[\AllowDynamicProperties]
 	class WFOCU_WC_Email_Updated_Order_Admin extends WC_Email {
 
 		/**
 		 * Constructor.
 		 */
 		public function __construct() {
-
 
 			$this->id = 'wfocu_admin_updated_order';
 
@@ -46,7 +46,6 @@ if ( ! class_exists( 'WFOCU_WC_Email_Updated_Order_Admin' ) ) :
 
 			// Call parent constructor
 			parent::__construct();
-
 
 			// Other settings.
 			$this->recipient = $this->get_option( 'recipient', get_option( 'admin_email' ) );
@@ -91,7 +90,7 @@ if ( ! class_exists( 'WFOCU_WC_Email_Updated_Order_Admin' ) ) :
 		/**
 		 * Trigger the sending of this email.
 		 *
-		 * @param int $order_id The order ID.
+		 * @param int            $order_id The order ID.
 		 * @param WC_Order|false $order Order object.
 		 */
 		public function trigger( $order_id, $order = false ) {
@@ -123,16 +122,20 @@ if ( ! class_exists( 'WFOCU_WC_Email_Updated_Order_Admin' ) ) :
 		public function get_content_html() {
 
 			ob_start();
-			wc_get_template( $this->template_html, array(
-				'order'         => $this->object,
-				'email_heading' => $this->get_heading(),
-				'sent_to_admin' => true,
-				'plain_text'    => false,
-				'email'         => $this,
-			), '', $this->template_base );
+			wc_get_template(
+				$this->template_html,
+				array(
+					'order'         => $this->object,
+					'email_heading' => $this->get_heading(),
+					'sent_to_admin' => true,
+					'plain_text'    => false,
+					'email'         => $this,
+				),
+				'',
+				$this->template_base
+			);
 
 			return ob_get_clean();
-
 		}
 
 		/**
@@ -143,13 +146,18 @@ if ( ! class_exists( 'WFOCU_WC_Email_Updated_Order_Admin' ) ) :
 		 */
 		public function get_content_plain() {
 			ob_start();
-			wc_get_template( $this->template_html, array(
-				'order'         => $this->object,
-				'email_heading' => $this->get_heading(),
-				'sent_to_admin' => true,
-				'plain_text'    => false,
-				'email'         => $this,
-			), '', $this->template_base );
+			wc_get_template(
+				$this->template_html,
+				array(
+					'order'         => $this->object,
+					'email_heading' => $this->get_heading(),
+					'sent_to_admin' => true,
+					'plain_text'    => false,
+					'email'         => $this,
+				),
+				'',
+				$this->template_base
+			);
 
 			return ob_get_clean();
 		}

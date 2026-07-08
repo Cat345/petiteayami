@@ -845,7 +845,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 		private function get_last_revision_page_template( $id ) {
 
 			global $wpdb;
-			$data     = $wpdb->get_results( "select ID from {$wpdb->posts} where post_parent='{$id}' ORDER BY ID DESC  LIMIT 1", ARRAY_A );
+			$data     = $wpdb->get_results( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_parent = %d ORDER BY ID DESC LIMIT 1", absint( $id ) ), ARRAY_A );
 			$template = '';
 			if ( ! empty( $data ) ) {
 				$revision_id = $data[0]['ID'];

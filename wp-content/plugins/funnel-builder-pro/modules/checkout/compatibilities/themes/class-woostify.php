@@ -83,11 +83,11 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Woostify' ) ) {
 
 			echo '<style>';
 			// Reset Woostify layout-3 column wrappers when they leak into the Aero form.
-			echo $bodyClass . '.wfacp_main_form .woostify-col-left, ' . $bodyClass . '.wfacp_main_form .woostify-col-right { width: 100%; float: none; }';
+			echo esc_attr( $bodyClass ) . '.wfacp_main_form .woostify-col-left, ' . $bodyClass . '.wfacp_main_form .woostify-col-right { width: 100%; float: none; }';
 			// Fallback only: remove_actions() clears Woostify cart-item image filters; this covers
 			// mini cart + order summary if anything still injects .w-product-thumb or .review-order-product-image.
 			// Scoped to .wfacp_main_form — do NOT target .multi-step-checkout-wrapper (FunnelKit uses that class inside #wfacp-e-form for its own multi-step UI).
-			echo $bodyClass . '.wfacp_main_form .w-product-thumb, ' . $bodyClass . '.wfacp_main_form .review-order-product-image { display: none !important; }';
+			echo esc_attr( $bodyClass ) . '.wfacp_main_form .w-product-thumb, ' . $bodyClass . '.wfacp_main_form .review-order-product-image { display: none !important; }';
 			echo '</style>';
 		}
 	}

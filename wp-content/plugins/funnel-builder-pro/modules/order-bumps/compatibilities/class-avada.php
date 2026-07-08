@@ -1,9 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! class_exists( 'WFOB_Compatibilities_Avada_Fusion_Builder' ) ) {
+	#[\AllowDynamicProperties]
 	class WFOB_Compatibilities_Avada_Fusion_Builder {
 		public function __construct() {
-			add_filter( 'wfob_product_switcher_price_data', [ $this, 'remove_action' ] );
-			add_filter( 'wfob_qv_images', [ $this, 'remove_action' ] );
+			add_filter( 'wfob_product_switcher_price_data', array( $this, 'remove_action' ) );
+			add_filter( 'wfob_qv_images', array( $this, 'remove_action' ) );
 		}
 
 		public function remove_action( $status ) {
@@ -13,8 +17,6 @@ if ( ! class_exists( 'WFOB_Compatibilities_Avada_Fusion_Builder' ) ) {
 
 			return $status;
 		}
-
-
 	}
 
 	new WFOB_Compatibilities_Avada_Fusion_Builder();

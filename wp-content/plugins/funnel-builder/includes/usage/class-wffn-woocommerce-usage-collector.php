@@ -16,6 +16,7 @@ if ( ! class_exists( 'WFFN_WooCommerce_Usage_Collector' ) && class_exists( 'WooF
 	/**
 	 * Class WFFN_WooCommerce_Usage_Collector
 	 */
+	#[\AllowDynamicProperties]
 	class WFFN_WooCommerce_Usage_Collector extends WooFunnels_Usage_Collector_Abstract {
 
 		/**
@@ -340,17 +341,8 @@ if ( ! class_exists( 'WFFN_WooCommerce_Usage_Collector' ) && class_exists( 'WooF
 			$is_hpos_enabled = \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
 
 			if ( $is_hpos_enabled ) {
-				$orders_table = \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::get_orders_table_name();
-				// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$orders_and_gateway_details = $wpdb->get_results(
-					"
-					SELECT IFNULL(payment_method, '') AS gateway, currency AS currency, count( id ) AS counts
-					FROM $orders_table
-					WHERE status IN ( 'wc-completed', 'wc-processing', 'wc-refunded' )
-					GROUP BY gateway, currency;
-					"
-				);
-				// phpcs:enable
+				$orders_table               = \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::get_orders_table_name();
+				$orders_and_gateway_details = $wpdb->get_results( "SELECT IFNULL(payment_method, '') AS gateway, currency AS currency, count( id ) AS counts FROM $orders_table WHERE status IN ( 'wc-completed', 'wc-processing', 'wc-refunded' ) GROUP BY gateway, currency;" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $orders_table is a trusted WooCommerce table name (OrdersTableDataStore::get_orders_table_name()); all query values are hardcoded literals.
 			} else {
 				$orders_and_gateway_details = $wpdb->get_results(
 					"

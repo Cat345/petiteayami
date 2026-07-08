@@ -5,6 +5,7 @@ require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader-skin.php';
 /**
  * class BWFAN_Plugin_Silent_Upgrader_Skin
  */
+#[\AllowDynamicProperties]
 class BWFAN_Plugin_Silent_Upgrader_Skin extends WP_Upgrader_Skin {
 
 	/**

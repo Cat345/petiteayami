@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Users_Role extends BWFAN_Rule_Base {
 
 	public function __construct() {
@@ -141,6 +142,7 @@ class BWFAN_Rule_Users_Role extends BWFAN_Rule_Base {
 
 }
 
+#[\AllowDynamicProperties]
 class BWFAN_Rule_Users_User extends BWFAN_Dynamic_Option_Base {
 
 	public function __construct() {

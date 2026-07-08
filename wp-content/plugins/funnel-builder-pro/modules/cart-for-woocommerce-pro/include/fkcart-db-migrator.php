@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'FKCART_DB_Migrator' ) ) {
 	#[AllowDynamicProperties]
 	class FKCART_DB_Migrator extends WooFunnels_Background_Updater {
@@ -205,8 +209,16 @@ if ( ! class_exists( 'FKCART_DB_Migrator' ) ) {
 			 */
 			if ( ! empty( $data ) ) {
 				global $wpdb;
-				$first_row     = reset( $data );
-				$columns       = array_keys( $first_row );
+				$first_row = reset( $data );
+				$columns   = array_keys( $first_row );
+
+				foreach ( $columns as $col ) {
+					if ( ! in_array( $col, self::get_allowed_columns(), true ) ) {
+						WFFN_Core()->logger->log( 'fkcart migration rejected unknown column: ' . $col, 'fkcart_migration', true );
+						return;
+					}
+				}
+
 				$placeholders  = array_fill( 0, count( $data ), '(' . rtrim( str_repeat( '%s, ', count( $columns ) ), ', ' ) . ')' );
 				$query         = "INSERT INTO $table_name (" . implode( ', ', $columns ) . ") VALUES " . implode( ', ', $placeholders );
 				$insert_values = [];
@@ -232,8 +244,16 @@ if ( ! class_exists( 'FKCART_DB_Migrator' ) ) {
 				$sql = '';
 				unset( $item['id'] );
 
-				$update_data  = $item;
-				$oid_value    = $item['oid'];
+				$update_data = $item;
+				$oid_value   = $item['oid'];
+
+				foreach ( array_keys( $update_data ) as $col ) {
+					if ( ! in_array( $col, self::get_allowed_columns(), true ) ) {
+						WFFN_Core()->logger->log( 'fkcart migration rejected unknown column: ' . $col, 'fkcart_migration', true );
+						continue 2;
+					}
+				}
+
 				$placeholders = array();
 				$update_query = "UPDATE $table_name SET ";
 				foreach ( $update_data as $key => $value ) {
@@ -248,7 +268,14 @@ if ( ! class_exists( 'FKCART_DB_Migrator' ) ) {
 					WFFN_Core()->logger->log( 'fkcart migration process update data error ' . $wpdb->last_error . ' last query ' . $wpdb->last_query, 'fkcart_migration', true );
 				}
 			}
+		}
 
+		private static function get_allowed_columns() {
+			return [
+				'oid', 'onumber', 'addon_viewed', 'free_gift_viewed',
+				'upsells_viewed', 'discount', 'free_shipping', 'date_created',
+				'product_id', 'price', 'type',
+			];
 		}
 
 	}

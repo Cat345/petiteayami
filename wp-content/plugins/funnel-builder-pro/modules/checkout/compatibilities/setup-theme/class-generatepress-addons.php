@@ -1,16 +1,20 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Generate Press GP plugin compatibility
- * #[AllowDynamicProperties] 
- class WFACP_Compatibility_With_GP_PLUGIN
+ * #[AllowDynamicProperties]
+class WFACP_Compatibility_With_GP_PLUGIN
  */
 if ( ! class_exists( 'WFACP_Compatibility_With_GP_PLUGIN' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_GP_PLUGIN {
 
 		public function __construct() {
-			add_action( 'customize_register', [ $this, 'wfacp_temp_remove_controls' ], 1500 );
+			add_action( 'customize_register', array( $this, 'wfacp_temp_remove_controls' ), 1500 );
 		}
 
 		/**
