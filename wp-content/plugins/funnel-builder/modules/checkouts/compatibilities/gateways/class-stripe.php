@@ -3,16 +3,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 if ( ! class_exists( 'WFACP_Stripe_GPAY_AND_APAY' ) ) {
-    #[AllowDynamicProperties] 
+	#[AllowDynamicProperties]
 
-  class WFACP_Stripe_GPAY_AND_APAY {
-        public function __construct() {
-            add_filter( 'wfacp_smart_buttons', [ $this, 'add_buttons' ] );
-            add_action( 'wfacp_smart_button_container_stripe_gpay_apay', [ $this, 'add_stripe_gpay_apay_buttons' ] );
-            add_filter( 'wfacp_mark_conversion_post_id', [ $this, 'update_conversion_post_id' ], 10, 1 );
-            add_action( 'wfacp_after_checkout_page_found', [ $this, 'force_add_woocommerce_checkout_shortcode' ], 99 );
-            add_action( 'wfacp_internal_css', [ $this, 'add_internal_css' ] );
-        }
+	class WFACP_Stripe_GPAY_AND_APAY {
+		public function __construct() {
+			add_filter( 'wfacp_smart_buttons', array( $this, 'add_buttons' ) );
+			add_action( 'wfacp_smart_button_container_stripe_gpay_apay', array( $this, 'add_stripe_gpay_apay_buttons' ) );
+			add_filter( 'wfacp_mark_conversion_post_id', array( $this, 'update_conversion_post_id' ), 10, 1 );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'force_add_woocommerce_checkout_shortcode' ), 99 );
+			add_action( 'wfacp_internal_css', array( $this, 'add_internal_css' ) );
+		}
 
 		public function add_buttons( $buttons ) {
 
@@ -20,7 +20,6 @@ if ( ! class_exists( 'WFACP_Stripe_GPAY_AND_APAY' ) ) {
 				return $buttons;
 			}
 			if ( true == apply_filters( 'wfacp_disabled_google_apple_pay_button_on_desktop', false, $buttons ) ) {
-
 
 				if ( ! class_exists( 'WFACP_Mobile_Detect' ) ) {
 					return $buttons;
@@ -30,11 +29,21 @@ if ( ! class_exists( 'WFACP_Stripe_GPAY_AND_APAY' ) ) {
 				if ( ! $detect->isMobile() || empty( $detect ) ) {
 					return $buttons;
 				}
-				add_filter( 'wfacp_template_localize_data', [ $this, 'set_local_data' ] );
+				add_filter( 'wfacp_template_localize_data', array( $this, 'set_local_data' ) );
 			}
 			$settings = get_option( 'woocommerce_stripe_settings', array() );
 			// Checks if Payment Request is enabled.
 			if ( ! isset( $settings['payment_request'] ) || 'yes' !== $settings['payment_request'] ) {
+				return $buttons;
+			}
+
+			// Honor the Stripe gateway's own "Display Locations" (WC Stripe >= 5.5.0):
+			// if the merchant removed "Checkout" from Stripe's locations, do not add
+			// Stripe's own button key — otherwise an empty Stripe container is emitted
+			// that other gateways' Express Checkout buttons should not be collapsed for.
+			// An ABSENT key means the location setting was never configured and must
+			// default to "show on checkout", matching WC Stripe's get_button_locations().
+			if ( defined( 'WC_STRIPE_VERSION' ) && version_compare( WC_STRIPE_VERSION, '5.5.0', '>=' ) && array_key_exists( 'payment_request_button_locations', $settings ) && ! in_array( 'checkout', (array) $settings['payment_request_button_locations'], true ) ) {
 				return $buttons;
 			}
 
@@ -43,13 +52,13 @@ if ( ! class_exists( 'WFACP_Stripe_GPAY_AND_APAY' ) ) {
 			}
 
 			$instance = WC_Stripe_Payment_Request::instance();
-			remove_action( 'woocommerce_checkout_before_customer_details', [ $instance, 'display_payment_request_button_html' ], 1 );
-			remove_action( 'woocommerce_checkout_before_customer_details', [ $instance, 'display_payment_request_button_separator_html' ], 2 );
+			remove_action( 'woocommerce_checkout_before_customer_details', array( $instance, 'display_payment_request_button_html' ), 1 );
+			remove_action( 'woocommerce_checkout_before_customer_details', array( $instance, 'display_payment_request_button_separator_html' ), 2 );
 
-			$buttons['stripe_gpay_apay'] = [
+			$buttons['stripe_gpay_apay'] = array(
 				'iframe' => true,
 				'name'   => __( 'Stripe Payment Reques', 'woocommerce-gateway-amazon-payments-advanced' ),
-			];
+			);
 
 			return $buttons;
 		}
@@ -57,7 +66,6 @@ if ( ! class_exists( 'WFACP_Stripe_GPAY_AND_APAY' ) ) {
 		public function add_stripe_gpay_apay_buttons() {
 			$instance = WC_Stripe_Payment_Request::instance();
 			$instance->display_payment_request_button_html();
-
 		}
 
 
@@ -95,7 +103,7 @@ if ( ! class_exists( 'WFACP_Stripe_GPAY_AND_APAY' ) ) {
 			global $post;
 			if ( ! is_null( $post ) && ! is_checkout_pay_page() ) {
 				$post->post_content .= '[woocommerce_checkout]';
-				add_filter( 'pre_do_shortcode_tag', [ $this, 'replace_empty_string' ], 21, 2 );
+				add_filter( 'pre_do_shortcode_tag', array( $this, 'replace_empty_string' ), 21, 2 );
 			}
 		}
 
@@ -112,27 +120,24 @@ if ( ! class_exists( 'WFACP_Stripe_GPAY_AND_APAY' ) ) {
 				return;
 			}
 
-
 			$instance = wfacp_template();
 			if ( ! $instance instanceof WFACP_Template_Common ) {
 				return;
 			}
-			$bodyClass = "body";
+			$bodyClass = 'body';
 			if ( 'pre_built' !== $instance->get_template_type() ) {
-				$bodyClass = "body #wfacp-e-form";
+				$bodyClass = 'body #wfacp-e-form';
 			}
 			if ( version_compare( WC_STRIPE_VERSION, '5.6.0', '<' ) ) {
 				return;
 			}
 
+			echo '<style>';
 
-			echo "<style>";
-
-			echo $bodyClass . " #payment ul.payment_methods li .card-brand-icons img{position: absolute;}";
-			echo ".wfacp_smart_button_container #wc-stripe-payment-request-button-separator{display:none !important}";
-			echo ".wfacp_smart_button_container #wc-stripe-payment-request-wrapper{margin-top:0 !important}";
-			echo "</style>";
-
+			echo $bodyClass . ' #payment ul.payment_methods li .card-brand-icons img{position: absolute;}';
+			echo '.wfacp_smart_button_container #wc-stripe-payment-request-button-separator{display:none !important}';
+			echo '.wfacp_smart_button_container #wc-stripe-payment-request-wrapper{margin-top:0 !important}';
+			echo '</style>';
 		}
 	}
 
@@ -141,4 +146,3 @@ if ( ! class_exists( 'WFACP_Stripe_GPAY_AND_APAY' ) ) {
 
 
 }
-

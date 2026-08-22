@@ -779,7 +779,7 @@ class Edit_Coupon implements Model_Interface, Initiable_Interface {
 
         $post_data = array();
         foreach ( $raw_data as $raw_key => $value ) {
-            if ( strpos( $raw_key, $this->_constants->META_PREFIX ) !== false ) {
+            if ( str_contains( $raw_key, $this->_constants->META_PREFIX ) ) {
                 $key               = str_replace( $this->_constants->META_PREFIX, '', $raw_key );
                 $post_data[ $key ] = $value;
             }

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /**
  * Class to control Settings and its behaviour accross the buildwoofunnels
  *
@@ -39,7 +40,7 @@ if ( ! class_exists( 'BWF_Admin_Settings' ) ) {
 
 			$user = WFACP_Core()->role->user_access( 'menu', 'read' );
 			if ( empty( $found ) && false !== $user ) {
-				add_submenu_page( 'woofunnels', __( 'Settings', 'woofunnels' ), __( 'Settings', 'woofunnels' ), $user, 'woofunnels_settings', array( $this, '_callback' ) );
+				add_submenu_page( 'woofunnels', __( 'Settings', 'funnel-builder' ), __( 'Settings', 'funnel-builder' ), $user, 'woofunnels_settings', array( $this, '_callback' ) );
 			}
 		}
 

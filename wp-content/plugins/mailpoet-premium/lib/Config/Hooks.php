@@ -9,7 +9,10 @@ use MailPoet\API\JSON\API;
 use MailPoet\API\REST\API as RestApi;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\BouncesEndpoint;
+use MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\ClickedLinksEndpoint;
 use MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\EngagementEndpoint;
+use MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\ProductsEndpoint;
+use MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\UnsubscribeReasonsEndpoint;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -63,6 +66,9 @@ class Hooks {
 
     $api->registerGetRoute('newsletter-stats/(?P<id>\d+)/engagement', EngagementEndpoint::class);
     $api->registerGetRoute('newsletter-stats/(?P<id>\d+)/bounces', BouncesEndpoint::class);
+    $api->registerGetRoute('newsletter-stats/(?P<id>\d+)/clicked-links', ClickedLinksEndpoint::class);
+    $api->registerGetRoute('newsletter-stats/(?P<id>\d+)/products', ProductsEndpoint::class);
+    $api->registerGetRoute('newsletter-stats/(?P<id>\d+)/unsubscribe-reasons', UnsubscribeReasonsEndpoint::class);
   }
 
   public function pluginUpdateMessage() {

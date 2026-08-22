@@ -270,6 +270,10 @@ span.xwh-subheading {
 }
 
 
+form.xoo-wl-form button[type=submit].xoo-wl-submit-btn{
+    max-width: 100%;
+}
+
 
 @media only screen and (min-height: 650px) {
     .xoo-wl-srcont {

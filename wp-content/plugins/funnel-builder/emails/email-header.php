@@ -92,7 +92,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                                                                 <p class="bwf-block-text-inner-container" style="margin: 0; mso-line-height-alt: 130%; word-break: break-word; font-size: 16px; font-family: arial,helvetica,sans-serif; line-height: 1.3;">
                                                                     <span style="mso-line-height-alt: 130%; font-size: 13px;" class="has-font-size">🚀</span><span style="mso-line-height-alt: 130%; font-size: 14px;" class="has-font-size">&nbsp;<strong><span style="mso-line-height-alt: 130%; background-color: rgba(0, 0, 0, 0); color: #000000;" class="has-inline-color">
                                                                           <?php
-                                                                          echo wp_kses( __( 'Boost Profits with <br>Funnels &amp; Automations', 'wp-marketing-automations' ), array(
+                                                                          echo wp_kses( __( 'Boost Profits with <br>Funnels &amp; Automations', 'funnel-builder' ), array(
 	                                                                          'br' => array(),
                                                                           ) );
                                                                           ?>            </span></strong></span><br>

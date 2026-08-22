@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
+
 $iconbgcolor 	= $sy_options['s-icon-bgcolor'];
 $iconcolor 		= $sy_options['s-icon-color'];
 $iconsize 		= $sy_options['s-icon-size'];
@@ -90,3 +95,31 @@ $reqiredSymbol 	= $sy_options['s-show-reqicon'];
 	}
 
 <?php endif; ?>
+
+body:not(.rtl) .xoo-aff-input-group .xoo-aff-input-icon{
+    border-right: 0;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+
+body.rtl .xoo-aff-auto-fetch-loc{
+    text-align: left;
+}
+
+body.rtl .xoo-aff-input-group .xoo-aff-input-icon {
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+body.rtl .xoo-aff-input-icon + input, body.rtl .xoo-aff-input-icon + select {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 4px!important;
+    border-top-left-radius: 4px!important;
+}
+
+body.rtl .xoo-aff-input-group .xoo-aff-input-icon {
+    border-left: 0;
+}

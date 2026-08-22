@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * WooCommerce Address Validation by SkyVerge

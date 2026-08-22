@@ -37,7 +37,7 @@ if ( ! class_exists( 'The_Courier_Guy_Shipping_For_WC' ) ) {
 
 			new WFACP_Add_Address_Field( 'tcg_place_lookup', [
 				'type'        => 'tcg_place_lookup',
-				'label'       => __( 'Area/Suburb', 'woofunnels-aero-checkout' ),
+				'label'       => __( 'Area/Suburb', 'funnel-builder' ),
 				'placeholder' => 'Area/Suburb',
 				'options'     => [
 					'Search Suburb...',
@@ -56,7 +56,7 @@ if ( ! class_exists( 'The_Courier_Guy_Shipping_For_WC' ) ) {
 
 			new WFACP_Add_Address_Field( 'tcg_quoteno', [
 				'type'        => 'text',
-				'label'       => __( 'TCG Quote Number', 'woofunnels-aero-checkout' ),
+				'label'       => __( 'TCG Quote Number', 'funnel-builder' ),
 				'placeholder' => 'TCG Quote Number',
 				'class'       => [
 					'form-row-wide',
@@ -81,7 +81,7 @@ if ( ! class_exists( 'The_Courier_Guy_Shipping_For_WC' ) ) {
 
 			new WFACP_Add_Address_Field( 'tcg_place_lookup', [
 				'type'        => 'tcg_place_lookup',
-				'label'       => __( 'Area/Suburb', 'woofunnels-aero-checkout' ),
+				'label'       => __( 'Area/Suburb', 'funnel-builder' ),
 				'placeholder' => 'Area/Suburb',
 				'options'     => [
 					'Search Suburb...',
@@ -98,7 +98,7 @@ if ( ! class_exists( 'The_Courier_Guy_Shipping_For_WC' ) ) {
 
 			new WFACP_Add_Address_Field( 'tcg_quoteno', [
 				'type'        => 'text',
-				'label'       => __( 'TCG Quote Number', 'woofunnels-aero-checkout' ),
+				'label'       => __( 'TCG Quote Number', 'funnel-builder' ),
 				'placeholder' => 'TCG Quote Number',
 				'class'       => [
 					'form-row-wide',

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /**
  * WooCommerce Smart Coupons by StoreApps v.9.54.0
  */

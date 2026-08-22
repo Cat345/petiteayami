@@ -76,9 +76,12 @@ if ( ! class_exists( 'WFFN_Feature_Performance' ) ) {
 
 			$where_query = implode( ' AND ', $where_conditions );
 
-			// Build date condition for views table (wfco_report_views uses 'date' column, not 'timestamp')
-			// Match REST API format: date >= start_date AND date < end_date (both in Y-m-d format)
-			$views_date_condition = '';
+			/**
+			 * Date window handed to whoever supplies view counts. Empty strings
+			 * mean "no window" -- both stay empty when no interval was requested.
+			 */
+			$after_date  = '';
+			$before_date = '';
 			if ( $interval > 0 ) {
 				$current_time = current_time( 'timestamp' );
 				if ( 'hours' === $unit ) {
@@ -94,35 +97,57 @@ if ( ! class_exists( 'WFFN_Feature_Performance' ) ) {
 					// End date is today + 1 day (exclusive)
 					$before_date = date( 'Y-m-d', strtotime( 'tomorrow', $current_time ) ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 				}
-				$views_date_condition = $wpdb->prepare( 'AND date >= %s AND date < %s', $after_date, $before_date );
 			}
-
-			$views_table = $wpdb->prefix . 'wfco_report_views';
 
 			// Total: Conversions (orders through funnels) - type = 2 means wc_order (purchase)
 			$query             = "SELECT COUNT(*) FROM {$table} WHERE {$where_query} AND type = 2"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$total_conversions = (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-			// Total: Views - Sum of funnel sessions from wfco_report_views (type 7 = funnel session)
-			// This matches the REST API logic which uses type = 7 for "unique_visits" / "visitors"
-			$query       = "SELECT COALESCE(SUM(no_of_sessions), 0) FROM {$views_table} WHERE type = 7 {$views_date_condition}"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$total_views = (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			/** Funnel sessions. Zero unless something records views. */
+			$total_views = (int) apply_filters(
+				'wffn_report_views_count',
+				0,
+				array(
+					'context'    => 'usage_total',
+					'view_type'  => 7,
+					'start_date' => $after_date,
+					'end_date'   => $before_date,
+				)
+			);
 
 			// Checkout: Conversions - Orders from checkout pages (type = 2 and step is checkout page)
 			$query                = "SELECT COUNT(*) FROM {$table} ct INNER JOIN {$wpdb->prefix}posts p ON ct.step_id = p.ID WHERE {$where_query} AND ct.type = 2 AND p.post_type = 'wfacp_checkout'"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$checkout_conversions = (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-			// Checkout: Views - Sum views from wfco_report_views where type = 4 (checkout visited) and object_id is a checkout page
-			$query          = "SELECT COALESCE(SUM(rv.no_of_sessions), 0) FROM {$views_table} rv INNER JOIN {$wpdb->prefix}posts p ON rv.object_id = p.ID WHERE rv.type = 4 AND p.post_type = 'wfacp_checkout' {$views_date_condition}"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$checkout_views = (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			/** Checkout page views. Zero unless something records views. */
+			$checkout_views = (int) apply_filters(
+				'wffn_report_views_count',
+				0,
+				array(
+					'context'    => 'usage_checkout',
+					'view_type'  => 4,
+					'post_type'  => 'wfacp_checkout',
+					'start_date' => $after_date,
+					'end_date'   => $before_date,
+				)
+			);
 
 			// Optin: Conversions - Opt-in submissions (type = 1 means optin)
 			$query             = "SELECT COUNT(*) FROM {$table} WHERE {$where_query} AND type = 1"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$optin_conversions = (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-			// Optin: Views - Sum views from wfco_report_views where type = 8 (optin visited) and object_id is an optin page
-			$query       = "SELECT COALESCE(SUM(rv.no_of_sessions), 0) FROM {$views_table} rv INNER JOIN {$wpdb->prefix}posts p ON rv.object_id = p.ID WHERE rv.type = 8 AND p.post_type = 'wffn_optin' {$views_date_condition}"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$optin_views = (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			/** Optin page views. Zero unless something records views. */
+			$optin_views = (int) apply_filters(
+				'wffn_report_views_count',
+				0,
+				array(
+					'context'    => 'usage_optin',
+					'view_type'  => 8,
+					'post_type'  => 'wffn_optin',
+					'start_date' => $after_date,
+					'end_date'   => $before_date,
+				)
+			);
 
 			return array(
 				$prefix . 'total_conversions'    => $total_conversions,

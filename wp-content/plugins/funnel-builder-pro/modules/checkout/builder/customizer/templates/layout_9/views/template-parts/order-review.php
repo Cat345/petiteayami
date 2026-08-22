@@ -34,6 +34,8 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 	return;
 }
 
+$prepared_items = $instance->get_prepared_cart_items();
+
 ?>
 
 <div class="wfacp_template_9_cart_item_details wfacp_min_cart_widget" data-delete-enabled="<?php echo $enable_delete_item; ?>">
@@ -53,7 +55,8 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 			echo '</td></tr>';
 		} else {
 			foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
-				$_product               = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
+				$item_data              = isset( $prepared_items[ $cart_item_key ] ) ? $prepared_items[ $cart_item_key ] : null;
+				$_product               = $item_data ? $item_data['product'] : apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
 				$yes_enable_delete_item = apply_filters( 'wfacp_mini_cart_enable_delete_item', $enable_delete_item, $cart_item, $cart_item_key );
 
 
@@ -63,9 +66,10 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 					$enabled_delete_class = 'wfacp_delete_active';
 				}
 				if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_checkout_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
-					$aero_item_key = '';
-					$item_quantity = $cart_item['quantity'];
-					if ( false == WFACP_Core()->public->is_checkout_override() && isset( $cart_item['_wfacp_product'] ) ) {
+					$aero_item_key = $item_data ? $item_data['aero_item_key'] : '';
+					$item_quantity = $item_data ? $item_data['item_quantity'] : $cart_item['quantity'];
+					$product_data  = $item_data ? $item_data['product_data'] : $product_data;
+					if ( ! $item_data && false == WFACP_Core()->public->is_checkout_override() && isset( $cart_item['_wfacp_product'] ) ) {
 						$aero_item_key          = $cart_item['_wfacp_product_key'];
 						$temp                   = WC()->session->get( 'wfacp_product_data_' . WFACP_Common::get_id() );
 						$hide_quantity_switcher = wc_string_to_bool( $switcher_settings['settings']['hide_quantity_switcher'] );
@@ -88,8 +92,7 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 
 							if ( apply_filters( $cart_image_filter, $display_img ) ) {
 								$hideImageCls = 'wfacp_summary_img_true';
-								$thumbnail    = WFACP_Common::get_product_image( $_product, array( 100, 100 ), $cart_item, $cart_item_key );
-								$thumbnail    = apply_filters( 'wfacp_cart_image', $thumbnail, $_product );
+								$thumbnail    = $item_data ? $item_data['thumbnail'] : apply_filters( 'wfacp_cart_image', WFACP_Common::get_product_image( $_product, array( 100, 100 ), $cart_item, $cart_item_key ), $_product );
 								?>
 
 								<div class="product-image">
@@ -132,9 +135,9 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 								 * Default: compact format "Hoodie - Small, Black" via get_name().
 								 * When filter true: product name + "Size: small, Color: black" on separate line.
 								 */
-								$show_new_collapsible_design = apply_filters( 'wfacp_mini_cart_show_variation_details', false, $cart_item, $cart_item_key );
-								$product_name                = $_product->get_name();
-								if ( $show_new_collapsible_design && ( in_array( $_product->get_type(), WFACP_Common::get_variation_product_type() ) || true === apply_filters( 'wfacp_show_select_options_for_cart_item', false, $cart_item, $cart_item_key ) ) ) {
+								$show_new_collapsible_design = $item_data ? $item_data['show_variation_details'] : apply_filters( 'wfacp_mini_cart_show_variation_details', false, $cart_item, $cart_item_key );
+								$product_name                = $item_data ? $item_data['product_name'] : $_product->get_name();
+								if ( ! $item_data && $show_new_collapsible_design && ( in_array( $_product->get_type(), WFACP_Common::get_variation_product_type() ) || true === apply_filters( 'wfacp_show_select_options_for_cart_item', false, $cart_item, $cart_item_key ) ) ) {
 									$product_name = $_product->get_title();
 								}
 								echo apply_filters( 'woocommerce_cart_item_name', $product_name, $cart_item, $cart_item_key );
@@ -147,8 +150,9 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 									 */
 									do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key );
 								}
-								echo wc_get_formatted_cart_item_data( $cart_item );
-							
+
+								echo $item_data ? $item_data['formatted_data'] : wc_get_formatted_cart_item_data( $cart_item );
+
 								do_action( 'wfacp_after_mini_cart_attributes', $cart_item, $cart_item_key );
 
 								echo '</span> ';
@@ -156,8 +160,11 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 
 								echo '</div>';
 
-								if ( false == $show_subscription_string_old_version && in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() ) ) {
-									printf( "<div class='wfacp_product_subs_details'>%s</div>", WFACP_Common::subscription_product_string( $_product, $product_data, $cart_item, $cart_item_key ) );
+								$is_subscription       = $item_data ? $item_data['is_subscription'] : in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() );
+								$show_subscription_old = $item_data ? $item_data['show_subscription_old'] : $show_subscription_string_old_version;
+								if ( false == $show_subscription_old && $is_subscription && ( class_exists( 'WC_Subscriptions' ) || class_exists( 'WC_Subscriptions_Core_Plugin' ) ) && version_compare( WFACP_Common_Helper::get_subscription_version(), '9.0.0', '<' ) ) {
+									$sub_string = $item_data ? $item_data['subscription_string'] : WFACP_Common::subscription_product_string( $_product, $product_data, $cart_item, $cart_item_key );
+									printf( "<div class='wfacp_product_subs_details'>%s</div>", $sub_string );
 								}
 								if ( $show_quantity_switcher ) {
 									$is_sold_individually = false;
@@ -171,12 +178,26 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 										if ( false == $is_sold_individually ) {
 											$item_quantity = apply_filters( 'wfacp_item_quantity', $item_quantity, $cart_item );
 
+											// Derive step from WooCommerce's quantity-input filters so decimal-quantity plugins apply; defaults to 1.
+											$wfacp_qty_step = apply_filters( 'woocommerce_quantity_input_step', 1, $_product );
+											$wfacp_qty_args = apply_filters(
+												'woocommerce_quantity_input_args',
+												array(
+													'min_value' => 0,
+													'max_value' => '',
+													'step' => $wfacp_qty_step,
+												),
+												$_product
+											);
+											if ( is_array( $wfacp_qty_args ) && isset( $wfacp_qty_args['step'] ) ) {
+												$wfacp_qty_step = $wfacp_qty_args['step'];
+											}
 											$minMax = apply_filters(
 												'wfacp_cart_item_min_max_quantity',
 												array(
 													'min'  => 0,
 													'max'  => '',
-													'step' => '1',
+													'step' => $wfacp_qty_step,
 												),
 												$cart_item,
 												$aero_item_key,
@@ -214,9 +235,9 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 						</td>
 						<td class="product-total">
 							<?php
-							if ( in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() ) ) {
+							if ( $is_subscription ) {
 								if ( false == $show_subscription_string_old_version ) {
-									echo apply_filters( 'wfacp_subscription_price_display', wc_price( WFACP_Common::get_subscription_cart_item_price( $cart_item ) ), $_product, $cart_item, $cart_item_key );
+									echo apply_filters( 'wfacp_subscription_price_display', WFACP_Common::maybe_strike_subscription_price( wc_price( WFACP_Common::get_subscription_cart_item_price( $cart_item ) ), $_product, $cart_item, apply_filters( 'wfacp_collapsible_mini_cart_enable_strike_through_price', false ) ), $_product, $cart_item, $cart_item_key );
 								} else {
 									echo WFACP_Common::display_subscription_price( $_product, $cart_item, $cart_item_key );
 								}
@@ -231,6 +252,8 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 						</td>
 					</tr>
 					<?php
+					do_action( 'wfacp_after_order_review_cart_item_row', $cart_item, $cart_item_key );
+
 				}
 			}
 		}

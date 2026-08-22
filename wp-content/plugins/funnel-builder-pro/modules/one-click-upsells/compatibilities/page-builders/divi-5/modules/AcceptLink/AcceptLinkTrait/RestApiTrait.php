@@ -84,7 +84,7 @@ trait RestApiTrait {
 		// Build product options
 		foreach ( $wfocu_products as $key => $product ) {
 			$response[ (string) $key ] = array(
-				'label' => $product->data->get_name(),
+				'label' => $product->name,
 			);
 		}
 

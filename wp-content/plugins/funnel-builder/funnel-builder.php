@@ -3,15 +3,15 @@
  * Plugin Name: FunnelKit Funnel Builder
  * Plugin URI: https://funnelkit.com/wordpress-funnel-builder/
  * Description: Create high-converting sales funnels on WordPress that look professional by following a well-guided step-by-step process.
- * Version: 3.15.0.9
+ * Version: 3.16.0.4
  * Author: FunnelKit
  * Author URI: https://funnelkit.com
  * License: GPLv3 or later
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain: funnel-builder
  *
- * Requires at least: 5.4.0
- * Tested up to: 7.0
+ * Requires at least: 6.2
+ * Tested up to: 7.1
  * Requires PHP: 7.4
  * WooFunnels: true
  *
@@ -137,6 +137,34 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			$this->define_plugin_properties();
 			require_once __DIR__ . '/start.php';
 			require __DIR__ . '/includes/wffn-functions.php';
+			/**
+			 * Wire Funnel Builder's own framework classes (subcore/) into the core kernel.
+			 * subcore/load.php only registers them onto the kernel's bwf_kernel_* filters --
+			 * the core kernel does the actual loading, and only when FB's own dismantled core
+			 * is the copy that wins arbitration (a full core carries these classes itself).
+			 * subcore/ sits at the FB plugin root, NOT inside the shared woofunnels core:
+			 * nothing plugin-specific remains in woofunnels/, and no other FunnelKit plugin
+			 * references this folder. Its files are all __DIR__-relative, so it can live
+			 * anywhere FB ships it.
+			 */
+			require_once __DIR__ . '/subcore/load.php';
+			/**
+			 * Transition arbitration: withdraw our dismantled core if an un-dismantled
+			 * full core is present, so it wins include_core() below. See
+			 * WooFunnel_WFFN::maybe_yield_to_full_core().
+			 *
+			 * MUST run before the FIRST include_core() of the request. include_core is
+			 * triggered by many sibling plugins at assorted plugins_loaded priorities
+			 * (some as early as -99, e.g. via a Pro/checkout module), not just our own
+			 * -1 below -- and whoever fires it first locks WooFunnel_Loader::$loaded, so
+			 * a late withdrawal is a no-op. No sibling calls include_core at file-load
+			 * (all are inside plugins_loaded callbacks), so PHP_INT_MIN guarantees we
+			 * withdraw first. (Cannot live in register()/file-load: sibling full cores
+			 * that register at file-load load AFTER us, so the pool is not yet complete
+			 * there; and the automation registers even later, on plugins_loaded:1 -- the
+			 * hook force-registers those via file-probe.)
+			 */
+			add_action( 'plugins_loaded', array( 'WooFunnel_WFFN', 'maybe_yield_to_full_core' ), PHP_INT_MIN );
 			add_action( 'plugins_loaded', array( 'WooFunnel_Loader', 'include_core' ), - 1 );
 
 			/**
@@ -150,11 +178,18 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 		 */
 		public function define_plugin_properties() {
 
-			define( 'WFFN_VERSION', '3.15.0.9' );
-			define( 'WFFN_BWF_VERSION', '1.10.12.80' );
+			define( 'WFFN_VERSION', '3.16.0.4' );
+			define( 'WFFN_BWF_VERSION', '1.10.12.84' );
 
 			define( 'WFFN_MIN_WC_VERSION', '3.5.0' );
 			define( 'WFFN_MIN_WP_VERSION', '5.4.0' );
+			/**
+			 * Lowest Funnel Builder Pro build that pairs with this release. Older Pro
+			 * builds keep loading, but features whose code moved out of this plugin
+			 * stop working, so an admin notice asks for a Pro update.
+			 * Bump on every release that moves or removes code Pro depends on.
+			 */
+			define( 'WFFN_MIN_PRO_VERSION', '3.16.0' );
 			define( 'WFFN_DB_VERSION', '4.0.0' );
 			define( 'WFFN_REVIEW_RATING_COUNT', 897 );
 			define( 'WFFN_SLUG', 'wffn' );
@@ -179,6 +214,8 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			add_action( 'plugins_loaded', array( $this, 'register_classes' ), 1 );
 
 			register_activation_hook( __FILE__, array( $this, 'plugin_activation_hook' ) );
+
+			add_action( 'activated_plugin', array( $this, 'on_activated_plugin' ) );
 
 			if ( ! class_exists( 'WFACP_Core' ) ) {
 
@@ -213,6 +250,16 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 				$this->load_steps();
 				$this->load_commons();
 				$this->load_analytics();
+
+				/**
+				 * Deferred activation hook: fires only after all classes are
+				 * loaded, unlike activated_plugin.
+				 */
+				$activated_plugin = get_transient( 'wffn_activated_plugin' );
+				if ( $activated_plugin ) {
+					delete_transient( 'wffn_activated_plugin' );
+					do_action( 'wffn_activated_plugin', $activated_plugin );
+				}
 			} catch ( Exception | Error $e ) {
 				// do nothing here
 			}
@@ -223,6 +270,7 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 		 */
 		public function load_admin() {
 			include_once __DIR__ . '/admin/class-wffn-admin.php';
+			include_once __DIR__ . '/admin/class-wffn-pro-update-required.php';
 			include_once __DIR__ . '/admin/class-bwf-admin-breadcrumbs.php';
 			include_once __DIR__ . '/admin/class-bwf-admin-settings.php';
 			include_once __DIR__ . '/admin/class-wffn-page-builder-manager.php';
@@ -233,7 +281,6 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			include_once __DIR__ . '/admin/rest-api/class-wffn-rest-funnel-settings.php';
 			include_once __DIR__ . '/admin/rest-api/class-wffn-api-update-user-preference.php';
 			include_once __DIR__ . '/admin/rest-api/class-wffn-rest-tools.php';
-			include_once __DIR__ . '/admin/rest-api/class-wffn-rest-licenses.php';
 			include_once __DIR__ . '/admin/rest-api/class-wffn-rest-funnel-canvas.php';
 			include_once __DIR__ . '/admin/rest-api/class-wffn-rest-user-preferences.php';
 			include_once __DIR__ . '/admin/rest-api/class-wffn-rest-notifications.php';
@@ -262,6 +309,10 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 
 			/**Global Header */
 			include_once __DIR__ . '/admin/includes/class-wffn-header.php';
+
+			/** JS translations chunk combiner */
+			include_once __DIR__ . '/admin/class-wffn-translations.php';
+			WFFN_Translations::get_instance();
 		}
 
 		/**
@@ -351,12 +402,9 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			if ( class_exists( 'WFOPP_Core' ) && ! class_exists( 'WFFN_Optin_Contacts_Analytics' ) ) {
 				require_once __DIR__ . '/contact-analytics/class-wffn-optin-contacts-analytics.php';
 			}
-			if ( class_exists( 'WFOB_Core' ) && wffn_is_wc_active() && ! class_exists( 'WFOB_Contacts_Analytics' ) ) {
-				require_once __DIR__ . '/contact-analytics/class-wfob-contacts-analytics.php';
-			}
-			if ( class_exists( 'WFOCU_Core' ) && wffn_is_wc_active() && ! class_exists( 'WFOCU_Contacts_Analytics' ) ) {
-				require_once __DIR__ . '/contact-analytics/class-wfocu-contacts-analytics.php';
-			}
+
+			// Tracking system will be lazy-loaded on demand via autoloader
+			// No need to load classes here - they'll be loaded when tracking data is collected
 		}
 
 		/**
@@ -431,13 +479,53 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 
 		public function load_autoloader() {
 			spl_autoload_register( array( $this, 'autoload' ) );
+			/**
+			 * The license classes live in the premium plugin now; the free plugin only
+			 * carries inert fallbacks so premium builds released before the relocation
+			 * don't fatal. Their autoloader registers once every plugin has finished
+			 * booting, so it sits BEHIND every premium loader in the spl queue: the
+			 * premium copy always gets the first chance to supply the real classes,
+			 * and the fallback fires only when nothing else has defined them.
+			 */
+			add_action( 'plugins_loaded', array( $this, 'load_license_fallback_autoloader' ), 9999 );
+		}
+
+		public function load_license_fallback_autoloader() {
+			spl_autoload_register( array( $this, 'autoload_license_fallbacks' ) );
+		}
+
+		public function autoload_license_fallbacks( $class_name ) {
+			$license_classes = array( 'woofunnels_licenses', 'woofunnels_license_check', 'woofunnels_license_controller' );
+			if ( in_array( strtolower( $class_name ), $license_classes, true ) ) {
+				require_once WFFN_PLUGIN_DIR . '/includes/class-woofunnels-licenses.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			}
 		}
 
 		public function autoload( $class_name ) {
 			if ( false !== strpos( $class_name, 'WFFN_' ) ) {
-				if ( file_exists( WFFN_PLUGIN_DIR . '/includes/' . 'class-' . $this->slugify_classname( $class_name ) . '.php' ) ) {
-					require_once WFFN_PLUGIN_DIR . '/includes/' . 'class-' . $this->slugify_classname( $class_name ) . '.php';  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+				$filename  = basename( 'class-' . $this->slugify_classname( $class_name ) . '.php' );
+				$file_path = WFFN_PLUGIN_DIR . '/includes/' . $filename;
+
+				if ( file_exists( $file_path ) ) {
+					$real_path     = realpath( $file_path );
+					$real_includes = realpath( WFFN_PLUGIN_DIR . '/includes/' );
+
+					if ( false !== $real_path && false !== $real_includes && 0 === strpos( $real_path, $real_includes ) ) {
+						require_once $real_path;  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+					}
 				}
+			}
+		}
+
+		/**
+		 * Stores a transient on activation so wffn_activated_plugin can fire
+		 * later in plugins_loaded, once classes exist.
+		 *
+		 * @param string $filename Activated plugin filename.
+		 */
+		public function on_activated_plugin( $filename ) {
+			if ( '/funnel-builder.php' === substr( $filename, -19 ) ) {
+				set_transient( 'wffn_activated_plugin', $filename );
 			}
 		}
 
@@ -448,12 +536,6 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			return $classname;
 		}
 
-		/**
-		 * Custom sanitize title method to avoid conflicts with WordPress hooks on sanitize_title
-		 *
-		 * @param string $title The title to sanitize
-		 * @return string The sanitized title
-		 */
 		private function custom_sanitize_title( $title ) {
 			$title = remove_accents( $title );
 			$title = sanitize_title_with_dashes( $title );

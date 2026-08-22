@@ -32,7 +32,7 @@ if ( isset( $data['advance_setting']['rbox_border_type'] ) && $data['advance_set
 			$heading_fs_mobile  = $data['heading_section']['heading_fs']['mobile'];
 			?>
 			<h2 class="wfacp-list-title wfacp_section_title <?php echo $align_text . ' ' . $font_weight; ?>">
-				<?php echo esc_html( $data['heading_section']['heading'] ); ?>
+				<?php echo wp_kses( $data['heading_section']['heading'], array( 'br' => array(), 'span' => array( 'class' => array(), 'style' => array() ), 'b' => array(), 'strong' => array(), 'i' => array(), 'em' => array() ) ); ?>
 			</h2>
 			<?php
 		}

@@ -241,7 +241,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_PostNl' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_postnl_parcel' ],
 				'id'         => 'wfacp_postnl_parcel',
 				'field_type' => 'wfacp_postnl_parcel',
-				'label'      => __( 'Postnl Parcel', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'Postnl Parcel', 'funnel-builder' ),
 
 			];
 

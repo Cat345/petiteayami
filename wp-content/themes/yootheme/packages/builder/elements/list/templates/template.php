@@ -46,7 +46,7 @@ $item = $this->el($props['list_type'] == 'horizontal' ? 'span' : 'li', [
 
         <?php foreach ($children as $i => $child) :
         // No white space for horizontal lists
-        echo $item($props) . $builder->render($child, ['element' => $props]) . (($i !== array_key_last($children)) ? $props['list_horizontal_separator'] : '') . $item->end();
+        echo $item($props, $builder->render($child, ['element' => $props]) . (($i !== array_key_last($children)) ? $props['list_horizontal_separator'] : ''));
         endforeach ?>
 
     <?php else : ?>

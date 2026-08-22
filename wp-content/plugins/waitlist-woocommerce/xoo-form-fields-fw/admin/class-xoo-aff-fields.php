@@ -1,5 +1,11 @@
 <?php
 
+namespace XooWL\Aff;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Xoo_Aff_Fields{
 
 	public $types = array(), $sections = array(), $settings = array(),  $fields = array(), $setting_options = array(), $cached_field_html_args_for_value;
@@ -32,6 +38,7 @@ class Xoo_Aff_Fields{
 		}
 		if( current_user_can( 'manage_options' ) ){
 
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			if( isset( $_POST['is_ajax'] ) && $_POST['is_ajax'] === 'yes' ){
 				add_action( 'wp_ajax_xoo_aff_save_settings', array( $this, 'save_settings') );
 			}
@@ -51,16 +58,25 @@ class Xoo_Aff_Fields{
 	 * @param 	string 		$format 		Format type Array | Json
 	*/
 
-	public function get_fields_data( $format = 'array' ){
+	public function get_fields_data( $format = 'array' ) {
 
 		$data = get_option( $this->db_field );
 
-		if( $format === 'array' ){
-			$data = json_decode( $data, true );
+		if ( 'array' === $format ) {
+			$data = json_decode( (string) $data, true );
+
+			if ( ! is_array( $data ) ) {
+				$data = array();
+			}
 		}
 
-		return apply_filters( 'xoo_aff_'.$this->plugin_slug.'_data', $data );
-		
+		$data = apply_filters( 'xoo_aff_' . $this->plugin_slug . '_data', $data );
+
+		if ( 'array' === $format && ! is_array( $data ) ) {
+			$data = array();
+		}
+
+		return $data;
 	}
 
 
@@ -386,7 +402,7 @@ class Xoo_Aff_Fields{
 
 		//Get default field settings
 		if( empty( $this->setting_options ) ){
-			$this->setting_options = include XOO_AFF_DIR.'/admin/defaults/field-setting-options.php';
+			$this->setting_options = include $this->aff->dir.'/admin/defaults/field-setting-options.php';
 		}
 
 		//Field Types
@@ -417,16 +433,18 @@ class Xoo_Aff_Fields{
 
 		if( !$this->aff->is_fields_page_ajax_request() ) return;
 
-		if( !isset( $_POST['submit_nonce'] ) || !wp_verify_nonce( $_POST['submit_nonce'], 'xoo-aff-submit-nonce' ) ){
+		if( !isset( $_POST['submit_nonce'] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['submit_nonce'] ) ), 'xoo-aff-submit-nonce' ) ){
 			wp_die( 'Cheating.' );
 		}
 
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 		$fields = xff_wp_kses_post( json_decode( stripslashes( $_POST['xoo_aff_data'] ), true) );
 
 		$fields = $this->sort_by_priority( $fields );
 
 		$this->update_db_fields( $fields );
 
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 		if( $_POST['is_ajax'] === 'yes' ){
 			wp_send_json( array(
 				'success' => 1
@@ -440,7 +458,7 @@ class Xoo_Aff_Fields{
 	//Reset settings
 	public function reset_settings(){
 
-		if( !isset( $_POST['submit_nonce'] ) || !wp_verify_nonce( $_POST['submit_nonce'], 'xoo-aff-submit-nonce' ) ){
+		if( !isset( $_POST['submit_nonce'] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash($_POST['submit_nonce'] ) ), 'xoo-aff-submit-nonce' ) ){
 			wp_die( 'Cheating.' );
 		}
 
@@ -588,7 +606,12 @@ class Xoo_Aff_Fields{
 			var xoo_aff_fields_layout 	= <?php echo json_encode( $this->create_fields_layout_for_js() ); ?>;
 			var xoo_aff_field_types 	= <?php echo json_encode( $this->types ); ?>;
 			var xoo_aff_field_sections 	= <?php echo json_encode( $this->sections ); ?>;
-			var xoo_aff_db_fields		= <?php echo $this->get_fields_data('json'); ?>;
+			
+			var xoo_aff_db_fields		= <?php
+											// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+											echo $this->get_fields_data('json');
+											?>;
+
 			var xoo_aff_field_groups  	= <?php echo json_encode( $this->field_groups ); ?>;
 			var xoo_aff_plugin_info 	= <?php echo json_encode( array(
 				'admin_page_slug' 	=> $this->aff->admin_page_slug,
@@ -816,7 +839,7 @@ class Xoo_Aff_Fields{
 		$field_data = $this->get_field_data( $field_id );
 		if( !$field_data  ) return;
 
-		$countries 			= include XOO_AFF_DIR.'/countries/countries.php';
+		$countries 			= include $this->aff->dir.'/countries/countries.php';
 		$list_country 		= 'all';
 		$settings 			= $selected_countries = array();
 
@@ -863,7 +886,7 @@ class Xoo_Aff_Fields{
 	public function get_field_phone_codes( $field_id ){
 
 		$countries 			= $this->get_field_countries( $field_id );
-		$all_phone_codes 	= include XOO_AFF_DIR.'/countries/phone.php';
+		$all_phone_codes 	= include $this->aff->dir.'/countries/phone.php';
 
 		$phone_codes = array_intersect_key( $all_phone_codes, $countries ); 
 
@@ -877,7 +900,7 @@ class Xoo_Aff_Fields{
 	 * @param  	string 		$country_code 		Country Code
 	*/
 	public function get_country_states( $country_code = '' ){
-		$all_states = (array) include XOO_AFF_DIR.'/countries/states.php';
+		$all_states = (array) include $this->aff->dir.'/countries/states.php';
 		if( $country_code ){
 			return isset( $all_states[ $country_code ] ) ? $all_states[ $country_code ] : array();
 		}
@@ -1056,6 +1079,8 @@ class Xoo_Aff_Fields{
 			$args['cont_class'][] = 'xoo-aff-one-line';
 		}
 
+
+		$args['class'][] = 'xoo-aff-field';
 
 		$args = apply_filters( 'xoo_aff_'.$this->plugin_slug.'_before_html_input_args', $args );
 
@@ -1288,7 +1313,7 @@ class Xoo_Aff_Fields{
 	 * Add default field types
 	*/
 	public function set_default_field_types(){
-		$types = include XOO_AFF_DIR.'/admin/defaults/field-types.php';
+		$types = include $this->aff->dir.'/admin/defaults/field-types.php';
 
 		foreach ( $types as $type ) {
 			$args = isset( $type[3] ) ? $type[3] : array();
@@ -1301,8 +1326,12 @@ class Xoo_Aff_Fields{
  	*/
 	public function set_default_field_sections(){
 
-		$this->add_section( 'basic', 'Basic Settings', 10 );
-		$this->add_section( 'advanced', 'Advanced Settings', 20 );
+		$sections = include $this->aff->dir.'/admin/defaults/field-sections.php';
+
+		foreach ( $sections as $section ) {
+			$args = isset( $section[2] ) ? $section[2] : array();
+			$this->add_section( $section[0], $section[1], $args );
+		}
 	}
 
 
@@ -1311,7 +1340,7 @@ class Xoo_Aff_Fields{
  	*/
 	public function set_default_field_settings(){
 
-		$field_settings = include XOO_AFF_DIR.'/admin/defaults/field-settings.php';
+		$field_settings = include $this->aff->dir.'/admin/defaults/field-settings.php';
 
 		foreach ( $field_settings as $field_type_id => $field_setting_options ) {
 			$this->create_field_settings( $field_type_id, $field_setting_options );
@@ -1409,13 +1438,13 @@ class Xoo_Aff_Fields{
 		return $string;
 	}
 
-
 	public function validate_submitted_field_values( $values = array(), $do_not_validate_ids = array() ){
 
-		$errors = new WP_Error();
+		$errors = new \WP_Error();
 
 		//If no values are provided , use POST
 		if( empty( $values ) ){
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$values = $_POST;
 		}
 
@@ -1433,8 +1462,9 @@ class Xoo_Aff_Fields{
 			if( empty( $settings ) || in_array( $field_id , $do_not_validate_ids ) || $settings['active'] !== "yes") continue;
 
 			//Field Validation
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 			$userVal 				= isset( $values[ $field_id ] ) ? ( is_array( $_POST[ $field_id ] ) ? array_map( 'sanitize_text_field', $_POST[ $field_id ] ) : esc_attr( trim( $values[ $field_id ] ) ) ) : '';
-			$label 					= isset( $settings['label'] ) && trim( $settings['label'] ) ? trim( $settings['label'] ) : trim( $settings['placeholder'] );
+			$label 					= isset( $settings['label'] ) && $settings['label'] ? trim( $settings['label'] ) : trim( $settings['placeholder'] );
 
 			if( $input_type === 'file' ){
 
@@ -1445,6 +1475,7 @@ class Xoo_Aff_Fields{
 				$fieldValues[ $field_id.'_attachments' ] = $updatedSavedAttachments; //if files are modified from frontend form
 
 				$files 				= array();
+				// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 				$isFileUploaded 	= !( empty($_FILES) || ( isset( $_FILES[$field_id] ) && ( !$_FILES[$field_id]['name'] || !$_FILES[$field_id]['name'][0]  ) ) );
 
 				// Throws a message if no file is selected
@@ -1463,6 +1494,7 @@ class Xoo_Aff_Fields{
 					}
 
 					//Organize raw files in proper format
+					// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					$rawf 		= $_FILES[$field_id];
 					
 					$file_size 	= 0;
@@ -1582,5 +1614,3 @@ class Xoo_Aff_Fields{
 
 	
 }
-
-?>

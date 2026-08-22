@@ -56,7 +56,8 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			if ( ! empty( $conversations_ids ) ) {
 				$conversations_ids  = array_map( 'absint', $conversations_ids );
 				$conv_placeholder   = implode( ', ', array_fill( 0, count( $conversations_ids ), '%d' ) );
-				$conversion_query   = $wpdb->prepare( "SELECT wcid,cid,trackid,wctotal FROM {$wpdb->prefix}bwfan_conversions WHERE trackid IN( $conv_placeholder ) AND otype = %d", array_merge( $conversations_ids, array( $type ) ) );
+				/** Scoped by oid as well, a matching trackid alone does not mean the conversion belongs to this source */
+				$conversion_query   = $wpdb->prepare( "SELECT wcid,cid,trackid,wctotal FROM {$wpdb->prefix}bwfan_conversions WHERE trackid IN( $conv_placeholder ) AND otype = %d AND oid = %d", array_merge( $conversations_ids, array( $type, $oid ) ) );
 				$conversions_result = self::get_results( $conversion_query );
 				foreach ( $conversions_result as $conversion ) {
 					if ( ! isset( $conversions[ absint( $conversion['cid'] ) ] ) ) {
@@ -432,9 +433,30 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			$step_ids = array_map( 'absint', $step_ids );
 			$ids_ph   = implode( ', ', array_fill( 0, count( $step_ids ), '%d' ) );
 
-			$conversions_query = "SELECT trackid, count(ID) as conversions, SUM(wctotal) as revenue, cid FROM {$wpdb->prefix}bwfan_conversions GROUP BY trackid,cid";
-			$query             = "SELECT SUM(if(con.open>0,1,0)) AS open_count,(SUM(IF(con.open>0, 1, 0))/COUNT(con.ID)) * 100 as open_rate ,SUM(IF(con.c_status=2, 1, 0)) as sent,SUM(if(con.click>0,1,0)) AS click_count,(SUM(IF(con.click>0, 1, 0))/COUNT(con.ID)) * 100 as click_rate,  SUM(conv.conversions) as conversions, SUM(conv.revenue) as revenue, COUNT(DISTINCT con.cid) as contacts_count  FROM {$table} AS con LEFT JOIN ({$conversions_query}) as conv ON con.ID = conv.trackid WHERE 1=1 AND con.type = %d AND con.sid IN ({$ids_ph}) AND con.c_status = 2 ";
-			$args              = array_merge( array( absint( BWFAN_Email_Conversations::$TYPE_AUTOMATION ) ), $step_ids );
+			$type = absint( BWFAN_Email_Conversations::$TYPE_AUTOMATION );
+
+			/**
+			 * `trackid` only points at an engagement row, it does not identify the source of the
+			 * conversion, so an unscoped sub-query lets conversions recorded against another
+			 * automation land on this one's steps. Scope it the same way the outer query is scoped.
+			 *
+			 * Grouping by `trackid` alone (`cid` is not used downstream) keeps this to one row per
+			 * engagement, so the join cannot duplicate an engagement row and inflate the
+			 * open/click/sent aggregates that are counted in the same query.
+			 *
+			 * The sub-query is embedded ahead of the outer query's own placeholders, so its
+			 * arguments are collected separately and prepended to $args below.
+			 */
+			$conversions_where = 'otype = %d AND trackid > 0';
+			$conversions_args  = array( $type );
+			if ( ! empty( $oid ) ) {
+				$conversions_where  .= ' AND oid = %d';
+				$conversions_args[] = absint( $oid );
+			}
+
+			$conversions_query = "SELECT trackid, count(ID) as conversions, SUM(wctotal) as revenue FROM {$wpdb->prefix}bwfan_conversions WHERE {$conversions_where} GROUP BY trackid";
+			$query             = "SELECT SUM(if(con.open>0,1,0)) AS open_count,(SUM(IF(con.open>0, 1, 0))/COUNT(con.ID)) * 100 as open_rate ,SUM(IF(con.c_status=2, 1, 0)) as sent,SUM(if(con.click>0,1,0)) AS click_count,(SUM(IF(con.click>0, 1, 0))/COUNT(con.ID)) * 100 as click_rate,  COALESCE(SUM(conv.conversions), 0) as conversions, COALESCE(SUM(conv.revenue), 0) as revenue, COUNT(DISTINCT con.cid) as contacts_count  FROM {$table} AS con LEFT JOIN ({$conversions_query}) as conv ON con.ID = conv.trackid WHERE 1=1 AND con.type = %d AND con.sid IN ({$ids_ph}) AND con.c_status = 2 ";
+			$args              = array_merge( $conversions_args, array( $type ), $step_ids );
 			if ( ! empty( $oid ) ) {
 				$query  .= " AND con.oid IN (%d) ";
 				$args[] = absint( $oid );

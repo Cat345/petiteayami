@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Eps Überweisung By PSA Gmbh Version: 2.1.2.

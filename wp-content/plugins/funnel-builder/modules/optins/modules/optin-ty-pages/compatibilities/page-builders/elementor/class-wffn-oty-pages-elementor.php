@@ -145,12 +145,28 @@ if ( ! class_exists( 'WFFN_OTY_Pages_Elementor' ) ) {
 			if ( ! is_array( $design ) || empty( $design['selected_type'] ) || 'elementor' !== $design['selected_type'] ) {
 				return;
 			}
-			if ( ! class_exists( '\Elementor\Core\Base\Document' ) ) {
+			if ( ! class_exists( '\Elementor\Core\Base\Document' ) || ! defined( '\Elementor\Core\Base\Document::CACHE_META_KEY' ) ) {
 				return;
 			}
 			$cache_meta_key = \Elementor\Core\Base\Document::CACHE_META_KEY;
 			if ( ! empty( $cache_meta_key ) ) {
-				delete_post_meta( $page_id, $cache_meta_key );
+				/**
+				 * Only bust the Elementor element cache when the opt-in thank you page design
+				 * has actually changed since we last cleared it.
+				 *
+				 * This runs on every front-end render of the page. An unconditional
+				 * delete_post_meta() (DELETE FROM wp_postmeta) on EVERY request forces an
+				 * Elementor cache regeneration each load and causes MySQL deadlocks under
+				 * concurrent traffic. Gating on the post's modified time makes the DELETE run
+				 * at most once per design change; steady-state loads do only cached reads.
+				 */
+				$design_marker = (string) get_post_field( 'post_modified_gmt', $page_id );
+				$last_marker   = (string) get_post_meta( $page_id, '_wffn_oty_elementor_cache_marker', true );
+
+				if ( '' !== $design_marker && $design_marker !== $last_marker ) {
+					delete_post_meta( $page_id, $cache_meta_key );
+					update_post_meta( $page_id, '_wffn_oty_elementor_cache_marker', $design_marker );
+				}
 			}
 		}
 	}

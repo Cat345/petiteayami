@@ -4,8 +4,7 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Reporting {
 
-		private static $ins       = null;
-		private $is_cart_restored = false;
+		private static $ins = null;
 
 		private function __construct() {
 			global $wpdb;
@@ -17,11 +16,7 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 			add_action( 'woocommerce_delete_order', array( $this, 'delete_report_for_order' ) );
 			add_action( 'delete_post', array( $this, 'delete_report_for_order' ) );
 
-			add_action( 'wfab_pre_abandoned_cart_restored', array( $this, 'check_if_autobot_cart_restored' ) );
-			add_action( 'woocommerce_thankyou', array( $this, 'wfacp_clear_view_session' ), 10, 1 );
-
 			add_action( 'woocommerce_thankyou', array( $this, 'updating_reports_from_orders' ) );
-			add_action( 'woocommerce_checkout_update_order_review', array( $this, 'update_order_review' ) );
 
 			add_action( 'woocommerce_order_fully_refunded', array( $this, 'fully_refunded_process' ), 10, 1 );
 			add_action( 'woocommerce_order_partially_refunded', array( $this, 'partially_refunded_process' ), 10, 2 );
@@ -338,78 +333,6 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 			}
 
 			return null;
-		}
-
-		public function get_session_key( $aero_id ) {
-			return WC()->session->get( 'wfacp_view_session_' . $aero_id, false );
-		}
-
-		public function update_session_key( $aero_id ) {
-			WC()->session->set( 'wfacp_view_session_' . $aero_id, true );
-		}
-
-
-		public function check_if_autobot_cart_restored() {
-			$this->is_cart_restored = true;
-		}
-
-		public function wfacp_clear_view_session( $order_id ) {
-			$aero_id = ( $order_id > 0 ) ? wfacp_get_order_meta( wc_get_order( $order_id ), '_wfacp_post_id' ) : 0;
-			if ( $aero_id > 0 && ! is_null( WC()->session ) && method_exists( WC()->session, 'has_session' ) && WC()->session->has_session() ) {
-				WC()->session->set( 'wfacp_view_session_' . $aero_id, false );
-			}
-		}
-
-		public function update_order_review( $postdata ) {
-			$post_data = array();
-			parse_str( $postdata, $post_data );
-			$wfacp_id  = isset( $post_data['_wfacp_post_id'] ) ? $post_data['_wfacp_post_id'] : 0;
-			$funnel_id = 0;
-			if ( $wfacp_id < 1 ) {
-				/**
-				 * Check if store checkout is configures
-				 */
-				if ( ! class_exists( 'WFFN_Common' ) || ! method_exists( 'WFFN_Common', 'get_store_checkout_id' ) || 0 === WFFN_Common::get_store_checkout_id() ) {
-					return;
-				}
-
-				if ( false === wffn_string_to_bool( WFFN_Core()->get_dB()->get_meta( WFFN_Common::get_store_checkout_id(), 'status' ) ) ) {
-					return;
-				}
-				$funnel_id = WFFN_Common::get_store_checkout_id();
-				$wfacp_id  = 0;
-
-			}
-
-			$status = $this->get_session_key( $wfacp_id );
-
-			/** Already captured */
-			if ( true === $status ) {
-				return;
-			}
-
-			/** Check if AutoBot installed and cart tracking in enabled and Cart is restored, don't require cart initiate increment */
-			if ( true === $this->is_cart_restored ) {
-				$this->update_session_key( $wfacp_id );
-
-				return;
-			}
-
-			if ( true === apply_filters( 'wfacp_update_report_views', false, $wfacp_id, $postdata ) ) {
-				return;
-			}
-
-			if ( ! class_exists( 'WFCO_Model_Report_views' ) ) {
-				$bwf_configuration = WooFunnel_Loader::get_the_latest();
-				require $bwf_configuration['plugin_path'] . '/woofunnels/connector/db/class-wfco-model-report-views.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-			}
-			WFCO_Model_Report_views::update_data( gmdate( 'Y-m-d', current_time( 'timestamp' ) ), $wfacp_id, 4 );
-			$this->update_session_key( $wfacp_id );
-
-			/** update store checkout views  */
-			if ( absint( $funnel_id ) > 0 ) {
-				WFCO_Model_Report_views::update_data( gmdate( 'Y-m-d', current_time( 'timestamp' ) ), $funnel_id, 7 );
-			}
 		}
 
 		public function wfacp_custom_order_status( $all_status ) {

@@ -20,6 +20,7 @@ return [
                     'label' => 'Privacy Policy Link',
                     'type' => 'link',
                     'description' => 'Show a link to the privacy policy in the cookie banner and consent manager.',
+                    'filePicker' => false,
                     'attrs' => [
                         'placeholder' => 'http://',
                     ],

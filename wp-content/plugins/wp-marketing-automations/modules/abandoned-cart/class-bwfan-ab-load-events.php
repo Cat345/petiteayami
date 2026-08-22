@@ -36,6 +36,9 @@ class BWFAN_AB_Load_Events {
 		$resource_dir = __DIR__ . '/events';
 		if ( file_exists( $resource_dir ) ) {
 			foreach ( glob( $resource_dir . '/class-*.php' ) as $_field_filename ) {
+				if ( ! is_readable( $_field_filename ) ) { // survive update file-swap / partial deploy
+					continue;
+				}
 
 				$event_class = require_once( $_field_filename );
 				if ( ! is_null( $event_class ) && method_exists( $event_class, 'get_instance' ) ) {

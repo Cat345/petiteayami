@@ -64,6 +64,10 @@ foreach ( $section_order as $item_section ) {
 						<div class="wfty_pro_list_cont <?php echo esc_attr( $show_images_class ); ?>">
 							<?php
 							foreach ( $order_items as $item_id => $item ) {
+								// Honor plugins that hide order items (e.g. WPC Product Bundles' bundled
+								if ( ! apply_filters( 'woocommerce_order_item_visible', true, $item ) ) {
+									continue;
+								}
 								$product = apply_filters( 'woocommerce_order_item_product', $item->get_product(), $item );
 								if ( ! $product instanceof WC_Product ) {
 									continue;

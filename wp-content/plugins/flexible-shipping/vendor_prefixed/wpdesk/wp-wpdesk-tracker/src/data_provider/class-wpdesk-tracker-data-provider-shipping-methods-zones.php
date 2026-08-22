@@ -27,6 +27,7 @@ if (!\class_exists('FSVendor\WPDesk_Tracker_Data_Provider_Shipping_Methods_Zones
          */
         public function get_data()
         {
+            $data = ['shipping_methods_by_title' => [], 'shipping_zones_by_name' => []];
             if (\class_exists('WC_Shipping_Zones')) {
                 $other_zones = \WC_Shipping_Zones::get_zones();
                 $zones = [];
@@ -34,8 +35,6 @@ if (!\class_exists('FSVendor\WPDesk_Tracker_Data_Provider_Shipping_Methods_Zones
                     $zones[] = \WC_Shipping_Zones::get_zone_by('zone_id', $zone['zone_id']);
                 }
                 $zones[] = \WC_Shipping_Zones::get_zone_by();
-                $data['shipping_methods_by_title'] = [];
-                $data['shipping_zones_by_name'] = [];
                 foreach ($zones as $zone) {
                     if (empty($data['shipping_zones_by_name'][$zone->get_zone_name()])) {
                         $data['shipping_zones_by_name'][$zone->get_zone_name()] = 1;

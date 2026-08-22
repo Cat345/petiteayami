@@ -14,43 +14,43 @@ class OnboardingStep implements \JsonSerializable
     /**
      * @var string
      */
-    private $id = 'step_0';
+    private string $id = 'step_0';
     /**
      * @var int
      */
-    private $step = 0;
+    private int $step = 0;
     /**
      * @var bool
      */
-    private $logo = \false;
+    private bool $logo = \false;
     /**
      * @var string
      */
-    private $title = '';
+    private string $title = '';
     /**
      * @var bool
      */
-    private $show = \false;
+    private bool $show = \false;
     /**
      * @var string
      */
-    private $image = '';
+    private string $image = '';
     /**
      * @var string
      */
-    private $heading = '';
+    private string $heading = '';
     /**
      * @var string
      */
-    private $sub_heading = '';
+    private string $sub_heading = '';
     /**
      * @var Field[]
      */
-    private $content = [];
+    private array $content = [];
     /**
      * @var OnboardingButton[]
      */
-    private $buttons = [];
+    private array $buttons = [];
     /**
      * @param string $id
      * @param int $step

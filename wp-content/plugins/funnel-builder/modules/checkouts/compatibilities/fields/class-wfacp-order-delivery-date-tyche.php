@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Order Delivery Date Pro for WooCommerce v.12.7.0 Tyche Softwares
@@ -36,21 +37,21 @@ if ( ! class_exists( 'WFACP_Compatibility_Order_Delivery_Date_Tyche_Pro' ) ) {
 				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'oddt' ),
 				'id'         => 'oddt',
 				'field_type' => 'advanced',
-				'label'      => __( 'Delivery Date', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'Delivery Date', 'funnel-builder' ),
 			);
 			$fields['orddd_time_slot'] = array(
 				'type'       => 'wfacp_html',
 				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'orddd_time_slot' ),
 				'id'         => 'orddd_time_slot',
 				'field_type' => 'advanced',
-				'label'      => __( 'Time Slot', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'Time Slot', 'funnel-builder' ),
 			);
 			$fields['orddd_locations'] = array(
 				'type'       => 'wfacp_html',
 				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'orddd_locations' ),
 				'id'         => 'orddd_locations',
 				'field_type' => 'advanced',
-				'label'      => __( 'Pickup Location', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'Pickup Location', 'funnel-builder' ),
 			);
 
 			return $fields;

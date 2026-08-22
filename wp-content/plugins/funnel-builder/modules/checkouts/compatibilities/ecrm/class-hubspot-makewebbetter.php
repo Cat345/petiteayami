@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /**
  * https://makewebbetter.com/
  * WFACP_Hubspot_MakeWebBetter_Compatibilities

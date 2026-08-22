@@ -1,5 +1,11 @@
 <?php
 
+namespace XooWL\Framework;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
 class Xoo_Admin{
 
 	public $data 		= array();
@@ -38,10 +44,12 @@ class Xoo_Admin{
 	}
 
 	public function is_settings_page(){
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		return isset( $_GET['page'] ) && $_GET['page'] === $this->settings_slug;
 	}
 
 	public function is_settings_page_request(){
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		return isset( $_POST['slug'] ) && $_POST['slug'] === $this->helper->slug;
 	}
 
@@ -69,18 +77,19 @@ class Xoo_Admin{
 
 		if( isset( $this->helper->helperArgs ) && !isset($this->helper->helperArgs['disable_usage']) ){
 
-			add_action( 'admin_notices', array( $this, 'usage_data_notice' ) );
-			add_action( 'admin_init', array( $this, 'handle_usage_click_response' ) );
-			add_action( 'admin_init', array( $this, 'on_plugin_reactivate' ) );
+			//add_action( 'admin_notices', array( $this, 'usage_data_notice' ) );
+			//add_action( 'admin_init', array( $this, 'handle_usage_click_response' ) );
+			add_action( 'admin_init', array( $this, 'on_plugin_activation' ) );
 
 			if( $this->helper->helperArgs['pluginFile'] ){
 				register_deactivation_hook( $this->helper->helperArgs['pluginFile'] , array( $this, 'on_plugin_deactivate' ) );
 			}
 
 		}
-		
+
 
 	}
+
 
 
 	public function usage_data_notice(){
@@ -91,12 +100,12 @@ class Xoo_Admin{
 
 		?>
 		<div class="notice notice-info xoo-usage-consent" style="max-width: 1300px;">
-			<p><strong>[<?php echo $pluginName ?>] Help us improve!</strong> We'd love your permission to send anonymous, non-sensitive data (such as your WordPress version, plugin settings, etc.) to help us improve the plugin.<br><strong> No personal information is collected ever</strong></p>
+			<p><strong>[<?php echo esc_html( $pluginName ) ?>] Help us improve!</strong> We'd love your permission to send anonymous, non-sensitive data (such as your WordPress version, plugin settings, etc.) to help us improve the plugin.<br><strong> No personal information is collected ever</strong></p>
 				<form method="post" action="" class="xoo-usage-consent">
 					<input type="checkbox" name="xoo_allow" value="yes" checked>
 					<input type="hidden" name="xoo_usage_handle" value="yes">
-					<input type="hidden" name="xoo_slug" value="<?php echo $this->helper->slug ?>">
-					<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce( 'xoo_usage_nonce' ) ?>">
+					<input type="hidden" name="xoo_slug" value="<?php echo esc_attr( $this->helper->slug ) ?>">
+					<input type="hidden" name="_wpnonce" value="<?php echo esc_attr( wp_create_nonce( 'xoo_usage_nonce' ) ) ?>">
 					<button type="submit" class="button-small button">ok, dismiss notice</button>
 				</form>
 			</p>
@@ -116,19 +125,19 @@ class Xoo_Admin{
 
 		if( !isset( $_POST['xoo_usage_handle'] ) ) return;
 
-		$slug 		= sanitize_text_field( $_POST['xoo_slug'] );
-		$nonce 		= sanitize_text_field( $_POST['_wpnonce'] );
-		$response 	= sanitize_text_field( $_POST['xoo_allow'] );
+		$slug 		= sanitize_text_field( wp_unslash( $_POST['xoo_slug'] ) );
+		$nonce 		= sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) );
+		$response 	= sanitize_text_field( wp_unslash( $_POST['xoo_allow'] ) );
 
 		if( $this->helper->slug !== $slug ) return;
 
-		if( !wp_verify_nonce( $_POST['_wpnonce'], 'xoo_usage_nonce' ) ) return;
+		if( !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'xoo_usage_nonce' ) ) return;
 
 		update_option( 'xoo_tracking_consent_'.$this->helper->slug, $response );
 
 		$this->usage_data_http_request();
 
-		wp_redirect( remove_query_arg( 'xooisrandom' ) );
+		wp_safe_redirect( remove_query_arg( 'xooisrandom' ) );
 
 	}
 
@@ -139,14 +148,25 @@ class Xoo_Admin{
 	}
 
 
-	public function on_plugin_reactivate(){
-		if( $this->is_usage_allowed() && get_option('xoo_plugin_deactivated_'.$this->helper->slug) === "yes" ){
-			delete_option('xoo_plugin_deactivated_'.$this->helper->slug);
-			$this->usage_data_http_request(array(
+	public function on_plugin_activation(){
+
+		$option_key = 'xoo_plugin_isactive_' . $this->helper->slug;
+		$active 	= get_option( $option_key );
+
+		if( !$active && get_option( 'xoo_tracking_consent_'.$this->helper->slug ) ){ // older version where usage cons shown
+			update_option( $option_key, 'yes' );
+			return;
+		}
+
+		if ( !$active || $active !== 'yes'  ) {
+
+			update_option( $option_key, 'yes' );
+		   $this->usage_data_http_request(array(
 				'active' => 1
 			) );
 		}
 	}
+
 
 
 	public function usage_data_http_request( $passed_data = array() ) {
@@ -162,63 +182,36 @@ class Xoo_Admin{
 
 		$data = array_merge( $defaults, $passed_data, $helperdata );
 
-		$response = wp_remote_post(
+		wp_remote_post(
 			$this->usageURL,
 			array(
-				'timeout' => 15,
-				'body' => $data,
+				'blocking' => false,
+				'timeout'  => 1,
+				'body'     => $data,
 			)
 		);
-
-		// Handle request failure
-		if ( is_wp_error( $response ) ) {
-			return array(
-				'success' => false,
-				'error'   => $response->get_error_message(),
-			);
-		}
-
-		$body = wp_remote_retrieve_body( $response );
-
-		if ( empty( $body ) ) {
-			return array(
-				'success' => false,
-				'error'   => 'Empty response body',
-			);
-		}
-
-		$decoded = json_decode( $body, true );
-
-		// Handle invalid JSON
-		if ( json_last_error() !== JSON_ERROR_NONE ) {
-			return array(
-				'success' => false,
-				'error'   => 'Invalid JSON response',
-			);
-		}
-
-		return $decoded;
 	}
 
 
 
 	public function on_plugin_deactivate(){
-		if( !$this->is_usage_allowed() ) return;
 		$this->usage_data_http_request( array(
 			'active' => 0
 		) );
-		update_option( 'xoo_plugin_deactivated_'.$this->helper->slug, 'yes' );
+		update_option( 'xoo_plugin_isactive_'.$this->helper->slug, 'no' );
 	}
 
 	public function export_settings(){
 
 		// Check for nonce security      
-		if ( !wp_verify_nonce( $_POST['xoo_ff_nonce'], 'xoo-ff-nonce' ) ) {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		if ( !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['xoo_ff_nonce'] ) ), 'xoo-ff-nonce' ) ) {
 			die('cheating');
 		}
 
 		if( !current_user_can( $this->capability ) ) return;
 
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 		$options = $_POST['options'];
 
 		$data = array();
@@ -234,12 +227,14 @@ class Xoo_Admin{
 	public function import_settings(){
 
 		// Check for nonce security      
-		if ( !wp_verify_nonce( $_POST['xoo_ff_nonce'], 'xoo-ff-nonce' ) ) {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		if ( !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['xoo_ff_nonce'] ) ), 'xoo-ff-nonce' ) ) {
 			die('cheating');
 		}
 
 		if( !current_user_can( $this->capability ) ) return;
 		
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 		$settings  = $_POST['import'];
 	
 		$options = json_decode( html_entity_decode( stripslashes ($settings ) ), true );
@@ -254,12 +249,16 @@ class Xoo_Admin{
 
 	//Add info tab
 	public function set_info_tab(){
-		$this->register_tab( 'Info', 'info', '' );
+		$this->register_tab( 'Info', 'info', '', false, array(
+			'priority' 			=> 99,
+			'icon' 						=> 'xoo-icon-info',
+			'section_sidebar_disable' 	=> 'yes',
+		) );
 	}
 
 	public function info_tab_data( $tab_id, $tab_data ){
 		if( $tab_id !== 'info' ) return;
-		echo $this->helper->get_outdated_section();
+		echo wp_kses_post( $this->helper->get_outdated_section() );
 		?>
 		<p>
 			<h3>How to translate or change text?</h3>
@@ -309,7 +308,7 @@ class Xoo_Admin{
 		if( !isset( $_GET['reset'] ) || !isset( $_GET['page'] ) || $this->settings_slug !== $_GET['page'] ) return;
 
 			// Check for nonce security      
-		if ( !wp_verify_nonce( $_GET['reset'], 'reset' ) ) {
+		if ( !wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['reset'] ) ), 'reset' ) ) {
 			die('cheating');
 		}
 
@@ -330,14 +329,16 @@ class Xoo_Admin{
 	public function save_settings(){
 
 		// Check for nonce security      
-		if ( !wp_verify_nonce( $_POST['xoo_ff_nonce'], 'xoo-ff-nonce' ) ) {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		if ( !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['xoo_ff_nonce'] ) ), 'xoo-ff-nonce' ) ) {
 			die('cheating');
 		}
 
 		if( !current_user_can( $this->capability ) ) return;
 
 		$formData = array();
-		$parseFormData = parse_str( $_POST['form'], $formData );
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		$parseFormData = parse_str( wp_unslash( $_POST['form'] ), $formData );
 
 		$formData = apply_filters( 'xoo_admin_settings_'.$this->helper->slug.'_save_data', $formData );
 
@@ -447,8 +448,10 @@ class Xoo_Admin{
 		
 		wp_enqueue_media(); // media gallery
 		wp_enqueue_style( 'wp-color-picker' );
-		wp_enqueue_style( 'xoo-admin-style', XOO_FW_URL . '/admin/assets/css/xoo-admin-style.css', array(), XOO_FW_VERSION, 'all' );
-		wp_enqueue_script( 'xoo-admin-js', XOO_FW_URL . '/admin/assets/js/xoo-admin-js.js', array( 'jquery','wp-color-picker', 'jquery-ui-sortable' ), XOO_FW_VERSION, false );
+		wp_enqueue_style( 'xoo-admin-style', $this->helper->fw_url . '/admin/assets/css/xoo-admin-style.css', array(), XOO_FW_VERSION, 'all' );
+		wp_enqueue_style( 'xoo-admin-fonts', $this->helper->fw_url.'/admin/assets/css/xoo-admin-fonts.css', array(), XOO_FW_VERSION );
+		wp_enqueue_script( 'xoo-admin-serializejson', $this->helper->fw_url . '/admin/assets/js/xoo-admin-serializejson.js', array( 'jquery' ), '1.0', true );
+		wp_enqueue_script( 'xoo-admin-js', $this->helper->fw_url . '/admin/assets/js/xoo-admin-js.js', array( 'jquery','wp-color-picker', 'jquery-ui-sortable' ), XOO_FW_VERSION, false );
 		
 
 		wp_localize_script( 'xoo-admin-js', 'xoo_admin_params', array(
@@ -699,24 +702,38 @@ class Xoo_Admin{
 
 		//Register Tabs
 		foreach ( $tabs as $tab_id => $tab_data ) {
+
+			$args = isset( $tab_data['args'] ) ? $tab_data['args'] : array();
+
+			if( isset( $tab_data['icon'] ) ){
+				$args['icon'] = $tab_data['icon'];
+			}
+
 			 $this->register_tab(
 			 	$tab_data['title'],
 			 	$tab_data['id'],
 			 	$tab_data['option_key'],
 			 	isset( $tab_data['pro'] ) ? $tab_data['pro'] : 'no',
-			 	isset( $tab_data['args'] ) ? $tab_data['args'] : array()
+			 	$args
 			 );
 		}
 
 		//Register Sections
 		foreach ( $sections as $section_data ) {
+
+			$args = isset( $section_data['args'] ) ? $section_data['args'] : array();
+
+			if( isset( $section_data['icon'] ) ){
+				$args['icon'] = $section_data['icon'];
+			}
+
 			$this->register_section(
 			 	$section_data['title'],
 			 	$section_data['id'],
 			 	$section_data['tab'],
 			 	isset( $section_data['desc'] ) ? $section_data['desc'] : '',
 			 	isset( $section_data['pro'] ) ? $section_data['pro'] : 'no',
-			 	isset( $section_data['args'] ) ? $section_data['args'] : array()
+			 	$args
 			 );
 		}
 
@@ -766,7 +783,7 @@ class Xoo_Admin{
 
 		$args = apply_filters( 'xoo_admin_settings_output_args', $args, $this->helper->slug, $this );
 
-		$this->helper->get_template( '/admin/templates/xoo-admin-settings-output.php', $args, XOO_FW_DIR  );
+		$this->helper->get_template( '/admin/templates/xoo-admin-settings-output-new.php', $args, XOO_FW_DIR  );
 	}
 
 
@@ -779,52 +796,84 @@ class Xoo_Admin{
 	}
 
 
-	public function create_settings_html( $tab_id ){
+	public function create_settings_html( $tab_id ) {
 
-		if( !isset( $this->settings[ $tab_id ] ) ) return;
+		if ( ! isset( $this->settings[ $tab_id ] ) ) {
+			return;
+		}
 
-		$html = '';
+		$tab_settings = $this->settings[ $tab_id ];
+		$option_key   = $this->tabs[ $tab_id ]['option_key'];
+		$option_value = (array) get_option( $option_key, true );
 
-		$tab_settings 	= $this->settings[ $tab_id ];
-		$option_key 	= $this->tabs[ $tab_id ]['option_key'];
-		$option_value 	= (array) get_option( $option_key, true );
+		ob_start();
 
-		foreach ( $tab_settings as $section_id => $settings ) {
-				
-			$section_container 	= '<div class="%1$s">%2$s</div>';
-			$section_settings  	= $section_heading = '';
-			$section_data 		= $this->sections[ $tab_id ][ $section_id ];
+		foreach ( $tab_settings as $section_id => $settings ) :
+
+			$section_data     = $this->sections[ $tab_id ][ $section_id ];
+			$section_settings = '';
 
 			foreach ( $settings as $setting_id => $setting_data ) {
-				$id 	= $option_key.'['.$setting_id.']';
-				$value 	= isset( $option_value[ $setting_id ] ) ? $option_value[ $setting_id ] : null;
-				$section_settings .= $this->get_setting_html( $id, $setting_data, $value );
+
+				$id    = $option_key . '[' . $setting_id . ']';
+				$value = $option_value[ $setting_id ] ?? null;
+
+				$section_settings .= $this->get_setting_html(
+					$id,
+					$setting_data,
+					$value
+				);
+
 			}
 
-			if( $section_settings ){
-
-				$section_heading = '<span id="'.$tab_id.'_'.$section_id.'" class="xoo-asc-head xoo-asc-'.$section_id.'">'.$section_data['title'].'</span>';
-
-				if( $section_data['desc'] ){
-					$section_heading .= '<span class="xoo-asc-desc">'.$section_data['desc'].'</span>';
-				}
-
+			if ( ! $section_settings ) {
+				continue;
 			}
 
 			$section_class = array(
-				'xoo-ass-'.$tab_id.'-'.$section_id
+				'xoo-ass-section',
+				'xoo-ass-' . $tab_id . '-' . $section_id,
 			);
 
-			if( $section_data['pro'] === "yes" ){
+			if ( $section_data['pro'] === 'yes' ) {
 				$section_class[] = 'xoo-ass-pro-sec';
 			}
+			?>
 
-			$html .= sprintf( $section_container, implode( " ", $section_class ) , $section_heading . $section_settings );
+			<div id="<?php echo esc_attr( $tab_id . '_' . $section_id ); ?>" class="<?php echo esc_attr( implode( ' ', $section_class ) ); ?>">
 
-		} 
+				<div  class="<?php echo esc_attr( 'xoo-asc-head xoo-asc-' . $section_id ); ?>" >
 
-		echo $html;
+					<div>
 
+						<?php if ( ! empty( $section_data['args']['icon'] ) ) : ?>
+							<span class="<?php echo esc_attr( 'xoo-as-icon ' . $section_data['args']['icon'] ); ?>"></span>
+						<?php endif; ?>
+
+						<span class="xoo-asch-title <?php if ( $section_data['pro'] === 'yes' ) echo 'xoo-as-is-pro' ?>"><?php echo esc_html( $section_data['title'] ); ?></span>
+
+					</div>
+
+					<?php if ( ! empty( $section_data['desc'] ) ) : ?>
+						<span class="xoo-asc-desc">
+							<?php echo wp_kses_post( $section_data['desc'] ); ?>
+						</span>
+					<?php endif; ?>
+
+				</div>
+
+				
+
+				<?php echo $section_settings; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+
+			</div>
+
+			<?php
+
+		endforeach;
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo ob_get_clean();
 	}
 
 
@@ -900,57 +949,56 @@ class Xoo_Admin{
 
 		if ( $callback === 'wp_editor' ) {
 
-	$editor_settings = isset( $args['editor_settings'] ) ? $args['editor_settings'] : array();
-	$editor_settings = xoo_recursive_parse_args( $editor_settings, array(
-		'textarea_name' => $field_id,
-		'wpautop'       => false,
-	) );
+			$editor_settings = isset( $args['editor_settings'] ) ? $args['editor_settings'] : array();
+			$editor_settings = xoo_recursive_parse_args( $editor_settings, array(
+				'textarea_name' => $field_id,
+				'wpautop'       => false,
 
-	if ( isset( $args['group'] ) && $args['group'] === 'email_content' ) {
+				'tinymce' => array(
+					'teeny'   => false,
+					/* Toolbar */
+					'toolbar1' => 'formatselect,fontselect,styleselect,fontsizeselect,bold,italic,underline,forecolor,backcolor,alignleft,aligncenter,alignright,removeformat,code,hr',
 
-		$editor_settings = xoo_recursive_parse_args( $editor_settings, array(
-			'teeny'   => false,
-			'tinymce' => array(
+					/* Font sizes */
+					'fontsize_formats' => '12px 14px 15px 16px 18px 20px 22px 24px 28px 32px',
+					/* Paragraph handling */
+					'forced_root_block' => 'p',
 
-				/* Toolbar */
-				'toolbar1' => 'formatselect,styleselect,fontsizeselect,bold,italic,underline,forecolor,backcolor,alignleft,aligncenter,alignright,undo,redo,removeformat,code,hr',
+					'init_instance_callback' => 'function(editor) {
+						editor.settings.forced_root_block_attrs = {
+							style: "margin:0 0 16px 0;"
+						};
+					}'
+				)
+			) );
 
-				/* Font sizes */
-				'fontsize_formats' => '12px 14px 16px 18px 20px 24px 28px 32px',
+			if ( isset( $args['group'] ) && $args['group'] === 'email_content' ) {
 
-				/* Valid styles (JSON REQUIRED) */
-				'valid_styles' => wp_json_encode( array(
-					'*' => 'color,font-size,font-weight,font-style,text-decoration,background-color,text-align,margin,padding',
-				) ),
+				$editor_settings = xoo_recursive_parse_args( $editor_settings, array(
+					
+					'tinymce' => array(
 
-				'extended_valid_elements' => 'span[style],a[href|style],p[style],div[style],br',
+						/* Valid styles (JSON REQUIRED) */
+						'valid_styles' => wp_json_encode( array(
+							'*' => 'color,font-size,font-weight,font-style,text-decoration,background-color,text-align,margin,padding',
+						) ),
 
-				/* Protect placeholders (JSON REQUIRED) */
-				'protect' => wp_json_encode( array(
-					'/{[^}]+}/g',
-				) ),
+						'extended_valid_elements' => 'span[style],a[href|style],p[style],div[style],br',
 
-				/* Clean & predictable output */
-				'verify_html'        => false,
-				'cleanup'            => false,
-				'convert_urls'       => false,
-				'remove_script_host' => false,
+						/* Protect placeholders (JSON REQUIRED) */
+						'protect' => wp_json_encode( array(
+							'/{[^}]+}/g',
+						) ),
 
-				/* Paragraph handling */
-				'forced_root_block' => 'p',
-
-				'init_instance_callback' => 'function(editor) {
-					editor.settings.forced_root_block_attrs = {
-						style: "margin:0 0 16px 0;"
-					};
-				}',
-			),
-		));
-	}
-}
-
-
-
+						/* Clean & predictable output */
+						'verify_html'        => false,
+						'cleanup'            => false,
+						'convert_urls'       => false,
+						'remove_script_host' => false,
+					),
+				));
+			}
+		}
 
 		
 		$toggleDataHTML = isset( $args['toggleSettings'] )  ? "data-togglesettings=".esc_attr( wp_json_encode( $args['toggleSettings'] ) ) : '';
@@ -958,7 +1006,15 @@ class Xoo_Admin{
 		$field_container = '<div class="%1$s" data-setting="%3$s" data-field_id="'.$field_id.'" '.$toggleDataHTML.'>%2$s</div>';
 
 		$field = '';
+
+
+
 		switch ( $callback ) {
+
+			case 'border':
+				$value = is_array( $value ) ? $value : array();
+				$field .= $this->get_border_setting_html( $field_id, $value );;
+				break;
 
 			case 'wp_editor':
 				ob_start();
@@ -1162,6 +1218,364 @@ class Xoo_Admin{
 				$field .= '</div>';
 
 				break;
+
+
+
+			case 'button_theme_creator':
+
+				$value = is_array( $value ) ? $value : array();
+
+				$defaults = array_merge( array(
+					'theme_id' 		=> '',
+					'title' 		=> 'Theme [%^]',
+				), $this->helper->get_button_values() );
+
+
+				if( !empty( $value ) ){
+
+					foreach ( $value as $theme_id => $theme_values ) {
+						$value[ $theme_id ] =  xoo_recursive_parse_args(
+							$theme_values,
+							$defaults
+						);
+					}
+					
+				}
+
+
+				$units = array(
+					'px' => 'px',
+					'%'  => '%',
+					'em' => 'em',
+					'rem'=> 'rem'
+				);
+
+				ob_start();
+				?>
+
+				<div class="xoo-btntheme-cont" data-value="<?php echo esc_attr( wp_json_encode( $value ) ); ?>" data-defaults='<?php echo esc_attr( wp_json_encode( $defaults ) ); ?>'>
+
+					<button type="button" class="xoo-btn xoo-btn-primary xoo-add-btntheme"><span class="xoo-as-icon xoo-icon-plus"></span>New Theme</button>
+
+					<div class="xoo-btnthemes"></div>
+
+				</div>
+
+				<?php
+
+				$field .= ob_get_clean();
+
+				$field .= $this->helper->get_template( '/admin/templates/global/button-theme.php', array( 'adminObj' => $this, 'field_id' => $field_id ), XOO_FW_DIR );
+
+				break;
+
+			case 'button_theme_selector':
+
+				$select 	= '<select name="'.$field_id.'" '.$custom_attributes.' data-default="'.$value.'"></select>';
+
+				$field 		.= $select;
+
+				break;
+
+		
+			case 'button':
+
+				$value = is_array( $value ) ? $value : array();
+
+				$value = xoo_recursive_parse_args(
+					$value,
+					array(
+						'width'         => 300,
+						'width_unit'    => 'px',
+						'height'        => 40,
+						'height_unit'   => 'px',
+						'bgColor'       => '#000000',
+						'txtColor'      => '#ffffff',
+
+						'text' => array(
+							'fontWeight' 		=> 500,
+							'fontStyle' 		=> 'normal',
+							'fontSize' 			=> 15,
+							'fontSizeUnit' 		=> 'px',
+							'textTransform' 	=> 'capitalize',
+						),
+
+						'border' => array(
+							'size'      => 1,
+							'color'     => '#cccccc',
+							'style'     => 'solid',
+							'radius'    => 5,
+						),
+
+						'hover' => array(
+							'bgColor'       => '#eee',
+							'txtColor'      => '#000',
+
+							'border' => array(
+								'size'      => 1,
+								'color'     => '#cccccc',
+								'style'     => 'solid',
+								'radius'    => 5,
+							),
+						),
+					)
+				);
+
+				$units = array(
+					'px' => 'px',
+					'%'  => '%',
+					'em' => 'em',
+					'rem'=> 'rem'
+				);
+
+				ob_start();
+				?>
+
+				<div class="xoo-btn-setting xoo-tabs-cont" data-field_id="<?php echo  esc_attr( $field_id ) ?>">
+
+					<span class="xoo-btnset-desc">Customize the appearance of your button</span>
+
+					<div class="xoo-btn-preview-wrap">
+
+						<div class="xoo-btn-preview">
+							<button type="button">Button</button>
+						</div>
+
+					</div>
+
+					<div class="xoo-setting-tabs">
+
+						<span class="xoo-set-tab xoo-tabactive" data-xootab="normal"><span class="xoo-icon-light xoo-icon"></span>Normal</span>
+
+						<span class="xoo-set-tab" data-xootab="hover"><span class="xoo-icon-cursor xoo-icon"></span>Hover</span>
+
+					</div>
+
+					<!-- NORMAL -->
+					<div class="xoo-btn-group xoo-tabgroup xoo-tabactive" data-xootab="normal">
+
+						<!-- Colors -->
+						<div class="xoo-btn-row">
+
+							<span class="xoo-btnrow-head"><span class="xoo-icon-paint xoo-icon"></span>Colors</span>
+
+							<div class="xoo-row-settings">
+
+								<div>
+									<i>Background</i>
+									<input type="text" class="xoo-as-color-input" name="<?php echo esc_attr( $field_id ); ?>[bgColor]" value="<?php echo esc_attr( $value['bgColor'] ); ?>" >
+								</div>
+
+								<div>
+									<i>Text Color</i>
+									<input type="text" class="xoo-as-color-input" name="<?php echo esc_attr( $field_id ); ?>[txtColor]" value="<?php echo esc_attr( $value['txtColor'] ); ?>" >
+								</div>
+
+							</div>
+
+						</div>
+
+						<!-- Size -->
+						<div class="xoo-btn-row">
+
+							<span class="xoo-btnrow-head"><span class="xoo-icon-ruler xoo-icon"></span>Size</span>
+
+							<div class="xoo-row-settings">
+
+								<div>
+
+									<i>Width</i>
+									<input type="number" name="<?php echo esc_attr( $field_id ); ?>[width]" value="<?php echo esc_attr( $value['width'] ); ?>" >
+
+								</div>
+
+								<div>
+
+									<i>Unit</i>
+									<select name="<?php echo esc_attr( $field_id ); ?>[width_unit]">
+
+										<?php foreach ( $units as $unit ) : ?>
+
+											<option value="<?php echo esc_attr( $unit ); ?>"
+												<?php selected( $value['width_unit'], $unit ); ?>>
+												<?php echo esc_html( $unit ); ?>
+											</option>
+
+										<?php endforeach; ?>
+									</select>
+
+
+								</div>
+
+								<div>
+
+									<i>Height</i>
+									<input type="number" name="<?php echo esc_attr( $field_id ); ?>[height]" value="<?php echo esc_attr( $value['height'] ); ?>" >	
+
+								</div>
+
+
+
+								<div>
+
+									<i>Unit</i>
+									<select name="<?php echo esc_attr( $field_id ); ?>[height_unit]">
+
+										<?php foreach ( $units as $unit ) : ?>
+											<option value="<?php echo esc_attr( $unit ); ?>"
+												<?php selected( $value['height_unit'], $unit ); ?>>
+												<?php echo esc_html( $unit ); ?>
+											</option>
+										<?php endforeach; ?>
+
+									</select>	
+
+								</div>
+
+							</div>
+
+						</div>
+
+						<!-- Text -->
+						<div class="xoo-btn-row">
+
+							<span class="xoo-btnrow-head"><span class="xoo-icon-font xoo-icon"></span>Text</span>
+
+							<div class="xoo-row-settings">
+
+								<div>
+
+									<i>Weight</i>
+
+									<select name="<?php echo esc_attr( $field_id ); ?>[text][fontWeight]">
+
+										<option value="300" <?php selected( $value['text']['fontWeight'], 300 ); ?>>300</option>
+										<option value="400" <?php selected( $value['text']['fontWeight'], 400 ); ?>>400</option>
+										<option value="500" <?php selected( $value['text']['fontWeight'], 500 ); ?>>500</option>
+										<option value="600" <?php selected( $value['text']['fontWeight'], 600 ); ?>>600</option>
+										<option value="700" <?php selected( $value['text']['fontWeight'], 700 ); ?>>700</option>
+
+									</select>
+
+								</div>
+
+								<div>
+
+									<i>Style</i>
+
+									<select name="<?php echo esc_attr( $field_id ); ?>[text][fontStyle]">
+
+										<option value="normal" <?php selected( $value['text']['fontStyle'], 'normal' ); ?>>Normal</option>
+										<option value="italic" <?php selected( $value['text']['fontStyle'], 'italic' ); ?>>Italic</option>
+
+									</select>
+
+								</div>
+
+								<div>
+
+									<i>Font Size</i>
+
+									<input type="number" name="<?php echo esc_attr( $field_id ); ?>[text][fontSize]" value="<?php echo esc_attr( $value['text']['fontSize'] ); ?>">
+
+								</div>
+
+								<div>
+
+									<i>Unit</i>
+
+									<select name="<?php echo esc_attr( $field_id ); ?>[text][fontSizeUnit]">
+
+										<?php foreach ( $units as $unit ) : ?>
+
+											<option value="<?php echo esc_attr( $unit ); ?>" <?php selected( $value['text']['fontSizeUnit'], $unit ); ?>>
+												<?php echo esc_html( $unit ); ?>
+											</option>
+
+										<?php endforeach; ?>
+
+									</select>
+
+								</div>
+
+								<div>
+
+									<i>Transform</i>
+
+									<select name="<?php echo esc_attr( $field_id ); ?>[text][textTransform]">
+
+										<option value="none" <?php selected( $value['text']['textTransform'], 'none' ); ?>>None</option>
+										<option value="uppercase" <?php selected( $value['text']['textTransform'], 'uppercase' ); ?>>Uppercase</option>
+										<option value="lowercase" <?php selected( $value['text']['textTransform'], 'lowercase' ); ?>>Lowercase</option>
+										<option value="capitalize" <?php selected( $value['text']['textTransform'], 'apitalize' ); ?>>Capitalize</option>
+
+									</select>
+
+								</div>
+
+							</div>
+
+						</div>
+
+						<!-- Border -->
+						<div class="xoo-btn-row">
+
+							<span class="xoo-btnrow-head"><span class="xoo-icon-border xoo-icon"></span>Border</span>
+							
+							<?php
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							echo $this->get_border_setting_html( $field_id.'[border]', $value['border'] );
+							?>
+
+						</div>
+
+					</div>
+
+					<!-- HOVER -->
+					<div class="xoo-btn-group xoo-tabgroup" data-xootab="hover">
+
+						<div class="xoo-btn-row">
+
+							<span class="xoo-btnrow-head"><span class="xoo-icon-paint xoo-icon"></span>Colors</span>
+
+							<div class="xoo-row-settings">
+
+								<div>
+									<i>Background</i>
+									<input type="text" class="xoo-as-color-input" name="<?php echo esc_attr( $field_id ); ?>[hover][bgColor]" value="<?php echo esc_attr( $value['hover']['bgColor'] ); ?>">									
+								</div>
+
+								<div>
+									<i>Text Color</i>
+									<input type="text" class="xoo-as-color-input" name="<?php echo esc_attr( $field_id ); ?>[hover][txtColor]" value="<?php echo esc_attr( $value['hover']['txtColor'] ); ?>" >
+								</div>
+
+							</div>
+
+						</div>
+
+						<div class="xoo-btn-row">
+
+							<span class="xoo-btnrow-head"><span class="xoo-icon-border xoo-icon"></span>Border</span>
+
+							<?php
+
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							echo $this->get_border_setting_html( $field_id.'[hover][border]', $value['hover']['border'] );
+
+							?>
+
+						</div>
+
+					</div>
+
+				</div>
+
+				<?php
+
+				$field .= ob_get_clean();
+
+				break;
 			
 			default:
 				# code...
@@ -1169,6 +1583,10 @@ class Xoo_Admin{
 		}
 
 		$field = apply_filters( 'xoo_admin_setting_field_callback_html', $field, $field_id, $value, $args );
+
+		if( isset( $args['reset'] ) && $args['reset'] === "yes" ){
+			$field .= '<span class="xoo-as-resetval" data-default="'.esc_attr( wp_json_encode( $default) ).'">Reset to default value</span>';
+		}
 
 		if( isset( $args['value_desc'] ) && !empty( $args['value_desc'] ) ){
 			$defaultValueDesc = isset( $args['value_desc'][$value] ) ? $args['value_desc'][$value] : '';
@@ -1191,8 +1609,12 @@ class Xoo_Admin{
 			
 		}
 
-		$label = '<div class="xoo-as-label">'.$title.'</div>';
-		$field = $label.'<div class="xoo-as-field">'.$field.'</div>';
+		if( isset( $title ) && $title ){
+			$label = '<div class="xoo-as-label">'.$title.'</div>';
+			$field = $label.'<div class="xoo-as-field">'.$field.'</div>';
+		}
+		
+		
 
 		$container_class 	= implode( ' ' , $container_class );
 		$field 				= sprintf( $field_container, $container_class, $field, $callback );
@@ -1200,5 +1622,105 @@ class Xoo_Admin{
 		return apply_filters( 'xoo_admin_setting_field', $field, $field_id, $value, $args );
 
 	}
+
+	private function get_border_setting_html( $field_id, $value = array() ) {
+
+		$value = wp_parse_args(
+			$value,
+			array(
+				'size' 		=> 1,
+				'color' 	=> '#ccc',
+				'style' 	=> 'solid',
+				'radius' 	=> 0,
+			)
+		);
+
+		$styles = array(
+			'none',
+			'hidden',
+			'solid',
+			'dashed',
+			'dotted',
+			'double',
+			'groove',
+			'ridge',
+			'inset',
+			'outset'
+		);
+
+		ob_start();
+		?>
+
+		<div class="xoo-row-settings">
+
+			<div>
+				<i>Size</i>
+				<input name="<?php echo esc_attr( $field_id ); ?>[size]" type="number" min="0" value="<?php echo esc_attr( $value['size'] ); ?>">
+			</div>
+
+			<div>
+				<i>Color</i>
+				<input name="<?php echo esc_attr( $field_id ); ?>[color]" type="text" class="xoo-as-color-input" value="<?php echo esc_attr( $value['color'] ); ?>">
+			</div>
+
+			<div>
+
+				<i>Style</i>
+				<select name="<?php echo esc_attr( $field_id ); ?>[style]">
+
+					<?php foreach ( $styles as $style ) : ?>
+
+						<option value="<?php echo esc_attr( $style ); ?>" <?php selected( $value['style'], $style ); ?>>
+							<?php echo esc_html( ucfirst( $style ) ); ?>
+						</option>
+
+					<?php endforeach; ?>
+
+				</select>
+
+
+			</div>
+
+			<div>
+				<i>Radius</i>
+				<input name="<?php echo esc_attr( $field_id ); ?>[radius]" type="number" min="0" value="<?php echo esc_attr( $value['radius'] ); ?>">
+			</div>
+
+		</div>
+
+		<?php
+
+		return ob_get_clean();
+
+	}
+
+
+	
+	public function add_button_theme_creator(){
+		?>
+
+		<div class="xoo-wsc-btntheme-cont">
+
+			<button type="button" class="button button-primary xoo-wsc-add-btntheme">+ Add a new button theme</button>
+
+			<div class="xoo-wsc-btnthemes"></div>
+
+		</div>
+
+		<?php
+		include XOO_FW_DIR.'/admin/templates/global/button-theme.php';
+	}
+
+	public function templatejs_select_options( $name, $options ) {
+		foreach ( $options as $option_value => $title ) {
+			?>
+			<option
+				value="<?php echo esc_attr( $option_value ); ?>"
+				{{ data.<?php echo esc_attr( $name ); ?> == '<?php echo esc_js( $option_value ); ?>' ? 'selected' : '' }}
+			><?php echo esc_html( $title ); ?></option>
+			<?php
+		}
+	}
+
 
 }

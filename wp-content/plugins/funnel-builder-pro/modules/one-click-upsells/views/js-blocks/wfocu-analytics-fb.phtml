@@ -50,6 +50,9 @@ if ( $this->do_track_fb_synced_purchase() && is_array( $data ) && isset( $data['
 	<?php if ( isset( $data['fb']['additional']['coupon_used'] ) && ! empty( $data['fb']['additional']['coupon_used'] ) ) { ?>
 		wfocufbDataPurchaseTrackSynced.coupon_used = '<?php echo esc_js( $data['fb']['additional']['coupon_used'] ); ?>';
 	<?php } ?>
+	<?php if ( isset( $data['fb']['is_customer_new'] ) ) { ?>
+		wfocufbDataPurchaseTrackSynced.is_customer_new = <?php echo absint( $data['fb']['is_customer_new'] ); ?>;
+	<?php } ?>
 	wfocufbDataPurchaseTrackSynced = (typeof wffnAddTrafficParamsToEvent !== "undefined")?wffnAddTrafficParamsToEvent(wfocufbDataPurchaseTrackSynced):wfocufbDataPurchaseTrackSynced;
 	fbq('track', 'Purchase', wfocufbDataPurchaseTrackSynced,{'eventID': '<?php echo esc_attr( $event_id ); ?>'});
 	<?php if ( isset( $data['fb']['bumps'] ) ) {
@@ -98,6 +101,9 @@ if ( false === $this->do_track_fb_synced_purchase() && $this->do_track_fb_purcha
 	<?php } ?>
 	<?php if ( isset( $data['fb']['additional']['coupon_used'] ) && ! empty( $data['fb']['additional']['coupon_used'] ) ) { ?>
 		wfocufbDataPurchaseTrack.coupon_used = '<?php echo esc_js( $data['fb']['additional']['coupon_used'] ); ?>';
+	<?php } ?>
+	<?php if ( isset( $data['fb']['is_customer_new'] ) ) { ?>
+		wfocufbDataPurchaseTrack.is_customer_new = <?php echo absint( $data['fb']['is_customer_new'] ); ?>;
 	<?php } ?>
 	<?php if ( isset( $data['fb']['bumps'] ) ) {
 		foreach ( $data['fb']['bumps'] as $bump ) { ?>

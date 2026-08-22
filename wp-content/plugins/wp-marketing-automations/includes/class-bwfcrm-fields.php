@@ -815,6 +815,4 @@ if ( ! class_exists( 'BWFCRM_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 			return $data;
 		}
 	}
-
-	BWFCRM_Fields::get_instance();
 }

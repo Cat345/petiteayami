@@ -83,6 +83,10 @@ class Admin extends Base_Model implements Model_Interface, Initiable_Interface, 
             'any-products'         => __( 'Any Products - good when you want to trigger or apply all of the products present in the cart', 'advanced-coupons-for-woocommerce' ),
         );
 
+        if ( \ACFWF()->Helper_Functions->get_product_brand_taxonomy() ) {
+            $premium['product-brands'] = __( 'Product Brands – good when you want to trigger or apply a range of products from a particular brand or set of brands', 'advanced-coupons-for-woocommerce' );
+        }
+
         return array_merge( $descs, $premium );
     }
 
@@ -101,6 +105,11 @@ class Admin extends Base_Model implements Model_Interface, Initiable_Interface, 
             'product-categories'   => __( 'Product Categories', 'advanced-coupons-for-woocommerce' ),
             'any-products'         => __( 'Any Products', 'advanced-coupons-for-woocommerce' ),
         );
+
+        // Only offer brand targeting when a brand taxonomy is registered on the store.
+        if ( \ACFWF()->Helper_Functions->get_product_brand_taxonomy() ) {
+            $options['product-brands'] = __( 'Product Brands', 'advanced-coupons-for-woocommerce' );
+        }
 
         return $options;
     }
@@ -165,6 +174,7 @@ class Admin extends Base_Model implements Model_Interface, Initiable_Interface, 
             case 'combination_products':
             case 'any-products':
             case 'product-categories':
+            case 'product-brands':
                 $formatted_deals                   = $bogo_deals['deals'];
                 $formatted_deals['discount_value'] = wc_format_localized_price( $formatted_deals['discount_value'] );
                 break;
@@ -198,6 +208,9 @@ class Admin extends Base_Model implements Model_Interface, Initiable_Interface, 
                 break;
             case 'product-categories':
                 $sanitized = $this->_sanitize_product_cat_data( $data );
+                break;
+            case 'product-brands':
+                $sanitized = $this->_sanitize_product_brands_data( $data );
                 break;
             case 'any-products':
                 $sanitized = $this->_sanitize_any_products_data( $data );
@@ -258,6 +271,38 @@ class Admin extends Base_Model implements Model_Interface, Initiable_Interface, 
         if ( isset( $data['categories'] ) && is_array( $data['categories'] ) ) {
             foreach ( $data['categories'] as $category ) {
                 $sanitized['categories'][] = array_map( 'sanitize_text_field', $category );
+            }
+        }
+
+        if ( isset( $data['discount_type'] ) ) {
+            $sanitized['discount_type'] = sanitize_text_field( $data['discount_type'] );
+        }
+
+        if ( isset( $data['discount_value'] ) ) {
+            $sanitized['discount_value'] = (float) wc_format_decimal( $data['discount_value'] );
+        }
+
+        return $sanitized;
+    }
+
+    /**
+     * Sanitize conditions/deals product brand data.
+     *
+     * @since 4.0.9
+     * @access private
+     *
+     * @param array $data Product data.
+     * @return array Sanitized product data.
+     */
+    private function _sanitize_product_brands_data( $data ) {
+        $sanitized = array(
+            'brands'   => array(),
+            'quantity' => isset( $data['quantity'] ) && intval( $data['quantity'] ) > 0 ? absint( $data['quantity'] ) : 1,
+        );
+
+        if ( isset( $data['brands'] ) && is_array( $data['brands'] ) ) {
+            foreach ( $data['brands'] as $brand ) {
+                $sanitized['brands'][] = array_map( 'sanitize_text_field', $brand );
             }
         }
 

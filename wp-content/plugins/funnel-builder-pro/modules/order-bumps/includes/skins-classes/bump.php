@@ -230,9 +230,9 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				'selectors'          => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_pro_image_wrap',
 				'alignmentSelectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]',
 				'alignmentClassList' => array(
-					'top'   => 'wfob_img_position_top',
 					'left'  => 'wfob_img_position_left',
 					'right' => 'wfob_img_position_right',
+					'top'   => 'wfob_img_position_top',
 				),
 				'widthSelectors'     => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_pro_image_wrap',
 				'toggler'            => array(
@@ -538,7 +538,11 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			if ( ! isset( $bump_design_data[ $product_key . '_featured_image_options' ] ) && empty( $bump_design_data[ $product_key . '_featured_image_options' ] ) ) {
 
 				$this->wfob_bump_products[ $product_key . '_featured_image_options' ]['image_url'] = WFOB_PLUGIN_URL . '/assets/img/no-image.png';
-				$this->wfob_bump_products[ $product_key . '_featured_image_options' ]['position']  = 'left';
+				// Saved design data may predate the skin (or carry no position class at all), so fall
+				// back to the skin's own default model rather than the horizontal skins' "left".
+				$position_source = ( is_array( $bump_design_data ) && isset( $bump_design_data['product_image_position_class'] ) ) ? $bump_design_data : $this->get_default_models();
+
+				$this->wfob_bump_products[ $product_key . '_featured_image_options' ]['position']  = WFOB_Common::get_skin_default_image_position( $position_source );
 				$this->wfob_bump_products[ $product_key . '_featured_image_options' ]['width']     = '96';
 				$this->wfob_bump_products[ $product_key . '_featured_image_options' ]['type']      = 'product';
 
@@ -1168,13 +1172,13 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 		/*------------------------------------get Price Data--------------------------------------------- */
 
-		public function get_bump_product_price_data( $wc_product, $qty = 1 ) {
+		public function get_bump_product_price_data( $wc_product, $qty = 1, $product_data = array() ) {
 
 			if ( ! $wc_product instanceof WC_Product ) {
 				return array();
 			}
 
-			$price_data = apply_filters( 'wfob_product_switcher_price_data', array(), $wc_product, $qty );
+			$price_data = apply_filters( 'wfob_product_switcher_price_data', array(), $wc_product, $qty, $product_data );
 			if ( empty( $price_data ) ) {
 				$price_data['regular_org'] = $wc_product->get_regular_price( 'edit' );
 				$price_data['price']       = $wc_product->get_price( 'edit' );
@@ -1236,7 +1240,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 			$cart_item = $this->get_bump_cart_item();
 			if ( '' !== $cart_item_key ) {
-				$price_data = WFOB_Common::get_cart_product_price_data( $wc_product, $cart_item, $cart_item['quantity'] );
+				$price_data = WFOB_Common::get_cart_product_price_data( $wc_product, $cart_item, $cart_item['quantity'], $price_data );
 			} else {
 				$price_data             = WFOB_Common::get_product_price_data( $wc_product, $price_data );
 				$price_data['quantity'] = $qty;
@@ -1372,6 +1376,48 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 		}
 
 		/**
+		 * Layouts whose multiple products render as a horizontal, scrollable slider.
+		 *
+		 * @return array
+		 */
+		protected function get_slider_layouts() {
+			return apply_filters( 'wfob_slider_layouts', array( 'layout_12' ) );
+		}
+
+		/**
+		 * Open the multi-product slider wrapper (track + prev nav) for slider layouts.
+		 * Multiple bump products are echoed inside a single horizontally scrollable track;
+		 * when they overflow the container the frontend reveals prev/next arrows (see public.js).
+		 *
+		 * @param string $layout     Selected layout slug.
+		 * @param bool   $print_bump Whether output is actually being printed.
+		 */
+		protected function print_multi_product_slider_open( $layout, $print_bump ) {
+			if ( true !== $print_bump || ! in_array( $layout, $this->get_slider_layouts(), true ) ) {
+				return;
+			}
+			$product_count = is_array( $this->products ) ? count( $this->products ) : 0;
+			echo '<div class="wfob_l12_slider" data-product-count="' . esc_attr( $product_count ) . '">';
+			echo '<button type="button" class="wfob_l12_nav wfob_l12_nav_prev" aria-label="' . esc_attr__( 'Previous products', 'woofunnels-order-bump' ) . '"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+			echo '<div class="wfob_l12_track">';
+		}
+
+		/**
+		 * Close the multi-product slider wrapper (track + next nav) for slider layouts.
+		 *
+		 * @param string $layout     Selected layout slug.
+		 * @param bool   $print_bump Whether output is actually being printed.
+		 */
+		protected function print_multi_product_slider_close( $layout, $print_bump ) {
+			if ( true !== $print_bump || ! in_array( $layout, $this->get_slider_layouts(), true ) ) {
+				return;
+			}
+			echo '</div>'; // .wfob_l12_track
+			echo '<button type="button" class="wfob_l12_nav wfob_l12_nav_next" aria-label="' . esc_attr__( 'Next products', 'woofunnels-order-bump' ) . '"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+			echo '</div>'; // .wfob_l12_slider
+		}
+
+		/**
 		 * Print all bump ui at checkout page
 		 */
 		public function print_bump( $print_bump = true, $products_key = array() ) {
@@ -1397,6 +1443,9 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			$final_data           = array();
 			$image_position_style = array();
 			$dynamic_temp_style   = array();
+
+			$slider_layout = isset( $design_data['layout'] ) ? $design_data['layout'] : '';
+			$this->print_multi_product_slider_open( $slider_layout, $print_bump );
 
 			foreach ( $this->products as $product_key => $data ) {
 
@@ -1465,7 +1514,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$this->wc_product_object = $wc_product;
 
 				if ( ! $wc_product instanceof WC_Product || ( ! $wc_product->is_purchasable() && '' == $cart_item_key ) ) {
-					break;
+					continue;
 				}
 
 				$wc_product = $this->set_product_price( $wc_product, $data, $cart_item_key );
@@ -1504,7 +1553,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 				/*--------------------------------------- Product Price Data--------------------------------- */
 
-				$price_data = $this->get_bump_product_price_data( $wc_product, $qty );
+				$price_data = $this->get_bump_product_price_data( $wc_product, $qty, $data );
 
 				$price_data['regular_org'] *= $qty;
 				$price_data['price']       *= $qty;
@@ -1614,7 +1663,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				} elseif ( $selected_layout == 'layout_5' || $selected_layout == 'layout_6' ) {
 					$css_class[] = 'bump_skin_type_3';
 					$skin_type   = 'bump_skin_type_3';
-				} elseif ( $selected_layout == 'layout_7' || $selected_layout == 'layout_11' ) {
+				} elseif ( $selected_layout == 'layout_7' || $selected_layout == 'layout_11' || $selected_layout == 'layout_12' ) {
 					$css_class[] = 'wfob_bump_r_outer_wrap';
 					$css_class[] = 'bump_skin_type_4';
 					$skin_type   = 'bump_skin_type_4';
@@ -1730,6 +1779,8 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				}
 			}
 
+			$this->print_multi_product_slider_close( $slider_layout, $print_bump );
+
 			/*--------------------------------------------Dynamic Style------------------------------------ */
 
 			if ( WFOB_Bump_Fc::$number_of_bump_print >= 1 && apply_filters( 'wfacp_disabled_order_bump_css_printing', true, $this ) && ! empty( $selected_layout ) ) {
@@ -1814,6 +1865,9 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			$final_data           = array();
 			$image_position_style = array();
 			$dynamic_temp_style   = array();
+
+			$slider_layout = isset( $design_data['layout'] ) ? $design_data['layout'] : '';
+			$this->print_multi_product_slider_open( $slider_layout, $print_bump );
 
 			foreach ( $this->products as $product_key => $data ) {
 
@@ -1954,7 +2008,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				} elseif ( $selected_layout == 'layout_5' || $selected_layout == 'layout_6' ) {
 					$css_class[] = 'bump_skin_type_3';
 					$skin_type   = 'bump_skin_type_3';
-				} elseif ( $selected_layout == 'layout_7' || $selected_layout == 'layout_11' ) {
+				} elseif ( $selected_layout == 'layout_7' || $selected_layout == 'layout_11' || $selected_layout == 'layout_12' ) {
 					$css_class[] = 'wfob_bump_r_outer_wrap';
 					$css_class[] = 'bump_skin_type_4';
 					$skin_type   = 'bump_skin_type_4';
@@ -2065,6 +2119,8 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					WFOB_Bump_Fc::$number_of_bump_print[ $product_key ] = 1;
 				}
 			}
+
+			$this->print_multi_product_slider_close( $slider_layout, $print_bump );
 
 			/*--------------------------------------------Dynamic Style------------------------------------ */
 

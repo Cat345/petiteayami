@@ -68,6 +68,20 @@ class Frontend extends Base_Model implements Model_Interface {
      */
     const BOGO_LOCKED_PRICE_META_KEY = '_acfw_bogo_locked_price';
 
+    /**
+     * Guard flag set while unqualified deal items are being removed from the cart.
+     *
+     * Removal happens inside woocommerce_before_calculate_totals. Removing/reducing a
+     * cart item can fire third-party handlers (e.g. on woocommerce_before_cart_item_quantity_zero)
+     * that call WC()->cart->calculate_totals() again. This flag lets implement_bogo_deals()
+     * bail on such re-entry so the BOGO calculation is not re-run against a half-modified cart.
+     *
+     * @since 4.7.4
+     * @access private
+     * @var bool
+     */
+    private $_removing_unqualified_items = false;
+
     /*
     |--------------------------------------------------------------------------
     | Class Methods
@@ -132,8 +146,38 @@ class Frontend extends Base_Model implements Model_Interface {
      * @access public
      */
     public function implement_bogo_deals() {
-        // Skip when there are no coupon's applied yet.
+        // Bail on re-entry triggered while removing unqualified deal items (issue #909),
+        // so the calculation is not re-run against a cart that is mid-modification.
+        if ( $this->_removing_unqualified_items ) {
+            return;
+        }
+
+        if ( ! \WC()->cart instanceof \WC_Cart ) {
+            return;
+        }
+
+        // Capture the previous calculation's matched deal entries up front, before anything
+        // clears the session. Needed to detect deal items that must be removed even when the
+        // last BOGO coupon has just been removed and the normal calculation below is skipped
+        // (issue #909).
+        $previous_session = \WC()->session ? \WC()->session->get( 'acfw_bogo_entries' ) : null;
+        $previous_matched = is_array( $previous_session ) && isset( $previous_session['matched'] ) ? $previous_session['matched'] : array();
+
+        // Skip when there are no coupons applied yet. Still sweep for previously deal-granted
+        // items to remove first (e.g. the only BOGO coupon was just removed), otherwise the
+        // item would silently revert to full price instead of being removed (issue #909).
         if ( empty( \WC()->cart->get_applied_coupons() ) ) {
+            if ( ! empty( $previous_matched ) ) {
+                if ( ! $this->_calculation instanceof Calculation ) {
+                    $this->_calculation = Calculation::get_instance();
+                }
+
+                $this->_maybe_remove_unqualified_deal_items( $previous_matched );
+
+                // No coupons remain, so drop the stale session state that seeded the sweep.
+                Calculation::clear_session_data();
+            }
+
             return;
         }
 
@@ -152,6 +196,12 @@ class Frontend extends Base_Model implements Model_Interface {
             // clear previous session data.
             Calculation::clear_session_data();
 
+            // Refresh BOGO deals from the current cart. The Calculation singleton may have been
+            // instantiated during coupon validation (restrict_cart_to_only_one_bogo_deal) before any
+            // BOGO coupons were applied, leaving its deal list stale/empty. Re-reading the cart here
+            // ensures every applied BOGO deal is processed (e.g. two simultaneous auto-apply BOGOs).
+            $this->_calculation->refresh_bogo_deals();
+
             foreach ( $this->_calculation->get_all_bogo_deals() as $bogo_deal ) {
                 $this->_implement_bogo_deal( $bogo_deal );
             }
@@ -159,16 +209,25 @@ class Frontend extends Base_Model implements Model_Interface {
             // add eligible notices for deals with missing items.
             $this->_add_notice_for_eligible_deals();
 
+            // Remove deal items from the cart when their coupon is opted into removal
+            // and the deal no longer qualifies for them (issue #909). Runs before the
+            // session is persisted so the saved state reflects the modified cart.
+            $this->_maybe_remove_unqualified_deal_items( $previous_matched );
+
             // save calculation and notices data to session.
             $this->_calculation->set_session_data();
         }
 
         // apply discount by adjusting cart item prices.
+        // NOTE: in "coupon" discount application mode this still runs to populate the
+        // price display bookkeeping (used by the coupon summary and order meta), but the
+        // actual cart item price mutations are skipped — the discount is instead delivered
+        // through the `woocommerce_coupon_get_discount_amount` filter.
         if ( ! empty( $this->_calculation->get_all_entries() ) ) {
             $this->_set_matching_cart_item_deals_prices();
 
-            // apply price of matching cart item triggers.
-            if ( apply_filters( 'acfw_enable_matching_cart_triggers_prices', false ) ) {
+            // apply price of matching cart item triggers (price modification mode only).
+            if ( ! $this->is_coupon_amount_mode() && apply_filters( 'acfw_enable_matching_cart_triggers_prices', false ) ) {
                 $this->_set_matching_cart_item_triggers_prices();
             }
         }
@@ -373,9 +432,14 @@ class Frontend extends Base_Model implements Model_Interface {
                 // reads this meta and returns it, overriding whatever WooPayments at
                 // priority 99 computed. This follows the same pattern WooPayments itself
                 // uses in its WooCommerceProductAddOns compatibility class.
-                $bogo_new_price = apply_filters( 'acfw_bogo_get_item_new_price', $new_price, $cart_item );
-                $cart_item['data']->update_meta_data( self::BOGO_LOCKED_PRICE_META_KEY, (float) $bogo_new_price );
-                $cart_item['data']->set_price( $bogo_new_price );
+                // In "coupon" discount application mode the product price is left untouched
+                // (no set_price, no locked-price meta) — the discount is applied to the
+                // coupon amount instead.
+                if ( ! $this->is_coupon_amount_mode() ) {
+                    $bogo_new_price = apply_filters( 'acfw_bogo_get_item_new_price', $new_price, $cart_item );
+                    $cart_item['data']->update_meta_data( self::BOGO_LOCKED_PRICE_META_KEY, (float) $bogo_new_price );
+                    $cart_item['data']->set_price( $bogo_new_price );
+                }
 
                 // add details to $this->_price_display property price differences on cart table.
                 $this->_price_display[ $key ] = array(
@@ -439,6 +503,12 @@ class Frontend extends Base_Model implements Model_Interface {
             }
         }
 
+        // In "coupon" discount application mode no prices were modified, so there is
+        // nothing to reset (and no locked-price meta should ever be stamped).
+        if ( $this->is_coupon_amount_mode() ) {
+            return;
+        }
+
         // Reset prices for items that don't have BOGO discounts.
         foreach ( \WC()->cart->get_cart_contents() as $cart_item ) {
             $key = $cart_item['key'];
@@ -458,6 +528,186 @@ class Frontend extends Base_Model implements Model_Interface {
             $reset_price = apply_filters( 'acfw_bogo_reset_deal_item_price', $price, $cart_item );
             $cart_item['data']->update_meta_data( self::BOGO_LOCKED_PRICE_META_KEY, (float) $reset_price );
             $cart_item['data']->set_price( $reset_price );
+        }
+    }
+
+    /**
+     * Remove deal items from the cart when the deal no longer qualifies for them.
+     *
+     * Opt-in per BOGO coupon (issue #909). When a coupon is configured to "Remove the
+     * free item from the cart" and a cart line that previously received a deal-granted
+     * quantity from that coupon no longer receives it (trigger removed, cart condition
+     * failed, coupon removed, or deal quantity exceeded), the lost deal-granted quantity
+     * is removed from the cart instead of reverting to the original price. Quantities the
+     * customer added independently of the deal are preserved: only the whole line is
+     * removed when the entire line was deal-granted.
+     *
+     * Detection compares the previous calculation's matched deal entries against what each
+     * coupon still grants now, treating a coupon that is no longer applied or no longer valid
+     * as granting nothing. Cart mutations use the non-refreshing WooCommerce cart methods and
+     * a re-entrancy guard so they are safe to run inside woocommerce_before_calculate_totals.
+     *
+     * @since 4.7.4
+     * @access private
+     *
+     * @param array $previous_matched Matched entries from the previous calculation (pre-clear).
+     */
+    private function _maybe_remove_unqualified_deal_items( $previous_matched ) {
+        if ( $this->_removing_unqualified_items || ! is_array( $previous_matched ) || empty( $previous_matched ) || ! \WC()->cart instanceof \WC_Cart ) {
+            return;
+        }
+
+        // Build previous deal-granted quantities keyed by coupon code and cart item key.
+        $previous_deals = array();
+        foreach ( $previous_matched as $entry ) {
+            if ( ! is_array( $entry ) || 'deal' !== ( $entry['type'] ?? '' ) || empty( $entry['coupon'] ) || empty( $entry['key'] ) ) {
+                continue;
+            }
+
+            $previous_deals[ $entry['coupon'] ][ $entry['key'] ] = ( $previous_deals[ $entry['coupon'] ][ $entry['key'] ] ?? 0 ) + (int) $entry['quantity'];
+        }
+
+        if ( empty( $previous_deals ) ) {
+            return;
+        }
+
+        // A coupon only keeps granting its deal items while it is still applied to the cart
+        // AND still valid. A coupon that was removed, or whose cart conditions now fail (so it
+        // is applied but invalid), no longer grants anything — its previously granted
+        // quantities all count as lost. Resolving "still active" this way (rather than diffing
+        // matched entries alone) is what lets removal fire on the coupon-removed and
+        // cart-condition-fail paths, not just when the trigger is removed (issue #909).
+        $applied_coupons = array_map( 'strtolower', \WC()->cart->get_applied_coupons() );
+        $active_cache    = array();
+        $is_active       = function ( $code ) use ( &$active_cache, $applied_coupons ) {
+            $lc = strtolower( (string) $code );
+
+            if ( ! array_key_exists( $lc, $active_cache ) ) {
+                // is_valid() runs WooCommerce's coupon validity filters (cart conditions etc.),
+                // so a coupon that is applied but whose conditions now fail resolves to false.
+                $active_cache[ $lc ] = in_array( $lc, $applied_coupons, true ) && ( new Advanced_Coupon( $code ) )->is_valid();
+            }
+
+            return $active_cache[ $lc ];
+        };
+
+        // Build current deal-granted quantities keyed by coupon code and cart item key,
+        // plus the per-cart-item total still granted across ALL still-active coupons (used to
+        // cap removal so a unit another still-active coupon covers is never deleted). Only
+        // count coupons that are still applied and valid; grants from removed/invalid coupons
+        // must not protect their lines from removal.
+        $current_deals       = array();
+        $current_deals_total = array();
+        if ( $this->_calculation instanceof Calculation ) {
+            foreach ( $this->_calculation->get_all_entries( 'matched' ) as $entry ) {
+                if ( ! is_array( $entry ) || 'deal' !== ( $entry['type'] ?? '' ) || empty( $entry['coupon'] ) || empty( $entry['key'] ) ) {
+                    continue;
+                }
+
+                if ( ! $is_active( $entry['coupon'] ) ) {
+                    continue;
+                }
+
+                $current_deals[ $entry['coupon'] ][ $entry['key'] ] = ( $current_deals[ $entry['coupon'] ][ $entry['key'] ] ?? 0 ) + (int) $entry['quantity'];
+                $current_deals_total[ $entry['key'] ]               = ( $current_deals_total[ $entry['key'] ] ?? 0 ) + (int) $entry['quantity'];
+            }
+        }
+
+        // Guard against re-entry while mutating the cart. Wrapped in try/finally so an
+        // exception from wc_add_notice(), the notice filter, or the removal action (all of
+        // which may run untrusted third-party callbacks) can never leave the flag stuck true —
+        // which would short-circuit implement_bogo_deals() for the rest of the request and
+        // drop BOGO prices from the totals.
+        $this->_removing_unqualified_items = true;
+
+        try {
+            foreach ( $previous_deals as $coupon_code => $keys ) {
+                $coupon = new Advanced_Coupon( $coupon_code );
+
+                // Only act on coupons opted into removal.
+                if ( 'remove' !== $coupon->get_bogo_remove_unqualified_deal() ) {
+                    continue;
+                }
+
+                foreach ( $keys as $key => $previous_qty ) {
+                    // A coupon that is no longer active grants nothing now, so its whole
+                    // previous quantity is lost regardless of any stale matched entry.
+                    $current_qty = $is_active( $coupon_code ) ? ( $current_deals[ $coupon_code ][ $key ] ?? 0 ) : 0;
+                    $lost_qty    = $previous_qty - $current_qty;
+
+                    // Deal still grants at least the previous quantity: nothing to remove.
+                    if ( $lost_qty <= 0 ) {
+                        continue;
+                    }
+
+                    $cart_item = \WC()->cart->get_cart_item( $key );
+
+                    // Item is already gone from the cart.
+                    if ( empty( $cart_item ) ) {
+                        continue;
+                    }
+
+                    $line_qty     = (int) $cart_item['quantity'];
+                    $product_name = $cart_item['data'] instanceof \WC_Product ? $cart_item['data']->get_name() : '';
+
+                    // Cap the removal so it never eats into quantity that is still deal-granted
+                    // by ANY still-active coupon on this line, nor the quantity the customer
+                    // added independently. The most we can remove is the line quantity minus
+                    // what is still deal-granted across all coupons; this also prevents deleting
+                    // a line the deal still legitimately covers when the customer previously
+                    // shrank it below the old deal quantity (issue #909).
+                    $still_granted_total = $current_deals_total[ $key ] ?? 0;
+                    $remove_qty          = min( $lost_qty, max( 0, $line_qty - $still_granted_total ) );
+
+                    if ( $remove_qty <= 0 ) {
+                        continue;
+                    }
+
+                    // Use set_quantity() with $refresh_totals = false so the cart is not
+                    // recalculated mid-hook (remove_cart_item() would call calculate_totals()
+                    // and re-enter this calculation). A resulting quantity of 0 removes the line.
+                    \WC()->cart->set_quantity( $key, $line_qty - $remove_qty, false );
+
+                    // Escape the product name and strings: wc_add_notice() does not escape, and
+                    // custom themes or the filter below could output the notice unescaped. The
+                    // wording distinguishes a full line removal from a partial quantity
+                    // reduction, since a "was removed" notice for a product still sitting in the
+                    // cart would be misleading.
+                    $full_removal = $remove_qty >= $line_qty;
+
+                    if ( $product_name ) {
+                        $message = $full_removal
+                            // Translators: %s is the product name.
+                            ? sprintf( esc_html__( '"%s" was removed from your cart because the deal no longer applies.', 'advanced-coupons-for-woocommerce-free' ), esc_html( $product_name ) )
+                            // Translators: 1: quantity removed, 2: product name.
+                            : sprintf( esc_html__( '%1$d × "%2$s" was removed from your cart because the deal no longer applies.', 'advanced-coupons-for-woocommerce-free' ), $remove_qty, esc_html( $product_name ) );
+                    } else {
+                        $message = $full_removal
+                            ? esc_html__( 'A deal item was removed from your cart because the deal no longer applies.', 'advanced-coupons-for-woocommerce-free' )
+                            // Translators: %d is the quantity removed.
+                            : sprintf( esc_html__( '%d deal item(s) were removed from your cart because the deal no longer applies.', 'advanced-coupons-for-woocommerce-free' ), $remove_qty );
+                    }
+
+                    if ( function_exists( 'wc_add_notice' ) ) {
+                        wc_add_notice(
+                            apply_filters( 'acfw_bogo_removed_unqualified_deal_notice', $message, $cart_item, $coupon ),
+                            'notice',
+                            array(
+                                'acfw-bogo' => true,
+                                'coupon'    => $coupon_code,
+                            )
+                        );
+                    }
+
+                    do_action( 'acfw_bogo_removed_unqualified_deal_item', $key, $cart_item, $coupon );
+                }
+            }
+        } finally {
+            // Note: the coupon itself is intentionally left applied. When a BOGO deal stops
+            // qualifying its coupon usually becomes invalid and WooCommerce handles removal or
+            // shows an error; forcing coupon removal here would fight that flow. This mirrors
+            // the default 'keep' behaviour, which also leaves the coupon applied.
+            $this->_removing_unqualified_items = false;
         }
     }
 
@@ -651,6 +901,12 @@ class Frontend extends Base_Model implements Model_Interface {
      * @return string Filtered item price.
      */
     public function display_discounted_price( $price_html, $item ) {
+        // In "coupon" discount application mode item prices are not modified, so the
+        // price column should display the normal product price.
+        if ( $this->is_coupon_amount_mode() ) {
+            return $price_html;
+        }
+
         $key               = $item['key'];
         $data              = isset( $this->_price_display[ $key ] ) ? $this->_price_display[ $key ] : array();
         $discounted_prices = isset( $data['discounted_prices'] ) ? $data['discounted_prices'] : array();
@@ -751,6 +1007,127 @@ class Frontend extends Base_Model implements Model_Interface {
     }
 
     /**
+     * Check if BOGO Deals discounts should be applied to the coupon amount instead of
+     * modifying the deal item prices.
+     *
+     * @since 4.8
+     * @access public
+     *
+     * @return bool True when the "coupon amount" discount application mode is selected.
+     */
+    public function is_coupon_amount_mode() {
+        return 'coupon' === $this->_helper_functions->get_discount_application_mode( 'bogo_deals' );
+    }
+
+    /**
+     * Register the BOGO coupon type as a cart coupon type in "coupon" discount application mode.
+     *
+     * `WC_Discounts::get_items_to_apply_coupon()` only passes cart items to a coupon when
+     * the coupon is valid for the product or valid for the cart. Custom coupon types fail
+     * both checks by default, which would prevent `apply_coupon_custom()` from ever calling
+     * `WC_Coupon::get_discount_amount()` for BOGO coupons. Registering `acfw_bogo` as a cart
+     * coupon type makes all cart items eligible (mirrors the Cashback coupon type approach);
+     * items without matched deal entries simply receive a zero discount.
+     *
+     * @since 4.8
+     * @access public
+     *
+     * @param array $types Cart coupon types.
+     * @return array Filtered cart coupon types.
+     */
+    public function register_bogo_cart_coupon_type( $types ) {
+        if ( $this->is_coupon_amount_mode() && ! in_array( 'acfw_bogo', $types, true ) ) {
+            $types[] = 'acfw_bogo';
+        }
+
+        return $types;
+    }
+
+    /**
+     * Deliver BOGO deal discounts through the native coupon discount amount in
+     * "coupon" discount application mode.
+     *
+     * Runs on `woocommerce_coupon_get_discount_amount` during `WC_Discounts::apply_coupon_custom()`.
+     * The discount per unit is calculated from the same matched deal entries and price basis as
+     * price modification mode, so totals are identical between the two modes. WooCommerce then
+     * natively handles the item tax bases, the cart coupon discount totals, and the order
+     * coupon line amounts.
+     *
+     * Notes:
+     * - `apply_coupon_custom()` calls this with `$single = true` (per-unit price) and multiplies
+     *   the result by the item quantity, so the matched entries' total is averaged across the
+     *   full line quantity (deal entries may cover only part of the line).
+     * - Price-increasing overrides (override price above the product price) cannot be expressed
+     *   as a coupon discount, so entry discounts are clamped at zero.
+     * - Order recalculations pass order items instead of cart items and are intentionally
+     *   ignored (the persisted order coupon line and meta are the durable record).
+     *
+     * @since 4.8
+     * @access public
+     *
+     * @param float      $discount           Discount amount.
+     * @param float      $discounting_amount Amount the coupon is being applied to.
+     * @param array|null $cart_item          Cart item data (order item object during order recalculation).
+     * @param bool       $single             True if the discount is being applied to a single qty.
+     * @param \WC_Coupon $coupon             Coupon object.
+     * @return float Filtered discount amount.
+     */
+    public function filter_bogo_coupon_discount_amount( $discount, $discounting_amount, $cart_item, $single, $coupon ) {
+        if (
+            ! $this->is_coupon_amount_mode()
+            || ! $coupon instanceof \WC_Coupon
+            || 'acfw_bogo' !== $coupon->get_discount_type()
+            || ! is_array( $cart_item )
+            || ! isset( $cart_item['key'], $cart_item['data'], $cart_item['quantity'] )
+            || ! $cart_item['data'] instanceof \WC_Product
+        ) {
+            return $discount;
+        }
+
+        if ( ! $this->_calculation instanceof Calculation ) {
+            $this->_calculation = Calculation::get_instance();
+        }
+
+        $coupon_code = $coupon->get_code();
+        $deals       = array_filter(
+            $this->_calculation->get_entries_by_cart_item( $cart_item['key'], 'deal' ),
+            function ( $entry ) use ( $coupon_code ) {
+                return $entry['coupon'] === $coupon_code;
+            }
+        );
+
+        if ( empty( $deals ) ) {
+            return $discount;
+        }
+
+        // Use the same price basis as price modification mode (the "regular" price basis,
+        // subject to the always-use-regular-price option) so both modes charge the customer
+        // the same amount for each deal unit.
+        $price_basis = $this->_helper_functions->get_price( $cart_item['data'], array( 'cart_item' => $cart_item ) );
+
+        // Per-unit price the customer is actually being discounted against. The price basis
+        // can differ from it (e.g. regular price basis vs. sale price on the line), so the
+        // coupon discount per unit is the difference between the current unit price and the
+        // unit price that price modification mode would have charged (basis - deal discount).
+        $current_unit_price = $single ? (float) $discounting_amount : (float) $discounting_amount / max( 1, (int) $cart_item['quantity'] );
+        $total              = 0.0;
+
+        foreach ( $deals as $deal ) {
+            $deal_discount  = (float) \ACFWF()->Helper_Functions->calculate_discount_by_type( $deal['discount_type'], $deal['discount'], $price_basis );
+            $new_unit_price = max( 0.0, $price_basis - $deal_discount );
+            $total         += max( 0.0, $current_unit_price - $new_unit_price ) * $deal['quantity'];
+        }
+
+        if ( 0.0 >= $total ) {
+            return $discount;
+        }
+
+        // Average the matched entries' total across the full line quantity, as WooCommerce
+        // multiplies the per-unit discount by the item quantity.
+        return $single ? $total / max( 1, (int) $cart_item['quantity'] ) : $total;
+    }
+
+    /**
      * Save bogo discounts to order.
      *
      * @since 1.0
@@ -770,23 +1147,29 @@ class Frontend extends Base_Model implements Model_Interface {
         $order->update_meta_data( Plugin_Constants::ORDER_BOGO_DISCOUNTS, array_values( $this->_price_display ) );
         $order->save_meta_data();
 
-        $order_coupons = $order->get_items( 'coupon' );
+        // In "coupon" discount application mode the BOGO discount is already part of the
+        // native order coupon line discount. Skip the extra meta so downstream consumers
+        // (edit order coupon value display, extra discount totals) don't count it twice.
+        if ( ! $this->is_coupon_amount_mode() ) {
 
-        foreach ( $order_coupons as $order_coupon ) {
-            $discounts = $this->calculate_bogo_discounts_for_coupon( $order_coupon->get_code() );
+            $order_coupons = $order->get_items( 'coupon' );
 
-            // calculate the total discount via BOGO for coupon.
-            $bogo_discount = array_reduce(
-                $discounts,
-                function ( $c, $d ) {
-                    return $c + $d['amount'];
-                },
-                0.0
-            );
+            foreach ( $order_coupons as $order_coupon ) {
+                $discounts = $this->calculate_bogo_discounts_for_coupon( $order_coupon->get_code() );
 
-            // save BOGO total discount to the coupon line item meta.
-            $order_coupon->update_meta_data( Plugin_Constants::ORDER_COUPON_BOGO_DISCOUNT, $bogo_discount );
-            $order_coupon->save_meta_data();
+                // calculate the total discount via BOGO for coupon.
+                $bogo_discount = array_reduce(
+                    $discounts,
+                    function ( $c, $d ) {
+                        return $c + $d['amount'];
+                    },
+                    0.0
+                );
+
+                // save BOGO total discount to the coupon line item meta.
+                $order_coupon->update_meta_data( Plugin_Constants::ORDER_COUPON_BOGO_DISCOUNT, $bogo_discount );
+                $order_coupon->save_meta_data();
+            }
         }
 
         // clear session data.
@@ -897,7 +1280,20 @@ class Frontend extends Base_Model implements Model_Interface {
 
             // calculate total discount value for matched deal item, by looping on all applied discount prices.
             $amount = \ACFWF()->Helper_Functions->calculate_discount_by_type( $deal['discount_type'], $deal['discount'], $price );
-            $total  = $amount * $deal['quantity'];
+
+            // In "coupon" discount application mode report the amount actually attributed to
+            // the coupon (difference between the item's natural unit price and the unit price
+            // that price modification mode would have charged) so the summary rows add up to
+            // the coupon line total.
+            if ( $this->is_coupon_amount_mode() ) {
+                $cart_item = $this->_helper_functions->get_cart_item( $deal['key'] );
+
+                if ( ! empty( $cart_item ) && isset( $cart_item['data'] ) ) {
+                    $amount = max( 0.0, (float) $cart_item['data']->get_price() - max( 0.0, (float) $price - $amount ) );
+                }
+            }
+
+            $total = $amount * $deal['quantity'];
 
             /**
              * If discount is negative, it means that the new price is greater than the regular price.
@@ -995,6 +1391,10 @@ class Frontend extends Base_Model implements Model_Interface {
         add_filter( 'woocommerce_coupon_is_valid', array( $this, 'restrict_cart_to_only_one_bogo_deal' ), 10, 2 );
         add_action( 'woocommerce_before_calculate_totals', array( $this, 'implement_bogo_deals' ), apply_filters( 'acfw_bogo_implementation_priority', 11 ) );
         add_filter( 'woocommerce_cart_item_price', array( $this, 'display_discounted_price' ), 10, 2 );
+        // "Coupon amount" discount application mode: deliver BOGO discounts through the
+        // native coupon discount amount instead of modifying deal item prices.
+        add_filter( 'woocommerce_cart_coupon_types', array( $this, 'register_bogo_cart_coupon_type' ) );
+        add_filter( 'woocommerce_coupon_get_discount_amount', array( $this, 'filter_bogo_coupon_discount_amount' ), 10, 5 );
         add_filter( 'woocommerce_cart_totals_coupon_html', array( $this, 'display_bogo_discount_summary' ), 10, 3 );
         add_filter( 'acfwf_cart_checkout_block_coupon_summary', array( $this, 'add_bogo_discount_summary_to_cart_checkout_block' ), 10, 2 );
         add_action( 'woocommerce_checkout_order_processed', array( $this, 'save_bogo_discounts_to_order' ), 10, 3 );

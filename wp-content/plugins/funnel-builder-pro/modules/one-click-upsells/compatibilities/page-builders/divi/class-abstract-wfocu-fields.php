@@ -1150,7 +1150,7 @@ if ( ! class_exists( 'WFOCU_Divi_Field' ) ) {
 				if ( ! empty( $products ) ) {
 					self::$product_options = array();
 					foreach ( $products as $key => $product ) {
-						self::$product_options[ $key ] = $product->data->get_name();
+						self::$product_options[ $key ] = $product->name;
 					}
 				}
 			}

@@ -11,6 +11,23 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Avada_Theme' ) ) {
 
 		public function __construct() {
 			add_filter( 'elementor/frontend/builder_content_data', array( $this, 'remove_avada_parse_elementor_content' ), 9, 2 );
+			add_action( 'template_redirect', array( $this, 'disable_off_canvas_on_checkout' ), 99 );
+		}
+
+		/**
+		 * Avada Off Canvas (e.g. a site-wide mini-cart sliding bar) loads itself on every page via
+		 * `wp_footer`, including the FunnelKit checkout, where it renders a SECOND copy of the
+		 * checkout form (`<form id="wfacp_checkout_form">`). On `update_order_review` the duplicate
+		 * empty `wfob_input_hidden_data` overrides the real one, so order bumps (and other fields)
+		 * silently fail to apply. Stop Avada from rendering Off Canvas on any checkout page.
+		 *
+		 * `is_checkout()` covers native WC checkout AND FunnelKit funnel/override checkouts, since
+		 * FunnelKit forces `woocommerce_is_checkout` true at `wp` priority 5 (before this runs).
+		 */
+		public function disable_off_canvas_on_checkout() {
+			if ( function_exists( 'is_checkout' ) && is_checkout() && function_exists( 'AWB_Off_Canvas_Front_End' ) ) {
+				remove_action( 'wp_footer', array( AWB_Off_Canvas_Front_End(), 'insert' ), 0 );
+			}
 		}
 
 		public function is_enable() {

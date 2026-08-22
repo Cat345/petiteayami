@@ -2,9 +2,9 @@
 Contributors: xlplugins, amans2k
 Tags: cart abandonment, follow up emails, email marketing, newsletter, marketing automation
 Requires at least: 5.0
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.0
-Stable tag: 3.8.3
+Stable tag: 3.8.5.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -416,7 +416,32 @@ FunnelKit Automations is 100% self-hosted and fully GDPR compliant.
 
 == Change log ==
 
-= 3.8.3 (June 30, 2026) =
+= 3.8.5.2 (Aug 5, 2026) =
+* Fixed: PHP error with Funnel Builder Pro without WooCommerce, issue resolved. (#4829)
+* Fixed: "Contact Soft Bounced" automation event running multiple times due to multiple requests from SMTP providers, handling added to not trigger duplicate. (#4825)
+* Fixed: Contacts restored from Bounced or Soft-Bounced states now correctly complete the "Contact Subscribes" goal, ensuring recovery automations progress as expected. (#4827)
+
+= 3.8.5.1 (Aug 3, 2026) =
+* Fixed: Improved search support for automation search, broadcast tag lists, and advanced filters when using terms with special characters. (#4814)
+* Fixed: Improved one-click unsubscribe reliability by ensuring the List-Unsubscribe email header always generates a valid URL, even if the unsubscribe page has been deleted. (#4818)
+
+= 3.8.5 (July 30, 2026) =
+* Added: Compatibility with React 19, which is coming in WordPress 7.1. (#4750)
+* Improved: REST API loading performance — consolidated 160+ endpoint registrations for faster admin API responses. (#4604)
+* Improved: Soft-bounced contacts are no longer auto-converted to hard bounces and continue receiving emails (removed the legacy 3-attempt soft bounce limit). (#4769)
+* Fixed: Valid links flagged as broken in the contact audit link checker when an ad blocker blocked the request. (#4778)
+* Fixed: Abandoned cart tracking ignored the "Exclude User Roles" setting for guest checkouts and on the add-to-cart capture path, so excluded users such as administrators were still tracked. (#4782)
+* Fixed: A name entered after the email at checkout was not saved to an existing contact with blank name fields, leaving first/last name merge tags empty in abandonment emails. (#4792)
+* Fixed: Recovered Carts count did not match Cart Analytics and automation revenue figures. (#4796)
+* Fixed: Automation Orders tab rendered empty on WooCommerce HPOS-enabled stores where syncing was off. (#4780)
+* Fixed: Automation analytics — order count and revenue sometimes included data from other automations. (#4794)
+* Fixed: Contact order reindex could read stale values from the object cache, leaving contact order counts and purchase history out of sync. (#4799)
+* Fixed: Contacts were enrolled into the same automation two or three times during bulk tagging, causing duplicate emails when "Allow currently active contacts to re-enter" was off. (#4790)
+* Fixed: Rare database claim error that caused the automation worker to fail intermittently under concurrent load. (#4776)
+* Fixed: Expired-coupon cleanup task ran every 2 seconds instead of every 2 minutes, causing unnecessary database load. (#4787)
+* Dev: New filter `bwfan_global_tools_settings` to register custom entries on the Settings → Tools screen, and `bwfan_run_global_tool_{type}` to handle their actions. (#4801)
+
+= 3.8.3 (June 29, 2026) =
 * Fixed: Improved background worker detection to prevent false firewall warnings when loopback requests are temporarily rate-limited (HTTP 429). (#4759)
 * Fixed: Improved Reply-To email header formatting for better compatibility with strict SMTP plugins when sending automation emails. (#4752)
 * Improvement: Persistent pagination across all admin list views. (#4526)

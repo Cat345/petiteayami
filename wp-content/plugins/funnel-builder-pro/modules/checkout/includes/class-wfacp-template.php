@@ -91,6 +91,16 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 		public $optional_collapsible_fields = array();
 
+		/**
+		 * Pre-built cart item data shared across all fragment templates.
+		 * Built once in add_checkout_fragments(), consumed by order-review.php,
+		 * main-order-summary.php, and mini-cart-items.php to avoid redundant
+		 * per-item product lookups.
+		 *
+		 * @var array
+		 */
+		protected $prepared_cart_items = array();
+
 		protected $custom_modules = array();
 		public $img_path          = '';
 
@@ -299,6 +309,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 		}
 
 		public function add_checkout_fragments( $fragments ) {
+			$this->prepare_cart_items();
 			$fragments = $this->remove_order_summary_table_add_extra_data( $fragments );
 			$fragments = $this->add_fragment_order_summary( $fragments );
 			$fragments = $this->add_fragment_shipping_calculator( $fragments );
@@ -312,7 +323,99 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				$fragments = $this->add_mini_cart_fragments( $fragments );
 			}
 
+			$this->prepared_cart_items = array();
+
 			return $fragments;
+		}
+
+		/**
+		 * Build cart item data once so templates don't re-compute per item.
+		 */
+		protected function prepare_cart_items() {
+			$this->prepared_cart_items = array();
+
+			if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
+				return;
+			}
+
+			$cart                                 = WC()->cart->get_cart();
+			$switcher_settings                    = WFACP_Common::get_product_switcher_data( WFACP_Common::get_id() );
+			$show_subscription_string_old_version = apply_filters( 'wfacp_show_subscription_string_old_version', false );
+
+			foreach ( $cart as $cart_item_key => $cart_item ) {
+				$_product = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
+
+				if ( ! $_product || ! $_product->exists() || $cart_item['quantity'] <= 0 ) {
+					continue;
+				}
+
+				if ( ! apply_filters( 'woocommerce_checkout_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
+					continue;
+				}
+
+				$aero_item_key = '';
+				$item_quantity = $cart_item['quantity'];
+				$product_data  = array();
+
+				if ( false == WFACP_Core()->public->is_checkout_override() && isset( $cart_item['_wfacp_product'] ) ) {
+					$aero_item_key          = $cart_item['_wfacp_product_key'];
+					$temp                   = WC()->session->get( 'wfacp_product_data_' . WFACP_Common::get_id() );
+					$hide_quantity_switcher = wc_string_to_bool( $switcher_settings['settings']['hide_quantity_switcher'] );
+					if ( isset( $temp[ $aero_item_key ] ) ) {
+						$product_data = $temp[ $aero_item_key ];
+						if ( '' !== $cart_item_key ) {
+							$item_quantity = $product_data['quantity'];
+						}
+					}
+				}
+
+				$thumbnail      = WFACP_Common::get_product_image( $_product, array( 100, 100 ), $cart_item, $cart_item_key );
+				$thumbnail      = apply_filters( 'wfacp_cart_image', $thumbnail, $_product );
+				$formatted_data = wc_get_formatted_cart_item_data( $cart_item );
+
+				$show_variation_details = apply_filters( 'wfacp_mini_cart_show_variation_details', false, $cart_item, $cart_item_key );
+				$product_name           = $_product->get_name();
+				$variation_html         = array();
+
+				if ( in_array( $_product->get_type(), WFACP_Common::get_variation_product_type() ) || true === apply_filters( 'wfacp_show_select_options_for_cart_item', false, $cart_item, $cart_item_key ) ) {
+					$variation_html = WFACP_Common::get_single_variation_html( $_product, $cart_item, true );
+					if ( $show_variation_details ) {
+						$product_name = $_product->get_title();
+					}
+				}
+
+				$is_subscription     = in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() );
+				$subscription_string = '';
+				if ( $is_subscription && false == $show_subscription_string_old_version ) {
+					$subscription_string = WFACP_Common::subscription_product_string( $_product, $product_data, $cart_item, $cart_item_key );
+				}
+
+				$this->prepared_cart_items[ $cart_item_key ] = array(
+					'product'                => $_product,
+					'cart_item'              => $cart_item,
+					'product_name'           => $product_name,
+					'thumbnail'              => $thumbnail,
+					'quantity'               => $cart_item['quantity'],
+					'item_quantity'          => $item_quantity,
+					'formatted_data'         => $formatted_data,
+					'aero_item_key'          => $aero_item_key,
+					'product_data'           => $product_data,
+					'is_subscription'        => $is_subscription,
+					'subscription_string'    => $subscription_string,
+					'show_variation_details' => $show_variation_details,
+					'variation_html'         => $variation_html,
+					'show_subscription_old'  => $show_subscription_string_old_version,
+				);
+			}
+		}
+
+		/**
+		 * Get pre-built cart items for use in fragment templates.
+		 *
+		 * @return array
+		 */
+		public function get_prepared_cart_items() {
+			return $this->prepared_cart_items;
 		}
 
 		public function update_base_country() {
@@ -325,6 +428,10 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 		}
 
 		final public function get_base_country() {
+			if ( empty( $this->base_country['store_country'] ) ) {
+				$this->base_country['store_country'] = wc_format_country_state_string( get_option( 'woocommerce_default_country', '' ) )['country'];
+			}
+
 			return $this->base_country;
 		}
 
@@ -510,6 +617,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 					wp_enqueue_style( 'wfacp-intl-css', plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/css/intlTelInput.css', false, WFACP_VERSION_DEV );
 				}
 				wp_enqueue_script( 'wfacp-intlTelInput-js', plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/js/intlTelInput.min.js', array(), WFACP_VERSION_DEV );
+				wp_add_inline_script( 'wfacp-intlTelInput-js', 'window.wfacpIntlTelInput = window.intlTelInput;', 'after' );
 			}
 		}
 
@@ -629,13 +737,17 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				'enable_hashtag_for_multistep_checkout' => apply_filters( 'wfacp_enable_hashtag_for_multistep_checkout', 'yes', $this ),
 				'gmaps'                                 => $gmap_data,
 				'template_name'                         => $template_name,
-				'base_country'                          => $this->base_country,
+				'base_country'                          => $this->get_base_country(),
+				'intl_i18n'                             => array(
+					'searchEmptyState' => __( 'No results found', 'woofunnels-aero-checkout' ),
+				),
 				'edit_mode'                             => WFACP_Common::is_theme_builder() ? 'yes' : 'no',
 				'applied_coupons'                       => ! empty( $coupon_object ) ? $coupon_object : new stdClass(),
 				'is_checkout_pay_page'                  => is_checkout_pay_page() ? 'yes' : 'no',
 				'enable_google_autocomplete'            => $page_settings['enable_google_autocomplete'],
 				'enable_smart_buttons'                  => $page_settings['enable_smart_buttons'],
 				'enable_phone_flag'                     => wc_string_to_bool( $page_settings['enable_phone_flag'] ) ? 'yes' : 'no',
+				'save_phone_number_type'                => wc_string_to_bool( $page_settings['save_phone_number_type'] ) ? 'yes' : 'no',
 				'enable_phone_validation'               => wc_string_to_bool( $page_settings['enable_phone_validation'] ) ? 'yes' : 'no',
 				'intl_util_scripts'                     => plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/js/utils.js',
 				'process_order_loader_text'             => __( 'Processing order', 'woocommerce' ),
@@ -660,6 +772,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			$data['smart_button_hide_timeout_m']  = apply_filters( 'wfacp_smart_button_hide_timeout_m', 3000, $this );
 			$data['stripe_smart_show_on_desktop'] = 'yes';
 			$data['smart_button_wrappers']        = $this->smart_button_wrappers();
+			$data['fkwcs_legacy_express']         = $this->is_legacy_fkwcs_express() ? 'yes' : 'no';
+			$data[' ']                            = $this->is_legacy_fkwcs_express() ? 'yes' : 'no';
 			$data['is_user_logged_in']            = $this->is_user_logged_in ? 'yes' : 'no';
 
 			if ( isset( $page_settings['enable_address_field_number_validation'] ) && wc_string_to_bool( $page_settings['enable_address_field_number_validation'] ) ) {
@@ -734,7 +848,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				$registered_script = $wp_scripts->registered;
 				if ( ! empty( $registered_script ) ) {
 					foreach ( $registered_script as $handle => $data ) {
-						if ( false !== strpos( $data->src, '/plugins/woocommerce/' ) ) {
+						// Guard against dependency-only handles registered with a false/null src (PHP 8.1+ strpos() deprecation).
+						if ( ! empty( $data->src ) && false !== strpos( $data->src, '/plugins/woocommerce/' ) ) {
 							if ( ! $is_vb ) {
 								unset( $wp_scripts->registered[ $handle ] );
 							}
@@ -848,8 +963,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 			if ( isset( $settings['header_script'] ) && '' != $settings['header_script'] ) {
 				$sanitized = WFACP_Common::sanitize_global_script( $settings['header_script'] );
-				if ( $sanitized === $settings['header_script'] ) {
-					printf( "\n \n %s \n \n", $settings['header_script'] ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				if ( trim( $sanitized ) === trim( $settings['header_script'] ) ) {
+					printf( "\n \n %s \n \n", $sanitized ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 			}
 		}
@@ -861,8 +976,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			if ( false == $this->footer_js_printed && isset( $settings['footer_script'] ) && '' != $settings['footer_script'] ) {
 				$this->footer_js_printed = true;
 				$sanitized_footer        = WFACP_Common::sanitize_global_script( $settings['footer_script'] );
-				if ( $sanitized_footer === $settings['footer_script'] ) {
-					printf( "\n \n %s \n\n", $settings['footer_script'] ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				if ( trim( $sanitized_footer ) === trim( $settings['footer_script'] ) ) {
+					printf( "\n \n %s \n\n", $sanitized_footer ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 			}
 
@@ -871,8 +986,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			if ( isset( $_wfacp_global_settings['wfacp_global_external_script'] ) && $_wfacp_global_settings['wfacp_global_external_script'] != '' ) {
 				$global_script    = $_wfacp_global_settings['wfacp_global_external_script'];
 				$sanitized_global = WFACP_Common::sanitize_global_script( $global_script );
-				if ( $sanitized_global === $global_script ) {
-					echo $global_script; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				if ( trim( $sanitized_global ) === trim( $global_script ) ) {
+					echo $sanitized_global; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 			}
 		}
@@ -1816,6 +1931,18 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			}
 			if ( isset( $locale_fields['address_2'] ) ) {
 				unset( $locale_fields['address_2'] );
+			}
+
+			/**
+			 * WooCommerce sets the default locale's phone `required` from the Customizer
+			 * "Phone field" setting (WC_Countries::get_default_address_fields()), and its
+			 * address-i18n JS re-applies it to `#billing_phone_field, #shipping_phone_field`
+			 * on every country change — relabelling a required phone as "(optional)".
+			 * FunnelKit Checkout manages the phone's required state from its own field
+			 * editor, so remove the phone selector to stop that override.
+			 */
+			if ( isset( $locale_fields['phone'] ) ) {
+				unset( $locale_fields['phone'] );
 			}
 
 			return $locale_fields;
@@ -3384,7 +3511,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 		}
 
 		public function smart_button_wrappers() {
-			return array(
+			$wrappers = array(
 				'dynamic_buttons'     => array(
 					'#wfacp_smart_button_stripe_gpay_apay' => '#wfacp_smart_button_stripe_gpay_apay',
 					'#wfacp_smart_button_wc_payment_gpay_apay #wcpay-payment-request-button' => '#wfacp_smart_button_wc_payment_gpay_apay',
@@ -3409,6 +3536,30 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 					'#wfacp_smart_button_paymentplugins_wc_ppcp',
 				),
 			);
+
+			if ( $this->is_legacy_fkwcs_express() ) {
+				// Legacy FunnelKit Stripe renders its express (payment request) button
+				// into this container before DOMContentLoaded; register it so the
+				// pre-rendered detection in smart-buttons.js can settle it.
+				$wrappers['dynamic_buttons']['#wfacp_smart_button_fkwcs_gpay_apay'] = '#wfacp_smart_button_fkwcs_gpay_apay';
+			}
+
+			return $wrappers;
+		}
+
+		/**
+		 * FunnelKit Stripe below 1.14.2 ships the legacy express checkout, whose
+		 * payment request button is rendered before DOMContentLoaded and needs
+		 * compatibility handling in smart-buttons.js. That covers the whole
+		 * 1.14.1.x line including stamped hotfix builds (e.g. 1.14.1.2-fix.1117).
+		 * 1.14.2 and above - including its dev/beta builds, hence the
+		 * `1.14.2-dev` comparison floor - ships the reworked integration that
+		 * needs none.
+		 *
+		 * @return bool
+		 */
+		public function is_legacy_fkwcs_express() {
+			return defined( 'FKWCS_VERSION' ) && version_compare( FKWCS_VERSION, '1.14.2-dev', '<' );
 		}
 
 		final public function order_attribution_inputs() {

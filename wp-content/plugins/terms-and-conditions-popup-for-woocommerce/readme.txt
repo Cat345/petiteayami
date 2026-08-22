@@ -4,8 +4,8 @@ Contributors: berocket, dholovnia
 Donate link: https://berocket.com/?utm_source=wordpress_org&utm_medium=donate&utm_campaign=terms_cond_popup
 Tags: privacy popup, terms and conditions, custom terms and conditions, force terms and conditions, improved terms and conditions
 Requires at least: 5.0
-Tested up to: 7.0
-Stable tag: 3.6.2.8
+Tested up to: 7.0.4
+Stable tag: 3.6.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,17 @@ If you have problems with our plugins or something is not working as it should, 
 If none of the previous listed actions helps you solve the problem, then, submit a ticket in the forum and describe your problem accurately, specify WordPress and WooCommerce versions you are using and any other information that might help us solve your problem as quickly as possible. Thanks!
 
 == Changelog ==
+
+= 3.6.4 =
+* Enhancement - Updated BeRocket framework.
+* Security - Hardened framework validation and output handling.
+
+= 3.6.3 =
+* Enhancement - Harden locked features validation
+* Enhancement - Small speed improvement
+* Enhancement - Harden Global settings validation
+* Fix - Global settings, some options were not editable
+* Fix - PHP warnings in new framework submodule
 
 = 3.6.2.8 =
 * Enhancement - Compatibility version: Wordpress 7.0

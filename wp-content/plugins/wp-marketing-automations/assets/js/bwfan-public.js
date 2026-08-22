@@ -24,6 +24,7 @@ var BWFAN_Public;
         last_edit_field: '',
         current_step: '',
         checkout_fields_data: {},
+        last_posted_fields_data: {},
         capture_email_xhr: null,
         checkout_fields: [],
         is_block_checkout: false,
@@ -411,6 +412,9 @@ var BWFAN_Public;
                     });
                 }
             }
+
+            /** Snapshot the values this POST carries — the change-listener dedupe compares against posted state, not the live cache. */
+            BWFAN_Public.last_posted_fields_data = $.extend(true, {}, BWFAN_Public.checkout_fields_data);
 
             BWFAN_Public.capture_email_xhr = $.ajax({
                 url: bwfanParamspublic.wc_ajax_url.toString().replace('%%endpoint%%', 'bwfan_insert_abandoned_cart'),
@@ -1163,7 +1167,6 @@ var BWFAN_Public;
             });
         }
     });
-    let bwfFieldChangeTimer = null;
     $(window).on('load', function () {
         BWFAN_Public.abandoned_cart();
         BWFAN_Public.unsubscribe_event();
@@ -1243,14 +1246,15 @@ var BWFAN_Public;
                 }
             });
         }
-        BWFAN_Public.checkout_form.on('blur focusout', '.input-text', () => {
-            // add check update on typing stops
-            if (bwfFieldChangeTimer) {
-                clearTimeout(bwfFieldChangeTimer);
-            }
-            bwfFieldChangeTimer = setTimeout(() => {
-                BWFAN_Public.bwfan_captureCheckoutField();
-            }, 500);
+        /**
+         * Safety net for inputs whose `change` never fires (scripted fills, autofill).
+         *
+         * This previously called bwfan_captureCheckoutField() from an arrow function with no
+         * element context, so `this` was BWFAN_Public and the call returned at its first guard —
+         * it captured nothing. Read the field off the blurred element, then capture.
+         */
+        BWFAN_Public.checkout_form.on('blur focusout', '.input-text', function () {
+            BWFAN_Public.bwfan_captureCheckoutField.call(this);
         });
         // Reset the 'triggered' flag when the input element gets focused again
         BWFAN_Public.checkout_form.on('focus', '.input-text', function () {
@@ -1273,10 +1277,10 @@ var BWFAN_Public;
             field_name = BWFAN_Public.bwfan_normalize_field_name(field_name);
 
             /**
-             * On block checkout the field-cache short-circuit below would always trip,
-             * because bwfan_captureCheckoutField (delegated earlier) has already written
-             * the new value to the cache by the time this handler runs. Skip straight to
-             * the debounced POST in that case.
+             * Block checkout: billing_email isn't in checkout_fields but must still
+             * trigger the POST, and React-controlled inputs can swallow discrete
+             * change events — skip the per-field dedupe and go straight to the
+             * debounced POST.
              */
             if (BWFAN_Public.is_block_checkout) {
                 if (BWFAN_Public.checkout_fields.indexOf(field_name) === -1 && field_name !== 'billing_email') {
@@ -1298,7 +1302,14 @@ var BWFAN_Public;
                 return;
             }
 
-            if (BWFAN_Public.checkout_fields_data[field_name] === field_value) {
+            /**
+             * Dedupe against the last POSTed values, not checkout_fields_data:
+             * bwfan_captureCheckoutField is delegated on the form, so it runs
+             * earlier in the same event's bubble path and has already synced
+             * the live cache — a live-cache comparison always reads "unchanged"
+             * and the POST would never fire (e.g. first/last name edits).
+             */
+            if (BWFAN_Public.last_posted_fields_data[field_name] === field_value) {
                 return;
             }
 

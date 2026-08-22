@@ -873,7 +873,10 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 
 				$variation_field = true;
 				$offer_data      = WFOCU_Core()->template_loader->product_data;
-				$temp_product    = get_object_vars( $offer_data->products );
+
+				// product_data is null when the offer's configured products were deleted permanently;
+				// fall back to an empty set so we hit the "no products" branch below instead of fataling.
+				$temp_product = ( is_object( $offer_data ) && isset( $offer_data->products ) && is_object( $offer_data->products ) ) ? get_object_vars( $offer_data->products ) : array();
 				if ( is_array( $temp_product ) && count( $temp_product ) > 0 ) {
 					/** Checking for variation single product */
 					if ( is_array( $temp_product ) && count( $temp_product ) > 1 ) {

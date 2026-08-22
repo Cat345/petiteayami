@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
 if ( ! function_exists( 'bwfblocks_attr' ) ) {

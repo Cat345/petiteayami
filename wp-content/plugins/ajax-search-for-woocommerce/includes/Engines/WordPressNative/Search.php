@@ -190,8 +190,15 @@ class Search {
             if ( $return ) {
                 return $this->getEmptyOutput();
             } else {
-                echo json_encode( Helpers::noResultsSuggestion( $this->getEmptyOutput() ) );
-                die;
+                wp_send_json( Helpers::noResultsSuggestion( $this->getEmptyOutput() ) );
+            }
+        }
+        // Break early if keyword is empty - an empty phrase must not return the whole catalog.
+        if ( $keyword === '' ) {
+            if ( $return ) {
+                return $this->getEmptyOutput();
+            } else {
+                wp_send_json( Helpers::noResultsSuggestion( $this->getEmptyOutput() ) );
             }
         }
         /* SEARCH IN WOO CATEGORIES */
@@ -227,7 +234,14 @@ class Search {
                 $args['tax_query'] = $this->getTaxQuery();
             }
             $args = apply_filters( 'dgwt/wcas/search_query/args', $args );
+            add_filter(
+                'posts_where',
+                ['DgoraWcas\\Helpers', 'excludePasswordProtectedProducts'],
+                90,
+                2
+            );
             $products = get_posts( $args );
+            remove_filter( 'posts_where', ['DgoraWcas\\Helpers', 'excludePasswordProtectedProducts'], 90 );
             $products = apply_filters( 'dgwt/wcas/search_results/products_raw', $products );
             $totalProducts = count( $products );
             $hits += $totalProducts;
@@ -272,8 +286,7 @@ class Search {
                     if ( $return ) {
                         return $result;
                     } else {
-                        echo json_encode( $result );
-                        die;
+                        wp_send_json( $result );
                     }
                 }
                 if ( $context === 'product-ids-ff' ) {
@@ -290,8 +303,7 @@ class Search {
                     if ( $return ) {
                         return $result;
                     } else {
-                        echo json_encode( $result );
-                        die;
+                        wp_send_json( $result );
                     }
                 }
                 $productsSlots = ( $this->flexibleLimits ? $this->totalLimit : $this->groups['product']['limit'] );
@@ -343,8 +355,7 @@ class Search {
                 if ( $return ) {
                     return $result;
                 } else {
-                    echo json_encode( $result );
-                    die;
+                    wp_send_json( $result );
                 }
             }
             if ( $context === 'product-ids' ) {
@@ -372,8 +383,7 @@ class Search {
         if ( $return ) {
             return $result;
         } else {
-            echo json_encode( $result );
-            die;
+            wp_send_json( $result );
         }
     }
 
@@ -526,8 +536,11 @@ class Search {
         $args = [
             'taxonomy' => 'product_cat',
         ];
-        $productCategories = get_terms( 'product_cat', apply_filters( 'dgwt/wcas/search/product_cat/args', $args ) );
         $keywordUnslashed = wp_unslash( $keyword );
+        if ( $keywordUnslashed === '' ) {
+            return $results;
+        }
+        $productCategories = get_terms( 'product_cat', apply_filters( 'dgwt/wcas/search/product_cat/args', $args ) );
         // Compare keyword and term name
         $i = 0;
         foreach ( $productCategories as $cat ) {
@@ -565,7 +578,7 @@ class Search {
     /**
      * Extend research in the Woo tags
      *
-     * @param strong $keyword
+     * @param string $keyword
      * @param int $limit
      *
      * @return array
@@ -578,8 +591,11 @@ class Search {
         $args = [
             'taxonomy' => 'product_tag',
         ];
-        $productTags = get_terms( 'product_tag', apply_filters( 'dgwt/wcas/search/product_tag/args', $args ) );
         $keywordUnslashed = wp_unslash( $keyword );
+        if ( $keywordUnslashed === '' ) {
+            return $results;
+        }
+        $productTags = get_terms( 'product_tag', apply_filters( 'dgwt/wcas/search/product_tag/args', $args ) );
         // Compare keyword and term name
         $i = 0;
         foreach ( $productTags as $tag ) {
@@ -660,9 +676,6 @@ class Search {
             }
             if ( !empty( $search ) ) {
                 $search = " AND ({$search}) ";
-                if ( !is_user_logged_in() ) {
-                    $search .= " AND ({$wpdb->posts}.post_password = '') ";
-                }
             }
         }
         return $search;

@@ -166,6 +166,11 @@ class LicenseTab extends BaseSettings
                     // If license was activated, we have to refresh updates info
                     delete_transient(FLRT_VERSION_TRANSIENT );
 
+                    // Store the signed, domain-bound token connect issued at activation.
+                    if ( isset( $result['data']['token'] ) && $result['data']['token'] ) {
+                        flrt_store_token( $result['data']['token'] );
+                    }
+
                     $new_values['license_key'] = base64_encode( maybe_serialize( $data ) );
                     return $new_values;
                 }else{
@@ -210,6 +215,7 @@ class LicenseTab extends BaseSettings
                     add_settings_error('general', 'settings_updated', esc_html__('The license was successfully deactivated.', 'filter-everything' ), 'info' );
                     // If license was deactivated, we have to refresh updates info
                     delete_transient(FLRT_VERSION_TRANSIENT );
+                    flrt_clear_token();
                     return false;
                 }
 

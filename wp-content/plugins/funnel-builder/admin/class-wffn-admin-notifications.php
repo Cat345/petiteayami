@@ -681,15 +681,6 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 			);
 		}
 
-		private function maybe_add_security_audit_notification() {
-			if ( ! class_exists( 'WFFN_Security_Audit' ) ) {
-				return;
-			}
-			$entry = WFFN_Security_Audit::get_notification_entry();
-			if ( null !== $entry ) {
-				$this->notifs[] = $entry;
-			}
-		}
 
 		public function prepare_notifications() {
 
@@ -851,7 +842,41 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 				);
 			}
 
-			$this->maybe_add_security_audit_notification();
+			/**
+			 * Allows other FunnelKit plugins to register a notification without
+			 * touching this class. Callbacks receive and must return the notification
+			 * list; each entry uses the same shape built above.
+			 *
+			 * @param array $notifs Registered notifications.
+			 */
+			$filtered = apply_filters( 'wffn_admin_notifications', $this->notifs );
+			if ( is_array( $filtered ) ) {
+				$this->notifs = $filtered;
+			}
+		}
+
+		/**
+		 * Appends a notification from outside this class.
+		 *
+		 * Kept public so companion plugins have a stable entry point; the presence
+		 * of this method also tells them the 'wffn_admin_notifications' filter exists.
+		 *
+		 * @param array $notification Notification data, must carry at least a key and content.
+		 *
+		 * @return void
+		 */
+		public function add_notification_data( $notification ) {
+			if ( ! is_array( $notification ) || empty( $notification['key'] ) || empty( $notification['content'] ) ) {
+				return;
+			}
+
+			foreach ( $this->notifs as $registered ) {
+				if ( isset( $registered['key'] ) && $registered['key'] === $notification['key'] ) {
+					return;
+				}
+			}
+
+			$this->notifs[] = $notification;
 		}
 
 		public function stripe_1_14_notice() {

@@ -95,9 +95,27 @@ if ( ! class_exists( 'WFOCU_Template_Group_Oxygen' ) ) {
 				return $get_template_json['error'];
 			}
 			$content = $get_template_json;
-			if ( ! empty( $content ) && ( false == strpos( $content, '<script' ) ) ) {
+			require_once WFOCU_PLUGIN_DIR . '/includes/class-wfocu-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+			if ( ! empty( $content ) && ! WFOCU_Content_Validator::contains_dangerous_tags( $content ) && ! WFOCU_Content_Validator::contains_php_code( $content ) ) {
 				update_post_meta( $offer, WFOCU_Common::oxy_get_meta_prefix( 'ct_other_template' ), '-1' );
-				update_post_meta( $offer, WFOCU_Common::oxy_get_meta_prefix( 'ct_builder_shortcodes' ), $content );
+
+				/**
+				 * Re-sign shortcodes with this site's oxygen_private_key (mirrors Oxygen's save flow).
+				 *
+				 * The helper keeps every element in the template intact; on a Lite version
+				 * that predates it the import stays a plain passthrough, which is the
+				 * behaviour Oxygen templates had before re-signing was introduced.
+				 */
+				if ( method_exists( 'WFFN_Common', 'oxy_resign_shortcodes' ) ) {
+					$content = WFFN_Common::oxy_resign_shortcodes( $content );
+				}
+
+				// Write both prefixed and bare meta keys (oxy_get_meta_prefix may add an underscore).
+				$meta_key = WFOCU_Common::oxy_get_meta_prefix( 'ct_builder_shortcodes' );
+				update_post_meta( $offer, $meta_key, $content );
+				if ( 'ct_builder_shortcodes' !== $meta_key ) {
+					update_post_meta( $offer, 'ct_builder_shortcodes', $content );
+				}
 				$this->clear_oxy_page_cache_css( $offer );
 
 				return array( 'status' => true );

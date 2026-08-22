@@ -1,27 +1,78 @@
 *** FunnelKit Funnel Builder Pro ***
 
-= 3.15.0.14 (July 01, 2026)=
-* Improved: Checkout: Improved compatibility with WooCommerce PayPal Payments. (#8885)
-* Improved: Funnel: Improved compatibility with Bricks Builder. (#9174)
-* Improved: Funnel: Analytics database queries improved for MariaDB 12.3.2 version. (#9199)
-* Fixed: Checkout: Resolved flickering of express checkout smart buttons for a smoother checkout experience. (#9168)
-* Fixed: Checkout: Resolved a PHP error while adding a product in the legacy admin checkout product editor. (#9196)
-* Fixed: Checkout: Resolved an issue where custom CSS is not rendering due to a mismatch with white spaces. (#9203)
+= 3.16.0.5 (Aug 20, 2026) =
+* Improved: Funnel: Compatibility with Elementor improved related to widget cache. (#9446)
 
-= 3.15.0.13 (June 24, 2026)=
-* Fixed: Checkout: Customizer editor was not working since last release. (#9160)
+= 3.16.0.4 (Aug 18, 2026) =
+* Improved: Upsells: Compatibility with CookieYes plugin. (#9431)
+* Improved: Checkout: Handle edge case of billing fields validation when Conditional shipping address rules are set. (#9413)
+* Improved: Funnel: Compatibility with Sublium improved. (#9246)
+* Fixed: Checkout: Shipping-Billing copy issue with multistep forms having shipping address in first step. (#9438)
+* Fixed: Upsells: PHP Error handling for the case where compatibility files load fail. (#9432)
 
-= 3.15.0.12 (June 23, 2026)=
-* Improved: Compatibility with PHP version 8.4.x. (#9140)
-* Improved: Funnel: Hardened the security of the plugin. (#9036)
-* Fixed: Checkout: PHP warnings when store checkout template is used as subscription change-payment method page. (#8854)
+= 3.16.0.3 (Aug 14, 2026) =
+* Fixed: Checkout: Advanced phone field styling issues with divi builder. (#9418)
 
-= 3.15.0.11 (June 19, 2026)=
-* Fixed: Checkout: Checkout form preview was not loading in the editor with Divi v4. (#9129)
+= 3.16.0.2 (Aug 13, 2026) =
+* Improved: Bump: Styling improvements for the multi product slider template. (#9401)
+* Improved: Upsells: Updated Compatibility with WooPayments. (#9401)
+* Fixed: Upsells: PHP notice on the offer pages built using customizer. (#9396)
+* Fixed: Cart: Handled edge case of column 'onumber' missing from the database table. (#9404)
+* Fixed: Checkout: Phone field validation not working correctly in a few edge cases. (#9414)
 
-= 3.15.0.10 (June 08, 2026)=
-* Improved: Upsells: Compatibility with Mollie gateway for version 8.1.4 or above. (#9080)
-* Fixed: Upsells: Upsell refunds using upsell refund admin metaboxes were showing infinite loading state. (#9084)
+
+= 3.16.0.1 (Aug 11, 2026) =
+* Fixed: Checkout: Item metadata in the collapsible order summary showing twice. (#9401)
+
+= 3.16.0 (Aug 07, 2026) =
+* Added: Order Bumps: Added a new slider-based Multi product order bump skin. (#9276)
+* Added: Checkout: Added new filter hooks around cart item rows in customizer templates. (#9318)
+* Improved: A/B: A/B test results are now more accurate with bot and crawler traffic excluded. (#9028)
+* Improved: Checkout: Improved stability of the checkout caching layer. (#4146)
+* Improved: Checkout: Improved checkout fragment performance across order summary and mini cart templates. (#8620)
+* Improved: Checkout: Improved checkout data handling by keeping payment details out of stored form values. (#8921)
+* Improved: Checkout: Subscription cart lines now show the struck-through regular price. (#9067)
+* Improved: Checkout: Refined spacing on the single shipping method label. (#9092)
+* Improved: Checkout: Improved compatibility with Elementor. (#9099)
+* Improved: Checkout: Section headings now support basic HTML formatting such as line breaks. (#9275)
+* Improved: Funnel: Saved product selections now stay visible when the Pro license is inactive. (#8733)
+* Improved: Funnel: Improved compatibility with Sublium. (#8816)
+* Improved: Funnel: Conversion exports now use true UTC timestamps for offline conversion imports. (#9242)
+* Improved: Order Bumps: Improved compatibility with CURCY Multi Currency for WooCommerce. (#8840)
+* Improved: Order Bumps: Improved order bump rendering when a product is no longer purchasable. (#8991)
+* Improved: Order Bumps: Improved compatibility with WPC Variations Radio Buttons. (#8997)
+* Improved: Order Bumps: Improved handling of legacy order bump settings data. (#9082)
+* Improved: Order Bumps: Improved compatibility with WooCommerce Subscriptions. (#9116)
+* Improved: Order Bumps: Improved live preview updates for the arrow settings. (#9273)
+* Improved: Upsells: Streamlined the tracking script for better alignment with Google policies. (#8781)
+* Improved: Upsells: Improved compatibility with Jetpack. (#8803)
+* Improved: Upsells: Improved order notes when Authorize.Net cannot create a payment token. (#8808)
+* Improved: Upsells: Improved offer template loading when product data is missing. (#8910)
+* Improved: Upsells: Improved offer handling when configured products no longer exist. (#8965)
+* Improved: Upsells: Improved compatibility with Opayo. (#9117)
+* Improved: Upsells: Upsell skip reasons are now clearer for unsupported payment gateways. (#9239)
+* Improved: Upsells: Improved compatibility with WooPayments. (#9284)
+* Improved: Upsells: Improved order details rendering on HPOS stores with unresolved related orders. (#9338)
+* Improved: Upsells: Improved compatibility with Mollie. (#9351)
+* Improved: Checkout: Quantity inputs behavior improved with decimal inputs. (#9347)
+* Fixed: A/B: Offer variant cloning now keeps the source template content instead of copying the control. (#8980)
+* Fixed: A/B: Script and style tags in variant content are now kept when declaring a winner. (#9219)
+* Fixed: Checkout: Product quantity now carries over when switching variations in the product switcher. (#8773)
+* Fixed: Checkout: Conditional field text inputs no longer clear while typing when rules re-evaluate. (#8913)
+* Fixed: Checkout: Conditional field radio and checkbox selections are no longer cleared on re-evaluation. (#9058)
+* Fixed: Checkout: Shipping to billing address copy now works on checkout templates added through import. (#9105)
+* Fixed: Checkout: Fields revealed by a conditional rule are now required, so shipping cannot submit empty. (#9314)
+* Fixed: Funnel: UTM analytics counts now match the Conversions view for campaigns using utm_term. (#8891)
+* Fixed: Funnel: Admin no longer white screens on PHP 8.3 when a stored option value is corrupted. (#9295)
+* Fixed: Funnel: On admin screens deleting a rule now removes the selected rule instead of the last one. (#8861)
+* Fixed: Order Bumps: Switching between multiple Replace All bumps now replaces the original product instead of keeping both. (#8870)
+* Fixed: Order Bumps: Subscription order bumps now open in the editor instead of failing to build. (#9230)
+* Fixed: Order Bumps: The arrow graphic renders again and the tooltip width stays stable. (#9302)
+* Fixed: Upsells: Subscription upsell renewals now charge the discounted price when the recurring discount is enabled. (#8856)
+* Fixed: Upsells: Cloned WordPress pages now keep their design when used as an upsell offer. (#8966)
+* Fixed: Upsells: Variable products in upsell offers no longer preselect a variation when no default is set. (#9091)
+* Fixed: Upsells: Upgrade groups now cancel the previous subscription with free trial, preventing duplicate active subscriptions. (#9250)
+* Fixed: Checkout: Invalid 3rd argument in the filter woocommerce_order_item_class for order-pay and change-payment-method pages. (#9378)
 
 = 3.15.0.9 (June 08, 2026)=
 * Fixed: Bump: Quantity switcher input box was not showing up since the last update. (#9070)

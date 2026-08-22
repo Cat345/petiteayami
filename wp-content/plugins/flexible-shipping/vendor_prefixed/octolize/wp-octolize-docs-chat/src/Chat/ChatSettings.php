@@ -1,7 +1,11 @@
 <?php
 
+declare (strict_types=1);
 namespace FSVendor\Octolize\Docs\Chat;
 
+/**
+ * Configures the chat and its diagnostic metadata.
+ */
 class ChatSettings
 {
     private const WEBHOOK_URL = 'webhook_url';
@@ -19,8 +23,9 @@ class ChatSettings
     private array $plugin_settings = [];
     private array $plugin_settings_masked_fields = ['api_key', 'api_secret', 'client_id', 'client_secret', 'user_id', 'password', 'access_key', 'account_numer'];
     private array $shipping_method_settings = [];
-    private string $current_page = "Plugin settings";
+    private string $current_page = 'Plugin settings';
     private array $settings = [];
+    private ?ConsentSettings $consent_settings = null;
     public function set_webhook_url(string $url): void
     {
         $this->settings[self::WEBHOOK_URL] = $url;
@@ -81,7 +86,11 @@ class ChatSettings
     }
     public function set_consent(array $consent): void
     {
-        $this->settings[self::CONSENT] = $consent;
+        $this->consent_settings = ConsentSettings::from_array($consent);
+    }
+    public function set_consent_settings(ConsentSettings $consent_settings): void
+    {
+        $this->consent_settings = $consent_settings;
     }
     public function set_shipping_method_settings(array $settings): void
     {
@@ -131,22 +140,7 @@ Just tell me what you need help with 🙂', 'flexible-shipping')];
         if (empty($settings[self::GET_STARTED])) {
             $settings[self::GET_STARTED] = __('New conversation', 'flexible-shipping');
         }
-        // Consent texts for gating chat initialization
-        if (empty($settings[self::CONSENT]) || !is_array($settings[self::CONSENT])) {
-            $settings[self::CONSENT] = [];
-        }
-        $settings[self::CONSENT] = wp_parse_args($settings[self::CONSENT], [
-            'title' => __('Do you consent to sending data to the chat?', 'flexible-shipping'),
-            'message' => __('To start the chat, we need to send your inputs and technical data to the chat service. Read more in our Privacy Policy.', 'flexible-shipping'),
-            'accept' => __('Accept', 'flexible-shipping'),
-            'decline' => __('Decline', 'flexible-shipping'),
-            'privacy_policy_url' => 'https://octolize.com/terms-of-service/privacy-policy/',
-            'privacy_link_label' => __('Privacy Policy', 'flexible-shipping'),
-            // Support fallback values shown when user does not want to give consent
-            'support_url' => 'https://octolize.com/support/',
-            'support_text' => __('If you don’t want to give consent, you can contact our support using this form:', 'flexible-shipping'),
-            'support_link_label' => __('Support form', 'flexible-shipping'),
-        ]);
+        $settings[self::CONSENT] = ($this->consent_settings ?? new ConsentSettings())->to_array();
         if (!array_key_exists(self::CONSENT_DISABLED, $settings)) {
             $settings[self::CONSENT_DISABLED] = \false;
         }

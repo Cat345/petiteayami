@@ -257,7 +257,7 @@ if ( ! class_exists( 'WFACP_Importer' ) ) {
 		public function imported_successfully() {
 			?>
 		<div class="notice notice-success is-dismissible">
-			<p><?php esc_html_e( 'Imported Successfully!', 'woofunnels-order-acp' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></p>
+			<p><?php esc_html_e( 'Imported Successfully!', 'funnel-builder' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></p>
 		</div>
 			<?php
 		}

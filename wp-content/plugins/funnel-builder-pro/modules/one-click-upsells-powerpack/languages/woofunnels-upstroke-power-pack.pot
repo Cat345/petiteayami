@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-01T12:37:09+00:00\n"
+"POT-Creation-Date: 2026-08-20T13:40:02+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woofunnels-upstroke-power-pack\n"
@@ -36,45 +36,11 @@ msgstr ""
 msgid "Funnelkit"
 msgstr ""
 
-#: addons/funnelkit/class-wfocu-sublium-compatibility.php:400
-#: class-woofunnels-support-wfocu-power-pack.php:220
-msgid "All Products Subscription Plan List"
-msgstr ""
-
-#: addons/funnelkit/class-wfocu-sublium-compatibility.php:410
-msgid "Sublium Plans Selector"
-msgstr ""
-
-#: addons/funnelkit/sublium-order-bump-rules.php:38
-#: addons/funnelkit/sublium-upsell-rules.php:35
-msgid "Yes"
-msgstr ""
-
-#: addons/funnelkit/sublium-order-bump-rules.php:39
-#: addons/funnelkit/sublium-upsell-rules.php:36
-msgid "No"
-msgstr ""
-
-#: addons/funnelkit/sublium-order-bump-rules.php:98
-#: addons/funnelkit/sublium-upsell-rules.php:106
-msgid "matched any of"
-msgstr ""
-
-#: addons/funnelkit/sublium-order-bump-rules.php:99
-#: addons/funnelkit/sublium-upsell-rules.php:107
-msgid "matches all of "
-msgstr ""
-
-#: addons/funnelkit/sublium-order-bump-rules.php:100
-#: addons/funnelkit/sublium-upsell-rules.php:108
-msgid "matches none of "
-msgstr ""
-
 #: addons/multiple-products/class-woofunnels-upstroke-multiple-products.php:112
 #: addons/subscriptions/class-woofunnels-upstroke-subscriptions.php:52
-#: woofunnels-upstroke-power-pack.php:161
-#: woofunnels-upstroke-power-pack.php:183
-#: woofunnels-upstroke-power-pack.php:283
+#: woofunnels-upstroke-power-pack.php:169
+#: woofunnels-upstroke-power-pack.php:191
+#: woofunnels-upstroke-power-pack.php:291
 msgid "Attention"
 msgstr ""
 
@@ -2336,19 +2302,62 @@ msgstr ""
 msgid "Upsells amount"
 msgstr ""
 
+#. translators: %s: price charged today
+#: addons/sublium/class-wfocu-sublium-compatibility.php:350
+#: addons/sublium/class-wfocu-sublium-compatibility.php:367
+#: addons/sublium/class-wfocu-sublium-compatibility.php:604
+#: addons/sublium/class-wfocu-sublium-compatibility.php:1142
+#, php-format
+msgid "Billed %s today."
+msgstr ""
+
+#: addons/sublium/class-wfocu-sublium-compatibility.php:2081
+#: class-woofunnels-support-wfocu-power-pack.php:220
+msgid "All Products Subscription Plan List"
+msgstr ""
+
+#: addons/sublium/class-wfocu-sublium-compatibility.php:2091
+msgid "Sublium Plans Selector"
+msgstr ""
+
+#: addons/sublium/sublium-order-bump-rules.php:38
+#: addons/sublium/sublium-upsell-rules.php:35
+msgid "Yes"
+msgstr ""
+
+#: addons/sublium/sublium-order-bump-rules.php:39
+#: addons/sublium/sublium-upsell-rules.php:36
+msgid "No"
+msgstr ""
+
+#: addons/sublium/sublium-order-bump-rules.php:98
+#: addons/sublium/sublium-upsell-rules.php:106
+msgid "matched any of"
+msgstr ""
+
+#: addons/sublium/sublium-order-bump-rules.php:99
+#: addons/sublium/sublium-upsell-rules.php:107
+msgid "matches all of "
+msgstr ""
+
+#: addons/sublium/sublium-order-bump-rules.php:100
+#: addons/sublium/sublium-upsell-rules.php:108
+msgid "matches none of "
+msgstr ""
+
 #: addons/subscriptions/class-upstroke-subscriptions.php:110
 msgid "Subscription replaced by the UpStroke"
 msgstr ""
 
-#: addons/subscriptions/class-upstroke-subscriptions.php:1114
+#: addons/subscriptions/class-upstroke-subscriptions.php:1128
 msgid "Go to settings"
 msgstr ""
 
-#: addons/subscriptions/class-upstroke-subscriptions.php:1388
+#: addons/subscriptions/class-upstroke-subscriptions.php:1402
 msgid "Recurring Price Label"
 msgstr ""
 
-#: addons/subscriptions/class-upstroke-subscriptions.php:1402
+#: addons/subscriptions/class-upstroke-subscriptions.php:1416
 msgid "Signup Fee Label"
 msgstr ""
 
@@ -2416,38 +2425,38 @@ msgstr ""
 msgid "Subscriptions"
 msgstr ""
 
-#: woofunnels-upstroke-power-pack.php:140
+#: woofunnels-upstroke-power-pack.php:148
 msgid "Sublium Subscription"
 msgstr ""
 
-#: woofunnels-upstroke-power-pack.php:141
+#: woofunnels-upstroke-power-pack.php:149
 msgid "Cart Contain Subscriptions"
 msgstr ""
 
-#: woofunnels-upstroke-power-pack.php:142
+#: woofunnels-upstroke-power-pack.php:150
 msgid "Recurring Products"
 msgstr ""
 
-#: woofunnels-upstroke-power-pack.php:143
+#: woofunnels-upstroke-power-pack.php:151
 msgid "Subscribe & Save Products"
 msgstr ""
 
-#: woofunnels-upstroke-power-pack.php:144
+#: woofunnels-upstroke-power-pack.php:152
 msgid "Installment Products"
 msgstr ""
 
 #. translators: %1$s: Plugin name %2$s Plugin name
-#: woofunnels-upstroke-power-pack.php:164
+#: woofunnels-upstroke-power-pack.php:172
 #, php-format
 msgid "Old version of \"UpStroke: %1$s\" is installed and active. Please deactivate it to run updated \"Upstroke PowerPack - %2$s\" module"
 msgstr ""
 
 #. translators: %1$s: Min required upstroke version
-#: woofunnels-upstroke-power-pack.php:186
+#: woofunnels-upstroke-power-pack.php:194
 #, php-format
 msgid "UpStroke PowerPack requires  WooFunnels UpStroke: One Click Upsell version %1$s or greater. Kindly update the WooFunnels UpStroke: One Click Upsell plugin."
 msgstr ""
 
-#: woofunnels-upstroke-power-pack.php:285
+#: woofunnels-upstroke-power-pack.php:293
 msgid "UpStroke PowerPack contains a \"UpStroke: WooCommerce One Click Upsells\" addons and would only work if it is installed and activated. Please install and activate it first."
 msgstr ""

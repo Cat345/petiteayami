@@ -9,28 +9,26 @@
 if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 	#[AllowDynamicProperties]
 	final class WFACP_Embed_Form_loader {
-		private static $ins = null;
-		private $current_template = false;
+		private static $ins           = null;
+		private $current_template     = false;
 		private $is_divi_builder_page = false;
-		private $wfacp_id = 0;
-		private $rest_api_run = false;
-		private $page_is_editable = false;
-		private $is_received_page = false;
+		private $wfacp_id             = 0;
+		private $rest_api_run         = false;
+		private $page_is_editable     = false;
+		private $is_received_page     = false;
 		public static $pop_up_trigger = false;
-		public $current_page_id = 0;
+		public $current_page_id       = 0;
 
 
 		protected function __construct() {
-			add_action( 'rest_jsonp_enabled', [ $this, 'enable_rest_jsonp' ] );
-			add_action( 'wfacp_none_checkout_pages', [ $this, 'detect_shortcode' ], 1 );
-			add_action( 'wfacp_none_checkout_pages', [ $this, 'active_woo_compatibility' ] );
-			add_shortcode( 'wfacp_forms', [ $this, 'shortcode' ] );
-			add_filter( 'wfacp_page_located', [ $this, 'detect_page_located' ], 10, 2 );
-			add_filter( 'wfacp_do_not_check_for_global_checkout', [ $this, 'do_not_checkout_for_global_checkout' ], 10, 2 );
-			add_filter( 'wfacp_do_not_execute_shortcode', [ $this, 'do_not_execute_shortcode' ] );
-			add_filter( 'wfacp_do_not_allow_shortcode_printing', [ $this, 'do_not_allow_shortcode_printing' ] );
-
-
+			add_action( 'rest_jsonp_enabled', array( $this, 'enable_rest_jsonp' ) );
+			add_action( 'wfacp_none_checkout_pages', array( $this, 'detect_shortcode' ), 1 );
+			add_action( 'wfacp_none_checkout_pages', array( $this, 'active_woo_compatibility' ) );
+			add_shortcode( 'wfacp_forms', array( $this, 'shortcode' ) );
+			add_filter( 'wfacp_page_located', array( $this, 'detect_page_located' ), 10, 2 );
+			add_filter( 'wfacp_do_not_check_for_global_checkout', array( $this, 'do_not_checkout_for_global_checkout' ), 10, 2 );
+			add_filter( 'wfacp_do_not_execute_shortcode', array( $this, 'do_not_execute_shortcode' ) );
+			add_filter( 'wfacp_do_not_allow_shortcode_printing', array( $this, 'do_not_allow_shortcode_printing' ) );
 		}
 
 		public function is_divi_builder_page() {
@@ -89,7 +87,7 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 			/** Shortcode exist on a page */
 
 			if ( ! is_null( $post ) ) {
-				remove_action( 'wp', [ WFACP_Core()->template_loader, 'maybe_setup_page' ], 7 );
+				remove_action( 'wp', array( WFACP_Core()->template_loader, 'maybe_setup_page' ), 7 );
 				do_shortcode( $shortcode_content );
 			}
 		}
@@ -98,7 +96,7 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 		public function do_not_allow_shortcode_printing( $status ) {
 
 			if ( is_admin() && ( true == $this->rest_api_run || isset( $_GET['post'] ) && $_GET['post'] > 0 && isset( $_REQUEST['action'] ) ) ) {
-				//return;
+				// return;
 				$status = true;
 			}
 
@@ -108,7 +106,6 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 				$status = false;
 				add_filter( 'wfacp_allow_printing_shortcode_direct', '__return_true' );
 			}
-
 
 			return $status;
 		}
@@ -122,14 +119,38 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 			if ( true === $this->is_received_page ) {
 				return do_shortcode( '[woocommerce_checkout]' );
 			}
-			$attributes = shortcode_atts( [
-				'id'           => 0,
-				'lightbox'     => 'no',
-				'width'        => 500,
-				'mode'         => 'all',
-				'product_ids'  => '',
-				'product_qtys' => '',
-			], $attributes, 'wfacp_forms' );
+			/** Shortcode placed on a checkout page itself: print the loaded template's checkout form */
+			$template = wfacp_template();
+			if ( $template instanceof WFACP_Template_Common ) {
+				global $post;
+				if ( ! is_null( $post ) && $post->post_type == WFACP_Common::get_post_type_slug() ) {
+					$sc_id = ( is_array( $attributes ) && isset( $attributes['id'] ) ) ? absint( $attributes['id'] ) : 0;
+					if ( $sc_id > 0 && $sc_id !== absint( $post->ID ) ) {
+						return '';
+					}
+					add_filter( 'wfacp_skip_form_printing', '__return_false' );
+					ob_start();
+					if ( $template instanceof WFACP_Pre_Built ) {
+						$this->get_form_shortcode_html( $template );
+					} else {
+						include $template->wfacp_get_form();
+					}
+
+					return ob_get_clean();
+				}
+			}
+			$attributes = shortcode_atts(
+				array(
+					'id'           => 0,
+					'lightbox'     => 'no',
+					'width'        => 500,
+					'mode'         => 'all',
+					'product_ids'  => '',
+					'product_qtys' => '',
+				),
+				$attributes,
+				'wfacp_forms'
+			);
 
 			if ( empty( $attributes['id'] ) || 0 == $attributes['id'] ) {
 				global $post;
@@ -140,9 +161,14 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 				}
 			}
 
-
 			$wfacp_id = $attributes['id'];
 			$lightbox = $attributes['lightbox'];
+
+			/** A different checkout cannot be embedded inside a checkout page */
+			global $post;
+			if ( ! is_null( $post ) && $post->post_type == WFACP_Common::get_post_type_slug() && absint( $wfacp_id ) !== absint( $post->ID ) ) {
+				return '';
+			}
 
 			if ( '' !== $attributes['product_ids'] ) {
 				$aero_add_to_checkout_parameter          = WFACP_Core()->public->aero_add_to_checkout_parameter();
@@ -178,23 +204,23 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 
 				// Normal checkout page (Woocommerce setting checkout page)
 				if ( ( is_checkout() || ( $this->current_page_id > 0 && $this->current_page_id == WFACP_Common::get_checkout_page_id() ) ) && false == $this->page_is_editable ) {
-					remove_action( 'wfacp_after_checkout_page_found', [ WFACP_Core()->public, 'add_to_cart' ], 2 );
+					remove_action( 'wfacp_after_checkout_page_found', array( WFACP_Core()->public, 'add_to_cart' ), 2 );
 					do_action( 'wfacp_changed_default_woocommerce_page' );
 				}
 
-				add_filter( 'wfacp_skip_add_to_cart', [ $this, 'skip_add_to_cart' ] );
+				add_filter( 'wfacp_skip_add_to_cart', array( $this, 'skip_add_to_cart' ) );
 
 				$this->remove_hooks();
 
 				add_filter( 'wfacp_enqueue_global_script', '__return_true' );
-				add_filter( 'wfacp_cancel_url_arguments', [ $this, 'add_embed_page_id' ] );
+				add_filter( 'wfacp_cancel_url_arguments', array( $this, 'add_embed_page_id' ) );
 				add_filter( 'woocommerce_is_checkout', '__return_true' );
-				add_filter( 'wfacp_remove_woocommerce_style_dependency', [ $this, 'remove_wc_style_dependency' ] );
+				add_filter( 'wfacp_remove_woocommerce_style_dependency', array( $this, 'remove_wc_style_dependency' ) );
 				add_filter( 'wfacp_skip_form_printing', '__return_true', 10 );
-				add_filter( 'body_class', [ $this, 'add_body_class' ] );
+				add_filter( 'body_class', array( $this, 'add_body_class' ) );
 
 				if ( 'yes' == $lightbox ) {
-					add_action( 'wp_enqueue_scripts', [ $this, 'remove_select2_wc' ], 100 );
+					add_action( 'wp_enqueue_scripts', array( $this, 'remove_select2_wc' ), 100 );
 					self::$pop_up_trigger = true;
 				}
 				WFACP_Common::set_id( $this->wfacp_id );
@@ -211,7 +237,7 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 						remove_filter( 'template_include', array( $get_template_loader, 'assign_template' ), 95 );
 					}
 
-					add_action( 'wfacp_after_payment_section', [ $this, 'create_hidden_input_for_saving_current_page_id' ] );
+					add_action( 'wfacp_after_payment_section', array( $this, 'create_hidden_input_for_saving_current_page_id' ) );
 					$this->current_template->get_customizer_data();
 
 					if ( empty( WFACP_Core()->public->added_products ) ) {
@@ -240,7 +266,6 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 
 				add_filter( 'wfacp_skip_form_printing', '__return_false' );
 				ob_start();
-
 
 				if ( 'yes' == $lightbox ) {
 					$this->wrap_in_light_box();
@@ -275,21 +300,21 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 		private function wrap_in_light_box() {
 
 			?>
-            <div class="wfacp_pop_up_wrap" id="wfacp_pop_up_wrap">
-                <div class="wfacp_modal_overlay wfacp_display_none"></div>
-                <div class="wfacp_modal_outerwrap wfacp_display_none">
-                    <div class="wfacp_modal_innerwrap">
-                        <div class="wfacp_modal_content" id="wfacp_modal_content">
-                            <div class="wfacp_pop_sec">
-                                <div class="wfacp_modal_container">
+			<div class="wfacp_pop_up_wrap" id="wfacp_pop_up_wrap">
+				<div class="wfacp_modal_overlay wfacp_display_none"></div>
+				<div class="wfacp_modal_outerwrap wfacp_display_none">
+					<div class="wfacp_modal_innerwrap">
+						<div class="wfacp_modal_content" id="wfacp_modal_content">
+							<div class="wfacp_pop_sec">
+								<div class="wfacp_modal_container">
 									<?php include $this->current_template->get_template_url(); ?>
-                                </div>
-                            </div><!-- product-container -->
-                            <button title="Close (Esc)" type="button" class="wfacp_modal_close">x</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+								</div>
+							</div><!-- product-container -->
+							<button title="Close (Esc)" type="button" class="wfacp_modal_close">x</button>
+						</div>
+					</div>
+				</div>
+			</div>
 			<?php
 		}
 
@@ -305,10 +330,13 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 
 				global $activewoo;
 				remove_action( 'woocommerce_before_checkout_form', array( $activewoo->recover_cart, 'print_subscribe_form' ) );
-				add_action( 'woocommerce_before_checkout_form', function () {
-					wp_enqueue_script( 'aw_rc_cart_js' );
-					wp_enqueue_script( 'wfacp_active_woo', WFACP_PLUGIN_URL . '/compatibilities/js/activewoo.min.js', [ 'wfacp_checkout_js' ], WFACP_VERSION, true );
-				} );
+				add_action(
+					'woocommerce_before_checkout_form',
+					function () {
+						wp_enqueue_script( 'aw_rc_cart_js' );
+						wp_enqueue_script( 'wfacp_active_woo', WFACP_PLUGIN_URL . '/compatibilities/js/activewoo.min.js', array( 'wfacp_checkout_js' ), WFACP_VERSION, true );
+					}
+				);
 			}
 		}
 
@@ -316,7 +344,6 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 		public function remove_select2_wc() {
 			wp_dequeue_style( 'select2' );
 			wp_dequeue_script( 'select2' );
-
 		}
 
 		public function skip_add_to_cart( $status ) {
@@ -336,9 +363,9 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 
 			if ( class_exists( 'Astra_Woocommerce' ) ) {
 				$astra = Astra_Woocommerce::get_instance();
-				remove_filter( 'astra_get_sidebar', [ $astra, 'replace_store_sidebar' ] );
-				remove_filter( 'astra_page_layout', [ $astra, 'store_sidebar_layout' ] );
-				remove_filter( 'astra_get_content_layout', [ $astra, 'store_content_layout' ] );
+				remove_filter( 'astra_get_sidebar', array( $astra, 'replace_store_sidebar' ) );
+				remove_filter( 'astra_page_layout', array( $astra, 'store_sidebar_layout' ) );
+				remove_filter( 'astra_get_content_layout', array( $astra, 'store_content_layout' ) );
 
 			}
 			if ( function_exists( 'flatsome_woocommerce_add_notice' ) ) {
@@ -369,7 +396,6 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 
 					$this->page_is_editable = true;
 
-
 				}
 			}
 
@@ -380,7 +406,7 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 			if ( $this->page_is_editable ) {
 
 				if ( ! WFACP_Common::is_global_checkout( $post->ID ) ) {
-					remove_filter( 'wfacp_changed_default_woocommerce_page', [ WFACP_Core()->public, 'wfacp_changed_default_woocommerce_page' ] );
+					remove_filter( 'wfacp_changed_default_woocommerce_page', array( WFACP_Core()->public, 'wfacp_changed_default_woocommerce_page' ) );
 				} else {
 					$this->page_is_editable = false;
 				}
@@ -388,7 +414,6 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 			}
 
 			return $status;
-
 		}
 
 		public function do_not_execute_shortcode( $status ) {
@@ -398,7 +423,6 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 			}
 
 			return $status;
-
 		}
 
 		public function remove_wc_style_dependency( $status ) {
@@ -433,8 +457,6 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 		public function __sleep() {
 			throw new ErrorException( 'WFACPEF_Core can`t converted to string' );
 		}
-
-
 	}
 
 	if ( class_exists( 'WFACP_Core' ) && ! WFACP_Common::is_disabled() ) {

@@ -1,4 +1,5 @@
 <?php
+
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'WooFunnels_Notifications' ) ) {
 	#[AllowDynamicProperties]
@@ -385,7 +386,7 @@ if ( ! class_exists( 'WooFunnels_Notifications' ) ) {
 			);
 
 			if ( ! current_user_can( 'manage_woocommerce' ) ) {
-				$results['msg'] = __( 'You do not have permission to perform this action.', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				$results['msg'] = __( 'You do not have permission to perform this action.', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				wp_send_json( $results, 403 );
 			}
 
@@ -468,7 +469,6 @@ if ( ! class_exists( 'WooFunnels_Notifications' ) ) {
 		 * @param $notifications_list
 		 */
 		public function get_notification_html( $notifications_list ) {
-			include dirname( dirname( __FILE__ ) ) . '/views/woofunnels-notifications.php';
 		}
 
 	}

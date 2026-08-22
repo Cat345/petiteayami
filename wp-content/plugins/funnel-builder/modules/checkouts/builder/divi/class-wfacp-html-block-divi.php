@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Divi_HTML_BLOCK' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFACP_Divi_HTML_BLOCK extends WFACP_Divi_Field {
@@ -76,7 +77,7 @@ if ( ! class_exists( 'WFACP_Divi_HTML_BLOCK' ) ) {
 			$this->add_color( $tab_id, $field_key . '_cart_item_color', $cart_item_color, '', '#666666' );
 
 
-			$this->add_border_color( $tab_id, 'mini_product_image_border_color', [ '%%order_class%% #wfacp-e-form table.shop_table.woocommerce-checkout-review-order-table tr.cart_item .product-image img' ], '', __( 'Image Border Color', 'woofunnel-aero-checkout' ), false, [ 'order_summary_enable_product_image' => 'on' ] );
+			$this->add_border_color( $tab_id, 'mini_product_image_border_color', [ '%%order_class%% #wfacp-e-form table.shop_table.woocommerce-checkout-review-order-table tr.cart_item .product-image img' ], '', __( 'Image Border Color', 'funnel-builder' ), false, [ 'order_summary_enable_product_image' => 'on' ] );
 
 
 
@@ -167,7 +168,7 @@ if ( ! class_exists( 'WFACP_Divi_HTML_BLOCK' ) ) {
 
 			$tab_id = $this->add_tab( __( 'Coupon', 'woocommerce' ), 2 );
 
-			$this->add_heading( $tab_id, __( 'Link ', 'woofunnel-aero-checkout' ), '' );
+			$this->add_heading( $tab_id, __( 'Link ', 'funnel-builder' ), '' );
 
 
 			$coupon_typography_opt = [
@@ -180,7 +181,7 @@ if ( ! class_exists( 'WFACP_Divi_HTML_BLOCK' ) ) {
 			$this->add_color( $tab_id, $field_key . '_coupon_text_color', $coupon_typography_opt, '', '' );
 
 
-			$this->add_heading( $tab_id, __( 'Label', 'woofunnel-aero-checkout' ) );
+			$this->add_heading( $tab_id, __( 'Label', 'funnel-builder' ) );
 
 
 			$form_fields_label_typo = [
@@ -194,34 +195,34 @@ if ( ! class_exists( 'WFACP_Divi_HTML_BLOCK' ) ) {
 			];
 
 			$font_side_default = [ 'default' => '12px', 'unit' => 'px' ];
-			$this->add_typography( $tab_id, $field_key . '_label_typo', implode( ',', $form_fields_label_typo ), $fields_options, [], __( 'Label Typography', 'woofunnels-aero-checkout' ), $font_side_default );
+			$this->add_typography( $tab_id, $field_key . '_label_typo', implode( ',', $form_fields_label_typo ), $fields_options, [], __( 'Label Typography', 'funnel-builder' ), $font_side_default );
 
 
 			$form_fields_label_color_opt = [
 				'%%order_class%% #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper label.wfacp-form-control-label',
 			];
-			$this->add_color( $tab_id, $field_key . '_label_color', $form_fields_label_color_opt, '', __( 'Label Color', 'woofunnels-aero-checkout' ) );
+			$this->add_color( $tab_id, $field_key . '_label_color', $form_fields_label_color_opt, '', __( 'Label Color', 'funnel-builder' ) );
 
 
 			$fields_options = [
 				'%%order_class%% #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper .wfacp-form-control',
 			];
 
-			$this->add_heading( $tab_id, __( 'Field', 'woofunnel-aero-checkout' ), '' );
+			$this->add_heading( $tab_id, __( 'Field', 'funnel-builder' ), '' );
 
 			$optionString = implode( ',', $fields_options );
-			$this->add_typography( $tab_id, $field_key . '_input_typo', $optionString, [], [], __( 'Coupon Typography' ) );
+			$this->add_typography( $tab_id, $field_key . '_input_typo', $optionString, [], [], __( 'Coupon Typography' , 'funnel-builder') );
 
 
 			$inputColorOption = [
 				'%%order_class%% #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper .wfacp-form-control',
 			];
-			$this->add_color( $tab_id, $field_key . '_input_color', $inputColorOption, '', __( 'Coupon Color', 'woofunnels-aero-checkout' ) );
+			$this->add_color( $tab_id, $field_key . '_input_color', $inputColorOption, '', __( 'Coupon Color', 'funnel-builder' ) );
 
 			$focus_color = [ '%%order_class%% #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper .wfacp-form-control:focus' ];
 
 
-			$this->add_border_color( $tab_id, $field_key . '_focus_color', $focus_color, '', __( 'Focus Color', 'woofunnel-aero-checkout' ), true );
+			$this->add_border_color( $tab_id, $field_key . '_focus_color', $focus_color, '', __( 'Focus Color', 'funnel-builder' ), true );
 
 
 			$fields_options = [
@@ -244,7 +245,7 @@ if ( ! class_exists( 'WFACP_Divi_HTML_BLOCK' ) ) {
 			$this->add_border( $tab_id, $field_key . '_coupon_border', implode( ',', $fields_options ), [], $default );
 
 
-			$this->add_heading( $tab_id, __( 'Button', 'woofunnel-aero-checkout' ) );
+			$this->add_heading( $tab_id, __( 'Button', 'funnel-builder' ) );
 
 
 			/* Button color setting */
@@ -262,16 +263,16 @@ if ( ! class_exists( 'WFACP_Divi_HTML_BLOCK' ) ) {
 
 			$control_tab_id = $this->add_controls_tabs( $tab_id, '' );
 			$field_keys     = [];
-			$field_keys[]   = $this->add_background_color( $tab_id, $field_key . '_btn_bg_color', $btnkey, '', __( 'Background', 'woofunnels-aero-checkout' ) );
-			$field_keys[]   = $this->add_color( $tab_id, $field_key . '_btn_text_color', $btnkey, '', __( 'Label', 'woofunnels-aero-checkout' ) );
+			$field_keys[]   = $this->add_background_color( $tab_id, $field_key . '_btn_bg_color', $btnkey, '', __( 'Background', 'funnel-builder' ) );
+			$field_keys[]   = $this->add_color( $tab_id, $field_key . '_btn_text_color', $btnkey, '', __( 'Label', 'funnel-builder' ) );
 
 			$this->add_controls_tab( $control_tab_id, 'Normal', $field_keys );
 
 			$field_keys = [];
 
-			$field_keys[] = $this->add_background_color( $tab_id, $field_key . '_btn_bg_hover_color', $btnkey_hover, '', __( 'Background', 'woofunnels-aero-checkout' ) );
-			$field_keys[] = $this->add_color( $tab_id, $field_key . '_btn_bg_hover_text_color', $btnkey_hover, '', __( 'Label', 'woofunnels-aero-checkout' ) );
-			$this->add_typography( $tab_id, $field_key . '_btn_typo', implode( ',', $btnkey ), __( 'Button Typography' ) );
+			$field_keys[] = $this->add_background_color( $tab_id, $field_key . '_btn_bg_hover_color', $btnkey_hover, '', __( 'Background', 'funnel-builder' ) );
+			$field_keys[] = $this->add_color( $tab_id, $field_key . '_btn_bg_hover_text_color', $btnkey_hover, '', __( 'Label', 'funnel-builder' ) );
+			$this->add_typography( $tab_id, $field_key . '_btn_typo', implode( ',', $btnkey ), __( 'Button Typography' , 'funnel-builder') );
 			$this->add_controls_tab( $control_tab_id, 'Hover', $field_keys );
 			/* Button color setting End*/
 		}

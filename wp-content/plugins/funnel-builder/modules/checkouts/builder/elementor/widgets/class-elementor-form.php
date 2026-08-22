@@ -164,7 +164,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 			$default_cls        = $template->default_css_class();
 			$do_not_show_fields = WFACP_Common::get_html_excluded_field();
 
-			// $this->add_heading( __( 'Field Width', 'woofunnels-aero-checkout' ) );
+			// $this->add_heading( __( 'Field Width', 'funnel-builder' ) );
 
 			$this->section_fields[] = $temp_fields;
 			foreach ( $temp_fields as $loop_key => $field ) {
@@ -302,7 +302,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 			$this->add_tab( __( 'Collapsible Order Summary', 'funnel-builder' ), 5 );
 
 			$this->add_switcher( 'enable_callapse_order_summary', __( 'Enable', 'funnel-builder' ), '', '', 'no', 'yes', array(), '', '' );
-			$this->add_switcher( 'enable_order_field_collapsed', __( 'Expanded Order Summary', 'woofunnels-aero-checkout' ), '', '', 'no', 'yes', array(), '', '' );
+			$this->add_switcher( 'enable_order_field_collapsed', __( 'Expanded Order Summary', 'funnel-builder' ), '', '', 'no', 'yes', array(), '', '' );
 
 			$this->add_switcher_without_responsive( 'order_summary_enable_product_image_collapsed', __( 'Enable Image', 'funnel-builder' ), '', '', 'yes', 'yes', array(), '', '', 'wfacp_elementor_device_hide' );
 			$enable_callapse_order_summary_condition = array();
@@ -380,7 +380,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 			);
 			$this->add_color( $field_key . '_input_color', $inputColorOption, '', __( 'Coupon Color', 'funnel-builder' ), $condition );
 
-			$this->add_border_color( $field_key . '_focus_color', array( '{{WRAPPER}} #wfacp-e-form form.checkout_coupon.woocommerce-form-coupon .wfacp-col-left-half .wfacp-form-control:focus' ), '#61bdf7', __( 'Focus Color', 'woofunnels-aero-checkout' ), true, $condition );
+			$this->add_border_color( $field_key . '_focus_color', array( '{{WRAPPER}} #wfacp-e-form form.checkout_coupon.woocommerce-form-coupon .wfacp-col-left-half .wfacp-form-control:focus' ), '#61bdf7', __( 'Focus Color', 'funnel-builder' ), true, $condition );
 
 			$fields_options = array(
 				'{{WRAPPER}} #wfacp-e-form form.checkout_coupon.woocommerce-form-coupon .wfacp-col-left-half .wfacp-form-control',
@@ -744,7 +744,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 			// Sub heading end here
 
 			$advanceOption = array( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-section .wfacp-comm-title' );
-			$this->add_heading( __( 'Advanced', 'woofunnels-aero-checkout' ) );
+			$this->add_heading( __( 'Advanced', 'funnel-builder' ) );
 			$this->add_background_color( 'form_heading_bg_color', $advanceOption, 'transparent' );
 
 			$this->add_padding( 'form_heading_padding', implode( ',', $advanceOption ) );
@@ -889,7 +889,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper input[type="emal"].wfacp-form-control',
 				'{{WRAPPER}} #wfacp-e-form .wfacp_allowed_countries strong',
 				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .select2-container .select2-selection--single .select2-selection__rendered',
-				'{{WRAPPER}} #wfacp-e-form .iti__selected-flag',
+				'{{WRAPPER}} #wfacp-e-form .iti__selected-country',
 			);
 
 			$Validation_options = array(
@@ -897,7 +897,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-error ul',
 				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-error li',
 				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-error li strong',
-				'{{WRAPPER}} #wfacp-e-form .iti__selected-flag',
+				'{{WRAPPER}} #wfacp-e-form .iti__selected-country',
 			);
 
 			$default = array(
@@ -1439,7 +1439,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 				'{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th a',
 			);
 
-			$this->add_font_family( 'wfacp_font_family', $globalSettingOptions, 'Family', 'Open Sans' );
+			$this->add_font_family( 'wfacp_font_family', $globalSettingOptions, 'Family', '' );
 
 			$primary_color = array(
 				'{{WRAPPER}} #wfacp-e-form  #payment li.wc_payment_method input.input-radio:checked::before',

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFFN_OXYGEN' ) ) {
 	#[\AllowDynamicProperties]
 	class WFFN_OXYGEN {
@@ -47,7 +48,7 @@ if ( ! class_exists( 'WFFN_OXYGEN' ) ) {
 				return;
 			}
 			/* show a section in +Add dropdown menu and name it "My Custom Elements" */
-			CT_Toolbar::oxygen_add_plus_accordion_section( $this->section_slug, __( 'FunnelKit', 'woofunnels-aero-checkout' ) );
+			CT_Toolbar::oxygen_add_plus_accordion_section( $this->section_slug, __( 'FunnelKit', 'funnel-builder' ) );
 		}
 
 

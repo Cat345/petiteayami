@@ -44,7 +44,10 @@ class BWFAN_DB {
 		$wpdb->bwfan_engagement_tracking     = $wpdb->prefix . 'bwfan_engagement_tracking';
 		$wpdb->bwfan_engagement_trackingmeta = $wpdb->prefix . 'bwfan_engagement_trackingmeta';
 
-		add_action( 'plugins_loaded', [ $this, 'load_db_classes' ], 8 );
+		// Model classes (includes/db/class-bwfan-model-*.php) are now resolved lazily
+		// by the classmap autoloader. The previous plugins_loaded@8 hook eager-loaded
+		// all 31 model files via a glob regardless of whether the request queried them.
+		// Each model is a pure CRUD wrapper with no file-scope side effects.
 
 		add_action( 'admin_init', [ $this, 'version_1_0_0' ], 10 );
 		add_action( 'admin_init', [ $this, 'db_update' ], 11 );
@@ -66,15 +69,11 @@ class BWFAN_DB {
 		return self::$ins;
 	}
 
-	/**
-	 * Include all the DB Table files
-	 */
-	public static function load_db_classes() {
-		self::load_class_files( __DIR__ . '/db' );
-	}
-
 	public static function load_class_files( $dir ) {
 		foreach ( glob( $dir . '/class-*.php' ) as $_field_filename ) {
+			if ( ! is_readable( $_field_filename ) ) { // survive update file-swap / partial deploy
+				continue;
+			}
 			$file_data = pathinfo( $_field_filename );
 			if ( isset( $file_data['basename'] ) && 'index.php' === $file_data['basename'] ) {
 				continue;

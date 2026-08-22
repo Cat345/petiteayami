@@ -35,7 +35,10 @@ class CsrfMiddleware
      */
     public function handle($request, callable $next): Response
     {
-        $csrf = $request->getAttribute('csrf', in_array($request->getMethod(), ['POST', 'DELETE']));
+        $csrf = $request->getAttribute(
+            'csrf',
+            in_array($request->getMethod(), ['POST', 'PUT', 'PATCH', 'DELETE'], true),
+        );
 
         if ($csrf && !($this->verify)($request->getHeaderLine('X-XSRF-Token'))) {
             $request->abort(401, 'Invalid CSRF token.');

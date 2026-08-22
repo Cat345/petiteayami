@@ -285,7 +285,7 @@ class WhatsApp_Integration_Settings {
 		// Generate a fresh nonce for this request
 		$nonce = wp_json_encode( wp_create_nonce( 'wp_rest' ) );
 
-		return <<<JAVASCRIPT
+		return "
 			const whatsAppAPI = GeneratePluginAPIClient({$nonce});
 			const ALLOWED_ORIGINS = [
 				'https://www.commercepartnerhub.com',
@@ -325,6 +325,18 @@ class WhatsApp_Integration_Settings {
 						});
 				}
 
+				if (messageEvent === 'CommerceExtension::WA_CONNECT' && message.success) {
+					whatsAppAPI.notifyWhatsAppOnboardingComplete()
+						.then(function(response) {
+							if (!response.success) {
+								console.error('Error marking WhatsApp onboarding complete:', response);
+							}
+						})
+						.catch(function(error) {
+							console.error('Error during onboarding-complete notify:', error);
+						});
+				}
+
 				if (messageEvent === 'CommerceExtension::WA_RESIZE') {
 					const iframe = document.getElementById('facebook-whatsapp-iframe-enhanced');
 					if ( iframe ) {
@@ -350,6 +362,6 @@ class WhatsApp_Integration_Settings {
 						});
 				}
 			});
-		JAVASCRIPT;
+		";
 	}
 }

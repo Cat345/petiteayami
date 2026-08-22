@@ -1,3 +1,4 @@
+<?php defined( 'ABSPATH' ) || exit; // Exit if accessed directly ?>
 <table cellpadding="0" cellspacing="0" border="0" bgcolor="" align="center" role="presentation" class="bwfbe-block-section-container bwfbe-block-section bwfbe-block-dcb37e6" style="border-collapse: collapse; width: 640px;" width="640">
     <tbody>
     <tr>

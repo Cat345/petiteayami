@@ -170,7 +170,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Oxygen' ) ) {
 		private function get_modules() {
 			$modules = [
 				'optin_form' => [
-					'name' => __( 'Optin Form', 'woofunnels-aero-checkout' ),
+					'name' => __( 'Optin Form', 'funnel-builder' ),
 					'path' => __DIR__ . '/class-oxygen-wffn-optin-form-widget.php',
 				],
 			];
@@ -211,9 +211,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Oxygen' ) ) {
 			if ( isset( $_GET['ct_builder'] ) && ! empty( $_GET['ct_builder'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				$post_id = get_the_ID();
 				if ( WFOPP_Core()->optin_pages->get_post_type_slug() === get_post_type( $post_id ) && WFFN_Common::wffn_is_funnel_pro_active() ) {
-					wp_enqueue_script( 'phone_flag_intl', plugin_dir_url( WFOPP_PRO_PLUGIN_FILE ) . 'assets/phone/js/intltelinput.min.js', array(), WFFN_VERSION_DEV );
-					wp_enqueue_style( 'flag_style', plugin_dir_url( WFOPP_PRO_PLUGIN_FILE ) . 'assets/phone/css/phone-flag.css', array(), WFFN_VERSION_DEV );
-
+					WFFN_Optin_Pages::enqueue_phone_flag_editor_assets();
 				}
 
 			}

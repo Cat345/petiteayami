@@ -52,6 +52,7 @@ class Cart_Integration extends Base_Model implements IntegrationInterface {
         $vite_app = new Vite_App(
             'acfwp-wc-cart-block-integration', // Don't forget to register this handle in the get_script_handles() or get_editor_script_handles() method.
             'packages/acfwp-cart-block/index.tsx',
+            array( 'wc-blocks-checkout', 'wc-blocks-data-store' )
         );
         $vite_app->register();
     }

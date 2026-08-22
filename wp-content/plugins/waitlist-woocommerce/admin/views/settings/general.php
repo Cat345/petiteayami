@@ -38,13 +38,21 @@ $settings = array(
 		'desc' 	=> 'You can also manage each product individually from the "edit product -> inventory" section'
 	),
 
+
 	array(
-		'callback' 		=> 'checkbox',
-		'title' 		=> 'Show on Archive/Shop Page',
-		'id' 			=> 'm-en-shop',
+		'callback' 		=> 'checkbox_list',
+		'title' 		=> 'Show waitlist Button on',
+		'id' 			=> 'm-show-waitlist',
 		'section_id' 	=> 'gl_main',
-		'default' 		=> 'yes'
+		'args'			=> array(
+			'options' => array(
+				'shop' 		=> 'Shop/Archive items ',
+				'product'  	=> 'Product page',
+			)
+		),
+		'default' 		=> array( 'shop', 'product' )
 	),
+
 
 
 
@@ -99,6 +107,37 @@ $settings = array(
 		'id'			=> 'txt-subhead',
 		'title' 		=> 'Form Sub-Head',
 		'default' 		=> 'We will inform you when the product arrives in stock. Please leave your valid email address below.',
+	),
+
+	array(
+		'callback' 		=> 'checkbox',
+		'section_id' 	=> 'gl_texts',
+		'id'			=> 'txt-new-form-desc',
+		'title' 		=> 'New Form Description Layout',
+		'default' 		=> 'yes',
+		'args' 			=> array(
+			'toggleSettings' => array(
+				'xoo-wl-general-options[txt-head]' 		=> array( 'yes' ),
+				'xoo-wl-general-options[txt-subhead]' 	=> array( 'yes' ),
+				'xoo-wl-general-options[txt-form-desc]' => array( 'unchecked' ),
+			)
+		),
+	),
+
+
+
+	array(
+		'callback' 		=> 'wp_editor',
+		'section_id' 	=> 'gl_texts',
+		'id'			=> 'txt-form-desc',
+		'title' 		=> 'Form Description',
+		'args' 			=> array(
+			'editor_settings' => array(
+				'editor_height' => 100,	
+			)
+		),
+		'default' 		=> '<p style="margin: 0px 0px 16px; text-align: center;"><span style="font-size: 24px;"><strong style="color: #000;">Join Waitlist</strong></span></p>
+<p style="margin: 0px 0px 20px;">We will inform you when the product arrives in stock.<br />Please leave your valid email address below.</p>',
 	),
 
 

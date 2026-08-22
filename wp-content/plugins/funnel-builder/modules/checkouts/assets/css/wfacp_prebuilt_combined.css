@@ -450,7 +450,7 @@ body:not(.wfacp_oxygen_template) .wfacp_main_form p.woocommerce-invalid-required
     border-bottom-color: #E15334;
 }
 
-.wfacp_main_form .wfacp-comm-title:not(.wfacp_internal_form_wrap).none {
+.wfacp_main_form .wfacp-comm-title:not(.wfacp_internal_form_wrap).wfacp_none {
     padding: 0;
 }
 
@@ -594,10 +594,6 @@ body table.shop_table tr td small {
 .blockOverlay:before,
 .blockOverlay:after {
     display: none !important;
-}
-
-body .wfacp_main_form #wfacp_checkout_form.processing .blockUI.blockOverlay {
-    background: url(../../assets/img/spinner.gif) no-repeat 50% rgb(255, 255, 255) !important;
 }
 
 body .wfacp_main_form .wc_payment_method .payment_box label {
@@ -4830,11 +4826,11 @@ body .wfacp_main_form.woocommerce #wfacp_checkout_form .iti__country-list li {
 }
 
 
-body .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp-intl-phone-flag-field .woocommerce-input-wrapper .iti.iti--allow-dropdown {
+body .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp-intl-phone-flag-field .woocommerce-input-wrapper .iti.iti--has-country-selector {
     display: block;
 }
 
-body .wfacp_main_form.woocommerce #wfacp_checkout_form .iti__selected-flag {
+body .wfacp_main_form.woocommerce #wfacp_checkout_form .iti__selected-country {
     padding: 10px 12px;
     border: none !important;
     width: auto;
@@ -4844,7 +4840,7 @@ body .wfacp_main_form.woocommerce #wfacp_checkout_form .iti__selected-flag {
     position: relative;
 }
 
-body .wfacp_main_form.woocommerce #wfacp_checkout_form .iti__selected-flag:after {
+body .wfacp_main_form.woocommerce #wfacp_checkout_form .iti__selected-country:after {
     content: '';
     display: block;
     width: 1px;
@@ -4854,7 +4850,7 @@ body .wfacp_main_form.woocommerce #wfacp_checkout_form .iti__selected-flag:after
     right: 0;
 }
 
-body .wfacp_main_form.woocommerce #wfacp_checkout_form .iti__selected-flag .iti__selected-dial-code {
+body .wfacp_main_form.woocommerce #wfacp_checkout_form .iti__selected-country .iti__selected-dial-code {
     font-size: 14px;
     line-height: 1;
 }
@@ -4881,11 +4877,11 @@ body .wfacp_main_form.woocommerce #wfacp_checkout_form .select2-container--defau
     margin-top: 0;
 }
 
-body .wfacp_main_form.woocommerce #wfacp_checkout_form .woocommerce-invalid-phone-field .iti__selected-flag {
+body .wfacp_main_form.woocommerce #wfacp_checkout_form .woocommerce-invalid-phone-field .iti__selected-country {
     height: calc(100% - 20px);
 }
 
-body .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp_main_form p.woocommerce-invalid-required-field .iti__selected-flag {
+body .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp_main_form p.woocommerce-invalid-required-field .iti__selected-country {
     border-color: #E15334;
 }
 
@@ -4995,6 +4991,7 @@ body #wfacp-e-form .wfacp_order_summary_container table.shop_table tr.order-tota
 
 #wfacp-e-form .wfacp_main_form input[type=checkbox]:after {
     content: "";
+    border: 0;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -5965,6 +5962,16 @@ body #wfacp-sec-wrapper table.shop_table:not(#product_switching_field) {
     background-color: transparent;
     margin: 0;
 }
+/* -----------------------------------------------BRICKS THEME FOR REMEMBER ME CHECKBOX---------------------------------------- */
+/* Bricks forces display:inline !important from inside @layer bricks, which outranks our unlayered
+   !important, so this input is rendered natively (see wfacp-form.css). The native widget draws its
+   own check, so both of our check decorations have to go or they stack on top of it. */
+body.wfacp_bricks_template .wfacp_main_form.woocommerce input#rememberme:before,
+body.wfacp_bricks_template .wfacp_main_form.woocommerce input#rememberme:after {
+    content: none !important;
+    display: none !important;
+}
+
 /* -----------------------------------------------MEDIA QUERY---------------------------------------- */
 @media (min-width: 993px) {
     body .select2-dropdown {
@@ -6251,7 +6258,7 @@ body #wfacp-sec-wrapper table.shop_table:not(#product_switching_field) {
         text-align: center;
     }
 
-    .none.div_wrap_sec {
+    .wfacp_none.div_wrap_sec {
         padding: 5px 15px;
     }
 

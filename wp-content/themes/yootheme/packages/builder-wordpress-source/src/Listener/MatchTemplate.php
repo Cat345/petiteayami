@@ -52,8 +52,14 @@ class MatchTemplate
         }
 
         if ($object && $query->is_post_type_archive()) {
+            $postType = $query->get('post_type');
+
+            if (is_array($postType)) {
+                $postType = reset($postType);
+            }
+
             return [
-                'type' => "archive-{$object->name}",
+                'type' => "archive-{$postType}",
                 'query' => ['pages' => $pages, 'locale' => $locale],
             ];
         }

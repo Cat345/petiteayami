@@ -1,10 +1,10 @@
 === MailPoet - Premium ===
 Contributors: mailpoet
 Tags: newsletter, email, welcome email, post notification, autoresponder, mailchimp, signup, smtp
-Requires at least: 6.9
-Tested up to: 7.0
+Requires at least: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 5.33.0
+Stable tag: 5.36.0
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -57,6 +57,24 @@ Our [support site](https://kb.mailpoet.com/) has plenty of articles. You can wri
 5. Importing subscribers with a CSV or from MailChimp.
 
 == Changelog ==
+
+= 5.36.0 - 2026-08-18 =
+* Updated: Bump the minimum required WordPress version to 7.0 and tested up to version to 7.1;
+* Improved: Quicker access to subscribers who clicked a specific link in campaign stats, with a new clicked link column and always-visible filters.
+
+= 5.35.0 - 2026-08-03 =
+* Improved: minor changes and fixes.
+
+= 5.34.0 - 2026-07-13 =
+* Added: Native filters and sorting on the campaign statistics tables (engagement, bounces, clicked links, products sold and unsubscribe reasons);
+* Fixed: Show Create Segment when filtering campaign stats by a clicked link;
+* Fixed: Match shortcode link labels when searching the campaign stats clicked-links table;
+* Fixed: Apply date and subscriber-status filters to the engagement Status filter counts;
+* Fixed: Restore searching unsubscribe reasons by their label in campaign stats;
+* Fixed: Show the clicked-links stats table without relying on the legacy links argument;
+* Fixed: Sync the engagement Status filter chips to the clicked status when filtering by a link;
+* Fixed: Respect a single engagement status filter passed as a query string value;
+* Fixed: Show the unsubscribe reason column whenever unsubscribed is among the selected engagement statuses.
 
 = 5.33.0 - 2026-06-30 =
 * Fixed: Birthday and saved-card-expires automations now keep running every hour instead of stopping after the first run, and previously stopped automations resume automatically.

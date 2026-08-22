@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_Klarna_checkout' ) ) {
 	/**
 	 * Klarna Checkout BY Klarna Krokedril
@@ -51,7 +52,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Klarna_checkout' ) ) {
             <div class="error" style="margin-top:74px">
                 <p>
 					<?php
-					_e( '<strong> Attention: </strong>You are using Klarna Checkout which completely takes over the checkout. To have best experience with WooFunnels Checkout please activate <a href="https://wordpress.org/plugins/klarna-payments-for-woocommerce/" target="_blank">Klarna Payments</a>.', 'woofunnels-aero-checkout' );
+					_e( '<strong> Attention: </strong>You are using Klarna Checkout which completely takes over the checkout. To have best experience with WooFunnels Checkout please activate <a href="https://wordpress.org/plugins/klarna-payments-for-woocommerce/" target="_blank">Klarna Payments</a>.', 'funnel-builder' );
 					?>
                 </p>
             </div>

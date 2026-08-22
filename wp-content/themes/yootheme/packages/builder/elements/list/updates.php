@@ -23,7 +23,7 @@ return [
 
     '4.3.2' => function ($node) {
         $separator = $node->props['list_horizontal_separator'] ?? '';
-        if ($separator && !preg_match('/\h$/u', $separator)) {
+        if ($separator && !preg_match('/\h$/u', html_entity_decode($separator))) {
             $node->props['list_horizontal_separator'] .= ' ';
         }
     },

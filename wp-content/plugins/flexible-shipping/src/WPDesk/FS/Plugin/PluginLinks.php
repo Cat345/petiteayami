@@ -22,6 +22,7 @@ class PluginLinks implements Hookable {
 			$support_link = get_locale() === 'pl_PL' ? 'https://octol.io/fs-support-pl' : 'https://octol.io/fs-support';
 
 			$plugin_links = [
+				'<a target="_blank" rel="noopener noreferrer" href="' . esc_url( 'https://octol.io/fs-free-rate' ) . '" aria-label="' . esc_attr__( 'Rate Flexible Shipping', 'flexible-shipping' ) . '" style="color:#ffb900;font-size:20px;text-decoration:none;">★★★★★</a>',
 				'<a target="_blank" href="' . esc_url( $docs_link ) . '">' . __( 'Docs', 'flexible-shipping' ) . '</a>',
 				'<a target="_blank" href="' . esc_url( $support_link ) . '">' . __( 'Support', 'flexible-shipping' ) . '</a>',
 			];

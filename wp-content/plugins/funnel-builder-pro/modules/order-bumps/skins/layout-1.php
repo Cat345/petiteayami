@@ -74,7 +74,7 @@ if ( ! isset( $design_data[ "product_{$product_key}_featured_image" ] ) || '' ==
 } else {
 	$featured_image = $design_data[ "product_{$product_key}_featured_image" ];
 }
-$price_data = apply_filters( 'wfob_product_switcher_price_data', array(), $wc_product, $qty );
+$price_data = apply_filters( 'wfob_product_switcher_price_data', array(), $wc_product, $qty, $data );
 if ( empty( $price_data ) ) {
 	$price_data['regular_org'] = $wc_product->get_regular_price( 'edit' );
 	$price_data['price']       = $wc_product->get_price( 'edit' );
@@ -99,7 +99,7 @@ if ( ! is_null( $cart_item ) && isset( $cart_item['variation_id'] ) ) {
 }
 $enable_pointer = '';
 if ( '' !== $cart_item_key ) {
-	$price_data = WFOB_Common::get_cart_product_price_data( $wc_product, $cart_item, $cart_item['quantity'] );
+	$price_data = WFOB_Common::get_cart_product_price_data( $wc_product, $cart_item, $cart_item['quantity'], $price_data );
 } else {
 	$price_data             = WFOB_Common::get_product_price_data( $wc_product, $price_data );
 	$price_data['quantity'] = $qty;

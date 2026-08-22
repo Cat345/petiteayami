@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 $system_font = [
     [
         'label'=> 'System Default',

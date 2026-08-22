@@ -40,7 +40,6 @@ if ( ! class_exists( 'WooFunnels_Support' ) ) {
 		 * @param $posted_data
 		 *
 		 * @uses WooFunnels_API used to fire api request to generate request
-		 * @uses WooFunnels_admin_notifications pushing success and failure notifications
 		 * @since 1.0.4
 		 */
 		public function woofunnels_maybe_push_support_request( $posted_data ) {

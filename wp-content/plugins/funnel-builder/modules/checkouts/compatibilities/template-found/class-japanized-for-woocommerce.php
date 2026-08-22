@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Japanized_for_Woocommerce' ) ) {
 	/**
 	 * Author Artisan Workshop  https://wc.artws.info/

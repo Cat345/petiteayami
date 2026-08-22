@@ -643,4 +643,18 @@ jQuery(document).ready(function($){
 
 	}	
 	
+
+	
+
+	$('.xoo-aff-group').on('focusin', 'input, textarea, select', function () {
+		$(this).closest('.xoo-aff-group').addClass('xoo-aff-isfocused');
+	});
+
+	$('.xoo-aff-group').on('focusout', 'input, textarea, select', function () {
+		$(this).closest('.xoo-aff-group').removeClass('xoo-aff-isfocused');
+	});
+
+	
+
+
 })

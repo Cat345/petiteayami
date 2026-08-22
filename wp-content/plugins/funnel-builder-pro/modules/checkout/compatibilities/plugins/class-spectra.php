@@ -27,15 +27,23 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Spectra' ) ) {
 		/**
 		 * Return FunnelKit page ID
 		 *
-		 * @return int
+		 * Guarded against re-entry: is_checkout() may read the same option this filter
+		 * short-circuits (via wc_get_page_id), which re-fires this callback and would
+		 * recurse until memory is exhausted.
+		 *
+		 * @return int|false
 		 * @since 3.22.1
 		 */
 		public function return_funnelkit_checkout_id() {
-			if ( ! is_checkout() ) {
+			static $running = false;
+			if ( $running ) {
 				return false;
 			}
+			$running = true;
+			$id      = is_checkout() ? WFACP_Common::get_id() : false;
+			$running = false;
 
-			return WFACP_Common::get_id();
+			return $id;
 		}
 	}
 

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /**
  * FOX – Currency Switcher Professional for WooCommerce
  * Realmag777

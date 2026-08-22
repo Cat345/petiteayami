@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /**
  * Class WFFN_Ecom_Tracking_Common
  */
@@ -178,7 +179,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				$fb_advanced_pixel_data = $this->get_advanced_pixel_data( 'fb' );
 				?>
 				<!-- Facebook Analytics Script Added By WooFunnels -->
-				<script type="text/javascript">
+				<script type="text/javascript" data-no-defer="1">
 					<?php $this->prepare_wffnevents(); ?>
 					function wffnFbTrackingIn() {
 						try {
@@ -429,11 +430,16 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 
 		public function is_fb_pixel() {
 
-			$steps = WFFN_Core()->data->get_current_step();
-			$key   = $this->admin_general_settings->get_option( 'fb_pixel_key' );
+			global $post;
+			$step_id = 0;
+			if ( $post instanceof WP_Post ) {
+				$step_id = $post->ID;
+			}
 
-			if ( is_array( $steps ) && isset( $steps['id'] ) && get_post( $steps['id'] ) instanceof WP_Post ) {
-				$setting = WFFN_Common::maybe_override_tracking( $steps['id'] );
+			$key = $this->admin_general_settings->get_option( 'fb_pixel_key' );
+
+			if ( $step_id > 0 && get_post( $step_id ) instanceof WP_Post ) {
+				$setting = WFFN_Common::maybe_override_tracking( $step_id );
 				if ( is_array( $setting ) ) {
 					$key = ( isset( $setting['fb_pixel_key'] ) && ! empty( $setting['fb_pixel_key'] ) ) ? $setting['fb_pixel_key'] : $key;
 				}
@@ -446,11 +452,16 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 
 		public function is_pint_pixel() {
 
-			$steps = WFFN_Core()->data->get_current_step();
-			$key   = $this->admin_general_settings->get_option( 'pint_key' );
+			global $post;
+			$step_id = 0;
+			if ( $post instanceof WP_Post ) {
+				$step_id = $post->ID;
+			}
 
-			if ( is_array( $steps ) && isset( $steps['id'] ) && get_post( $steps['id'] ) instanceof WP_Post ) {
-				$setting = WFFN_Common::maybe_override_tracking( $steps['id'] );
+			$key = $this->admin_general_settings->get_option( 'pint_key' );
+
+			if ( $step_id > 0 && get_post( $step_id ) instanceof WP_Post ) {
+				$setting = WFFN_Common::maybe_override_tracking( $step_id );
 				if ( is_array( $setting ) ) {
 					$key = ( isset( $setting['pint_key'] ) && ! empty( $setting['pint_key'] ) ) ? $setting['pint_key'] : $key;
 				}
@@ -1093,6 +1104,45 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 		}
 
 		/**
+		 * Build a list of event payloads for Conversion API iteration.
+		 *
+		 * Callers differ: thank-you / inline code push a numeric list of events onto `$this->api_events`;
+		 * AJAX passes decoded JSON shaped like `array( 'events' => array( ... ) )` (sometimes nested).
+		 *
+		 * @param array $payload Raw `$this->api_events`.
+		 * @return array<int, array<string, mixed>> List of per-event arrays for `fire_conv_api_event`.
+		 */
+		protected function normalize_conv_api_events_list( $payload ) {
+			if ( ! is_array( $payload ) ) {
+				return array();
+			}
+			$queue = $payload;
+			$depth = 0;
+			while ( isset( $queue['events'] ) && is_array( $queue['events'] ) && $depth < 10 ) {
+				$queue = $queue['events'];
+				++$depth;
+			}
+			if ( ! is_array( $queue ) ) {
+				return array();
+			}
+			if ( isset( $queue['event'], $queue['event_id'] ) ) {
+				$is_list = false;
+				if ( function_exists( 'array_is_list' ) ) {
+					$is_list = array_is_list( $queue );
+				} else {
+					$keys    = array_keys( $queue );
+					$n       = count( $keys );
+					$is_list = $n > 0 && $keys === range( 0, $n - 1 );
+				}
+				if ( ! $is_list ) {
+					return array( $queue );
+				}
+			}
+
+			return $queue;
+		}
+
+		/**
 		 * Render a JS to fire async ajax calls to fire further events
 		 */
 		public function maybe_render_conv_api( $is_ajax = false ) {
@@ -1114,6 +1164,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				}
 
 				if ( is_array( $get_each_pixel_id ) && count( $get_each_pixel_id ) > 0 ) {
+					$events_list = $this->normalize_conv_api_events_list( $this->api_events );
 					foreach ( $get_each_pixel_id as $key => $pixel_id ) {
 						/**
 						 * continue if access token empty
@@ -1121,7 +1172,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 						if ( empty( $access_token[ $key ] ) ) {
 							continue;
 						}
-						foreach ( $this->api_events as $event ) {
+						foreach ( $events_list as $event ) {
 							$this->fire_conv_api_event( $event, $pixel_id, $access_token[ $key ], $key, $is_ajax );
 						}
 					}
@@ -1131,11 +1182,16 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 
 		public function get_conversion_api_access_token() {
 
-			$steps = WFFN_Core()->data->get_current_step();
-			$key   = $this->admin_general_settings->get_option( 'conversion_api_access_token' );
+			global $post;
+			$step_id = 0;
+			if ( $post instanceof WP_Post ) {
+				$step_id = $post->ID;
+			}
 
-			if ( is_array( $steps ) && isset( $steps['id'] ) && get_post( $steps['id'] ) instanceof WP_Post ) {
-				$setting = WFFN_Common::maybe_override_tracking( $steps['id'] );
+			$key = $this->admin_general_settings->get_option( 'conversion_api_access_token' );
+
+			if ( $step_id > 0 && get_post( $step_id ) instanceof WP_Post ) {
+				$setting = WFFN_Common::maybe_override_tracking( $step_id );
 				if ( is_array( $setting ) ) {
 					$key = ( isset( $setting['conversion_api_access_token'] ) && ! empty( $setting['conversion_api_access_token'] ) ) ? $setting['conversion_api_access_token'] : $key;
 				}
@@ -1148,11 +1204,16 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 
 		public function get_conversion_api_test_event_code() {
 
-			$steps = WFFN_Core()->data->get_current_step();
-			$key   = $this->admin_general_settings->get_option( 'conversion_api_test_event_code' );
+			global $post;
+			$step_id = 0;
+			if ( $post instanceof WP_Post ) {
+				$step_id = $post->ID;
+			}
 
-			if ( is_array( $steps ) && isset( $steps['id'] ) && get_post( $steps['id'] ) instanceof WP_Post ) {
-				$setting = WFFN_Common::maybe_override_tracking( $steps['id'] );
+			$key = $this->admin_general_settings->get_option( 'conversion_api_test_event_code' );
+
+			if ( $step_id > 0 && get_post( $step_id ) instanceof WP_Post ) {
+				$setting = WFFN_Common::maybe_override_tracking( $step_id );
 				if ( is_array( $setting ) ) {
 					$key = ( isset( $setting['conversion_api_test_event_code'] ) && ! empty( $setting['conversion_api_test_event_code'] ) ) ? $setting['conversion_api_test_event_code'] : $key;
 				}
@@ -1241,45 +1302,19 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 
 			$response = $instance->execute();
 
-			if ( $this->should_log_event( $type ) ) {
-				$this->maybe_insert_log( '----Facebook conversion API-----------' . print_r( $response, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
-			}
+			$this->maybe_insert_log( '----Facebook conversion API-----------' . print_r( $response, true ), $type ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 		}
 		/************************************ Conversion API related methods starts here ***************************/
-
-		/**
-		 * Check if an event type should be logged
-		 *
-		 * @param string $event_type The event type to check (e.g., 'Purchase', 'PageView', 'AddToCart').
-		 * @return bool True if the event should be logged, false otherwise.
-		 * @since 1.0.0
-		 */
-		public function should_log_event( $event_type ) {
-			// Default events that are logged
-			$default_logged_events = array( 'Purchase', 'AddToCart' );
-
-			/**
-			 * Filter to control which CAPI events should be logged
-			 *
-			 * @param array  $logged_events Array of event types that should be logged.
-			 * @param string $event_type    The current event type being checked.
-			 * @return array Modified array of event types to log.
-			 * @since 1.0.0
-			 */
-			$logged_events = apply_filters( 'wffn_should_log_conv_api_event', $default_logged_events, $event_type );
-
-			return in_array( $event_type, $logged_events, true );
-		}
 
 		/**
 		 * Maybe insert logs for the conversion API
 		 *
 		 * @param string $content
+		 * @param string $event The CAPI event type this log belongs to (e.g. 'Purchase', 'AddToCart'), so the filter can allow logging per event.
 		 */
-		public function maybe_insert_log( $content ) {
+		public function maybe_insert_log( $content, $event = '' ) {
 
-			if ( $this->is_enabled_log() ) {
+			if ( true === apply_filters( 'bwf_conversion_api_checkout_event_logs', in_array( $event, array( 'Purchase', 'AddToCart' ), true ), $event ) && $this->is_enabled_log() ) {
 				wc_get_logger()->log( 'info', $content, array( 'source' => 'bwf_facebook_conversion_api' ) );
 			}
 		}
@@ -1455,7 +1490,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 		public function fire_tracking() {
 			if ( $this->should_render() ) {
 				?>
-			<script type="text/javascript">
+			<script type="text/javascript" data-no-defer="1">
 				(function() {
 					'use strict';
 

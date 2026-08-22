@@ -120,7 +120,7 @@ if ( ! class_exists( 'WFOB_Importer' ) ) {
 				}
 
 				if ( $bump_id !== 0 ) {
-					update_post_meta( $bump_id, '_wfob_settings', map_deep( $bump['settings'], 'sanitize_text_field' ) );
+					WFOB_Common::update_setting_data( $bump_id, map_deep( $bump['settings'], 'sanitize_text_field' ) );
 					update_post_meta( $bump_id, '_wfob_rules', map_deep( $bump['rules'], 'sanitize_text_field' ) );
 					update_post_meta( $bump_id, '_wfob_is_rules_saved', 'yes' );
 					update_post_meta( $bump_id, '_wfob_design_data', map_deep( $bump['design_data'], 'wp_kses_post' ) );

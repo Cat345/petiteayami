@@ -1345,6 +1345,28 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 		}
 
 		/**
+		 * Read an option straight from the database, bypassing a stale persistent object cache.
+		 *
+		 * update_option() skips its cache-repair step on a zero-row (no-op) write, so a control value
+		 * like the reindex cursor can pin to a stale cached copy under Redis / Object Cache Pro and spin
+		 * the recurring action without ever making progress. A get_option() based read cannot help either:
+		 * legacy cursor rows were created autoloaded, so it resolves via the alloptions blob (or a stale
+		 * notoptions entry) before the per-key cache is ever consulted. Query the row directly instead.
+		 *
+		 * @param string $key
+		 * @param mixed  $default
+		 *
+		 * @return mixed
+		 */
+		private function bwf_fresh_option( $key, $default = 0 ) {
+			global $wpdb;
+
+			$value = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1", $key ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+			return is_null( $value ) ? $default : $value;
+		}
+
+		/**
 		 * Reindex contact orders
 		 *
 		 * @param $cid
@@ -1380,7 +1402,7 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 				$key      = "bwf_contact_orders_{$cid}";
 				$runs_key = "bwf_contact_orders_runs_{$cid}";
 
-				$indexed_order_id = get_option( $key, 0 );
+				$indexed_order_id = $this->bwf_fresh_option( $key, 0 );
 				if ( 0 > $indexed_order_id ) {
 					return 1;
 				}
@@ -1389,7 +1411,7 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 				 * Bounded-execution failsafe: if the cursor has failed to advance across too many consecutive
 				 * runs the action is stuck. Force-unschedule it instead of re-running the expensive scan forever.
 				 */
-				$no_progress_runs     = absint( get_option( $runs_key, 0 ) );
+				$no_progress_runs     = absint( $this->bwf_fresh_option( $runs_key, 0 ) );
 				$max_no_progress_runs = absint( apply_filters( 'bwf_reindex_max_no_progress_runs', 50, $cid ) );
 				if ( $no_progress_runs >= $max_no_progress_runs ) {
 					delete_option( $runs_key );
@@ -1474,7 +1496,7 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 				$bwf_contact->update_meta( 'processed_order_ids', maybe_serialize( $processed_oids ) );
 
 				/** Track forward progress for the bounded-execution failsafe */
-				$new_cursor = intval( get_option( $key, 0 ) );
+				$new_cursor = intval( $this->bwf_fresh_option( $key, 0 ) );
 				if ( $new_cursor > intval( $indexed_order_id ) ) {
 					delete_option( $runs_key );
 				} else {

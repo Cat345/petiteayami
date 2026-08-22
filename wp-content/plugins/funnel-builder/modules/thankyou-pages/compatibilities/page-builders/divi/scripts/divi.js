@@ -133,7 +133,6 @@
         let el = $(this);
         setTimeout((el) => {
             let siblings = el.children('.et-fb-form__group');
-            console.log('Hello Toggle run', siblings.length);
             if (siblings.length === 0) {
                 return;
             }

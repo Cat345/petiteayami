@@ -1,7 +1,6 @@
 <?php
 
 $props['connect'] = "js-{$this->uid()}";
-$props['item_nav'] = "js-{$this->uid()}";
 
 $el = $this->el('div');
 

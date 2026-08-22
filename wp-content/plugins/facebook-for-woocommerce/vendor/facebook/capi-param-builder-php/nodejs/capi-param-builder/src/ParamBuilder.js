@@ -8,6 +8,8 @@
 const FbcParamConfig = require('./model/FbcParamConfig');
 const CookieSettings = require('./model/CookieSettings');
 const Constants = require('./model/Constants');
+const PlainDataObject = require('./model/PlainDataObject');
+const RequestContextAdaptor = require('./utils/RequestContextAdaptor');
 const net = require('net');
 const { getNormalizedAndHashedPII } = require('./piiUtil/PIIUtil');
 const { getAppendixInfo } = require('./utils/AppendixProvider');
@@ -31,6 +33,8 @@ class ParamBuilder {
     this.fbc = null;
     this.fbp = null;
     this.fbi = null;
+    this.referrerUrl = null;
+    this.eventSourceUrl = null;
 
     // perf optimization - save etld+1
     this.host = null;
@@ -39,9 +43,10 @@ class ParamBuilder {
     // output cookies, an array of CookieSettings
     this.cookies_to_set = [];
     this.cookies_to_set_dict = {};
-    // language token
-    this.appendix_new = getAppendixInfo(true);
-    this.appendix_normal = getAppendixInfo(false);
+    // appendix info
+    this.appendix_net_new = getAppendixInfo(Constants.APPENDIX_NET_NEW);
+    this.appendix_modified_new = getAppendixInfo(Constants.APPENDIX_MODIFIED_NEW);
+    this.appendix_no_change = getAppendixInfo(Constants.APPENDIX_NO_CHANGE);
   }
 
   _preprocessCookie(cookies, cookie_name) {
@@ -96,7 +101,7 @@ class ParamBuilder {
   }
 
   _updateCookieWithLanguageToken(cookie_value, cookie_name) {
-    const updated_cookie_value = `${cookie_value}.${this.appendix_normal}`;
+    const updated_cookie_value = `${cookie_value}.${this.appendix_no_change}`;
 
     this.cookies_to_set_dict[cookie_name] = new CookieSettings(
       cookie_name,
@@ -130,7 +135,13 @@ class ParamBuilder {
     this.cookies_to_set_dict = {};
     this.etld_plus_1 = null;
     this.sub_domain_index = 0;
+    this.eventSourceUrl = null;
     this._computeETLDPlus1ForHost(host);
+
+    this.referrerUrl = referer;
+    if (typeof this.referrerUrl === 'string' && this.referrerUrl !== '') {
+      this.referrerUrl = `${this.referrerUrl}.${this.appendix_no_change}`;
+    }
 
     // capture existing cookies
     this.fbc = this._preprocessCookie(cookies, Constants.FBC_NAME_STRING);
@@ -153,38 +164,36 @@ class ParamBuilder {
     if (!this.fbp) {
       const new_fbp_payload = Math.floor(Math.random() * 2147483647);
       const drop_ts = Date.now();
-      this.fbp = `fb.${this.sub_domain_index}.${drop_ts}.${new_fbp_payload}.${this.appendix_new}`;
+      this.fbp = `fb.${this.sub_domain_index}.${drop_ts}.${new_fbp_payload}.${this.appendix_net_new}`;
       this.cookies_to_set_dict[Constants.FBP_NAME_STRING] = new CookieSettings(
         Constants.FBP_NAME_STRING,
         this.fbp,
         Constants.DEFAULT_1PC_AGE,
         this.etld_plus_1);
     }
-    if (!new_fbc_payload) {
-      this.cookies_to_set = Object.values(this.cookies_to_set_dict);
-      return this.cookies_to_set;
-    }
-    // check if we should overwrite the fbc
-    if (!this.fbc) {
-      const drop_ts = Date.now();
-      this.fbc = `fb.${this.sub_domain_index}.${drop_ts}.${new_fbc_payload}.${this.appendix_new}`;
-      this.cookies_to_set_dict[Constants.FBC_NAME_STRING] = new CookieSettings(
-        Constants.FBC_NAME_STRING,
-        this.fbc,
-        Constants.DEFAULT_1PC_AGE,
-        this.etld_plus_1);
-    } else {
-      // extract payload
-      const split = this.fbc.split('.');
-      const old_fbc_payload = split[3];
-      if (new_fbc_payload !== old_fbc_payload) {
+    if (new_fbc_payload) {
+      // check if we should overwrite the fbc
+      if (!this.fbc) {
         const drop_ts = Date.now();
-        this.fbc = `fb.${this.sub_domain_index}.${drop_ts}.${new_fbc_payload}.${this.appendix_new}`;
+        this.fbc = `fb.${this.sub_domain_index}.${drop_ts}.${new_fbc_payload}.${this.appendix_net_new}`;
         this.cookies_to_set_dict[Constants.FBC_NAME_STRING] = new CookieSettings(
           Constants.FBC_NAME_STRING,
           this.fbc,
           Constants.DEFAULT_1PC_AGE,
           this.etld_plus_1);
+      } else {
+        // extract payload
+        const split = this.fbc.split('.');
+        const old_fbc_payload = split[3];
+        if (new_fbc_payload !== old_fbc_payload) {
+          const drop_ts = Date.now();
+          this.fbc = `fb.${this.sub_domain_index}.${drop_ts}.${new_fbc_payload}.${this.appendix_modified_new}`;
+          this.cookies_to_set_dict[Constants.FBC_NAME_STRING] = new CookieSettings(
+            Constants.FBC_NAME_STRING,
+            this.fbc,
+            Constants.DEFAULT_1PC_AGE,
+            this.etld_plus_1);
+        }
       }
     }
 
@@ -196,6 +205,24 @@ class ParamBuilder {
     this.cookies_to_set = Object.values(this.cookies_to_set_dict);
     return this.cookies_to_set;
   }
+
+  processRequestFromContext(context = null) {
+    const data = (context instanceof PlainDataObject)
+      ? context
+      : RequestContextAdaptor.extract(context);
+
+    const result = this.processRequest(
+      data.host,
+      data.query_params,
+      data.cookies,
+      data.referer,
+      data.x_forwarded_for,
+      data.remote_address
+    );
+    this.eventSourceUrl = this._constructEventSourceUrl(data);
+    return result;
+  }
+
   getCookiesToSet() {
     return this.cookies_to_set;
   }
@@ -207,6 +234,26 @@ class ParamBuilder {
   }
   getClientIpAddress() {
     return this.fbi;
+  }
+  getReferrerUrl() {
+    return this.referrerUrl;
+  }
+  getEventSourceUrl() {
+    return this.eventSourceUrl;
+  }
+
+  _constructEventSourceUrl(data) {
+    if (!data || !data.host || !data.scheme) {
+      return null;
+    }
+    let url = data.scheme + '://' + data.host;
+    if (data.request_uri) {
+      url += data.request_uri;
+    }
+    if (typeof url === 'string' && url !== '') {
+      url = `${url}.${this.appendix_net_new}`;
+    }
+    return url;
   }
 
   getNormalizedAndHashedPII(piiValue, dataType) {
@@ -229,6 +276,11 @@ class ParamBuilder {
       // in case a new host is passed in for the same request
       this.host = host;
       const hostname = this._extractHostFromHttpHost(host);
+      if (!hostname) {
+        this.etld_plus_1 = null;
+        this.sub_domain_index = 0;
+        return;
+      }
       if (this._isIPAddress(hostname)) {
         this.etld_plus_1 = this._maybeBracketIPv6(hostname);
         this.sub_domain_index = 0;
@@ -470,15 +522,19 @@ class ParamBuilder {
     const clientIpFromCookieIsPublicIp = this._isPublicIp(clientIpFromCookie);
     const clientIpFromRequestIsPublicIp = this._isPublicIp(clientIpFromRequest);
 
+    const clientIpAppendix = clientIpFromRequestIsPublicIp
+      ? this.appendix_modified_new
+      : this.appendix_net_new;
+
     // Prioritize: IPv6 over IPv4, public over private, cookie-sourced IPs over request-sourced IPs.
     if (clientIpFromCookieIsIPv6 && clientIpFromCookieIsPublicIp) {
-      bestClientIp = clientIpFromCookie + '.' + (clientIpLanguageTokenFromCookie || this.appendix_new);
+      bestClientIp = clientIpFromCookie + '.' + (clientIpLanguageTokenFromCookie || clientIpAppendix);
     } else if (clientIpFromRequestIsIPv6 && clientIpFromRequestIsPublicIp) {
-      bestClientIp = clientIpFromRequest + '.' + this.appendix_normal;
+      bestClientIp = clientIpFromRequest + '.' + this.appendix_no_change;
     } else if (clientIpFromCookieIsIPv4 && clientIpFromCookieIsPublicIp) {
-      bestClientIp = clientIpFromCookie + '.' + (clientIpLanguageTokenFromCookie || this.appendix_new);
+      bestClientIp = clientIpFromCookie + '.' + (clientIpLanguageTokenFromCookie || clientIpAppendix);
     } else if (clientIpFromRequestIsIPv4 && clientIpFromRequestIsPublicIp) {
-      bestClientIp = clientIpFromRequest + '.' + this.appendix_normal;
+      bestClientIp = clientIpFromRequest + '.' + this.appendix_no_change;
     }
 
     return bestClientIp;

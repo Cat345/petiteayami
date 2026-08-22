@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * MailPoet 3 (New) by MailPoet
@@ -37,7 +38,7 @@ if ( ! class_exists( 'WFACP_MailPoet' ) ) {
 				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_mail_poet' ),
 				'id'         => 'wfacp_mail_poet',
 				'field_type' => 'wfacp_mail_poet',
-				'label'      => __( 'MailPoet', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'MailPoet', 'funnel-builder' ),
 
 			);
 

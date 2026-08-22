@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || exit;
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Elementor template library local source.
@@ -60,7 +62,16 @@ if ( ! class_exists( 'WFACP_Oxy_Importer' ) ) {
 			require_once WFFN_PLUGIN_DIR . '/includes/class-wffn-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 			if ( ! empty( $content ) && ! WFFN_Content_Validator::contains_dangerous_tags( $content ) && ! WFFN_Content_Validator::contains_php_code( $content ) ) {
 				update_post_meta( $aero_id, WFACP_Common::oxy_get_meta_prefix( 'ct_other_template' ), '-1' );
-				update_post_meta( $aero_id, WFACP_Common::oxy_get_meta_prefix( 'ct_builder_shortcodes' ), $content );
+
+				// Re-sign shortcodes with this site's oxygen_private_key (mirrors Oxygen's save flow).
+				$content = WFFN_Common::oxy_resign_shortcodes( $content );
+
+				// Write both prefixed and bare meta keys (oxy_get_meta_prefix may add an underscore).
+				$meta_key = WFACP_Common::oxy_get_meta_prefix( 'ct_builder_shortcodes' );
+				update_post_meta( $aero_id, $meta_key, $content );
+				if ( 'ct_builder_shortcodes' !== $meta_key ) {
+					update_post_meta( $aero_id, 'ct_builder_shortcodes', $content );
+				}
 				WFACP_Common::update_label_meta( $aero_id, $content );
 				$this->clear_oxy_page_cache_css( $aero_id );
 				$this->save_data( $this->post_id );
@@ -87,7 +98,7 @@ if ( ! class_exists( 'WFACP_Oxy_Importer' ) ) {
 					'hide_you_save'                       => 'true',
 					'hide_best_value'                     => 'false',
 					'best_value_product'                  => '',
-					'best_value_text'                     => __( 'Best Value', 'woofunnels-aero-checkout' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'best_value_text'                     => __( 'Best Value', 'funnel-builder' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'best_value_position'                 => 'above',
 					'enable_custom_name_in_order_summary' => 'false',
 					'autocomplete_enable'                 => 'false',

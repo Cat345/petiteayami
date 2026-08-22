@@ -31,6 +31,8 @@ if ( $instance->mini_cart_allow_quantity_box() ) {
  */
 $product_data                         = ( ! isset( $product_data ) || is_null( $product_data ) ) ? array() : $product_data;
 $show_subscription_string_old_version = apply_filters( 'wfacp_show_subscription_string_old_version', false );
+$className                            = 'wfacp_mini_cart_items_' . $widget_id;
+$prepared_items                       = $instance->get_prepared_cart_items();
 $className                            = 'wfacp_mini_cart_items_' . WFACP_Common::sanitize_mini_cart_widget_id_for_selector( $widget_id );
 ?>
 
@@ -52,14 +54,16 @@ $className                            = 'wfacp_mini_cart_items_' . WFACP_Common:
 		} else {
 			$switcher_settings = WFACP_Common::get_product_switcher_data( WFACP_Common::get_id() );
 			foreach ( $wfacp_cart as $cart_item_key => $cart_item ) {
-				$_product           = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
+				$item_data          = isset( $prepared_items[ $cart_item_key ] ) ? $prepared_items[ $cart_item_key ] : null;
+				$_product           = $item_data ? $item_data['product'] : apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
 				$enable_delete_item = apply_filters( 'wfacp_mini_cart_enable_delete_item', $enable_delete_item, $cart_item, $cart_item_key );
 
 				if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_checkout_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
 
-					$item_quantity = $cart_item['quantity'];
-					$aero_item_key = '';
-					if ( false == WFACP_Core()->public->is_checkout_override() ) {
+					$item_quantity = $item_data ? $item_data['item_quantity'] : $cart_item['quantity'];
+					$aero_item_key = $item_data ? $item_data['aero_item_key'] : '';
+					$product_data  = $item_data ? $item_data['product_data'] : $product_data;
+					if ( ! $item_data && false == WFACP_Core()->public->is_checkout_override() ) {
 						$is_aero_point = false;
 
 						if ( isset( $cart_item['_wfacp_product'] ) ) {
@@ -92,17 +96,19 @@ $className                            = 'wfacp_mini_cart_items_' . WFACP_Common:
 							$hideImageCls = '';
 							if ( $show_product_image ) {
 								$hideImageCls = 'wfacp_summary_img_true';
-								$thumbnail    = WFACP_Common::get_product_image(
-									$_product,
-									array(
-										100,
-										100,
+								$thumbnail    = $item_data ? $item_data['thumbnail'] : apply_filters(
+									'wfacp_cart_image',
+									WFACP_Common::get_product_image(
+										$_product,
+										array(
+											100,
+											100,
+										),
+										$cart_item,
+										$cart_item_key
 									),
-									$cart_item,
-									$cart_item_key
+									$_product
 								);
-
-								$thumbnail = apply_filters( 'wfacp_cart_image', $thumbnail, $_product );
 
 
 								?>
@@ -142,10 +148,10 @@ $className                            = 'wfacp_mini_cart_items_' . WFACP_Common:
 								 * Default: compact format "Hoodie - Small, Black" via get_name().
 								 * When filter true: product name + "Size: small, Color: black" on separate line + select option link.
 								 */
-								$show_new_mini_cart_design = apply_filters( 'wfacp_mini_cart_show_variation_details', false, $cart_item, $cart_item_key );
-								$product_name              = $_product->get_name();
-								$variation                 = array();
-								if ( in_array( $_product->get_type(), WFACP_Common::get_variation_product_type() ) || true === apply_filters( 'wfacp_show_select_options_for_cart_item', false, $cart_item, $cart_item_key ) ) {
+								$show_new_mini_cart_design = $item_data ? $item_data['show_variation_details'] : apply_filters( 'wfacp_mini_cart_show_variation_details', false, $cart_item, $cart_item_key );
+								$product_name              = $item_data ? $item_data['product_name'] : $_product->get_name();
+								$variation                 = $item_data ? $item_data['variation_html'] : array();
+								if ( ! $item_data && ( in_array( $_product->get_type(), WFACP_Common::get_variation_product_type() ) || true === apply_filters( 'wfacp_show_select_options_for_cart_item', false, $cart_item, $cart_item_key ) ) ) {
 									$variation = WFACP_Common::get_single_variation_html( $_product, $cart_item, true );
 									if ( $show_new_mini_cart_design ) {
 										$product_name = $_product->get_title();
@@ -161,7 +167,7 @@ $className                            = 'wfacp_mini_cart_items_' . WFACP_Common:
 									 */
 									do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key );
 								}
-								echo wc_get_formatted_cart_item_data( $cart_item );
+								echo $item_data ? $item_data['formatted_data'] : wc_get_formatted_cart_item_data( $cart_item );
 
 								do_action( 'wfacp_after_mini_cart_attributes', $cart_item, $cart_item_key );
 								/**
@@ -184,8 +190,11 @@ $className                            = 'wfacp_mini_cart_items_' . WFACP_Common:
 
 								echo '</div> ';
 
-								if ( false == $show_subscription_string_old_version && in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() ) ) {
-									$subscription_product_string = sprintf( "<div class='wfacp_product_subs_details'>%s</div>", WFACP_Common::subscription_product_string( $_product, $product_data, $cart_item, $cart_item_key ) );
+								$is_subscription       = $item_data ? $item_data['is_subscription'] : in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() );
+								$show_subscription_old = $item_data ? $item_data['show_subscription_old'] : $show_subscription_string_old_version;
+								if ( false == $show_subscription_old && $is_subscription && ( class_exists( 'WC_Subscriptions' ) || class_exists( 'WC_Subscriptions_Core_Plugin' ) ) && version_compare( WFACP_Common_Helper::get_subscription_version(), '9.0.0', '<' ) ) {
+									$sub_string                  = $item_data ? $item_data['subscription_string'] : WFACP_Common::subscription_product_string( $_product, $product_data, $cart_item, $cart_item_key );
+									$subscription_product_string = sprintf( "<div class='wfacp_product_subs_details'>%s</div>", $sub_string );
 									echo apply_filters( 'wfacp_subscription_string', $subscription_product_string, $_product, $product_data, $cart_item_key );
 								}
 								if ( $show_quantity_image ) {
@@ -199,12 +208,26 @@ $className                            = 'wfacp_mini_cart_items_' . WFACP_Common:
 
 									if ( apply_filters( 'wfacp_display_quantity_increment', true, $cart_item, $item_quantity, $aero_item_key, $cart_item_key ) ) {
 										if ( false == $is_sold_individually ) {
+											// Derive step from WooCommerce's quantity-input filters so decimal-quantity plugins apply; defaults to 1.
+											$wfacp_qty_step = apply_filters( 'woocommerce_quantity_input_step', 1, $_product );
+											$wfacp_qty_args = apply_filters(
+												'woocommerce_quantity_input_args',
+												array(
+													'min_value' => 0,
+													'max_value' => '',
+													'step' => $wfacp_qty_step,
+												),
+												$_product
+											);
+											if ( is_array( $wfacp_qty_args ) && isset( $wfacp_qty_args['step'] ) ) {
+												$wfacp_qty_step = $wfacp_qty_args['step'];
+											}
 											$minMax        = apply_filters(
 												'wfacp_cart_item_min_max_quantity',
 												array(
 													'min'  => 0,
 													'max'  => '',
-													'step' => '1',
+													'step' => $wfacp_qty_step,
 												),
 												$cart_item,
 												$aero_item_key,
@@ -242,7 +265,7 @@ $className                            = 'wfacp_mini_cart_items_' . WFACP_Common:
 
 							if ( in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() ) ) {
 								if ( false == $show_subscription_string_old_version ) {
-									$price_show = apply_filters( 'wfacp_subscription_price_display', wc_price( WFACP_Common::get_subscription_cart_item_price( $cart_item ) ), $_product, $cart_item, $cart_item_key );
+									$price_show = apply_filters( 'wfacp_subscription_price_display', WFACP_Common::maybe_strike_subscription_price( wc_price( WFACP_Common::get_subscription_cart_item_price( $cart_item ) ), $_product, $cart_item, apply_filters( 'wfacp_mini_cart_enable_strike_through_price', false ) ), $_product, $cart_item, $cart_item_key );
 									echo $price_show;
 
 								} else {

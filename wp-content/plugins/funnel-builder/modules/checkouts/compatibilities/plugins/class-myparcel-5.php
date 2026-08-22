@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
 if ( ! class_exists( 'WFACP_WooCommerce_MyParcel5' ) ) {
@@ -116,7 +117,7 @@ if ( ! class_exists( 'WFACP_WooCommerce_MyParcel5' ) ) {
 				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_myparcel_delivery_options' ),
 				'id'         => 'wfacp_myparcel_delivery_options',
 				'field_type' => 'wfacp_myparcel_delivery_options',
-				'label'      => __( 'MyParcel Delivery Options', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'MyParcel Delivery Options', 'funnel-builder' ),
 			);
 
 			return $fields;

@@ -6,27 +6,42 @@ if ( ! class_exists( 'BWFAN_Model_Conversions' ) && BWFAN_Common::is_pro_3_0() )
 	class BWFAN_Model_Conversions extends BWFAN_Model {
 		static $primary_key = 'ID';
 
-		public static function get_conversions_by_source_type( $source_id, $source_type = 1, $limit = 0, $offset = 25 ) {
+		public static function get_conversions_by_source_type( $source_id, $source_type = 1, $limit = 25, $offset = 0 ) {
 			global $wpdb;
 			$table       = self::_table();
 			$source_id   = absint( $source_id );
 			$source_type = absint( $source_type );
 			$limit       = absint( $limit );
 			$offset      = absint( $offset );
-			$query       = "SELECT bwc.* FROM $table as bwc JOIN {$wpdb->prefix}posts as p ON bwc.wcid=p.ID WHERE bwc.oid = $source_id AND bwc.otype=$source_type ORDER BY bwc.wcid DESC LIMIT $limit OFFSET $offset";
+			/**
+			 * Do not join on wp_posts here: under WooCommerce HPOS orders live in wc_orders (not wp_posts),
+			 * so an INNER JOIN on posts drops every conversion row and empties the Orders tab. Select the
+			 * conversion rows directly and use the HPOS-aware wc_get_order() check below to flag rows whose
+			 * order was deleted (the UI renders them as "Order Deleted") instead of dropping them.
+			 */
+			$query       = $wpdb->prepare( "SELECT bwc.* FROM $table as bwc WHERE bwc.oid = %d AND bwc.otype=%d ORDER BY bwc.wcid DESC LIMIT %d OFFSET %d", ...[ $source_id, $source_type, $limit, $offset ] );
 			$conversions = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			if ( empty( $conversions ) ) {
 				return [ 'conversions' => array(), 'total' => 0 ];
 			}
 
-			$total_query = "SELECT COUNT(*) FROM $table as bwc JOIN {$wpdb->prefix}posts as p ON bwc.wcid=p.ID  WHERE bwc.oid = $source_id AND bwc.otype=$source_type";
+			$total_query = $wpdb->prepare( "SELECT COUNT(*) FROM $table as bwc WHERE bwc.oid = %d AND bwc.otype=%d", ...[ $source_id, $source_type ] );
 			$total       = absint( $wpdb->get_var( $total_query ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			foreach ( $conversions as $key => $conv ) {
 				$order = wc_get_order( absint( $conv['wcid'] ) );
 
-				/** unset the conversion if order deleted or not exists */
+				/** flag the conversion if order deleted or not exists so the UI can show it as "Order Deleted" */
 				if ( ! $order instanceof WC_Order ) {
-					unset( $conversions[ $key ] );
+					$conversions[ $key ]['order_deleted'] = 1;
+					
+					/** order is gone, but surface the contact's name from the contact record if it still exists */
+					$contact = new WooFunnels_Contact( '', '', '', absint( $conv['cid'] ) );
+					if ( $contact->get_id() > 0 ) {
+						$conversions[ $key ]['f_name'] = $contact->get_f_name();
+						$conversions[ $key ]['l_name'] = $contact->get_l_name();
+						$conversions[ $key ]['email']  = $contact->get_email();
+					}
+
 					continue;
 				}
 

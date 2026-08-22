@@ -1,3 +1,11 @@
+<?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
+?>
+
 <div class="xoo-aff-settings-modal">
 
 	<div class="xoo-aff-settings-topbar">
@@ -11,7 +19,7 @@
 	<div class="xoo-aff-grpfield-cont">
 		<div class="xoo-aff-field-groups">
 			<?php foreach ( $groups as $group_id => $group_args ): ?>
-				<div data-grpid="<?php echo $group_id ?>" class="xoo-aff-grp-selector"><?php echo $group_args['title']; ?></div>
+				<div data-grpid="<?php echo esc_attr( $group_id ) ?>" class="xoo-aff-grp-selector"><?php echo wp_kses_post( $group_args['title'] ); ?></div>
 			<?php endforeach; ?>
 		</div>
 		<button class="xoo-aff-add-field"><span class="fas fa-plus-circle"></span>Add Field</button>

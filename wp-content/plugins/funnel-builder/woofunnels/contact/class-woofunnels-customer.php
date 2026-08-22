@@ -341,7 +341,18 @@ if ( ! class_exists( 'WooFunnels_Customer' ) ) {
 				$customer['id'] = $this->get_id();
 				$this->db_operations->update_customer( $customer );
 			} elseif ( empty( $this->get_id() ) ) {
-				$customer['cid'] = $this->get_cid();
+				$cid = $this->get_cid();
+
+				/**
+				 * A customer profile must belong to a real contact. cid 0 is the guest
+				 * fallback and `cid` is a UNIQUE column on wp_bwf_wc_customers, so a second
+				 * guest order would throw "Duplicate entry '0' for key 'cid'". Skip the insert.
+				 */
+				if ( empty( $cid ) || absint( $cid ) < 1 ) {
+					return;
+				}
+
+				$customer['cid'] = $cid;
 
 				$this->id = $this->db_operations->insert_customer( $customer );
 			}

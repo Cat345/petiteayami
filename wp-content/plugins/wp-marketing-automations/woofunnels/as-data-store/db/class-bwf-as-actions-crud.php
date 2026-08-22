@@ -13,7 +13,7 @@ if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 		 * @param $action_id
 		 * @param string $return_vars
 		 *
-		 * @return stdClass
+		 * @return stdClass|null Null when the action row does not exist (or the query failed).
 		 */
 		public static function get_single_action( $action_id, $return_vars = '*' ) {
 			global $wpdb;
@@ -28,15 +28,18 @@ if ( ! class_exists( 'BWF_AS_Actions_Crud' ) ) {
 
 			$status = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
+			if ( ! is_array( $status ) || ! isset( $status[0] ) || ! is_array( $status[0] ) || 0 === count( $status[0] ) ) {
+				/** Empty stdClass here passed every instanceof/empty() guard downstream, causing undefined-property warnings on deleted actions */
+				return null;
+			}
+
 			$return = new stdClass();
-			if ( is_array( $status ) && count( $status ) > 0 && isset( $status[0] ) && is_array( $status[0] ) && count( $status[0] ) > 0 ) {
-				foreach ( $status[0] as $key => $value ) {
-					$value = maybe_unserialize( $value );
-					if ( true === self::is_json( $value ) ) {
-						$value = json_decode( $value, ARRAY_A );
-					}
-					$return->$key = $value;
+			foreach ( $status[0] as $key => $value ) {
+				$value = maybe_unserialize( $value );
+				if ( true === self::is_json( $value ) ) {
+					$value = json_decode( $value, ARRAY_A );
 				}
+				$return->$key = $value;
 			}
 
 			return $return;

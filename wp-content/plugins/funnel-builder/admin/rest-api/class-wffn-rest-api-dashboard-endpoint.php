@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 	#[\AllowDynamicProperties]
@@ -83,42 +84,6 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 						'args'                => $this->get_stats_collection(),
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => array( $this, 'get_all_source_data' ),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					),
-				)
-			);
-			register_rest_route(
-				$this->namespace,
-				'/' . $this->rest_base . '/revenue-percentage/',
-				array(
-					array(
-						'args'                => $this->get_stats_collection(),
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_revenue_percentage' ),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					),
-				)
-			);
-			register_rest_route(
-				$this->namespace,
-				'/' . $this->rest_base . '/all-upsells/',
-				array(
-					array(
-						'args'                => $this->get_stats_collection(),
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_all_upsells' ),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					),
-				)
-			);
-			register_rest_route(
-				$this->namespace,
-				'/' . $this->rest_base . '/upsells-items/',
-				array(
-					array(
-						'args'                => $this->get_stats_collection(),
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_item_list' ),
 						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
 					),
 				)
@@ -313,276 +278,6 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 			}
 
 			return $result;
-		}
-
-		/**
-		 * Handles the request to fetch items based on the specified type.
-		 *
-		 * This function checks the 'type' parameter from the request and invokes the corresponding
-		 * method to fetch upsell or bump items based on the value of 'type'.
-		 *
-		 * @param WP_REST_Request $request The request object containing the parameters.
-		 *
-		 * @return WP_REST_Response The response object with the fetched items or an error message.
-		 *
-		 * @throws Exception|Error Throws an exception or error if any issue occurs during processing.
-		 */
-		public function get_item_list( WP_REST_Request $request ) {
-			try {
-				$type = $request->get_param( 'type' );
-				if ( 'wfocu_offer' === $type ) {
-					return $this->get_upsell_items( $request );
-				} elseif ( 'wfob_bump' === $type ) {
-					return $this->get_bump_items( $request );
-				} elseif ( 'cart_upsells' === $type ) {
-					return $this->get_cart_upsell_items( $request );
-				}
-			} catch ( Exception | Error $e ) {
-				return rest_ensure_response(
-					array(
-						'result'  => array(
-							'items' => array(),
-						),
-						'status'  => false,
-						'message' => esc_html( $e->getMessage() ),
-					)
-				);
-			}
-		}
-
-		/**
-		 * Get cart upsell item details including item name and total price.
-		 *
-		 * @param WP_REST_Request $request The REST request object.
-		 *
-		 * @return WP_REST_Response The response containing item details or an error message.
-		 */
-		public function get_cart_upsell_items( WP_REST_Request $request ) {
-			global $wpdb;
-			$product_id = $request->get_param( 'id' );
-
-			if ( empty( $product_id ) || ! is_numeric( $product_id ) ) {
-				return rest_ensure_response(
-					array(
-						'result'  => array( 'items' => array() ),
-						'status'  => false,
-						'message' => __( 'Invalid Product ID', 'funnel-builder' ),
-					)
-				);
-			}
-
-			$items = $wpdb->get_results(
-				$wpdb->prepare(
-					"
-        SELECT
-            p.post_title as product_name,
-            SUM(cp.price) as total
-        FROM
-            {$wpdb->prefix}fk_cart_products cp
-        JOIN {$wpdb->prefix}fk_cart c ON cp.oid = c.oid
-        JOIN {$wpdb->posts} p ON cp.product_id = p.ID
-        WHERE cp.type = 1 AND cp.product_id = %d
-        GROUP BY cp.product_id, p.post_title
-    ",
-					$product_id
-				),
-				ARRAY_A
-			);
-
-			if ( empty( $items ) ) {
-				return rest_ensure_response(
-					array(
-						'result'  => array( 'items' => array() ),
-						'status'  => false,
-						'message' => __( 'No cart upsell items found for this product', 'funnel-builder' ),
-					)
-				);
-			}
-
-			return rest_ensure_response(
-				array(
-					'result'  => array(
-						'items' => array_map(
-							fn( $item ) => array(
-								'product_name' => $item['product_name'],
-								'total'        => (float) $item['total'],
-							),
-							$items
-						),
-					),
-					'status'  => true,
-					'message' => __( 'Cart Upsell Items Fetched Successfully', 'funnel-builder' ),
-				)
-			);
-		}
-		/**
-		 * Get upsell item details including item name and total price.
-		 *
-		 * @param WP_REST_Request $request The REST request object.
-		 *
-		 * return The response containing item details or an error message.
-		 */
-		public function get_upsell_items( WP_REST_Request $request ) {
-			global $wpdb;
-			$fid = $request->get_param( 'id' );
-			if ( empty( $fid ) || ! is_numeric( $fid ) ) {
-				return rest_ensure_response(
-					array(
-						'result'  => array(
-							'items' => array(),
-						),
-						'status'  => false,
-						'message' => __( 'Invalid Object Id', 'funnel-builder' ),
-					)
-				);
-			}
-			$sess_ids = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT sess_id FROM {$wpdb->prefix}wfocu_event WHERE object_id = %d AND action_type_id = 4", $fid ) );
-			if ( empty( $sess_ids ) ) {
-				return rest_ensure_response(
-					array(
-						'result'  => array(
-							'items' => array(),
-						),
-						'status'  => false,
-						'message' => __( 'No matching sessions found', 'funnel-builder' ),
-					)
-				);
-			}
-
-			$upsell_items = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT p.post_title as product_name, SUM(ev.value) as total
-						 FROM {$wpdb->prefix}wfocu_event AS ev
-						 INNER JOIN {$wpdb->prefix}wfocu_event_meta AS em ON ev.id = em.event_id
-						 INNER JOIN {$wpdb->prefix}posts AS p ON ev.object_id = p.ID
-						 WHERE ev.sess_id IN (" . implode( ', ', array_fill( 0, count( $sess_ids ), '%d' ) ) . ")
-						   AND ev.object_type = 'product'
-						   AND ev.action_type_id = 5
-						   AND em.meta_key = '_offer_id'
-						   AND em.meta_value = %d
-						 GROUP BY ev.object_id, p.post_title",
-					array_merge( $sess_ids, array( $fid ) )
-				),
-				ARRAY_A
-			);
-			if ( empty( $upsell_items ) ) {
-				return rest_ensure_response(
-					array(
-						'result'  => array(
-							'items' => array(),
-						),
-						'status'  => false,
-						'message' => __( 'No upsell items found for this offer', 'funnel-builder' ),
-					)
-				);
-			}
-			$formatted_response = array_map(
-				function ( $item ) {
-					return array(
-						'product_name' => $item['product_name'],
-						'total'        => floatval( $item['total'] ),
-					);
-				},
-				$upsell_items
-			);
-
-			return rest_ensure_response(
-				array(
-					'result'  => array(
-						'items' => $formatted_response,
-					),
-					'status'  => true,
-					'message' => __( 'Upsell Items Fetched Successfully', 'funnel-builder' ),
-				)
-			);
-		}
-
-		/**
-		 * Get bump item details including item name and total price.
-		 *
-		 * @param WP_REST_Request $request The REST request object.
-		 *
-		 * return The response containing item details or an error message.
-		 */
-		public function get_bump_items( WP_REST_Request $request ) {
-			global $wpdb;
-			$bid = $request->get_param( 'id' );
-			if ( empty( $bid ) || ! is_numeric( $bid ) ) {
-				return rest_ensure_response(
-					array(
-						'result'  => array(
-							'items' => array(),
-						),
-						'status'  => false,
-						'message' => __( 'Invalid Bump ID', 'funnel-builder' ),
-					)
-				);
-
-			}
-			$results = $wpdb->get_col( $wpdb->prepare( "SELECT iid FROM {$wpdb->prefix}wfob_stats WHERE bid = %d", $bid ) );
-			if ( empty( $results ) ) {
-				return rest_ensure_response(
-					array(
-						'result'  => array(
-							'items' => array(),
-						),
-						'status'  => false,
-						'message' => __( 'No records found', 'funnel-builder' ),
-					)
-				);
-
-			}
-			$iids = array();
-			foreach ( $results as $iid_value ) {
-				$decoded = json_decode( $iid_value, true ) ?: maybe_unserialize( $iid_value );
-				$iids    = array_merge( $iids, is_array( $decoded ) ? $decoded : array( (int) $iid_value ) );
-			}
-			if ( empty( $iids ) ) {
-				return rest_ensure_response(
-					array(
-						'result'  => array(
-							'items' => array(),
-						),
-						'status'  => false,
-						'message' => __( 'No valid IIDs found', 'funnel-builder' ),
-					)
-				);
-
-			}
-			$order_items = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT oi.order_item_name as product_name, SUM(meta_total.meta_value + meta_tax.meta_value) AS total
-					 FROM {$wpdb->prefix}woocommerce_order_items AS oi
-					 LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS meta_total ON oi.order_item_id = meta_total.order_item_id AND meta_total.meta_key = '_line_total'
-					 LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS meta_tax ON oi.order_item_id = meta_tax.order_item_id AND meta_tax.meta_key = '_line_tax'
-					 WHERE oi.order_item_id IN (" . implode( ', ', array_fill( 0, count( $iids ), '%d' ) ) . ')
-					 GROUP BY oi.order_item_name',
-					$iids
-				),
-				ARRAY_A
-			);
-			if ( empty( $order_items ) ) {
-				return rest_ensure_response(
-					array(
-						'result'  => array(
-							'items' => array(),
-						),
-						'status'  => false,
-						'message' => __( 'Order Bump items not fetched', 'funnel-builder' ),
-					)
-				);
-
-			}
-
-			return rest_ensure_response(
-				array(
-					'result'  => array(
-						'items' => $order_items,
-					),
-					'status'  => true,
-					'message' => __( 'Order Bump items fetched successfully', 'funnel-builder' ),
-				)
-			);
 		}
 
 		public function get_all_stats_data( $request ) {
@@ -880,69 +575,6 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 			return (int) $wpdb->get_var( $query );//phpcs:ignore
 		}
 
-		public function get_revenue_percentage( $request ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-
-			try {
-				$response = array();
-
-				$get_total_revenue = $this->get_total_revenue( 0, '', '' );
-
-				$sum_bump   = floatval( $get_total_revenue['bump'][0]['sum_bump'] );
-				$sum_aero   = floatval( $get_total_revenue['aero'][0]['sum_aero'] );
-				$sum_upsell = floatval( $get_total_revenue['upsell'][0]['sum_upsells'] );
-				$total      = $sum_aero + $sum_bump + $sum_upsell;
-
-				$checkout_orders = floatval( $get_total_revenue['aero'][0]['checkout_orders'] );
-				$bump_orders     = floatval( $get_total_revenue['bump'][0]['bump_orders'] );
-				$upsell_orders   = floatval( $get_total_revenue['upsell'][0]['upsell_orders'] );
-
-				$checkout_percentage = $this->get_percentage( $total, $sum_aero );
-				$bump_percentage     = $this->get_percentage( $total, $sum_bump );
-				$upsell_percentage   = $this->get_percentage( $total, $sum_upsell );
-
-				$response['checkout'] = array(
-					'source'     => __( 'Checkouts', 'funnel-builder' ),
-					'orders'     => $checkout_orders,
-					'revenue'    => round( $sum_aero, 2 ),
-					'percentage' => round( $checkout_percentage, 2 ),
-				);
-
-				$response['bump'] = array(
-					'source'     => __( 'Order Bump', 'funnel-builder' ),
-					'orders'     => $bump_orders,
-					'revenue'    => round( $sum_bump, 2 ),
-					'percentage' => round( $bump_percentage, 2 ),
-				);
-
-				$response['upsell'] = array(
-					'source'     => __( 'One Click Upsell', 'funnel-builder' ),
-					'orders'     => $upsell_orders,
-					'revenue'    => round( $sum_upsell, 2 ),
-					'percentage' => round( $upsell_percentage, 2 ),
-				);
-
-				return rest_ensure_response(
-					array(
-						'result'  => array(
-							'items' => $response,
-						),
-						'status'  => true,
-						'message' => __( 'Revenue Percentage Fetched Successfully', 'funnel-builder' ),
-					)
-				);
-			} catch ( Exception | Error $e ) {
-				return rest_ensure_response(
-					array(
-						'result'  => array(
-							'items' => array(),
-						),
-						'status'  => false,
-						'message' => esc_html( $e->getMessage() ),
-					)
-				);
-			}
-		}
-
 		public function get_top_funnels( $request ) {
 
 			if ( isset( $request['overall'] ) ) {
@@ -1080,48 +712,40 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 
 			$ids = array_values( array_unique( array_map( 'absint', wp_list_pluck( $funnels, 'fid' ) ) ) );
 
-			if ( '' !== $start_date && '' !== $end_date ) {
-				$report_data = $wpdb->get_results(
-					$wpdb->prepare(
-						'SELECT object_id as fid , SUM(COALESCE(no_of_sessions, 0)) AS views FROM ' . $wpdb->prefix . 'wfco_report_views WHERE type = 7 AND object_id IN ( ' . implode( ', ', array_fill( 0, count( $ids ), '%d' ) ) . ' ) AND date >= %s AND date < %s GROUP BY object_id',
-						array_merge( $ids, array( $start_date, $end_date ) )
-					),
-					ARRAY_A
-				);
-			} else {
-				$report_data = $wpdb->get_results(
-					$wpdb->prepare(
-						'SELECT object_id as fid , SUM(COALESCE(no_of_sessions, 0)) AS views FROM ' . $wpdb->prefix . 'wfco_report_views WHERE type = 7 AND object_id IN ( ' . implode( ', ', array_fill( 0, count( $ids ), '%d' ) ) . ' ) GROUP BY object_id',
-						$ids
-					),
-					ARRAY_A
-				);
-			}
-			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
-				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
-				if ( false === $db_error['db_error'] ) {
-					if ( is_array( $report_data ) && count( $report_data ) > 0 ) {
-						/**
-						 * prepare data for sales funnels and add views and conversion
-						 */
-						$funnels = array_map(
-							function ( $item ) use ( $report_data ) {
-								$search_view = array_search( intval( $item['fid'] ), array_map( 'intval', wp_list_pluck( $report_data, 'fid' ) ), true );
-								if ( false !== $search_view && isset( $report_data[ $search_view ]['views'] ) && absint( $report_data[ $search_view ]['views'] ) > 0 ) {
-										$item['views']           = absint( $report_data[ $search_view ]['views'] );
-										$item['conversion_rate'] = $this->get_percentage( absint( $item['views'] ), $item['conversion'] );
-								} else {
-									$item['views']           = '0';
-									$item['conversion']      = '0';
-									$item['conversion_rate'] = '0';
-								}
+			/**
+			 * Empty unless something records views; the mapping below then falls
+			 * to its else branch and every funnel reports zero.
+			 */
+			$report_data = apply_filters(
+				'wffn_report_views_rows',
+				array(),
+				array(
+					'context'    => 'dashboard_funnels',
+					'object_ids' => $ids,
+					'start_date' => $start_date,
+					'end_date'   => $end_date,
+				)
+			);
+			if ( is_array( $report_data ) && count( $report_data ) > 0 ) {
+				/**
+				 * prepare data for sales funnels and add views and conversion
+				 */
+				$funnels = array_map(
+					function ( $item ) use ( $report_data ) {
+						$search_view = array_search( intval( $item['fid'] ), array_map( 'intval', wp_list_pluck( $report_data, 'fid' ) ), true );
+						if ( false !== $search_view && isset( $report_data[ $search_view ]['views'] ) && absint( $report_data[ $search_view ]['views'] ) > 0 ) {
+								$item['views']           = absint( $report_data[ $search_view ]['views'] );
+								$item['conversion_rate'] = $this->get_percentage( absint( $item['views'] ), $item['conversion'] );
+						} else {
+							$item['views']           = '0';
+							$item['conversion']      = '0';
+							$item['conversion_rate'] = '0';
+						}
 
-								return $item;
-							},
-							$funnels
-						);
-					}
-				}
+						return $item;
+					},
+					$funnels
+				);
 			}
 
 			return $funnels;

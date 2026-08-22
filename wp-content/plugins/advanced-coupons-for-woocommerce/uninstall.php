@@ -94,6 +94,8 @@ function acfwp_plugin_cleanup() {
     delete_option( $constants->AUTO_APPLY_COUPONS );
     delete_option( $constants->APPLY_NOTIFICATION_CACHE );
     delete_option( $constants->DEFER_URL_COUPON_SESSION );
+    delete_option( $constants->ADD_PRODUCTS_DISCOUNT_APPLICATION_MODE );
+    delete_option( $constants->SHIPPING_OVERRIDES_DISCOUNT_APPLICATION_MODE );
 
     // SLMW options.
     delete_option( $constants->OPTION_ACTIVATION_EMAIL );

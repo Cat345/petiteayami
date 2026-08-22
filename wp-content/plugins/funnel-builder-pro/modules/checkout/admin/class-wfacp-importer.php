@@ -122,6 +122,10 @@ if ( ! class_exists( 'WFACP_Importer' ) ) {
 					// Import every Aero Checkout page meta
 					$acp_meta = apply_filters( 'wfacp_json_importer_meta', $acp_meta );
 
+					if ( isset( $acp_meta['_wfacp_fieldsets_data'] ) ) {
+						$acp_meta['_wfacp_fieldsets_data'] = $this->normalize_address_divider_positions( $acp_meta['_wfacp_fieldsets_data'] );
+					}
+
 					foreach ( $acp_meta as $meta_key => $meta_value ) {
 						update_post_meta( $acp_id, $meta_key, $meta_value );
 					}
@@ -163,6 +167,89 @@ if ( ! class_exists( 'WFACP_Importer' ) ) {
 			}
 
 			return $imported_acps;
+		}
+
+		/**
+		 * Reposition the address divider entries in the fieldsets data.
+		 *
+		 * Export files that round-tripped through a JS object have the
+		 * `wfacp_start_divider_*` / `wfacp_end_divider_*` keys pushed after the
+		 * integer-keyed fields, which renders the address divider empty and breaks
+		 * the shipping-to-billing address copy. Move each divider pair back around
+		 * its address group fields.
+		 *
+		 * @param array $fieldsets_data Value of the `_wfacp_fieldsets_data` meta.
+		 *
+		 * @return array
+		 */
+		public function normalize_address_divider_positions( $fieldsets_data ) {
+			if ( ! is_array( $fieldsets_data ) || empty( $fieldsets_data['fieldsets'] ) || ! is_array( $fieldsets_data['fieldsets'] ) ) {
+				return $fieldsets_data;
+			}
+
+			foreach ( $fieldsets_data['fieldsets'] as $step => $sections ) {
+				if ( ! is_array( $sections ) ) {
+					continue;
+				}
+				foreach ( $sections as $section_index => $section ) {
+					if ( empty( $section['fields'] ) || ! is_array( $section['fields'] ) ) {
+						continue;
+					}
+					$fieldsets_data['fieldsets'][ $step ][ $section_index ]['fields'] = $this->wrap_address_groups_in_dividers( $section['fields'] );
+				}
+			}
+
+			return $fieldsets_data;
+		}
+
+		/**
+		 * Move `wfacp_start_divider_*` / `wfacp_end_divider_*` entries so they wrap
+		 * the fields of their address group within a section's fields map.
+		 *
+		 * @param array $fields Section fields keyed by index or divider key.
+		 *
+		 * @return array
+		 */
+		protected function wrap_address_groups_in_dividers( $fields ) {
+			foreach ( array( 'billing', 'shipping' ) as $type ) {
+				$start_key = 'wfacp_start_divider_' . $type;
+				$end_key   = 'wfacp_end_divider_' . $type;
+				if ( ! isset( $fields[ $start_key ] ) || ! isset( $fields[ $end_key ] ) ) {
+					continue;
+				}
+
+				$group_keys = array();
+				foreach ( $fields as $key => $field ) {
+					if ( $start_key === $key || $end_key === $key ) {
+						continue;
+					}
+					if ( is_array( $field ) && ! empty( $field['address_group'] ) && isset( $field['id'] ) && 0 === strpos( $field['id'], $type . '_' ) ) {
+						$group_keys[] = $key;
+					}
+				}
+				if ( empty( $group_keys ) ) {
+					continue;
+				}
+
+				$first_key  = reset( $group_keys );
+				$last_key   = end( $group_keys );
+				$new_fields = array();
+				foreach ( $fields as $key => $field ) {
+					if ( $start_key === $key || $end_key === $key ) {
+						continue;
+					}
+					if ( $key === $first_key ) {
+						$new_fields[ $start_key ] = $fields[ $start_key ];
+					}
+					$new_fields[ $key ] = $field;
+					if ( $key === $last_key ) {
+						$new_fields[ $end_key ] = $fields[ $end_key ];
+					}
+				}
+				$fields = $new_fields;
+			}
+
+			return $fields;
 		}
 
 		// Import Images from URLs

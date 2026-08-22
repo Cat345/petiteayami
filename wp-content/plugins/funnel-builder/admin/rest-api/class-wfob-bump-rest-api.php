@@ -25,7 +25,6 @@ if ( ! class_exists( 'WFOB_Bump_Rest_Api' ) ) {
 
 		protected $namespace    = 'funnelkit-app';
 		protected $rest_base    = 'funnel-bump';
-		protected $rest_base_id = 'funnel-bump/';
 
 		public function __construct() {
 			add_action( 'rest_api_init', array( $this, 'register_routes' ) );
@@ -45,7 +44,7 @@ if ( ! class_exists( 'WFOB_Bump_Rest_Api' ) ) {
 		public function register_routes() {
 			register_rest_route(
 				$this->namespace,
-				'/' . $this->rest_base_id . 'skins/preview',
+				'/ob-sample-preview',
 				array(
 					'args' => array(
 						'bump_id' => array(
@@ -69,7 +68,7 @@ if ( ! class_exists( 'WFOB_Bump_Rest_Api' ) ) {
 		}
 
 		public function get_bumps_preview() {
-			$preview_path = WFFN_PLUGIN_DIR . '/admin/rest-api-helpers/order-bumps/bump-preview.json';
+			$preview_path = WFFN_PLUGIN_DIR . '/admin/rest-api-helpers/order-bumps/ob-sample-preview.json';
 
 			$data = array(
 				'success'  => false,

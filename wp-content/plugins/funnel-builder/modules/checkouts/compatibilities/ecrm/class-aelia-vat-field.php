@@ -56,7 +56,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Aliea_vat' ) ) {
 		public function setup_fields_billing() {
 			new WFACP_Add_Address_Field( 'wfacp_vat_fields', array(
 				'type'        => 'wfacp_html',
-				'label'       => __( 'vat Fields', 'woocommerce-aero-checkout' ),
+				'label'       => __( 'vat Fields', 'funnel-builder' ),
 				'placeholder' => __( 'vat Fields', 'woocommerce-fakturownia' ),
 				'cssready'    => [ 'wfacp-col-left-third' ],
 				'class'       => array( 'form-row-third first', 'wfacp-col-full' ),
@@ -129,7 +129,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Aliea_vat' ) ) {
 				return $messages;
 			}
 			$messages[] = [
-				'message'     => __( 'EU VAT field requires Billing Address field to present in checkout. Please drag Billing Address to place it in form.', 'woofunnels-aero-checkout' ),
+				'message'     => __( 'EU VAT field requires Billing Address field to present in checkout. Please drag Billing Address to place it in form.', 'funnel-builder' ),
 				'id'          => 'address',
 				'show'        => 'yes',
 				'dismissible' => false,

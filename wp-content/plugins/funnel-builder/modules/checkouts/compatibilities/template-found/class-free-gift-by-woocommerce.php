@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Free_Gift_By_WooCommerce' ) ) {
 	/**
 	 * Free Gift For WooCommerce (Official WooCommerce)

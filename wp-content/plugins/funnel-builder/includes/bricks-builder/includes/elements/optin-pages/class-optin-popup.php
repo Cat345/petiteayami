@@ -22,7 +22,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 		 * @return string The label for the Optin Popup element.
 		 */
 		public function get_label() {
-			return esc_html__( 'Optin Popup' );
+			return esc_html__( 'Optin Popup' , 'funnel-builder');
 		}
 
 		/**
@@ -38,7 +38,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 			$this->control_groups = array();
 
 			$this->control_groups['contentProgressBar'] = array(
-				'title' => esc_html__( 'Progress Bar' ),
+				'title' => esc_html__( 'Progress Bar' , 'funnel-builder'),
 				'tab'   => 'content',
 			);
 
@@ -48,7 +48,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 			);
 
 			$this->control_groups['contentForm'] = array(
-				'title' => esc_html__( 'Form' ),
+				'title' => esc_html__( 'Form' , 'funnel-builder'),
 				'tab'   => 'content',
 			);
 
@@ -58,12 +58,12 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 			);
 
 			$this->control_groups['contentPopup'] = array(
-				'title' => esc_html__( 'Popup' ),
+				'title' => esc_html__( 'Popup' , 'funnel-builder'),
 				'tab'   => 'content',
 			);
 
 			$this->control_groups['styleProgressBar'] = array(
-				'title' => esc_html__( 'Progress Bar' ),
+				'title' => esc_html__( 'Progress Bar' , 'funnel-builder'),
 				'tab'   => 'style',
 			);
 
@@ -73,7 +73,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 			);
 
 			$this->control_groups['styleForm'] = array(
-				'title' => esc_html__( 'Form' ),
+				'title' => esc_html__( 'Form' , 'funnel-builder'),
 				'tab'   => 'style',
 			);
 
@@ -83,12 +83,12 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 			);
 
 			$this->control_groups['stylePopup'] = array(
-				'title' => esc_html__( 'Popup' ),
+				'title' => esc_html__( 'Popup' , 'funnel-builder'),
 				'tab'   => 'style',
 			);
 
 			$this->control_groups['styleCloseButton'] = array(
-				'title' => esc_html__( 'Close Button' ),
+				'title' => esc_html__( 'Close Button' , 'funnel-builder'),
 				'tab'   => 'style',
 			);
 
@@ -118,7 +118,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 			// Add the 'popup_bar_text_position' control
 			$this->controls['popup_bar_text_position'] = array(
 				'group'    => 'contentProgressBar',
-				'label'    => esc_html__( 'Show progress text above the bar' ),
+				'label'    => esc_html__( 'Show progress text above the bar' , 'funnel-builder'),
 				'type'     => 'checkbox',
 				'default'  => true,
 				'css'      => array(
@@ -138,7 +138,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 
 			$this->controls['popup_bar_animation'] = array(
 				'group'    => 'contentProgressBar',
-				'label'    => esc_html__( 'Animation' ),
+				'label'    => esc_html__( 'Animation' , 'funnel-builder'),
 				'type'     => 'checkbox',
 				'default'  => true,
 				'required' => array( 'popup_bar_pp', '=', true ),
@@ -148,7 +148,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 				'group'    => 'contentProgressBar',
 				'label'    => esc_html__( 'Text' ),
 				'type'     => 'text',
-				'default'  => esc_html__( '75% Complete' ),
+				'default'  => esc_html__( '75% Complete' , 'funnel-builder'),
 				'required' => array( 'popup_bar_pp', '=', true ),
 			);
 
@@ -156,32 +156,32 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 				'group'   => 'contentHeading',
 				'label'   => esc_html__( 'Heading' ),
 				'type'    => 'textarea',
-				'default' => __( 'You\'re just one step away!' ),
+				'default' => __( 'You\'re just one step away!' , 'funnel-builder'),
 			);
 
 			$this->controls['popup_sub_heading'] = array(
 				'group'   => 'contentHeading',
-				'label'   => esc_html__( 'Sub Heading' ),
+				'label'   => esc_html__( 'Sub Heading' , 'funnel-builder'),
 				'type'    => 'textarea',
-				'default' => __( 'Enter your details below and we\'ll get you signed up' ),
+				'default' => __( 'Enter your details below and we\'ll get you signed up' , 'funnel-builder'),
 			);
 
 			$this->controls['btn_text'] = array(
 				'group'   => 'contentButton',
 				'label'   => esc_html__( 'Title' ),
 				'type'    => 'text',
-				'default' => esc_html__( 'Signup Now' ),
+				'default' => esc_html__( 'Signup Now' , 'funnel-builder'),
 			);
 
 			$this->controls['btn_subheading_text'] = array(
 				'group' => 'contentButton',
-				'label' => esc_html__( 'Subtitle' ),
+				'label' => esc_html__( 'Subtitle' , 'funnel-builder'),
 				'type'  => 'text',
 			);
 
 			$this->controls['btn_alignment'] = array(
 				'group'   => 'contentButton',
-				'label'   => esc_html__( 'Button Alignment' ),
+				'label'   => esc_html__( 'Button Alignment' , 'funnel-builder'),
 				'type'    => 'text-align',
 				'exclude' => array( 'justify' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'default' => 'center',
@@ -195,7 +195,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 
 			$this->controls['btn_text_alignment'] = array(
 				'group'   => 'contentButton',
-				'label'   => esc_html__( 'Text Alignment' ),
+				'label'   => esc_html__( 'Text Alignment' , 'funnel-builder'),
 				'type'    => 'text-align',
 				'exclude' => array( 'justify' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'css'     => array(
@@ -208,7 +208,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 
 			$this->controls['separatorButtonIcon'] = array(
 				'group' => 'contentButton',
-				'label' => esc_html__( 'Button Icon' ),
+				'label' => esc_html__( 'Button Icon' , 'funnel-builder'),
 				'type'  => 'separator',
 			);
 
@@ -233,9 +233,9 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 				'label'   => esc_html( 'Effect' ),
 				'type'    => 'select',
 				'options' => array(
-					'fade'       => __( 'Fade' ),
-					'slide-up'   => __( 'Slide Up' ),
-					'slide-down' => __( 'Slide Down' ),
+					'fade'       => __( 'Fade' , 'funnel-builder'),
+					'slide-up'   => __( 'Slide Up' , 'funnel-builder'),
+					'slide-down' => __( 'Slide Down' , 'funnel-builder'),
 				),
 				'default' => 'fade',
 			);
@@ -308,7 +308,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 
 			$this->controls['separatorProgressBarStyling'] = array(
 				'group' => 'styleProgressBar',
-				'label' => esc_html__( 'Styling' ),
+				'label' => esc_html__( 'Styling' , 'funnel-builder'),
 				'type'  => 'separator',
 			);
 
@@ -380,7 +380,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 
 			$this->controls['separatorStyleSubHeading'] = array(
 				'group' => 'styleHeading',
-				'label' => esc_html__( 'Sub-Heading' ),
+				'label' => esc_html__( 'Sub-Heading' , 'funnel-builder'),
 				'type'  => 'separator',
 			);
 
@@ -404,7 +404,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 
 			$this->controls['btn_width'] = array(
 				'group'   => 'styleButton',
-				'label'   => esc_html__( 'Button width (in %)' ),
+				'label'   => esc_html__( 'Button width (in %)' , 'funnel-builder'),
 				'type'    => 'slider',
 				'css'     => array(
 					array(
@@ -480,7 +480,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 
 			$this->controls['btn_subheading_text_typo'] = array(
 				'group'  => 'styleButton',
-				'label'  => esc_html__( 'Sub Heading' ),
+				'label'  => esc_html__( 'Sub Heading' , 'funnel-builder'),
 				'type'   => 'typography',
 				'css'    => array(
 					array(
@@ -519,7 +519,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 
 			$this->controls['btn_text_alignment_box_shadow'] = array(
 				'group'  => 'styleButton',
-				'label'  => esc_html__( 'Box Shadow' ),
+				'label'  => esc_html__( 'Box Shadow' , 'funnel-builder'),
 				'type'   => 'box-shadow',
 				'css'    => array(
 					array(
@@ -581,7 +581,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 
 			$this->controls['popup_wrap_width'] = array(
 				'group'   => 'stylePopup',
-				'label'   => esc_html__( 'Button width (in px)' ),
+				'label'   => esc_html__( 'Button width (in px)' , 'funnel-builder'),
 				'type'    => 'slider',
 				'css'     => array(
 					array(
@@ -625,7 +625,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 
 			$this->controls['close_button_vertical'] = array(
 				'group'   => 'styleCloseButton',
-				'label'   => esc_html__( 'Vertical Position' ),
+				'label'   => esc_html__( 'Vertical Position' , 'funnel-builder'),
 				'type'    => 'slider',
 				'css'     => array(
 					array(
@@ -649,7 +649,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 
 			$this->controls['close_button_horizontal'] = array(
 				'group'   => 'styleCloseButton',
-				'label'   => esc_html__( 'Horizontal Position' ),
+				'label'   => esc_html__( 'Horizontal Position' , 'funnel-builder'),
 				'type'    => 'slider',
 				'css'     => array(
 					array(
@@ -679,7 +679,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 
 			$this->controls['icon_size'] = array(
 				'group'   => 'styleCloseButton',
-				'label'   => esc_html__( 'Font Size' ),
+				'label'   => esc_html__( 'Font Size' , 'funnel-builder'),
 				'type'    => 'slider',
 				'css'     => array(
 					array(
@@ -727,7 +727,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 
 			$this->controls['close_btn_border'] = array(
 				'group'   => 'styleCloseButton',
-				'label'   => esc_html__( 'Border Radius' ),
+				'label'   => esc_html__( 'Border Radius' , 'funnel-builder'),
 				'type'    => 'slider',
 				'css'     => array(
 					array(
@@ -787,7 +787,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 
 			$this->controls['separatorContentTextAfterButton'] = array(
 				'group' => 'contentForm',
-				'label' => esc_html__( 'Text After Button' ),
+				'label' => esc_html__( 'Text After Button' , 'funnel-builder'),
 				'type'  => 'separator',
 			);
 
@@ -795,12 +795,12 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 				'group'   => 'contentForm',
 				'label'   => esc_html__( 'Text' ),
 				'type'    => 'text',
-				'default' => esc_html__( 'Your Information is 100% Secure' ),
+				'default' => esc_html__( 'Your Information is 100% Secure' , 'funnel-builder'),
 			);
 
 			$this->controls['separatorStyleTextAfterButton'] = array(
 				'group' => 'styleForm',
-				'label' => esc_html__( 'Text After Button' ),
+				'label' => esc_html__( 'Text After Button' , 'funnel-builder'),
 				'type'  => 'separator',
 			);
 

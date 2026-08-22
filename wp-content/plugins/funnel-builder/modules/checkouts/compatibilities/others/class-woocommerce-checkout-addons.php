@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /**
  * Compatibility Name: WooCommerce Checkout Add-Ons
  * Plugin URI: http://www.woocommerce.com/products/woocommerce-checkout-add-ons/

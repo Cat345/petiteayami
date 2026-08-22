@@ -2,6 +2,8 @@
 
 namespace FunnelKit;
 
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
+
 use WFACP_Common;
 use WFACP_Template_Importer;
 use Exception;
@@ -100,7 +102,7 @@ if ( ! class_exists( '\FunnelKit\WFACP_Bricks_Importer' ) && interface_exists( '
 				return array( 'status' => $status );
 			}
 
-			return array( 'error' => __( 'Something Went wrong', 'woofunnels-aero-checkout' ) ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			return array( 'error' => __( 'Something Went wrong', 'funnel-builder' ) ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 		}
 
 
@@ -200,9 +202,9 @@ if ( ! class_exists( '\FunnelKit\WFACP_Bricks_Importer' ) && interface_exists( '
 						 */
 						$elements[ $index ]['settings']['mini_cart_enable_strike_through_price'] = false;
 						$elements[ $index ]['settings']['mini_cart_enable_low_stock_trigger']    = false;
-						$elements[ $index ]['settings']['mini_cart_low_stock_message']           = __( '{{quantity}} LEFT IN STOCK', 'woofunnels-aero-checkout' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						$elements[ $index ]['settings']['mini_cart_low_stock_message']           = __( '{{quantity}} LEFT IN STOCK', 'funnel-builder' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 						$elements[ $index ]['settings']['mini_cart_enable_saving_price_message'] = false;
-						$elements[ $index ]['settings']['mini_cart_saving_price_message']        = __( 'You saved {{saving_amount}} ({{saving_percentage}}) on this order', 'woofunnels-aero-checkout' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						$elements[ $index ]['settings']['mini_cart_saving_price_message']        = __( 'You saved {{saving_amount}} ({{saving_percentage}}) on this order', 'funnel-builder' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 					}
 
@@ -212,9 +214,9 @@ if ( ! class_exists( '\FunnelKit\WFACP_Bricks_Importer' ) && interface_exists( '
 						 */
 						$elements[ $index ]['settings']['collapsible_mini_cart_enable_strike_through_price'] = false;
 						$elements[ $index ]['settings']['collapsible_mini_cart_enable_low_stock_trigger']    = false;
-						$elements[ $index ]['settings']['collapsible_mini_cart_low_stock_message']           = __( '{{quantity}} LEFT IN STOCK', 'woofunnels-aero-checkout' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						$elements[ $index ]['settings']['collapsible_mini_cart_low_stock_message']           = __( '{{quantity}} LEFT IN STOCK', 'funnel-builder' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 						$elements[ $index ]['settings']['collapsible_mini_cart_enable_saving_price_message'] = false;
-						$elements[ $index ]['settings']['collapsible_mini_cart_saving_price_message']        = __( 'You saved {{saving_amount}} ({{saving_percentage}}) on this order', 'woofunnels-aero-checkout' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						$elements[ $index ]['settings']['collapsible_mini_cart_saving_price_message']        = __( 'You saved {{saving_amount}} ({{saving_percentage}}) on this order', 'funnel-builder' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					}
 
 					if ( $setting_key == 'order_summary_enable_product_image' ) {
@@ -223,9 +225,9 @@ if ( ! class_exists( '\FunnelKit\WFACP_Bricks_Importer' ) && interface_exists( '
 						 */
 						$elements[ $index ]['settings']['order_summary_field_enable_strike_through_price'] = false;
 						$elements[ $index ]['settings']['order_summary_field_enable_low_stock_trigger']    = false;
-						$elements[ $index ]['settings']['order_summary_field_low_stock_message']           = __( '{{quantity}} LEFT IN STOCK', 'woofunnels-aero-checkout' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						$elements[ $index ]['settings']['order_summary_field_low_stock_message']           = __( '{{quantity}} LEFT IN STOCK', 'funnel-builder' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 						$elements[ $index ]['settings']['order_summary_field_enable_saving_price_message'] = false;
-						$elements[ $index ]['settings']['order_summary_field_saving_price_message']        = __( 'You saved {{saving_amount}} ({{saving_percentage}}) on this order', 'woofunnels-aero-checkout' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						$elements[ $index ]['settings']['order_summary_field_saving_price_message']        = __( 'You saved {{saving_amount}} ({{saving_percentage}}) on this order', 'funnel-builder' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					}
 				}
 			}

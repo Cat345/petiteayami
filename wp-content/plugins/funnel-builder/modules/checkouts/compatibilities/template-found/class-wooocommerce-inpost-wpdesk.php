@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Shipping_Packzkomaty_impost' ) ) {
 	/**
 	 * WooCommerce InPost By WP Desk

@@ -158,7 +158,7 @@ if ($props['image'] && in_array($element['image_align'], ['left', 'right'])) {
             // Center vertically
             'uk-flex uk-flex-column uk-flex-center[@{image_grid_breakpoint}] {@image_vertical_align} {@image_expand} {@!content_expand}',
             // Expand, also when stacking but only for `content`
-            'uk-flex uk-flex-column {content_expand}',
+            'uk-flex uk-flex-column {@content_expand}',
             'uk-flex-1 {@image_grid_breakpoint} {@content_expand} {@!image_expand}',
             'uk-flex-1[@{image_grid_breakpoint} uk-flex-none] {@content_expand} {@image_expand}',
             'uk-flex-none uk-flex-1@{image_grid_breakpoint} {@image_expand} {@!content_expand}',

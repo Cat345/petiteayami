@@ -7,6 +7,8 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 	#[\AllowDynamicProperties]
 	class WFOCU_Common {
 
+		/** Sentinel stored as an offer's default_variation when the admin explicitly cleared the pre-selected variant. */
+		const DEFAULT_VARIATION_NONE = 'none';
 
 		public static $customizer_key_prefix        = '';
 		public static $customizer_key_data          = '';

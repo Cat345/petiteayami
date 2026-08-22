@@ -55,6 +55,9 @@ class BWFAN_Automation_Controller {
 
 	public $skip_step_id = 0;
 
+	/** Set by process_disabled_step() when it fast-forwards, so start() bypasses setup_next_step(). */
+	public $fast_forwarded = false;
+
 	public $end_reason = '';
 
 	/** @var int Type of end automation */
@@ -173,9 +176,20 @@ class BWFAN_Automation_Controller {
 				return;
 			}
 
-			/** If wait step has a skip target, bypass normal traversal and execute the target step directly */
-			if ( intval( $this->skip_step_id ) > 0 && self::$TYPE_WAIT === $this->type ) {
-				$this->skip_step_id = 0;
+			/**
+			 * If a skip target was set, bypass normal traversal and execute the target step directly.
+			 * Applies to: wait steps with skip_to_step, and steps fast-forwarded in process_disabled_step()
+			 * (disabled steps, and Pro-only steps skipped on a Lite site).
+			 */
+			if (
+				intval( $this->skip_step_id ) > 0 &&
+				(
+					self::$TYPE_WAIT === $this->type ||
+					true === $this->fast_forwarded
+				)
+			) {
+				$this->skip_step_id   = 0;
+				$this->fast_forwarded = false;
 				continue;
 			}
 
@@ -373,6 +387,28 @@ class BWFAN_Automation_Controller {
 			return;
 		}
 
+		/**
+		 * NEW — Disabled step bypass (Disable Step feature). Runs before the type switch.
+		 * Pro-only — without Pro the disabled state is inert and the step runs normally
+		 * (e.g. a site downgraded from Pro with existing status-5 steps).
+		 */
+		if ( bwfan_is_autonami_pro_active() && BWFAN_Model_Automation_Step::STATUS_DISABLED === absint( $this->current_step['status'] ) ) {
+			$this->process_disabled_step();
+
+			return;
+		}
+
+		/**
+		 * Pro-only step on a Lite site (Split / Conditional / Goal / Jump / Exit).
+		 * Instead of parking the contact on "This is a pro feature", skip the step and
+		 * advance to the next node — identical fast-forward to a disabled step.
+		 */
+		if ( ! bwfan_is_autonami_pro_active() && in_array( absint( $this->type ), [ self::$TYPE_CONDITIONAL, self::$TYPE_SPLIT, self::$TYPE_GOAL, self::$TYPE_JUMP, self::$TYPE_EXIT ], true ) ) {
+			$this->process_disabled_step( __( 'This is a pro feature', 'wp-marketing-automations' ) );
+
+			return;
+		}
+
 		/** Execute Steps */
 		switch ( $this->type ) {
 			case self::$TYPE_ACTION:
@@ -430,6 +466,71 @@ class BWFAN_Automation_Controller {
 
 		/** Update automation contact DB row */
 		$this->update_automation_contact();
+	}
+
+	/**
+	 * Bypass a step — write a skip trail row, advance to next, re-enter loop.
+	 * Used for disabled steps, and for Pro-only steps skipped on a Lite site.
+	 *
+	 * @param string|null $skip_msg Trail message. Null → default "Step is Disabled".
+	 *
+	 * @return void
+	 */
+	private function process_disabled_step( $skip_msg = null ) {
+		$next_step_id = $this->resolve_next_after_disabled();
+
+		/** Trail row — status 4 = skipped. */
+		if ( null === $skip_msg ) {
+			$skip_msg = apply_filters(
+				'bwfan_step_disabled_skip_message',
+				__( 'Step is Disabled', 'wp-marketing-automations' ),
+				$this->step_id,
+				$this->automation_id
+			);
+		}
+		$this->set_trail_item( [ 'msg' => $skip_msg ], 4 );
+
+		/** No valid next step — end the automation gracefully. */
+		if ( empty( $next_step_id ) || 'end' === $next_step_id ) {
+			$this->should_end_automation = true;
+			$this->end_current_process   = true;
+			$this->move_to_completed();
+
+			return;
+		}
+
+		/**
+		 * Fast-forward — advance traversal + reuse skip_step_id pattern so the
+		 * start() loop bypasses setup_next_step() (avoids double-advance). The
+		 * fast_forwarded flag lets start() skip regardless of the step's own status
+		 * (a Pro-skipped step is status Active, not Disabled).
+		 */
+		$this->fast_forwarded = true;
+		$this->skip_step_id   = intval( $next_step_id );
+		$this->traverse_ins->set_node_id_from_step_id( intval( $next_step_id ) );
+		$this->step_id        = intval( $next_step_id );
+		$this->last_step_id   = $this->step_id;
+		$this->status         = self::$STATUS_ACTIVE;
+
+		$this->update_automation_contact();
+	}
+
+	/**
+	 * Resolve the next step ID for the current disabled step based on its type.
+	 *
+	 * @return string|int 'end' | step ID | 0
+	 */
+	private function resolve_next_after_disabled() {
+		switch ( absint( $this->type ) ) {
+			case self::$TYPE_CONDITIONAL:
+			case self::$TYPE_SPLIT:
+				/** Branching — jump to where the branches converge (or end). */
+				return $this->traverse_ins->get_merger_or_end( $this->step_id );
+
+			default:
+				/** Linear single outgoing edge — Action, Wait, Goal, Jump, Exit. */
+				return $this->traverse_ins->get_single_next_step_id( $this->step_id );
+		}
 	}
 
 	/**
@@ -624,11 +725,12 @@ class BWFAN_Automation_Controller {
 		$enable_step_skip = isset( $step_data['sidebarData']['data']['enable_step_skip'] ) ? $step_data['sidebarData']['data']['enable_step_skip'] : 0;
 		if ( current_time( 'timestamp', 1 ) > $time && ! empty( $enable_step_skip ) ) {
 			$this->skip_step_id = isset( $step_data['sidebarData']['data']['skip_to_step']['step'] ) ? $step_data['sidebarData']['data']['skip_to_step']['step'] : 0;
-			$is_step_active     = BWFAN_Model_Automation_Step::is_step_active( intval( $this->skip_step_id ) );
+			/** Disabled target is routable — it self-skips via process_disabled_step(). Only deleted/archived targets fail. */
+			$is_step_active     = BWFAN_Model_Automation_Step::is_step_runtime_routable( intval( $this->skip_step_id ) );
 			if ( empty( $is_step_active ) && 'end' !== $this->skip_step_id ) {
 				$this->end_current_process = true;
 				$this->skip_step_id        = 0;
-				$this->set_trail_item( [ 'error_msg' => __( 'Jump step deleted', 'wp-marketing-automations' ) ], 3 );
+				$this->set_trail_item( [ 'error_msg' => __( 'Jump step not available', 'wp-marketing-automations' ) ], 3 );
 
 				$this->status   = BWFAN_Automation_Controller::$STATUS_FAILED;
 				$this->attempts = 0;
@@ -826,11 +928,13 @@ class BWFAN_Automation_Controller {
 		$ins->populate_step_data( $this->current_step );
 		$this->skip_step_id = $ins->get_jump_step_id();
 
-		/** If jump step deleted then end automation */
-		$skip_step_data = BWFAN_Model_Automation_Step::is_step_active( $this->skip_step_id );
+		/** If jump target is deleted/archived then end automation. A disabled target is routable — it self-skips via process_disabled_step(). */
+		$skip_step_data = BWFAN_Model_Automation_Step::is_step_runtime_routable( $this->skip_step_id );
 		if ( empty( $skip_step_data ) && 'end' !== $this->skip_step_id ) {
 			$this->end_current_process = true;
-			$this->set_trail_item( [ 'msg' => 'Jump step deleted' ], 3 );
+			/** Reset before return, else the TYPE_JUMP tail in process_current_step flips this FAILED back to STATUS_RETRY. */
+			$this->skip_step_id = 0;
+			$this->set_trail_item( [ 'msg' => 'Jump step not available' ], 3 );
 
 			$this->status   = BWFAN_Automation_Controller::$STATUS_FAILED;
 			$this->attempts = 0;

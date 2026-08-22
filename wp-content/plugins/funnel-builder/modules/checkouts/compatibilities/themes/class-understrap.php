@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Theme_Understrap' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Theme_Understrap {

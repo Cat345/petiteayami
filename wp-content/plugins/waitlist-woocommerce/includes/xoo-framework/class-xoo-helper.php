@@ -1,35 +1,34 @@
 <?php
 
+namespace XooWL\Framework;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Xoo_Helper{
 
 	public $slug, $path, $helperArgs;
 	public $admin;
 
+	public $fw_url;
+
 	public function __construct( $slug, $path, $helperArgs = array() ){
 
 		$this->slug 		= $slug;
 		$this->path 		= $path;
+		$this->fw_url 		= untrailingslashit(plugin_dir_url( XOO_FW_DIR .'/'.basename( XOO_FW_DIR ) ) );
 		$this->helperArgs 	= wp_parse_args( $helperArgs, array(
 			'pluginFile' 	=> '',
 			'pluginName' 	=> ''
 		) );
 
-		$this->set_constants();
+
 		$this->includes(); 
 		$this->hooks();
 	}
 
 
-	public function set_constants(){
-		$this->define( 'XOO_FW_URL', untrailingslashit(plugin_dir_url( XOO_FW_DIR .'/'.basename( XOO_FW_DIR ) ) ) );
-		$this->define( 'XOO_FW_VERSION', '1.7.4' );
-	}
-
-	public function define( $name, $value ){
-		if( !defined( $name ) ){
-			define( $name, $value );
-		}
-	}
 
 	public function includes(){
 		require_once __DIR__.'/admin/class-xoo-admin-settings.php';
@@ -38,8 +37,8 @@ class Xoo_Helper{
 
 
 	public function hooks(){
-		add_action( 'init', array( $this, 'internationalize' ) );
-		add_action( 'admin_init', array( $this, 'time_to_update_theme_templates_data' ) );
+		\add_action( 'init', array( $this, 'internationalize' ) );
+		\add_action( 'admin_init', array( $this, 'time_to_update_theme_templates_data' ) );
 	}
 
 
@@ -278,6 +277,7 @@ class Xoo_Helper{
 
 		$tempData = $this->get_theme_templates_data();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if(  ( ( time() - $tempData['last_scanned'] ) > ( 86400 * 1 ) ) || ( isset( $_GET['scan_templates'] ) && isset( $_GET['slug'] ) && $_GET['slug'] === $this->slug ) ){
 			$this->update_theme_templates_data();
 			wp_safe_redirect( remove_query_arg( array( 'scan_templates', 'slug' ) ) );
@@ -351,7 +351,7 @@ class Xoo_Helper{
 							}	
 						}
 
-						return new WP_Error( 'failed', 'Some files failed to upload'. ' - ' . $file['name'] . '('.$attachment_id->get_error_message().')' );
+						return new \WP_Error( 'failed', 'Some files failed to upload'. ' - ' . $file['name'] . '('.$attachment_id->get_error_message().')' );
 					} 
 					else{
 						$attachmentIDS[ $field_id ][] = $attachment_id;
@@ -453,6 +453,226 @@ class Xoo_Helper{
 	    do_action( 'xoo_mail_' . $this->slug . '_' . $identifier . '_sent', $return );
 
 	    return $return;
+
+	}
+
+
+	public function get_border_options( $border ){
+
+		$defaults = array(
+	        'size'   => 0,
+	        'color'  => 'transparent',
+	        'style'  => 'none',
+	        'radius' => 0,
+	    );
+
+	    $border = array_merge( $defaults, $border );
+
+	    // Sanitize values
+	    $border['size']   	= max( 0, (float) $border['size'] );
+	    $border['radius'] 	= max( 0, (float) $border['radius'] );
+	    $border['style']  	= strtolower( $border['style'] );
+	   	$border['color']  	= trim( $border['color'] );
+
+	   	return $border;
+	}
+
+
+	public function get_border_css_value( $border, $return = 'all' ){
+
+		$border = $this->get_border_options( $border );
+
+		extract($border);
+
+    	$css = [];
+
+	    // Border
+	    if ( in_array( $return, [ 'border', 'all' ], true ) ) {
+	        $css[] = "border: {$size}px {$style} {$color};";
+	    }
+
+	    // Radius
+	    if ( in_array( $return, [ 'radius', 'all' ], true ) ) {
+	        $css[] = "border-radius: {$radius}px;";
+	    }
+
+	    return implode( ' ', $css );
+
+	    
+	}
+
+
+	public function get_button_values( $values = array() ){
+
+		$values = xoo_recursive_parse_args(
+			$values,
+			array(
+				'size_type' 	=> 'custom',
+				'width'         => 100,
+				'width_unit'    => '%',
+				'height_unit'   => 'px',
+				'height'        => 47,
+				'bgColor'       => '#27374d',
+				'txtColor'      => '#dde6ed',
+
+				'padding_v' 	=> 10,
+				'padding_h' 	=> 20,
+
+				'margin_v' 		=> 10,
+				'margin_h' 		=> 10,
+				'position' 		=> 'center',
+
+				'text' => array(
+					'fontWeight' 		=> 500,
+					'fontStyle' 		=> 'normal',
+					'fontSize' 			=> 15,
+					'fontSizeUnit' 		=> 'px',
+					'textTransform' 	=> 'capitalize',
+				),
+
+				'border' => array(
+					'size'      => 1,
+					'color'     => '#dde6ed',
+					'style'     => 'solid',
+					'radius'    => 5,
+				),
+
+				'hover' => array(
+					'bgColor'       => '#dde6ed',
+					'txtColor'      => '#27374d',
+
+					'border' => array(
+						'size'      => 1,
+						'color'     => '#27374d',
+						'style'     => 'solid',
+						'radius'    => 5,
+					),
+				),
+			)
+		);
+
+		return $values;
+
+	}
+
+	public function get_button_css( $selectors, $settings ) {
+
+		$settings = $this->get_button_values( $settings );
+
+		$selectors = (array) $selectors;
+
+		if ( empty( $selectors ) ) {
+			return '';
+		}
+
+		$normal_selectors = implode( ',', $selectors );
+
+		$hover_selectors = implode(
+			',',
+			array_map(
+				static fn( $selector ) => $selector . ':hover',
+				$selectors
+			)
+		);
+
+		$is_auto = $settings['size_type'] === 'auto';
+
+		$normal_css = array(
+			'max-width'        => $is_auto ? 'none' : $settings['width'] . $settings['width_unit'],
+			'width'            => $is_auto ? 'max-content' : '100%',
+			'height'           => $is_auto ? 'auto' : $settings['height'] . $settings['height_unit'],
+			'padding'          => $is_auto ? $settings['padding_v'] . 'px ' . $settings['padding_h'] . 'px' : '5px 10px',
+			'margin'           => $settings['margin_v'] . 'px ' . $settings['margin_h'] . 'px',
+
+			'background-color' => $settings['bgColor'],
+			'color'            => $settings['txtColor'],
+
+			'font-weight'      => $settings['text']['fontWeight'],
+			'font-style'       => $settings['text']['fontStyle'],
+			'font-size'        => $settings['text']['fontSize'] . $settings['text']['fontSizeUnit'],
+			'text-transform'   => $settings['text']['textTransform'],
+
+			'border-width'     => $settings['border']['size'] . 'px',
+			'border-style'     => $settings['border']['style'],
+			'border-color'     => $settings['border']['color'],
+			'border-radius'    => $settings['border']['radius'] . 'px',
+			'display' 			=> 'flex',
+			'align-items' 		=> 'center',
+			'justify-content' 	=> 'center'
+		);
+
+		if( $settings['position'] === 'center' ){
+			$normal_css['margin-left'] = $normal_css['margin-right'] = 'auto'; 
+		}
+		elseif ( $settings['position'] === 'left' ){
+			$normal_css['margin-right'] = 'auto';
+		}
+		elseif ( $settings['position'] === 'right' ){
+			$normal_css['margin-left'] = 'auto';
+		}
+
+		$hover_css = array(
+			'background-color' => $settings['hover']['bgColor'],
+			'color'            => $settings['hover']['txtColor'],
+
+			'border-width'     => $settings['hover']['border']['size'] . 'px',
+			'border-style'     => $settings['hover']['border']['style'],
+			'border-color'     => $settings['hover']['border']['color'],
+			'border-radius'    => $settings['hover']['border']['radius'] . 'px',
+		);
+
+		$css = $normal_selectors . '{';
+
+		foreach ( $normal_css as $property => $value ) {
+			$css .= $property . ':' . $value . ';';
+		}
+
+		$css .= '}';
+
+		$css .= $hover_selectors . '{';
+
+		foreach ( $hover_css as $property => $value ) {
+			$css .= $property . ':' . $value . ';';
+		}
+
+		$css .= '}';
+
+		return $css;
+	}
+
+
+	public function print_button_themed_css( $selectors_map, $settings, $themes ) {
+
+		if( empty( $themes ) ) return;
+
+		$theme_selectors = array();
+
+		foreach ( $selectors_map as $option_key => $selector ) {
+
+			if ( empty( $settings[ $option_key ] ) ) {
+				continue;
+			}
+
+			$theme_id = $settings[ $option_key ];
+
+			if ( empty( $themes[ $theme_id ] ) ) {
+				continue;
+			}
+
+			$theme_selectors[ $theme_id ][] = $selector;
+
+		}
+
+		foreach ( $theme_selectors as $theme_id => $selectors ) {
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->get_button_css(
+				$selectors,
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$themes[ $theme_id ]
+			);
+
+		}
 
 	}
 

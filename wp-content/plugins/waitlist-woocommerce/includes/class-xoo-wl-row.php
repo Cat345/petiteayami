@@ -84,6 +84,7 @@ class Xoo_Wl_Row{
 		return wc_placeholder_img_src();
 	}
 
+
 }
 
 function xoo_wl_get_row( $row_id ){

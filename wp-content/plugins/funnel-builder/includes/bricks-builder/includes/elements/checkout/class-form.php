@@ -29,7 +29,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 		 * @return string The label for the Checkout Form element.
 		 */
 		public function get_label() {
-			return esc_html__( 'Checkout Form' );
+			return esc_html__( 'Checkout Form' , 'funnel-builder');
 		}
 
 		/**
@@ -52,8 +52,8 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			// Initialize control groups array
 			$this->control_groups = array();
 
-			$this->add_group( 'contentSteps', esc_html__( 'Steps' ) );
-			$this->add_group( 'contentCollapsibleOrderSummary', esc_html__( 'Collapsible Order Summary' ) );
+			$this->add_group( 'contentSteps', esc_html__( 'Steps' , 'funnel-builder') );
+			$this->add_group( 'contentCollapsibleOrderSummary', esc_html__( 'Collapsible Order Summary' , 'funnel-builder') );
 
 			$template = wfacp_template();
 
@@ -104,28 +104,28 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				}
 			}
 
-			$this->add_group( 'contentCoupon', esc_html__( 'Coupon' ) );
-			$this->add_group( 'contentOrderSummary', esc_html__( 'Order Summary' ) );
-			$this->add_group( 'contentPaymentGateways', esc_html__( 'Payment Gateways' ) );
-			$this->add_group( 'contentCheckoutButtons', esc_html__( 'Checkout Button(s)' ) );
+			$this->add_group( 'contentCoupon', esc_html__( 'Coupon' , 'funnel-builder') );
+			$this->add_group( 'contentOrderSummary', esc_html__( 'Order Summary' , 'funnel-builder') );
+			$this->add_group( 'contentPaymentGateways', esc_html__( 'Payment Gateways' , 'funnel-builder') );
+			$this->add_group( 'contentCheckoutButtons', esc_html__( 'Checkout Button(s)' , 'funnel-builder') );
 
 			// Predefined control groups for various styling sections
-			$this->add_group( 'styleCheckoutForm', esc_html__( 'Checkout Form' ), self::TAB_STYLE );
+			$this->add_group( 'styleCheckoutForm', esc_html__( 'Checkout Form' , 'funnel-builder'), self::TAB_STYLE );
 			$this->add_group( 'styleHeader', esc_html__( 'Header' ), self::TAB_STYLE );
-			$this->add_group( 'styleCollapsibleOrderSummary', esc_html__( 'Collapsible Order Summary' ), self::TAB_STYLE );
+			$this->add_group( 'styleCollapsibleOrderSummary', esc_html__( 'Collapsible Order Summary' , 'funnel-builder'), self::TAB_STYLE );
 			$this->add_group( 'styleHeading', esc_html__( 'Heading' ), self::TAB_STYLE );
 
 			// Add new control groups using the add_group method
-			$this->add_group( 'styleFields', esc_html__( 'Fields' ), self::TAB_STYLE );
-			$this->add_group( 'styleSection', esc_html__( 'Section' ), self::TAB_STYLE );
-			$this->add_group( 'styleProductSwitcher', esc_html__( 'Product Switcher' ), self::TAB_STYLE );
-			$this->add_group( 'styleOrderSummary', esc_html__( 'Order Summary' ), self::TAB_STYLE );
-			$this->add_group( 'styleCoupon', esc_html__( 'Coupon' ), self::TAB_STYLE );
-			$this->add_group( 'styleSectionPaymentMethods', esc_html__( 'Payment Methods' ), self::TAB_STYLE );
+			$this->add_group( 'styleFields', esc_html__( 'Fields' , 'funnel-builder'), self::TAB_STYLE );
+			$this->add_group( 'styleSection', esc_html__( 'Section' , 'funnel-builder'), self::TAB_STYLE );
+			$this->add_group( 'styleProductSwitcher', esc_html__( 'Product Switcher' , 'funnel-builder'), self::TAB_STYLE );
+			$this->add_group( 'styleOrderSummary', esc_html__( 'Order Summary' , 'funnel-builder'), self::TAB_STYLE );
+			$this->add_group( 'styleCoupon', esc_html__( 'Coupon' , 'funnel-builder'), self::TAB_STYLE );
+			$this->add_group( 'styleSectionPaymentMethods', esc_html__( 'Payment Methods' , 'funnel-builder'), self::TAB_STYLE );
 			$this->add_group( 'stylePrivacyPolicy', esc_html__( 'Privacy Policy' ), self::TAB_STYLE );
-			$this->add_group( 'styleTermsConditions', __( 'Terms & Conditions' ), self::TAB_STYLE );
-			$this->add_group( 'styleCheckoutButtons', esc_html__( 'Checkout Button(s)' ), self::TAB_STYLE );
-			$this->add_group( 'stylefieldClasses', esc_html__( 'Field Classes' ), self::TAB_STYLE );
+			$this->add_group( 'styleTermsConditions', __( 'Terms & Conditions' , 'funnel-builder'), self::TAB_STYLE );
+			$this->add_group( 'styleCheckoutButtons', esc_html__( 'Checkout Button(s)' , 'funnel-builder'), self::TAB_STYLE );
+			$this->add_group( 'stylefieldClasses', esc_html__( 'Field Classes' , 'funnel-builder'), self::TAB_STYLE );
 
 			// Set common control groups
 			$this->set_common_control_groups();
@@ -234,16 +234,16 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			if ( $num_of_steps >= 1 ) {
 				$stepsCounter = 1;
 
-				$tab_name              = __( 'Steps' );
-				$enable_condition_name = __( 'Enable Steps' );
+				$tab_name              = __( 'Steps' , 'funnel-builder');
+				$enable_condition_name = __( 'Enable Steps' , 'funnel-builder');
 
 				$options = array(
-					'tab'       => __( 'Tabs' ),
-					'bredcrumb' => __( 'Breadcrumb' ),
+					'tab'       => __( 'Tabs' , 'funnel-builder'),
+					'bredcrumb' => __( 'Breadcrumb' , 'funnel-builder'),
 				);
 
 				if ( $num_of_steps === 1 ) {
-					$tab_name              = __( 'Form Header' );
+					$tab_name              = __( 'Form Header' , 'funnel-builder');
 					$enable_condition_name = __( 'Enable' );
 					unset( $options['bredcrumb'] );
 				}
@@ -269,7 +269,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 					true,
 				);
 
-				$this->add_select( 'select_type', esc_html__( 'Select Type' ), $options, 'tab', $enable_options );
+				$this->add_select( 'select_type', esc_html__( 'Select Type' , 'funnel-builder'), $options, 'tab', $enable_options );
 
 				$bredcrumb_controls = array(
 					array( 'select_type', '=', 'bredcrumb' ),
@@ -304,12 +304,12 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 					if ( $num_of_steps > 1 ) {
 						/* translators: %s: Steps counter */
-						$this->add_heading( sprintf( __( 'Step %s', 'funnel-builder-bricks-integration' ), $stepsCounter ), array( 'enable_progress_bar', '=', true ) );
+						$this->add_heading( sprintf( __( 'Step %s', 'funnel-builder' ), $stepsCounter ), array( 'enable_progress_bar', '=', true ) );
 					}
 					/* translators: %s: Steps counter */
-					$this->add_text( 'step_' . $bi . '_bredcrumb', __( 'Title', 'funnel-builder-bricks-integration' ), sprintf( __( 'Step %s', 'funnel-builder-bricks-integration' ), $stepsCounter ), $bredcrumb_controls );
+					$this->add_text( 'step_' . $bi . '_bredcrumb', __( 'Title', 'funnel-builder' ), sprintf( __( 'Step %s', 'funnel-builder' ), $stepsCounter ), $bredcrumb_controls );
 					/* translators: %s: Steps counter */
-					$this->add_text( 'step_' . $bi . '_progress_bar', __( 'Heading', 'funnel-builder-bricks-integration' ), sprintf( __( 'Step %s', 'funnel-builder-bricks-integration' ), $stepsCounter ), $progress_controls );
+					$this->add_text( 'step_' . $bi . '_progress_bar', __( 'Heading', 'funnel-builder' ), sprintf( __( 'Step %s', 'funnel-builder' ), $stepsCounter ), $progress_controls );
 
 					$this->add_text(
 						'step_' . $bi . '_heading',
@@ -323,7 +323,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 					$this->add_text(
 						'step_' . $bi . '_subheading',
-						__( 'Sub Heading' ),
+						__( 'Sub Heading' , 'funnel-builder'),
 						$subheading,
 						array(
 							array( 'select_type', '=', 'tab' ),
@@ -348,8 +348,8 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 					);
 
 					$cart_title          = __( 'Title' );
-					$progress_cart_title = __( 'Cart title' );
-					$setting_description = __( 'Note: Cart settings will work for Global Checkout when user navigates from Product > Cart > Checkout' );
+					$progress_cart_title = __( 'Cart title' , 'funnel-builder');
+					$setting_description = __( 'Note: Cart settings will work for Global Checkout when user navigates from Product > Cart > Checkout' , 'funnel-builder');
 					$cart_text           = __( 'Cart' );
 
 					$options = array(
@@ -360,7 +360,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 					$this->add_heading( 'Cart', $bredcrumb_controls );
 
-					$this->add_select( 'step_cart_link_enable', __( 'Add to Breadcrumb' ), $options, 'yes', $condtion_control );
+					$this->add_select( 'step_cart_link_enable', __( 'Add to Breadcrumb' , 'funnel-builder'), $options, 'yes', $condtion_control );
 					$this->add_text( 'step_cart_progress_bar_link', $progress_cart_title, $cart_text, $progress_controls );
 					$this->add_text( 'step_cart_bredcrumb_link', $cart_title, $cart_text, $bredcrumb_controls, '', $setting_description );
 				}
@@ -393,7 +393,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 			$this->add_switcher(
 				'enable_order_field_collapsed',
-				__( 'Expanded Order Summary' ),
+				__( 'Expanded Order Summary' , 'funnel-builder'),
 				false,
 				array(
 					array(
@@ -403,29 +403,29 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 					),
 				)
 			);
-			$this->add_switcher( 'order_summary_enable_product_image_collapsed', __( 'Enable Image' ), true );
+			$this->add_switcher( 'order_summary_enable_product_image_collapsed', __( 'Enable Image' , 'funnel-builder'), true );
 
-			$this->add_text( 'cart_collapse_title', __( 'Collapsed View Text' ), __( 'Show Order Summary' ) );
-			$this->add_text( 'cart_expanded_title', __( 'Expanded View Text' ), __( 'Hide Order Summary' ) );
-			$this->add_text( 'collapse_coupon_button_text', __( 'Coupon Button Text' ), __( 'Apply', 'woocommerce' ) );
+			$this->add_text( 'cart_collapse_title', __( 'Collapsed View Text' , 'funnel-builder'), __( 'Show Order Summary' , 'funnel-builder') );
+			$this->add_text( 'cart_expanded_title', __( 'Expanded View Text' , 'funnel-builder'), __( 'Hide Order Summary' , 'funnel-builder') );
+			$this->add_text( 'collapse_coupon_button_text', __( 'Coupon Button Text' , 'funnel-builder'), __( 'Apply', 'woocommerce' ) );
 
-			$this->add_switcher( 'collapse_enable_coupon', __( 'Enable Coupon' ), false );
-			$this->add_switcher( 'collapse_enable_coupon_collapsible', __( 'Collapsible Coupon Field' ), false );
+			$this->add_switcher( 'collapse_enable_coupon', __( 'Enable Coupon' , 'funnel-builder'), false );
+			$this->add_switcher( 'collapse_enable_coupon_collapsible', __( 'Collapsible Coupon Field' , 'funnel-builder'), false );
 
-			$this->add_switcher( 'collapse_order_quantity_switcher', __( 'Quantity Switcher' ), true );
-			$this->add_switcher( 'collapse_order_delete_item', __( 'Allow Deletion' ), true );
+			$this->add_switcher( 'collapse_order_quantity_switcher', __( 'Quantity Switcher' , 'funnel-builder'), true );
+			$this->add_switcher( 'collapse_order_delete_item', __( 'Allow Deletion' , 'funnel-builder'), true );
 
 			if ( true === wfacp_pro_dependency() ) {
 
 				/**
 				 * Strike Through for order summary
 				 */
-				$this->add_switcher( 'collapsible_mini_cart_enable_strike_through_price', __( 'Regular & Discounted Price' ), false );
-				$this->add_switcher( 'collapsible_mini_cart_enable_low_stock_trigger', __( 'Low Stock Trigger' ), false );
+				$this->add_switcher( 'collapsible_mini_cart_enable_strike_through_price', __( 'Regular & Discounted Price' , 'funnel-builder'), false );
+				$this->add_switcher( 'collapsible_mini_cart_enable_low_stock_trigger', __( 'Low Stock Trigger' , 'funnel-builder'), false );
 				$this->add_text(
 					'collapsible_mini_cart_low_stock_message',
-					__( 'Message' ),
-					__( '{{quantity}} LEFT IN STOCK', 'woofunnels-aero-checkout' ),
+					__( 'Message' , 'funnel-builder'),
+					__( '{{quantity}} LEFT IN STOCK', 'funnel-builder' ),
 					array(
 						'collapsible_mini_cart_enable_low_stock_trigger',
 						'=',
@@ -433,11 +433,11 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 					)
 				);
 
-				$this->add_switcher( 'collapsible_mini_cart_enable_saving_price_message', __( 'Enable Total Saving', 'woofunnels-aero-checkout' ), false );
+				$this->add_switcher( 'collapsible_mini_cart_enable_saving_price_message', __( 'Enable Total Saving', 'funnel-builder' ), false );
 				$this->add_text(
 					'collapsible_mini_cart_saving_price_message',
-					__( 'Message' ),
-					__( 'You saved {{saving_amount}} ({{saving_percentage}}) on this order', 'woofunnels-aero-checkout' ),
+					__( 'Message' , 'funnel-builder'),
+					__( 'You saved {{saving_amount}} ({{saving_percentage}}) on this order', 'funnel-builder' ),
 					array(
 						'collapsible_mini_cart_enable_saving_price_message',
 						'=',
@@ -519,7 +519,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 				$options = $this->get_class_options();
 				if ( isset( $field['type'] ) && 'wfacp_html' === $field['type'] ) {
-					$options           = array( 'wfacp-col-full' => __( 'Full' ) );
+					$options           = array( 'wfacp-col-full' => __( 'Full' , 'funnel-builder') );
 					$field_default_cls = 'wfacp-col-full';
 				}
 
@@ -536,10 +536,10 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 		 */
 		protected function get_class_options() {
 			return array(
-				'wfacp-col-full'       => __( 'Full' ),
-				'wfacp-col-left-half'  => __( 'One Half' ),
-				'wfacp-col-left-third' => __( 'One Third' ),
-				'wfacp-col-two-third'  => __( 'Two Third' ),
+				'wfacp-col-full'       => __( 'Full' , 'funnel-builder'),
+				'wfacp-col-left-half'  => __( 'One Half' , 'funnel-builder'),
+				'wfacp-col-left-third' => __( 'One Third' , 'funnel-builder'),
+				'wfacp-col-two-third'  => __( 'Two Third' , 'funnel-builder'),
 			);
 		}
 
@@ -548,7 +548,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 		 */
 		public function coupon_fields() {
 			$this->set_current_group( 'contentCoupon' );
-			$this->add_text( 'form_coupon_button_text', __( 'Coupon Button Text' ), __( 'Apply', 'woocommerce' ) );
+			$this->add_text( 'form_coupon_button_text', __( 'Coupon Button Text' , 'funnel-builder'), __( 'Apply', 'woocommerce' ) );
 		}
 
 		/**
@@ -560,19 +560,19 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 		 */
 		public function order_summary_fields() {
 			$this->set_current_group( 'contentOrderSummary' );
-			$this->add_switcher( 'order_summary_enable_product_image', __( 'Enable Image' ), true );
+			$this->add_switcher( 'order_summary_enable_product_image', __( 'Enable Image' , 'funnel-builder'), true );
 
 			if ( true === wfacp_pro_dependency() ) {
 
 				/**
 				 * Strike Through for order summary
 				 */
-				$this->add_switcher( 'order_summary_field_enable_strike_through_price', __( 'Regular & Discounted Price' ), true );
-				$this->add_switcher( 'order_summary_field_enable_low_stock_trigger', __( 'Low Stock Trigger' ), true );
+				$this->add_switcher( 'order_summary_field_enable_strike_through_price', __( 'Regular & Discounted Price' , 'funnel-builder'), true );
+				$this->add_switcher( 'order_summary_field_enable_low_stock_trigger', __( 'Low Stock Trigger' , 'funnel-builder'), true );
 				$this->add_text(
 					'order_summary_field_low_stock_message',
-					__( 'Message' ),
-					__( '{{quantity}} LEFT IN STOCK', 'woofunnels-aero-checkout' ),
+					__( 'Message' , 'funnel-builder'),
+					__( '{{quantity}} LEFT IN STOCK', 'funnel-builder' ),
 					array(
 						'order_summary_field_enable_low_stock_trigger',
 						'=',
@@ -580,11 +580,11 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 					)
 				);
 
-				$this->add_switcher( 'order_summary_field_enable_saving_price_message', __( 'Enable Total Saving', 'woofunnels-aero-checkout' ), true );
+				$this->add_switcher( 'order_summary_field_enable_saving_price_message', __( 'Enable Total Saving', 'funnel-builder' ), true );
 				$this->add_text(
 					'order_summary_field_saving_price_message',
-					__( 'Message' ),
-					__( 'You saved {{saving_amount}} ({{saving_percentage}}) on this order', 'woofunnels-aero-checkout' ),
+					__( 'Message' , 'funnel-builder'),
+					__( 'You saved {{saving_amount}} ({{saving_percentage}}) on this order', 'funnel-builder' ),
 					array(
 						'order_summary_field_enable_saving_price_message',
 						'=',
@@ -606,20 +606,20 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 		 */
 		public function payment_method() {
 			$this->set_current_group( 'contentPaymentGateways' );
-			$this->add_heading( __( 'Section' ) );
+			$this->add_heading( __( 'Section' , 'funnel-builder') );
 
 			$payment_default = method_exists( 'WFACP_Common', 'translation_string_to_check' )
-				? WFACP_Common::translation_string_to_check( __( 'Payment Information', 'woofunnels-aero-checkout' ) )
-				: __( 'Payment Information', 'woofunnels-aero-checkout' );
+				? WFACP_Common::translation_string_to_check( __( 'Payment Information', 'funnel-builder' ) )
+				: __( 'Payment Information', 'funnel-builder' );
 
-			$security_text = esc_attr__( 'All transactions are secure and encrypted. Credit card information is never stored on our servers.', 'woofunnels-aero-checkout' );
+			$security_text = esc_attr__( 'All transactions are secure and encrypted. Credit card information is never stored on our servers.', 'funnel-builder' );
 
 			if ( class_exists( 'WFACP_Common' ) && method_exists( 'WFACP_Common', 'translation_string_to_check' ) ) {
 				$security_text = WFACP_Common::translation_string_to_check( $security_text );
 			}
 
 			$this->add_text( 'wfacp_payment_method_heading_text', __( 'Heading' ), $payment_default );
-			$this->add_textarea( 'wfacp_payment_method_subheading', __( 'Sub heading' ), $security_text );
+			$this->add_textarea( 'wfacp_payment_method_subheading', __( 'Sub heading' , 'funnel-builder'), $security_text );
 
 			$this->set_current_group( 'contentCheckoutButtons' );
 			$this->form_buttons();
@@ -642,7 +642,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			$backLinkArr = array();
 
 			for ( $i = 1; $i <= $count; $i++ ) {
-				$button_default_text = __( 'NEXT STEP →' );
+				$button_default_text = __( 'NEXT STEP →' , 'funnel-builder');
 				$button_key          = 'wfacp_payment_button_' . $i . '_text';
 				$button_label        = "Step {$i}";
 				$text_key            = $i;
@@ -658,14 +658,14 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				$this->icon_text( $text_key );
 
 				if ( $i === $count ) {
-					$this->add_switcher( 'enable_price_in_place_order_button', __( 'Enable Price' ), false );
+					$this->add_switcher( 'enable_price_in_place_order_button', __( 'Enable Price' , 'funnel-builder'), false );
 				}
 
 				if ( $i > 1 ) {
 					$backCount = $i - 1;
 
 					$backLinkArr[ 'payment_button_back_' . $i . '_text' ] = array(
-						'label'   => __( 'Return to Step ', 'funnel-builder-bricks-integration' ) . $backCount,
+						'label'   => __( 'Return to Step ', 'funnel-builder' ) . $backCount,
 						'default' => sprintf( '« Return to Step %s ', $i - 1 ),
 					);
 				}
@@ -673,15 +673,15 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 			$this->add_divider();
 			if ( is_array( $backLinkArr ) && count( $backLinkArr ) > 0 ) {
-				$this->add_heading( __( 'Return Link Text' ) );
-				$cart_name = __( '« Return to Cart' );
+				$this->add_heading( __( 'Return Link Text' , 'funnel-builder') );
+				$cart_name = __( '« Return to Cart' , 'funnel-builder');
 				$this->add_text( 'return_to_cart_text', 'Return to Cart', $cart_name, array( 'step_cart_link_enable', '=', true ) );
 				foreach ( $backLinkArr as $i => $val ) {
 					$this->add_text( $i, $val['label'], $val['default'], array() );
 				}
 			}
 
-			$this->add_text( 'text_below_placeorder_btn', __( 'Text Below Place Order Button' ), sprintf( 'We Respect Your Privacy & Information ' ), array() );
+			$this->add_text( 'text_below_placeorder_btn', __( 'Text Below Place Order Button' , 'funnel-builder'), sprintf( 'We Respect Your Privacy & Information ' ), array() );
 		}
 
 		/**
@@ -905,9 +905,9 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total th a',
 			);
 
-			$this->add_font_family( 'wfacp_font_family', $global_setting_options, __( 'Family' ) );
+			$this->add_font_family( 'wfacp_font_family', $global_setting_options, __( 'Family' , 'funnel-builder') );
 
-			$this->add_background_color( 'default_primary_color', array(), '', __( 'Primary Color' ) );
+			$this->add_background_color( 'default_primary_color', array(), '', __( 'Primary Color' , 'funnel-builder') );
 
 			$fields_content_color = array(
 				'#wfacp-e-form .wfacp_main_form .woocommerce-form-login-toggle .woocommerce-info',
@@ -930,7 +930,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'#wfacp-e-form fieldset legend',
 			);
 
-			$this->add_color( 'default_text_color', $fields_content_color, '', __( 'Content Color' ) );
+			$this->add_color( 'default_text_color', $fields_content_color, '', __( 'Content Color' , 'funnel-builder') );
 
 			$default_link_color_option = array(
 				'#wfacp-e-form .woocommerce-form-login-toggle .woocommerce-info a',
@@ -947,7 +947,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'#wfacp-e-form .wfacp_main_form .wfacp_collapsible',
 			);
 
-			$this->add_color( 'default_link_color', $default_link_color_option, '', __( 'Link Color' ) );
+			$this->add_color( 'default_link_color', $default_link_color_option, '', __( 'Link Color' , 'funnel-builder') );
 
 			$selector = array(
 				'#wfacp-e-form .wfacp-form',
@@ -976,7 +976,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				return;
 			}
 
-			$step_text = __( 'Steps' );
+			$step_text = __( 'Steps' , 'funnel-builder');
 			if ( $number_of_steps <= 1 ) {
 				$step_text = __( 'Header' );
 			}
@@ -1029,13 +1029,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			);
 
 			$this->add_background_color( 'progress_bar_line_color', array( '#wfacp-e-form .wfacp_custom_breadcrumb .wfacp_steps_sec ul:before' ), '', 'Line', $progress_bar_condition );
-			$this->add_border_color( 'progress_bar_circle_color', array( '#wfacp-e-form .wfacp_custom_breadcrumb .wfacp_steps_sec ul li:before' ), '', __( 'Circle Border' ), false, $progress_bar_condition );
+			$this->add_border_color( 'progress_bar_circle_color', array( '#wfacp-e-form .wfacp_custom_breadcrumb .wfacp_steps_sec ul li:before' ), '', __( 'Circle Border' , 'funnel-builder'), false, $progress_bar_condition );
 
 			$this->add_background_color( 'progress_bar_active_color', $active_color, '', 'Active Step', $progress_bar_condition );
 			$this->add_color( 'progressbar_text_color', array( ' #wfacp-e-form .wfacp_custom_breadcrumb .wfacp_steps_sec ul li a' ), '', 'Text ', $progress_bar_condition );
 
 			if ( $number_of_steps > 1 ) {
-				$this->add_heading( __( 'Active Step' ) );
+				$this->add_heading( __( 'Active Step' , 'funnel-builder') );
 			} else {
 				$this->add_heading(
 					'Colors',
@@ -1051,16 +1051,16 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 			$this->add_background_color( 'active_step_bg_color', array( '#wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active' ), '', 'Background Color', $tab_condition );
 			$this->add_color( 'active_step_text_color', array( '#wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp_tcolor' ), '', 'Text Color', $tab_condition );
-			$this->add_border_color( 'active_tab_border_bottom_color', array( '#wfacp-e-form .wfacp-payment-tab-list.wfacp-active' ), '', __( 'Tab Border Color' ), false, $tab_condition );
+			$this->add_border_color( 'active_tab_border_bottom_color', array( '#wfacp-e-form .wfacp-payment-tab-list.wfacp-active' ), '', __( 'Tab Border Color' , 'funnel-builder'), false, $tab_condition );
 
 			if ( $number_of_steps > 1 ) {
 				$this->add_background_color( 'active_step_count_bg_color', array( '#wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber' ), '', 'Count Background Color', $tab_condition );
-				$this->add_border_color( 'active_step_count_border_color', array( '#wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber' ), '', __( 'Count Border Color' ), false, $tab_condition );
+				$this->add_border_color( 'active_step_count_border_color', array( '#wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber' ), '', __( 'Count Border Color' , 'funnel-builder'), false, $tab_condition );
 				$this->add_color( 'active_step_count_text_color', array( '#wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber' ), '', 'Count Text Color', $tab_condition );
 			}
 
 			if ( $number_of_steps > 1 ) {
-				$this->add_heading( __( 'Inactive Step' ) );
+				$this->add_heading( __( 'Inactive Step' , 'funnel-builder') );
 
 				$inactive_bg_color = array(
 					'#wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list',
@@ -1068,15 +1068,15 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 				$this->add_background_color( 'inactive_step_bg_color', $inactive_bg_color, '', __( 'Background Color' ), $tab_condition );
 				$this->add_color( 'inactive_step_text_color', array( '#wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp_tcolor' ), '', __( 'Text Color' ), $tab_condition );
-				$this->add_border_color( 'inactive_tab_border_bottom_color', array( '#wfacp-e-form .wfacp-payment-tab-list' ), '', __( 'Tab Border Color' ), false, $tab_condition );
+				$this->add_border_color( 'inactive_tab_border_bottom_color', array( '#wfacp-e-form .wfacp-payment-tab-list' ), '', __( 'Tab Border Color' , 'funnel-builder'), false, $tab_condition );
 				$this->add_background_color( 'inactive_step_count_bg_color', array( '#wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp-order2StepNumber' ), '', 'Count Background Color', $tab_condition );
-				$this->add_border_color( 'inactive_step_count_border_color', array( '#wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp-order2StepNumber' ), '', __( 'Count Border Color' ), false, $tab_condition );
+				$this->add_border_color( 'inactive_step_count_border_color', array( '#wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp-order2StepNumber' ), '', __( 'Count Border Color' , 'funnel-builder'), false, $tab_condition );
 				$this->add_color( 'inactive_step_count_text_color', array( '#wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp-order2StepNumber' ), '', 'Count Text Color', $tab_condition );
 			}
 
 			$this->add_heading( 'Border Radius', $tab_condition );
 
-			$label = __( 'Step Bar Border Radius' );
+			$label = __( 'Step Bar Border Radius' , 'funnel-builder');
 			$this->add_border_radius( 'border_radius_steps', '#wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list', array(), $label, $tab_condition );
 
 			$selector = array(
@@ -1101,14 +1101,14 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 		 */
 		public function collapsible_order_summary() {
 			$this->set_current_group( 'styleCollapsibleOrderSummary' );
-			$this->add_background_color( 'collapsible_order_summary_bg_color', array( '#wfacp-e-form .wfacp_mb_mini_cart_wrap .wfacp_mb_cart_accordian' ), '#f7f7f7', __( 'Collapsed Background' ) );
+			$this->add_background_color( 'collapsible_order_summary_bg_color', array( '#wfacp-e-form .wfacp_mb_mini_cart_wrap .wfacp_mb_cart_accordian' ), '#f7f7f7', __( 'Collapsed Background' , 'funnel-builder') );
 			$this->add_background_color(
 				'expanded_order_summary_bg_color',
 				array(
 					'#wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content',
 				),
 				'#f7f7f7',
-				__( 'Expanded Background' )
+				__( 'Expanded Background' , 'funnel-builder')
 			);
 			$this->add_color(
 				'expanded_order_summary_link_color',
@@ -1139,7 +1139,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 					'#wfacp-e-form .wfacp_mb_mini_cart_wrap .wfacp_mb_mini_cart_sec_accordion_content',
 				),
 				array(),
-				__( 'Border Radius' )
+				__( 'Border Radius' , 'funnel-builder')
 			);
 		}
 
@@ -1161,7 +1161,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			$subheading_option = array( '#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-comm-title h4' );
 
 			// Sub heading start here
-			$this->add_heading( __( 'Sub Heading' ) );
+			$this->add_heading( __( 'Sub Heading' , 'funnel-builder') );
 			$this->add_typography( 'section_sub_heading_typo', $subheading_option );
 
 			$advanced_option = array( '#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-section .wfacp-comm-title' );
@@ -1193,13 +1193,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			$this->add_heading( __( 'Label' ) );
 
 			$label_position_options = array(
-				'wfacp-modern-label' => __( 'Floating' ),
-				'wfacp-top'          => __( 'Outside' ),
-				'wfacp-inside'       => __( 'Inside' ),
+				'wfacp-modern-label' => __( 'Floating' , 'funnel-builder'),
+				'wfacp-top'          => __( 'Outside' , 'funnel-builder'),
+				'wfacp-inside'       => __( 'Inside' , 'funnel-builder'),
 
 			);
 
-			$this->add_select( 'wfacp_label_position', __( 'Label Position' ), $label_position_options, 'wfacp-inside' );
+			$this->add_select( 'wfacp_label_position', __( 'Label Position' , 'funnel-builder'), $label_position_options, 'wfacp-inside' );
 
 			$form_fields_label_typo = array(
 				'#wfacp-e-form .wfacp_main_form.woocommerce p.wfacp-form-control-wrapper label.wfacp-form-control-label',
@@ -1244,7 +1244,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'font-size' => '14px',
 			);
 
-			$this->add_heading( __( 'Input' ) );
+			$this->add_heading( __( 'Input' , 'funnel-builder') );
 			$this->add_typography( 'wfacp_form_fields_input_typo', $input_typo_selectors, $default_typography_options, array(), '', array( 'color' ) );
 
 			$input_color_selectors = array(
@@ -1330,8 +1330,8 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'#wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single:focus>span.select2-selection__rendered',
 			);
 
-			$this->add_border_color( 'wfacp_form_fields_focus_color', $focus_fields_color, '#61bdf7', __( 'Focus Color' ), true );
-			$this->add_border_color( 'wfacp_form_fields_validation_color', $validation_error, '#d50000', __( 'Error Validation Color' ), true );
+			$this->add_border_color( 'wfacp_form_fields_focus_color', $focus_fields_color, '#61bdf7', __( 'Focus Color' , 'funnel-builder'), true );
+			$this->add_border_color( 'wfacp_form_fields_validation_color', $validation_error, '#d50000', __( 'Error Validation Color' , 'funnel-builder'), true );
 		}
 
 
@@ -1409,13 +1409,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box  p strong',
 			);
 
-			$this->add_color( 'wfacp_form_payment_method_description_color', $payment_method_description_color, '', __( 'Description Color' ) );
+			$this->add_color( 'wfacp_form_payment_method_description_color', $payment_method_description_color, '', __( 'Description Color' , 'funnel-builder') );
 
 			$payment_method_description_bg_color = array(
 				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box',
 			);
 
-			$this->add_background_color( 'wfacp_form_payment_method_description_bg_color', $payment_method_description_bg_color, '', __( 'Information Background Color' ) );
+			$this->add_background_color( 'wfacp_form_payment_method_description_bg_color', $payment_method_description_bg_color, '', __( 'Information Background Color' , 'funnel-builder') );
 		}
 
 		/**
@@ -1436,7 +1436,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			);
 
 			$this->set_current_group( 'stylePrivacyPolicy' );
-			$this->add_font_size( 'wfacp_privacy_policy_font_size', $typo, __( 'Font Size (in px)' ), '12px' );
+			$this->add_font_size( 'wfacp_privacy_policy_font_size', $typo, __( 'Font Size (in px)' , 'funnel-builder'), '12px' );
 			$this->add_color( 'wfacp_privacy_policy_color', $color, '#777777', __( 'Color' ), array(), true );
 		}
 
@@ -1475,7 +1475,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			);
 
 			$this->set_current_group( 'styleTermsConditions' );
-			$this->add_font_size( 'wfacp_terms_condition_font_size', $typo, __( 'Font Size (in px)' ), '14px', array(), $range );
+			$this->add_font_size( 'wfacp_terms_condition_font_size', $typo, __( 'Font Size (in px)' , 'funnel-builder'), '14px', array(), $range );
 			$this->add_color( 'wfacp_terms_condition_color', $color, '', __( 'Color' ) );
 		}
 
@@ -1501,7 +1501,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 			);
 
-			$this->add_width( 'wfacp_button_width', $selector, __( 'Button Width (in %)' ), '100%', array(), array() );
+			$this->add_width( 'wfacp_button_width', $selector, __( 'Button Width (in %)' , 'funnel-builder'), '100%', array(), array() );
 
 			$alignment = array(
 				'#wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout .wfacp-order-place-btn-wrap',
@@ -1572,15 +1572,15 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 			/* Back Link color setting */
 
-			$this->add_heading( __( 'Return Link' ) );
+			$this->add_heading( __( 'Return Link' , 'funnel-builder') );
 			$this->add_color( 'step_back_link_color', $stepBackLink, '', 'Color' );
 
 			/* Back link color setting End*/
 
-			$this->add_heading( __( 'Additional Text' ) );
+			$this->add_heading( __( 'Additional Text' , 'funnel-builder') );
 			$this->add_color( 'additional_text_color', array( '#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-payment-dec' ) );
 			$this->add_background_color( 'additional_bg_color', array( '#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-payment-dec' ), '', __( 'Background' ) );
-			$this->add_switcher( 'wfacp_make_button_sticky_on_mobile', __( 'Sticky on Mobile' ), false );
+			$this->add_switcher( 'wfacp_make_button_sticky_on_mobile', __( 'Sticky on Mobile' , 'funnel-builder'), false );
 		}
 
 		/**
@@ -1618,7 +1618,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 					if ( in_array( $field_key, $skipKey, true ) ) {
 						continue;
 					}
-					$this->add_text( 'wfacp_' . $template_slug . '_' . $field_key . '_field_class', $field['label'], '', array(), '', __( 'Custom Class' ) );
+					$this->add_text( 'wfacp_' . $template_slug . '_' . $field_key . '_field_class', $field['label'], '', array(), '', __( 'Custom Class' , 'funnel-builder') );
 				}
 			}
 		}
@@ -1635,22 +1635,22 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			$template_obj  = wfacp_template();
 			$template_slug = $template_obj->get_template_slug();
 
-			$this->add_heading( __( 'Button Icon' ) );
+			$this->add_heading( __( 'Button Icon' , 'funnel-builder') );
 
 			$btn_icon_selector = array(
 				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-order-place-btn-wrap button:before',
 				'#wfacp-e-form .wfacp-next-btn-wrap button:before',
 			);
 
-			$this->add_color( $template_slug . '_btn_icon_color', $btn_icon_selector, '#ffffff', __( 'Icon Color' ) );
-			$this->add_heading( __( 'Sub Text' ) );
+			$this->add_color( $template_slug . '_btn_icon_color', $btn_icon_selector, '#ffffff', __( 'Icon Color' , 'funnel-builder') );
+			$this->add_heading( __( 'Sub Text' , 'funnel-builder') );
 
 			$button_sub_text_selector = array(
 				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-order-place-btn-wrap button:after',
 				'#wfacp-e-form .wfacp-next-btn-wrap button:after',
 			);
 
-			$this->add_font_size( $template_slug . '_button_sub_text_font_size', $button_sub_text_selector, __( 'Font Size (in px)' ), '12px', array() );
+			$this->add_font_size( $template_slug . '_button_sub_text_font_size', $button_sub_text_selector, __( 'Font Size (in px)' , 'funnel-builder'), '12px', array() );
 			$this->add_color( $template_slug . '_button_sub_text_color', $button_sub_text_selector, '#ffffff', __( 'Text Color' ) );
 		}
 
@@ -1669,7 +1669,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 			/*  Selected Items Setting */
 
-			$this->add_heading( __( 'Selected Items' ) );
+			$this->add_heading( __( 'Selected Items' , 'funnel-builder') );
 
 			/* Typography  */
 			$product_switcher_typo_option = array(
@@ -1700,7 +1700,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'#wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item.wfacp-selected-product .wfacp_row_wrap .wfacp_product_choosen_label .wfacp_product_row_quantity',
 			);
 
-			$this->add_color( $field_key . '_label_color', $selector, '', __( 'Item Color' ) );
+			$this->add_color( $field_key . '_label_color', $selector, '', __( 'Item Color' , 'funnel-builder') );
 
 			/* Items Price Color */
 
@@ -1709,7 +1709,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'#wfacp-e-form .wfacp_main_form.woocommerce .shop_table.wfacp-product-switch-panel .wfacp-selected-product .product-price span',
 			);
 
-			$this->add_color( $field_key . '_price_color', $item_price_color_opt, '', __( 'Item Price Color' ) );
+			$this->add_color( $field_key . '_price_color', $item_price_color_opt, '', __( 'Item Price Color' , 'funnel-builder') );
 
 			$variant_color = array(
 				'#wfacp-e-form .wfacp_main_form .wfacp_selected_attributes .wfacp_pro_attr_single span',
@@ -1718,7 +1718,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				' #wfacp-e-form .wfacp_main_form.woocommerce #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_subs_details span',
 			);
 
-			$this->add_color( $field_key . '_variant_color', $variant_color, '#666666', __( 'Variant Color' ) );
+			$this->add_color( $field_key . '_variant_color', $variant_color, '#666666', __( 'Variant Color' , 'funnel-builder') );
 
 			/* Background Color */
 			$item_bg_color = array(
@@ -1749,7 +1749,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 			/* Optional Item Setting */
 
-			$this->add_heading( __( 'Non-selected Items' ) );
+			$this->add_heading( __( 'Non-selected Items' , 'funnel-builder') );
 
 			$product_switcher_typo_optional = array(
 				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_name_inner *',
@@ -1776,7 +1776,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'#wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item .wfacp_row_wrap .wfacp_product_choosen_label .wfacp_product_row_quantity',
 			);
 
-			$this->add_color( $field_key . '_optional_label_color', $optional_label_color_opt, '', esc_attr__( 'Item Color' ) );
+			$this->add_color( $field_key . '_optional_label_color', $optional_label_color_opt, '', esc_attr__( 'Item Color' , 'funnel-builder') );
 
 			/* Items Price Color */
 
@@ -1791,7 +1791,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 			$this->add_background_color( $field_key . '_optional_background', array( '.woocommerce-cart-form__cart-item.cart_item:not(.wfacp-selected-product)' ), '#ffffff', __( 'Background Color' ) );
 
-			$this->add_background_color( $field_key . '_optional_background_hover', array( '.wfacp-product-switch-panel .woocommerce-cart-form__cart-item.cart_item:not(.wfacp-selected-product):hover' ), '#fbfbfb', __( 'Background Hover Color' ) );
+			$this->add_background_color( $field_key . '_optional_background_hover', array( '.wfacp-product-switch-panel .woocommerce-cart-form__cart-item.cart_item:not(.wfacp-selected-product):hover' ), '#fbfbfb', __( 'Background Hover Color' , 'funnel-builder') );
 
 			$this->product_switching_saving_text( $field_key . '_non_selected' );
 
@@ -1801,7 +1801,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			// Best value Controls
 
 			if ( true === WFACP_Common::is_best_value_available() ) {
-				$this->add_heading( __( 'Best Value' ) );
+				$this->add_heading( __( 'Best Value' , 'funnel-builder') );
 				$selector = array(
 					'#wfacp-e-form .wfacp_main_form.woocommerce #product_switching_field fieldset .wfacp_best_value',
 					'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp_best_value.wfacp_top_left_corner',
@@ -1813,14 +1813,14 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				$this->add_color( $field_key . '_best_value_text_color', $selector );
 				$this->add_background_color( $field_key . '_best_value_bg_color', $selector, '', __( 'Background Color' ) );
 
-				$this->add_border_color( '_best_value_border_color', array( '#wfacp-e-form .wfacp_main_form .shop_table.wfacp-product-switch-panel .woocommerce-cart-form__cart-item.cart_item.wfacp_best_val_wrap' ), '', __( 'Best Value Item Border Color' ) );
+				$this->add_border_color( '_best_value_border_color', array( '#wfacp-e-form .wfacp_main_form .shop_table.wfacp-product-switch-panel .woocommerce-cart-form__cart-item.cart_item.wfacp_best_val_wrap' ), '', __( 'Best Value Item Border Color' , 'funnel-builder') );
 
 				/* Typography */
 				$this->add_border( $field_key . '_best_value_border', $selector );
 			}
 
 			if ( true === WFACP_Common::is_what_included_available() ) {
-				$this->add_heading( __( 'Custom Product Description' ) );
+				$this->add_heading( __( 'Custom Product Description' , 'funnel-builder') );
 
 				/* Section Heading Setting */
 				$what_included_heading_opt = array(
@@ -1879,9 +1879,9 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 				$this->add_border( $field_key . '_what_included_border', array( '#wfacp-e-form .wfacp_main_form.woocommerce .wfacp_whats_included' ), $fields_options );
 
-				$description = __( 'Note: Add this CSS class <strong>"wfacp_for_mb_style"</strong> here if your checkout page width is less than 375px on desktop browser' );
+				$description = __( 'Note: Add this CSS class <strong>"wfacp_for_mb_style"</strong> here if your checkout page width is less than 375px on desktop browser' , 'funnel-builder');
 
-				$this->add_text( 'product_switcher_mobile_style', __( 'CSS Class' ), '', array(), $description );
+				$this->add_text( 'product_switcher_mobile_style', __( 'CSS Class' , 'funnel-builder'), '', array(), $description );
 			}
 		}
 
@@ -1929,7 +1929,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				);
 			}
 
-			$this->add_heading( __( 'Saving Text' ) );
+			$this->add_heading( __( 'Saving Text' , 'funnel-builder') );
 
 			$this->add_typography( $field_key . '_you_save_typo', $typography, array(), array(), '', array( 'color', 'text-align' ) );
 			$this->add_color( $field_key . '_you_save_color', $save_text_color_option, '#b22323' );
@@ -1943,21 +1943,21 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 		 * @return void
 		 */
 		public function icon_text( $counter_step ) {
-			$this->add_text( 'step_' . $counter_step . '_text_after_place_order', __( ' Sub Text' ), '', array() );
+			$this->add_text( 'step_' . $counter_step . '_text_after_place_order', __( ' Sub Text' , 'funnel-builder'), '', array() );
 
 			$icon_list = array(
-				'aero-e902' => __( 'Arrow 1' ),
-				'aero-e906' => __( 'Arrow 2' ),
-				'aero-e907' => __( 'Arrow 3' ),
-				'aero-e908' => __( 'Checkmark' ),
-				'aero-e905' => __( 'Cart 1' ),
-				'aero-e901' => __( 'Lock 1' ),
-				'aero-e900' => __( 'Lock 2' ),
+				'aero-e902' => __( 'Arrow 1' , 'funnel-builder'),
+				'aero-e906' => __( 'Arrow 2' , 'funnel-builder'),
+				'aero-e907' => __( 'Arrow 3' , 'funnel-builder'),
+				'aero-e908' => __( 'Checkmark' , 'funnel-builder'),
+				'aero-e905' => __( 'Cart 1' , 'funnel-builder'),
+				'aero-e901' => __( 'Lock 1' , 'funnel-builder'),
+				'aero-e900' => __( 'Lock 2' , 'funnel-builder'),
 			);
 
 			$bwf_icon_list = apply_filters( 'bwf_icon_list', $icon_list );
 
-			$this->add_switcher( 'enable_icon_with_place_order_' . $counter_step, __( 'Enable Icon' ), false );
+			$this->add_switcher( 'enable_icon_with_place_order_' . $counter_step, __( 'Enable Icon' , 'funnel-builder'), false );
 
 			$condition = array(
 				'enable_icon_with_place_order_' . $counter_step,
@@ -1965,7 +1965,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				true,
 			);
 
-			$this->add_select( 'icons_with_place_order_list_' . $counter_step, __( 'Select Icons Style' ), $bwf_icon_list, 'aero-e901', $condition );
+			$this->add_select( 'icons_with_place_order_list_' . $counter_step, __( 'Select Icons Style' , 'funnel-builder'), $bwf_icon_list, 'aero-e901', $condition );
 		}
 
 		/**
@@ -2011,7 +2011,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			$this->add_color( $field_key . '_cart_item_color', $cart_item_color, '#666666' );
 
 			$border_image_color = array( '#wfacp-e-form table.shop_table tr.cart_item .product-image img' );
-			$this->add_border_color( 'mini_product_image_border_color', $border_image_color, '', __( 'Image Border Color' ), false, array( 'order_summary_enable_product_image', '=', true ) );
+			$this->add_border_color( 'mini_product_image_border_color', $border_image_color, '', __( 'Image Border Color' , 'funnel-builder'), false, array( 'order_summary_enable_product_image', '=', true ) );
 
 			$this->add_border_radius( $field_key . '_cart_item_image_border_radius', $border_image_color );
 
@@ -2028,7 +2028,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 					$selector . ' .product-total del span.woocommerce-Price-currencySymbol',
 				);
 
-				$this->add_typography( $field_key . '_strike_through_typo', $strike_through_typo, '', '', esc_html__( 'Strike Through' ) );
+				$this->add_typography( $field_key . '_strike_through_typo', $strike_through_typo, '', '', esc_html__( 'Strike Through' , 'funnel-builder') );
 
 				/**
 				 * Low Stock Message Style Setting
@@ -2036,7 +2036,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				$low_stock_message = array(
 					$selector . ' .wfacp_stocks',
 				);
-				$this->add_typography( $field_key . '_low_stock_message_typo', $low_stock_message, '', '', esc_html__( 'Low Stock' ) );
+				$this->add_typography( $field_key . '_low_stock_message_typo', $low_stock_message, '', '', esc_html__( 'Low Stock' , 'funnel-builder') );
 
 				/**
 				 * Saved Price Setting
@@ -2048,13 +2048,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 					$selector . ' table.shop_table tr:not(.order-total):not(.cart-discount).wfacp-saving-amount td span *',
 				);
 
-				$this->add_typography( $field_key . '_saving_price_message_typo', $saving_price_message, '', '', esc_html__( 'Save Price Typography' ) );
+				$this->add_typography( $field_key . '_saving_price_message_typo', $saving_price_message, '', '', esc_html__( 'Save Price Typography' , 'funnel-builder') );
 
 			}
 			/**
 			 * Subtotal Style Setting
 			 */
-			$this->add_heading( __( 'Subtotal' ) );
+			$this->add_heading( __( 'Subtotal' , 'funnel-builder') );
 
 			$cart_subtotal_color_option = array(
 				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount)',
@@ -2076,7 +2076,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 			/* ------------------------------------ Coupon Start------------------------------------ */
 
-			$this->add_heading( __( 'Coupon code' ) );
+			$this->add_heading( __( 'Coupon code' , 'funnel-builder') );
 			$coupon_selector = array(
 				'#wfacp-e-form  table.shop_table tfoot tr.cart-discount th',
 				'#wfacp-e-form  table.shop_table tfoot tr.cart-discount th span',
@@ -2085,7 +2085,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'#wfacp-e-form  table.shop_table tfoot tr.cart-discount td a',
 			);
 
-			$this->add_font_size( $field_key . '_display_font_size', $coupon_selector, __( 'Font Size (in px)' ), '14px', array() );
+			$this->add_font_size( $field_key . '_display_font_size', $coupon_selector, __( 'Font Size (in px)' , 'funnel-builder'), '14px', array() );
 
 			$coupon_selector_label_color = array(
 				'#wfacp-e-form table.shop_table tfoot tr.cart-discount th',
@@ -2100,7 +2100,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'#wfacp-e-form table.shop_table tfoot tr.cart-discount td span bdi',
 				'#wfacp-e-form table.shop_table tfoot tr.cart-discount th .wfacp_coupon_code',
 			);
-			$this->add_color( $field_key . '_display_val_color', $coupon_selector_val_color, '#24ae4e', __( 'Code Color' ) );
+			$this->add_color( $field_key . '_display_val_color', $coupon_selector_val_color, '#24ae4e', __( 'Code Color' , 'funnel-builder') );
 
 			/* ------------------------------------ End ------------------------------------ */
 
@@ -2145,11 +2145,11 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 			$this->add_heading( 'Total' );
 
-			$this->add_typography( $field_key . '_cart_total_label_typo', $cart_total_label_typo_option, $fields_options, array(), __( 'Label Typography' ), array( 'text-align', 'color' ) );
-			$this->add_typography( $field_key . '_cart_subtotal_heading_typo', $cart_total_value_typo_option, $fields_options, array(), __( 'Price Typography' ), array( 'text-align', 'color' ) );
+			$this->add_typography( $field_key . '_cart_total_label_typo', $cart_total_label_typo_option, $fields_options, array(), __( 'Label Typography' , 'funnel-builder'), array( 'text-align', 'color' ) );
+			$this->add_typography( $field_key . '_cart_subtotal_heading_typo', $cart_total_value_typo_option, $fields_options, array(), __( 'Price Typography' , 'funnel-builder'), array( 'text-align', 'color' ) );
 			$this->add_color( $field_key . '_cart_subtotal_heading_color', $cart_total_color_option, '' );
 
-			$this->add_heading( __( 'Divider' ) );
+			$this->add_heading( __( 'Divider' , 'funnel-builder') );
 			$divider_line_color = array(
 				'#wfacp-e-form  table.shop_table tbody .wfacp_order_summary_item_name',
 				'#wfacp-e-form table.shop_table tr.cart_item',
@@ -2206,7 +2206,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			$this->add_typography( $field_key . '_coupon_typography', $coupon_typography_opt, array(), array(), __( 'Typography' ), array( 'color' ) );
 			$this->add_color( $field_key . '_coupon_text_color', $coupon_typography_opt );
 
-			$this->add_heading( __( 'Field' ) );
+			$this->add_heading( __( 'Field' , 'funnel-builder') );
 
 			$form_fields_label_typo = array(
 				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper label.wfacp-form-control-label',
@@ -2216,18 +2216,18 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'font_weight' => '400',
 			);
 
-			$this->add_typography( $field_key . '_label_typo', $form_fields_label_typo, $fields_options, array(), __( 'Label Typography' ), array( 'text-align', 'color' ) );
-			$this->add_color( $field_key . '_label_color', $form_fields_label_typo, '', __( 'Label Color' ) );
+			$this->add_typography( $field_key . '_label_typo', $form_fields_label_typo, $fields_options, array(), __( 'Label Typography' , 'funnel-builder'), array( 'text-align', 'color' ) );
+			$this->add_color( $field_key . '_label_color', $form_fields_label_typo, '', __( 'Label Color' , 'funnel-builder') );
 
 			$form_fields_coupon_typo = array(
 				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper .wfacp-form-control',
 			);
 
-			$this->add_typography( $field_key . '_input_typo', $form_fields_coupon_typo, array(), array(), __( 'Coupon Typography' ), array( 'text-align', 'color' ) );
-			$this->add_color( $field_key . '_input_color', $form_fields_coupon_typo, '', __( 'Coupon Color' ) );
+			$this->add_typography( $field_key . '_input_typo', $form_fields_coupon_typo, array(), array(), __( 'Coupon Typography' , 'funnel-builder'), array( 'text-align', 'color' ) );
+			$this->add_color( $field_key . '_input_color', $form_fields_coupon_typo, '', __( 'Coupon Color' , 'funnel-builder') );
 
 			$focus_color = array( '#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper .wfacp-form-control:focus' );
-			$this->add_border_color( $field_key . '_focus_color', $focus_color, '#61bdf7', __( 'Focus Color' ), true );
+			$this->add_border_color( $field_key . '_focus_color', $focus_color, '#61bdf7', __( 'Focus Color' , 'funnel-builder'), true );
 
 			$default = array(
 				'radius' => array(
@@ -2251,7 +2251,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			$this->add_background_color( $field_key . '_btn_bg_color', $btnkey, '', __( 'Background' ) );
 			$this->add_color( $field_key . '_btn_text_color', $btnkey, '', __( 'Label' ) );
 
-			$this->add_typography( $field_key . '_btn_typo', $btnkey, array(), array(), __( 'Button Typography' ) );
+			$this->add_typography( $field_key . '_btn_typo', $btnkey, array(), array(), __( 'Button Typography' , 'funnel-builder') );
 			/* Button color setting End*/
 		}
 

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Yth_WC_Delivery_Date_Premium' ) ) {
 	/**
 	 * YITH WooCommerce Delivery Date Premium by YITH (up to  2.1.29 Version)
@@ -29,7 +30,7 @@ if ( ! class_exists( 'WFACP_Yth_WC_Delivery_Date_Premium' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_yth_wc_delivery_date' ],
 				'id'         => 'wfacp_yth_wc_delivery_date',
 				'field_type' => 'wfacp_yth_wc_delivery_date',
-				'label'      => __( 'YITH Delivery Date', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'YITH Delivery Date', 'funnel-builder' ),
 			];
 
 			return $fields;

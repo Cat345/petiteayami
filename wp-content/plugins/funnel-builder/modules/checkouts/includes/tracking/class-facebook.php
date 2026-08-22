@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Analytics_Pixel' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Analytics_Pixel extends WFACP_Analytics {
@@ -64,7 +65,7 @@ if ( ! class_exists( 'WFACP_Analytics_Pixel' ) ) {
 			}
 			$output['currency']     = get_woocommerce_currency();
 			$output['value']        = $this->number_format( $subtotal );
-			$output['content_name'] = __( 'Checkout', 'woofunnels-aero-checkout' );
+			$output['content_name'] = __( 'Checkout', 'funnel-builder' );
 			$output['content_type'] = 'product';
 			$output['plugin']       = 'FunnelKit Checkout';
 			$output['subtotal']     = $this->number_format( WC()->cart->cart_contents_total );

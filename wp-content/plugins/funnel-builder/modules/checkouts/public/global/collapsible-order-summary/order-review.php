@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -114,7 +115,7 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 								echo '</span> ';
 								do_action( 'wfacp_after_cart_formatted_item_data', $cart_item, $cart_item_key );
 								echo '</div>';
-								if ( false == $show_subscription_string_old_version && in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() ) ) {
+								if ( false == $show_subscription_string_old_version && in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() ) && ( class_exists( 'WC_Subscriptions' ) || class_exists( 'WC_Subscriptions_Core_Plugin' ) ) && version_compare( WFACP_Common_Helper::get_subscription_version(), '9.0.0', '<' ) ) {
 									printf( "<div class='wfacp_product_subs_details'>%s</div>", WFACP_Common::subscription_product_string( $_product, $product_data, $cart_item, $cart_item_key ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								}
 
@@ -127,12 +128,26 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 									if ( apply_filters( 'wfacp_display_quantity_increment', true, $cart_item, $item_quantity, $aero_item_key, $cart_item_key ) ) {
 										if ( false == $is_sold_individually ) {
 											$item_quantity = apply_filters( 'wfacp_item_quantity', $item_quantity, $cart_item );
-											$minMax        = apply_filters(
+											// Derive step from WooCommerce's quantity-input filters so decimal-quantity plugins apply; defaults to 1.
+											$wfacp_qty_step = apply_filters( 'woocommerce_quantity_input_step', 1, $_product );
+											$wfacp_qty_args = apply_filters(
+												'woocommerce_quantity_input_args',
+												array(
+													'min_value' => 0,
+													'max_value' => '',
+													'step' => $wfacp_qty_step,
+												),
+												$_product
+											);
+											if ( is_array( $wfacp_qty_args ) && isset( $wfacp_qty_args['step'] ) ) {
+												$wfacp_qty_step = $wfacp_qty_args['step'];
+											}
+											$minMax = apply_filters(
 												'wfacp_cart_item_min_max_quantity',
 												array(
 													'min'  => 0,
 													'max'  => '',
-													'step' => '1',
+													'step' => $wfacp_qty_step,
 												),
 												$cart_item,
 												$aero_item_key,
@@ -142,7 +157,7 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 											<div class="product-quantity">
 												<div class="wfacp_quantity_selector" style="<?php echo ( true == $hide_quantity_switcher ) ? 'display:none;pointer-events:none;' : ''; ?>">
 													<div class="value-button wfacp_decrease_item" onclick="decreaseItmQty(this,'<?php echo $aero_item_key;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>')" value="Decrease Value">-</div>
-													<input type="number" step='<?php echo $minMax['step']; ?>' min='<?php echo $minMax['min']; ?>' max='<?php echo $minMax['max']; ?>' value="<?php echo $item_quantity; ?>" data-value="<?php echo $item_quantity; ?>" class="wfacp_mini_cart_update_qty wfacp_product_quantity_number_field" cart_key="<?php echo $cart_item_key;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
+													<input type="number" step='<?php echo esc_attr( $minMax['step'] ); ?>' min='<?php echo esc_attr( $minMax['min'] ); ?>' max='<?php echo esc_attr( $minMax['max'] ); ?>' value="<?php echo $item_quantity; ?>" data-value="<?php echo $item_quantity; ?>" class="wfacp_mini_cart_update_qty wfacp_product_quantity_number_field" aria-label="<?php esc_attr_e( 'Quantity', 'funnel-builder' ); ?>" cart_key="<?php echo $cart_item_key;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 													<div class="value-button wfacp_increase_item" onclick="increaseItmQty(this,'<?php echo $aero_item_key;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>')" value="Increase Value">+</div>
 												</div>
 											</div>

@@ -37,6 +37,8 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 }
 $wc_version = WC()->version;
 
+$prepared_items = $instance->get_prepared_cart_items();
+
 ?>
 	<div class="wfacp_order_summary wfacp_wrapper_start wfacp_order_sec <?php echo $classes . ' ' . $tax_enabled; ?>" id="order_summary_field" <?php echo WFACP_Common::get_fragments_attr(); ?>>
 		<?php do_action( 'wfacp_before_order_summary', $field, $instance ); ?>
@@ -78,21 +80,22 @@ $wc_version = WC()->version;
 
 					do_action( 'woocommerce_review_order_before_cart_contents' );
 					foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
-						$_product = apply_filters( 'woocommerce_cart_item_product1', $cart_item['data'], $cart_item, $cart_item_key );
+						$item_data    = isset( $prepared_items[ $cart_item_key ] ) ? $prepared_items[ $cart_item_key ] : null;
+						$base_product = $item_data ? $item_data['product'] : $cart_item['data'];
+						$_product     = apply_filters( 'woocommerce_cart_item_product1', $base_product, $cart_item, $cart_item_key );
 
-						$aero_item_key          = isset($cart_item['_wfacp_product_key']) ? $cart_item['_wfacp_product_key'] : '';
+						$aero_item_key = $item_data ? $item_data['aero_item_key'] : ( isset( $cart_item['_wfacp_product_key'] ) ? $cart_item['_wfacp_product_key'] : '' );
 						if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_checkout_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
 							?>
-                            <tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>" cart_key="<?php echo $cart_item_key ?>" data-item-key="<?php echo $aero_item_key ?>">
-                                <td class="product-name-area">
+							<tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>" cart_key="<?php echo $cart_item_key; ?>" data-item-key="<?php echo $aero_item_key; ?>">
+								<td class="product-name-area">
 									<?php
 									$hideImageCls = '';
 
 
 									if ( apply_filters( 'wfacp_cart_show_product_thumbnail', false ) ) {
 										$hideImageCls = 'wfacp_summary_img_true';
-										$thumbnail    = WFACP_Common::get_product_image( $_product, array( 100, 100 ), $cart_item, $cart_item_key );
-										$thumbnail    = apply_filters( 'wfacp_cart_image', $thumbnail, $_product );
+										$thumbnail    = $item_data ? $item_data['thumbnail'] : apply_filters( 'wfacp_cart_image', WFACP_Common::get_product_image( $_product, array( 100, 100 ), $cart_item, $cart_item_key ), $_product );
 										?>
 										<div class="product-image">
 											<div class="wfacp-pro-thumb">
@@ -103,18 +106,18 @@ $wc_version = WC()->version;
 											</div>
 										</div>
 									<?php } ?>
-                                    <div class="product-name  <?php echo $hideImageCls; ?> ">
-                                        <span class="wfacp_order_summary_item_name">
-                                            <?php
+									<div class="product-name  <?php echo $hideImageCls; ?> ">
+										<span class="wfacp_order_summary_item_name">
+											<?php
 											/**
 											 * Filter wfacp_mini_cart_show_variation_details: default false. Return true for new design (labeled variation + select option link).
 											 * Default: compact format "Hoodie - Small, Black" via get_name().
 											 * When filter true: product name + "Size: small, Color: black" on separate line + select option link.
 											 */
-											$show_new_order_summary_design = apply_filters( 'wfacp_mini_cart_show_variation_details', false, $cart_item, $cart_item_key );
-											$product_name                 = $_product->get_name();
-											$variation                   = [];
-											if ( in_array( $_product->get_type(), WFACP_Common::get_variation_product_type() ) || true === apply_filters( 'wfacp_show_select_options_for_cart_item', false, $cart_item, $cart_item_key ) ) {
+											$show_new_order_summary_design = $item_data ? $item_data['show_variation_details'] : apply_filters( 'wfacp_mini_cart_show_variation_details', false, $cart_item, $cart_item_key );
+											$product_name                  = $item_data ? $item_data['product_name'] : $_product->get_name();
+											$variation                     = $item_data ? $item_data['variation_html'] : array();
+											if ( ! $item_data && ( in_array( $_product->get_type(), WFACP_Common::get_variation_product_type() ) || true === apply_filters( 'wfacp_show_select_options_for_cart_item', false, $cart_item, $cart_item_key ) ) ) {
 												$variation = WFACP_Common::get_single_variation_html( $_product, $cart_item, true );
 												if ( $show_new_order_summary_design ) {
 													$product_name = $_product->get_title();
@@ -124,8 +127,8 @@ $wc_version = WC()->version;
 											echo apply_filters( 'woocommerce_cart_item_name', $product_name, $cart_item, $cart_item_key );
 											do_action( 'wfacp_order_summary_field_after_product_name', $cart_item, $cart_item_key );
 
-                                            ?>
-                                        </span>
+											?>
+										</span>
 										<?php
 
 										echo apply_filters( 'woocommerce_checkout_cart_item_quantity', ' <strong class="product-quantity">' . sprintf( '&times; %s', $cart_item['quantity'] ) . '</strong>', $cart_item, $cart_item_key );
@@ -137,13 +140,10 @@ $wc_version = WC()->version;
 											do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key );
 										}
 
-										
-										if ( version_compare( $wc_version, '3.3.0', '>=' ) ) {
-												echo wc_get_formatted_cart_item_data( $cart_item );
-										} else {
-												echo WC()->cart->get_item_data( $cart_item );
-										}
-										
+
+
+										echo $item_data ? $item_data['formatted_data'] : wc_get_formatted_cart_item_data( $cart_item );
+
 
 										/**
 										 * Display Low Stock Trigger
@@ -168,7 +168,7 @@ $wc_version = WC()->version;
 										<?php
 
 										if ( in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() ) ) {
-											$price_show = apply_filters( 'wfacp_subscription_price_display', WFACP_Common::display_subscription_price( $_product, $cart_item, $cart_item_key ), $_product, $cart_item, $cart_item_key );
+											$price_show = apply_filters( 'wfacp_subscription_price_display', WFACP_Common::maybe_strike_subscription_price( WFACP_Common::display_subscription_price( $_product, $cart_item, $cart_item_key ), $_product, $cart_item, apply_filters( 'wfacp_order_summary_field_enable_strike_through_price', false ) ), $_product, $cart_item, $cart_item_key );
 
 											echo $price_show;
 
@@ -203,10 +203,15 @@ $wc_version = WC()->version;
 				</tr>
 
 				<?php foreach ( WFACP_Common::get_coupons() as $code => $coupon ) : ?>
-                    <tr class="cart-discount coupon-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
-                        <th <?php echo $colspan_attr; ?>><?php $instance->wc_cart_totals_coupon_label( $coupon ) ?></th>
-                        <td><?php wc_cart_totals_coupon_html( $coupon );							do_action( 'wfacp_after_coupon_html', $coupon ); ?></td>
-                    </tr>
+					<tr class="cart-discount coupon-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
+						<th <?php echo $colspan_attr; ?>><?php $instance->wc_cart_totals_coupon_label( $coupon ); ?></th>
+						<td>
+						<?php
+						wc_cart_totals_coupon_html( $coupon );
+						do_action( 'wfacp_after_coupon_html', $coupon );
+						?>
+						</td>
+					</tr>
 				<?php endforeach; ?>
 
 				<?php foreach ( WC()->cart->get_fees() as $fee ) : ?>

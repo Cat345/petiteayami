@@ -3012,10 +3012,13 @@ class BWFAN_Common {
 
 		$as_ins = ActionScheduler_QueueRunner::instance();
 
-		/** Run Action Scheduler worker */
-		$result = $as_ins->run();
-
-		self::event_advanced_logs( "Actions processed: {$result}" );
+		/** Run Action Scheduler worker. Guard against any store-level exception (e.g. claim UPDATE DB error) escaping as a fatal on the worker endpoint. */
+		try {
+			$result = $as_ins->run();
+			self::event_advanced_logs( "Actions processed: {$result}" );
+		} catch ( \Throwable $e ) {
+			self::log_test_data( 'BWFAN: Worker run aborted: ' . $e->getMessage(), 'fka-db-deadlock', true );
+		}
 	}
 
 	/**
@@ -3124,7 +3127,21 @@ class BWFAN_Common {
 		if ( ( ! isset( $_GET['rest_route'] ) || '/autonami/v1/worker' !== sanitize_text_field( $_GET['rest_route'] ) ) && false === strpos( $_SERVER['REQUEST_URI'], '/autonami/v1/worker' ) ) { //phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
 			return;
 		}
-		if ( ! class_exists( 'BWFAN_AS_CT' ) ) {
+
+		/**
+		 * Load the custom AS-CT store files directly instead of relying on the generated
+		 * classmap (includes/class-bwfan-autoload-map.php). Its libraries/ entries are manual
+		 * additions that the funnelkit-profiler generator can drop on regen; losing them would
+		 * silently revert this worker to the core AS tables. Request-scoped (worker endpoint only).
+		 * Do NOT remove as "redundant" — it is the load-bearing guarantee for the worker store.
+		 */
+		if ( ! class_exists( 'BWFAN_AS_CT', false ) ) {
+			$as_ct_dir = BWFAN_PLUGIN_DIR . '/libraries/action-scheduler-ct/';
+			require_once $as_ct_dir . 'class-bwfan-as-ct.php';
+			require_once $as_ct_dir . 'action-store.php';
+			require_once $as_ct_dir . 'logs-store.php';
+		}
+		if ( ! class_exists( 'BWFAN_AS_CT', false ) ) {
 			return;
 		}
 
@@ -3144,7 +3161,21 @@ class BWFAN_Common {
 		if ( ( ! isset( $_GET['rest_route'] ) || '/autonami/v2/worker' !== sanitize_text_field( $_GET['rest_route'] ) ) && false === strpos( $_SERVER['REQUEST_URI'], '/autonami/v2/worker' ) ) { //phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
 			return;
 		}
-		if ( ! class_exists( 'BWFAN_AS_V2' ) ) {
+
+		/**
+		 * Load the custom AS-V2 store files directly instead of relying on the generated
+		 * classmap (includes/class-bwfan-autoload-map.php). Its libraries/ entries are manual
+		 * additions that the funnelkit-profiler generator can drop on regen; losing them would
+		 * silently revert this worker to the core AS tables. Request-scoped (worker endpoint only).
+		 * Do NOT remove as "redundant" — it is the load-bearing guarantee for the worker store.
+		 */
+		if ( ! class_exists( 'BWFAN_AS_V2', false ) ) {
+			$as_v2_dir = BWFAN_PLUGIN_DIR . '/libraries/action-scheduler-v2/';
+			require_once $as_v2_dir . 'class-bwfan-as-ct.php';
+			require_once $as_v2_dir . 'action-store.php';
+			require_once $as_v2_dir . 'logs-store.php';
+		}
+		if ( ! class_exists( 'BWFAN_AS_V2', false ) ) {
 			return;
 		}
 
@@ -5190,7 +5221,7 @@ class BWFAN_Common {
 
 				$result['msg'] = __( 'Process scheduled for deleting expired Funnelkit Automation generated coupons', 'wp-marketing-automations' );
 
-				bwf_schedule_recurring_action( time(), 2, 'bwfan_delete_expired_coupons', array() );
+				bwf_schedule_recurring_action( time(), MINUTE_IN_SECONDS * 2, 'bwfan_delete_expired_coupons', array() );
 
 				break;
 			case 'delete_lost_carts':
@@ -5278,6 +5309,9 @@ class BWFAN_Common {
 
 				$result['msg']    = __( 'Status Updated', 'wp-marketing-automations' );
 				$result['status'] = true;
+				break;
+			default:
+				$result = apply_filters( 'bwfan_run_global_tool_' . $tool_type, $result, $data );
 				break;
 		}
 
@@ -12181,9 +12215,10 @@ class BWFAN_Common {
 			if ( ! isset( $global_settings['bwfan_unsubscribe_page'] ) || empty( $global_settings['bwfan_unsubscribe_page'] ) ) {
 				self::$unsubscribe_page_link = esc_url_raw( home_url() );
 			} else {
-				$page = absint( $global_settings['bwfan_unsubscribe_page'] );
+				$page      = absint( $global_settings['bwfan_unsubscribe_page'] );
+				$permalink = get_permalink( $page );
 
-				self::$unsubscribe_page_link = get_permalink( $page );
+				self::$unsubscribe_page_link = ! empty( $permalink ) ? $permalink : esc_url_raw( home_url( '/' ) );
 			}
 		}
 
@@ -13308,7 +13343,7 @@ class BWFAN_Common {
 
 		/** Check if the worker has run recently */
 		$last_run = empty( $last_run ) ? bwf_options_get( 'fk_core_worker_let' ) : $last_run;
-		if ( $last_run > 0 ) {
+		if ( false === $force && $last_run > 0 ) {
 			return ['response_code' => '' ];
 		}
 

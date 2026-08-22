@@ -35,6 +35,8 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 	$tax_enabled = 'wfacp_tax_enabled';
 }
 
+$prepared_items = $instance->get_prepared_cart_items();
+
 ?>
 
 	<div class="wfacp_order_summary wfacp_wrapper_start wfacp_order_sec <?php echo $classes . ' ' . $tax_enabled; ?>" id="order_summary_field" <?php echo WFACP_Common::get_fragments_attr(); ?> >
@@ -70,7 +72,8 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 				<?php
 				do_action( 'woocommerce_review_order_before_cart_contents' );
 				foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
-					$_product = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
+					$item_data = isset( $prepared_items[ $cart_item_key ] ) ? $prepared_items[ $cart_item_key ] : null;
+					$_product  = $item_data ? $item_data['product'] : apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
 					if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_checkout_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
 						?>
 						<tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>" cart_key="<?php echo esc_attr( $cart_item_key ); ?>">
@@ -81,8 +84,7 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 								$hideImageCls = '';
 								if ( apply_filters( 'wfacp_cart_show_product_thumbnail', false ) ) {
 									$hideImageCls = 'wfacp_summary_img_true';
-									$thumbnail    = WFACP_Common::get_product_image( $_product, array( 100, 100 ), $cart_item, $cart_item_key );
-									$thumbnail    = apply_filters( 'wfacp_cart_image', $thumbnail, $_product );
+									$thumbnail    = $item_data ? $item_data['thumbnail'] : apply_filters( 'wfacp_cart_image', WFACP_Common::get_product_image( $_product, array( 100, 100 ), $cart_item, $cart_item_key ), $_product );
 									?>
 									<div class="product-image">
 										<div class="wfacp-pro-thumb">
@@ -96,7 +98,7 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 
 								<div class="product-name  <?php echo $hideImageCls; ?> ">
 									<span class="wfacp_order_summary_item_name">
-									<?php echo apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key ); ?>
+									<?php echo apply_filters( 'woocommerce_cart_item_name', $item_data ? $item_data['product_name'] : $_product->get_name(), $cart_item, $cart_item_key ); ?>
 									</span>
 									<?php
 										do_action( 'wfacp_order_summary_field_after_product_name', $cart_item, $cart_item_key );
@@ -109,12 +111,7 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 										do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key );
 									}
 
-
-									if ( version_compare( $wc_version, '3.3.0', '>=' ) ) {
-										echo wc_get_formatted_cart_item_data( $cart_item );
-									} else {
-										echo WC()->cart->get_item_data( $cart_item );
-									}
+									echo $item_data ? $item_data['formatted_data'] : wc_get_formatted_cart_item_data( $cart_item );
 									do_action( 'wfacp_order_summary_cart_item_formatted_data', $cart_item, $cart_item_key, $_product );
 									?>
 								</div>
@@ -123,7 +120,8 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 							<td class="product-total">
 								<div class="wfacp_order_summary_item_total">
 									<?php
-									if ( in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() ) ) {
+									$is_subscription = $item_data ? $item_data['is_subscription'] : in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() );
+									if ( $is_subscription ) {
 										echo WFACP_Common::display_subscription_price( $_product, $cart_item, $cart_item_key );
 									} elseif ( true == apply_filters( 'wfacp_woocommerce_cart_item_subtotal_except_subscription', true, $_product, $cart_item, $cart_item_key ) ) {
 											echo apply_filters( 'woocommerce_cart_item_subtotal', WFACP_Common::get_product_subtotal( $_product, $cart_item ), $cart_item, $cart_item_key );

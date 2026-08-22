@@ -415,15 +415,22 @@ abstract class BWFAN_Event {
 			return false;
 		}
 
+		$contact_id = intval( $global_data['global']['cid'] );
+
+		/** Serialize the check-then-insert critical section per (aid, cid) so concurrent workers cannot both enroll the same contact (opt-in, see acquire_enroll_lock) */
+		$lock_name = $this->acquire_enroll_lock( $aid, $contact_id );
+
 		/** Validate automation common settings like run count */
-		if ( false === BWFAN_Model_Automations_V2::validation_automation_run_count( $aid, $global_data['global']['cid'], $automation ) ) {
-			BWFAN_Common::log_test_data( 'Automation ID ' . $aid . ' already run on a contact ' . $global_data['global']['cid'] . '. Event - ' . $event_slug, 'contact-exist-automation', true );
+		if ( false === BWFAN_Model_Automations_V2::validation_automation_run_count( $aid, $contact_id, $automation ) ) {
+			BWFAN_Common::log_test_data( 'Automation ID ' . $aid . ' already run on a contact ' . $contact_id . '. Event - ' . $event_slug, 'contact-exist-automation', true );
+
+			$this->release_enroll_lock( $lock_name );
 
 			return false;
 		}
 
 		$data = [
-			'cid'       => intval( $global_data['global']['cid'] ),
+			'cid'       => $contact_id,
 			'aid'       => $aid,
 			'event'     => $event_slug,
 			'c_date'    => current_time( 'mysql', 1 ),
@@ -438,10 +445,57 @@ abstract class BWFAN_Event {
 			BWFAN_Common::log_test_data( 'Automation ID ' . $data['aid'] . ' already exists with same data for contact ' . $data['cid'] . '. Event - ' . $data['event'], 'contact-duplicate-automation', true );
 			BWFAN_Common::log_test_data( $global_data, 'contact-duplicate-automation', true );
 
+			$this->release_enroll_lock( $lock_name );
+
 			return false;
 		}
 
 		BWFAN_Model_Automation_Contact::insert( $data );
+
+		$this->release_enroll_lock( $lock_name );
+	}
+
+	/**
+	 * Acquire a MySQL named lock to serialize the V2 enrollment critical section for a given (aid, cid).
+	 *
+	 * The enrollment gate does a non-atomic SELECT (active check) -> SELECT (duplicate check) -> INSERT.
+	 * Under concurrent Action Scheduler workers this allows duplicate active enrollments to be created.
+	 * Serializing per (aid, cid) makes the check-then-insert atomic across processes.
+	 *
+	 * Always on: adds one lock round-trip per enrollment so the duplicate-enrollment race is closed on every
+	 * site. Can be disabled per-site with add_filter( 'bwfan_enable_v2_enroll_lock', '__return_false' ).
+	 * Gating lives here so every call site shares a single toggle.
+	 *
+	 * @param int $aid
+	 * @param int $cid
+	 *
+	 * @return string Lock name if acquired, empty string otherwise (fail-open / disabled).
+	 */
+	public function acquire_enroll_lock( $aid, $cid ) {
+		if ( ! apply_filters( 'bwfan_enable_v2_enroll_lock', true, $aid, $cid ) ) {
+			return '';
+		}
+
+		global $wpdb;
+		$lock_name = substr( 'bwfan_enroll_' . intval( $aid ) . '_' . intval( $cid ), 0, 64 );
+		$acquired  = $wpdb->get_var( $wpdb->prepare( "SELECT GET_LOCK(%s, %d)", $lock_name, 2 ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+
+		return ( '1' === (string) $acquired ) ? $lock_name : '';
+	}
+
+	/**
+	 * Release a MySQL named lock acquired via acquire_enroll_lock().
+	 *
+	 * @param string $lock_name
+	 *
+	 * @return void
+	 */
+	public function release_enroll_lock( $lock_name ) {
+		if ( empty( $lock_name ) ) {
+			return;
+		}
+		global $wpdb;
+		$wpdb->query( $wpdb->prepare( "SELECT RELEASE_LOCK(%s)", $lock_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	public function get_automations_data( $v = 1 ) {
@@ -1313,28 +1367,36 @@ abstract class BWFAN_Event {
 			return false;
 		}
 
+		$contact_id = intval( $global_data['global']['cid'] );
+
+		/** Serialize the check-then-insert critical section per (aid, cid) so concurrent workers cannot both enroll the same contact and create duplicate active rows (opt-in, see acquire_enroll_lock) */
+		$lock_name = $this->acquire_enroll_lock( $automation_id, $contact_id );
+
 		/** If contact is active in automation */
 		$exclude_check = false;
 		if ( isset( $automation_data['event_meta'] ) && isset( $automation_data['event_meta']['enter_automation_on_active_contact'] ) && 1 === absint( $automation_data['event_meta']['enter_automation_on_active_contact'] ) ) {
 			$exclude_check = true;
 		}
 
-		if ( false === $exclude_check && BWFAN_Model_Automation_Contact::maybe_contact_in_automation( $global_data['global']['cid'], $automation_id ) ) {
-			BWFAN_Common::log_test_data( 'Contact ' . $global_data['global']['cid'] . ' is active in the automation - ' . $automation_id . '. Event - ' . $this->get_slug(), 'contact-exist-automation', true );
+		if ( false === $exclude_check && BWFAN_Model_Automation_Contact::maybe_contact_in_automation( $contact_id, $automation_id ) ) {
+			BWFAN_Common::log_test_data( 'Contact ' . $contact_id . ' is active in the automation - ' . $automation_id . '. Event - ' . $this->get_slug(), 'contact-exist-automation', true );
+
+			$this->release_enroll_lock( $lock_name );
 
 			return false;
 		}
 
 		/** Validate automation common settings like run count */
-		if ( false === BWFAN_Model_Automations_V2::validation_automation_run_count( $automation_id, $global_data['global']['cid'], $automation_data, $exclude_check ) ) {
-			BWFAN_Common::log_test_data( 'Automation ID ' . $automation_id . ' already run on a contact ' . $global_data['global']['cid'] . '. Event - ' . $this->get_slug(), 'contact-exist-automation', true );
+		if ( false === BWFAN_Model_Automations_V2::validation_automation_run_count( $automation_id, $contact_id, $automation_data, $exclude_check ) ) {
+			BWFAN_Common::log_test_data( 'Automation ID ' . $automation_id . ' already run on a contact ' . $contact_id . '. Event - ' . $this->get_slug(), 'contact-exist-automation', true );
+
+			$this->release_enroll_lock( $lock_name );
 
 			return false;
 		}
 
 		/** set automation id in event global data */
 		$global_data['global']['automation_id'] = $automation_id;
-		$contact_id                             = intval( $global_data['global']['cid'] );
 
 		$data = [
 			'cid'       => $contact_id,
@@ -1352,6 +1414,8 @@ abstract class BWFAN_Event {
 			BWFAN_Common::log_test_data( 'Automation ID ' . $data['aid'] . ' already exists with same data for contact ' . $data['cid'] . '. Event - ' . $data['event'], 'contact-duplicate-automation', true );
 			BWFAN_Common::log_test_data( $global_data, 'contact-duplicate-automation', true );
 
+			$this->release_enroll_lock( $lock_name );
+
 			return false;
 		}
 
@@ -1362,6 +1426,9 @@ abstract class BWFAN_Event {
 
 		$inserted = BWFAN_Model_Automation_Contact::insert( $data );
 		$p_key    = BWFAN_Model_Automation_Contact::insert_id();
+
+		/** Enrollment row committed, safe to release the per-contact lock */
+		$this->release_enroll_lock( $lock_name );
 
 		/** Insert failed (e.g. deadlock-retry exhausted under concurrent checkout load) - fail cleanly instead of acting on a non-existent row */
 		if ( false === $inserted || empty( $p_key ) ) {

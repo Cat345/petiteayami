@@ -275,6 +275,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 		}
 
 		public function wfacp_changed_default_woocommerce_page() {
+
 			if ( ! is_null( WC()->session ) ) {
 				WC()->cart->removed_cart_contents = array();
 				WC()->session->set( 'removed_cart_contents', array() );
@@ -760,8 +761,11 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 			$wfacp_options     = $cart_item['_wfacp_options'];
 			$switcher_settings = WFACP_Common::get_product_switcher_data( $aero_id );
 			if ( isset( $switcher_settings['settings']['enable_custom_name_in_order_summary'] ) && wc_string_to_bool( $switcher_settings['settings']['enable_custom_name_in_order_summary'] ) && $wfacp_options['title'] !== $wfacp_options['old_title'] ) {
-				$wfacp_qty = absint( $wfacp_options['org_quantity'] );
-				$cart_qty  = absint( $cart_item['quantity'] );
+				// absint() zeroed a fractional line quantity, and the > 0 test below then
+				// dropped the "× qty" markup altogether, so decimal quantities showed no
+				// count at all on the order.
+				$wfacp_qty = wc_stock_amount( $wfacp_options['org_quantity'] );
+				$cart_qty  = wc_stock_amount( $cart_item['quantity'] );
 				if ( $wfacp_qty > 0 && $cart_qty > 0 ) {
 					return ' <strong class="product-quantity">' . sprintf( '&times; %s', ( $cart_qty / $wfacp_qty ) ) . '</strong>';
 				}
@@ -781,8 +785,10 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 			}
 			$wfacp_options = $cart_item['_wfacp_options'];
 
-			$wfacp_qty = absint( $wfacp_options['quantity'] );
-			$cart_qty  = absint( $cart_item['org_quantity'] );
+			// Same as above — absint() dropped the quantity from order emails entirely
+			// once it was fractional.
+			$wfacp_qty = wc_stock_amount( $wfacp_options['quantity'] );
+			$cart_qty  = wc_stock_amount( $cart_item['org_quantity'] );
 			if ( $wfacp_qty > 0 && $cart_qty > 0 ) {
 				return ( $cart_qty / $wfacp_qty );
 			}
@@ -966,8 +972,6 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 		public function set_nocache_constants() {
 
 			$this->maybe_define_constant( 'DONOTCACHEPAGE', true );
-			$this->maybe_define_constant( 'DONOTCACHEOBJECT', true );
-			$this->maybe_define_constant( 'DONOTCACHEDB', true );
 
 			return null;
 		}
@@ -1306,8 +1310,54 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 					}
 
 					if ( count( $new_products ) > 0 ) {
-						$this->products        = $new_products;
-						$this->products_count += count( $new_products );
+						$has_new_products = false;
+						foreach ( $new_products as $p ) {
+							if ( ! empty( $p['not_existing_product'] ) ) {
+								$has_new_products = true;
+								break;
+							}
+						}
+
+						if ( $has_new_products ) {
+							$this->products        = $new_products;
+							$this->products_count += count( $new_products );
+						} else {
+							// All URL products matched configured products.
+							// Keep the full product switcher only when the product came via the
+							// dedicated checkout page redirect (_fk_redirect_to_checkout = yes).
+							// For all other aero-add-to-checkout sources use standard replacement.
+							$from_product_page_redirect = false;
+							foreach ( $new_products as $data ) {
+								$check_id = ( isset( $data['parent_product_id'] ) && $data['parent_product_id'] > 0 )
+									? $data['parent_product_id']
+									: ( isset( $data['id'] ) ? $data['id'] : 0 );
+								if ( $check_id > 0 && 'yes' === get_post_meta( $check_id, '_fk_redirect_to_checkout', true ) ) {
+									$from_product_page_redirect = true;
+									break;
+								}
+							}
+
+							if ( $from_product_page_redirect ) {
+								foreach ( $this->products as $key => $data ) {
+									unset( $this->products[ $key ]['is_default'] );
+									$this->products[ $key ]['add_to_cart_via_url'] = true;
+								}
+								foreach ( $new_products as $key => $data ) {
+									if ( isset( $this->products[ $key ] ) ) {
+										$this->products[ $key ]['is_default'] = isset( $data['is_default'] ) ? $data['is_default'] : false;
+										if ( isset( $data['add_to_cart_via_url_quantity'] ) ) {
+											$this->products[ $key ]['add_to_cart_via_url_quantity'] = $data['add_to_cart_via_url_quantity'];
+										}
+										if ( isset( $data['org_quantity'] ) ) {
+											$this->products[ $key ]['org_quantity'] = $data['org_quantity'];
+										}
+									}
+								}
+							} else {
+								$this->products        = $new_products;
+								$this->products_count += count( $new_products );
+							}
+						}
 					} else {
 						$this->add_to_cart_via_url = false;
 					}
@@ -1482,6 +1532,10 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 			$run_status = apply_filters( 'wfacp_run_add_to_cart_at_load', true, $this );
 			if ( true == $run_status ) {
 
+				// Unhook WC's per-item calculate_totals to avoid N redundant calls during the loop.
+				// We run calculate_totals once after all products are added (form.php).
+				remove_action( 'woocommerce_add_to_cart', array( WC()->cart, 'calculate_totals' ), 20 );
+
 				foreach ( $this->added_products as $index => $product_obj ) {
 					$data = $product_obj->get_meta( 'wfacp_data' );
 					$data = apply_filters( 'wfacp_single_added_product_data', $data, $index, $product_obj, $this );
@@ -1538,7 +1592,15 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 						$custom_data['_wfacp_product']     = true;
 						$custom_data['_wfacp_product_key'] = $index;
 						$custom_data['_wfacp_options']     = $data;
-						$attributes                        = apply_filters( 'wfacp_product_attributes', $attributes, $product_obj, $product_id, $variation_id, $custom_data );
+
+						if ( ! empty( $data['plan_id'] ) ) {
+							$custom_data['sublium_wcs_plan'] = absint( $data['plan_id'] );
+						} elseif ( isset( $data['products_meta_data'][1]['sublium_plan'] ) && ! empty( $data['products_meta_data'][1]['sublium_plan'] ) ) {
+							$custom_data['sublium_wcs_plan'] = absint( $data['products_meta_data'][1]['sublium_plan'] );
+						}
+						
+
+						$attributes = apply_filters( 'wfacp_product_attributes', $attributes, $product_obj, $product_id, $variation_id, $custom_data );
 
 						$cart_key = WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $attributes, $custom_data );
 
@@ -1561,6 +1623,11 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 					} catch ( Exception $e ) {
 
 					}
+				}
+
+				// Run calculate_totals once with the complete cart.
+				if ( $is_product_added_to_cart ) {
+					WC()->cart->calculate_totals();
 				}
 			}
 

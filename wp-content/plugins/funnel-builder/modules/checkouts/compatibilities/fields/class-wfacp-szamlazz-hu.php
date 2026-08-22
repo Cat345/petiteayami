@@ -60,7 +60,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Szamlazz_HU' ) ) {
 				'class'      => array( 'form-row-wide' ),
 				'id'         => 'wfacp_szamlazz_vat',
 				'field_type' => 'advanced',
-				'label'      => __( 'Szamlazz.hu Tax Number', 'woofunnels-aero-checkout' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'label'      => __( 'Szamlazz.hu Tax Number', 'funnel-builder' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			);
 
 			return $fields;

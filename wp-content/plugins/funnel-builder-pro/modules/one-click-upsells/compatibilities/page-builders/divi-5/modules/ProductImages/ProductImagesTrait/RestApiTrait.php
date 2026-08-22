@@ -145,7 +145,7 @@ trait RestApiTrait {
 				}
 
 				$response[ (string) $key ] = array(
-					'label'         => $product_obj->get_name(),
+					'label'         => $product->name,
 					'featuredImage' => $featured_image_url,
 					'galleryImages' => $gallery_images,
 				);

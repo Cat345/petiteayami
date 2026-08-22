@@ -345,7 +345,7 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 					if ( false === $data['foot'] ) {
 						if ( isset( $data['data'] ) ) {
 							foreach ( $data['data'] as $var => $data_loc ) {
-								$script .= 'var ' . $var . ' = ' . wp_json_encode( $data_loc ) . ';';
+								$script .= 'var ' . $var . ' = ' . wp_json_encode( $data_loc, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ) . ';';
 							}
 							printf( ' <script type="text/javascript" >%s</script>', $script ); // phpcs:ignore WordPress.Security.EscapeOutput
 						}
@@ -371,7 +371,7 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 					$script = '';
 					if ( isset( $data['data'] ) ) {
 						foreach ( $data['data'] as $var => $data_loc ) {
-							$script .= 'var ' . $var . ' = ' . wp_json_encode( $data_loc ) . ';';
+							$script .= 'var ' . $var . ' = ' . wp_json_encode( $data_loc, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ) . ';';
 						}
 						printf( ' <script type="text/javascript" >%s</script>', $script ); // phpcs:ignore WordPress.Security.EscapeOutput
 					}

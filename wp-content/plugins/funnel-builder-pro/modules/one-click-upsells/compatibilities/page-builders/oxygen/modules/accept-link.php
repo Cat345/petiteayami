@@ -31,7 +31,7 @@ if ( ! class_exists( 'WFOCU_Oxy_Accept_Link' ) ) {
 
 			$tab_id = $this->add_tab( __( 'Text', 'woofunnels-upstroke-one-click-upsell' ) );
 			foreach ( $products as $key => $product ) {
-				$product_options[ $key ] = $product->data->get_name();
+				$product_options[ $key ] = $product->name;
 			}
 			$this->add_select( $tab_id, 'selected_product', __( 'Product', 'woofunnels-upstroke-one-click-upsell' ), $product_options, key( $product_options ) );
 			$this->add_text( $tab_id, 'text', __( 'Accept Offer', 'woofunnels-upstroke-one-click-upsell' ), __( 'Accept this offer', 'woofunnels-upstroke-one-click-upsell' ) );

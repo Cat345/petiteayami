@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -16,7 +17,7 @@ if ( $change_back_btn != '' ) {
 	?>
     <div class="wfacp-back-btn-wrap wfacp_back_wrap">
         <a class='wfacp_back_page_button' data-next-step="<?php echo $next_action; ?>" data-current-step='<?php echo $current_action; ?>' href='javascript:void(0)'>
-			<?php esc_html_e( $change_back_btn ); ?>
+			<?php echo wp_kses_post( $change_back_btn ); ?>
         </a>
     </div>
 	<?php

@@ -152,6 +152,9 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 			}
 			$activate = activate_plugin( $plugin_basename, '', false, true );
 
+			// Silent activation skips WooCommerce's own installer; run it explicitly.
+			WFFN_Common::maybe_install_woocommerce( $plugin_basename );
+
 			if ( is_wp_error( $activate ) ) {
 				$resp = array(
 					'status'  => false,

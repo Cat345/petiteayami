@@ -8,17 +8,12 @@
  * maintain compatibility. We try to do this as little as possible, but it does
  * happen.
  * @see     https://docs.xootix.com/waitlist-for-woocommerce/
- * @version 2.7
+ * @version 2.9.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) { 
     exit; // Exit if accessed directly
 }
-
-
-?>
-
-<?php
 
 $outContBGcolor = xoo_wl_helper()->get_email_style_option('c-outbgcolor');
 $inContBGcolor  = xoo_wl_helper()->get_email_style_option('c-inbgcolor');

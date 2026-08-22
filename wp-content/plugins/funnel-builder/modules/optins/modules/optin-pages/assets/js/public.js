@@ -22,26 +22,79 @@
             });
 
         },
+        getItiLib: function () {
+            // snapshot taken right after our bundle loads; other plugins may overwrite window.intlTelInput with an incompatible version
+            return window.wfopIntlTelInput || window.intlTelInput;
+        },
         initPhoneFlag: function () {
+            // v17 country names (with native scripts) — v29 data ships English-only names
+            var WFOP_INTL_COUNTRY_NAMES = {"af":"Afghanistan (‫افغانستان‬‎)","al":"Albania (Shqipëri)","dz":"Algeria (‫الجزائر‬‎)","as":"American Samoa","ad":"Andorra","ao":"Angola","ai":"Anguilla","ag":"Antigua and Barbuda","ar":"Argentina","am":"Armenia (Հայաստան)","aw":"Aruba","ac":"Ascension Island","au":"Australia","at":"Austria (Österreich)","az":"Azerbaijan (Azərbaycan)","bs":"Bahamas","bh":"Bahrain (‫البحرين‬‎)","bd":"Bangladesh (বাংলাদেশ)","bb":"Barbados","by":"Belarus (Беларусь)","be":"Belgium (België)","bz":"Belize","bj":"Benin (Bénin)","bm":"Bermuda","bt":"Bhutan (འབྲུག)","bo":"Bolivia","ba":"Bosnia and Herzegovina (Босна и Херцеговина)","bw":"Botswana","br":"Brazil (Brasil)","io":"British Indian Ocean Territory","vg":"British Virgin Islands","bn":"Brunei","bg":"Bulgaria (България)","bf":"Burkina Faso","bi":"Burundi (Uburundi)","kh":"Cambodia (កម្ពុជា)","cm":"Cameroon (Cameroun)","ca":"Canada","cv":"Cape Verde (Kabu Verdi)","bq":"Caribbean Netherlands","ky":"Cayman Islands","cf":"Central African Republic (République centrafricaine)","td":"Chad (Tchad)","cl":"Chile","cn":"China (中国)","cx":"Christmas Island","cc":"Cocos (Keeling) Islands","co":"Colombia","km":"Comoros (‫جزر القمر‬‎)","cd":"Congo (DRC) (Jamhuri ya Kidemokrasia ya Kongo)","cg":"Congo (Republic) (Congo-Brazzaville)","ck":"Cook Islands","cr":"Costa Rica","ci":"Côte d’Ivoire","hr":"Croatia (Hrvatska)","cu":"Cuba","cw":"Curaçao","cy":"Cyprus (Κύπρος)","cz":"Czech Republic (Česká republika)","dk":"Denmark (Danmark)","dj":"Djibouti","dm":"Dominica","do":"Dominican Republic (República Dominicana)","ec":"Ecuador","eg":"Egypt (‫مصر‬‎)","sv":"El Salvador","gq":"Equatorial Guinea (Guinea Ecuatorial)","er":"Eritrea","ee":"Estonia (Eesti)","sz":"Eswatini","et":"Ethiopia","fk":"Falkland Islands (Islas Malvinas)","fo":"Faroe Islands (Føroyar)","fj":"Fiji","fi":"Finland (Suomi)","fr":"France","gf":"French Guiana (Guyane française)","pf":"French Polynesia (Polynésie française)","ga":"Gabon","gm":"Gambia","ge":"Georgia (საქართველო)","de":"Germany (Deutschland)","gh":"Ghana (Gaana)","gi":"Gibraltar","gr":"Greece (Ελλάδα)","gl":"Greenland (Kalaallit Nunaat)","gd":"Grenada","gp":"Guadeloupe","gu":"Guam","gt":"Guatemala","gg":"Guernsey","gn":"Guinea (Guinée)","gw":"Guinea-Bissau (Guiné Bissau)","gy":"Guyana","ht":"Haiti","hn":"Honduras","hk":"Hong Kong (香港)","hu":"Hungary (Magyarország)","is":"Iceland (Ísland)","in":"India (भारत)","id":"Indonesia","ir":"Iran (‫ایران‬‎)","iq":"Iraq (‫العراق‬‎)","ie":"Ireland","im":"Isle of Man","il":"Israel (‫ישראל‬‎)","it":"Italy (Italia)","jm":"Jamaica","jp":"Japan (日本)","je":"Jersey","jo":"Jordan (‫الأردن‬‎)","kz":"Kazakhstan (Казахстан)","ke":"Kenya","ki":"Kiribati","xk":"Kosovo","kw":"Kuwait (‫الكويت‬‎)","kg":"Kyrgyzstan (Кыргызстан)","la":"Laos (ລາວ)","lv":"Latvia (Latvija)","lb":"Lebanon (‫لبنان‬‎)","ls":"Lesotho","lr":"Liberia","ly":"Libya (‫ليبيا‬‎)","li":"Liechtenstein","lt":"Lithuania (Lietuva)","lu":"Luxembourg","mo":"Macau (澳門)","mk":"North Macedonia (Македонија)","mg":"Madagascar (Madagasikara)","mw":"Malawi","my":"Malaysia","mv":"Maldives","ml":"Mali","mt":"Malta","mh":"Marshall Islands","mq":"Martinique","mr":"Mauritania (‫موريتانيا‬‎)","mu":"Mauritius (Moris)","yt":"Mayotte","mx":"Mexico (México)","fm":"Micronesia","md":"Moldova (Republica Moldova)","mc":"Monaco","mn":"Mongolia (Монгол)","me":"Montenegro (Crna Gora)","ms":"Montserrat","ma":"Morocco (‫المغرب‬‎)","mz":"Mozambique (Moçambique)","mm":"Myanmar (Burma) (မြန်မာ)","na":"Namibia (Namibië)","nr":"Nauru","np":"Nepal (नेपाल)","nl":"Netherlands (Nederland)","nc":"New Caledonia (Nouvelle-Calédonie)","nz":"New Zealand","ni":"Nicaragua","ne":"Niger (Nijar)","ng":"Nigeria","nu":"Niue","nf":"Norfolk Island","kp":"North Korea (조선 민주주의 인민 공화국)","mp":"Northern Mariana Islands","no":"Norway (Norge)","om":"Oman (‫عُمان‬‎)","pk":"Pakistan (‫پاکستان‬‎)","pw":"Palau","ps":"Palestine (‫فلسطين‬‎)","pa":"Panama (Panamá)","pg":"Papua New Guinea","py":"Paraguay","pe":"Peru (Perú)","ph":"Philippines","pl":"Poland (Polska)","pt":"Portugal","pr":"Puerto Rico","qa":"Qatar (‫قطر‬‎)","re":"Réunion (La Réunion)","ro":"Romania (România)","ru":"Russia (Россия)","rw":"Rwanda","bl":"Saint Barthélemy","sh":"Saint Helena","kn":"Saint Kitts and Nevis","lc":"Saint Lucia","mf":"Saint Martin (Saint-Martin (partie française))","pm":"Saint Pierre and Miquelon (Saint-Pierre-et-Miquelon)","vc":"Saint Vincent and the Grenadines","ws":"Samoa","sm":"San Marino","st":"São Tomé and Príncipe (São Tomé e Príncipe)","sa":"Saudi Arabia (‫المملكة العربية السعودية‬‎)","sn":"Senegal (Sénégal)","rs":"Serbia (Србија)","sc":"Seychelles","sl":"Sierra Leone","sg":"Singapore","sx":"Sint Maarten","sk":"Slovakia (Slovensko)","si":"Slovenia (Slovenija)","sb":"Solomon Islands","so":"Somalia (Soomaaliya)","za":"South Africa","kr":"South Korea (대한민국)","ss":"South Sudan (‫جنوب السودان‬‎)","es":"Spain (España)","lk":"Sri Lanka (ශ්‍රී ලංකාව)","sd":"Sudan (‫السودان‬‎)","sr":"Suriname","sj":"Svalbard and Jan Mayen","se":"Sweden (Sverige)","ch":"Switzerland (Schweiz)","sy":"Syria (‫سوريا‬‎)","tw":"Taiwan (台灣)","tj":"Tajikistan","tz":"Tanzania","th":"Thailand (ไทย)","tl":"Timor-Leste","tg":"Togo","tk":"Tokelau","to":"Tonga","tt":"Trinidad and Tobago","tn":"Tunisia (‫تونس‬‎)","tr":"Turkey (Türkiye)","tm":"Turkmenistan","tc":"Turks and Caicos Islands","tv":"Tuvalu","vi":"U.S. Virgin Islands","ug":"Uganda","ua":"Ukraine (Україна)","ae":"United Arab Emirates (‫الإمارات العربية المتحدة‬‎)","gb":"United Kingdom","us":"United States","uy":"Uruguay","uz":"Uzbekistan (Oʻzbekiston)","vu":"Vanuatu","va":"Vatican City (Città del Vaticano)","ve":"Venezuela","vn":"Vietnam (Việt Nam)","wf":"Wallis and Futuna (Wallis-et-Futuna)","eh":"Western Sahara (‫الصحراء الغربية‬‎)","ye":"Yemen (‫اليمن‬‎)","zm":"Zambia","zw":"Zimbabwe","ax":"Åland Islands"};
             let intlconfig = {
-                initialCountry: window.wfffOptinVars.op_flag_country,
                 separateDialCode: true,
-                geoIpLookup: function (callback) {
-                    $.get('https://ipinfo.io', function () {
-                    }, "jsonp").always(function (resp) {
-                        var countryCode = (resp && resp.country) ? resp.country : "us";
-                        callback(countryCode);
-                    });
-                },
+                countryNameOverrides: WFOP_INTL_COUNTRY_NAMES,
+                // v17 pinned us/gb on top by default (preferredCountries); v29 equivalent
+                countryOrder: ["us", "gb"],
             };
 
-            if (typeof window.wfffOptinVars.onlyCountries !== "undefined" && window.wfffOptinVars.onlyCountries.length > 0) {
-                intlconfig.onlyCountries = window.wfffOptinVars.onlyCountries;
+            // v29 split build: the core bundle ships without utils (validation/formatting),
+            // so lazy-load them from the URL the premium plugin exposes. Absent on v17.
+            if (window.wfopIntlUtilsSrc) {
+                intlconfig.loadUtils = function () {
+                    // dynamic import via Function keeps ES5 transpilers/minifiers from choking on the import keyword
+                    return new Function('u', 'return import(u)')(window.wfopIntlUtilsSrc);
+                };
             }
+
+            /**
+             * Country auto-detection is supplied by the premium plugin, which
+             * defines this before the script runs. Without it we stay on the
+             * country the server chose and contact nobody.
+             */
+            if (typeof window.wffnOptinGeoLookup === 'function') {
+                intlconfig.initialCountryLookup = function () {
+                    return new Promise(function (resolve) {
+                        window.wffnOptinGeoLookup(resolve);
+                    });
+                };
+            }
+
+            // the only v29 UI string a sighted user can see in our build (search box is hidden,
+            // but typing while open still filters — gibberish shows the no-results card)
+            let ui = window.wfffOptinVars.op_intl_i18n || null;
+            if (ui && ui.searchEmptyState) {
+                intlconfig.uiTranslations = {
+                    searchEmptyState: ui.searchEmptyState
+                };
+            }
+
+            var flag_country = window.wfffOptinVars.op_flag_country;
+            if (flag_country && 'auto' !== flag_country) {
+                intlconfig.initialCountry = String(flag_country).toLowerCase();
+            }
+
+            if (typeof window.wfffOptinVars.onlyCountries !== "undefined" && window.wfffOptinVars.onlyCountries.length > 0) {
+                var validIso2 = null;
+                var itiLibForFilter = this.getItiLib();
+                if (itiLibForFilter && typeof itiLibForFilter.getAllCountries === 'function') {
+                    validIso2 = {};
+                    itiLibForFilter.getAllCountries().forEach(function (c) {
+                        validIso2[c.iso2] = true;
+                    });
+                }
+                intlconfig.onlyCountries = window.wfffOptinVars.onlyCountries.map(function (c) {
+                    return String(c).toLowerCase();
+                }).filter(function (c) {
+                    return null === validIso2 || !!validIso2[c];
+                });
+            }
+            var itiLib = this.getItiLib();
             var elems = document.querySelectorAll(".phone_flag_code input[type='tel']");
             for (var i in elems) {
-                if (typeof elems[i] === 'object' && undefined !== window.intlTelInput) {
-                    window.intlTelInput(elems[i], intlconfig);
+                if (typeof elems[i] === 'object' && undefined !== itiLib) {
+                    if (itiLib.getInstance && itiLib.getInstance(elems[i])) {
+                        continue;
+                    }
+                    itiLib(elems[i], intlconfig);
                 }
 
             }
@@ -117,16 +170,23 @@
                 var error_message = null;
                 var error_phone = window.wfffOptinVars.op_valid_phone;
                 if (jQuery.trim(inst.val()) !== '' && 'wfop_optin_phone' === inst.attr('name')) {
-                    if ("undefined" !== typeof window.intlTelInputGlobals) {
-                        var itis = window.intlTelInputGlobals.getInstance(inst.get(0));
-                        if (!itis.isValidNumber()) {
+                    try {
+                        var itiLib = wffnOptin.getItiLib();
+                        var itis = itiLib && itiLib.getInstance ? itiLib.getInstance(inst.get(0)) : null;
+                        var is_valid = itis ? (typeof itis.isValidNumberPrecise === 'function' ? itis.isValidNumberPrecise() : itis.isValidNumber()) : true;
+                        if (false === is_valid) {
                             if (Array.isArray(error_phone)) {
                                 var errorCode = itis.getValidationError();
-                                error_message = error_phone[errorCode];
+                                // v28+ returns string names instead of the old integer enum
+                                var errorMap = {'INVALID_COUNTRY_CODE': 1, 'TOO_SHORT': 2, 'TOO_LONG': 3, 'IS_POSSIBLE_LOCAL_ONLY': 4, 'INVALID_LENGTH': 5};
+                                var errorIdx = (typeof errorCode === 'number') ? errorCode : errorMap[errorCode];
+                                error_message = (undefined !== errorIdx && error_phone[errorIdx]) ? error_phone[errorIdx] : error_phone[0];
                             } else {
                                 error_message = error_phone;
                             }
                         }
+                    } catch (e) {
+                        error_message = null;
                     }
                 }
                 if (error_message !== null) {
@@ -176,11 +236,14 @@
                     jQuery(FormElem).find("button.wfop_submit_btn .bwf_subheading").hide();
 
 
-                    if ("undefined" !== typeof window.intlTelInputGlobals && undefined !== jQuery(FormElem).find('input[name="wfop_optin_phone"]').get(0)) {
-                        var iti = window.intlTelInputGlobals.getInstance(jQuery(FormElem).find('input[name="wfop_optin_phone"]').get(0));
-                        var getCountryData = iti.getSelectedCountryData();
-                        jQuery(FormElem).find('input[name="wfop_optin_phone_dialcode"]').eq(0).val('+' + getCountryData.dialCode);
-                        jQuery(FormElem).find('input[name="wfop_optin_phone_countrycode"]').eq(0).val(getCountryData.iso2);
+                    var wfopItiLib = wffnOptin.getItiLib();
+                    if (wfopItiLib && wfopItiLib.getInstance && undefined !== jQuery(FormElem).find('input[name="wfop_optin_phone"]').get(0)) {
+                        var iti = wfopItiLib.getInstance(jQuery(FormElem).find('input[name="wfop_optin_phone"]').get(0));
+                        var getCountryData = iti ? (typeof iti.getSelectedCountry === 'function' ? iti.getSelectedCountry() : iti.getSelectedCountryData()) : null;
+                        if (getCountryData) {
+                            jQuery(FormElem).find('input[name="wfop_optin_phone_dialcode"]').eq(0).val('+' + getCountryData.dialCode);
+                            jQuery(FormElem).find('input[name="wfop_optin_phone_countrycode"]').eq(0).val(getCountryData.iso2);
+                        }
 
                     }
 

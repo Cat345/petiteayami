@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_WC_Delivery' ) ) {
 	/**
 	 * Order delivery date By Woocommerce Delivery
@@ -93,7 +94,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Delivery' ) ) {
 					'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'deliveryDatePosition' ],
 					'id'         => 'oddt',
 					'field_type' => 'deliveryDatePosition',
-					'label'      => __( 'Delivery Date', 'woofunnels-aero-checkout' ),
+					'label'      => __( 'Delivery Date', 'funnel-builder' ),
 				];
 
 				$fields['deliveryTimePosition']     = [
@@ -101,14 +102,14 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Delivery' ) ) {
 					'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'deliveryTimePosition' ],
 					'id'         => 'oddt',
 					'field_type' => 'deliveryTimePosition',
-					'label'      => __( 'Delivery Time', 'woofunnels-aero-checkout' ),
+					'label'      => __( 'Delivery Time', 'funnel-builder' ),
 				];
 				$fields['deliveryLocationPosition'] = [
 					'type'       => 'wfacp_html',
 					'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'deliveryLocationPosition' ],
 					'id'         => 'deliveryLocationPosition',
 					'field_type' => 'deliveryLocationPosition',
-					'label'      => __( 'Delivery Location', 'woofunnels-aero-checkout' ),
+					'label'      => __( 'Delivery Location', 'funnel-builder' ),
 				];
 			}
 

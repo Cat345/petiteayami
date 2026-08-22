@@ -7,6 +7,8 @@
 require_relative 'model/fbc_param_configs'
 require_relative 'model/cookie_settings'
 require_relative 'model/etld_plus_one_resolver'
+require_relative 'model/plain_data_object'
+require_relative 'util/request_context_adaptor'
 require_relative 'release_config'
 require 'set'
 require 'uri'
@@ -29,10 +31,19 @@ class ParamBuilder
   APPENDIX_LENGTH_V1 = 2
   APPENDIX_LENGTH_V2 = 8
 
+  # Appendix type constants
+  APPENDIX_NO_CHANGE = 0x00
+  APPENDIX_GENERAL_NEW = 0x01
+  APPENDIX_NET_NEW = 0x02
+  APPENDIX_MODIFIED_NEW = 0x03
+
   def initialize(input = nil)
     @fbc_params_configs = [FbcParamConfigs.new("fbclid", "", "clickID")]
-    @appendix_new = get_appendix(true)
-    @appendix_normal = get_appendix(false)
+    @appendix_net_new = get_appendix(APPENDIX_NET_NEW)
+    @appendix_modified_new = get_appendix(APPENDIX_MODIFIED_NEW)
+    @appendix_no_change = get_appendix(APPENDIX_NO_CHANGE)
+    @referrer_url = nil
+    @event_source_url = nil
 
     if input.nil?
       return
@@ -48,7 +59,7 @@ class ParamBuilder
     end
   end
 
-  private def get_appendix(is_new)
+  private def get_appendix(appendix_type)
     begin
       version = ReleaseConfig::VERSION
       version_parts = version.split(".")
@@ -56,13 +67,19 @@ class ParamBuilder
       minor = version_parts[1].to_i
       patch = version_parts[2].to_i
 
-      is_new_byte = is_new ? 0x01 : 0x00
+      # Validate appendix type
+      valid_types = [APPENDIX_NET_NEW, APPENDIX_GENERAL_NEW, APPENDIX_MODIFIED_NEW]
+      if valid_types.include?(appendix_type)
+        type_byte = appendix_type
+      else
+        type_byte = APPENDIX_NO_CHANGE
+      end
 
       # Create byte array
       bytes_array = [
         DEFAULT_FORMAT,        # 0x01 = 1
         LANGUAGE_TOKEN_INDEX,  # 0x05 = 5
-        is_new_byte,          # 0x01 when is_new=true, 0x00 when is_new=false
+        type_byte,            # appendix type
         major,                # Major version number
         minor,                # Minor version number
         patch                 # Patch version number
@@ -104,7 +121,7 @@ class ParamBuilder
     end
     # Append language token if not present
     if parts.size == MIN_PAYLOAD_SPLIT_LENGTH
-      updated_cookie_value = cookie_value + "." + @appendix_normal
+      updated_cookie_value = cookie_value + "." + @appendix_no_change
       @cookie_to_set_dict[cookie_name] = CookieSettings.new(
         cookie_name, updated_cookie_value, @etld_plus_one, DEFAULT_1PC_AGE)
       return updated_cookie_value
@@ -162,11 +179,17 @@ class ParamBuilder
   end
 
   def process_request(host, queries, cookies, referer=nil)
+    @event_source_url = nil
     compute_etld_plus_one_for_host(host)
     @cookie_to_set_dict = {}
     @cookie_to_set = Set.new()
     @fbc = pre_process_cookies(cookies, FBC_NAME)
     @fbp = pre_process_cookies(cookies, FBP_NAME)
+
+    @referrer_url = referer
+    if @referrer_url.is_a?(String) && !@referrer_url.empty?
+      @referrer_url = "#{@referrer_url}.#{@appendix_no_change}"
+    end
 
     # Get new fbc payload
     new_fbc_payload = get_new_fbc_payload_from_url(queries, referer)
@@ -187,6 +210,32 @@ class ParamBuilder
     return @cookie_to_set
   end
 
+  # Process a request from a context object.
+  #
+  # Accepts either a PlainDataObject (used directly) or any framework
+  # request / Rack-style env Hash that RequestContextAdaptor knows how to
+  # extract from. Nil falls through to the adapter's empty-default behavior.
+  #
+  # Note: PlainDataObject carries x_forwarded_for and remote_address for
+  # parity with the JS / PHP SDKs, but the Ruby ParamBuilder does not yet
+  # implement client-IP attribution; those fields are extracted by the
+  # adapter but ignored here.
+  def process_request_from_context(context = nil)
+    data = context.is_a?(PlainDataObject) ?
+      context : RequestContextAdaptor.extract(context)
+
+    process_request(
+      data.host,
+      data.query_params,
+      data.cookies,
+      data.referer
+    )
+
+    @event_source_url = construct_event_source_url(data)
+
+    return @cookie_to_set
+  end
+
   def get_cookies_to_set()
     return @cookie_to_set
   end
@@ -199,9 +248,25 @@ class ParamBuilder
     return @fbp
   end
 
+  def get_referrer_url()
+    return @referrer_url
+  end
+
+  def get_event_source_url()
+    return @event_source_url
+  end
+
   private def compute_etld_plus_one_for_host(host)
     if @etld_plus_one.nil? || @host.nil?
       @host = host
+      # Guard empty/nil host: Ruby's "".split(".") returns [], so naively
+      # computing size - 1 would yield -1 and emit malformed `fb.-1.…`
+      # cookies. Match Python's behavior: empty host -> nil etld+1, index 0.
+      if host.nil? || host.empty?
+        @etld_plus_one = nil
+        @sub_domain_index = 0
+        return
+      end
       host_name = extract_host_from_http_host(host)
       if is_ip_address(host_name)
         @etld_plus_one = maybe_bracket_ipv6(host_name)
@@ -273,6 +338,21 @@ class ParamBuilder
     return host_name
   end
 
+  private def construct_event_source_url(data)
+    return nil if data.nil?
+    return nil if data.host.nil? || data.host.empty?
+    return nil if data.scheme.nil? || data.scheme.empty?
+
+    url = "#{data.scheme.downcase}://#{data.host}"
+    if !data.request_uri.nil? && !data.request_uri.empty?
+      url += data.request_uri
+    end
+    if url.is_a?(String) && !url.empty?
+      url = "#{url}.#{@appendix_net_new}"
+    end
+    url
+  end
+
   private def get_updated_fbc_cookie(existing_fbc = nil, new_fbc_payload)
     if @fbc_params_configs.nil?
       return nil
@@ -282,17 +362,26 @@ class ParamBuilder
       return nil
     end
 
+    cookie_update = false
+    is_net_new = false
     if existing_fbc.nil?
       cookie_update = true
+      is_net_new = true
     else
       parts = existing_fbc.split(/\./)
-      cookie_update = new_fbc_payload != parts[3]
+      if parts.size < MIN_PAYLOAD_SPLIT_LENGTH
+        cookie_update = true
+        is_net_new = true
+      else
+        cookie_update = new_fbc_payload != parts[3]
+      end
     end
     if cookie_update == false
       return nil
     end
 
     current_ms = (Time.now.to_f * 1000).to_i.to_s
+    appendix = is_net_new ? @appendix_net_new : @appendix_modified_new
     new_fbc = "fb." +
       @sub_domain_index.to_s +
       "." +
@@ -300,7 +389,7 @@ class ParamBuilder
       "." +
       new_fbc_payload +
       "." +
-      @appendix_new
+      appendix
     updated_cookie_setting = CookieSettings.new(
       FBC_NAME, new_fbc, @etld_plus_one, DEFAULT_1PC_AGE)
     return updated_cookie_setting
@@ -319,7 +408,7 @@ class ParamBuilder
       "." +
       new_fbp_payload +
       "." +
-      @appendix_new
+      @appendix_net_new
     updated_cookie_setting = CookieSettings.new(
       FBP_NAME, new_fbp, @etld_plus_one, DEFAULT_1PC_AGE)
     return updated_cookie_setting

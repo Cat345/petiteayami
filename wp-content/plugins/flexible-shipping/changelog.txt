@@ -1,0 +1,230 @@
+=== Flexible Shipping Changelog ===
+
+== Archived Changelog Entries ==
+
+For the latest changes, see the Changelog section in the [readme.txt file](https://plugins.svn.wordpress.org/flexible-shipping/trunk/readme.txt).
+
+= 6.12.0 - 2026-08-17 =
+
+* Changed the Flexible Shipping Info tab to Flexible Shipping.
+* Added support for WordPress 7.1.
+
+= 6.11.0 - 2026-08-10 =
+* Updated the Flexible Shipping PRO link and added a five-star rating link to the Plugins screen
+* Updated shipping extensions tab
+* Fixed duplicating shipping methods
+* Fixed visual issues and unavailable additional cost options appearing in the shipping cost calculation rules table
+* Fixed shipping method logo not being displayed when the method description was empty
+* Fixed shipping method description styling and logo placement in the block checkout
+
+= 6.10.0 - 2026-07-23 =
+* Replaced the Support button below the rules table with an AI Assistant button and a Flexible Shipping PRO subscription popup.
+* Aligned the Flexible Shipping PRO subscription popup with the approved design.
+
+= 6.9.1 - 2026-07-20 =
+* Added support for WooCommerce 11.0
+
+= 6.9.0 - 2026-07-13 =
+* Added AI documentation chat to Flexible Shipping settings.
+
+= 6.8.1 - 2026-07-01 =
+* Fixed duplicated shipping method description in WooCommerce block checkout.
+
+= 6.8.0 - 2026-06-10 =
+* Updated Shipping Extensions tab
+
+= 6.7.5 - 2026-06-08 =
+* Added support for WooCommerce 10.9
+
+= 6.7.4 - 2026-06-08 =
+* Added tracking for shipping method logo usage and free shipping threshold alert display.
+* Fixed tracker sender resolution.
+* Fixed early translation loading notice.
+
+= 6.7.3 - 2026-05-21 =
+* Fixed checkout Ajax 500 caused by invalid LFFS notice text placeholder formatting.
+* Fixed left to free shipping notice with pickup locations.
+
+= 6.7.2 - 2026-05-18 =
+* Added support for WordPress 7.0
+
+= 6.7.1 - 2026-05-11 =
+* Added support for WooCommerce 10.8
+
+= 6.7.0 - 2026-05-04 =
+* Added validation for free shipping threshold configuration against shipping cost calculation rules.
+* Added automatic next range start completion when adding new Price and Weight rules.
+
+= 6.6.2 - 2026-04-21 =
+* Fixed fatal error on older WooCommerce versions caused by missing native shipping rate description methods.
+
+= 6.6.1 - 2026-04-06 =
+* Added support for WooCommerce 10.7
+
+= 6.6.0 - 2026-04-01 =
+* Added shipping method description support in WooCommerce block checkout.
+* Added shipping method logo support in Flexible Shipping settings and checkout display for both classic and block checkout.
+
+= 6.5.8 - 2026-03-24 =
+* Added support for WordPress 7.0
+
+= 6.5.7 - 2026-02-25 =
+* Improved drag and drop behavior in shipping rules table ordering.
+* Added live rule number preview during drag and drop.
+
+= 6.5.6 - 2026-02-24 =
+* Added support for WooCommerce 10.6
+
+= 6.5.5 - 2026-02-11
+* Added support link to cost calculation rules table
+* Removed AI chat
+* Updated rating petition popup
+
+= 6.5.4 - 2026-01-20 =
+* Added support for WooCommerce 10.5
+
+= 6.5.3 - 2026-01-13 =
+* Updated rating petition popup
+* Fixed rounding shipping contents moved to line items
+
+= 6.5.2 - 2025-12-29 =
+* Updated rating petition CSS
+
+= 6.5.1 - 2025-12-18 =
+* Updated rating petition
+
+= 6.5.0 - 2025-12-16 =
+* Removed docs Beacon
+* Added AI chat in Flexible Shipping Info and shipping method settings
+
+= 6.4.5 - 2025-12-02 =
+* Added support for WordPress 6.9
+
+= 6.4.4 - 2025-11-25 =
+* Added support for WooCommerce 10.4
+
+= 6.4.3 - 2025-11-18 =
+* Fixed shipment creation process for shipping integrations
+
+= 6.4.2 - 2025-11-17 =
+* Fixed rating petition
+* Fixed newsletter subscription form
+
+= 6.4.1 - 2025-10-30 =
+* Added support for WooCommerce 10.3
+* Updated Shipping Extensions tab
+
+= 6.4.0 - 2025-09-08 =
+* Added newsletter subscription in the Flexible Shipping Info tab
+* Added WC_Shipping_Method class existence checking
+
+= 6.3.0 - 2025-08-18 =
+* Added a new AI chat version
+
+= 6.2.4 - 2025-08-11 =
+* Added support for WooCommerce 10.2
+
+= 6.2.3 - 2025-08-04 =
+* Added support for WooCommerce 10.1
+
+= 6.2.2 - 2025-07-28 =
+* Fixed rule duplication error
+* The rule-sorting functionality has been modified
+
+= 6.2.1 - 2025-06-24 =
+* Added summer promo coupon, available in the Shipping Extensions tab
+* Added support for WooCommerce 10.0
+
+= 6.2.0 - 2025-06-16 =
+* AI functionality improvements
+
+= 6.1.2 - 2025-06-09 =
+* Added CSAT after an AI scenario used
+* Fixed fatal in third party shipping methods integration
+* Fixed fatal in free shipping notice on some configurations
+
+= 6.1.1 - 2025-05-15 =
+* Added support for WooCommerce 9.9
+
+= 6.1.0 - 2025-05-05 =
+* Added support for WordPress 6.8
+* Fixed debug mode messages
+
+= 6.0.0 - 2025-03-27 =
+* Added the ability to paste JSON with rules table configuration in the shipping method settings
+* Added an AI assistant for rules table configuration: https://octol.io/fs-rules-table-ai
+* Changed the button layout in the rules table settings
+
+= 5.3.5 - 2025-03-18 =
+* Fixed warning in free shipping notice generator
+* Fixed additional costs settings not saving with some shipping methods
+* Fixed fatal error with Product Feed PRO plugin
+
+= 5.3.4 - 2025-03-10 =
+* Added support for WooCommerce 9.8
+
+= 5.3.3 - 2025-02-27 =
+* Added shipping method description in block checkout
+
+= 5.3.2 - 2025-02-27 =
+* Fixed prefixing Psr\Log library with Delivery Date Picker extension
+
+= 5.3.1 - 2025-02-25 =
+* Fixed prefixing Psr\Log library
+
+= 5.3.0 - 2025-02-25 =
+* Prefixed Psr\Log library
+* Fixed conflicts with plugins and themes using non prefixed Psr\Log library
+* Fixed rules table crash with Flexible Shipping Locations Add-On
+
+= 5.2.0 - 2025-01-30 =
+* Improved rules table settings REACT component
+* Fixed fatal Unsupported operand types: string + float with some shipping methods integration.
+
+= 5.1.4 - 2025-01-22 =
+* Added support for WooCommerce 9.7
+
+= 5.1.3 - 2025-01-20 =
+* Added support for WooCommerce 9.6
+
+= 5.1.2 - 2024-12-17 =
+* Fixed calculation method handling with PRO version
+
+= 5.1.1 - 2024-12-12 =
+* Fixed fatal error when shipping cost are calculated as string in some cases
+
+= 5.1.0 - 2024-12-09 =
+* Fixed translations loading
+
+= 5.0.9 - 2024-11-20 =
+* Fixed fatal error on order meta data
+
+= 5.0.8 - 2024-11-19 =
+* Fixed upgrade info popup
+
+= 5.0.7 - 2024-11-19 =
+* Fixed support for WooCommerce 9.5
+
+= 5.0.6 - 2024-11-18 =
+* Added support for WooCommerce 9.5
+
+= 5.0.5 - 2024-11-13 =
+* Added rules table information in modal shipping method settings
+
+= 5.0.4 - 2024-11-07 =
+* Fixed tax calculation for shipping methods with rules table
+
+= 5.0.3 - 2024-10-30 =
+* Fixed compatibility with Mondial Relay – InPost Official (mondialrelay_official_shipping) by removing rules table from the shipping method settings
+
+= 5.0.2 - 2024-10-28 =
+* Fixed rules table settings fatal error after PRO version deactivation
+* Fixed compatibility with Box Now Delivery Plugin by removing rules table from the shipping method settings
+
+= 5.0.1 - 2024-10-24 =
+* Fixed PHP notices in shipping method settings
+* Fixed PHP notices on PHP 8
+
+= 5.0.0 - 2024-10-22 =
+* Added ability to use Rules Table in other shipping methods
+* Changed plugin video

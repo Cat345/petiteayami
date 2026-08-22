@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Mailjet for WordPress by Mailjet SAS
@@ -31,7 +32,7 @@ if ( ! class_exists( 'Mailjet_For_WP' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_mailjet_for_wp' ],
 				'id'         => 'mailjet_for_wp',
 				'field_type' => 'mailjet_for_wp',
-				'label'      => __( 'Mailjet for WordPress', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'Mailjet for WordPress', 'funnel-builder' ),
 			];
 
 			return $fields;

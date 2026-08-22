@@ -78,7 +78,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		public function add_font_family( $key, $selectors, $label = '', $default = 'Open Sans' ) {
 			// Ensure the label has a default value
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Font family' );
+				$label = esc_html__( 'Font family' , 'funnel-builder');
 			}
 
 			$css = array();
@@ -338,7 +338,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 			}
 
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Border Radius' );
+				$label = esc_html__( 'Border Radius' , 'funnel-builder');
 			}
 
 			$css = array();
@@ -497,7 +497,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		public function add_border_color( $key, $selectors, $default = '#000000', $label = '', $box_shadow = false, $required = array(), $variable_selector = '> div' ) {
 			// Ensure the label has a default value
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Border Color' );
+				$label = esc_html__( 'Border Color' , 'funnel-builder');
 			}
 
 			$css               = array();
@@ -550,7 +550,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		public function add_border_shadow( $key, $selectors, $default = array(), $label = '' ) {
 			// Ensure the label has a default value
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Box Shadow' );
+				$label = esc_html__( 'Box Shadow' , 'funnel-builder');
 			}
 
 			$css = array();
@@ -679,7 +679,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 */
 		public function add_font_size( $key, $selectors, $label = '', $default = '', $required = array(), $units = array() ) {
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Font Size' );
+				$label = esc_html__( 'Font Size' , 'funnel-builder');
 			}
 
 			if ( empty( $units ) ) {

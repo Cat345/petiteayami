@@ -49,7 +49,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Multiple_Customer_Addresses' )
 
 			new WFACP_Add_Address_Field( 'wc_multi_customer_address', array(
 				'type'     => 'wfacp_html',
-				'label'    => __( 'WC Multi Customer Address', 'woofunnels-aero-checkout' ),
+				'label'    => __( 'WC Multi Customer Address', 'funnel-builder' ),
 				'cssready' => [ 'wfacp-col-left-third' ],
 				'class'    => array( 'form-row-third first', 'wfacp-col-full' ),
 				'required' => false,
@@ -82,7 +82,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Multiple_Customer_Addresses' )
 
 			new WFACP_Add_Address_Field( 'wc_multi_customer_address', array(
 				'type'     => 'wfacp_html',
-				'label'    => __( 'WC Multi Customer Address', 'woofunnels-aero-checkout' ),
+				'label'    => __( 'WC Multi Customer Address', 'funnel-builder' ),
 				'cssready' => [ 'wfacp-col-left-third' ],
 				'class'    => array( 'form-row-third first', 'wfacp-col-full' ),
 				'required' => false,

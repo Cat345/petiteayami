@@ -63,7 +63,11 @@ if ( ! function_exists( 'bwf_get_states' ) ) {
 	 * @return mixed|string
 	 */
 	function bwf_get_states( $country = '', $state = '' ) {
-		$country_states = apply_filters( 'bwf_get_states', include WooFunnel_Loader::$ultimate_path . 'helpers/states.php' );
+		static $states_data = null;
+		if ( null === $states_data ) {
+			$states_data = include WooFunnel_Loader::$ultimate_path . 'includes/states.php'; // 1,700-line data array — parse once per request
+		}
+		$country_states = apply_filters( 'bwf_get_states', $states_data );
 
 		if ( empty( $state ) ) {
 			return '';
@@ -92,9 +96,12 @@ if ( ! function_exists( 'bwf_get_fonts_list' ) ) {
 	 * @return array|int[]|mixed|string[]
 	 */
 	function bwf_get_fonts_list( $mode = 'standard' ) {
-		$fonts        = [];
-		$font_path    = WooFunnel_Loader::$ultimate_path . '/helpers/fonts.json';
-		$google_fonts = json_decode( file_get_contents( $font_path ), true );     //phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
+		static $google_fonts = null;
+		$fonts = [];
+		if ( null === $google_fonts ) {
+			$font_path    = WooFunnel_Loader::$ultimate_path . '/includes/fonts.json';
+			$google_fonts = json_decode( file_get_contents( $font_path ), true );     //phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
+		}
 		$web_fonts    = ( $mode !== 'all' ) ? array_keys( $google_fonts ) : $google_fonts;
 
 		if ( $mode === 'all' || $mode === 'name_only' ) {
@@ -119,7 +126,7 @@ if ( ! function_exists( 'bwf_get_fonts_list' ) ) {
 		 */
 		$fonts[] = array(
 			'id'   => 'default',
-			'name' => __( 'Default', 'woofunnels' ) // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			'name' => __( 'Default', 'funnel-builder' ) // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 		);
 		foreach ( $web_fonts as $web_font_family ) {
 			if ( $web_font_family !== 'Open Sans' ) {

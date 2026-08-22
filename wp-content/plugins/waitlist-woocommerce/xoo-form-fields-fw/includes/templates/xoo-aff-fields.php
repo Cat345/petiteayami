@@ -1,6 +1,12 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
+
 $fields = xoo_aff()->get_fields_data();
+
 if( empty( $fields ) ) return;
 
 ?>
@@ -127,6 +133,7 @@ if( empty( $fields ) ) return;
 		$html .= '</div>';
 		$html .= '</div>';
 		
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo apply_filters( 'xoo_aff_field_html', $html, $field_id, $field_data );
 
 	}

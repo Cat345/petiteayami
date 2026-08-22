@@ -456,7 +456,12 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                         'tag'                 => __( 'Recommended', 'advanced-coupons-for-woocommerce-free' ),
                         'title'               => __( 'FREE GUIDE: How To Grow A WooCommerce Store Using Coupons', 'advanced-coupons-for-woocommerce-free' ),
                         'subtitle'            => __( 'The key to growing an online store is promoting it!', 'advanced-coupons-for-woocommerce-free' ),
-                        'content'             => __( 'If you\'ve ever wanted to grow a store to 6, 7 or 8-figures and beyond <strong>download this guide</strong> now. You\'ll learn how smart store owners are using coupons to grow their WooCommerce stores.', 'advanced-coupons-for-woocommerce-free' ),
+                        'content'             => sprintf(
+                            /* Translators: %1$s: opening bold tag. %2$s: closing bold tag. */
+                            __( 'If you\'ve ever wanted to grow a store to 6, 7 or 8-figures and beyond %1$sdownload this guide%2$s now. You\'ll learn how smart store owners are using coupons to grow their WooCommerce stores.', 'advanced-coupons-for-woocommerce-free' ),
+                            '<strong>',
+                            '</strong>'
+                        ),
                         'image'               => $this->_constants->IMAGES_ROOT_URL . 'coupons-free-guide.png',
                         'button'              => array(
                             'link'      => $this->_helper_functions->get_utm_url( 'how-to-grow-your-woocommerce-store-with-coupons/', 'acfwf', 'settings', 'helpfreeguidebutton' ),

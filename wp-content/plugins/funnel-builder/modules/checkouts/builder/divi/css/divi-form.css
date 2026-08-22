@@ -1521,14 +1521,14 @@ body.et-pb-preview #main-content .container tr td {
 }
 
 
-.et-db #et-boc .et-l #wfacp-e-form .wfacp-intl-phone-flag-field .woocommerce-input-wrapper .iti.iti--allow-dropdown,
-.et-db #et-boc .et-l .wfacp_main_form .wfacp-intl-phone-flag-field .woocommerce-input-wrapper .iti.iti--allow-dropdown {
+.et-db #et-boc .et-l #wfacp-e-form .wfacp-intl-phone-flag-field .woocommerce-input-wrapper .iti.iti--has-country-selector,
+.et-db #et-boc .et-l .wfacp_main_form .wfacp-intl-phone-flag-field .woocommerce-input-wrapper .iti.iti--has-country-selector {
     display: block;
 }
 
 
-.et-db #et-boc .et-l #wfacp-e-form .iti__selected-flag,
-.et-db #et-boc .et-l .wfacp_main_form .iti__selected-flag {
+.et-db #et-boc .et-l #wfacp-e-form .iti__selected-country,
+.et-db #et-boc .et-l .wfacp_main_form .iti__selected-country {
     padding: 5px;
     border-left: none !important;
     border-top: none !important;
@@ -1540,7 +1540,7 @@ body.et-pb-preview #main-content .container tr td {
 }
 
 
-.et-db #et-boc .et-l #wfacp-e-form .iti__selected-flag .iti__selected-dial-code {
+.et-db #et-boc .et-l #wfacp-e-form .iti__selected-country .iti__selected-dial-code {
     font-size: 13px;
     line-height: 1;
 }
@@ -1551,13 +1551,13 @@ body.et-pb-preview #main-content .container tr td {
 }
 
 
-.et-db #et-boc .et-l #wfacp-e-form .woocommerce-invalid-phone-field .iti__selected-flag,
-.et-db #et-boc .et-l .wfacp_main_form .woocommerce-invalid-phone-field .iti__selected-flag {
+.et-db #et-boc .et-l #wfacp-e-form .woocommerce-invalid-phone-field .iti__selected-country,
+.et-db #et-boc .et-l .wfacp_main_form .woocommerce-invalid-phone-field .iti__selected-country {
     height: calc(100% - 20px);
 }
 
-.et-db #et-boc .et-l #wfacp-e-form .wfacp_main_form p.woocommerce-invalid-required-field .iti__selected-flag,
-.et-db #et-boc .et-l .wfacp_main_form p.woocommerce-invalid-required-field .iti__selected-flag {
+.et-db #et-boc .et-l #wfacp-e-form .wfacp_main_form p.woocommerce-invalid-required-field .iti__selected-country,
+.et-db #et-boc .et-l .wfacp_main_form p.woocommerce-invalid-required-field .iti__selected-country {
     border-color: #D0011B;
 }
 
@@ -1591,20 +1591,20 @@ body.et-pb-preview #main-content .container tr td {
     padding: 5px 10px;
 }
 
-.et-db #et-boc .et-l #wfacp-e-form .iti--allow-dropdown .iti__flag-container:hover .iti__selected-flag {
+.et-db #et-boc .et-l #wfacp-e-form .iti--has-country-selector .iti__country-container:hover .iti__selected-country {
     background-color: transparent;
 }
 
-.et-db #et-boc .et-l #wfacp-e-form .wfacp-intl-phone-flag-field .woocommerce-input-wrapper .iti.iti--allow-dropdown {
+.et-db #et-boc .et-l #wfacp-e-form .wfacp-intl-phone-flag-field .woocommerce-input-wrapper .iti.iti--has-country-selector {
     display: block;
 }
 
 
-.et-db #et-boc .et-l #wfacp-e-form .woocommerce-invalid-phone-field .iti__selected-flag {
+.et-db #et-boc .et-l #wfacp-e-form .woocommerce-invalid-phone-field .iti__selected-country {
     height: calc(100% - 20px);
 }
 
-.et-db #et-boc .et-l #wfacp-e-form .wfacp_main_form p.woocommerce-invalid-required-field .iti__selected-flag {
+.et-db #et-boc .et-l #wfacp-e-form .wfacp_main_form p.woocommerce-invalid-required-field .iti__selected-country {
     border-color: #D0011B;
 }
 

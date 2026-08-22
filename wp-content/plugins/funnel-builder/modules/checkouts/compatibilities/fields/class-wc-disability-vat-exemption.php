@@ -46,7 +46,7 @@ if ( ! class_exists( 'WFACP_WC_Disability_Vat_Exemption' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_disability_vat_exemption' ],
 				'id'         => 'disability_vat_exemption',
 				'field_type' => 'disability_vat_exemption',
-				'label'      => __( 'WC Disability VAT Exemption', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'WC Disability VAT Exemption', 'funnel-builder' ),
 
 			];
 

@@ -34,7 +34,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Active_Campaign_Integration' )
 				'class'      => [ 'wfacp_active_campaign_integration' ],
 				'id'         => 'wfacp-aw-news-letter',
 				'field_type' => 'advanced',
-				'label'      => __( 'ActiveWoo', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'ActiveWoo', 'funnel-builder' ),
 
 			];
 

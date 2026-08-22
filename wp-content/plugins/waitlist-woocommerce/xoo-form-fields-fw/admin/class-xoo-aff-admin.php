@@ -1,5 +1,11 @@
 <?php
 
+namespace XooWL\Aff;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Xoo_Aff_Admin{
 
 	public $aff;
@@ -13,7 +19,7 @@ class Xoo_Aff_Admin{
 	}
 
 	public function includes(){
-		require_once XOO_AFF_DIR.'/admin/settings/class-xoo-aff-settings.php';
+		require_once $this->aff->dir.'/admin/settings/class-xoo-aff-settings.php';
 	}
 
 	public function hooks(){
@@ -32,13 +38,16 @@ class Xoo_Aff_Admin{
 
 		if( $slug === $this->aff->plugin_slug ){
 			$options[ $this->aff->fields->db_field ] = array(
-				'title' 		=> 'Fields',
+				'title' 		=> 'Fields Data',
 				'option_key' 	=> $this->aff->fields->db_field 
 			);
-			$options[ 'xoo-aff-'.$this->aff->plugin_slug.'-general-options' ] = array(
-				'title' 		=> 'Fields Style',
-				'option_key' 	=> 'xoo-aff-'.$this->aff->plugin_slug.'-general-options'
-			);
+
+			if( !$this->aff->ff_helper ){
+				$options[ 'xoo-aff-'.$this->aff->plugin_slug.'-general-options' ] = array(
+					'title' 		=> 'Fields Settings',
+					'option_key' 	=> 'xoo-aff-'.$this->aff->plugin_slug.'-general-options'
+				);
+			}
 		}
 		return $options;
 	}
@@ -48,18 +57,18 @@ class Xoo_Aff_Admin{
 
 		$sy_options 	= get_option( $this->settings->get_option_key( 'general' ) );
 
-		wp_enqueue_style( 'jquery-ui-css', XOO_AFF_URL.'/lib/jqueryui/uicss.css' ); // Jquery UI CSS
-		wp_enqueue_style( 'xoo-aff-fa', XOO_AFF_URL.'/lib/fontawesome5/css/all.min.css' ); //Font Awesome
-		wp_enqueue_style( 'xoo-aff-fa-picker', XOO_AFF_URL.'/lib/fontawesome-iconpicker/dist/css/fontawesome-iconpicker.min.css', array(), XOO_AFF_VERSION, 'all' ); //Font Awesome Icon Picker
-		wp_enqueue_style( 'xoo-aff-admin-style', XOO_AFF_URL . '/admin/assets/css/xoo-aff-admin-style.css', array(), XOO_AFF_VERSION, 'all' );
+		wp_enqueue_style( 'jquery-ui-css', $this->aff->url.'/lib/jqueryui/uicss.css' ); // Jquery UI CSS
+		wp_enqueue_style( 'xoo-aff-fa', $this->aff->url.'/lib/fontawesome5/css/all.min.css' ); //Font Awesome
+		wp_enqueue_style( 'xoo-aff-fa-picker', $this->aff->url.'/lib/fontawesome-iconpicker/dist/css/fontawesome-iconpicker.min.css', array(), XOO_AFF_VERSION, 'all' ); //Font Awesome Icon Picker
+		wp_enqueue_style( 'xoo-aff-admin-style', $this->aff->url . '/admin/assets/css/xoo-aff-admin-style.css', array(), XOO_AFF_VERSION, 'all' );
 
 		wp_enqueue_script('jquery-ui-datepicker');
 		wp_enqueue_script('jquery-ui-selectable');
 		wp_enqueue_script('jquery-ui-sortable');
 
-		wp_enqueue_script( 'xoo-aff-fa-pickers', XOO_AFF_URL.'/lib/fontawesome-iconpicker/dist/js/fontawesome-iconpicker.js', array( 'jquery'), XOO_AFF_VERSION, false );
+		wp_enqueue_script( 'xoo-aff-fa-pickers', $this->aff->url.'/lib/fontawesome-iconpicker/dist/js/fontawesome-iconpicker.js', array( 'jquery'), XOO_AFF_VERSION, false );
 
-		wp_enqueue_script( 'xoo-aff-admin-js', XOO_AFF_URL . '/admin/assets/js/xoo-aff-admin-js.js', array( 'jquery','wp-color-picker', 'wp-util'), XOO_AFF_VERSION, false );
+		wp_enqueue_script( 'xoo-aff-admin-js', $this->aff->url . '/admin/assets/js/xoo-aff-admin-js.js', array( 'jquery','wp-color-picker', 'wp-util'), XOO_AFF_VERSION, false );
 		wp_localize_script( 'xoo-aff-admin-js', 'xoo_aff_localize', array(
 			'ajax_url' 			=> admin_url().'admin-ajax.php',
 			'submit_nonce'		=> wp_create_nonce( 'xoo-aff-submit-nonce' ),
@@ -71,7 +80,7 @@ class Xoo_Aff_Admin{
 
 
 	public function templates(){
-		xoo_aff_get_template( 'xoo-aff-template-scripts.php',  XOO_AFF_DIR.'/admin/templates/' );
+		xoo_aff_get_template( 'xoo-aff-template-scripts.php',  $this->aff->dir.'/admin/templates/', array( 'aff' => $this->aff ) );
 	}
 
 	//Called by main plugin to display settings
@@ -80,13 +89,13 @@ class Xoo_Aff_Admin{
 		do_action( 'xoo_aff_before_displaying_fields', $this->aff );
 
 		$args = array(
-			'sidebar_template' => xoo_aff_get_template( 'xoo-aff-field-selector.php',  XOO_AFF_DIR.'/admin/templates/', array(
+			'sidebar_template' => xoo_aff_get_template( 'xoo-aff-field-selector.php',  $this->aff->dir.'/admin/templates/', array(
 				'field_types' 	=> $this->aff->fields->get_field_types(),
 				'aff' 			=> $this->aff,
 			), true ),
 			'groups' 		=> $this->aff->fields->get_field_groups()
 		);
-		xoo_aff_get_template( 'xoo-aff-page-markup.php',  XOO_AFF_DIR.'/admin/templates/', $args );
+		xoo_aff_get_template( 'xoo-aff-page-markup.php',  $this->aff->dir.'/admin/templates/', $args );
 	}
 
 	//Add css to admin footer
@@ -125,10 +134,7 @@ class Xoo_Aff_Admin{
 			'admin_page_slug' 	=> $this->aff->admin_page_slug,
 			'aff' 				=> $this->aff
 		);
-		xoo_aff_get_template( "xoo-aff-page-display.php", XOO_AFF_DIR.'/admin/templates/', $args );
+		xoo_aff_get_template( "xoo-aff-page-display.php", $this->aff->dir.'/admin/templates/', $args );
 	}
 
 }
-
-
-?>

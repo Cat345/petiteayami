@@ -24,20 +24,20 @@ $title = $this->el('h3', [
 
 ]);
 
+$titleInner = $props['title_color'] == 'background' || $props['title_decoration'] == 'line' ? $this->el('span', [
+
+    'class' => [
+        'uk-text-background' => $props['title_color'] == 'background',
+    ],
+
+]) : null;
+
 ?>
 
 <?= $el($props, $attrs) ?>
 
     <?php if ($props['showtitle']) : ?>
-        <?= $title($props) ?>
-        <?php if ($props['title_color'] == 'background') : ?>
-            <span class="uk-text-background"><?= $widget->title ?></span>
-        <?php elseif ($props['title_decoration'] == 'line') : ?>
-            <span><?= $widget->title ?></span>
-        <?php else: ?>
-            <?= $widget->title ?>
-        <?php endif ?>
-        <?= $title->end() ?>
+    <?= $title($props, $titleInner ? $titleInner([], $widget->title) : $widget->title) ?>
     <?php endif ?>
 
     <?= $widget->content ?>

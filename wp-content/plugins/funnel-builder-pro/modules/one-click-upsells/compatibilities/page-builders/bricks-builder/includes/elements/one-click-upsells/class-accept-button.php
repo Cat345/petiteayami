@@ -63,7 +63,7 @@ if ( ! class_exists( '\WfocuFunnelKit\Accept_Button' ) ) {
 				$products        = WFOCU_Core()->template_loader->product_data->products;
 				$product_options = array();
 				foreach ( $products as $key => $product ) {
-					$product_options[ $key ] = $product->data->get_name();
+					$product_options[ $key ] = $product->name;
 				}
 			}
 

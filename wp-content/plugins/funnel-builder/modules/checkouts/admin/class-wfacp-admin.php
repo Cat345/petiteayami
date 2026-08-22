@@ -82,7 +82,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 				if ( wc_ship_to_billing_address_only() ) {
 
-					$msg = sprintf( __( "<a href='%s'>Shipping destination</a> is set to 'Force shipping to customer billing address'. Please remove Shipping Address field from the checkout form.", 'woofunnels-aero-checkout' ), $shipping_methods );
+					$msg = sprintf( __( "<a href='%s'>Shipping destination</a> is set to 'Force shipping to customer billing address'. Please remove Shipping Address field from the checkout form.", 'funnel-builder' ), $shipping_methods );
 
 					$aero_messages[] = array(
 						'message'       => $msg,
@@ -97,7 +97,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			}
 
 			if ( get_option( 'woocommerce_ship_to_countries' ) == 'disabled' ) {
-				$msg             = sprintf( __( "<a href='%s' target='_blank'>Shipping Location</a> is disabled. Please replace Shipping Address with Billing Address field or enable Shipping Location.", 'woofunnels-aero-checkout' ), admin_url( 'admin.php?page=wc-settings' ) );
+				$msg             = sprintf( __( "<a href='%s' target='_blank'>Shipping Location</a> is disabled. Please replace Shipping Address with Billing Address field or enable Shipping Location.", 'funnel-builder' ), admin_url( 'admin.php?page=wc-settings' ) );
 				$aero_messages[] = array(
 					'message'       => $msg,
 					'id'            => 'shipping_address',
@@ -112,7 +112,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			}
 
 			$aero_messages[] = array(
-				'message'     => __( 'Billing First Name & Last Name are available in the form. Please disable First Name and Last Name from Billing Address field.', 'woofunnels-aero-checkout' ),
+				'message'     => __( 'Billing First Name & Last Name are available in the form. Please disable First Name and Last Name from Billing Address field.', 'funnel-builder' ),
 				'show'        => 'yes',
 				'dismissible' => false,
 				'is_global'   => false,
@@ -210,7 +210,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				if ( empty( $wfacp_id ) ) {
 					return;
 				}
-				$title           = get_the_title( $wfacp_id );
+				$title = get_the_title( $wfacp_id );
 				// page=wfacp is removed; link the order-screen "Template" to the page=bwf checkout builder. (#9188)
 				$wfacp_funnel_id = get_post_meta( $wfacp_id, '_bwf_in_funnel', true );
 				$title_link      = add_query_arg(
@@ -237,8 +237,8 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				</div>
 				<div style="margin-top:15px" class="wfacp_order_backend_field_container">
 					<h3 style="display: inline">Checkout</h3>
-					<p><b><?php _e( 'Template', 'woofunnel-aero-checkout' ); ?>:</b> <a href="<?php echo $title_link; ?>" target="_blank"><?php echo $title; ?></a></p>
-					<p><b><?php _e( 'Source', 'woofunnel-aero-checkout' ); ?>:</b> <a href="<?php echo $permalink; ?>" target="_blank"><?php echo $display_text; ?></a></p>
+					<p><b><?php _e( 'Template', 'funnel-builder' ); ?>:</b> <a href="<?php echo $title_link; ?>" target="_blank"><?php echo $title; ?></a></p>
+					<p><b><?php _e( 'Source', 'funnel-builder' ); ?>:</b> <a href="<?php echo $permalink; ?>" target="_blank"><?php echo $display_text; ?></a></p>
 				</div>
 				<?php
 				$wfacp_id = absint( $wfacp_id );
@@ -336,7 +336,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				 * disabled fieldset.
 				 */
 				if ( '' !== trim( $fields_html ) ) {
-					echo '<div style="clear: both;"></div><div style="margin-top:15px" class="wfacp_order_backend_field_container"><h3 style="display: inline">' . esc_html__( 'Custom Fields', 'woofunnels-aero-checkout' ) . '</h3><fieldset id="wfacp_admin_advanced_field" disabled>' . $fields_html . '</fieldset></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- markup from woocommerce_form_field()
+					echo '<div style="clear: both;"></div><div style="margin-top:15px" class="wfacp_order_backend_field_container"><h3 style="display: inline">' . esc_html__( 'Custom Fields', 'funnel-builder' ) . '</h3><fieldset id="wfacp_admin_advanced_field" disabled>' . $fields_html . '</fieldset></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- markup from woocommerce_form_field()
 				}
 			} catch ( Exception | Error $e ) {
 
@@ -381,7 +381,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			$post_type = WFACP_Common::get_post_type_slug();
 			add_meta_box(
 				'woofunnels-aero-checkout-shortcode',
-				__( 'FunnelKit Checkout', 'woofunnels-aero-checkout' ),
+				__( 'FunnelKit Checkout', 'funnel-builder' ),
 				array(
 					$this,
 					'render_shortcode_meta_box',
@@ -410,7 +410,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				<div class="wfacp_shortcode">
 					<div class="wfacp_shortcode_inner">
 						<div class="wfacp_description">
-							<label for='wfacp_shortcode_normal'><?php _e( 'Form Shortcode', 'woofunnels-aero-checkout' ); ?></label>
+							<label for='wfacp_shortcode_normal'><?php _e( 'Form Shortcode', 'funnel-builder' ); ?></label>
 							<input type="text" readonly="readonly" id='wfacp_shorcode_normal' style="width: 100%;" value="<?php echo $normal; ?>">
 						</div>
 						<a href="javascript:void(0)" class="wfacp_copy_text">
@@ -450,7 +450,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 					$post     = get_post( $v['post_id'] );
 					$output[] = array(
 						'id'   => $post->ID,
-						'name' => $post->post_title . ' - ' . __( 'Page', 'woofunnels-aero-checkout' ),
+						'name' => $post->post_title . ' - ' . __( 'Page', 'funnel-builder' ),
 						'type' => 'page',
 					);
 				}
@@ -583,7 +583,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				?>
 				<div id="wfacp-switch-mode">
 					<a id="wfacp-back-button" class="button button-default button-large" href="<?php echo esc_url( $edit_link ); ?>">
-						<?php esc_html_e( '&#8592; Back to Checkout Page', 'woofunnels-aero-checkout' ); ?>
+						<?php esc_html_e( '&#8592; Back to Checkout Page', 'funnel-builder' ); ?>
 					</a>
 				</div>
 				<script>
@@ -666,8 +666,8 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 										display: 'flex',
 										height: '33px'
 									},
-									text: "<?php esc_html_e( '← Back to Checkout Page', 'woofunnels-aero-checkout' ); ?>",
-									label: "<?php esc_html_e( 'Back to Checkout Page', 'woofunnels-aero-checkout' ); ?>"
+									text: "<?php esc_html_e( '← Back to Checkout Page', 'funnel-builder' ); ?>",
+									label: "<?php esc_html_e( 'Back to Checkout Page', 'funnel-builder' ); ?>"
 								}
 							);
 							var linkWrapper = '<div id="wfacp-switch-mode"></div>';
@@ -707,7 +707,12 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 		function get_advanced_field() {
 			if ( isset( $_REQUEST['post'] ) && absint( wp_unslash( $_REQUEST['post'] ) ) > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
-				$wfacp_id = wfacp_get_order_meta( wc_get_order( absint( wp_unslash( $_REQUEST['post'] ) ) ), '_wfacp_post_id' );
+				$post_id = absint( wp_unslash( $_REQUEST['post'] ) );
+				$order   = wc_get_order( $post_id );
+				if ( ! $order instanceof WC_Order ) {
+					return;
+				}
+				$wfacp_id = wfacp_get_order_meta( $order, '_wfacp_post_id' );
 				if ( absint( $wfacp_id ) == 0 ) {
 					return;
 				}

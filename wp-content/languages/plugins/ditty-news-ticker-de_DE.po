@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Ditty – Responsive News Tickers, Sliders, and Lists - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-04-05 02:28:57+0000\n"
+"PO-Revision-Date: 2026-08-09 22:42:12+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -370,10 +370,6 @@ msgstr "leer"
 #: legacy/inc/admin/fields/fields.php:150
 msgid "Descending"
 msgstr "Absteigend"
-
-#: legacy/inc/admin/fields/fields.php:146
-msgid "Menu Order"
-msgstr "Menü Anordnung"
 
 #: legacy/inc/admin/fields/fields.php:149
 msgid "Ascending"
@@ -1152,3 +1148,7 @@ msgstr "Hinzufügen"
 #: legacy/inc/help.php:110
 msgid "For more information:"
 msgstr "Weitere Informationen:"
+
+#: legacy/inc/admin/fields/fields.php:146
+msgid "Menu Order"
+msgstr "Menüreihenfolge"

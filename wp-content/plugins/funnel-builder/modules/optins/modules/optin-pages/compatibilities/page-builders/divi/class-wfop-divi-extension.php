@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFOP_Divi_Extension' ) ) {
 	#[AllowDynamicProperties]
 	class WFOP_Divi_Extension extends DiviExtension {

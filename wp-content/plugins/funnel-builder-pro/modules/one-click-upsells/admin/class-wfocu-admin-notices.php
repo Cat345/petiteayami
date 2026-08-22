@@ -66,7 +66,8 @@ if ( ! class_exists( 'WFOCU_Admin_Notices' ) ) {
 
 
 				<div class="wfocu-notice bwf-notice notice notice-error">
-					<p><?php esc_html_e( 'FunnelKit Notice: PHP memory is running low. It is recommended to set PHP Memory to at least 256MB. <a target="_blank" href="https://wordpress.org/support/article/editing-wp-config-php/#increasing-memory-allocated-to-php">Learn how to increase php memory limit</a>', 'woofunnels-upstroke-one-click-upsell' ); ?>
+					<p><?php esc_html_e( 'FunnelKit Notice: PHP memory is running low. It is recommended to set PHP Memory to at least 256MB.', 'woofunnels-upstroke-one-click-upsell' ); ?>
+						<a target="_blank" href="<?php echo esc_url( 'https://wordpress.org/support/article/editing-wp-config-php/#increasing-memory-allocated-to-php' ); ?>"><?php esc_html_e( 'Learn how to increase php memory limit', 'woofunnels-upstroke-one-click-upsell' ); ?></a>
 					</p>
 
 				</div>

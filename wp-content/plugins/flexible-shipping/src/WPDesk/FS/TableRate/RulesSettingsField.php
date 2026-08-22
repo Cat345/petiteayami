@@ -22,6 +22,9 @@ class RulesSettingsField {
 
 	const FIELD_TYPE = 'shipping_rules';
 
+	private const AI_PURCHASE_URL    = 'https://octol.io/flexibleshipping-ai';
+	private const AI_PURCHASE_URL_PL = 'https://octol.io/flexibleshipping-ai-pl';
+
 	/**
 	 * @var string
 	 */
@@ -110,29 +113,81 @@ class RulesSettingsField {
 		$is_pro_activated = defined( 'FLEXIBLE_SHIPPING_PRO_VERSION' );
 
 		$rules_table_settings = [
-			'rules_settings'           => $rules_settings,
-			'table_settings'           => $table_settings,
-			'translations'             => $translations,
-			'available_conditions'     => $available_conditions,
-			'cost_settings_fields'     => $cost_settings_fields,
-			'special_action_fields'    => $special_action_fields,
-			'additional_cost_fields'   => $additional_cost_fields,
-			'preconfigured_scenarios'  => $preconfigured_scenarios,
-			'is_pro_activated'         => $is_pro_activated,
-			'pro_features_data'        => $pro_features_data,
-			'paste_available'          => true,
-			'ai_button_available'      => false,
-			'ai_button_url'            => 'https://octol.io/fs-rules-table-ai',
-			'support_link_available'   => true,
-			'support_link_url'         => 'https://octol.io/fs-rules-table-support',
-			'shop_settings'            => $shop_settings,
+			'rules_settings'              => $rules_settings,
+			'table_settings'              => $table_settings,
+			'translations'                => $translations,
+			'available_conditions'        => $available_conditions,
+			'cost_settings_fields'        => $cost_settings_fields,
+			'special_action_fields'       => $special_action_fields,
+			'additional_cost_fields'      => $additional_cost_fields,
+			'preconfigured_scenarios'     => $preconfigured_scenarios,
+			'is_pro_activated'            => $is_pro_activated,
+			'pro_features_data'           => $pro_features_data,
+			'paste_available'             => true,
+			'ai_button_available'         => false,
+			'ai_button_url'               => 'https://octol.io/fs-rules-table-ai',
+			'ai_local_button_available'   => true,
+			'ai_local_message_title'      => __( 'Let AI build your rules table', 'flexible-shipping' ),
+			'ai_local_message'            => $this->get_ai_local_message(),
+			'ai_local_message_action'     => __( 'Get Flexible Shipping PRO →', 'flexible-shipping' ),
+			'ai_local_message_action_url' => $this->get_ai_purchase_url(),
+			'shop_settings'               => $shop_settings,
 		];
 
-		$rules_table_settings = apply_filters( 'flexible-shipping/rules-table/settings', $rules_table_settings, $this->shipping_method_settings );
+		$rules_table_settings = $this->filter_rules_table_settings( $rules_table_settings );
 
 		include __DIR__ . '/views/shipping-method-settings-rules.php';
 
 		return ob_get_clean();
+	}
+
+	/**
+	 * Filters rules table settings.
+	 *
+	 * @param array $rules_table_settings Rules table settings.
+	 *
+	 * @return array
+	 */
+	protected function filter_rules_table_settings( array $rules_table_settings ): array {
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+		return apply_filters( 'flexible-shipping/rules-table/settings', $rules_table_settings, $this->shipping_method_settings );
+	}
+
+	private function get_ai_local_message(): string {
+		$message = sprintf(
+			// Translators: 1: opening content tag, 2: closing content tag, 3: opening line break and strong tags, 4: closing strong tag, 5: opening list tag, 6: closing list tag, 7: opening list item tag, 8: closing list item tag, 9: opening strong tag, 10: closing strong tag.
+			__(
+				'%1$sThe AI Shipping Assistant is included with an active Flexible Shipping PRO subscription. Describe your shipping scenario in plain language, and it generates a ready-to-use rules table for you.
+%3$sWith an active subscription, you get:%4$s
+%5$s
+%7$s%9$sShipping configuration%10$s in under 60 seconds thanks to AI%8$s
+%7$s%9$sAutomatic plugin updates%10$s for as long as your subscription is active%8$s
+%7$s%9$sHuman 1-on-1 support%10$s, whenever you need it%8$s
+%6$s
+%2$s',
+				'flexible-shipping'
+			),
+			'<span class="fspro-ai-subscription-content">',
+			'</span>',
+			'<br><br><strong>',
+			'</strong>',
+			'<ul class="fspro-ai-subscription-benefits">',
+			'</ul>',
+			'<li>',
+			'</li>',
+			'<strong>',
+			'</strong>'
+		);
+
+		return $message . sprintf(
+			'<span class="fspro-ai-subscription-footer"><button type="button" class="fspro-ai-maybe-later">%1$s</button><small>%2$s</small></span>',
+			esc_html__( 'Maybe later', 'flexible-shipping' ),
+			esc_html__( '30-day money-back guarantee · Cancel anytime', 'flexible-shipping' )
+		);
+	}
+
+	private function get_ai_purchase_url(): string {
+		return get_user_locale() === 'pl_PL' ? self::AI_PURCHASE_URL_PL : self::AI_PURCHASE_URL;
 	}
 
 	private function get_shop_settings() {
@@ -238,7 +293,7 @@ class RulesSettingsField {
 	 * @return array
 	 */
 	private function get_field_value(): array {
-		$value = ! isset( $this->value ) ? ( $this->settings[ 'default' ] ?? [] ) : $this->value;
+		$value = ! isset( $this->value ) ? ( $this->settings['default'] ?? [] ) : $this->value;
 		if ( ! is_array( $value ) ) {
 			$value = [];
 		}
@@ -253,13 +308,13 @@ class RulesSettingsField {
 	 */
 	private function process_select_options_for_conditions( array $settings, $available_conditions ) {
 		foreach ( $settings as $rule_key => $rule ) {
-			$conditions = isset( $rule[ 'conditions' ] ) && is_array( $rule[ 'conditions' ] ) ? $rule[ 'conditions' ] : [];
+			$conditions = isset( $rule['conditions'] ) && is_array( $rule['conditions'] ) ? $rule['conditions'] : [];
 			foreach ( $conditions as $condition_key => $condition ) {
-				if ( isset( $available_conditions[ $condition[ 'condition_id' ] ] ) ) {
-					$settings[ $rule_key ][ 'conditions' ][ $condition_key ] = $available_conditions[ $condition[ 'condition_id' ] ]->prepare_settings( $condition );
+				if ( isset( $available_conditions[ $condition['condition_id'] ] ) ) {
+					$settings[ $rule_key ]['conditions'][ $condition_key ] = $available_conditions[ $condition['condition_id'] ]->prepare_settings( $condition );
 				}
 			}
-			$settings[ $rule_key ][ 'conditions' ] = array_values( $settings[ $rule_key ][ 'conditions' ] );
+			$settings[ $rule_key ]['conditions'] = array_values( $settings[ $rule_key ]['conditions'] );
 		}
 
 		return $settings;

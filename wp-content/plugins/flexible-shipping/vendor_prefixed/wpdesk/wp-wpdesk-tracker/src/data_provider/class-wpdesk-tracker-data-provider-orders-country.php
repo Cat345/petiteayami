@@ -28,8 +28,12 @@ if (!\class_exists('FSVendor\WPDesk_Tracker_Data_Provider_Orders_Country')) {
         public function get_data()
         {
             global $wpdb;
-            $query = $wpdb->get_results("\n            \tSELECT m.meta_value AS shipping_country, p.post_status AS post_status , COUNT(p.ID) AS orders\n            \tFROM {$wpdb->postmeta} m, {$wpdb->posts} p\n            \tWHERE p.ID = m.post_id\n            \tAND m.meta_key = '_shipping_country'\n            \tGROUP BY shipping_country, post_status ORDER BY orders DESC");
-            $data['shipping_country_per_order'] = [];
+            if (\class_exists('\Automattic\WooCommerce\Utilities\OrderUtil') && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled()) {
+                $query = $wpdb->get_results("\nSELECT a.country AS shipping_country, o.status AS post_status, COUNT(o.id) AS orders\nFROM {$wpdb->prefix}wc_order_addresses a, {$wpdb->prefix}wc_orders o\nWHERE o.id = a.order_id\nAND o.type = 'shop_order'\nAND a.address_type = 'shipping'\nGROUP BY shipping_country, post_status ORDER BY orders DESC");
+            } else {
+                $query = $wpdb->get_results("\n            \tSELECT m.meta_value AS shipping_country, p.post_status AS post_status , COUNT(p.ID) AS orders\n            \tFROM {$wpdb->postmeta} m, {$wpdb->posts} p\n            \tWHERE p.ID = m.post_id\n            \tAND m.meta_key = '_shipping_country'\n            \tGROUP BY shipping_country, post_status ORDER BY orders DESC");
+            }
+            $data = ['shipping_country_per_order' => []];
             if ($query) {
                 foreach ($query as $row) {
                     if (!isset($data['shipping_country_per_order'][$row->shipping_country])) {

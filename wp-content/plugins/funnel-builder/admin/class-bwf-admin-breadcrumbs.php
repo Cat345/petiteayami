@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /**
  * Class to control breadcrumb and its behaviour across the buildwoofunnels
  * @author buildwoofunnels

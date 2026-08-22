@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 	#[AllowDynamicProperties]
 	class WFTY_Gutenberg {
@@ -187,7 +188,6 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 				$style_path = "/$app_name.css";
 
 				$deps    = ( isset( $assets['dependencies'] ) ? array_merge( $assets['dependencies'], array( 'jquery' ) ) : array( 'jquery' ) );
-				$deps    = array_merge( $deps, array( 'bwf-font-awesome-kit' ) );
 				$version = time();
 
 				$script_deps = array_filter(
@@ -197,7 +197,7 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 					}
 				);
 
-				WFFN_Common::enqueue_block_editor_remote_assets( 'bwf-font-awesome-kit', 'bwf-web-font' );
+				WFFN_Common::enqueue_block_editor_webfont_loader( 'bwf-web-font' );
 				wp_enqueue_script( 'wfty-block-editor', $frontend_dir . $js_path, $script_deps, $version, true );
 
 				$exp_date = gmdate( 'Y-m-d H:i:s', strtotime( '+10 days' ) );

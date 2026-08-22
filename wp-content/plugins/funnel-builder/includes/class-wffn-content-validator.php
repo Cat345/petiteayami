@@ -143,13 +143,10 @@ if ( ! class_exists( 'WFFN_Content_Validator' ) ) {
 		 */
 		public static function get_allowed_image_hosts() {
 			return array(
-				'woofunnels.s3.us-east-1.amazonaws.com',
-				'woofunnels.s3.amazonaws.com',
 				'd3ldyx3r2ad3ic.cloudfront.net',
 				'www.w3.org',
 				'youtu.be',
 				'www.youtube.com',
-				'templates-elementor.funnelswp.com',
 				'vimeo.com',
 				'videopress.com',
 				'dailymotion.com',

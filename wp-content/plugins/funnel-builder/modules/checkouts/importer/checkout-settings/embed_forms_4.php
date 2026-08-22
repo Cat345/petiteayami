@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 $product_field   = WFACP_Common::get_product_field();
 $advanced_field  = WFACP_Common::get_advanced_fields();
 $customizer_data = [
@@ -35,8 +36,8 @@ $customizer_data = [
 		'wfacp_form_section_embed_forms_2_form_border_type'   => 'none',
 		'wfacp_form_section_embed_forms_2_form_border_color'  => '#bbbbbb',
 		'wfacp_form_section_embed_forms_2_form_inner_padding' => '16',
-		'wfacp_form_section_embed_forms_2_name_0'             => __( 'GET YOUR FREE COPY OF AMAZING BOOK', 'woofunnels-aero-checkout' ),
-		'wfacp_form_section_embed_forms_2_headline_0'         => __( 'Shipped in less than 3 days!', 'woofunnels-aero-checkout' ),
+		'wfacp_form_section_embed_forms_2_name_0'             => __( 'GET YOUR FREE COPY OF AMAZING BOOK', 'funnel-builder' ),
+		'wfacp_form_section_embed_forms_2_headline_0'         => __( 'Shipped in less than 3 days!', 'funnel-builder' ),
 
 		'wfacp_form_section_embed_forms_2_heading_talign'        => 'wfacp-text-left',
 		'wfacp_form_section_embed_forms_2_sec_bg_color'          => 'transparent',

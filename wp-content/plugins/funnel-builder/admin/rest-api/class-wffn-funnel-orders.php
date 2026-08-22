@@ -97,30 +97,10 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 					'args'                => $this->sanitize_receive_params(),
 				)
 			);
-			register_rest_route(
-				$this->namespace,
-				'/funnel-leads/delete',
-				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_lead_entry' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array(
-						'source_id' => array(
-							'description'       => __( 'Delete funnels', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-					),
-				)
-			);
 		}
 
 		public function get_read_api_permission_check() {
 			return wffn_rest_api_helpers()->get_api_permission_check( 'funnel', 'read' );
-		}
-
-		public function get_write_api_permission_check() {
-			return wffn_rest_api_helpers()->get_api_permission_check( 'funnel', 'write' );
 		}
 
 		public function prepare_filters( $filters ) {
@@ -626,11 +606,13 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 				return $where_query;
 			}
 			if ( isset( $filters['offer'] ) && isset( $filters['offer']['rule'] ) && isset( $filters['offer']['data'] ) && ! empty( $filters['offer']['data'] ) ) {
-				$offer_like = '%"' . $filters['offer']['data'] . '"%';
-				if ( 'offer_accepted' === $filters['offer']['rule'] ) {
-					$where_query[] = $wpdb->prepare( '( tracking.offer_accepted LIKE %s )', $offer_like );
-				} elseif ( 'offer_rejected' === $filters['offer']['rule'] ) {
-					$where_query[] = $wpdb->prepare( '( tracking.offer_rejected LIKE %s )', $offer_like );
+				$offer_col = ( 'offer_rejected' === $filters['offer']['rule'] ) ? 'offer_rejected' : ( ( 'offer_accepted' === $filters['offer']['rule'] ) ? 'offer_accepted' : '' );
+				if ( '' !== $offer_col ) {
+					$offer_ors = array();
+					foreach ( explode( ',', $filters['offer']['data'] ) as $offer_id ) {
+						$offer_ors[] = "tracking.{$offer_col} LIKE '%\"" . esc_sql( trim( $offer_id ) ) . "\"%'";
+					}
+					$where_query[] = '( ' . implode( ' OR ', $offer_ors ) . ' )';
 				}
 			}
 
@@ -649,11 +631,13 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 				return $where_query;
 			}
 			if ( isset( $filters['wc_order_bump'] ) && isset( $filters['wc_order_bump']['rule'] ) && isset( $filters['wc_order_bump']['data'] ) && ! empty( $filters['wc_order_bump']['data'] ) ) {
-				$bump_like = '%"' . $filters['wc_order_bump']['data'] . '"%';
-				if ( 'bump_accepted' === $filters['wc_order_bump']['rule'] ) {
-					$where_query[] = $wpdb->prepare( '( tracking.bump_accepted LIKE %s )', $bump_like );
-				} elseif ( 'bump_rejected' === $filters['wc_order_bump']['rule'] ) {
-					$where_query[] = $wpdb->prepare( '( tracking.bump_rejected LIKE %s )', $bump_like );
+				$bump_col = ( 'bump_rejected' === $filters['wc_order_bump']['rule'] ) ? 'bump_rejected' : ( ( 'bump_accepted' === $filters['wc_order_bump']['rule'] ) ? 'bump_accepted' : '' );
+				if ( '' !== $bump_col ) {
+					$bump_ors = array();
+					foreach ( explode( ',', $filters['wc_order_bump']['data'] ) as $bump_id ) {
+						$bump_ors[] = "tracking.{$bump_col} LIKE '%\"" . esc_sql( trim( $bump_id ) ) . "\"%'";
+					}
+					$where_query[] = '( ' . implode( ' OR ', $bump_ors ) . ' )';
 				}
 			}
 
@@ -1030,27 +1014,6 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			$response['message']     = __( 'Success', 'funnel-builder' );
 
 			return $return_data ? $response : rest_ensure_response( $response );
-		}
-
-		public function delete_lead_entry( $request ) {
-			$resp = array(
-				'msg'     => __( 'Failed', 'funnel-builder' ),
-				'success' => false,
-			);
-
-			$entry_ids = isset( $request['source_id'] ) ? $request['source_id'] : 0;
-
-			$op_obj = WFFN_Optin_Contacts_Analytics::get_instance();
-			$result = $op_obj->delete_optin_entries( $entry_ids );
-			if ( is_array( $result ) && isset( $result['db_error'] ) ) {
-				return rest_ensure_response( $resp );
-			}
-			$resp = array(
-				'success' => true,
-				'msg'     => __( 'Success', 'funnel-builder' ),
-			);
-
-			return rest_ensure_response( $resp );
 		}
 	}
 

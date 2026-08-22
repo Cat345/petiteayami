@@ -28,6 +28,6 @@ $shortcodes = array(
 	)
 );
 
-return apply_filters( 'xoo_el_shortcode_info_tab', $shortcodes );
+return apply_filters( 'xoo_wl_shortcode_info_tab', $shortcodes );
 
 ?>

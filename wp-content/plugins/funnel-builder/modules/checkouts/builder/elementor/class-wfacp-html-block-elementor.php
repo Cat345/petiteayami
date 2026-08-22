@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Elementor_HTML_BLOCK' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFACP_Elementor_HTML_BLOCK extends WFACP_EL_Fields {
@@ -82,7 +83,7 @@ if ( ! class_exists( 'WFACP_Elementor_HTML_BLOCK' ) ) {
 			$this->add_color( $field_key . '_cart_item_color', $cart_item_color, '#666666' );
 
 			$border_image_color = [ '{{WRAPPER}} #wfacp-e-form table.shop_table tr.cart_item .product-image img' ];
-			$this->add_border_color( 'mini_product_image_border_color', $border_image_color, '', __( 'Image Border Color', 'woofunnel-aero-checkout' ), false, [ 'order_summary_enable_product_image' => 'yes' ] );
+			$this->add_border_color( 'mini_product_image_border_color', $border_image_color, '', __( 'Image Border Color', 'funnel-builder' ), false, [ 'order_summary_enable_product_image' => 'yes' ] );
 
 
 			/* ------------------------------------ End ------------------------------------ */
@@ -134,7 +135,7 @@ if ( ! class_exists( 'WFACP_Elementor_HTML_BLOCK' ) ) {
 				'{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount th',
 				'{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount th span:not(.wfacp_coupon_code)',
 			];
-			$this->add_color( $field_key . '_display_label_color', $coupon_selector_label_color, '', __( 'Text Color', 'woofunnel-aero-checkout' ) );
+			$this->add_color( $field_key . '_display_label_color', $coupon_selector_label_color, '', __( 'Text Color', 'funnel-builder' ) );
 			$coupon_selector_val_color = [
 				'{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount td',
 				'{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount td span',
@@ -143,7 +144,7 @@ if ( ! class_exists( 'WFACP_Elementor_HTML_BLOCK' ) ) {
 				'{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount td span bdi',
 				'{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount th .wfacp_coupon_code',
 			];
-			$this->add_color( $field_key . '_display_val_color', $coupon_selector_val_color, '#24ae4e', __( 'Code Color', 'woofunnel-aero-checkout' ) );
+			$this->add_color( $field_key . '_display_val_color', $coupon_selector_val_color, '#24ae4e', __( 'Code Color', 'funnel-builder' ) );
 
 			/* ------------------------------------ End ------------------------------------ */
 
@@ -189,8 +190,8 @@ if ( ! class_exists( 'WFACP_Elementor_HTML_BLOCK' ) ) {
 
 			$this->add_heading( 'Total' );
 
-			$this->add_typography( $field_key . '_cart_total_label_typo', implode( ',', $cart_total_label_typo_option ), $fields_options, [], __( 'Label Typography', 'woofunnel-aero-checkout' ) );
-			$this->add_typography( $field_key . '_cart_subtotal_heading_typo', implode( ',', $cart_total_value_typo_option ), $fields_options, [], __( 'Price Typography', 'woofunnel-aero-checkout' ) );
+			$this->add_typography( $field_key . '_cart_total_label_typo', implode( ',', $cart_total_label_typo_option ), $fields_options, [], __( 'Label Typography', 'funnel-builder' ) );
+			$this->add_typography( $field_key . '_cart_subtotal_heading_typo', implode( ',', $cart_total_value_typo_option ), $fields_options, [], __( 'Price Typography', 'funnel-builder' ) );
 			$this->add_color( $field_key . '_cart_subtotal_heading_color', $cart_total_color_option, '' );
 
 			$this->add_heading( __( 'Divider', 'woocommerce' ) );
@@ -219,7 +220,7 @@ if ( ! class_exists( 'WFACP_Elementor_HTML_BLOCK' ) ) {
 		}
 
 		protected function coupon_field_style( $field_key ) {
-			$this->add_heading( __( 'Link', 'woofunnel-aero-checkout' ), '' );
+			$this->add_heading( __( 'Link', 'funnel-builder' ), '' );
 			$coupon_typography_opt = [
 				'{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .woocommerce-info > a',
 				'{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .woocommerce-info > a:not(.wfacp_close_icon):not(.button-social-login):not(.wfob_btn_add):not(.ywcmas_shipping_address_button_new):not(.wfob_qv-button):not(.wfob_read_more_link):not(.wfacp_step_text_have ):not(.wfacp_cart_link)',
@@ -229,7 +230,7 @@ if ( ! class_exists( 'WFACP_Elementor_HTML_BLOCK' ) ) {
 			$this->add_color( $field_key . '_coupon_text_color', $coupon_typography_opt );
 
 
-			$this->add_heading( __( 'Field', 'woofunnel-aero-checkout' ) );
+			$this->add_heading( __( 'Field', 'funnel-builder' ) );
 			$form_fields_label_typo = [
 				'{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper label.wfacp-form-control-label',
 
@@ -240,12 +241,12 @@ if ( ! class_exists( 'WFACP_Elementor_HTML_BLOCK' ) ) {
 				],
 			];
 
-			$this->add_typography( $field_key . '_label_typo', implode( ',', $form_fields_label_typo ), $fields_options, [], __( 'Label Typography', 'woofunnels-aero-checkout' ) );
+			$this->add_typography( $field_key . '_label_typo', implode( ',', $form_fields_label_typo ), $fields_options, [], __( 'Label Typography', 'funnel-builder' ) );
 
 			$form_fields_label_color_opt = [
 				'{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper label.wfacp-form-control-label',
 			];
-			$this->add_color( $field_key . '_label_color', $form_fields_label_color_opt, '', __( 'Label Color', 'woofunnels-aero-checkout' ) );
+			$this->add_color( $field_key . '_label_color', $form_fields_label_color_opt, '', __( 'Label Color', 'funnel-builder' ) );
 
 
 			$fields_options = [
@@ -253,16 +254,16 @@ if ( ! class_exists( 'WFACP_Elementor_HTML_BLOCK' ) ) {
 			];
 
 			$optionString = implode( ',', $fields_options );
-			$this->add_typography( $field_key . '_input_typo', $optionString, [], [], __( 'Coupon Typography' ) );
+			$this->add_typography( $field_key . '_input_typo', $optionString, [], [], __( 'Coupon Typography' , 'funnel-builder') );
 
 
 			$inputColorOption = [
 				'{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper .wfacp-form-control',
 			];
-			$this->add_color( $field_key . '_input_color', $inputColorOption, '', __( 'Coupon Color', 'woofunnels-aero-checkout' ) );
+			$this->add_color( $field_key . '_input_color', $inputColorOption, '', __( 'Coupon Color', 'funnel-builder' ) );
 
 			$focus_color = [ '{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper .wfacp-form-control:focus' ];
-			$this->add_border_color( $field_key . '_focus_color', $focus_color, '#61bdf7', __( 'Focus Color', 'woofunnel-aero-checkout' ), true );
+			$this->add_border_color( $field_key . '_focus_color', $focus_color, '#61bdf7', __( 'Focus Color', 'funnel-builder' ), true );
 			$fields_options = [
 				'{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper .wfacp-form-control',
 			];
@@ -270,7 +271,7 @@ if ( ! class_exists( 'WFACP_Elementor_HTML_BLOCK' ) ) {
 			$this->add_border( $field_key . '_coupon_border', implode( ',', $fields_options ), [], $default );
 
 
-			$this->add_heading( __( 'Button', 'woofunnel-aero-checkout' ) );
+			$this->add_heading( __( 'Button', 'funnel-builder' ) );
 
 			/* Button color setting */
 			$btnkey = [
@@ -284,17 +285,17 @@ if ( ! class_exists( 'WFACP_Elementor_HTML_BLOCK' ) ) {
 			];
 			$this->add_controls_tabs( $field_key . "_tabs" );
 			$this->add_controls_tab( $field_key . "_normal_tab", 'Normal' );
-			$this->add_background_color( $field_key . '_btn_bg_color', $btnkey, '', __( 'Background', 'woofunnels-aero-checkout' ) );
-			$this->add_color( $field_key . '_btn_text_color', $btnkey, '', __( 'Label', 'woofunnels-aero-checkout' ) );
+			$this->add_background_color( $field_key . '_btn_bg_color', $btnkey, '', __( 'Background', 'funnel-builder' ) );
+			$this->add_color( $field_key . '_btn_text_color', $btnkey, '', __( 'Label', 'funnel-builder' ) );
 			$this->close_controls_tab();
 
 			$this->add_controls_tab( $field_key . "_hover_tab", 'Hover' );
-			$this->add_background_color( $field_key . '_btn_bg_hover_color', $btnkey_hover, '', __( 'Background', 'woofunnels-aero-checkout' ) );
-			$this->add_color( $field_key . '_btn_bg_hover_text_color', $btnkey_hover, '', __( 'Label', 'woofunnels-aero-checkout' ) );
+			$this->add_background_color( $field_key . '_btn_bg_hover_color', $btnkey_hover, '', __( 'Background', 'funnel-builder' ) );
+			$this->add_color( $field_key . '_btn_bg_hover_text_color', $btnkey_hover, '', __( 'Label', 'funnel-builder' ) );
 			$this->close_controls_tab();
 			$this->close_controls_tabs();
 
-			$this->add_typography( $field_key . '_btn_typo', implode( ',', $btnkey ), [], [], __( 'Button Typography' ) );
+			$this->add_typography( $field_key . '_btn_typo', implode( ',', $btnkey ), [], [], __( 'Button Typography' , 'funnel-builder') );
 			/* Button color setting End*/
 		}
 

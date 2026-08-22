@@ -12,9 +12,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 
-<p class="shipping-method-description">
-	<?php echo wp_kses_post( $method_description ); ?>
-</p>
+<?php if ( '' !== $method_description ) : ?>
+	<p
+		class="shipping-method-description"
+		<?php if ( ! empty( $method_logo_url ) ) : ?>
+			style="margin-bottom: 0;"
+		<?php endif; ?>
+	>
+		<?php echo wp_kses_post( $method_description ); ?>
+	</p>
+<?php endif; ?>
 <?php if ( ! empty( $method_logo_url ) ) : ?>
 	<p class="shipping-method-logo">
 		<img

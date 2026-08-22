@@ -11,7 +11,6 @@ $nav = $this->el('ul', [
 
     $props['nav'] == 'tab' ? 'uk-tab' : 'uk-switcher' => [
         'connect: #{connect};',
-        'itemNav: #{item_nav};',
         'animation: uk-animation-{switcher_animation};',
         'media: @{nav_grid_breakpoint} {@nav_position: left|right} {@nav: tab};',
     ],

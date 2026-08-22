@@ -11,8 +11,10 @@ namespace FacebookAds;
 require_once 'model/Constants.php';
 require_once 'model/FbcParamConfig.php';
 require_once 'model/CookieSettings.php';
+require_once 'model/PlainDataObject.php';
 require_once 'piiUtil/PIIUtils.php';
 require_once 'util/AppendixProvider.php';
+require_once 'util/RequestContextAdaptor.php';
 
 final class ParamBuilder
 {
@@ -30,6 +32,8 @@ final class ParamBuilder
     private $fbc = null;
     private $fbp = null;
     private $fbi = null;
+    private $referrer_url = null;
+    private $event_source_url = null;
 
     // perf optimization - save etld+1
     private $host = null;
@@ -69,7 +73,8 @@ final class ParamBuilder
         }
     }
 
-    private function validateAppendix($appendix_value) {
+    private function validateAppendix($appendix_value)
+    {
         $appendix_length = strlen($appendix_value);
 
         // Backward compatible V1 format: 2-character language token
@@ -234,6 +239,11 @@ final class ParamBuilder
         $this->etld_plus_1 = null;
         $this->sub_domain_index = 0;
 
+        $this->referrer_url = $referer;
+        if (is_string($this->referrer_url) && $this->referrer_url !== '') {
+            $this->referrer_url .= '.' . $this->appendix_no_change;
+        }
+
         // Pre-process if cookie already exists
         $this->fbc = ParamBuilder::preProcess($cookies, FBC_NAME, $host);
         $this->fbp = ParamBuilder::preProcess($cookies, FBP_NAME, $host);
@@ -291,6 +301,33 @@ final class ParamBuilder
         return $this->cookies_to_set_array;
     }
 
+    public function processRequestFromContext($context = null)
+    {
+        // Reset event_source_url
+        $this->event_source_url = null;
+
+        // 1. Normalize input into PlainDataObject
+        $data = ($context instanceof PlainDataObject)
+            ? $context
+            : RequestContextAdaptor::extract($context);
+
+        // 2. Delegate to the existing API
+        // This prevents code duplication by reusing existing logic.
+        $result = $this->processRequest(
+            $data->host,
+            $data->query_params,
+            $data->cookies,
+            $data->referer,
+            $data->x_forwarded_for,
+            $data->remote_address
+        );
+
+        // 3. Construct event_source_url from full request context
+        $this->constructEventSourceUrl($data);
+
+        return $result;
+    }
+
     public function getCookiesToSet()
     {
         return $this->cookies_to_set_array;
@@ -311,6 +348,36 @@ final class ParamBuilder
         return $this->fbi;
     }
 
+    public function getReferrerUrl()
+    {
+        return $this->referrer_url;
+    }
+
+    public function getEventSourceUrl()
+    {
+        return $this->event_source_url;
+    }
+
+    private function constructEventSourceUrl($data)
+    {
+        if ($data === null || empty($data->host) || empty($data->scheme)) {
+            $this->event_source_url = null;
+            return;
+        }
+
+        $url = $data->scheme . '://';
+        $url .= $data->host;
+
+        if (!empty($data->request_uri)) {
+            $url .= $data->request_uri;
+        }
+
+        $this->event_source_url = $url;
+        if (is_string($this->event_source_url) && $this->event_source_url !== '') {
+            $this->event_source_url .= '.' . $this->appendix_net_new;
+        }
+    }
+
     public function getNormalizedAndHashedPII($piiValue, $dataType)
     {
         return PIIUtils::getNormalizedAndHashedPII($piiValue, $dataType);
@@ -323,6 +390,11 @@ final class ParamBuilder
         if ($this->etld_plus_1 === null || $this->host !== $host) {
             // in case a new host is passed in for the same request
             $this->host = $host;
+            if ($host === null || $host === '') {
+                $this->etld_plus_1 = null;
+                $this->sub_domain_index = 0;
+                return;
+            }
             $host = ParamBuilder::extractHostFromHttpHost($host);
 
             if (

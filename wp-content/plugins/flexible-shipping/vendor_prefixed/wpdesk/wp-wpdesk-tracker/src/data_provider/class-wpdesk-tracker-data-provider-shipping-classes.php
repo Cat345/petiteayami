@@ -27,12 +27,8 @@ if (!\class_exists('FSVendor\WPDesk_Tracker_Data_Provider_Shipping_Classes')) {
          */
         public function get_data()
         {
-            $data['number_of_shipping_classes'] = 0;
             $shipping_classes = \WC()->shipping()->get_shipping_classes();
-            if (\is_array($shipping_classes)) {
-                $data['number_of_shipping_classes'] = \count($shipping_classes);
-            }
-            return $data;
+            return ['number_of_shipping_classes' => \count($shipping_classes)];
         }
     }
 }

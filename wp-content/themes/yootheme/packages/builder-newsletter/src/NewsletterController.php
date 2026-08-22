@@ -4,8 +4,8 @@ namespace YOOtheme\Builder\Newsletter;
 
 use YOOtheme\Http\Request;
 use YOOtheme\Http\Response;
+use YOOtheme\View;
 use function YOOtheme\app;
-use function YOOtheme\trans;
 
 /**
  * @phpstan-type Providers array{mailchimp: string, cmonitor: string}
@@ -77,7 +77,7 @@ class NewsletterController
         if ($settings['after_submit'] === 'redirect') {
             $return['redirect'] = $settings['redirect'];
         } else {
-            $return['message'] = trans($settings['message']);
+            $return['message'] = app(View::class)->trans($settings['message']);
         }
 
         return $response->withJson($return);

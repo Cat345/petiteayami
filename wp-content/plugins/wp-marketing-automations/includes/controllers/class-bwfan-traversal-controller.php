@@ -23,6 +23,9 @@ class BWFAN_Traversal_Controller {
 	protected $steps = array();
 	protected $links = array();
 
+	/** Lazy cache of the automation's stored merger_points meta (null = not loaded yet). */
+	protected $stored_merger_points = null;
+
 	/** Logging */
 	protected $step_log = null;
 
@@ -101,6 +104,14 @@ class BWFAN_Traversal_Controller {
 
 		$goal_ins->goal_steps = $this->get_step_nodes( $step_ids );
 
+		/**
+		 * Live disabled-step set. Async goal-jump must honour disabled Split/Conditional
+		 * steps the same way the main engine does — otherwise a benchmark inside a disabled
+		 * branch could pull the contact into that branch, bypassing the skip. Read fresh from
+		 * DB because the meta `steps` step_status goes stale after a disable toggle.
+		 */
+		$disabled_step_ids = BWFAN_Model_Automation_Step::get_disabled_step_ids( $this->automation_id );
+
 		$run              = 0;
 		$goal_found_nodes = [];
 		while ( $run < count( $this->steps ) ) {
@@ -108,6 +119,24 @@ class BWFAN_Traversal_Controller {
 			$current_step = $this->steps[ $this->current_node_id ];
 			$this->log( 'current step', 'goal-check' );
 			$this->log( [ 'id' => $current_step['id'], 'type' => $current_step['type'] ], 'goal-check' );
+
+			/**
+			 * Disabled Split/Conditional — do not enter its branch. Jump to the merger,
+			 * matching process_disabled_step() in the main engine. Any goal inside the
+			 * skipped subtree is intentionally unreachable via this path.
+			 */
+			if (
+				in_array( $current_step['type'], [ 'conditional', 'split' ], true ) &&
+				! empty( $disabled_step_ids ) &&
+				in_array( intval( $current_step['stepId'] ), $disabled_step_ids, true )
+			) {
+				$merger = $this->get_merger_or_end( intval( $current_step['stepId'] ) );
+				if ( empty( $merger ) || 'end' === $merger || false === $this->set_node_id_from_step_id( intval( $merger ) ) ) {
+					/** No merger (branch ends) — goal not reachable past here, stop. */
+					$run = count( $this->steps );
+				}
+				continue;
+			}
 
 			switch ( $current_step['type'] ) {
 				case 'action':
@@ -467,5 +496,205 @@ class BWFAN_Traversal_Controller {
 		$this->step_log = true;
 
 		BWFAN_Common::log_test_data( $log, $name, true );
+	}
+
+	/**
+	 * Return the step ID of the single outgoing edge from $step_id.
+	 * Used when bypassing a disabled Action / Wait step.
+	 *
+	 * Returns 'end' if the next node is the end node, false if no edge exists.
+	 *
+	 * @param int $step_id source step ID (the step being skipped)
+	 *
+	 * @return string|int|false 'end' | next step ID | false
+	 */
+	public function get_single_next_step_id( $step_id ) {
+		$step = $this->get_step_by_step_id( $step_id );
+		if ( empty( $step ) || ! isset( $step['id'] ) ) {
+			return false;
+		}
+		$node_id = $step['id'];
+		if ( ! isset( $this->links[ $node_id ] ) ) {
+			return false;
+		}
+		$next_node_id = $this->links[ $node_id ];
+		if ( 'end' === $next_node_id ) {
+			return 'end';
+		}
+		if ( ! isset( $this->steps[ $next_node_id ] ) || ! isset( $this->steps[ $next_node_id ]['stepId'] ) ) {
+			return false;
+		}
+
+		return $this->steps[ $next_node_id ]['stepId'];
+	}
+
+	/**
+	 * For a disabled Conditional / Split node, find the step ID where its
+	 * branches converge (the "merger"), or 'end' if branches don't converge.
+	 *
+	 * Primary source: the pre-computed merger stored in automation meta
+	 * (get_stored_merger_points) — the same map the builder greys the canvas from,
+	 * so runtime skip and canvas preview agree. 0/stale → 'end'.
+	 *
+	 * Fallback (only when the automation has no stored merger_points, e.g. saved
+	 * before the feature) — compute live from $this->links:
+	 *   1. Enumerate branch-start node IDs from the disabled node's virtual
+	 *      sub-node IDs (yes/no for conditional; -path-N for split).
+	 *   2. For each branch start, walk forward via $this->links collecting
+	 *      every reachable node ID. Stop at 'end', exit, jump, or already-visited
+	 *      (cycle guard). Cap at 500 hops per branch.
+	 *   3. Intersect the reachable sets across all branches.
+	 *   4. Pick the intersection node closest to the disabled step
+	 *      (minimum hops through any branch).
+	 *   5. If intersection is empty, return 'end'.
+	 *
+	 * @param int $step_id step ID of the disabled Conditional or Split
+	 *
+	 * @return string|int 'end' | merger step ID
+	 */
+	public function get_merger_or_end( $step_id ) {
+		$step = $this->get_step_by_step_id( $step_id );
+		if ( empty( $step ) || ! isset( $step['id'] ) ) {
+			return 'end';
+		}
+		$node_id = $step['id'];
+
+		/**
+		 * Prefer the pre-computed merger stored in automation meta — this is the exact
+		 * same source the builder greys the canvas from (get_all_steps_merger_point),
+		 * so the runtime skip target and the canvas preview stay in sync. Only fall
+		 * through to the live BFS below when the automation has no stored merger_points
+		 * (e.g. it was saved before the feature and never re-saved).
+		 *
+		 * Stored value is the merger node id, or 0 when the branches never reconverge —
+		 * 0 (or a stale node id) means "no merger" → end the automation.
+		 */
+		$stored = $this->get_stored_merger_points();
+		if ( ! empty( $stored ) && array_key_exists( $node_id, $stored ) ) {
+			$merger_node = $stored[ $node_id ];
+			if ( empty( $merger_node ) || ! isset( $this->steps[ $merger_node ]['stepId'] ) ) {
+				return 'end';
+			}
+
+			return $this->steps[ $merger_node ]['stepId'];
+		}
+
+		/** Enumerate branch starts. Conditional has yes/no virtual nodes; Split has -path-N. */
+		$branch_starts = [];
+		foreach ( [ 'yes', 'no' ] as $suffix ) {
+			$virtual = $node_id . $suffix;
+			if ( isset( $this->links[ $virtual ] ) ) {
+				$branch_starts[] = $this->links[ $virtual ];
+			}
+		}
+		/**
+		 * Split paths — enumerate the actual -path-* handles present in the graph
+		 * instead of a fixed 1..N loop, so a wider split can never silently fall
+		 * past a hardcoded ceiling. Mirrors the frontend (split-node.js), which
+		 * also reads real -path- child nodes rather than the stored path count.
+		 */
+		foreach ( $this->links as $src => $tgt ) {
+			if ( 0 === strpos( (string) $src, $node_id . '-path-' ) ) {
+				$branch_starts[] = $tgt;
+			}
+		}
+
+		if ( empty( $branch_starts ) ) {
+			return 'end';
+		}
+
+		/** Walk each branch — collect reachable nodes with min-hop distance. */
+		$max_hops    = 500;
+		$per_branch  = []; // index => [ reachable_node_id => hops_from_branch_start ]
+		foreach ( $branch_starts as $idx => $start ) {
+			$reach    = [];
+			$queue    = [ [ $start, 0 ] ];
+			$visited  = [];
+			while ( ! empty( $queue ) ) {
+				list( $cur, $hops ) = array_shift( $queue );
+				if ( isset( $visited[ $cur ] ) || 'end' === $cur || $hops > $max_hops ) {
+					continue;
+				}
+				$visited[ $cur ] = true;
+				$reach[ $cur ]   = $hops;
+
+				/** Bare linear edge — absent for a branching node (its edges are keyed by virtual handle), so guard rather than continue, else the sub-edge enqueue below is skipped and the walk truncates at a nested conditional/split. */
+				if ( isset( $this->links[ $cur ] ) ) {
+					$next = $this->links[ $cur ];
+					if ( ! isset( $visited[ $next ] ) ) {
+						$queue[] = [ $next, $hops + 1 ];
+					}
+				}
+				/** Also enqueue branching sub-edges if this node is itself a conditional / split. */
+				foreach ( [ 'yes', 'no' ] as $sub ) {
+					$v = $cur . $sub;
+					if ( isset( $this->links[ $v ] ) && ! isset( $visited[ $this->links[ $v ] ] ) ) {
+						$queue[] = [ $this->links[ $v ], $hops + 1 ];
+					}
+				}
+				/** Nested split sub-edges — enumerate actual -path-* handles (no fixed ceiling). */
+				foreach ( $this->links as $src => $tgt ) {
+					if ( 0 === strpos( (string) $src, $cur . '-path-' ) && ! isset( $visited[ $tgt ] ) ) {
+						$queue[] = [ $tgt, $hops + 1 ];
+					}
+				}
+			}
+			$per_branch[ $idx ] = $reach;
+		}
+
+		/** Intersect reachable sets across all branches. */
+		$intersection = null;
+		foreach ( $per_branch as $reach ) {
+			$keys = array_keys( $reach );
+			$intersection = ( null === $intersection ) ? $keys : array_intersect( $intersection, $keys );
+			if ( empty( $intersection ) ) {
+				break;
+			}
+		}
+
+		if ( empty( $intersection ) ) {
+			return 'end';
+		}
+
+		/** For each candidate, take the min hops across branches; pick the smallest min. */
+		$best_node_id = null;
+		$best_hops    = PHP_INT_MAX;
+		foreach ( $intersection as $candidate_node_id ) {
+			$min_hops = PHP_INT_MAX;
+			foreach ( $per_branch as $reach ) {
+				if ( isset( $reach[ $candidate_node_id ] ) && $reach[ $candidate_node_id ] < $min_hops ) {
+					$min_hops = $reach[ $candidate_node_id ];
+				}
+			}
+			if ( $min_hops < $best_hops ) {
+				$best_hops    = $min_hops;
+				$best_node_id = $candidate_node_id;
+			}
+		}
+
+		if ( null === $best_node_id || ! isset( $this->steps[ $best_node_id ] ) || ! isset( $this->steps[ $best_node_id ]['stepId'] ) ) {
+			return 'end';
+		}
+
+		return $this->steps[ $best_node_id ]['stepId'];
+	}
+
+	/**
+	 * Stored split/conditional merger_points for this automation, keyed by node id.
+	 * Loaded once per traversal instance from cached automation meta (the same map
+	 * get_all_steps_merger_point() writes and the builder greys the canvas from).
+	 * Absent (empty array) when the automation was never saved with the feature.
+	 *
+	 * @return array node_id => merger node id (0 = no merger)
+	 */
+	protected function get_stored_merger_points() {
+		if ( null !== $this->stored_merger_points ) {
+			return $this->stored_merger_points;
+		}
+
+		$meta                       = BWFAN_Model_Automationmeta::get_automation_meta( $this->automation_id );
+		$this->stored_merger_points = ( isset( $meta['merger_points'] ) && is_array( $meta['merger_points'] ) ) ? $meta['merger_points'] : array();
+
+		return $this->stored_merger_points;
 	}
 }

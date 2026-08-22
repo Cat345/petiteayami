@@ -1,8 +1,13 @@
 <?php
 
-$countries = include XOO_AFF_DIR.'/countries/countries.php';
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
+$countries = include $aff->dir.'/countries/countries.php';
 
 ?>
+
 <# if ( "section" === data.type ) { #>
 <div class="xoo-aff-field-section xoo-aff-field-section-{{data.id}}">
 	<label class="xoo-aff-section-label">{{data.title}}</label>

@@ -1,5 +1,82 @@
 (function ($) {
 
+    // Debounce rapid qty clicks (incl. product switcher) into one change → AJAX.
+    // The quantity shown to the user always changes on the click itself; only the
+    // change event that drives the server update waits.
+    //
+    // The update goes out WFACP_QTY_DEBOUNCE_DELAY after the last click, so clicks
+    // closer together than that count as one action and produce a single call, while a
+    // click after a longer pause is treated as its own action and goes out on its own.
+    // The window also has to outlast the gap between two deliberate clicks, otherwise an
+    // update fires in the middle of a burst and the re-render it triggers throws away
+    // the clicks that followed.
+    const WFACP_QTY_DEBOUNCE_DELAY = 400;
+
+    let wfacpQtyTimers = {};
+    const wfacp_qty_delay = () => {
+        let d = parseInt((typeof wfacp_frontend === 'object' && wfacp_frontend.hooks) ? wfacp_frontend.hooks.applyFilters('wfacp_quantity_debounce_delay', WFACP_QTY_DEBOUNCE_DELAY) : WFACP_QTY_DEBOUNCE_DELAY, 10);
+        return isNaN(d) || d < 0 ? WFACP_QTY_DEBOUNCE_DELAY : d;
+    };
+    const wfacp_qty_key = (qtyEle) => {
+        return qtyEle.attr('cart_key')
+            || qtyEle.attr('name')
+            || qtyEle.closest('[cart_key]').attr('cart_key')
+            || qtyEle.closest('[data-item-key]').attr('data-item-key')
+            || 'wfacp_qty';
+    };
+    const wfacp_debounce_qty = (key, fn) => {
+        key = key || 'wfacp_qty';
+        let entry = wfacpQtyTimers[key];
+        if (!entry) {
+            entry = wfacpQtyTimers[key] = {timer: null, fn: null};
+        }
+        entry.fn = fn;
+        if (entry.timer) {
+            clearTimeout(entry.timer);
+        }
+        entry.timer = setTimeout(function () {
+            entry.timer = null;
+            let run = entry.fn;
+            entry.fn = null;
+            if (typeof run === 'function') {
+                run();
+            }
+        }, wfacp_qty_delay());
+    };
+    // A re-render landing between the click and the debounced update detaches the input
+    // the click captured, which would silently drop the update. Fall back to the
+    // re-rendered input and re-apply the quantity the user actually asked for.
+    const wfacp_live_qty = (qtyEle, value) => {
+        if (qtyEle.length === 0 || $.contains(document.documentElement, qtyEle[0])) {
+            return qtyEle;
+        }
+        let name = qtyEle.attr('name');
+        let live = name ? $('input[name="' + name + '"]').first() : $();
+        if (live.length === 0) {
+            return qtyEle;
+        }
+        live.val(value);
+        return live;
+    };
+    // Anything still waiting has to go out before the order is placed, or the order
+    // would be created with the quantity the user has already moved past.
+    const wfacp_flush_qty = () => {
+        Object.keys(wfacpQtyTimers).forEach(function (key) {
+            let entry = wfacpQtyTimers[key];
+            if (!entry || !entry.timer) {
+                return;
+            }
+            clearTimeout(entry.timer);
+            entry.timer = null;
+            let run = entry.fn;
+            entry.fn = null;
+            if (typeof run === 'function') {
+                run();
+            }
+        });
+    };
+    $(document).on('checkout_place_order submit', 'form.woocommerce-checkout', wfacp_flush_qty);
+
     window.increaseItmQty = (currentEle, aero_key = '', callback = '') => {
         let $this = $(currentEle);
         let qtyEle = $this.siblings(".wfacp_product_quantity_number_field");
@@ -9,7 +86,7 @@
         let step = qtyEle.attr('step');
         step = isNaN(step) ? 1 : parseFloat(step);
         if (undefined != max && '' != max) {
-            max = parseInt(max, 10);
+            max = parseFloat(max);
             if (value >= max) {
                 wfacp_frontend.hooks.doAction('wfacp_max_quantity_reached', value, qtyEle);
                 return;
@@ -19,6 +96,10 @@
             //trigger aerocheckout page
             let el = $('.wfacp_increase_item[data-item-key=' + aero_key + ']');
             if (el.length > 0) {
+                // The work is handed to the switcher's stepper, so move the stepper the
+                // user actually clicked as well — otherwise its number sits still until
+                // the server response re-renders it.
+                qtyEle.val(value + step);
                 increaseItmQty(el[0], '', function (rsp) {
                     if (rsp.hasOwnProperty('error')) {
                         let parent = $this.parents('.product-name-area');
@@ -35,14 +116,28 @@
         let product_row = $this.parents('fieldset.wfacp_product_row');
 
         let product_row_class = $this.parents('.wfacp_product_row');
-        product_row_class.parents('#product_switching_field').addClass("wfacp_animation_start");
 
+        wfacp_debounce_qty(wfacp_qty_key(qtyEle), function () {
+            let live_qty = wfacp_live_qty(qtyEle, value);
+            let live_row = live_qty.parents('fieldset.wfacp_product_row');
+            live_qty.parents('.wfacp_product_row').parents('#product_switching_field').addClass("wfacp_animation_start");
 
-        if (product_row.find('.wfacp_product_switch').length > 0 && product_row.find('.wfacp_product_switch:checked').length == 0) {
-            product_row.find('.wfacp_product_switch').trigger('click');
-            return;
-        }
-        qtyEle.trigger("change", [callback]);
+            // Decide how to submit only once the clicks have settled. A switcher row that
+            // isn't the one in the cart keeps its quantity input disabled, so a change on
+            // it would be dropped — route it through the product switch instead, which
+            // reads back the quantity we just set on the input.
+            let switch_ele = live_row.find('.wfacp_product_switch');
+            if (switch_ele.length > 0 && switch_ele.filter(':checked').length === 0) {
+                switch_ele.trigger('click');
+                return;
+            }
+            if (switch_ele.length > 0 && live_qty.is(':disabled')) {
+                switch_ele.trigger('change');
+                return;
+            }
+
+            live_qty.trigger("change", [callback]);
+        });
     };
     window.decreaseItmQty = (currentEle, aero_key = '') => {
 
@@ -50,16 +145,18 @@
         let qtyEle = $this.siblings(".wfacp_product_quantity_number_field");
         var value = parseFloat(qtyEle.val(), 10);
         value = isNaN(value) ? 0 : value;
-        if (value < 1) {
-            value = 1;
-        }
         let min = qtyEle.attr('min');
         let step = qtyEle.attr('step');
         step = isNaN(step) ? 1 : parseFloat(step);
+        // Floor at one step rather than a hardcoded 1, so a decimal-quantity plugin
+        // (step 0.1) can still step down below a whole unit.
+        if (value < step) {
+            value = step;
+        }
 
         let product_row_class = $this.parents('.wfacp_product_row');
         if (undefined != min && '' != min) {
-            min = parseInt(min, 10);
+            min = parseFloat(min);
             if (value <= min) {
 
                 wfacp_frontend.hooks.doAction('wfacp_min_quantity_reached', value, qtyEle);
@@ -70,6 +167,9 @@
 
             let el = $('.wfacp_decrease_item[data-item-key=' + aero_key + ']');
             if (el.length > 0) {
+                // See increaseItmQty — keep the clicked stepper's number in step with
+                // the switcher stepper it delegates to.
+                qtyEle.val(value - step);
                 el.click();
                 return;
             }
@@ -79,7 +179,9 @@
         value = value - step;
         qtyEle.val(value);
 
-        qtyEle.trigger("change");
+        wfacp_debounce_qty(wfacp_qty_key(qtyEle), function () {
+            wfacp_live_qty(qtyEle, value).trigger("change");
+        });
 
     };
     window.wfacp_product_switch = function (data, cb) {
@@ -723,13 +825,12 @@
             let wfacp_id = $('._wfacp_post_id').val();
             let qty = $(this).val();
 
-
             let max = $(this).attr('max');
             let old_qty = $(this).attr('data-value');
             let old_val = $(this).data('value');
             let step = $(this).attr('step');
             let delete_enabled = "0";
-            let old_qty_is = parseInt(qty) + parseInt(step);
+            let old_qty_is = parseFloat(qty) + parseFloat(step);
 
             if ($(this).parents('.wfacp-product-switch-panel').hasClass('wfacp_enable_delete_item')) {
 
@@ -738,7 +839,7 @@
 
 
             if (undefined != max && '' != max) {
-                max = parseInt(max, 10);
+                max = parseFloat(max);
                 if (qty > max) {
                     $(this).val(old_qty);
                     wfacp_frontend.hooks.doAction('wfacp_max_quantity_reached', qty, $(this));
@@ -750,7 +851,7 @@
             let min = $(this).attr('min');
 
             if (undefined != min && '' != min) {
-                min = parseInt(min, 10);
+                min = parseFloat(min);
                 if (old_qty_is <= min && step !== old_qty_is) {
                     if (qty == '0') {
                         old_qty = 0;
@@ -782,7 +883,7 @@
 
 
             if ('' !== cart_key) {
-                if (0 === parseInt(qty) || '' === qty) {
+                if (0 === parseFloat(qty) || '' === qty) {
 
                     let old_val = $(this).data('value');
                     let enable_delete = (wfacp_frontend.switcher_settings.hasOwnProperty('enable_delete_item') && wfacp_frontend.switcher_settings.enable_delete_item === 'true');
@@ -797,7 +898,7 @@
                 }
             } else {
                 parent.parents('#product_switching_field').removeClass('wfacp_animation_start');
-                if (0 === parseInt(qty) || '' === qty) {
+                if (0 === parseFloat(qty) || '' === qty) {
                     return;
                 }
 
@@ -849,7 +950,7 @@
             let max = $(this).attr('max');
             let old_qty = $(this).attr('data-value');
             if (undefined != max && '' != max) {
-                max = parseInt(max, 10);
+                max = parseFloat(max);
                 if (qty > max) {
                     $(this).val(old_qty);
                     wfacp_frontend.hooks.doAction('wfacp_max_quantity_reached', qty, $(this));
@@ -861,7 +962,7 @@
             let min = $(this).attr('min');
 
             if (undefined != min && '' != min) {
-                min = parseInt(min, 10);
+                min = parseFloat(min);
                 if (qty < min) {
                     $(this).val(old_qty);
                     wfacp_frontend.hooks.doAction('wfacp_min_quantity_reached', qty, $(this));
@@ -919,13 +1020,13 @@
             let old_val = el.data('value');
             let step = el.attr('step');
 
-            let old_qty_is = parseInt(qty) + parseInt(step);
+            let old_qty_is = parseFloat(qty) + parseFloat(step);
 
             let max = el.attr('max');
             let old_qty = el.attr('data-value');
 
             if (undefined != max && '' != max) {
-                max = parseInt(max, 10);
+                max = parseFloat(max);
                 if (qty > max) {
                     wfacp_frontend.hooks.doAction('wfacp_max_quantity_reached', qty, el);
                     $(this).val(old_qty);
@@ -937,7 +1038,7 @@
 
 
             if (undefined != min && '' != min) {
-                min = parseInt(min, 10);
+                min = parseFloat(min);
 
                 if (old_qty_is <= min && step !== old_qty_is) {
 

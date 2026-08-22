@@ -35,19 +35,14 @@ import './editor.scss';
  */
 export default function Edit( props ) {
 	const classnamesArg = {};
-	const { deviceType } = useSelect( ( select ) => {
-		let deviceTypeTmp = '';
+	const deviceType = useSelect( ( select ) => {
 		const coreEditor = select( 'core/editor' );
 
 		if ( typeof coreEditor === 'object' && typeof coreEditor.getDeviceType === 'function' ) {
-			deviceTypeTmp = coreEditor.getDeviceType();
-		} else if ( typeof window.editPost === 'object' && window.editPost.__experimentalGetPreviewDeviceType === 'function' ) {
-			deviceTypeTmp = window.editPost.__experimentalGetPreviewDeviceType();
+			return coreEditor.getDeviceType();
 		}
 
-		return {
-			deviceType: deviceTypeTmp,
-		};
+		return 'Desktop';
 	}, [] );
 
 	if ( typeof deviceType === 'string' ) {

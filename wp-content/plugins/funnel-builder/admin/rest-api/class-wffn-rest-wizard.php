@@ -44,40 +44,6 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 		public function register_routes() {
 			register_rest_route(
 				$this->namespace,
-				'/' . $this->rest_base . '/activate-builder',
-				array(
-					array(
-						'methods'             => WP_REST_Server::CREATABLE,
-						'callback'            => array( $this, 'activate_builder' ),
-						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-						'args'                => array(
-							'status'          => array(
-								'description'       => __( 'Check plugin status', 'funnel-builder' ),
-								'type'              => 'string',
-								'validate_callback' => 'rest_validate_request_arg',
-							),
-							'slug'            => array(
-								'description'       => __( 'Check plugin slug', 'funnel-builder' ),
-								'type'              => 'string',
-								'validate_callback' => 'rest_validate_request_arg',
-							),
-							'init'            => array(
-								'description'       => __( 'Check builder status', 'funnel-builder' ),
-								'type'              => 'string',
-								'validate_callback' => 'rest_validate_request_arg',
-							),
-							'default_builder' => array(
-								'description'       => __( 'Set default builder status', 'funnel-builder' ),
-								'type'              => 'string',
-								'validate_callback' => 'rest_validate_request_arg',
-							),
-						),
-					),
-					'schema' => array( $this, 'get_public_item_schema' ),
-				)
-			);
-			register_rest_route(
-				$this->namespace,
 				'/' . $this->rest_base . '/other-plugins',
 				array(
 					array(
@@ -187,6 +153,9 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 
 				$activate = activate_plugin( $plugin_init, '', false, true );
 
+				// Silent activation skips WooCommerce's own installer; run it explicitly.
+				WFFN_Common::maybe_install_woocommerce( $plugin_init );
+
 				if ( '' !== $default_builder && ( ! is_wp_error( $activate ) || $plugin_status === 'activated' ) ) {
 					$get_config                             = get_option( 'bwf_gen_config', true );
 					$get_config['default_selected_builder'] = $default_builder;
@@ -279,6 +248,9 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 
 					if ( 'woocommerce/woocommerce.php' === $plugin_init ) {
 						update_option( 'bwf_needs_rewrite', 'yes', true );
+						// Silent activation skipped WooCommerce's installer — run it now so its
+						// tables/pages exist before the follow-up get-steps-data request fires.
+						WFFN_Common::maybe_install_woocommerce( $plugin_init );
 					}
 
 					if ( is_wp_error( $activate ) ) {
@@ -312,6 +284,17 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 
 			if ( ! class_exists( 'WFFN_Common' ) ) {
 				return $resp;
+			}
+
+			// Guard against querying a half-installed WooCommerce: if it is active but its
+			// tables are missing, finish the install first, then bail with the retry-tolerant
+			// default response rather than surfacing raw "Table … doesn't exist" errors.
+			if ( wffn_is_wc_active() && ! wffn_is_wc_ready() ) {
+				WFFN_Common::maybe_install_woocommerce( 'woocommerce/woocommerce.php' );
+
+				if ( ! wffn_is_wc_ready() ) {
+					return rest_ensure_response( $resp );
+				}
 			}
 
 			$substeps_data            = WFFN_Common::get_substeps_data();
@@ -397,13 +380,31 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 		 * @return void
 		 */
 		function suppress_warnings() {
-			if ( ( isset( $_GET['path'] ) && '/user-setup' === $_GET['path'] ) || ( ! empty( $_SERVER['REQUEST_URI'] ) && ( strpos( $_SERVER['REQUEST_URI'], 'funnelkit-app/wizard' ) !== false ) ) ) {//phpcs:ignore
+			$path        = sanitize_text_field( wp_unslash( filter_input( INPUT_GET, 'path' ) ?? '' ) );
+			$request_uri = sanitize_text_field( wp_unslash( filter_input( INPUT_SERVER, 'REQUEST_URI' ) ?? '' ) );
+
+			// Decode before matching so every wizard route is caught on both permalink
+			// styles: pretty URLs carry it plainly (/wp-json/funnelkit-app/wizard/…), while
+			// plain ones send it encoded as ?rest_route=%2Ffunnelkit-app%2Fwizard%2F…
+			$request_uri = '' !== $request_uri ? rawurldecode( $request_uri ) : '';
+
+			if ( '/user-setup' === $path || ( '' !== $request_uri && false !== strpos( $request_uri, 'funnelkit-app/wizard' ) ) ) {
 				global $wpdb;
 				$wpdb->hide_errors();
+				$wpdb->suppress_errors();
 				if ( ! function_exists( 'set_error_handler' ) ) {
 					return;
 				}
-				set_error_handler( function () {} ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler
+				// Scope the handler to E_WARNING only (was a blanket handler) so genuine
+				// errors/notices later in the request still surface; the handler stays
+				// installed for the wizard request by design — this is a band-aid layered
+				// under the real fix (synchronous WooCommerce install), not a bounded read.
+				set_error_handler( //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- Intentional, scoped to the wizard request; see note above.
+					function () {
+						return true;
+					},
+					E_WARNING
+				);
 			}
 		}
 	}

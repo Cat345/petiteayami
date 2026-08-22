@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the MailPoet Premium plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: MailPoet Premium 5.33.0\n"
+"Project-Id-Version: MailPoet Premium 5.36.0\n"
 "Report-Msgid-Bugs-To: http://support.mailpoet.com/\n"
 "Last-Translator: MailPoet i18n (https://www.transifex.com/organization/wysija)\n"
 "Language-Team: MailPoet i18n <https://www.transifex.com/organization/wysija>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-30T06:30:27+00:00\n"
+"POT-Creation-Date: 2026-08-18T12:04:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -38,7 +38,8 @@ msgstr ""
 
 #: lib/API/JSON/v1/ResponseBuilders/SubscriberDetailedStatsResponseBuilder.php:182
 #: lib/API/JSON/v1/ResponseBuilders/SubscriberDetailedStatsResponseBuilder.php:185
-#: lib/Newsletter/Stats/SubscriberEngagement.php:313
+#: lib/Newsletter/Stats/SubscriberEngagement.php:414
+#: lib/Newsletter/Stats/UnsubscribeReasons.php:156
 #: assets/dist/js/premium.js:2
 msgid "No reason provided"
 msgstr ""
@@ -1301,15 +1302,15 @@ msgstr ""
 msgid "The taxonomy “%s” is not registered."
 msgstr ""
 
-#: lib/Config/Hooks.php:69
+#: lib/Config/Hooks.php:75
 msgid "[link1]Register[/link1] your copy of the MailPoet Premium plugin to receive access to automatic upgrades and support. Need a license key? [link2]Purchase one now.[/link2]"
 msgstr ""
 
-#: lib/Config/Hooks.php:92
+#: lib/Config/Hooks.php:98
 msgid "View MailPoet settings"
 msgstr ""
 
-#: lib/Config/Hooks.php:92
+#: lib/Config/Hooks.php:98
 #: assets/dist/js/premium.js:2
 msgid "Settings"
 msgstr ""
@@ -1415,11 +1416,12 @@ msgstr ""
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:125
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:140
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:159
-#: lib/Newsletter/Stats/RecipientsExporter.php:138
-#: lib/Newsletter/Stats/RecipientsExporter.php:141
-#: lib/Newsletter/Stats/RecipientsExporter.php:142
-#: lib/Newsletter/Stats/RecipientsExporter.php:144
-#: lib/Newsletter/Stats/RecipientsExporter.php:145
+#: lib/Newsletter/Stats/RecipientsExporter.php:173
+#: lib/Newsletter/Stats/RecipientsExporter.php:176
+#: lib/Newsletter/Stats/RecipientsExporter.php:177
+#: lib/Newsletter/Stats/RecipientsExporter.php:179
+#: lib/Newsletter/Stats/RecipientsExporter.php:180
+#: lib/Newsletter/Stats/RecipientsExporter.php:196
 #: assets/dist/js/premium.js:2
 msgid "Yes"
 msgstr ""
@@ -1429,54 +1431,65 @@ msgstr ""
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:140
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:155
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:159
-#: lib/Newsletter/Stats/RecipientsExporter.php:138
-#: lib/Newsletter/Stats/RecipientsExporter.php:141
-#: lib/Newsletter/Stats/RecipientsExporter.php:142
-#: lib/Newsletter/Stats/RecipientsExporter.php:144
-#: lib/Newsletter/Stats/RecipientsExporter.php:145
+#: lib/Newsletter/Stats/RecipientsExporter.php:173
+#: lib/Newsletter/Stats/RecipientsExporter.php:176
+#: lib/Newsletter/Stats/RecipientsExporter.php:177
+#: lib/Newsletter/Stats/RecipientsExporter.php:179
+#: lib/Newsletter/Stats/RecipientsExporter.php:180
+#: lib/Newsletter/Stats/RecipientsExporter.php:197
 #: assets/dist/js/premium.js:2
 msgid "No"
+msgstr ""
+
+#. translators: %s is the send time in UTC, shown when the recipient's delivery timezone could not be resolved.
+#: lib/Newsletter/Stats/RecipientsExporter.php:246
+msgid "%s (UTC)"
 msgstr ""
 
 #: lib/Newsletter/Stats/RestApi/Endpoints/AbstractNewsletterStatsListingEndpoint.php:168
 msgid "Detailed analytics are not available for this site."
 msgstr ""
 
-#: lib/Newsletter/Stats/SubscriberEngagement.php:385
+#. translators: %s is a timezone name. "site default" marks subscribers without their own timezone who received the email in the site timezone.
+#: lib/Newsletter/Stats/SubscriberEngagement.php:525
+#: assets/dist/js/premium.js:2
+msgid "%s (site default)"
+msgstr ""
+
+#: lib/Newsletter/Stats/SubscriberEngagement.php:598
 msgid "Filter by link clicked"
 msgstr ""
 
-#: lib/Newsletter/Stats/SubscriberEngagement.php:417
+#: lib/Newsletter/Stats/SubscriberEngagement.php:640
 #: assets/dist/js/premium.js:2
 msgctxt "Subscriber engagement filter - filter those who clicked on a newsletter link"
 msgid "Clicked"
 msgstr ""
 
-#: lib/Newsletter/Stats/SubscriberEngagement.php:422
+#: lib/Newsletter/Stats/SubscriberEngagement.php:645
 #: assets/dist/js/premium.js:2
 msgctxt "Subscriber engagement filter - filter those who opened a newsletter"
 msgid "Opened"
 msgstr ""
 
-#: lib/Newsletter/Stats/SubscriberEngagement.php:427
+#: lib/Newsletter/Stats/SubscriberEngagement.php:650
 #: assets/dist/js/premium.js:2
 msgctxt "Subscriber engagement filter - shows machine-opens for a given newsletter"
 msgid "Machine-opened"
 msgstr ""
 
-#: lib/Newsletter/Stats/SubscriberEngagement.php:432
+#: lib/Newsletter/Stats/SubscriberEngagement.php:655
 #: assets/dist/js/premium.js:2
 msgctxt "Subscriber engagement filter - filter those who unsubscribed from a newsletter"
 msgid "Unsubscribed"
 msgstr ""
 
-#: lib/Newsletter/Stats/SubscriberEngagement.php:441
-#: assets/dist/js/premium.js:2
+#: lib/Newsletter/Stats/SubscriberEngagement.php:664
 msgctxt "Subscriber engagement filter - filter those who performed any action (e.g., clicked, opened, unsubscribed)"
 msgid "All engaged"
 msgstr ""
 
-#: lib/Newsletter/Stats/SubscriberEngagement.php:448
+#: lib/Newsletter/Stats/SubscriberEngagement.php:671
 #: assets/dist/js/premium.js:2
 msgctxt "Subscriber engagement filter - filter those who did not open a newsletter"
 msgid "Unopened"
@@ -2839,6 +2852,10 @@ msgid "Unique clicks"
 msgstr ""
 
 #: assets/dist/js/premium.js:2
+msgid "View subscribers"
+msgstr ""
+
+#: assets/dist/js/premium.js:2
 msgid "No clicked links found"
 msgstr ""
 
@@ -2867,11 +2884,39 @@ msgid "Or, if you haven’t tried out the products widget yet, <link>here’s ho
 msgstr ""
 
 #: assets/dist/js/premium.js:2
+msgid "Clicked link"
+msgstr ""
+
+#: assets/dist/js/premium.js:2
 msgid "Reason"
 msgstr ""
 
 #: assets/dist/js/premium.js:2
+msgid "Delivery timezone"
+msgstr ""
+
+#: assets/dist/js/premium.js:2
 msgid "Date and time"
+msgstr ""
+
+#: assets/dist/js/premium.js:2
+msgid "Subscribed"
+msgstr ""
+
+#: assets/dist/js/premium.js:2
+msgid "Unsubscribed"
+msgstr ""
+
+#: assets/dist/js/premium.js:2
+msgid "Unconfirmed"
+msgstr ""
+
+#: assets/dist/js/premium.js:2
+msgid "Inactive"
+msgstr ""
+
+#: assets/dist/js/premium.js:2
+msgid "Bounced"
 msgstr ""
 
 #: assets/dist/js/premium.js:2
@@ -2891,11 +2936,11 @@ msgid "Clicked"
 msgstr ""
 
 #: assets/dist/js/premium.js:2
-msgid "Unsubscribed"
+msgid "Unopened"
 msgstr ""
 
 #: assets/dist/js/premium.js:2
-msgid "Unopened"
+msgid "Subscriber status"
 msgstr ""
 
 #: assets/dist/js/premium.js:2
@@ -2916,10 +2961,6 @@ msgstr ""
 
 #: assets/dist/js/premium.js:2
 msgid "Segment \"<segmentName/>\" created. <link>Create and send an email to it.</link>"
-msgstr ""
-
-#: assets/dist/js/premium.js:2
-msgid "Bounced"
 msgstr ""
 
 #: assets/dist/js/premium.js:2

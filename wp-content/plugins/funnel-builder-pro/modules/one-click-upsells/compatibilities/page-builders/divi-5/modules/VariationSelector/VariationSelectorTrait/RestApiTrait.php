@@ -108,13 +108,13 @@ trait RestApiTrait {
 				}
 
 				$response[ (string) $key ] = array(
-					'label'      => $product_obj->get_name(),
+					'label'      => $product->name,
 					'isVariable' => true,
 					'attributes' => $attributes,
 				);
 			} else {
 				$response[ (string) $key ] = array(
-					'label'      => $product->data->get_name(),
+					'label'      => $product->name,
 					'isVariable' => false,
 				);
 			}

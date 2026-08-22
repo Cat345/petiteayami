@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_WC_Italian_Add_ON' ) ) {
 	/**
 	 * WooCommerce Italian Add-on Plus By laboratorio d'Avanguardia (Version 0.7.2.32)
@@ -71,8 +72,8 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Italian_Add_ON' ) ) {
 				'wfacp_wc_italian_add_on',
 				array(
 					'type'        => 'wfacp_html',
-					'label'       => __( 'WC Italian Fields', 'woofunnels-aero-checkout' ),
-					'placeholder' => __( 'WC Italian Fields', 'woofunnels-aero-checkout' ),
+					'label'       => __( 'WC Italian Fields', 'funnel-builder' ),
+					'placeholder' => __( 'WC Italian Fields', 'funnel-builder' ),
 					'cssready'    => array( 'wfacp-col-left-third' ),
 					'class'       => array( 'form-row-third first', 'wfacp-col-full' ),
 					'required'    => false,

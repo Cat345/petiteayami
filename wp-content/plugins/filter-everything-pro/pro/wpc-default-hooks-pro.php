@@ -848,3 +848,60 @@ if(!function_exists('flrt_import_settings')){
         exit;
     }
 }
+
+//Changer for range list filter
+add_filter('wpc_pre_save_filter', function($filter) {
+    if($filter['view'] === 'range' && $filter['show_range_list'] === 'yes'){
+        if(!empty($filter['range_list_input'])){
+            foreach ($filter['range_list_input'] as $key => $range_val) {
+                if(empty($range_val['range_list_min_val']) && empty($range_val['range_list_max_val'])){
+                    unset($filter['range_list_input'][$key]);
+                }
+            }
+        }
+    }
+    return $filter;
+});
+
+add_action('wpc_after_filter_input', 'flrt_choose_filter_set_selector');
+
+if (!function_exists('flrt_choose_filter_set_selector')) {
+    function flrt_choose_filter_set_selector(array $attributes): void
+    {
+        if (($attributes['id'] ?? '') !== 'wpc_set_fields-custom_posts_container') {
+            return;
+        }
+
+        global $post;
+
+        $post_id = (int) ($post->ID ?? 0);
+
+        $base_link = $post_id
+                ? flrt_filter_set_front_link($post_id)
+                : '';
+
+        if (empty($base_link)) {
+            // A new, not yet saved Set has no location — fall back to the same
+            // most-likely-page cascade the plugin Settings picker uses
+            $base_link = flrt_default_selector_page_link();
+        }
+
+        if (empty($base_link)) {
+            return;
+        }
+
+        $link = add_query_arg(
+                [
+                        'flrt_get_html_selector' => 1,
+                        'flrt_set_id'            => $post_id,
+                ],
+                $base_link
+        );
+
+        printf(
+                '<a id="wpc-choose-selector-button" class="button wpc-choose-selector" href="%s">%s</a>',
+                esc_url($link),
+                esc_html__('Select visually', 'filter-everything')
+        );
+    }
+}

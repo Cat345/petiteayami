@@ -48,6 +48,16 @@ class Frontend extends Base_Model implements Model_Interface {
     private $_category_products = array();
 
     /**
+     * Property that houses the cache of products IDs under a brand.
+     * brand_id => array( ...product_ids)
+     *
+     * @since 4.0.9
+     * @access private
+     * @var array
+     */
+    private $_brand_products = array();
+
+    /**
      * Property that houses the cache of product variations of a list of variable products.
      * imploded_product_id => array( ...variation_product_ids)
      *
@@ -138,6 +148,25 @@ class Frontend extends Base_Model implements Model_Interface {
 
                 break;
 
+            case 'product-brands':
+                $brand_ids   = array_column( $raw_triggers['brands'], 'brand_id' );
+                $product_ids = array_reduce(
+                    $brand_ids,
+                    function ( $c, $id ) {
+                    return array_merge( $c, $this->_get_products_under_brand( $id ) );
+                    },
+                    array()
+                );
+
+                $triggers[] = \ACFWF()->Helper_Functions->format_bogo_trigger_deal_entry(
+                    array(
+                        'ids'      => array_unique( $product_ids ),
+                        'quantity' => $raw_triggers['quantity'],
+                    )
+                );
+
+                break;
+
             case 'any-products':
                 $cart_item_ids = $this->get_cart_item_ids( true );
                 $triggers[]    = \ACFWF()->Helper_Functions->format_bogo_trigger_deal_entry(
@@ -188,6 +217,28 @@ class Frontend extends Base_Model implements Model_Interface {
                     $category_ids,
                     function ( $c, $id ) {
                     return array_merge( $c, $this->_get_products_under_category( $id ) );
+                    },
+                    array()
+                );
+
+                $deals[] = \ACFWF()->Helper_Functions->format_bogo_trigger_deal_entry(
+                    array(
+                        'ids'      => array_unique( $product_ids ),
+                        'quantity' => $raw_deals['quantity'],
+                        'discount' => $raw_deals['discount_value'],
+                        'type'     => $raw_deals['discount_type'],
+                    ),
+                    true
+                );
+
+                break;
+
+            case 'product-brands':
+                $brand_ids   = array_column( $raw_deals['brands'], 'brand_id' );
+                $product_ids = array_reduce(
+                    $brand_ids,
+                    function ( $c, $id ) {
+                    return array_merge( $c, $this->_get_products_under_brand( $id ) );
                     },
                     array()
                 );
@@ -262,6 +313,7 @@ class Frontend extends Base_Model implements Model_Interface {
                 return ! empty( $intersect ) ? current( $intersect ) : false;
 
             case 'product-categories':
+            case 'product-brands':
                 $product_id = apply_filters( 'acfw_filter_cart_item_product_id', $cart_item['product_id'] ); // filter for WPML support.
 
                 // Convert to integers to ensure type consistency.
@@ -410,7 +462,8 @@ class Frontend extends Base_Model implements Model_Interface {
         global $wpdb;
 
         // if products IDs for category have already been queried before, then return cached value.
-        if ( isset( $this->_category_products[ $category_id ] ) && ! empty( $this->_category_products[ $category_id ] ) ) {
+        // Use array_key_exists() so a category with zero products is cached too (empty result is valid).
+        if ( array_key_exists( $category_id, $this->_category_products ) ) {
             return $this->_category_products[ $category_id ];
         }
 
@@ -434,10 +487,72 @@ class Frontend extends Base_Model implements Model_Interface {
 
         $product_ids = array_map( 'absint', $wpdb->get_col( $query ) ); // phpcs:ignore
 
-        // save product ids under category to cache.
+        $product_ids = apply_filters( 'acfwp_bogo_get_products_under_category', $product_ids, $category_id );
+
+        // save the (filtered) product ids under category to cache so cached and uncached calls stay consistent.
         $this->_category_products[ $category_id ] = $product_ids;
 
-        return apply_filters( 'acfwp_bogo_get_products_under_category', $product_ids, $category_id );
+        return $product_ids;
+    }
+
+    /**
+     * Get products IDs under a specific brand.
+     * NOTE: We use this function so data is explicitly fetched without filtering from 3rd party plugins.
+     *
+     * @since 4.0.9
+     * @access private
+     *
+     * @param int $brand_id Brand term ID.
+     * @return array List of product IDs under the brand.
+     */
+    private function _get_products_under_brand( $brand_id ) {
+        // if products IDs for brand have already been queried before, then return cached value.
+        // Use array_key_exists() so a brand with zero products is cached too (empty result is valid).
+        if ( array_key_exists( $brand_id, $this->_brand_products ) ) {
+            return $this->_brand_products[ $brand_id ];
+        }
+
+        $taxonomy = \ACFWF()->Helper_Functions->get_product_brand_taxonomy();
+
+        if ( ! $taxonomy ) {
+            return array();
+        }
+
+        $brand_id      = absint( $brand_id );
+        $term_children = get_term_children( $brand_id, $taxonomy );
+
+        if ( is_wp_error( $term_children ) || empty( $term_children ) ) {
+            $brands = array( $brand_id );
+        } else {
+            $brands = array_merge( array( $brand_id ), $term_children );
+        }
+
+        // Fetch object IDs directly from the term relationships, mirroring the category query
+        // so the result is not filtered by 3rd party visibility/query hooks.
+        $object_ids  = get_objects_in_term( $brands, $taxonomy );
+        $product_ids = is_wp_error( $object_ids ) ? array() : array_map( 'absint', $object_ids );
+
+        $product_ids = apply_filters( 'acfwp_bogo_get_products_under_brand', $product_ids, $brand_id, $taxonomy );
+
+        // save the (filtered) product ids under brand to cache so cached and uncached calls stay consistent.
+        $this->_brand_products[ $brand_id ] = $product_ids;
+
+        return $product_ids;
+    }
+
+    /**
+     * Public accessor for product IDs under a category.
+     * Lets the Same Products BOGO type reuse the same category resolution (incl. child
+     * categories and cache) instead of duplicating the query.
+     *
+     * @since 4.0.9
+     * @access public
+     *
+     * @param int $category_id Category ID.
+     * @return array Product IDs under the category.
+     */
+    public function get_products_under_category( $category_id ) {
+        return $this->_get_products_under_category( $category_id );
     }
 
     /**

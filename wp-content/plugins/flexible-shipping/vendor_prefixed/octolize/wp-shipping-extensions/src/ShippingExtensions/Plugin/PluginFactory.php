@@ -14,7 +14,7 @@ class PluginFactory
     const GROUP_UPS = 'ups';
     private const SHIPPING_ANALYTICS_TIMED_UPDATE = 'shipping_analytics_pro_early_access';
     private const SHIPPING_ANALYTICS_VISIBILITY_START_DATE = '2026-05-17';
-    private const SHIPPING_ANALYTICS_VISIBILITY_END_DATE = '2026-06-17';
+    private const SHIPPING_ANALYTICS_VISIBILITY_END_DATE = '2026-09-30';
     /**
      * @return Plugin[]
      */
@@ -45,7 +45,7 @@ class PluginFactory
         $plugin = new Plugin(__('UPS Live Rates and Access Points PRO', 'flexible-shipping'), __('WooCommerce UPS integration packed with many advanced features. Display the dynamically calculated live rates for UPS shipping methods and adjust them to your needs.', 'flexible-shipping'), 'flexible-shipping-ups-pro.svg', 'flexible-shipping-ups-pro/flexible-shipping-ups-pro.php', $categories[self::CATEGORY_LIVE_RATES], 'https://octol.io/ups-extensions', self::GROUP_UPS);
         $plugin->add_url('https://octol.io/ups-extensions-pl', 'pl_PL');
         $plugins[] = $plugin;
-        $plugin = new Plugin(__('FedEx WooCommerce Live Rates PRO', 'flexible-shipping'), __('Enable the FedEx live rates for international delivery and integrate it with your shop in less than 5 minutes. Save your time and money – let the shipping cost be calculated automatically.', 'flexible-shipping'), 'flexible-shipping-fedex-pro.svg', 'flexible-shipping-fedex-pro/flexible-shipping-fedex-pro.php', $categories[self::CATEGORY_LIVE_RATES], 'https://octol.io/fedex-extensions', self::GROUP_UPS);
+        $plugin = new Plugin(__('FedEx WooCommerce Live Rates PRO<br>(with LTL Freight)', 'flexible-shipping'), __('Enable the FedEx live rates for international delivery and integrate it with your shop in less than 5 minutes. Save your time and money – let the shipping cost be calculated automatically. Now with LTL Freight support!', 'flexible-shipping'), 'flexible-shipping-fedex-pro.svg', 'flexible-shipping-fedex-pro/flexible-shipping-fedex-pro.php', $categories[self::CATEGORY_LIVE_RATES], 'https://octol.io/fedex-extensions', self::GROUP_UPS);
         $plugin->add_url('https://octol.io/fedex-extensions-pl', 'pl_PL');
         $plugins[] = $plugin;
         $plugin = new Plugin(__('USPS Live Rates PRO', 'flexible-shipping'), __('Serve your customers the automatically and real-time calculated USPS shipping rates. Add the handling fees, insurance and adjust them to your needs with just a few clicks.', 'flexible-shipping'), 'flexible-shipping-usps-pro.svg', 'flexible-shipping-usps-pro/flexible-shipping-usps-pro.php', $categories[self::CATEGORY_LIVE_RATES], 'https://octol.io/usps-extensions', self::GROUP_UPS);

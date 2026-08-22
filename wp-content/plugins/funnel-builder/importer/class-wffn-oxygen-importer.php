@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 if ( ! class_exists( 'WFFN_Oxygen_Importer' ) ) {
 	#[\AllowDynamicProperties]
@@ -13,7 +14,16 @@ if ( ! class_exists( 'WFFN_Oxygen_Importer' ) ) {
 			require_once WFFN_PLUGIN_DIR . '/includes/class-wffn-content-validator.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 			if ( ! empty( $content ) && ! WFFN_Content_Validator::contains_dangerous_tags( $content ) && ! WFFN_Content_Validator::contains_php_code( $content ) ) {
 				update_post_meta( $module_id, WFFN_Common::oxy_get_meta_prefix( 'ct_other_template' ), '-1' );
-				update_post_meta( $module_id, WFFN_Common::oxy_get_meta_prefix( 'ct_builder_shortcodes' ), $content );
+
+				// Re-sign shortcodes with this site's oxygen_private_key (mirrors Oxygen's save flow).
+				$content = WFFN_Common::oxy_resign_shortcodes( $content );
+
+				// Write both prefixed and bare meta keys (oxy_get_meta_prefix may add an underscore).
+				$meta_key = WFFN_Common::oxy_get_meta_prefix( 'ct_builder_shortcodes' );
+				update_post_meta( $module_id, $meta_key, $content );
+				if ( 'ct_builder_shortcodes' !== $meta_key ) {
+					update_post_meta( $module_id, 'ct_builder_shortcodes', $content );
+				}
 
 				$this->clear_oxy_page_cache_css( $module_id );
 

@@ -126,14 +126,15 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 
 				$system_font_path = __DIR__ . '/font/standard-fonts.php';
 
-				wp_enqueue_script( 'web-font', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js', array(), true );//@codingStandardsIgnoreLine
+				wp_enqueue_script( 'web-font', plugin_dir_url( WFOCU_PLUGIN_FILE ) . 'assets/js/webfont-loader.js', array(), WFOCU_VERSION_DEV, true );
 
-				wp_enqueue_script(
+				// FontAwesome runtime for the icon pickers (IconControl/SvgIcon) in the button and offer-price blocks.
+				$this->enqueue_script_with_integrity(
 					'bwf-font-awesome-kit',
-					'https://kit.fontawesome.com/f4306c3ab0.js', // Our free kit https://fontawesome.com/kits/f4306c3ab0/settings
-					null, null, true );//@codingStandardsIgnoreLine
-
-				wp_enqueue_style( 'bwf-fonts', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' );//@codingStandardsIgnoreLine
+					'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/js/all.min.js',
+					'6.7.2',
+					'sha384-DsXFqEUf3HnCU8om0zbXN58DxV7Bo8/z7AbHBGd2XxkeNpdLrygNiGFr/03W0Xmt'
+				);
 
 				$offer_id             = WFOCU_Core()->template_loader->get_offer_id();
 				$offer_settings       = get_post_meta( $offer_id, '_wfocu_setting', true );
@@ -242,6 +243,33 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 				wp_enqueue_script( 'bwf-jquery.flexslider', plugins_url( 'assets/js/flexslider/jquery.flexslider.min.js', WC_PLUGIN_FILE ), array(), WC_VERSION, true );
 
 			}
+		}
+
+		/**
+		 * Register and enqueue a remote script locked with Subresource Integrity, so a tampered
+		 * CDN response cannot execute in the page.
+		 *
+		 * @param string $handle    Script handle.
+		 * @param string $src       Remote script URL.
+		 * @param string $version   Script version.
+		 * @param string $integrity Integrity hash (e.g. "sha384-...").
+		 */
+		private function enqueue_script_with_integrity( $handle, $src, $version, $integrity ) {
+			wp_register_script( $handle, $src, array(), $version, true );
+			wp_enqueue_script( $handle );
+
+			add_filter(
+				'script_loader_tag',
+				function ( $tag, $tag_handle ) use ( $handle, $integrity ) {
+					if ( $tag_handle === $handle && false === strpos( $tag, 'integrity=' ) ) {
+						$tag = str_replace( ' src=', ' integrity="' . esc_attr( $integrity ) . '" crossorigin="anonymous" src=', $tag );
+					}
+
+					return $tag;
+				},
+				10,
+				2
+			);
 		}
 
 		public function init_extension() {
@@ -430,7 +458,6 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 			$version      = time();
 
 			wp_enqueue_style( 'wfocu-default', $frontend_dir . $style_path, array(), $version );
-			wp_enqueue_style( 'bwf-fonts', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' ); //phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 
 			// Layer 1: Enqueue saved default font for iframe editor
 			$default_font = get_post_meta( $post->ID, 'bwfblock_default_font', true );

@@ -12,11 +12,11 @@ class OnboardingDeactivationData implements Hookable
     /**
      * @var string
      */
-    private $plugin_file;
+    private string $plugin_file;
     /**
      * @var OnboardingOption
      */
-    private $onboarding_option;
+    private OnboardingOption $onboarding_option;
     /**
      * @param string $plugin_file
      * @param OnboardingOption $onboarding_option

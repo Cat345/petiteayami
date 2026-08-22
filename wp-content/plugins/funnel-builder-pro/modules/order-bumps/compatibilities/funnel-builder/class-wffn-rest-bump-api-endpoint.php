@@ -354,9 +354,10 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 			if ( absint( $step_id ) > 0 && ! empty( $options ) ) {
 				$posted_data = $this->sanitize_custom( $options );
 
-				$wfob_id          = absint( $step_id );
-				$products         = $posted_data['products'];
-				$existing_product = get_post_meta( $wfob_id, '_wfob_selected_products', true );
+				$wfob_id            = absint( $step_id );
+				$products           = $posted_data['products'];
+				$products_meta_data = isset( $posted_data['products_meta_data'] ) ? $posted_data['products_meta_data'] : array();
+				$existing_product   = get_post_meta( $wfob_id, '_wfob_selected_products', true );
 
 				$get_design_data         = get_post_meta( $wfob_id, '_wfob_design_data', true );
 				$tmp_default_design_data = WFOB_Common::get_default_model_data( $wfob_id );
@@ -380,10 +381,25 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 				if ( empty( $existing_product ) ) {
 					$existing_product = array();
 				}
-				foreach ( $products as $pid ) {
+				foreach ( $products as $p_index => $pid ) {
 
-					$unique_id = uniqid( 'wfob_' );
-					$product   = wc_get_product( $pid );
+					$unique_id        = uniqid( 'wfob_' );
+					$pid              = absint( $pid );
+					$plan_id          = 0;
+					$per_product_meta = isset( $products_meta_data[ $p_index ] ) && is_array( $products_meta_data[ $p_index ] ) ? $products_meta_data[ $p_index ] : array();
+					$product          = wc_get_product( $pid );
+					// Detect encoded Sublium plan variant: combined_id = product_id * 1,000,000 + plan_id
+					if ( ! $product instanceof WC_Product && $pid > 1000000 ) {
+						$candidate_plan_id    = $pid % 1000000;
+						$candidate_product_id = intdiv( $pid, 1000000 );
+						if ( $candidate_product_id > 0 ) {
+							$product = wc_get_product( $candidate_product_id );
+							if ( $product instanceof WC_Product ) {
+								$plan_id = $candidate_plan_id;
+								$pid     = $candidate_product_id;
+							}
+						}
+					}
 
 					if ( method_exists( 'WFFN_REST_API_Helpers', 'remove_all_wc_price_action' ) ) {
 						wffn_rest_api_helpers()->remove_all_wc_price_action();
@@ -435,15 +451,26 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 								$default['sale_price'] = wc_price( $sale_price );
 							}
 						}
+						$default['plan_id'] = $plan_id;
+						if ( $plan_id > 0 && empty( $per_product_meta ) ) {
+							$per_product_meta = array( $pid, array( 'sublium_plan' => $plan_id ) );
+						}
+						$default['products_meta_data'] = $per_product_meta;
+						$default                       = apply_filters( 'wffn_rest_api_bump_add_product', $default, $product );
 						$resp_products[ $unique_id ] = $default;
 
-						$default = WFOB_Common::remove_product_keys( $default );
+						// remove_product_keys() strips price/regular_price/sale_price before persisting
+						// to _wfob_selected_products (those are recomputed fresh on every GET, not stored).
+						// The API response must keep them — it's what the React table renders immediately
+						// after "Add", before any reload re-fetches via the GET path.
+						$response_product = $default;
+						$default          = WFOB_Common::remove_product_keys( $default );
 
 						$existing_product[ $unique_id ] = $default;
-						$default['key']                 = $default['id'];
-						$default['id']                  = $unique_id;
+						$response_product['key']        = $response_product['id'];
+						$response_product['id']         = $unique_id;
 
-						$resp['data']['products'][] = wffn_rest_api_helpers()->unstrip_product_data( $default );
+						$resp['data']['products'][] = wffn_rest_api_helpers()->unstrip_product_data( $response_product );
 					}
 				}
 
@@ -558,6 +585,7 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 							// Swap ID with key for Product Component
 							$_product['key'] = $_product['id'];
 							$_product['id']  = $key;
+							$_product        = apply_filters( 'wffn_rest_api_bump_get_product', $_product, $this_product );
 							$products[]      = $_product;
 
 						}
@@ -609,8 +637,19 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 				$product_ids = get_posts( $product_defaults );
 				if ( $product_ids ) {
 					foreach ( $product_ids as $product_id ) {
-						$product           = wc_get_product( $product_id );
-						$product_name      = strip_tags( BWF_WC_Compatibility::woocommerce_get_formatted_product_name( $product ) );
+						$product = wc_get_product( $product_id );
+						if ( ! $product instanceof WC_Product ) {
+							continue;
+						}
+						if ( method_exists( 'WFFN_REST_Controller', 'get_product_label_with_id' ) ) {
+							$product_name = $this->get_product_label_with_id( $product );
+						} else {
+							$product_name = wp_strip_all_tags( BWF_WC_Compatibility::woocommerce_get_formatted_product_name( $product ) );
+							// Match the live-search canonical format: show the ID once, even when a SKU is present.
+							if ( false === strpos( $product_name, '(#' . $product_id . ')' ) ) {
+								$product_name .= ' (#' . $product_id . ')';
+							}
+						}
 						$default_product[] = array(
 							'label'   => $product_name,
 							'product' => $product_name,
@@ -628,8 +667,30 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 				if ( ! empty( $selected_product ) ) {
 					$selected_product = array_map(
 						function ( $item ) {
+							// Self-heal: re-derive the label from the stored product ID so previously-saved
+							// doubled labels (e.g. "Name (#123)(#123)") render with the ID shown once.
+							if ( isset( $item['id'] ) ) {
+								$product = wc_get_product( $item['id'] );
+								if ( $product instanceof WC_Product ) {
+									if ( method_exists( 'WFFN_REST_Controller', 'get_product_label_with_id' ) ) {
+										$item['label'] = $item['product'] = $this->get_product_label_with_id( $product );
+									} else {
+										$product_id   = $product->get_id();
+										$product_name = wp_strip_all_tags( BWF_WC_Compatibility::woocommerce_get_formatted_product_name( $product ) );
+										if ( false === strpos( $product_name, '(#' . $product_id . ')' ) ) {
+											$product_name .= ' (#' . $product_id . ')';
+										}
+										$item['label']   = $product_name;
+										$item['product'] = $product_name;
+									}
+
+									return $item;
+								}
+							}
+
+							// Fall back to the stored label when the product no longer exists.
 							if ( isset( $item['product'] ) ) {
-									$item['label'] = $item['product'];
+								$item['label'] = $item['product'];
 							}
 
 							return $item;
@@ -838,6 +899,11 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 		public function get_bump( WP_REST_Request $request ) {
 
 			add_filter( 'woocommerce_is_purchasable', '__return_true', 9999 );// Allow purchasable For product in rest api.
+			// Force WooCommerce Subscriptions products to stay purchasable in the REST editor context, overriding WCS_Limiter (e.g. one-subscription-per-customer limits) so subscription bumps render instead of blanking the bump HTML.
+			add_filter( 'woocommerce_subscription_is_purchasable', '__return_true', 9999 );
+			add_filter( 'woocommerce_subscription_variation_is_purchasable', '__return_true', 9999 );
+			add_filter( 'woocommerce_variation_is_purchasable', '__return_true', 9999 );
+			add_filter( 'woocommerce_subscriptions_product_limitation', '__return_true', 9999 );
 			$bump_id = $request->get_param( 'bump_id' );
 
 			if ( method_exists( 'WFFN_REST_API_Helpers', 'remove_all_wc_price_action' ) ) {
@@ -891,8 +957,21 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 
 			$schema['products'] = $admin_schema['products'];
 
-			$schema['values']        = $admin_schema['values'];
-			$schema['layouts']       = array_values( WFOB_Bump_Fc::get_layouts_info() );
+			$schema['values'] = $admin_schema['values'];
+			// Show the multi-product card skin (layout_12) last in the skin picker, keeping the others in order.
+			$layouts   = array_values( WFOB_Bump_Fc::get_layouts_info() );
+			$layout_12 = null;
+			foreach ( $layouts as $layout_index => $layout_info ) {
+				if ( isset( $layout_info['id'] ) && 'layout_12' === $layout_info['id'] ) {
+					$layout_12 = $layout_info;
+					unset( $layouts[ $layout_index ] );
+				}
+			}
+			$layouts = array_values( $layouts );
+			if ( null !== $layout_12 ) {
+				$layouts[] = $layout_12;
+			}
+			$schema['layouts']       = $layouts;
 			$schema['active_layout'] = $bump->get_bump_selected_layout();
 			$schema['merge_tags']    = WFOB_Product_Switcher_Merge_Tags::get_tags_list();
 			$schema['html']          = $admin_schema['html'];
@@ -933,6 +1012,7 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 					'layout_10',
 					'layout_9',
 					'layout_6',
+					'layout_12',
 				)
 			);
 
@@ -981,6 +1061,9 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 
 			ob_start();
 			include WFOB_PLUGIN_DIR . '/assets/css/public.min.css';
+			if ( is_rtl() ) {
+				include WFOB_PLUGIN_DIR . '/assets/css/wfob-public-rtl.css';
+			}
 			$css_file = ob_get_clean();
 
 			$temp_data['skin_all']    = $bump_list;
@@ -1014,6 +1097,9 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 				if ( isset( $options['settings'] ) && ! empty( $options['settings'] ) ) {
 					$settings      = $options['settings'];
 					$wfob_settings = get_post_meta( $bump_id, '_wfob_settings', true );
+					if ( ! is_array( $wfob_settings ) ) {
+						$wfob_settings = array();
+					}
 					if ( isset( $settings['order_bump_position_hooks'] ) && ! empty( $settings['order_bump_position_hooks'] ) ) {
 						$wfob_settings['order_bump_position_hooks'] = $settings['order_bump_position_hooks'];
 					}
@@ -1029,7 +1115,7 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 						$wfob_settings['order_bump_auto_hide'] = $settings['order_bump_auto_hide'];
 					}
 
-					update_post_meta( $bump_id, '_wfob_settings', $wfob_settings );
+					WFOB_Common::update_setting_data( $bump_id, $wfob_settings );
 				}
 
 				// Delete transient before update

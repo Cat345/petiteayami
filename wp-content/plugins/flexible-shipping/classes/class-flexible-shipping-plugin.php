@@ -10,6 +10,7 @@ use FSVendor\Octolize\Blocks\Registrator;
 use FSVendor\Octolize\Blocks\StoreEndpoint;
 use FSVendor\Octolize\Brand\Assets\AdminAssets;
 use FSVendor\Octolize\Brand\UpsellingBox\ShippingMethodShouldShowStrategy;
+use FSVendor\Octolize\Docs\Chat\DocsChat;
 use FSVendor\Octolize\ShippingExtensions\ShippingExtensions;
 use FSVendor\Octolize\Tracker\DeactivationTracker\OctolizeReasonsFactory;
 use FSVendor\Octolize\Tracker\OptInNotice\ShouldDisplayAndConditions;
@@ -38,6 +39,7 @@ use FSVendor\WPDesk\RepositoryRating\RepositoryRatingPetitionText;
 use FSVendor\WPDesk\RepositoryRating\TextPetitionDisplayer;
 use FSVendor\WPDesk\Session\SessionFactory;
 use FSVendor\WPDesk\ShowDecision\WooCommerce\ShippingMethodInstanceStrategy;
+use FSVendor\WPDesk\ShowDecision\WooCommerce\ShippingMethodStrategy;
 use FSVendor\WPDesk\View\Resolver\ChainResolver;
 use FSVendor\WPDesk\View\Resolver\DirResolver;
 use FSVendor\WPDesk\View\Resolver\WPThemeResolver;
@@ -48,8 +50,11 @@ use WPDesk\FS\Blocks\FreeShipping\FreeShippingStoreEndpointData;
 use WPDesk\FS\Admin\MarketplaceSuggestionsRedirect;
 use WPDesk\FS\Helpers\FlexibleShippingMethodsChecker;
 use WPDesk\FS\Helpers\WooSettingsPageChecker;
+use WPDesk\FS\HookProvider\Admin\DocsChatSettingsProvider;
+use WPDesk\FS\Info\DashboardTracker;
+use WPDesk\FS\Info\DashboardTrackingData;
+use WPDesk\FS\Info\DashboardTrackingReceiver;
 use WPDesk\FS\Integration\ExternalPluginAccess;
-use WPDesk\FS\Newsletter\SubscriptionForm;
 use WPDesk\FS\Onboarding\TableRate\FinishOption;
 use WPDesk\FS\Onboarding\TableRate\Onboarding;
 use WPDesk\FS\Onboarding\TableRate\OptionAjaxUpdater;
@@ -121,7 +126,7 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 	 *
 	 * @var string
 	 */
-	private $scripts_version = '2';
+	private $scripts_version = '34';
 
 	/**
 	 * Admin notices.
@@ -313,6 +318,10 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 		$this->add_hookable( new ProFeatures\Tracker\AjaxTracker( $tracking_data ) );
 		$this->add_hookable( new ProFeatures\Tracker\Tracker( $tracking_data ) );
 
+		$dashboard_tracking_data = new DashboardTrackingData();
+		$this->add_hookable( new DashboardTrackingReceiver( $dashboard_tracking_data ) );
+		$this->add_hookable( new DashboardTracker( $dashboard_tracking_data ) );
+
 		// Time tracking
 		$this->add_hookable( new \WPDesk\FS\TableRate\ShippingMethod\Timestamps\MethodTimestamps() );
 		$this->add_hookable( new \WPDesk\FS\TableRate\ShippingMethod\Timestamps\TrackerData() );
@@ -351,11 +360,10 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 			)
 		);
 
-		// Newsletter
-		$this->add_hookable( new SubscriptionForm() );
-
 		// Redirect woo marketplace suggestions
 		$this->add_hookable( new MarketplaceSuggestionsRedirect( $this->prepare_marketplace_suggestions_should_show_strategy() ) );
+
+		$this->initialize_docs_chat();
 
 		// Rating petition
 		add_action( 'admin_init', [ $this, 'init_rating_petition' ] );
@@ -666,6 +674,39 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 		return $show_strategy;
 	}
 
+	private function initialize_docs_chat(): void {
+		$plugin_slug = 'flexible-shipping';
+		$plugin_name = 'Flexible Shipping';
+		if ( defined( 'FLEXIBLE_SHIPPING_PRO_VERSION' ) ) {
+			$plugin_slug = 'flexible-shipping-pro';
+			$plugin_name = 'Flexible Shipping PRO';
+		}
+
+		$this->add_hookable(
+			new DocsChat(
+				$plugin_slug,
+				$this->get_plugin_url(),
+				$this->plugin_info->get_version(),
+				$this->prepare_docs_chat_should_show_strategy(),
+				new DocsChatSettingsProvider( $plugin_name )
+			)
+		);
+	}
+
+	private function prepare_docs_chat_should_show_strategy(): OrStrategy {
+		$show_strategy = new OrStrategy(
+			new ShippingMethodStrategy( \WPDesk_Flexible_Shipping_Settings::METHOD_ID )
+		);
+		$show_strategy->addCondition(
+			new ShippingMethodInstanceStrategy(
+				new \WC_Shipping_Zones(),
+				ShippingMethodSingle::SHIPPING_METHOD_ID
+			)
+		);
+
+		return $show_strategy;
+	}
+
 	/**
 	 * Woocommerce shipping methods filter.
 	 *
@@ -858,6 +899,26 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 			);
 			wp_enqueue_script( 'fs_admin' );
 
+			if ( isset( $_GET['section'] ) && WPDesk_Flexible_Shipping_Settings::METHOD_ID === sanitize_key( wp_unslash( $_GET['section'] ) ) ) {
+				add_filter( 'admin_body_class', [ $this, 'add_dashboard_admin_body_class' ] );
+				wp_enqueue_script(
+					'fs_dashboard',
+					trailingslashit( $this->get_plugin_assets_url() ) . 'js/dashboard.js',
+					[ 'heartbeat' ],
+					$this->scripts_version,
+					true
+				);
+				wp_localize_script(
+					'fs_dashboard',
+					'fsDashboardTracking',
+					[
+						'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+						'action'  => DashboardTrackingReceiver::AJAX_ACTION,
+						'nonce'   => wp_create_nonce( DashboardTrackingReceiver::AJAX_ACTION ),
+					]
+				);
+			}
+
 			$current_screen = get_current_screen();
 
 			wp_register_script(
@@ -890,6 +951,17 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 			do_action( 'flexible-shipping/admin/enqueue_scripts', $this, $suffix );
 
 		}
+	}
+
+	/**
+	 * Add body class on the Flexible Shipping info page.
+	 *
+	 * @param string $classes Admin body classes.
+	 *
+	 * @return string
+	 */
+	public function add_dashboard_admin_body_class( $classes ) {
+		return $classes . ' flexible-shipping-info-page';
 	}
 
 	/**
@@ -941,8 +1013,8 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 
 		if ( ! defined( 'FLEXIBLE_SHIPPING_PRO_VERSION' )  ) {
 			$pro_link     = get_locale() === 'pl_PL' ? 'https://octol.io/fs-upgrade-pl' : 'https://octol.io/fs-upgrade';
-			$plugin_links[] = '<a href="' . esc_url( $pro_link ) . '" target="_blank" style="color:#00B62E;font-weight:bold;">' . __(
-					'Buy PRO',
+			$plugin_links[] = '<a href="' . esc_url( $pro_link ) . '" target="_blank" style="color:#00e3c0;font-weight:bold;">' . __(
+					'Buy Flexible Shipping PRO',
 					'flexible-shipping'
 				) . '</a>';
 		}

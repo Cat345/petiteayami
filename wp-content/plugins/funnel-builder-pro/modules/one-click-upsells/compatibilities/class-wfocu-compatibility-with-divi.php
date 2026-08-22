@@ -315,7 +315,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Divi' ) ) {
 		 */
 		public function enqueue_divi_css() {
 			global $post;
-			if (! defined( 'ET_BUILDER_VERSION' ) ) {
+			if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
 				return;
 			}
 			// Check if we should enqueue CSS

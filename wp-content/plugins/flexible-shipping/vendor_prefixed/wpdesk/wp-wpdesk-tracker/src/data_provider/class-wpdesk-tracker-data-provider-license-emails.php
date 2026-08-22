@@ -44,8 +44,7 @@ if (!\class_exists('FSVendor\WPDesk_Tracker_Data_Provider_License_Emails')) {
             foreach ($license_emails_email as $email) {
                 $license_emails[] = $email;
             }
-            $data['license_emails'] = $license_emails;
-            return $data;
+            return ['license_emails' => $license_emails];
         }
     }
 }

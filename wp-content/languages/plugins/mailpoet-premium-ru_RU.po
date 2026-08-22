@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-06-16 02:46:36+0000\n"
+"PO-Revision-Date: 2026-08-03 13:59:40+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -8,6 +8,18 @@ msgstr ""
 "X-Generator: GlotPress/2.4.0-alpha\n"
 "Language: ru\n"
 "Project-Id-Version: MailPoet - MailPoet Premium\n"
+
+#. translators: %s is a timezone name. "site default" marks subscribers
+#. without their own timezone who received the email in the site timezone.
+#: lib/Newsletter/Stats/SubscriberEngagement.php:518
+msgid "%s (site default)"
+msgstr ""
+
+#. translators: %s is the send time in UTC, shown when the recipient's
+#. delivery timezone could not be resolved.
+#: lib/Newsletter/Stats/RecipientsExporter.php:246
+msgid "%s (UTC)"
+msgstr ""
 
 #: lib/Automation/Integrations/WooCommerceBookings/Fields/BookingFields.php:67
 msgid "Woo Booking customer booking count"
@@ -461,7 +473,7 @@ msgstr ""
 #. translators: automation action title
 #: lib/Automation/Integrations/WooCommerce/Actions/AddOrderNoteAction.php:29
 msgid "Add order note"
-msgstr ""
+msgstr "Добавить примечание к заказу"
 
 #: lib/Automation/Integrations/MailPoetPremium/Triggers/ClicksEmailLinkTrigger.php:112
 msgid "Please select a link."
@@ -469,7 +481,7 @@ msgstr ""
 
 #: lib/API/JSON/v1/ResponseBuilders/SubscriberDetailedStatsResponseBuilder.php:182
 #: lib/API/JSON/v1/ResponseBuilders/SubscriberDetailedStatsResponseBuilder.php:185
-#: lib/Newsletter/Stats/SubscriberEngagement.php:313
+#: lib/Newsletter/Stats/SubscriberEngagement.php:407
 msgid "No reason provided"
 msgstr "Причина не указана"
 
@@ -1258,10 +1270,11 @@ msgstr "Ошибка"
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:140
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:155
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:159
-#: lib/Newsletter/Stats/RecipientsExporter.php:138
-#: lib/Newsletter/Stats/RecipientsExporter.php:141
-#: lib/Newsletter/Stats/RecipientsExporter.php:142
-#: lib/Newsletter/Stats/RecipientsExporter.php:144
+#: lib/Newsletter/Stats/RecipientsExporter.php:173
+#: lib/Newsletter/Stats/RecipientsExporter.php:176
+#: lib/Newsletter/Stats/RecipientsExporter.php:177
+#: lib/Newsletter/Stats/RecipientsExporter.php:179
+#: lib/Newsletter/Stats/RecipientsExporter.php:180
 msgid "No"
 msgstr "Нет"
 
@@ -1269,10 +1282,11 @@ msgstr "Нет"
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:125
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:140
 #: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:159
-#: lib/Newsletter/Stats/RecipientsExporter.php:138
-#: lib/Newsletter/Stats/RecipientsExporter.php:141
-#: lib/Newsletter/Stats/RecipientsExporter.php:142
-#: lib/Newsletter/Stats/RecipientsExporter.php:144
+#: lib/Newsletter/Stats/RecipientsExporter.php:173
+#: lib/Newsletter/Stats/RecipientsExporter.php:176
+#: lib/Newsletter/Stats/RecipientsExporter.php:177
+#: lib/Newsletter/Stats/RecipientsExporter.php:179
+#: lib/Newsletter/Stats/RecipientsExporter.php:180
 msgid "Yes"
 msgstr "Да"
 
@@ -1385,7 +1399,7 @@ msgstr "https://www.mailpoet.com"
 msgid "MailPoet Premium"
 msgstr "MailPoet Premium"
 
-#: lib/Config/Hooks.php:92
+#: lib/Config/Hooks.php:98
 msgid "View MailPoet settings"
 msgstr "Просмотр настроек MailPoet"
 
@@ -1395,32 +1409,32 @@ msgstr "Просмотр настроек MailPoet"
 msgid "Unsubscribe"
 msgstr "Отписаться"
 
-#: lib/Newsletter/Stats/SubscriberEngagement.php:427
+#: lib/Newsletter/Stats/SubscriberEngagement.php:641
 msgctxt "Subscriber engagement filter - shows machine-opens for a given newsletter"
 msgid "Machine-opened"
 msgstr "Открыто машиной"
 
-#: lib/Newsletter/Stats/SubscriberEngagement.php:448
+#: lib/Newsletter/Stats/SubscriberEngagement.php:662
 msgctxt "Subscriber engagement filter - filter those who did not open a newsletter"
 msgid "Unopened"
 msgstr "Не открыто"
 
-#: lib/Newsletter/Stats/SubscriberEngagement.php:441
+#: lib/Newsletter/Stats/SubscriberEngagement.php:655
 msgctxt "Subscriber engagement filter - filter those who performed any action (e.g., clicked, opened, unsubscribed)"
 msgid "All engaged"
 msgstr "Все вовлеченные"
 
-#: lib/Newsletter/Stats/SubscriberEngagement.php:432
+#: lib/Newsletter/Stats/SubscriberEngagement.php:646
 msgctxt "Subscriber engagement filter - filter those who unsubscribed from a newsletter"
 msgid "Unsubscribed"
 msgstr "Отписано"
 
-#: lib/Newsletter/Stats/SubscriberEngagement.php:422
+#: lib/Newsletter/Stats/SubscriberEngagement.php:636
 msgctxt "Subscriber engagement filter - filter those who opened a newsletter"
 msgid "Opened"
 msgstr "Открыто"
 
-#: lib/Newsletter/Stats/SubscriberEngagement.php:417
+#: lib/Newsletter/Stats/SubscriberEngagement.php:631
 msgctxt "Subscriber engagement filter - filter those who clicked on a newsletter link"
 msgid "Clicked"
 msgstr "Нажато"
@@ -1442,7 +1456,7 @@ msgstr "Для работы MailPoet Premium вам необходимо уст�
 msgid "MailPoet Premium cannot start because it is missing core files. Please reinstall the plugin."
 msgstr "MailPoet Premium не может функционировать, потому что не хватает ключевых файлов. Пожалуйста, переустановите плагин."
 
-#: lib/Newsletter/Stats/SubscriberEngagement.php:385
+#: lib/Newsletter/Stats/SubscriberEngagement.php:591
 msgid "Filter by link clicked"
 msgstr "Фильтровать по нажатой ссылке"
 
@@ -1452,7 +1466,7 @@ msgstr "Фильтровать по нажатой ссылке"
 msgid "Failed to render template \"%1$s\". Please ensure the template cache folder \"%2$s\" exists and has write permissions. Terminated with error: \"%3$s\""
 msgstr "Произошла ошибка при отображении шаблона \"%1$s\". Пожалуйста, убедитесь, что папка с кешем шаблонов \"%2$s\" существует и у вас есть необходимые права на запись. Завершено с ошибкой: \"%3$s\""
 
-#: lib/Config/Hooks.php:69
+#: lib/Config/Hooks.php:75
 msgid "[link1]Register[/link1] your copy of the MailPoet Premium plugin to receive access to automatic upgrades and support. Need a license key? [link2]Purchase one now.[/link2]"
 msgstr "[link1]Зарегистрируйте[/link1] вашу копию плагина MailPoet Premium для автоматического обновления и техподдержки. Нужен лицензионный ключ? [link2]Приобрети сейчас же.[/link2]"
 

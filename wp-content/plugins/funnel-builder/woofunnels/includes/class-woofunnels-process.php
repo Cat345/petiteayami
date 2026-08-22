@@ -24,8 +24,6 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 
 			add_action( 'admin_head', array( $this, 'register_in_update_plugin_message' ) );
 
-			add_action( 'fk_fb_every_day', array( 'WooFunnels_License_Controller', 'license_check' ) );
-			add_action( 'funnelkit_license_update', array( $this, 'maybe_clear_plugin_update_transients' ) );
 			add_action( 'funnelkit_delete_transients', array( $this, 'maybe_clear_plugin_update_transients' ) );
 			add_action( 'admin_init', array( $this, 'maybe_set_options_auto_loading_false' ) );
 
@@ -48,20 +46,15 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 		}
 
 		public function parse_request_and_process() {
-			// Initiating the license instance to handle submissions  (submission can redirect page two that can cause "header already sent" issue to be arised)
-			// Initiating this to over come that issue
-			if ( 'woofunnels' === filter_input( INPUT_GET, 'page', FILTER_UNSAFE_RAW ) && 'licenses' === filter_input( INPUT_GET, 'tab', FILTER_UNSAFE_RAW ) ) {
-				WooFunnels_licenses::get_instance();
-			}
 
 			// Handling Optin
 			if ( isset( $_GET['woofunnels-optin-choice'] ) && isset( $_GET['_woofunnels_optin_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_woofunnels_optin_nonce'] ) ), 'woofunnels_optin_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				if ( ! current_user_can( 'manage_options' ) ) {
-					wp_die( esc_html__( 'Cheating huh?', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Cheating huh?', 'funnel-builder' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				$optin_choice = sanitize_text_field( wp_unslash( $_GET['woofunnels-optin-choice'] ) );
@@ -109,11 +102,11 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 						?>
 						<div class="woofunnel-notice-message notice notice-warning">
 							<a class="woofunnel-message-close notice-dismiss" href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'woofunnel-update-notice', 'hide' ), 'woofunnel_update_notice_nonce', '_woofunnel_update_notice_nonce' ) ); ?>">
-								<?php esc_html_e( 'Dismiss', 'woofunnels' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
+								<?php esc_html_e( 'Dismiss', 'funnel-builder' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
 							</a>
 							<p>
 								<?php
-								_e( sprintf( 'Attention: There is an update available of <strong>%s</strong> plugin. &nbsp;<a href="%s" class="">Go to updates</a>', implode( ', ', array_map( 'esc_html', $plugin_names ) ), esc_url( admin_url( 'plugins.php?s=funnelkit&plugin_status=all' ) ) ), 'woofunnels' ); // phpcs:ignore WordPress.Security.EscapeOutput, WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment, WordPress.WP.I18n.NonSingularStringLiteralText
+								_e( sprintf( 'Attention: There is an update available of <strong>%s</strong> plugin. &nbsp;<a href="%s" class="">Go to updates</a>', implode( ', ', array_map( 'esc_html', $plugin_names ) ), esc_url( admin_url( 'plugins.php?s=funnelkit&plugin_status=all' ) ) ), 'funnel-builder' ); // phpcs:ignore WordPress.Security.EscapeOutput, WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment, WordPress.WP.I18n.NonSingularStringLiteralText
 								?>
 							</p>
 						</div>
@@ -152,7 +145,7 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 
 			if ( isset( $_GET['woofunnel-update-notice'] ) && isset( $_GET['_woofunnel_update_notice_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_woofunnel_update_notice_nonce'] ) ), 'woofunnel_update_notice_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 				update_option( 'woofunnel_hide_update_notice', 'yes' );
 				wp_safe_redirect( admin_url( 'index.php' ) );
@@ -702,7 +695,7 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 					background-position: 50% 25%;
 					background-size: 60%;
 				}
-			</style> 
+			</style>
 			<?php
 		}
 	}

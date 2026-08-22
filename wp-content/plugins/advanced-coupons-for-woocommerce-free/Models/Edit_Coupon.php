@@ -336,9 +336,8 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
         $url_warning        = $this->_get_special_symbols_warning_text( $coupon );
         $additional_classes = 'toggle-enable-fields';
         $title              = __( 'URL Coupons', 'advanced-coupons-for-woocommerce-free' );
-        /* Translators: %s: Learn more link. */
-        $kb_link = sprintf( __( '<a href="%s" target="_blank">Learn more.</a>', 'advanced-coupons-for-woocommerce-free' ), $this->_helper_functions->get_utm_url( 'knowledgebase/how-to-use-the-coupon-url/', 'acfwf', 'help_modal', 'aboutpageupgradebutton', 'how-to-use-the-coupon-url' ) );
-        $fields  = apply_filters(
+        $kb_link            = sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( $this->_helper_functions->get_utm_url( 'knowledgebase/how-to-use-the-coupon-url/', 'acfwf', 'help_modal', 'aboutpageupgradebutton', 'how-to-use-the-coupon-url' ) ), __( 'Learn more.', 'advanced-coupons-for-woocommerce-free' ) );
+        $fields             = apply_filters(
             'acfw_url_coupons_admin_data_panel_fields',
             array(
                 array(
@@ -357,7 +356,7 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
                         'id'                => Plugin_Constants::META_PREFIX . 'coupon_url',
                         'style'             => 'width: 50%;box-shadow: 0 1px 0 #ccc;box-sizing: border-box;height: 26px;vertical-align: top;',
                         'label'             => __( 'Coupon URL', 'advanced-coupons-for-woocommerce-free' ),
-                        'description'       => $url_warning . __( '<br>Visitors to this link will have the coupon code applied to their cart automatically.', 'advanced-coupons-for-woocommerce-free' ) . '<br/>' . $kb_link,
+                        'description'       => $url_warning . '<br>' . __( 'Visitors to this link will have the coupon code applied to their cart automatically.', 'advanced-coupons-for-woocommerce-free' ) . '<br/>' . $kb_link,
                         'type'              => 'url',
                         'data_type'         => 'url',
                         'value'             => $coupon->get_coupon_url(),
@@ -438,10 +437,12 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
             return '';
         }
 
-        return sprintf(
-            '<span class="acfw-warn-url-coupon">%s</span>',
-            __( '<strong>Warning:</strong> The URL for this coupon may not work as it contains special symbols. Please remove it from the coupon code or use the code override field below.', 'advanced-coupons-for-woocommerce-free' )
-        );
+        return '<span class="acfw-warn-url-coupon">' . sprintf(
+            /* Translators: %1$s: opening bold tag. %2$s: closing bold tag. */
+            __( '%1$sWarning:%2$s The URL for this coupon may not work as it contains special symbols. Please remove it from the coupon code or use the code override field below.', 'advanced-coupons-for-woocommerce-free' ),
+            '<strong>',
+            '</strong>'
+        ) . '</span>';
     }
 
     /*
@@ -662,6 +663,8 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
         $notice_btn_text = $bogo_deals['notice_settings']['button_text'] ?? '';
         $notice_btn_url  = $bogo_deals['notice_settings']['button_url'] ?? '';
         $notice_type     = $bogo_deals['notice_settings']['notice_type'] ?? 'global';
+
+        $remove_unqualified_deal = $bogo_deals['remove_unqualified_deal'] ?? 'keep';
 
         $notice_types = array(
             'notice'  => __( 'Info', 'advanced-coupons-for-woocommerce-free' ),
@@ -1512,10 +1515,15 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
         $products        = array();
 
         // Filter supported product types.
-        $types = array( 'simple', 'variable', 'variation', 'subscription', 'subscription_variation' );
+        $types = Plugin_Constants::PRODUCT_SEARCH_ALWAYS_SUPPORTED_TYPES;
         if ( $allow_gift_card ) {
             $types = array_merge( $types, array( 'advanced_gift_card', 'advanced_gift_card_variation' ) );
         }
+
+        // Merge in the additional product types configured in the settings.
+        $extra = (array) get_option( Plugin_Constants::PRODUCT_SEARCH_ADDITIONAL_TYPES, array() );
+        $types = array_merge( $types, array_filter( $extra ) );
+
         $supported_types = apply_filters( 'acfw_product_search_allowed_types', $types );
 
         foreach ( $product_objects as $product_object ) {
@@ -1566,17 +1574,21 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
     }
 
     /**
-     * AJAX search for simple and variable products.
+     * AJAX search product brand.
      *
-     * @since 1.0
+     * @since 4.7.4
      * @access public
      */
-    public function ajax_search_simple_variable_products() {
-        global $wpdb;
-
+    public function ajax_search_product_brands() {
         check_ajax_referer( 'search-products', 'security' );
 
-        if ( ! isset( $_GET['term'] ) || empty( $_GET['term'] ) ) {
+        if ( ! current_user_can( 'manage_woocommerce' ) ) {
+            wp_die( -1 );
+        }
+
+        $taxonomy = $this->_helper_functions->get_product_brand_taxonomy();
+
+        if ( ! $taxonomy || ! isset( $_GET['term'] ) || empty( $_GET['term'] ) ) {
             wp_die();
         }
 
@@ -1584,26 +1596,22 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
         $search      = sanitize_text_field( wp_unslash( $_GET['term'] ) );
 
         $args = array(
-            'post_type'      => 'product',
-            'status'         => 'publish',
-            's'              => $search,
-            'post__not_in'   => $exclude_ids,
-            'posts_per_page' => -1,
-            'fields'         => 'ids',
+            'taxonomy'   => $taxonomy,
+            'hide_empty' => false,
+            'exclude'    => $exclude_ids,
+            'search'     => $search,
         );
 
-        $query = new \WP_Query( $args );
+        $terms   = get_terms( $args );
+        $options = array();
 
-        $product_objects = array_map( 'wc_get_product', $query->posts );
-        $products        = array();
-
-        foreach ( $product_objects as $product_object ) {
-            if ( ( $product_object->get_type() === 'simple' ) || ( $product_object->get_type() === 'variable' ) ) {
-                $products[ $product_object->get_id() ] = rawurldecode( $product_object->get_formatted_name() );
+        if ( ! is_wp_error( $terms ) ) {
+            foreach ( $terms as $term ) {
+                $options[ $term->term_id ] = $term->name . ' (' . $term->slug . ')';
             }
-}
+        }
 
-        wp_send_json( apply_filters( 'acfw_json_search_products_response', $products ) );
+        wp_send_json( apply_filters( 'acfw_json_search_product_brands_response', $options ) );
     }
 
     /*
@@ -1636,7 +1644,7 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
         add_action( 'wp_ajax_acfw_search_free_products', array( $this, 'ajax_search_products' ) );
         add_action( 'wp_ajax_acfw_search_products', array( $this, 'ajax_search_products' ) );
         add_action( 'wp_ajax_acfw_search_product_category', array( $this, 'ajax_search_product_category' ) );
-        add_action( 'wp_ajax_acfw_search_products', array( $this, 'ajax_search_simple_variable_products' ) );
+        add_action( 'wp_ajax_acfw_search_product_brands', array( $this, 'ajax_search_product_brands' ) );
     }
 
     /**

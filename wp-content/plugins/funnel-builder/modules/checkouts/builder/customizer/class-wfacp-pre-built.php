@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 	#[\AllowDynamicProperties]
 	class WFACP_Pre_Built extends WFACP_Template_Common {
@@ -1412,10 +1413,10 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 			<div id="wfacp_form_popup_content" style="display: none;">
 
 				<h3>
-					<?php _e( 'CSS Ready Classes', 'woofunnels-aero-checkout' ); ?>
+					<?php _e( 'CSS Ready Classes', 'funnel-builder' ); ?>
 				</h3>
 				<div class="wfacp_des_wrap">
-					<?php _e( 'Here are set of CSS classes that can be used to style the checkout form', 'woofunnels-aero-checkout' ); ?>
+					<?php _e( 'Here are set of CSS classes that can be used to style the checkout form', 'funnel-builder' ); ?>
 
 				</div>
 
@@ -1423,9 +1424,9 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 				<table class="table widefat">
 					<thead>
 					<tr>
-						<td><?php _e( 'Title', 'woofunnels-aero-checkout' ); ?></td>
+						<td><?php _e( 'Title', 'funnel-builder' ); ?></td>
 						<td style="width: 70%;">
-							<?php _e( 'Classes', 'woofunnels-aero-checkout' ); ?>
+							<?php _e( 'Classes', 'funnel-builder' ); ?>
 						</td>
 
 					</tr>
@@ -1433,27 +1434,27 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 					<tbody>
 
 					<tr>
-						<td><?php _e( 'To create full width field', 'woofunnels-aero-checkout' ); ?></td>
+						<td><?php _e( 'To create full width field', 'funnel-builder' ); ?></td>
 						<td><input type="text" readonly onClick="this.select()" value='wfacp-col-full'/></td>
 					</tr>
 
 					<tr>
-						<td><?php _e( 'To create two columns structure and set field left side', 'woofunnels-aero-checkout' ); ?></td>
+						<td><?php _e( 'To create two columns structure and set field left side', 'funnel-builder' ); ?></td>
 						<td><input type="text" readonly onClick="this.select()" value='wfacp-col-left-half'/></td>
 					</tr>
 
 					<tr>
-						<td><?php _e( 'To create three columns structure and set field left side', 'woofunnels-aero-checkout' ); ?></td>
+						<td><?php _e( 'To create three columns structure and set field left side', 'funnel-builder' ); ?></td>
 						<td><input type="text" readonly onClick="this.select()" value='wfacp-col-left-third'/></td>
 					</tr>
 
 
 					<tr>
-						<td><?php _e( 'To create two third columns structure', 'woofunnels-aero-checkout' ); ?></td>
+						<td><?php _e( 'To create two third columns structure', 'funnel-builder' ); ?></td>
 						<td><input type="text" readonly onClick="this.select()" value='wfacp-col-two-third'/></td>
 					</tr>
 					<tr>
-						<td><?php _e( 'To create field from new line use clearfix', 'woofunnels-aero-checkout' ); ?></td>
+						<td><?php _e( 'To create field from new line use clearfix', 'funnel-builder' ); ?></td>
 						<td><input type="text" readonly onClick="this.select()" value='wfacp-col-clearfix'/></td>
 					</tr>
 
@@ -1558,12 +1559,12 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 					$back_btn_text = str_replace( '{step_name}', "$sectionKeyText", $back_btn_text );
 
 				}
-				$back_text = __( '&laquo; Return', 'woofunnels-aero-checkout' );
+				$back_text = __( '&laquo; Return', 'funnel-builder' );
 
 				if ( ! isset( $back_btn_text ) || $back_btn_text == '' ) {
 					$back_btn_text = $back_text;
 				}
-				echo "<div class='place_order_back_btn wfacp_none_class '><a class='wfacp_back_page_button' data-next-step='" . $last_step . "' data-current-step='" . $this->current_step . "' href='javascript:void(0)'>" . __( $back_btn_text, 'woofunnels-aero-checkout' ) . '</a> </div>';
+				echo "<div class='place_order_back_btn wfacp_none_class '><a class='wfacp_back_page_button' data-next-step='" . $last_step . "' data-current-step='" . $this->current_step . "' href='javascript:void(0)'>" . esc_html( $back_btn_text ) . '</a> </div>';
 			}
 
 			echo '</div>';
@@ -1609,7 +1610,7 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 
 					$cartURL  = wc_get_cart_url();
 					$cartURL  = apply_filters( 'wfacp_return_to_cart_link', $cartURL );
-					$cartName = __( $before_link['enable_cart_text'], 'woocommerce' );
+					$cartName = $before_link['enable_cart_text'];
 
 					echo "<li class='df_cart_link wfacp_bred_visited' $inline_width><a href='$cartURL'>$cartName</a></li>";
 				}

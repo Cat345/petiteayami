@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * This class take care of ecommerce tracking setup
@@ -224,6 +225,31 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 		 *
 		 * @return bool
 		 */
+		/**
+		 * Order-pay URLs must validate the WooCommerce order key (same idea as WC_Shortcode_Checkout::order_pay).
+		 *
+		 * @param int $order_id Order ID from the order-pay query var.
+		 * @return bool
+		 */
+		private function is_valid_order_pay_request( $order_id ) {
+			$order_id = absint( $order_id );
+			if ( $order_id < 1 || empty( $_GET['key'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				return false;
+			}
+
+			$order = wc_get_order( $order_id );
+			if ( ! $order ) {
+				return false;
+			}
+
+			$posted_key = bwf_clean( wp_unslash( $_GET['key'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( ! hash_equals( (string) $order->get_order_key(), (string) $posted_key ) ) {
+				return false;
+			}
+
+			return current_user_can( 'pay_for_order', $order_id );
+		}
+
 		public function should_render( $check_session = true ) {
 			if ( false === parent::should_render( $check_session ) ) {
 				return false;
@@ -256,6 +282,16 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			if ( true === apply_filters( 'wffn_allow_native_thankyou_tracking', is_order_received_page(), $check_session ) ) {
 				return true;
 
+			}
+
+			if ( wffn_is_wc_active() && is_checkout_pay_page() ) {
+				global $wp;
+				if ( isset( $wp->query_vars['order-pay'] ) && $this->is_valid_order_pay_request( $wp->query_vars['order-pay'] ) ) {
+					$order = wc_get_order( absint( $wp->query_vars['order-pay'] ) );
+					if ( $order && $order->is_paid() ) {
+						return true;
+					}
+				}
 			}
 
 			return false;
@@ -634,23 +670,27 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 				$get_order_id = BWF_WC_Compatibility::get_order_id( $order );
 
 				$purchase_data = array(
-					'fb'   => array(
-						'products'       => $products,
-						'total'          => ( 0.00 === $fb_total || '0.00' === $fb_total ) ? 0 : $fb_total,
-						'currency'       => BWF_WC_Compatibility::get_order_currency( $order ),
-						'advanced'       => $advanced,
-						'content_ids'    => $content_ids,
-						'content_name'   => $content_name,
-						'category_name'  => array_map(
-							static function ( $v ) {
-								return html_entity_decode( $v, ENT_QUOTES | ENT_HTML401 ); },
-							$category_names
+					'fb'   => apply_filters(
+						'wffn_ecomm_tracking_fb_params',
+						array(
+							'products'       => $products,
+							'total'          => ( 0.00 === $fb_total || '0.00' === $fb_total ) ? 0 : $fb_total,
+							'currency'       => BWF_WC_Compatibility::get_order_currency( $order ),
+							'advanced'       => $advanced,
+							'content_ids'    => $content_ids,
+							'content_name'   => $content_name,
+							'category_name'  => array_map(
+								static function ( $v ) {
+									return html_entity_decode( $v, ENT_QUOTES | ENT_HTML401 ); },
+								$category_names
+							),
+							'num_qty'        => $num_qty,
+							'additional'     => $this->purchase_custom_aud_params( $order ),
+							'transaction_id' => $get_order_id,
+							'is_order'       => $get_order_id,
+							'order_id'       => $get_order_id,
 						),
-						'num_qty'        => $num_qty,
-						'additional'     => $this->purchase_custom_aud_params( $order ),
-						'transaction_id' => $get_order_id,
-						'is_order'       => $get_order_id,
-						'order_id'       => $get_order_id,
+						$order
 					),
 					'pint' => array(
 						'order_id'       => $get_order_id,
@@ -1279,7 +1319,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 				$purchase_params = array_merge( $purchase_params, $event_data );
 			}
 
-			return $purchase_params;
+			return apply_filters( 'wffn_capi_purchase_params', $purchase_params, $get_data_from_session );
 		}
 
 		public function get_event_data() {
@@ -1405,6 +1445,14 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 					if ( $get_order instanceof WC_Order && ( empty( $request_key ) || ! hash_equals( (string) $get_order->get_order_key(), $request_key ) ) ) {
 						return false;
 					}
+				}
+			}
+
+			if ( empty( $get_order ) && is_checkout_pay_page() ) {
+				global $wp;
+				if ( isset( $wp->query_vars['order-pay'] ) && $this->is_valid_order_pay_request( $wp->query_vars['order-pay'] ) ) {
+					$order_id  = absint( $wp->query_vars['order-pay'] );
+					$get_order = wc_get_order( $order_id );
 				}
 			}
 

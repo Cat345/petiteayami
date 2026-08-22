@@ -474,7 +474,7 @@ class Frontend extends Base_Model implements Model_Interface {
         $is_updated      = false;
 
         foreach ( $applied_coupons as $key => $applied_coupon ) {
-            if ( strpos( $coupon_code, $applied_coupon ) !== false ) {
+            if ( str_contains( $coupon_code, $applied_coupon ) ) {
                 unset( $applied_coupons[ $key ] );
                 $is_updated = true;
             }

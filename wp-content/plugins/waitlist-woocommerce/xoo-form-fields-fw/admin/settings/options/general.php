@@ -1,5 +1,8 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
 if( $this->aff->en_autocompadr ){
 
@@ -203,6 +206,3 @@ if( isset( $autocompadr ) ){
 }
 
 return $settings;
-
-
-?>

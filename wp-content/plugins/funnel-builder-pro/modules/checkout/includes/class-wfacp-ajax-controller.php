@@ -319,6 +319,29 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 					'product' => rawurldecode( WFACP_Common::get_formatted_product_name( $product_object ) ),
 				);
 			}
+
+			if ( class_exists( '\Sublium_WCS\Plugin', false ) ) {
+				foreach ( $product_objects as $product_object ) {
+					$plans = \Sublium_WCS\Includes\Main\Product::get_instance()->get_cached_plans_for_product( $product_object );
+					if ( empty( $plans ) ) {
+						continue;
+					}
+					$product_name = rawurldecode( WFACP_Common::get_formatted_product_name( $product_object ) );
+					foreach ( $plans as $plan ) {
+						$price = $plan->get_recurring_cart_price( $product_object->get_price(), $product_object );
+						if ( $plan->get_billing_frequency() === 1 ) {
+							$desc = '/ ' . $plan->get_billing_interval_string();
+						} else {
+							$desc = 'every ' . $plan->get_billing_frequency() . ' ' . $plan->get_billing_interval_string() . 's';
+						}
+						$products[] = array(
+							'id'      => $product_object->get_id() . '-' . $plan->get_id(),
+							'product' => $product_name . ' - (' . get_woocommerce_currency_symbol() . number_format( (float) $price, 2 ) . ' ' . $desc . ')',
+						);
+					}
+				}
+			}
+
 			wp_send_json( apply_filters( 'wfacp_woocommerce_json_search_found_products', $products ) );
 		}
 
@@ -340,7 +363,15 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 				foreach ( $products as $pid ) {
 					$unique_id = uniqid( 'wfacp_' );
-					$product   = wc_get_product( $pid );
+					$plan_id   = 0;
+					if ( strpos( $pid, '-' ) !== false ) {
+						list( $pid, $plan_id ) = explode( '-', $pid, 2 );
+						$pid     = absint( $pid );
+						$plan_id = absint( $plan_id );
+					} else {
+						$pid = absint( $pid );
+					}
+					$product = wc_get_product( $pid );
 					if ( $product instanceof WC_Product ) {
 						$product_type                    = $product->get_type();
 						$image_id                        = $product->get_image_id();
@@ -351,6 +382,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 						$default['title']                = $product->get_title();
 						$default['stock']                = $product->is_in_stock();
 						$default['is_sold_individually'] = $product->is_sold_individually();
+						$default['plan_id']              = $plan_id;
 
 						$product_image_url = '';
 						$images            = wp_get_attachment_image_src( $image_id );
@@ -376,6 +408,20 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 							$default['regular_price'] = wc_price( $row_data['regular_price'] );
 							if ( '' != $sale_price ) {
 								$default['sale_price'] = wc_price( $sale_price );
+							}
+
+							// A Sublium plan is attached (encoded as "product_id-plan_id" above): the
+							// "Offer Price" basis for "on Sale Price" discount types must reflect the
+							// plan's own recurring price (which already includes the plan's built-in
+							// discount, e.g. Subscribe & Save 15%), not the product's raw WC sale price
+							// (which is usually unset), so the admin table doesn't wrongly show the full
+							// regular price as the offer price for a plan that's already discounted.
+							if ( $plan_id > 0 && class_exists( '\Sublium_WCS\Plugin', false ) ) {
+								$plan = \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_id, $product );
+								if ( ! is_null( $plan ) ) {
+									$plan_price             = $plan->get_recurring_cart_price( $product->get_price(), $product );
+									$default['sale_price'] = wc_price( $plan_price );
+								}
 							}
 						}
 
@@ -759,7 +805,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			$item_key = trim( $post['item_key'] );
 
 			$wfacp_id    = absint( $post['wfacp_id'] );
-			$product_qty = ( isset( $post['quantity'] ) ? $post['quantity'] : 1 );
+			$product_qty = ( isset( $post['quantity'] ) ? wc_stock_amount( $post['quantity'] ) : 1 );
 
 			$product_variation_id = ( isset( $post['variation_id'] ) ? absint( $post['variation_id'] ) : 0 );
 
@@ -961,8 +1007,9 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 			$wfacp_id = absint( $post['wfacp_id'] );
 			WFACP_Common::set_id( $wfacp_id );
+			WFACP_Core()->public->get_page_data( $wfacp_id );
+			WFACP_Common::disable_wcct_pricing();
 			$product_variation_id = absint( isset( $post['variation_id'] ) ? $post['variation_id'] : 0 );
-			$product_qty          = ( isset( $post['quantity'] ) ? $post['quantity'] : 1 );
 			$cart_key             = ( $post['cart_key'] );
 			$attributes           = ( isset( $post['attributes'] ) && is_array( $post['attributes'] ) ) ? $post['attributes'] : array();
 			$plan_id              = isset( $post['sublium-option-plan'] ) ? absint( $post['sublium-option-plan'] ) : 0;
@@ -987,7 +1034,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				}
 			}
 
-			$cart_item['quantity'] = intval( $product_qty );
+			// Switching the variation must not change the item quantity: keep the quantity
+			// already in the cart. The client-posted quantity is unreliable here — the
+			// quick-view flow resolves the switcher row by a cart_key that can be stale
+			// after cart updates and then falls back to 1, resetting the customer's choice.
 
 			// Update variation data if variation_id is provided
 			if ( $product_variation_id > 0 ) {
@@ -1017,6 +1067,13 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				}
 			}
 
+			// The funnel discount cached in `_wfacp_item_discount` was computed from the
+			// previous variation's price; empty it (keeping the key, which calculate_totals()
+			// uses as its marker) so the discount recalculates against the new variation.
+			if ( isset( $cart_item['_wfacp_item_discount'] ) ) {
+				$cart_item['_wfacp_item_discount'] = array();
+			}
+
 			$cart->cart_contents[ $cart_key ] = $cart_item;
 			$cart->set_session();
 			$resp['status'] = true;
@@ -1042,7 +1099,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			WFACP_Core()->public->get_page_data( $wfacp_id );
 			WFACP_Common::disable_wcct_pricing();
 			$save_product_list    = WC()->session->get( 'wfacp_product_data_' . WFACP_Common::get_id() );
-			$product_qty          = ( isset( $post['quantity'] ) ? $post['quantity'] : 1 );
+			$product_qty          = ( isset( $post['quantity'] ) ? wc_stock_amount( $post['quantity'] ) : 1 );
 			$field_type           = isset( $post['field_type'] ) ? $post['field_type'] : 'radio';
 			$product_variation_id = absint( $post['variation_id'] );
 			$attributes           = ( isset( $post['attributes'] ) && is_array( $post['attributes'] ) ) ? $post['attributes'] : array();
@@ -1053,7 +1110,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			$remove_item_key       = '';
 			if ( isset( $post['remove_item_key'] ) && '' != $post['remove_item_key'] ) {
 				$remove_item_key = trim( $post['remove_item_key'] );
-				$quantity        = ( $post['quantity'] );
+				$quantity        = wc_stock_amount( $post['quantity'] );
 				$cart_key        = $remove_item_key;
 				if ( 0 == $quantity && false == WFACP_Common::enable_cart_deletion() ) {
 					$resp           = WFACP_Common::last_item_delete_message( $resp, $remove_item_key );
@@ -1238,7 +1295,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			if ( isset( $post['item_key'] ) && isset( $post['cart_key'] ) && isset( $post['qty'] ) ) {
 				$cart_key = $post['cart_key'];
 				$item_key = $post['item_key'];
-				$qty      = absint( $post['qty'] );
+				$qty      = wc_stock_amount( $post['qty'] );
 				$wfacp_id = absint( $post['wfacp_id'] );
 				WFACP_Common::set_id( $wfacp_id );
 				WFACP_Core()->public->get_page_data( $wfacp_id );
@@ -1513,7 +1570,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				'msg'    => '',
 				'status' => false,
 			);
-			$quantity = floatval( $post['quantity'] );
+			$quantity = wc_stock_amount( $post['quantity'] );
 
 			if ( $quantity <= 0 ) {
 				$quantity = 0;
@@ -1801,14 +1858,11 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 					do_action( 'wfacp_apply_coupon_via_ajax_placeholder', $bump_action_data );
 				}
 
-				WC()->cart->calculate_totals();
-
 				$all_notices  = WC()->session->get( 'wc_notices', array() );
 				$notice_types = apply_filters( 'woocommerce_notice_types', array( 'error', 'success', 'notice' ) );
 				$message      = array();
-				do_action( 'wfacp_after_coupon_apply', $bump_action_data );
 				foreach ( $notice_types as $notice_type ) {
-					if ( wc_notice_count( $notice_type ) > 0 ) {
+					if ( isset( $all_notices[ $notice_type ] ) && count( $all_notices[ $notice_type ] ) > 0 ) {
 						$message = array(
 							$notice_type => $all_notices[ $notice_type ],
 						);
@@ -1816,6 +1870,9 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				}
 
 				wc_clear_notices();
+
+				WC()->cart->calculate_totals();
+				do_action( 'wfacp_after_coupon_apply', $bump_action_data );
 
 				$resp = array(
 					'status'  => $status,
@@ -2211,7 +2268,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 						}
 						$instance->set_event_data( $single_item['event'], $fb_single_data );
 						$response = $instance->execute();
-						WFACP_Common::maybe_insert_log( '----Facebook conversion API-----------' . print_r( $response, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+						WFACP_Common::maybe_insert_log( '----Facebook conversion API-----------' . print_r( $response, true ), $single_item['event'] ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 					}
 					$resp['status'] = true;
 				}

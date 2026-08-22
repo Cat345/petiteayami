@@ -27,6 +27,16 @@ if ( ! class_exists( 'WFFN_Pro_Modules' ) ) {
 		public static function update_modules() {
 			$modules = get_option( '_bwf_individual_modules', [] );
 
+			/**
+			 * Guard against a corrupted/legacy option value stored as a non-array
+			 * (string/scalar). Writing a string-keyed offset onto a string throws a
+			 * TypeError ("Cannot access offset of type string on string"), which can
+			 * blank the site. Reset to an empty array so defaults rebuild below.
+			 */
+			if ( ! is_array( $modules ) ) {
+				$modules = [];
+			}
+
 
 			if ( empty( $modules ) ) {
 				$modules = array(

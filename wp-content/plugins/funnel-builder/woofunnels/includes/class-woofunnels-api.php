@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'WooFunnels_API' ) ) :
 
 	/**
-	 * WooFunnels_License Class
+	 * WooFunnels_API Class
 	 */
 	#[AllowDynamicProperties]
 	class WooFunnels_API {

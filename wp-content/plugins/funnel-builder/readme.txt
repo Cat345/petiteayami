@@ -1,10 +1,10 @@
 === FunnelKit - Funnel Builder for WooCommerce Checkout ===
 Contributors: teamfunnelkit, xlplugins
 Tags: Funnel Builder, WooCommerce Checkout, Sales Funnels, One Click Upsells
-Requires at least: 5.4.0
-Tested up to: 7.0
+Requires at least: 6.2
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.15.0.9
+Stable tag: 3.16.0.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -31,7 +31,7 @@ FunnelKit provides you with pre-built templates that are 100% mobile-responsive 
 Use FunnelKit's Funnel Builder to create:
 
 - Optimized WooCommerce checkout pages (global & one page checkouts)
-- Beautiful sales/ landing and opt-in pages.
+- Beautiful sales/ landing and opt-in pages
 - Highly targeted order bumps
 - Rule-based one-click upsell offers
 - Custom thank you or order confirmation pages
@@ -209,7 +209,7 @@ These would help you nail the products and sales page copy that resonates the mo
 - **LearnDash:** FunnelKit integrates via WooCommerce with the popular LMS plugin, LearnDash, allowing you to auto-enroll leads into your free course with a single click.
 
 
-== Go beyond funnels with Marketing Automation ==
+== Go Beyond Funnels With Marketing Automations ==
 
 Why stop at the sales funnel when you can go beyond marketing automation? Use email marketing to recover abandoned carts and bring customers back to the funnel.
 
@@ -247,6 +247,26 @@ All of this led us to create *– FunnelKit –* an interface that is designed k
 And now you can enjoy a very intuitive and guided user experience to create your sales funnel within minutes without hiring a developer or a designer.
 
 It's the ultimate all-in-one Funnel Builder for WordPress, WooCommerce checkout manager and the complete funnel building solution.
+
+
+== External services ==
+
+FunnelKit may connect to the following external services, only when the related feature is used:
+
+* **FunnelKit** provides the template library, template images, previews and optional usage tracking. [Terms](https://funnelkit.com/terms-conditions/) and [Privacy Policy](https://funnelkit.com/privacy-policy/)
+* **Google Fonts** may load when a Google font is selected. [Terms](https://policies.google.com/terms) and [Privacy Policy](https://policies.google.com/privacy)
+* **Google reCAPTCHA** may be used for opt-in spam prevention. [Terms](https://policies.google.com/terms) and [Privacy Policy](https://policies.google.com/privacy)
+* **YouTube** may embed tutorial videos on FunnelKit screens. [Terms](https://www.youtube.com/t/terms) and [Privacy Policy](https://policies.google.com/privacy)
+* **Meta** may receive pixel and Conversions API events. [Terms](https://www.facebook.com/legal/terms) and [Privacy Policy](https://www.facebook.com/privacy/policy)
+* **Google** may receive pixel and analytics events. [Terms](https://policies.google.com/terms) and [Privacy Policy](https://policies.google.com/privacy)
+* **Pinterest** may receive pixel events when a tag is added. [Terms](https://policy.pinterest.com/en/terms-of-service) and [Privacy Policy](https://policy.pinterest.com/en/privacy-policy)
+* **Snapchat** may receive pixel events when a tag is added. [Terms](https://snap.com/en-US/terms) and [Privacy Policy](https://snap.com/en-US/privacy/privacy-policy)
+* **TikTok** may receive pixel events when a tag is added. [Terms](https://www.tiktok.com/legal/page/global/terms-of-service/en) and [Privacy Policy](https://www.tiktok.com/legal/page/global/privacy-policy/en)
+
+
+== Source code ==
+
+Unminified source for the plugin's compiled JavaScript and CSS, along with the build configuration and build steps, is available here: https://drive.google.com/drive/folders/1Z-R0_Nbb0BOCyqauxvCftjhS9Ve--IHH
 
 
 == Frequently Asked Questions ==
@@ -379,13 +399,99 @@ If you face any difficulties with FunnelKit, feel free to contact our [Support T
 
 == Change log ==
 
-= 3.15.0.9 (June 30, 2026) =
-* Improved: Checkout: Improved compatibility with WooCommerce PayPal Payments. (#8885)
-* Improved: Funnel: Improved compatibility with Bricks Builder. (#9174)
-* Improved: Checkout: Streamlined the admin experience by removing the legacy checkout builder interface. (#9188)
-* Improved: Funnel: Analytics database queries improved for Mariadb 12.3.2 version. (#9199)
-* Fixed: Checkout: Resolved flickering of express checkout smart buttons for a smoother checkout experience. (#9168)
-* Fixed: Checkout: Resolved an issue where custom CSS is not rendering due to mismatch with white spaces. (#9203)
+= 3.16.0.4 =
+* Improved: Funnel: Compatibility with Elementor improved related to widget cache. (#9446)
+
+= 3.16.0.3 =
+* Improved: Thankyou Page: Shortcodes for order details and customer info improved to handle QR codes. (#9436)
+* Fixed: Optin: Compatibility with Cloudflare Turnstile causing double validation. (#9432)
+
+= 3.16.0.2 =
+* Fixed: Checkout: Advanced phone field styling issues with divi builder. (#9418)
+* Fixed: Checkout: Phone field validation not working correctly in a few edge cases. (#9414)
+
+= 3.16.0.1 =
+* Fixed: Plugin deactivation modal popup was not working. (#9405)
+
+= 3.16.0 =
+* Added: Optin: Added compatibility with Simple Cloudflare Turnstile for optin forms. (#8823)
+* Improved: Checkout: Improved checkout performance by skipping redundant total recalculations action hooks. (#8717)
+* Improved: Checkout: Optimized advanced field rendering with a lighter order lookup. (#8719)
+* Improved: Checkout: Improved page caching behavior on dedicated checkout pages. (#8722)
+* Improved: Checkout: Improved compatibility with Bricks Builder. (#8779, #8817, #8825)
+* Improved: Checkout: Improved compatibility with Elementor. (#8790)
+* Improved: Checkout: Improved compatibility with EU VAT Number for WooCommerce. (#8799)
+* Improved: Checkout: Improved compatibility with PS Delivery Module. (#8804)
+* Improved: Checkout: Improved compatibility with Germanized for WooCommerce. (#8827)
+* Improved: Checkout: Improved coupon message reliability at checkout. (#8833)
+* Improved: Checkout: Improved compatibility with Loco Translate. (#8841)
+* Improved: Checkout: Improved compatibility with Divi. (#8846, #9063, #9240)
+* Improved: Checkout: Refined the Google Pay button outline at checkout. (#8871)
+* Improved: Checkout: Improved compatibility with Oxygen Builder. (#8878)
+* Improved: Checkout: Improved checkout accessibility with clearer labels, ARIA attributes, and landmarks. (#8884)
+* Improved: Checkout: Improved compatibility with the Block editor. (#8888)
+* Improved: Checkout: Improved persistence of checkout customizations across order review updates. (#8918)
+* Improved: Checkout: Improved mobile order summary display alongside theme styles. (#8922)
+* Improved: Checkout: Improved compatibility with EU/UK VAT Manager for WooCommerce. (#8928, #9300, #9320)
+* Improved: Checkout: Improved compatibility with WooCommerce Product Bundles. (#8931)
+* Improved: Checkout: Improved compatibility with Google Captcha Pro. (#8976)
+* Improved: Checkout: Improved compatibility with Amazon Pay. (#9040)
+* Improved: Checkout: Refreshed the Express Checkout placement labels. (#9068)
+* Improved: Checkout: Improved compatibility with Spectra. (#9102)
+* Improved: Checkout: Improved compatibility with WebToffee Gift Cards. (#9118)
+* Improved: Checkout: Improved compatibility with Discount Rules PRO for WooCommerce. (#9123)
+* Improved: Checkout: Order summary now inherits the site's default font. (#9137)
+* Improved: Checkout: Improved compatibility with Weight Based Shipping for WooCommerce. (#9162)
+* Improved: Checkout: Improved compatibility with Woostify. (#9176)
+* Improved: Checkout: Improved compatibility with Sonaar MP3 Player Pro. (#9179)
+* Improved: Checkout: Improved compatibility with Klaviyo. (#9191)
+* Improved: Checkout: Improved compatibility with WooCommerce Checkout Field Editor. (#9201)
+* Improved: Checkout: Express checkout buttons now load with consistent sizing and a smoother reveal. (#9228)
+* Improved: Checkout: Improved compatibility with E-cab Taxi Booking Manager. (#9243)
+* Improved: Checkout: Improved compatibility with Better Shipping Calculator for Brazil. (#9244)
+* Improved: Checkout: Improved compatibility with Sublium. (#9246)
+* Improved: Checkout: Improved compatibility with Astra. (#9253)
+* Improved: Checkout: Improved compatibility with Shoptimizer. (#9256)
+* Improved: Checkout: Improved compatibility with WP Content Copy Protection. (#9285)
+* Improved: Checkout: Improved compatibility with WooCommerce Subscriptions. (#9312)
+* Improved: Checkout: Improved compatibility with YayPricing. (#9324)
+* Improved: Funnel: Improved compatibility with LiteSpeed Cache. (#8647)
+* Improved: Funnel: Improved error reporting and recovery in the plugin diagnostics screen. (#8751)
+* Improved: Funnel: Improved Conversion API event payloads for more accurate server-side tracking. (#8787)
+* Improved: Funnel: Improved compatibility with B2BKing. (#8847)
+* Improved: Funnel: Improved compatibility with All in One SEO. (#8984)
+* Improved: Funnel: Improved dashboard widget resilience when WooCommerce helpers are unavailable. (#8987)
+* Improved: Funnel: Improved admin screen styles to be compatible with WordPress 7.0. (#9014)
+* Improved: Funnel: Improved visibility of the quantity value in order bump rules. (#9024)
+* Improved: Funnel: Improved funnel canvas rendering and performance across browsers. (#9029)
+* Improved: Funnel: Improved resilience of admin data loading against stray output from other plugins. (#9042)
+* Improved: Funnel: Refined the Cart upsell settings notice so it matches its action. (#9073)
+* Improved: Funnel: Sublium recommendation notice now appears later after activation. (#9077)
+* Improved: Funnel: Improved license detection when the plugin folder has been renamed. (#9083)
+* Improved: Funnel: Conversion API checkout event logs now include the event name. (#9095)
+* Improved: Funnel: Improved the unsaved changes prompt after saving order bump designs. (#9133)
+* Improved: Funnel: Improved compatibility with Avada Builder. (#9172)
+* Improved: Funnel: Improved plugin architecture by separating the Lite and Pro admin app assets. (#9251)
+* Improved: Funnel: Improved plugin compliance with WordPress.org plugin guidelines. (#9252)
+* Improved: Funnel: Improved privacy and page performance by serving font assets locally. (#9259)
+* Improved: Funnel: Funnel Session handling improved for in-app browsers. (#9247)
+* Improved: Optin: Strengthened reCAPTCHA validation on optin forms to block automated submissions. (#9054)
+* Improved: Optin: Improved compatibility with Elementor. (#9296)
+* Improved: Thank you Page: Improved Meta Purchase event data with full product content details. (#8837)
+* Improved: Thank you Page: Improved compatibility with Sensei LMS. (#9019)
+* Improved: Thank you Page: Order details now honor item visibility rules set by other plugins. (#9071)
+* Improved: Thank you Page: Improved compatibility with Wompi. (#9226)
+* Fixed: Checkout: Emptied collapsible prefix labels now stay as saved instead of reverting to the default text. (#9030)
+* Fixed: Checkout: Persistent cart now restores saved items when using a global checkout. (#9047)
+* Fixed: Checkout: Phone country code now saves and shows in the summary when entered with a dial code. (#9109)
+* Fixed: Checkout: Order summary strikethrough price now includes tax on stores displaying prices excluding tax. (#9113)
+* Fixed: Checkout: Custom header and footer scripts saved before the sanitization update now render again. (#9224)
+* Fixed: Checkout: Phone field now follows the field editor Required setting instead of the WooCommerce Customizer. (#9233)
+* Fixed: Funnel: Pixel overrides from a previous funnel visit no longer apply on non-funnel pages. (#9007)
+* Fixed: Funnel: Upsell offers now appear in the offers filter dropdown. (#9026)
+* Fixed: Funnel: Contact tags now show every saved tag after in-app navigation instead of the first few. (#9065)
+* Fixed: Funnel: Advanced filter rule chips now render readable text instead of raw template placeholders. (#9155)
+* Fixed: Funnel: Explicitly allow GTM tracking scripts in script related settings . (#9220)
 
 = 3.15.0.8 =
 * Improved: Enhanced overall stability and reliability across the plugin.

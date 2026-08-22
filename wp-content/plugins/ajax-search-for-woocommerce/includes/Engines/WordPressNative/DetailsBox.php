@@ -198,7 +198,14 @@ class DetailsBox {
         $title = '';
         ob_start();
         $queryArgs = $this->getProductsQueryArgs( $termID, $taxonomy );
+        add_filter(
+            'posts_where',
+            ['DgoraWcas\\Helpers', 'excludePasswordProtectedProducts'],
+            90,
+            2
+        );
         $products = new \WP_Query($queryArgs);
+        remove_filter( 'posts_where', ['DgoraWcas\\Helpers', 'excludePasswordProtectedProducts'], 90 );
         if ( $products->have_posts() ) {
             $limit = $queryArgs['posts_per_page'];
             $totalProducts = absint( $products->found_posts );

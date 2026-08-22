@@ -594,6 +594,39 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 		}
 
 		/**
+		 * Determine whether the current request is an Oxygen editor context.
+		 *
+		 * Presence-based so it catches BOTH FunnelKit editor-entry URLs:
+		 * `ct_builder=1` (edit-template button) and `ct_builder=true`
+		 * (admin-bar link). A value compare (`'1' ===` / `=== 'true'`) would
+		 * match only one and wrongly clear Oxygen's own unsaved-changes
+		 * warning in the other editor session. Also covers editor AJAX
+		 * (save / render-inner / oxy_render*) and any admin/ajax request so a
+		 * frontend-only suppression can never leak into the real editor.
+		 *
+		 * @since 3.15.1
+		 *
+		 * @return bool True in any Oxygen editor / admin / editor-AJAX context.
+		 */
+		public static function is_oxy_editor_context() {
+			if ( is_admin() || wp_doing_ajax() ) {
+				return true;
+			}
+
+			// Presence check — catches both `ct_builder=1` and `ct_builder=true`.
+			if ( null !== filter_input( INPUT_GET, 'ct_builder' ) ) {
+				return true;
+			}
+
+			// Oxygen is an optional dependency — guard the core call.
+			if ( class_exists( 'WFFN_OXYGEN' ) && WFFN_OXYGEN::is_template_editor() ) {
+				return true;
+			}
+
+			return self::is_page_builder_editor();
+		}
+
+		/**
 		 * Replace the duplicate http from a string.
 		 *
 		 * @param $string
@@ -1514,6 +1547,48 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			return $resp;
 		}
 
+		/**
+		 * Runs WooCommerce's own installer after a silent activation.
+		 *
+		 * The wizard activates WooCommerce with activate_plugin( …, $silent = true ),
+		 * which suppresses WooCommerce's activation hook, so WC_Install::install()
+		 * never runs and its tables, pages, and db-version marker are never created.
+		 * Calling this immediately after the silent activation makes WooCommerce
+		 * finish installing before any follow-up request queries its tables. It is
+		 * idempotent — WC_Install::install() no-ops once woocommerce_db_version is
+		 * set — and never fatals if WooCommerce's files are unavailable.
+		 *
+		 * @since 3.15.0.9
+		 *
+		 * @param string $plugin_init Basename of the plugin that was just activated.
+		 *
+		 * @return void
+		 */
+		public static function maybe_install_woocommerce( $plugin_init ) {
+			// Key strictly off WooCommerce's basename so other plugin activations are untouched.
+			if ( 'woocommerce/woocommerce.php' !== $plugin_init ) {
+				return;
+			}
+
+			// Include-before-use: WC_Install may not be loaded during a silent activation.
+			if ( ! class_exists( 'WC_Install' ) ) {
+				$wc_install_file = WP_PLUGIN_DIR . '/woocommerce/includes/class-wc-install.php';
+				if ( file_exists( $wc_install_file ) ) {
+					include_once $wc_install_file;
+				}
+			}
+
+			// Fail safe: if WooCommerce's installer is still unavailable, skip without fatal.
+			if ( ! class_exists( 'WC_Install' ) ) {
+				return;
+			}
+
+			WC_Install::install();
+			// Mirror the Elementor precedent: clear the redirect transient so WooCommerce
+			// does not try to redirect the headless REST request.
+			delete_transient( '_wc_activation_redirect' );
+		}
+
 		public static function get_compare_operator_amount( $operand ) {
 			$operator = '';
 			switch ( $operand ) {
@@ -1632,6 +1707,120 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			}
 
 			return $key;
+		}
+
+		/**
+		 * Re-sign an imported Oxygen template with this site's oxygen_private_key.
+		 *
+		 * Oxygen signs every shortcode with a per-site key, so a template exported from
+		 * another site carries foreign signatures and is rejected on sites that have
+		 * signature validation switched on. Running the template through Oxygen's own
+		 * parse_shortcodes() -> parse_components_tree() round trip re-emits it signed
+		 * with the local key.
+		 *
+		 * That round trip is lossy though: parse_shortcodes() matches tags with
+		 * get_shortcode_regex(), which only knows *registered* shortcodes. During a
+		 * template import no FunnelKit Oxygen element is registered (they only boot on
+		 * their own step pages and inside the builder), so those shortcodes are parsed
+		 * as plain text and come back out of parse_components_tree() bracket-escaped to
+		 * _OXY_OPENING_BRACKET_ — the widget is destroyed and renders as literal text on
+		 * the front end. Third-party Oxygen add-on elements have the exact same problem.
+		 *
+		 * So register every tag the template actually uses for the duration of the round
+		 * trip, and refuse the result outright if it still came back mangled.
+		 *
+		 * @param string $content Oxygen shortcode string as exported.
+		 *
+		 * @return string Re-signed content, or the untouched input when the round trip is
+		 *                unavailable or would lose data.
+		 */
+		public static function oxy_resign_shortcodes( $content ) {
+			if ( ! is_string( $content ) || '' === $content ) {
+				return $content;
+			}
+
+			if ( ! function_exists( 'parse_shortcodes' ) || ! function_exists( 'parse_components_tree' ) ) {
+				return $content;
+			}
+
+			$registered = self::oxy_register_template_shortcodes( $content );
+
+			$reemit = '';
+			$parse  = parse_shortcodes( $content, false, false );
+
+			if ( is_array( $parse ) && ! empty( $parse['is_shortcode'] ) && ! empty( $parse['content'] ) && is_array( $parse['content'] ) ) {
+				$reemit = parse_components_tree( $parse['content'] );
+			}
+
+			foreach ( $registered as $tag ) {
+				remove_shortcode( $tag );
+			}
+
+			if ( ! is_string( $reemit ) || '' === $reemit ) {
+				return $content;
+			}
+
+			/**
+			 * Never accept a round trip that escaped brackets the source did not already
+			 * contain, or that lost an element entirely. A template left with foreign
+			 * signatures still recovers the moment signature validation is turned off (it
+			 * is off by default); a mangled template never recovers.
+			 */
+			if ( substr_count( $reemit, '_OXY_OPENING_BRACKET_' ) > substr_count( $content, '_OXY_OPENING_BRACKET_' ) ) {
+				return $content;
+			}
+
+			$lost = array_diff( self::oxy_get_shortcode_tags( $content ), self::oxy_get_shortcode_tags( $reemit ) );
+			if ( count( $lost ) > 0 ) {
+				return $content;
+			}
+
+			return $reemit;
+		}
+
+		/**
+		 * Register every shortcode tag used by an Oxygen template that is not registered
+		 * yet, so Oxygen's parser treats all of them as tree nodes.
+		 *
+		 * The callback is irrelevant — the tags are only ever matched by
+		 * get_shortcode_regex(), never executed — and every tag added here is removed
+		 * again by the caller as soon as the round trip finishes.
+		 *
+		 * @param string $content Oxygen shortcode string.
+		 *
+		 * @return array Tags that were added and must be removed afterwards.
+		 */
+		private static function oxy_register_template_shortcodes( $content ) {
+			$added = array();
+
+			foreach ( self::oxy_get_shortcode_tags( $content ) as $tag ) {
+				if ( ! shortcode_exists( $tag ) ) {
+					add_shortcode( $tag, '__return_empty_string' );
+					$added[] = $tag;
+				}
+			}
+
+			return $added;
+		}
+
+		/**
+		 * Collect the distinct opening shortcode tag names used in an Oxygen template.
+		 *
+		 * @param string $content Oxygen shortcode string.
+		 *
+		 * @return array
+		 */
+		private static function oxy_get_shortcode_tags( $content ) {
+			if ( ! is_string( $content ) || '' === $content ) {
+				return array();
+			}
+
+			// Opening tags only — `[/name]` cannot match because `/` is not a name start.
+			if ( ! preg_match_all( '/\[([a-z][a-z0-9_-]*)[\s\]]/i', $content, $matches ) ) {
+				return array();
+			}
+
+			return array_values( array_unique( $matches[1] ) );
 		}
 
 		/**
@@ -2015,13 +2204,60 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 		}
 
 		public static function sanitize_global_css( $css ) {
-			$css = wp_strip_all_tags( $css );
-			$css = preg_replace( '/expression\s*\(/i', '', $css );
-			$css = preg_replace( '/javascript\s*:/i', '', $css );
-			$css = preg_replace( '/behavior\s*:/i', '', $css );
-			$css = preg_replace( '/vbscript\s*:/i', '', $css );
-			$css = preg_replace( '/-moz-binding\s*:/i', '', $css );
+			if ( ! is_string( $css ) || '' === $css ) {
+				return '';
+			}
+
+			// Unwrap, don't delete, <style> wrappers a merchant may have pasted around their CSS —
+			// strip only the literal tags and keep the declarations inside (wp_strip_all_tags used to
+			// wipe the whole block, silently destroying legitimate CSS).
+			$css = preg_replace( '#</?\s*style\b[^>]*>#i', '', $css );
+
+			// Remove only tag openers (`<` followed by a letter, `!` or `/`) so a `</style><script>…`
+			// breakout is neutralized without eating `>` child combinators or a literal `<` in a value.
+			$css = preg_replace( '#<\s*(?=[a-z!/])#i', '', $css );
+
+			// Legacy CSS-context vectors, scoped so they never touch selector/identifier names.
+			$css = preg_replace( '/expression\s*\(/i', '', $css );   // IE expression().
+			$css = preg_replace( '/-moz-binding\s*:/i', '', $css );  // XBL binding.
+
+			// Strip javascript:/vbscript: only when used as a protocol inside url( … ) — a bare
+			// `javascript:` elsewhere in CSS is inert, and stripping it globally mangled selectors.
+			$css = preg_replace_callback(
+				'#url\(\s*([\'"]?)(.*?)\1\s*\)#is',
+				static function ( $matches ) {
+					$clean = preg_replace( '/(?:javascript|vbscript)\s*:/i', '', $matches[2] );
+					if ( $clean === $matches[2] ) {
+						return $matches[0]; // No dangerous protocol — keep the url() token byte-identical.
+					}
+
+					return 'url(' . $matches[1] . $clean . $matches[1] . ')';
+				},
+				$css
+			);
+
+			// `behavior:` only as a declaration (start of file, or after `;`/`{`), never inside a
+			// selector such as `.behavior:hover`.
+			$css = preg_replace( '/(^|[;{]\s*)behavior\s*:/i', '$1', $css );
+
 			return $css;
+		}
+
+		/**
+		 * Allow-listed iframe src origins permitted inside script fields.
+		 *
+		 * Matched case-insensitively as a URL prefix against each iframe's src by
+		 * sanitize_global_script(). Add trusted embed origins to the array
+		 * (keep in sync with the JS sanitizer's ALLOWED_IFRAME_SRC).
+		 *
+		 * @return string[]
+		 */
+		public static function get_allowed_iframe_src() {
+			// Iframe src origins allowed inside script fields (case-insensitive prefix
+			// match). Add future trusted embed origins to this array.
+			return array(
+				'https://www.googletagmanager.com',
+			);
 		}
 
 		public static function sanitize_global_script( $script ) {
@@ -2030,8 +2266,32 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			$script = preg_replace( '#<\s*/?\s*link\b[^>]*>#i', '', $script );
 			$script = preg_replace( '#<\s*meta\b[^>]*http-equiv\s*=\s*["\']?\s*refresh[^>]*>#i', '', $script );
 			$script = preg_replace( '#<\s*/?\s*(?:object|embed)\b[^>]*>#i', '', $script );
-			$script = preg_replace( '#<\s*/?\s*iframe\b[^>]*>#i', '', $script );
-			$script = preg_replace( '#<\s*(?:set|animate[a-z]*)\b[^>]*\battributeName\s*=\s*["\']?\s*(?:on|href|xlink)[^>]*>#i', '', $script );
+			// Strip iframes EXCEPT those whose src is explicitly allow-listed (e.g. the
+			// Google Tag Manager <noscript> fallback). Closing </iframe> tags are left
+			// as-is (harmless: kept for allowed iframes, orphaned for removed ones).
+			$allowed_iframe_src = self::get_allowed_iframe_src();
+			$script             = preg_replace_callback(
+				'#<\s*iframe\b[^>]*>#i',
+				static function ( $m ) use ( $allowed_iframe_src ) {
+					if ( is_array( $allowed_iframe_src ) && count( $allowed_iframe_src ) > 0 && preg_match( '#\ssrc\s*=\s*["\']?\s*([^"\'\s>]+)#i', $m[0], $src_m ) ) {
+						$src        = strtolower( $src_m[1] );
+						$src_scheme = wp_parse_url( $src, PHP_URL_SCHEME ) ?: '';
+						$src_host   = wp_parse_url( $src, PHP_URL_HOST ) ?: '';
+						$src_port   = wp_parse_url( $src, PHP_URL_PORT );
+						foreach ( $allowed_iframe_src as $prefix ) {
+							$pfx      = strtolower( $prefix );
+							$pfx_host = wp_parse_url( $pfx, PHP_URL_HOST ) ?: '';
+							if ( '' !== $pfx_host && $src_host === $pfx_host && $src_scheme === ( wp_parse_url( $pfx, PHP_URL_SCHEME ) ?: '' ) && $src_port === wp_parse_url( $pfx, PHP_URL_PORT ) ) {
+								return $m[0];
+							}
+						}
+					}
+
+					return '';
+				},
+				$script
+			);
+			$script             = preg_replace( '#<\s*(?:set|animate[a-z]*)\b[^>]*\battributeName\s*=\s*["\']?\s*(?:on|href|xlink)[^>]*>#i', '', $script );
 
 			// (2) Dangerous attributes / inline-URI protocols.
 			$script = preg_replace( '#\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $script );
@@ -2111,47 +2371,13 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 		}
 
 		/**
-		 * Enqueue the version-pinned FontAwesome and WebFont loader scripts used by the block editors.
+		 * Enqueue the WebFont loader used by the block editors' font pickers.
 		 *
-		 * Both are remote, version-pinned CDN files locked with Subresource Integrity so a compromised
-		 * CDN response cannot execute in the privileged wp-admin editor origin.
-		 *
-		 * @param string $fa_handle      Handle to register/enqueue the FontAwesome script under.
 		 * @param string $webfont_handle Handle to register/enqueue the WebFont loader script under.
 		 */
-		public static function enqueue_block_editor_remote_assets( $fa_handle = 'bwf-font-awesome-kit', $webfont_handle = 'bwf-web-font' ) {
-			$assets = array(
-				$fa_handle      => array(
-					'src'       => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/js/all.min.js',
-					'version'   => '6.7.2',
-					'integrity' => 'sha384-DsXFqEUf3HnCU8om0zbXN58DxV7Bo8/z7AbHBGd2XxkeNpdLrygNiGFr/03W0Xmt',
-				),
-				$webfont_handle => array(
-					'src'       => 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js',
-					'version'   => '1.6.26',
-					'integrity' => 'sha384-pvXSwSU09c+q9mPyY++ygUHWIYRoaxgnJ/JC5wcOzMb/NVVu+IDniiB9qWp3ZNWM',
-				),
-			);
-
-			$integrity_map = array();
-			foreach ( $assets as $handle => $asset ) {
-				wp_register_script( $handle, $asset['src'], array(), $asset['version'], true );
-				wp_enqueue_script( $handle );
-				$integrity_map[ $handle ] = $asset['integrity'];
-			}
-
-			add_filter(
-				'script_loader_tag',
-				function ( $tag, $handle, $src ) use ( $integrity_map ) {
-					if ( isset( $integrity_map[ $handle ] ) && false === strpos( $tag, 'integrity=' ) ) {
-						$tag = str_replace( ' src=', ' integrity="' . esc_attr( $integrity_map[ $handle ] ) . '" crossorigin="anonymous" src=', $tag );
-					}
-
-					return $tag;
-				},
-				10,
-				3
-			);
+		public static function enqueue_block_editor_webfont_loader( $webfont_handle = 'bwf-web-font' ) {
+			wp_register_script( $webfont_handle, WFFN_PLUGIN_URL . '/assets/js/webfont-loader.js', array(), WFFN_VERSION_DEV, true );
+			wp_enqueue_script( $webfont_handle );
 		}
 	}
 

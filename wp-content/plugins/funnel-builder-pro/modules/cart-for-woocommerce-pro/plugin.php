@@ -30,11 +30,13 @@ if ( ! class_exists( '\FKCart\Pro\Plugin' ) ) {
 			}
 
 			define('FKCART_PRO_PATH',__DIR__);
+			define( 'FKCART_PRO_DB_VERSION', '1.0.1' );
 
 			include __DIR__ . '/include/upsells.php';
 			include __DIR__ . '/include/rewards.php';
 			include_once __DIR__ . '/include/fkcart-db-migrator.php';
 			include __DIR__ . '/include/special-add-on.php';
+			include_once __DIR__ . '/include/db.php';
 
 			if ( class_exists( '\FKCart\Pro\Upsells' ) ) {
 				Upsells::getInstance();
@@ -44,6 +46,9 @@ if ( ! class_exists( '\FKCart\Pro\Plugin' ) ) {
 			}
 			if ( class_exists( '\FKCart\Pro\Special_Add_On' ) ) {
 				Special_Add_On::getInstance();
+			}
+			if ( class_exists( '\FKCart\Pro\DB' ) ) {
+				DB::getInstance();
 			}
 			add_action( 'rest_api_init', [ $this, 'init_rest_api' ], 9 );
 		}

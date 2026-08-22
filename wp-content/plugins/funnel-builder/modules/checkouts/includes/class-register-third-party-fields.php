@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Class_Register_Third_Party_Fields' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Class_Register_Third_Party_Fields {

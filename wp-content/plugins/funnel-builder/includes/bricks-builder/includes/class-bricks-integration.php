@@ -2,6 +2,8 @@
 
 namespace FunnelKit;
 
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
+
 use WFACP_Common;
 use WFFN_Thank_You_WC_Pages;
 
@@ -141,6 +143,8 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 			add_action( 'wp', array( $this, 'wp_register_elements' ), 8 );
 
 			add_action( 'wp_ajax_bricks_save_post', array( $this, 'wp_register_elements' ), - 1 );
+			add_action( 'wp_ajax_bricks_regenerate_css_file', array( $this, 'register_elements_for_css_regeneration' ), - 1 );
+			add_action( 'bricks_regenerate_css_files', array( $this, 'register_all_elements' ), - 1 );
 			add_action( 'rest_api_init', array( $this, 'rest_register_elements' ), 9 );
 			add_action( 'wffn_before_import_checkout_template', array( $this, 'rest_register_elements_on_import' ), 10, 2 );
 			add_action( 'wffn_import_template_background', array( $this, 'rest_register_elements' ), 9 );
@@ -299,6 +303,61 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 			if ( WFOPP_Core()->optin_pages->get_post_type_slug() === get_post_type( $post_id ) ) {
 				$this->register_elements( 'optin-pages' );
 			}
+		}
+
+		/**
+		 * Register elements during Bricks CSS file regeneration (AJAX).
+		 *
+		 * When "Regenerate CSS files" is clicked in Bricks settings, it processes each post via
+		 * wp_ajax_bricks_regenerate_css_file. The 'wp' hook doesn't fire during AJAX, so our
+		 * elements aren't registered and their control CSS is not generated.
+		 * This method checks the post type being regenerated and registers the appropriate elements.
+		 *
+		 * @return void
+		 */
+		public function register_elements_for_css_regeneration() {
+			$post_id = isset( $_POST['data'] ) ? absint( wp_unslash( $_POST['data'] ) ) : 0; //phpcs:ignore WordPress.Security.NonceVerification.Missing , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+
+			if ( empty( $post_id ) ) {
+				return;
+			}
+
+			$post_type = get_post_type( $post_id );
+
+			if ( class_exists( 'WFACP_Common' ) && WFACP_Common::get_post_type_slug() === $post_type ) {
+				if ( 0 === did_action( 'wfacp_template_class_found' ) && ! is_null( WFACP_Core()->template_loader ) ) {
+					WFACP_Core()->template_loader::$is_checkout = true;
+					WFACP_Common::set_id( $post_id );
+					WFACP_Core()->template_loader->maybe_setup_page();
+				}
+				$this->register_elements( 'checkout' );
+			}
+
+			if ( ! is_null( WFFN_Core()->thank_you_pages ) && WFFN_Core()->thank_you_pages->get_post_type_slug() === $post_type ) {
+				$this->register_elements( 'thankyou-pages' );
+			}
+
+			if ( WFOPP_Core()->optin_pages->get_post_type_slug() === $post_type ) {
+				$this->register_elements( 'optin-pages' );
+			}
+		}
+
+		/**
+		 * Register all elements for bulk CSS regeneration (cron/CLI).
+		 *
+		 * When CSS files are regenerated in bulk (theme update cron, WP-CLI), all element types
+		 * need to be registered upfront since multiple post types are processed.
+		 *
+		 * @return void
+		 */
+		public function register_all_elements() {
+			if ( class_exists( 'WFACP_Common' ) ) {
+				$this->register_elements( 'checkout' );
+			}
+			if ( wffn_is_wc_active() ) {
+				$this->register_elements( 'thankyou-pages' );
+			}
+			$this->register_elements( 'optin-pages' );
 		}
 
 		/**
@@ -462,7 +521,7 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 		 * @return array The modified array of internationalization strings.
 		 */
 		public function i18n_strings( $i18n ) {
-			$i18n['funnelkit'] = esc_html__( 'FunnelKit' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch , WordPress.WP.I18n.MissingArgDomain
+			$i18n['funnelkit'] = esc_html__( 'FunnelKit', 'funnel-builder' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 			return $i18n;
 		}

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
 	#[\AllowDynamicProperties]
@@ -28,7 +29,13 @@ if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
 			add_action( 'init', array( $this, 'maybe_set_optin' ) );
 
 			foreach ( $this->shortcodes as $code ) {
-				add_shortcode( 'wfop_' . $code, array( $this, 'get_' . $code ) );
+				/** Submitted optin values, printed by WordPress -- escape at the boundary. */
+				add_shortcode(
+					'wfop_' . $code,
+					function ( $atts = array() ) use ( $code ) {
+						return esc_html( (string) call_user_func( array( $this, 'get_' . $code ), $atts ) );
+					}
+				);
 			}
 			add_action( 'wp_head', array( $this, 'localize_optin_submitted_data' ) );
 		}

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /**.
  * Woo Credits Platinum
  * by http://woocredits.com/

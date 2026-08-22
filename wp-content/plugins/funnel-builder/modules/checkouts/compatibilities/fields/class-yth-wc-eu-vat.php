@@ -55,7 +55,7 @@ if ( ! class_exists( 'WFACP_Yth_Wc_Eu_Vat' ) ) {
 
 			new WFACP_Add_Address_Field( 'wfacp_yweu_vat', array(
 				'type'     => 'wfacp_html',
-				'label'    => __( 'YTH EU Vat', 'woofunnels-aero-checkout' ),
+				'label'    => __( 'YTH EU Vat', 'funnel-builder' ),
 				'cssready' => [ 'wfacp-col-left-third' ],
 				'class'    => array( 'form-row-third first', 'wfacp-col-full' ),
 				'required' => false,

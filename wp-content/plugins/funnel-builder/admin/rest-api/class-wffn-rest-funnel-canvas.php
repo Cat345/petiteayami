@@ -226,21 +226,19 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 			 */
 			$get_views = array();
 			if ( count( $ids ) > 0 ) {
-				$get_views = $wpdb->get_results(
-					$wpdb->prepare(
-						'SELECT object_id, SUM(CASE WHEN type = 2 OR type = 4 OR type = 5 OR type = 8 OR type = 10 THEN `no_of_sessions` END) AS `views` ,SUM(CASE WHEN type = 3 OR type = 11 THEN `no_of_sessions` END) AS `converted` FROM ' . $wpdb->prefix . 'wfco_report_views WHERE object_id IN ( ' . implode( ', ', array_fill( 0, count( $ids ), '%d' ) ) . ' ) GROUP BY object_id ORDER BY object_id ASC',
-						$ids
-					),
-					ARRAY_A
+				/**
+				 * View counts come from whoever records them. This plugin records
+				 * none, so the default is an empty set and every step keeps the
+				 * zeroes it was initialised with.
+				 */
+				$get_views = apply_filters(
+					'wffn_report_views_rows',
+					array(),
+					array(
+						'context'    => 'canvas_steps',
+						'object_ids' => $ids,
+					)
 				);
-				if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
-					$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
-					if ( true === $db_error['db_error'] ) {
-						WFFN_Core()->logger->log( 'canvas views analytics error : ' . wp_json_encode( $wpdb->last_error ) . '  query ' . wp_json_encode( $wpdb->last_query ), 'wffn-failed-query', true );
-
-						return $data;
-					}
-				}
 
 				if ( is_array( $get_views ) && count( $get_views ) > 0 ) {
 					foreach ( $get_views as $view_data ) {
@@ -606,14 +604,16 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 
 			}
 
-			$get_query = 'SELECT SUM( CASE WHEN type = ' . $view_type . ' THEN `no_of_sessions` END ) AS viewed FROM ' . $wpdb->prefix . 'wfco_report_views' . '  WHERE object_id IN(' . $step_ids . ') ' . $date_query . ' ORDER BY object_id ASC';
-			$get_data  = $wpdb->get_row( $get_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
-				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
-				if ( true === $db_error['db_error'] ) {
-					return $db_error;
-				}
-			}
+			/** Empty by default: this plugin records no views, so the zeroes stand. */
+			$get_data = apply_filters(
+				'wffn_report_views_row',
+				array(),
+				array(
+					'context'    => 'step_stats',
+					'object_ids' => $ids,
+					'view_type'  => $view_type,
+				)
+			);
 
 			if ( is_array( $get_data ) && count( $get_data ) > 0 ) {
 				$data['views']           = is_null( $get_data['viewed'] ) ? 0 : intval( $get_data['viewed'] );
@@ -659,14 +659,17 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 			$ids[]    = $step_id;
 			$step_ids = implode( ',', $ids );
 
-			$get_query = 'SELECT SUM(CASE WHEN type = ' . $view_type . ' THEN `no_of_sessions` END) AS `viewed` ,SUM(CASE WHEN type = ' . $convert_type . ' THEN `no_of_sessions` END) AS `converted` FROM  ' . $wpdb->prefix . 'wfco_report_views' . '  WHERE object_id IN(' . $step_ids . ') ' . $date_query . ' ORDER BY object_id ASC';
-			$get_data  = $wpdb->get_row( $get_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
-				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
-				if ( true === $db_error['db_error'] ) {
-					return $db_error;
-				}
-			}
+			/** Empty by default: this plugin records no views, so the zeroes stand. */
+			$get_data = apply_filters(
+				'wffn_report_views_row',
+				array(),
+				array(
+					'context'    => 'step_stats',
+					'object_ids' => $ids,
+					'view_type'  => $view_type,
+					'convert_type' => $convert_type,
+				)
+			);
 
 			if ( is_array( $get_data ) && count( $get_data ) > 0 ) {
 				$data['views']           = is_null( $get_data['viewed'] ) ? 0 : intval( $get_data['viewed'] );
@@ -712,16 +715,17 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 
 			$step_ids = implode( ',', $ids );
 
-			$get_query = 'SELECT SUM(CASE WHEN type = ' . $view_type . ' THEN `no_of_sessions` END) AS `viewed` ,SUM(CASE WHEN type = ' . $convert_type . ' THEN `no_of_sessions` END) AS `converted` FROM  ' . $wpdb->prefix . 'wfco_report_views' . '  WHERE object_id IN(' . $step_ids . ') ' . $date_query . ' ORDER BY object_id ASC';
-
-			$get_data = $wpdb->get_row( $get_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-
-			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
-				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
-				if ( true === $db_error['db_error'] ) {
-					return $db_error;
-				}
-			}
+			/** Empty by default: this plugin records no views, so the zeroes stand. */
+			$get_data = apply_filters(
+				'wffn_report_views_row',
+				array(),
+				array(
+					'context'    => 'step_stats',
+					'object_ids' => $ids,
+					'view_type'  => $view_type,
+					'convert_type' => $convert_type,
+				)
+			);
 
 			if ( is_array( $get_data ) && count( $get_data ) > 0 ) {
 				$data['views']           = is_null( $get_data['viewed'] ) ? 0 : intval( $get_data['viewed'] );
@@ -786,14 +790,16 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 
 			}
 
-			$get_query = 'SELECT object_id, SUM( CASE WHEN type = ' . $view_type . ' THEN `no_of_sessions` END ) AS viewed FROM ' . $wpdb->prefix . 'wfco_report_views' . '  WHERE object_id IN(' . $step_ids . ') ' . $date_query . ' ORDER BY object_id ASC';
-			$get_data  = $wpdb->get_row( $get_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
-				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
-				if ( true === $db_error['db_error'] ) {
-					return $db_error;
-				}
-			}
+			/** Empty by default: this plugin records no views, so the zeroes stand. */
+			$get_data = apply_filters(
+				'wffn_report_views_row',
+				array(),
+				array(
+					'context'    => 'step_stats',
+					'object_ids' => $ids,
+					'view_type'  => $view_type,
+				)
+			);
 
 			if ( is_array( $get_data ) && count( $get_data ) > 0 ) {
 				$data['views']           = is_null( $get_data['viewed'] ) ? 0 : intval( $get_data['viewed'] );
@@ -877,14 +883,16 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 
 			$step_ids = implode( ',', $ids );
 
-			$get_query = 'SELECT SUM( CASE WHEN type = ' . $view_type . ' THEN `no_of_sessions` END ) AS viewed FROM ' . $wpdb->prefix . 'wfco_report_views' . '  WHERE object_id IN(' . $step_ids . ') ' . $date_query . '  ORDER BY object_id ASC';
-			$get_data  = $wpdb->get_row( $get_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
-				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
-				if ( true === $db_error['db_error'] ) {
-					return $db_error;
-				}
-			}
+			/** Empty by default: this plugin records no views, so the zeroes stand. */
+			$get_data = apply_filters(
+				'wffn_report_views_row',
+				array(),
+				array(
+					'context'    => 'step_stats',
+					'object_ids' => $ids,
+					'view_type'  => $view_type,
+				)
+			);
 
 			if ( is_array( $get_data ) && count( $get_data ) > 0 ) {
 				$data['views'] = is_null( $get_data['viewed'] ) ? 0 : intval( $get_data['viewed'] );

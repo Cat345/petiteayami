@@ -3,6 +3,15 @@
 namespace YOOtheme;
 
 return [
+    '5.0.37' => function ($node, array $params) {
+        $type = $params['type'];
+
+        if (($type->container ?? false) &&
+            ($type->fields['content']['type'] ?? '') === 'content-items'
+        ) {
+            unset($node->props['content']);
+        }
+    },
     '5.0.0-beta.0.7' => function ($node) {
         if (($node->props['margin'] ?? '') === 'remove-vertical') {
             $node->props['margin'] = 'remove';
@@ -139,7 +148,7 @@ return [
         }
 
         // move declaration of uk-hidden class to visibility settings
-        if ($type->element && empty($node->props['visibility']) && !empty($node->props['class'])) {
+        if (($type->element ?? false) && empty($node->props['visibility']) && !empty($node->props['class'])) {
             $node->props['class'] = trim(
                 preg_replace_callback(
                     '/(^|\s+)uk-hidden@(s|m|l|xl)/',

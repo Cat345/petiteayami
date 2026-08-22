@@ -12,7 +12,7 @@ return [
                         'src' =>
                             'https://www.youtube-nocookie.com/watch?v=VPvMOJy8hPA&amp;list=PLrqT0WH0HPdM3qcWFqRRj_SOZ80ze0nKj',
                         'duration' => '1:19',
-                        'documentation' => 'support/yootheme-pro/wordpress/widgets-and-modules',
+                        'documentation' => 'docs/wordpress/widgets-and-modules',
                         'support' => 'support/search?tags=125&q=widgets',
                     ],
                     [
@@ -21,7 +21,7 @@ return [
                             'https://www.youtube-nocookie.com/watch?v=D7UsEG6FYIE&amp;list=PLrqT0WH0HPdM3qcWFqRRj_SOZ80ze0nKj',
                         'duration' => '0:55',
                         'documentation' =>
-                            'support/yootheme-pro/wordpress/widgets-and-modules#add-a-new-widget',
+                            'docs/wordpress/widgets-and-modules#add-a-new-widget',
                         'support' => 'support/search?tags=125&q=widgets',
                     ],
                     [
@@ -30,7 +30,7 @@ return [
                             'https://www.youtube-nocookie.com/watch?v=2CS7f-KKn3I&amp;list=PLrqT0WH0HPdM3qcWFqRRj_SOZ80ze0nKj',
                         'duration' => '1:48',
                         'documentation' =>
-                            'support/yootheme-pro/wordpress/widgets-and-modules#widget-areas',
+                            'docs/wordpress/widgets-and-modules#widget-areas',
                         'support' => 'support/search?tags=125&q=module%20areas',
                     ],
                     [
@@ -39,7 +39,7 @@ return [
                             'https://www.youtube-nocookie.com/watch?v=xhzDNUw8JAs&amp;list=PLrqT0WH0HPdM3qcWFqRRj_SOZ80ze0nKj',
                         'duration' => '1:37',
                         'documentation' =>
-                            'support/yootheme-pro/wordpress/widgets-and-modules#widget-visibility',
+                            'docs/wordpress/widgets-and-modules#widget-visibility',
                         'support' => 'support/search?tags=125&q=widget%20visibility',
                     ],
                 ],
@@ -50,7 +50,7 @@ return [
                             'https://www.youtube-nocookie.com/watch?v=ho3jXYvufJg&amp;list=PLrqT0WH0HPdM3qcWFqRRj_SOZ80ze0nKj',
                         'duration' => '0:40',
                         'documentation' =>
-                            'support/yootheme-pro/wordpress/widgets-and-modules#default-options',
+                            'docs/wordpress/widgets-and-modules#default-options',
                         'support' => 'support/search?tags=125&q=widget%20theme%20settings',
                     ],
                     [
@@ -59,7 +59,7 @@ return [
                             'https://www.youtube-nocookie.com/watch?v=IIk6QEfSZTo&amp;list=PLrqT0WH0HPdM3qcWFqRRj_SOZ80ze0nKj',
                         'duration' => '1:09',
                         'documentation' =>
-                            'support/yootheme-pro/wordpress/widgets-and-modules#appearance-options',
+                            'docs/wordpress/widgets-and-modules#appearance-options',
                         'support' => 'support/search?tags=125&q=widget%20theme%20settings',
                     ],
                     [
@@ -68,7 +68,7 @@ return [
                             'https://www.youtube-nocookie.com/watch?v=Ha_IKhtjWw8&amp;list=PLrqT0WH0HPdM3qcWFqRRj_SOZ80ze0nKj',
                         'duration' => '1:35',
                         'documentation' =>
-                            'support/yootheme-pro/wordpress/widgets-and-modules#grid-options',
+                            'docs/wordpress/widgets-and-modules#grid-options',
                         'support' => 'support/search?tags=125&q=widget%20theme%20settings%20grid',
                     ],
                     [
@@ -77,7 +77,7 @@ return [
                             'https://www.youtube-nocookie.com/watch?v=CD1Qc6yvDWQ&amp;list=PLrqT0WH0HPdM3qcWFqRRj_SOZ80ze0nKj',
                         'duration' => '0:36',
                         'documentation' =>
-                            'support/yootheme-pro/wordpress/widgets-and-modules#list-options',
+                            'docs/wordpress/widgets-and-modules#list-options',
                         'support' => 'support/search?tags=125&q=widget%20theme%20settings%20list',
                     ],
                     [
@@ -86,7 +86,7 @@ return [
                             'https://www.youtube-nocookie.com/watch?v=8gQVrgcUbzs&amp;list=PLrqT0WH0HPdM3qcWFqRRj_SOZ80ze0nKj',
                         'duration' => '1:09',
                         'documentation' =>
-                            'support/yootheme-pro/wordpress/widgets-and-modules#menu-options',
+                            'docs/wordpress/widgets-and-modules#menu-options',
                         'support' => 'support/search?tags=125&q=widget%20theme%20settings%20menu',
                     ],
                 ],
@@ -97,7 +97,7 @@ return [
                             'https://www.youtube-nocookie.com/watch?v=JMpEPdC9VN4&amp;list=PLrqT0WH0HPdM3qcWFqRRj_SOZ80ze0nKj',
                         'duration' => '1:22',
                         'documentation' =>
-                            'support/yootheme-pro/wordpress/widgets-and-modules#builder-widget',
+                            'docs/wordpress/widgets-and-modules#builder-widget',
                         'support' => 'support/search?tags=125&q=builder%20widget',
                     ],
                     [
@@ -106,7 +106,7 @@ return [
                             'https://www.youtube-nocookie.com/watch?v=_0vGzg_lmsg&amp;list=PLrqT0WH0HPdM3qcWFqRRj_SOZ80ze0nKj',
                         'duration' => '3:55',
                         'documentation' =>
-                            'support/yootheme-pro/wordpress/widgets-and-modules#advanced-layouts',
+                            'docs/wordpress/widgets-and-modules#advanced-layouts',
                         'support' => 'support/search?tags=125&q=builder%20widget',
                     ],
                 ],

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFTY_Order_Details' ) ) {
 	#[AllowDynamicProperties]
 	class WFTY_Order_Details extends WFTY_Divi_HTML_BLOCK {

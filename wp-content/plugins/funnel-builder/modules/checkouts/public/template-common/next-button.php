@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -36,8 +37,8 @@ if ( isset( $formData['form_data']['btn_details']['width'] ) ) {
 
 	do_action( 'wfacp_before_next_button', $current_action );
 	?>
-    <button type="button" class="button button-primary wfacp_next_page_button" data-next-step="<?php echo $next_action; ?>" data-current-step='<?php echo $current_action; ?>' value="<?php _e( 'Next Step', 'woofunnels-aero-checkout' ); ?>" data-text="<?php echo $data_text ?>">
-		<?php _e( $change_next_btn, 'woofunnels-aero-checkout' ); ?>
+    <button type="button" class="button button-primary wfacp_next_page_button" data-next-step="<?php echo $next_action; ?>" data-current-step='<?php echo $current_action; ?>' value="<?php _e( 'Next Step', 'funnel-builder' ); ?>" data-text="<?php echo $data_text ?>">
+		<?php echo wp_kses_post( $change_next_btn ); ?>
     </button>
 	<?php
 	if ( isset( $formData['form_data']['breadcrumb_before']['enable_cart'] ) && true === $formData['form_data']['breadcrumb_before']['enable_cart'] ) {
@@ -45,11 +46,11 @@ if ( isset( $formData['form_data']['btn_details']['width'] ) ) {
 		if ( apply_filters( 'wfacp_native_checkout_cart', true ) && $current_action == 'single_step' && $is_global_checkout === true ) {
 			$cartURL = wc_get_cart_url();
 
-			$cart_name = __( '« Return to Cart', 'woofunnels-aero-checkout' );
+			$cart_name = __( '« Return to Cart', 'funnel-builder' );
 			if ( isset( $formData['form_data']['breadcrumb_before']['enable_cart_text'] ) && $formData['form_data']['breadcrumb_before']['enable_cart_text'] != '' ) {
 				$enable_cart_text = esc_html( $formData['form_data']['breadcrumb_before']['enable_cart_text'] );
 				if ( "Cart" === $enable_cart_text ) {
-					$cart_name = __( '« Return to ' . $enable_cart_text, 'woofunnels-aero-checkout' );
+					$cart_name = __( '« Return to ' . $enable_cart_text, 'funnel-builder' );
 				} else {
 					$cart_name = "<span>«</span> " . esc_html( $formData['form_data']['breadcrumb_before']['enable_cart_text'] );
 				}

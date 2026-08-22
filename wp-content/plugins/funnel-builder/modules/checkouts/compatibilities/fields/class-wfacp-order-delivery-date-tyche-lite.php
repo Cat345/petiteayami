@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /**
  * Order delivery date pro tyche
  *  class WFACP_Compatibility_Order_Delivery_Date_Tyche_lite
@@ -35,7 +36,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Order_Delivery_Date_Tyche_lite' ) ) {
 					'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'aw_addon_wrap', 'oddt' ),
 					'id'         => 'oddt',
 					'field_type' => 'advanced',
-					'label'      => __( 'Delivery Date', 'woofunnels-aero-checkout' ),
+					'label'      => __( 'Delivery Date', 'funnel-builder' ),
 				);
 			}
 

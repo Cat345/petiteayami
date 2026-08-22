@@ -8,6 +8,8 @@
  * @package MetaCommerce
  */
 
+defined( 'ABSPATH' ) || exit;
+
 require_once __DIR__ . '/includes/fbutils.php';
 
 use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
@@ -193,9 +195,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 */
 	public function init() {
 		add_action( 'init', array( $this, 'get_integration' ) );
-
-		add_action( 'woocommerce_init', array( $this, 'add_whatsapp_consent_block_checkout_fields' ) );
-		add_filter( 'woocommerce_checkout_fields', array( $this, 'add_whatsapp_consent_classic_checkout_fields' ) );
 
 		// Hook the setup task. The hook admin_init is not triggered when the WC fetches the tasks using the endpoint: wp-json/wc-admin/onboarding/tasks and hence hooking into init.
 		add_action( 'init', array( $this, 'add_setup_task' ), 20 );
@@ -460,7 +459,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 		}
 		if ( ! is_object( $this->api ) ) {
 			if ( ! $access_token ) {
-				throw new ApiException( __( 'Cannot create the API instance because the access token is missing.', 'facebook-for-woocommerce' ) );
+				throw new ApiException( esc_html__( 'Cannot create the API instance because the access token is missing.', 'facebook-for-woocommerce' ) );
 			}
 			$this->api = new WooCommerce\Facebook\API( $access_token );
 		} else {
@@ -820,62 +819,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	}
 
 	/**
-	 * Add blocks checkout fields to collect whatsapp consent if consent collection is enabled
-	 *
-	 * @since 2.3.0
-	 *
-	 * @param array $fields
-	 *
-	 * @return array
-	 */
-	public function add_whatsapp_consent_block_checkout_fields( $fields ) {
-		if ( get_option( 'wc_facebook_whatsapp_consent_collection_setting_status', 'disabled' ) === 'enabled' ) {
-			woocommerce_register_additional_checkout_field(
-				array(
-					'id'            => 'wc_facebook/whatsapp_consent_checkbox', // id = namespace/field_name
-					'label'         => esc_html( 'Get order updates on WhatsApp' ),
-					'location'      => 'address',
-					'type'          => 'checkbox',
-					'optionalLabel' => esc_html( 'Get order updates on WhatsApp' ),
-				)
-			);
-		}
-		return $fields;
-	}
-
-	/**
-	 * Add classic checkout fields to collect whatsapp consent if consent collection is enabled
-	 *
-	 * @since 2.3.0
-	 *
-	 * @param array $fields
-	 *
-	 * @return array
-	 */
-	public function add_whatsapp_consent_classic_checkout_fields( $fields ) {
-		if ( get_option( 'wc_facebook_whatsapp_consent_collection_setting_status', 'disabled' ) === 'enabled' ) {
-				$fields['billing']['billing_whatsapp_consent']   = array(
-					'label'    => esc_html( 'Get order updates on WhatsApp' ),
-					'type'     => 'checkbox',
-					'required' => false,
-					'class'    => array( 'form-row-wide' ),
-					'default'  => true,
-					'priority' => 101,
-				);
-				$fields['shipping']['shipping_whatsapp_consent'] = array(
-					'label'    => esc_html( 'Get order updates on WhatsApp' ),
-					'type'     => 'checkbox',
-					'required' => false,
-					'class'    => array( 'form-row-wide' ),
-					'default'  => true,
-					'priority' => 101,
-				);
-		}
-		return $fields;
-	}
-
-	/**
-	/**
 	 * Displays an admin notice when the Facebook connection is invalid.
 	 *
 	 * Hooked on admin_notices so it fires regardless of whether the enhanced
@@ -887,7 +830,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 		}
 
 		// Only show on the Plugins page and the Facebook settings page.
-		$screen = get_current_screen();
+		$screen          = get_current_screen();
 		$allowed_screens = array( 'plugins', 'marketing_page_wc-facebook', 'woocommerce_page_wc-facebook' );
 		if ( ! $screen || ! in_array( $screen->id, $allowed_screens, true ) ) {
 			return;

@@ -159,7 +159,7 @@ return [
                             'https://www.youtube-nocookie.com/watch?v=PKVnGZjd0dE&amp;list=PLrqT0WH0HPdPfykSwhMt6Jl2_RgJ6ixU-',
                         'duration' => '9:59',
                         'documentation' =>
-                            'support/yootheme-pro/joomla/joomla/elements#parallax-settings',
+                            'docs/joomla/elements#parallax-settings',
                         'support' => 'support/search?tags=125&q=parallax',
                     ],
                     [
@@ -168,7 +168,7 @@ return [
                             'https://www.youtube-nocookie.com/watch?v=_fykqti6DYc&amp;list=PLrqT0WH0HPdPfykSwhMt6Jl2_RgJ6ixU-',
                         'duration' => '19:01',
                         'documentation' =>
-                            'support/yootheme-pro/joomla/joomla/elements#sticky-parallax-settings',
+                            'docs/joomla/elements#sticky-parallax-settings',
                         'support' => 'support/search?tags=125&q=sticky%20parallax',
                     ],
                 ],

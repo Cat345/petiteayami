@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Analytics_SnapChat' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Analytics_SnapChat extends WFACP_Analytics {

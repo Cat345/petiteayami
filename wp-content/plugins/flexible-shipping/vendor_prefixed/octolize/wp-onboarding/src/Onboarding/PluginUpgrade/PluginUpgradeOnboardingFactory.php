@@ -21,23 +21,23 @@ class PluginUpgradeOnboardingFactory
     /**
      * @var string
      */
-    private $plugin_name;
+    private string $plugin_name;
     /**
      * @var PluginUpgradeMessage[]
      */
-    private $upgrade_messages = [];
+    private array $upgrade_messages = [];
     /**
      * @var string
      */
-    private $current_plugin_version;
+    private string $current_plugin_version;
     /**
      * @var string
      */
-    private $plugin_file;
+    private string $plugin_file;
     /**
      * @var string
      */
-    private $append_tracker_data_to;
+    private string $append_tracker_data_to;
     /**
      * @param string $plugin_name
      * @param string $current_plugin_version
@@ -117,7 +117,7 @@ class PluginUpgradeOnboardingFactory
         $fields = [];
         foreach ($this->upgrade_messages as $upgrade_message) {
             if ($this->is_lower($previous_version, $upgrade_message->get_plugin_version()) && $this->is_grater_or_equal($current_version, $upgrade_message->get_plugin_version())) {
-                $fields[] = (new Html())->set_default_value(sprintf('<div class="upgrade_message"><img class="icon" src="%1$s" /><div class="content"><div class="title">%2$s</div><div class="message">%3$s</div><div><a target="_blank" href="%4$s">%5$s</a></div></div>', esc_url($upgrade_message->get_image_url()), $upgrade_message->get_title(), $upgrade_message->get_message(), esc_url($upgrade_message->get_link_url()), $upgrade_message->get_link_text()));
+                $fields[] = (new Html())->add_class('upgrade_message_wrapper')->set_default_value(sprintf('<div class="upgrade_message"><img class="icon" src="%1$s" /><div class="content"><div class="title">%2$s</div><div class="message">%3$s</div><div><a target="_blank" href="%4$s">%5$s</a></div></div>', esc_url($upgrade_message->get_image_url()), $upgrade_message->get_title(), $upgrade_message->get_message(), esc_url($upgrade_message->get_link_url()), $upgrade_message->get_link_text()));
             }
         }
         return $fields;

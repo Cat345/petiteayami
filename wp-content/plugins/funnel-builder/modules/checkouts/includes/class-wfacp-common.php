@@ -35,7 +35,13 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			add_filter( 'woocommerce_form_field_wfacp_end_divider', array( __CLASS__, 'woocommerce_form_field_wfacp_end_start_divider' ), 10, 4 );
 			add_action( 'woocommerce_form_field_wfacp_html', array( __CLASS__, 'process_wfacp_html' ), 10, 4 );
 			add_filter( 'wcct_get_restricted_action', array( __CLASS__, 'wcct_get_restricted_action' ) );
-			add_shortcode( 'wfacp_order_custom_field', array( __CLASS__, 'wfacp_order_custom_field' ) );
+			/** Returns a stored field value; WordPress prints it, so escape here. */
+			add_shortcode(
+				'wfacp_order_custom_field',
+				static function ( $atts = array() ) {
+					return esc_html( (string) self::wfacp_order_custom_field( $atts ) );
+				}
+			);
 			add_action( 'wfacp_get_fragments', array( __CLASS__, 'initializeTemplate' ) );
 			add_action( 'wfob_before_remove_bump_from_cart', array( __CLASS__, 'wfob_order_bump_fragments' ) );
 			add_action( 'wfob_before_add_to_cart', array( __CLASS__, 'wfob_order_bump_fragments' ) );
@@ -104,7 +110,13 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 			/*------------------------------Enable Order Total---------------------------------*/
 
-			add_shortcode( 'wfacp_order_total', array( __CLASS__, 'wfacp_order_total' ) );
+			/** Formatted price -- may carry currency markup, so keep safe HTML. */
+			add_shortcode(
+				'wfacp_order_total',
+				static function ( $atts = array() ) {
+					return wp_kses_post( (string) self::wfacp_order_total( $atts ) );
+				}
+			);
 
 			add_action( 'template_redirect', array( __CLASS__, 'do_wc_ajax' ), - 1 );
 
@@ -1084,7 +1096,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				'total_purchased_redirect_url'            => '',
 				'hide_best_value'                         => false,
 				'best_value_product'                      => '',
-				'best_value_text'                         => __( 'Best Value', 'woofunnels-aero-checkout' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'best_value_text'                         => __( 'Best Value', 'funnel-builder' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				'best_value_position'                     => 'below',
 				'enable_custom_name_in_order_summary'     => 'false',
 				'autocomplete_enable'                     => 'false',
@@ -1123,7 +1135,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				'save_phone_number_type'                  => 'false',
 				'enable_live_validation'                  => 'false',
 				'enable_address_field_number_validation'  => 'false',
-				'address_field_number_validation_message' => __( 'House/Building number is required in {{address_field}}', 'woofunnel-aero-checkout' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'address_field_number_validation_message' => __( 'House/Building number is required in {{address_field}}', 'funnel-builder' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			);
 
 			if ( is_array( $data ) && count( $data ) > 0 ) {
@@ -1458,7 +1470,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				);
 				// added 3.4.1
 				$address_fields['shipping_phone'] = array(
-					'label'        => self::translation_string_to_check( __( 'Shipping Phone', 'woofunnels-aero-checkout' ) ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'label'        => self::translation_string_to_check( __( 'Shipping Phone', 'funnel-builder' ) ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'type'         => 'tel',
 					'class'        => array( 'form-row-wide' ),
 					'validate'     => array( 'phone' ),
@@ -2152,8 +2164,27 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					$product_regular_price = 0;
 				}
 
-				$product_regular_price *= $quantity;
-				$subtotal               = $row_price;
+				$reg = floatval( $product_regular_price );
+				if ( $product->is_taxable() ) {
+					$product_regular_price = WC()->cart->display_prices_including_tax()
+						? wc_get_price_including_tax(
+							$product,
+							array(
+								'qty'   => $quantity,
+								'price' => $reg,
+							)
+						)
+						: wc_get_price_excluding_tax(
+							$product,
+							array(
+								'qty'   => $quantity,
+								'price' => $reg,
+							)
+						);
+				} else {
+					$product_regular_price = $reg * $quantity;
+				}
+				$subtotal = $row_price;
 
 				if ( $product_regular_price > 0 && ( round( $subtotal, 2 ) !== round( $product_regular_price, 2 ) ) ) {
 					if ( $subtotal > $product_regular_price ) {
@@ -2487,9 +2518,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			if ( isset( $data['footer_script'] ) ) {
 				$data['footer_script'] = self::sanitize_global_script( $data['footer_script'] );
 			}
-			if ( isset( $data['header_css'] ) ) {
-				$data['header_css'] = self::sanitize_global_css( $data['header_css'] );
-			}
+
+			// Store header_css raw and rely on output-side sanitization (WFACP_Template::global_css()).
+			// Sanitizing on save could irreversibly corrupt a merchant's stored CSS once persisted. See FB#9228.
 
 			$data['update_time'] = time();
 			$data['user_id']     = get_current_user_id();
@@ -3196,8 +3227,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				}
 
 				$regular_price = 0;
+				$display_incl  = WC()->cart->display_prices_including_tax();
 
-				foreach ( $cart_contents as $content ) {
+				foreach ( $cart_contents as $cart_item_key => $content ) {
 					// Validate cart item data
 					if ( ! isset( $content['data'] ) || ! isset( $content['quantity'] ) ) {
 						continue;
@@ -3208,7 +3240,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 						continue;
 					}
 
-					$quantity   = absint( $content['quantity'] );
+					$quantity   = wc_stock_amount( $content['quantity'] );
 					$product_id = $product->get_id();
 
 					// Get fresh instance of the product
@@ -3217,12 +3249,24 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 						continue;
 					}
 
-					$item_regular_price = $product->get_regular_price();
+					// Lets extensions override the savings baseline per item. Return '' to skip.
+					$item_regular_price = apply_filters( 'wfacp_saving_price_item_regular_price', $product->get_regular_price(), $content, $product, $cart_item_key );
+
 					if ( '' === $item_regular_price || ! is_numeric( $item_regular_price ) ) {
 						continue;
 					}
 
-					$regular_price += $quantity * floatval( $item_regular_price );
+					// Keep the baseline in the same tax context as the displayed totals.
+					if ( $product->is_taxable() ) {
+						$price_args = array(
+							'qty'   => $quantity,
+							'price' => $item_regular_price,
+						);
+
+						$regular_price += $display_incl ? wc_get_price_including_tax( $product, $price_args ) : wc_get_price_excluding_tax( $product, $price_args );
+					} else {
+						$regular_price += floatval( $item_regular_price ) * $quantity;
+					}
 				}
 
 				// Prevent division by zero
@@ -3230,7 +3274,29 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					return;
 				}
 
-				$total         = WC()->cart->get_cart_contents_total();
+				$total = WC()->cart->get_cart_contents_total();
+				if ( $display_incl ) {
+					$total += WC()->cart->get_cart_contents_tax();
+				}
+
+				// Reflect cart-level discounts from third-party plugins (e.g. Discount Rules PRO)
+				// that are applied as negative (discount-style) fee lines, since
+				// get_cart_contents_total() excludes fee lines. Native coupons and product-level
+				// dynamic discounts are already reflected in get_cart_contents_total(), so they
+				// must NOT be subtracted again (that would double-count the saving).
+				$fees = WC()->cart->get_fees();
+				if ( is_array( $fees ) ) {
+					foreach ( $fees as $fee ) {
+						if ( isset( $fee->total ) && is_numeric( $fee->total ) && (float) $fee->total < 0 && true === apply_filters( 'wfacp_display_save_price_include_fee', true, $fee ) ) {
+							// Fee total is negative, so adding it reduces the paid total.
+							$total += (float) $fee->total;
+							if ( isset( $fee->tax ) && is_numeric( $fee->tax ) ) {
+								$total += (float) $fee->tax;
+							}
+						}
+					}
+				}
+
 				$regular_price = round( $regular_price, 2 );
 				$total         = round( $total, 2 );
 

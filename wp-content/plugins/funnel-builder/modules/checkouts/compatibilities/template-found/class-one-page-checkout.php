@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_PP_one_page_checkout' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_PP_one_page_checkout {

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_Yith_Wc_ajax_Product_Filter_Premium' ) ) {
 	/**
 	 * https://yithemes.com/themes/plugins/yith-woocommerce-ajax-product-filter/

@@ -20,6 +20,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 			add_filter( 'wfacp_forms_field', array( $this, 'hide_product_switcher' ), 10, 2 );
 
 			add_filter( 'wfacp_cart_show_product_thumbnail', array( $this, 'display_order_summary_thumb' ), 10 );
+			add_filter( 'wfacp_cart_show_product_thumbnail_collapsible', array( $this, 'display_order_summary_thumb_collapsed' ), 12 );
 			add_action( 'process_wfacp_html', array( $this, 'layout_order_summary' ), 55, 4 );
 
 			add_filter( 'wfacp_html_fields_order_summary', '__return_false' );
@@ -374,7 +375,12 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 		 * @return bool True if the feature is enabled, false otherwise.
 		 */
 		public function display_image_in_collapsible_order_summary() {
-			return isset( $this->form_data['order_summary_enable_product_image_collapsed'] ) && $this->form_data['order_summary_enable_product_image_collapsed'];
+			$form = is_array( $this->form_data ) ? $this->form_data : array();
+			if ( ! array_key_exists( 'order_summary_enable_product_image_collapsed', $form ) ) {
+				return false;
+			}
+
+			return wc_string_to_bool( $form['order_summary_enable_product_image_collapsed'] );
 		}
 
 		/**
@@ -1295,7 +1301,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 				return trim( $this->form_data['wfacp_payment_place_order_text'] );
 			}
 
-			return __( 'Pladdce order' );
+			return __( 'Place order', 'woocommerce' );//phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 		}
 
 		/**
@@ -1409,18 +1415,30 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 		}
 
 		/**
-		 * Displays the order summary thumbnail.
-		 *
-		 * This function checks if the 'order_summary_enable_product_image' option is set in the form data.
-		 * If it is set, it returns true. Otherwise, it returns the provided status.
-		 *
-		 * @param bool $status The current status.
-		 *
-		 * @return bool The updated status.
+		 * @param bool $status Default from apply_filters.
+		 * @return bool
 		 */
 		public function display_order_summary_thumb( $status ) {
-			if ( isset( $this->form_data['order_summary_enable_product_image'] ) ) {
-				return $this->form_data['order_summary_enable_product_image'];
+			$form = is_array( $this->form_data ) ? $this->form_data : array();
+			if ( array_key_exists( 'order_summary_enable_product_image', $form ) ) {
+				return wc_string_to_bool( $form['order_summary_enable_product_image'] );
+			}
+			$mc = ( isset( $this->mini_cart_data ) && is_array( $this->mini_cart_data ) ) ? $this->mini_cart_data : array();
+			if ( array_key_exists( 'enable_product_image', $mc ) ) {
+				return wc_string_to_bool( $mc['enable_product_image'] );
+			}
+
+			return $status;
+		}
+
+		/**
+		 * @param bool $status Default from apply_filters.
+		 * @return bool
+		 */
+		public function display_order_summary_thumb_collapsed( $status ) {
+			$form = is_array( $this->form_data ) ? $this->form_data : array();
+			if ( array_key_exists( 'order_summary_enable_product_image_collapsed', $form ) ) {
+				return wc_string_to_bool( $form['order_summary_enable_product_image_collapsed'] );
 			}
 
 			return $status;
@@ -1731,6 +1749,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 				'#wfacp_qr_model_wrap .wfacp_qr_wrap .wfacp_qv-summary .button'                                                 => 'background-color:{{VALUE}};',
 				'#wfob_qr_model_wrap .wfob_qr_wrap .button'                                                                     => 'background-color:{{VALUE}};',
 				'body #wfob_qr_model_wrap .wfob_option_btn'                                                                     => 'background-color:{{VALUE}};',
+				'body.wfacp_bricks_template #wfacp-e-form input#rememberme'                                                     => 'accent-color:{{VALUE}};',
 			);
 
 			$color_selectors['{{WRAPPER}} #wfacp-e-form .form-row:not(.woocommerce-invalid-required-field) .wfacp-form-control:not(.input-checkbox):focus']   = 'border-color:{{VALUE}} ;';
@@ -1837,7 +1856,8 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 					// Only show low stock message if current stock is less than or equal to low stock threshold
 					if ( true === $status ) {
-						echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->mini_cart_data['mini_cart_low_stock_message'] ) . '</div>';
+						$low_msg = str_replace( '{{quantity}}', (string) $stock_quantity, $this->mini_cart_data['mini_cart_low_stock_message'] );
+						echo '<div class="wfacp_stocks">' . esc_html( $low_msg ) . '</div>';
 					}
 				}
 			} catch ( Exception $e ) {
@@ -1856,7 +1876,8 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 					$status         = $this->get_low_stock_status( $_product, $stock_quantity );
 					// Only show low stock message if current stock is less than or equal to low stock threshold
 					if ( true === $status ) {
-						echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['order_summary_field_low_stock_message'] ) . '</div>';
+						$low_msg = str_replace( '{{quantity}}', (string) $stock_quantity, $this->form_data['order_summary_field_low_stock_message'] );
+						echo '<div class="wfacp_stocks">' . esc_html( $low_msg ) . '</div>';
 					}
 				}
 			}
@@ -1875,7 +1896,8 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 					// Only show low stock message if current stock is less than or equal to low stock threshold
 					if ( true === $status ) {
-						echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['collapsible_mini_cart_low_stock_message'] ) . '</div>';
+						$low_msg = str_replace( '{{quantity}}', (string) $stock_quantity, $this->form_data['collapsible_mini_cart_low_stock_message'] );
+						echo '<div class="wfacp_stocks">' . esc_html( $low_msg ) . '</div>';
 					}
 				}
 			}

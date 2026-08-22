@@ -30,6 +30,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 		protected $templates            = array();
 		public $edit_id                 = 0;
 		private $url                    = '';
+		private $files_loaded           = false;
 
 		/**
 		 * WFFN_Thank_You_WC_Pages constructor.
@@ -65,6 +66,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 
 			add_action( 'init', array( $this, 'load_files' ), 1 );
 			add_action( 'init', array( $this, 'load_instances' ), 1 );
+			add_action( 'wp', array( $this, 'maybe_load_instances_before_init' ), - 999 );
 			add_action( 'plugins_loaded', array( $this, 'load_compatibility' ), 2 );
 
 			add_action( 'wp_footer', array( $this, 'execute_wc_thankyou_hooks' ), 1 );
@@ -83,6 +85,15 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			add_filter( 'woofunnels_global_settings_fields', array( $this, 'add_global_settings_fields' ) );
 			add_action( 'template_redirect', array( $this, 'clear_cart' ) );
 			$this->load_component_files();
+		}
+
+		public function maybe_load_instances_before_init() {
+			if ( did_action( 'init' ) ) {
+				return;
+			}
+
+			$this->load_files();
+			$this->load_instances();
 		}
 
 		private function process_url() {
@@ -138,13 +149,21 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 		}
 
 		public function load_files() {
-			require $this->get_module_path() . 'includes/class-wfty-data.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-			require $this->get_module_path() . 'includes/class-wfty-common.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-			require $this->get_module_path() . 'includes/class-wfty-shortcodes.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+			if ( true === $this->files_loaded ) {
+				return;
+			}
+
+			require_once $this->get_module_path() . 'includes/class-wfty-data.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+			require_once $this->get_module_path() . 'includes/class-wfty-common.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+			require_once $this->get_module_path() . 'includes/class-wfty-shortcodes.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+			$this->files_loaded = true;
 			do_action( 'wffn_include_files_loaded' );
 		}
 
 		public function load_instances() {
+			if ( $this->data instanceof WFTY_Data ) {
+				return;
+			}
 
 			$this->data = WFTY_Data::get_instance();
 			add_action( 'wp', array( $this->data, 'load_order_wp' ), 10 );
@@ -376,11 +395,17 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 				 * Check if its a page built using elementor, delete the cache for the page
 				 */
 				if ( defined( 'ELEMENTOR_VERSION' ) && version_compare( ELEMENTOR_VERSION, '3.23.0', '>=' ) && class_exists( 'Elementor\Core\Base\Document' ) && method_exists( 'Elementor\Core\Base\Document', 'is_built_with_elementor' ) ) {
-					$document = Elementor\Plugin::$instance->documents->get( get_the_ID() );
+					$ty_page_id = get_the_ID();
+					$document   = Elementor\Plugin::$instance->documents->get( $ty_page_id );
 
 					if ( $document && $document->is_built_with_elementor() ) {
-
-						delete_post_meta( get_the_ID(), Elementor\Core\Base\Document::CACHE_META_KEY );
+						/**
+						 * Thank you pages are per-order: the merge tags they carry resolve to the
+						 * current customer. Elementor stores one cached copy per page, shared by
+						 * every visitor, so any value baked into it by the first customer would be
+						 * served to the next one. Drop the cached copy on every render.
+						 */
+						delete_post_meta( $ty_page_id, Elementor\Core\Base\Document::CACHE_META_KEY );
 					}
 				}
 			}

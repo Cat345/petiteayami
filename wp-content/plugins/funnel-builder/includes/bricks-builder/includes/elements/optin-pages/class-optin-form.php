@@ -22,7 +22,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 		 * @return string The label for the "Optin Form" element.
 		 */
 		public function get_label() {
-			return esc_html__( 'Optin Form' );
+			return esc_html__( 'Optin Form' , 'funnel-builder');
 		}
 
 		/**
@@ -39,12 +39,12 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 			$this->control_groups = array();
 
 			$this->control_groups['contentForm'] = array(
-				'title' => esc_html__( 'Form' ),
+				'title' => esc_html__( 'Form' , 'funnel-builder'),
 				'tab'   => 'content',
 			);
 
 			$this->control_groups['styleForm'] = array(
-				'title' => esc_html__( 'Form' ),
+				'title' => esc_html__( 'Form' , 'funnel-builder'),
 				'tab'   => 'style',
 			);
 
@@ -72,10 +72,10 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			// Define the options array
 			$options = array(
-				'wffn-sm-100' => __( 'Full' ),
-				'wffn-sm-50'  => __( 'One Half' ),
-				'wffn-sm-33'  => __( 'One Third' ),
-				'wffn-sm-67'  => __( 'Two Third' ),
+				'wffn-sm-100' => __( 'Full' , 'funnel-builder'),
+				'wffn-sm-50'  => __( 'One Half' , 'funnel-builder'),
+				'wffn-sm-33'  => __( 'One Third' , 'funnel-builder'),
+				'wffn-sm-67'  => __( 'Two Third' , 'funnel-builder'),
 			);
 
 			// Ensure $get_fields is an array before looping
@@ -93,14 +93,14 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['show_labels'] = array(
 				'group'   => 'contentForm',
-				'label'   => esc_html__( 'Show Label' ),
+				'label'   => esc_html__( 'Show Label' , 'funnel-builder'),
 				'type'    => 'checkbox',
 				'default' => true,
 			);
 
 			$this->controls['separatorContentSubmitButton'] = array(
 				'group' => 'contentForm',
-				'label' => esc_html__( 'Submit Button' ),
+				'label' => esc_html__( 'Submit Button' , 'funnel-builder'),
 				'type'  => 'separator',
 			);
 
@@ -108,22 +108,22 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 				'group'       => 'contentForm',
 				'label'       => esc_html__( 'Title' ),
 				'type'        => 'text',
-				'default'     => esc_html__( 'Send Me My Free Guide' ),
-				'placeholder' => esc_html__( 'Enter the Button Text' ),
+				'default'     => esc_html__( 'Send Me My Free Guide' , 'funnel-builder'),
+				'placeholder' => esc_html__( 'Enter the Button Text' , 'funnel-builder'),
 			);
 
 			$this->controls['subtitle'] = array(
 				'group'       => 'contentForm',
-				'label'       => esc_html__( 'Sub Title' ),
+				'label'       => esc_html__( 'Sub Title' , 'funnel-builder'),
 				'type'        => 'text',
-				'placeholder' => esc_html__( 'Enter subtitle' ),
+				'placeholder' => esc_html__( 'Enter subtitle' , 'funnel-builder'),
 			);
 
 			$this->controls['button_submitting_text'] = array(
 				'group'   => 'contentForm',
-				'label'   => esc_html__( 'Submitting Text' ),
+				'label'   => esc_html__( 'Submitting Text' , 'funnel-builder'),
 				'type'    => 'text',
-				'default' => esc_html__( 'Submitting...' ),
+				'default' => esc_html__( 'Submitting...' , 'funnel-builder'),
 			);
 
 			$this->controls['separatorSpacing'] = array(
@@ -229,7 +229,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['mark_required_color'] = array(
 				'group' => 'styleForm',
-				'label' => esc_html__( 'Asterisk' ),
+				'label' => esc_html__( 'Asterisk' , 'funnel-builder'),
 				'type'  => 'color',
 				'css'   => array(
 					array(
@@ -255,7 +255,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['separatorInput'] = array(
 				'group' => 'styleForm',
-				'label' => esc_html__( 'Input' ),
+				'label' => esc_html__( 'Input' , 'funnel-builder'),
 				'type'  => 'separator',
 			);
 
@@ -310,7 +310,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['input_size'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Field Size' ),
+				'label'   => esc_html__( 'Field Size' , 'funnel-builder'),
 				'type'    => 'select',
 				'options' => self::get_input_fields_sizes(),
 				'default' => '12px',
@@ -360,7 +360,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['separatorStyleSubmitButton'] = array(
 				'group' => 'styleForm',
-				'label' => esc_html__( 'Submit Button' ),
+				'label' => esc_html__( 'Submit Button' , 'funnel-builder'),
 				'type'  => 'separator',
 			);
 
@@ -384,7 +384,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['button_subheading_text_typo'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Sub Heading' ),
+				'label'   => esc_html__( 'Sub Heading' , 'funnel-builder'),
 				'type'    => 'typography',
 				'css'     => array(
 					array(
@@ -443,7 +443,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['button_text_alignment_box_shadow'] = array(
 				'group'  => 'styleForm',
-				'label'  => esc_html__( 'Box Shadow' ),
+				'label'  => esc_html__( 'Box Shadow' , 'funnel-builder'),
 				'type'   => 'box-shadow',
 				'css'    => array(
 					array(
@@ -457,7 +457,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['button_width'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Button width (in %)' ),
+				'label'   => esc_html__( 'Button width (in %)' , 'funnel-builder'),
 				'type'    => 'slider',
 				'css'     => array(
 					array(
@@ -489,7 +489,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['button_text_alignment'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Text Alignment' ),
+				'label'   => esc_html__( 'Text Alignment' , 'funnel-builder'),
 				'type'    => 'text-align',
 				'exclude' => array( 'justify' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'css'     => array(

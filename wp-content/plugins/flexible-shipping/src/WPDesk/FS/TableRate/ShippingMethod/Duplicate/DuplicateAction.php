@@ -71,6 +71,13 @@ class DuplicateAction implements Hookable {
 		$new_instance_id = $zone->add_shipping_method( ShippingMethodSingle::SHIPPING_METHOD_ID );
 
 		$options = $this->get_instance_settings( $instance_id );
+		$new_instance_options = $this->get_instance_settings( $new_instance_id );
+		foreach ( [ 'creation_time_with_free', 'creation_time_with_pro' ] as $creation_time_key ) {
+			if ( isset( $new_instance_options[ $creation_time_key ] ) ) {
+				$options[ $creation_time_key ] = $new_instance_options[ $creation_time_key ];
+			}
+		}
+		unset( $options['method_rules_update_time_with_free'], $options['method_rules_update_time_with_pro'] );
 
 		if ( empty( $options['method_title'] ?? '' ) ) {
 			$options['method_title'] = __( 'Flexible Shipping', 'flexible-shipping' );
@@ -78,7 +85,7 @@ class DuplicateAction implements Hookable {
 
 		$options['method_title'] .= ' ' . __( '(Copy)', 'flexible-shipping' );
 
-		add_option( $this->get_option_settings_field( $new_instance_id ), $options );
+		update_option( $this->get_option_settings_field( $new_instance_id ), $options );
 
 		$this->shipping_method_management->set_shipping_method_status( $new_instance_id, false, $zone );
 

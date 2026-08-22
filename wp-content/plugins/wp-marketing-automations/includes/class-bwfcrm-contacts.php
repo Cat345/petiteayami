@@ -2400,19 +2400,31 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				$to_be_deleted[] = $this->contact->get_contact_no();
 			}
 
-			$is_unverified     = 0 === absint( $this->contact->get_status() );
-			$is_unsubscribed   = ! empty( $this->check_contact_unsubscribed() );
-			$is_not_subscribed = $is_unverified || $is_unsubscribed;
+			/**
+			 * A contact healed from Bounced (2), Soft Bounced (4) or Complaint (5) must signal downstream
+			 * goals (e.g. the "Contact Subscribes" automation goal). Only an already-Subscribed contact
+			 * (status 1 and not sitting in the unsubscribe table) should remain a no-op on repeat.
+			 */
+			$was_subscribed = ( 1 === absint( $this->contact->get_status() ) ) && empty( $this->check_contact_unsubscribed() );
 
-			$verified = $this->verify();
-			$deleted  = BWFAN_Model_Message_Unsubscribe::delete_unsubscribers( $to_be_deleted );
-			$return   = $deleted && $verified;
-
-			if ( $is_not_subscribed && ! $stop_hooks ) {
-				do_action( 'bwfcrm_after_contact_subscribed', $this->contact );
+			/**
+			 * Signal the transition through the contact object rather than a second do_action here.
+			 * is_subscribed is what actually makes WooFunnels_Contact::save() fire
+			 * bwfcrm_after_contact_subscribed, and save() clears it as it fires, so routing everything
+			 * through that one channel can never double fire. verify() -> set_status(1) arms it by itself
+			 * for a real status change; arm it here for a contact that is only unsubscribed by table
+			 * (status is already 1, so set_status() will not arm anything). Arming an already armed flag
+			 * is a no-op, which is the point: a caller that armed it earlier without saving no longer
+			 * results in one fire from save() plus one from here.
+			 */
+			if ( ! $was_subscribed && ! $stop_hooks ) {
+				$this->contact->is_subscribed = true;
 			}
 
-			$this->remove_soft_bounce_limit();
+			/** Clear the unsubscribe rows before verify(), so the contact is fully restored by the time it signals. */
+			$deleted  = BWFAN_Model_Message_Unsubscribe::delete_unsubscribers( $to_be_deleted );
+			$verified = $this->verify( $stop_hooks );
+			$return   = $deleted && $verified;
 
 			return $return;
 		}
@@ -2468,8 +2480,6 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				return false;
 			}
 
-			$this->remove_soft_bounce_limit();
-
 			if ( ! empty( $this->check_contact_unsubscribed() ) ) {
 				return true;
 			}
@@ -2519,13 +2529,31 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			return true;
 		}
 
-		public function verify() {
+		/**
+		 * Mark contact subscribed
+		 *
+		 * @param bool $stop_hooks Suppress the subscribed action for callers that asked for no events.
+		 *
+		 * @return bool
+		 */
+		public function verify( $stop_hooks = false ) {
 			if ( ! $this->is_contact_exists() ) {
 				return false;
 			}
 
 			$this->contact->set_last_modified( current_time( 'mysql', 1 ) );
 			$this->contact->set_status( 1 );
+
+			/**
+			 * set_status() arms is_subscribed so save() fires bwfcrm_after_contact_subscribed on a genuine
+			 * transition into Subscribed. That fire is inside the contact object and out of reach of the
+			 * $stop_hooks checks around the callers, so disarm it here instead - otherwise an importer run
+			 * with "disable events" still enrolls every healed contact into Contact Subscribes automations.
+			 */
+			if ( $stop_hooks ) {
+				$this->contact->is_subscribed = false;
+			}
+
 			$this->save();
 
 			return true;
@@ -2810,8 +2838,6 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$this->contact->set_last_modified( current_time( 'mysql', 1 ) );
 			$this->save();
 
-			$this->remove_soft_bounce_limit();
-
 			return true;
 		}
 
@@ -2842,8 +2868,6 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$this->save();
 			$this->contact->save_meta();
 
-			$this->remove_soft_bounce_limit();
-
 			/** Run action if contact earlier has a different status */
 			if ( false === $is_already_bounced && ! $stop_hooks ) {
 				do_action( 'bwfcrm_after_contact_bounced', $this->contact );
@@ -2857,57 +2881,50 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 		 *
 		 * @param $stop_hooks
 		 *
-		 * @return array|bool
+		 * @return bool
 		 */
 		public function mark_as_soft_bounced( $stop_hooks = false ) {
 			if ( ! $this->is_contact_exists() ) {
 				return false;
 			}
 
-			$soft_bounce_limit = apply_filters( 'bwfan_contact_soft_bounce_limit', 3 );
-			$soft_bounce_limit = empty( $soft_bounce_limit ) ? 1 : intval( $soft_bounce_limit );
+			$is_already_soft_bounced = self::$STATUS_SOFT_BOUNCED === absint( $this->contact->get_status() );
 
-			$soft_bounce_count = $this->contact->get_meta( 'soft_bounce_count' );
-			$soft_bounce_count = empty( $soft_bounce_count ) ? 0 : intval( $soft_bounce_count );
+			/**
+			 * Bail out if the contact is already soft bounced and there is nothing left to reconcile.
+			 * Repeat/duplicate bounce webhooks would otherwise re-run the status writes on every
+			 * notification. An unsubscribe row still has to be cleared below, since get_display_status()
+			 * prioritises it over the status column, so a contact sitting in the unsubscribe table is not
+			 * showing as Soft Bounced yet and an explicit status change must still take effect.
+			 */
+			if ( $is_already_soft_bounced && empty( $this->check_contact_unsubscribed() ) ) {
+				return true;
+			}
 
 			/** save last status in contact meta */
 			$this->save_last_status();
 			/** Remove data from unsubscribe table */
 			$this->remove_unsubscribe_data();
 
-			if ( $soft_bounce_count >= $soft_bounce_limit ) {
-				/** Soft bounce limit reached, mark contact bounced */
-
-				$this->contact->set_status( self::$STATUS_BOUNCED );
-				$this->contact->set_last_modified( current_time( 'mysql', 1 ) );
-				$this->save();
-
-				/** Run action if contact has a different status */
-				if ( ! $stop_hooks ) {
-					do_action( 'bwfcrm_after_contact_bounced', $this->contact );
-				}
-				$count = ( $soft_bounce_count > 1 ) ? "($soft_bounce_count times)" : 'once';
-
-				$soft_bounce_count ++;
-				$this->contact->set_meta( 'soft_bounce_count', $soft_bounce_count );
-				$this->contact->save_meta();
-
-				return [
-					'message' => __( "Status change to bounce as contact already soft bounce", "wp-marketing-automations" ) . " $count",
-				];
-			}
-
-			/** Mark contact soft bounced */
-			$soft_bounce_count ++;
-			$this->contact->set_meta( 'soft_bounce_count', $soft_bounce_count );
+			/**
+			 * Mark contact soft bounced.
+			 * A soft bounce no longer counts toward auto-removal. Contacts are only marked bounced on a
+			 * definitive (hard) bounce, handled separately by mark_as_bounced(). Removed the legacy
+			 * 3-attempt soft-bounce counter that converted soft bounces into hard bounces.
+			 */
 			$this->contact->set_status( self::$STATUS_SOFT_BOUNCED );
 			$this->contact->set_last_modified( current_time( 'mysql', 1 ) );
 			$this->save();
+			/** save() only writes the contact row, meta needs its own flush for save_last_status() above */
 			$this->contact->save_meta();
 
-			/** Check if contact is already bounced */
-			if ( ! $stop_hooks ) {
-				do_action( 'bwfcrm_after_contact_soft_bounced', $this->contact, $soft_bounce_count );
+			/**
+			 * Only a genuine transition into Soft Bounced runs the trigger, mirroring mark_as_bounced()
+			 * and mark_as_complaint(). Reaching this point on an already soft bounced contact means the
+			 * call was only clearing an unsubscribe row, which is not a new bounce.
+			 */
+			if ( ! $is_already_soft_bounced && ! $stop_hooks ) {
+				do_action( 'bwfcrm_after_contact_soft_bounced', $this->contact );
 			}
 
 			return true;
@@ -2938,26 +2955,12 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$this->contact->set_last_modified( current_time( 'mysql', 1 ) );
 			$this->save();
 
-			$this->remove_soft_bounce_limit();
-
 			/** Run action if contact earlier has a different status */
 			if ( false === $is_already_complaint && ! $stop_hooks ) {
 				do_action( 'bwfcrm_after_contact_complaint', $this->contact );
 			}
 
 			return true;
-		}
-
-		/**
-		 * Remove soft bounce limit meta
-		 *
-		 * @return void
-		 */
-		public function remove_soft_bounce_limit() {
-			$this->contact->delete_meta( 'soft_bounce_count' );
-
-			/** unset value */
-			$this->contact->unset_meta( 'soft_bounce_count' );
 		}
 
 		/**

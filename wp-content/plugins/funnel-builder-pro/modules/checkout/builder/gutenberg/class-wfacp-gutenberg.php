@@ -359,7 +359,6 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 				$style_path = "/$app_name.css";
 
 				$deps    = ( isset( $assets['dependencies'] ) ? array_merge( $assets['dependencies'], array( 'jquery' ) ) : array( 'jquery' ) );
-				$deps    = array_merge( $deps, array( 'bwf-font-awesome-kit' ) );
 				$version = $assets['version'];
 
 				$script_deps = array_filter(
@@ -383,6 +382,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 				if ( isset( $page_settings['enable_phone_flag'] ) && wc_string_to_bool( $page_settings['enable_phone_flag'] ) ) {
 					wp_enqueue_style( 'wfacp-intl-css', plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/css/intlTelInput.css', false, WFACP_VERSION_DEV );
 					wp_enqueue_script( 'wfacp-intlTelInput-js', plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/js/intlTelInput.min.js', array(), WFACP_VERSION_DEV );
+					wp_add_inline_script( 'wfacp-intlTelInput-js', 'window.wfacpIntlTelInput = window.intlTelInput;', 'after' );
 				}
 
 				$template = wfacp_template();
@@ -395,10 +395,8 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 
 				$template->localize_locals();
 
-				// Our free kit https://fontawesome.com/kits/f4306c3ab0/settings
-				wp_register_script( 'bwf-font-awesome-kit', 'https://kit.fontawesome.com/f4306c3ab0.js', null, null, true );
 				wp_enqueue_script( 'wfacp-block-editor', $frontend_dir . $js_path, $script_deps, $version, true );
-				wp_enqueue_script( 'web-font', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js', array(), true );
+				wp_enqueue_script( 'web-font', plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/js/webfont-loader.js', array(), WFACP_VERSION_DEV, true );
 
 				$section_data    = self::register_section_fields();
 				$section_classes = self::class_section();

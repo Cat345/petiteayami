@@ -1114,6 +1114,61 @@ if ( ! class_exists( 'BWFABT_Controller' ) ) {
 			return get_post_meta( $control->ID, '_experiment_status', true ) !== 'not_active';
 		}
 
+		/**
+		 * Whether the current request comes from a known crawler.
+		 *
+		 * Crawlers hit both variants of an experiment without ever converting, which
+		 * inflates the view counts and skews the split shown in the report. Every
+		 * controller that records views calls this before counting one.
+		 *
+		 * @return bool
+		 */
+		public function is_ab_crawler_request() {
+			$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : ''; //phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders
+			if ( empty( $user_agent ) ) {
+				return true;
+			}
+
+			$default_bots = array(
+				'Googlebot',
+				'bingbot',
+				'Slurp',
+				'DuckDuckBot',
+				'Baiduspider',
+				'YandexBot',
+				'facebookexternalhit',
+				'Facebot',
+				'Twitterbot',
+				'LinkedInBot',
+				'Pinterestbot',
+				'AhrefsBot',
+				'SemrushBot',
+				'MJ12bot',
+				'DotBot',
+				'PetalBot',
+				'Applebot',
+				'ia_archiver',
+				'Sogou',
+				'rogerbot',
+				'meta-externalagent',
+				'meta-externalads',
+				'TelegramBot',
+			);
+
+			$bot_patterns = apply_filters( 'bwfabt_bot_user_agents', $default_bots );
+			if ( ! is_array( $bot_patterns ) ) {
+				$bot_patterns = $default_bots;
+			}
+
+			foreach ( $bot_patterns as $bot ) {
+				if ( is_string( $bot ) && '' !== $bot && stripos( $user_agent, $bot ) !== false ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 
 	}
 }

@@ -2,7 +2,7 @@
 /**
 * Plugin Name: Waitlist woocommerce( Back in stock notifier )
 * Plugin URI: http://xootix.com/waitlist-for-woocommerce
-* Version: 2.8.9
+* Version: 2.9.0
 * Text Domain: waitlist-woocommerce
 * Domain Path: /languages
 * Author URI: http://xootix.com
@@ -17,9 +17,15 @@ if(!defined('ABSPATH')){
 }
 
 
-if ( ! defined( 'XOO_WL_PLUGIN_FILE' ) ) {
-	define( 'XOO_WL_PLUGIN_FILE', __FILE__ );
-}
+
+define( 'XOO_WL_PLUGIN_FILE', __FILE__ );
+define( "XOO_WL_PATH", plugin_dir_path( XOO_WL_PLUGIN_FILE ) ); // Plugin path
+define( "XOO_WL_PLUGIN_BASENAME",plugin_basename( XOO_WL_PLUGIN_FILE ) );
+define( "XOO_WL_URL", untrailingslashit( plugins_url( '/', XOO_WL_PLUGIN_FILE ) ) ); // plugin url
+define( "XOO_WL_VERSION", "2.9.0" ); //Plugin version
+define( "XOO_WL_LITE", true );
+
+require_once XOO_WL_PATH.'includes/xoo-framework/xoo-framework.php';
 
 /**
  * Initialize

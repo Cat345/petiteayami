@@ -8,19 +8,18 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_Avada' ) ) {
 	class WFACP_Compatibility_With_Active_Avada {
 
 		public $js_folder_url = '';
-		public $instance = null;
+		public $instance      = null;
 
 		public function __construct() {
 
-			add_action( 'wp', [ $this, 'remove_actions' ], 999 );
+			add_action( 'wp', array( $this, 'remove_actions' ), 999 );
 
-			add_filter( 'wfacp_do_not_allow_shortcode_printing', [ $this, 'do_not_execute_shortcode' ] );
-			add_filter( 'elementor/frontend/builder_content_data', [ $this, 'remove_avada_parse_elementor_content' ], 9, 2 );
-
+			add_filter( 'wfacp_do_not_allow_shortcode_printing', array( $this, 'do_not_execute_shortcode' ) );
+			add_filter( 'elementor/frontend/builder_content_data', array( $this, 'remove_avada_parse_elementor_content' ), 9, 2 );
 		}
 
 		public function wp_enqueue_script() {
-			wp_enqueue_script( 'lazysizes', $this->js_folder_url . '/library/lazysizes.js', [], '4.1.5', true );
+			wp_enqueue_script( 'lazysizes', $this->js_folder_url . '/library/lazysizes.js', array(), '4.1.5', true );
 		}
 
 		public function dequeue_scripts() {
@@ -31,8 +30,17 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_Avada' ) ) {
 
 			$id = WFACP_Common::get_id();
 
-			if ( absint( $id ) <= 0 || !is_checkout() ) {
+			if ( absint( $id ) <= 0 || ! is_checkout() ) {
 				return;
+			}
+
+			// Avada Off Canvas (e.g. a site-wide mini-cart sliding bar) renders itself via wp_footer
+			// on every page including this checkout, outputting a SECOND copy of the checkout form
+			// (<form id="wfacp_checkout_form">). On update_order_review the duplicate empty
+			// wfob_input_hidden_data overrides the real one, so order bumps silently fail to apply.
+			// Stop Avada from rendering Off Canvas on the checkout page.
+			if ( function_exists( 'AWB_Off_Canvas_Front_End' ) ) {
+				remove_action( 'wp_footer', array( AWB_Off_Canvas_Front_End(), 'insert' ), 0 );
 			}
 
 			global $avada_woocommerce, $fusion_settings;
@@ -49,7 +57,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_Avada' ) ) {
 
 				remove_filter( 'woocommerce_order_button_html', array( $avada_woocommerce, 'order_button_html' ) );
 
-				add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
+				add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
 
 			}
 			if ( class_exists( 'Fusion_Dynamic_CSS' ) ) {
@@ -72,17 +80,16 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_Avada' ) ) {
 						$path = ( true === FUSION_LIBRARY_DEV_MODE ) ? '' : '/min';
 						if ( defined( 'FUSION_LIBRARY_URL' ) ) {
 							$this->js_folder_url = FUSION_LIBRARY_URL . '/assets' . $path . '/js';
-							add_action( 'wp_enqueue_scripts', [ $this, 'wp_enqueue_script' ] );
+							add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_script' ) );
 						}
 					} else {
-						add_action( 'wp_enqueue_scripts', [ $this, 'dequeue_scripts' ], 15 );
+						add_action( 'wp_enqueue_scripts', array( $this, 'dequeue_scripts' ), 15 );
 					}
 				}
 			}
 		}
 
 		public function remove_avada_parse_elementor_content( $data, $post_id ) {
-
 
 			if ( $post_id <= 0 ) {
 				return $data;
@@ -94,61 +101,58 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_Avada' ) ) {
 
 			WFACP_Common::remove_actions( 'elementor/frontend/builder_content_data', 'FusionBuilder', 'parse_elementor_content' );
 
-
 			return $data;
 		}
 
 		public function internal_css() {
-
 
 			$instance = wfacp_template();
 			if ( ! $instance instanceof WFACP_Template_Common ) {
 				return;
 			}
 
-			$bodyClass = "body .wfacp_main_form.woocommerce ";
+			$bodyClass = 'body .wfacp_main_form.woocommerce ';
 			if ( 'pre_built' !== $instance->get_template_type() ) {
 
-				$bodyClass = "body #wfacp-e-form ";
+				$bodyClass = 'body #wfacp-e-form ';
 			}
 
-			$cssHtml = "<style>";
-			$cssHtml .= "html:not(.avada-html-layout-boxed):not(.avada-html-layout-framed){ background-color: transparent !important;}";
-			$cssHtml .= "html{ background-color: transparent !important;}";
-			$cssHtml .= "body{ background-color: transparent;}";
-			$cssHtml .= "body.wfacp_checkout-template-wfacp-canvas-php {overflow-x: initial; }";
-			$cssHtml .= $bodyClass . ".shop_table tbody tr {height: auto; }";
-			$cssHtml .= $bodyClass . "table th {font-family: inherit; }";
-			$cssHtml .= $bodyClass . "ul.woocommerce-error li { padding: 0;margin-bottom: 0;}";
-			$cssHtml .= $bodyClass . ".wfacp_whats_included h3 {border-bottom: none; }";
-			$cssHtml .= $bodyClass . ".wfacp_main_form .wfacp_shipping_recurring label { display: block;margin-bottom: 0;}";
-			$cssHtml .= $bodyClass . ".wfacp_main_form .recurring-total ul li {padding: 11px;text-indent: 0;}";
-			$cssHtml .= $bodyClass . "form.checkout_coupon.woocommerce-form-coupon {margin-bottom: 20px;}";
-			$cssHtml .= $bodyClass . ".select2-container--default .select2-selection--single .select2-selection__arrow {border-left: none;}";
-			$cssHtml .= $bodyClass . ".wfacp_main_form .wfacp_shipping_table tr.shipping td p small {font-size: 13px;}";
-			$cssHtml .= $bodyClass . ".wfacp_main_form #product_switching_field .wfacp_product_switcher_col.wfacp_product_switcher_col_1 .wfacp-qty-count {color: #fff;}";
-			$cssHtml .= $bodyClass . ".wfacp_main_form .wfacp_shipping_table ul li input[type=radio] {-webkit-appearance: none;-moz-appearance: none;appearance: none;}";
-			$cssHtml .= $bodyClass . ".wfacp_main_form .checkout .shop_table tfoot {border: none;}";
-			$cssHtml .= $bodyClass . "#wrapper .select-arrow {display: none;}";
-			$cssHtml .= $bodyClass . ".avada-select-parent .select-arrow{display: none;}";
-			$cssHtml .= $bodyClass . ".fusion-modal-content .select-arrow{display: none;}";
-			$cssHtml .= $bodyClass . ".select-arrow{display: none;}";
-			$cssHtml .= $bodyClass . "#customer_login .col-1{      padding: 0;}";
-			$cssHtml .= $bodyClass . "#customer_login .col-2{     padding: 0;}";
-			$cssHtml .= $bodyClass . ".checkout_coupon{       padding: 0;}";
-			$cssHtml .= $bodyClass . ".coupon{      padding: 0;}";
-			$cssHtml .= $bodyClass . ".shop_table tfoot{  border:none; }";
-			$cssHtml .= $bodyClass . ".shop_table tfoot th{text-align:inherit;}";
-			$cssHtml .= $bodyClass . ".shop_table tfoot td{text-align:inherit;}";
-			$cssHtml .= $bodyClass . ".shop_table tfoot td:last-child{ text-align:right;}";
-			$cssHtml .= ".wfacp_mini_cart_start_h .shop_table tr.order-total{  border:inherit; }";
-			$cssHtml .= ".wfacp_mini_cart_start_h .checkout_coupon{padding: 0;border:none;}";
-			$cssHtml .= "body .shop_table tbody tr{    height: auto;}";
-			$cssHtml .= "body .shop_table  tr{     border: none;}";
-			$cssHtml .= "</style>";
+			$cssHtml  = '<style>';
+			$cssHtml .= 'html:not(.avada-html-layout-boxed):not(.avada-html-layout-framed){ background-color: transparent !important;}';
+			$cssHtml .= 'html{ background-color: transparent !important;}';
+			$cssHtml .= 'body{ background-color: transparent;}';
+			$cssHtml .= 'body.wfacp_checkout-template-wfacp-canvas-php {overflow-x: initial; }';
+			$cssHtml .= $bodyClass . '.shop_table tbody tr {height: auto; }';
+			$cssHtml .= $bodyClass . 'table th {font-family: inherit; }';
+			$cssHtml .= $bodyClass . 'ul.woocommerce-error li { padding: 0;margin-bottom: 0;}';
+			$cssHtml .= $bodyClass . '.wfacp_whats_included h3 {border-bottom: none; }';
+			$cssHtml .= $bodyClass . '.wfacp_main_form .wfacp_shipping_recurring label { display: block;margin-bottom: 0;}';
+			$cssHtml .= $bodyClass . '.wfacp_main_form .recurring-total ul li {padding: 11px;text-indent: 0;}';
+			$cssHtml .= $bodyClass . 'form.checkout_coupon.woocommerce-form-coupon {margin-bottom: 20px;}';
+			$cssHtml .= $bodyClass . '.select2-container--default .select2-selection--single .select2-selection__arrow {border-left: none;}';
+			$cssHtml .= $bodyClass . '.wfacp_main_form .wfacp_shipping_table tr.shipping td p small {font-size: 13px;}';
+			$cssHtml .= $bodyClass . '.wfacp_main_form #product_switching_field .wfacp_product_switcher_col.wfacp_product_switcher_col_1 .wfacp-qty-count {color: #fff;}';
+			$cssHtml .= $bodyClass . '.wfacp_main_form .wfacp_shipping_table ul li input[type=radio] {-webkit-appearance: none;-moz-appearance: none;appearance: none;}';
+			$cssHtml .= $bodyClass . '.wfacp_main_form .checkout .shop_table tfoot {border: none;}';
+			$cssHtml .= $bodyClass . '#wrapper .select-arrow {display: none;}';
+			$cssHtml .= $bodyClass . '.avada-select-parent .select-arrow{display: none;}';
+			$cssHtml .= $bodyClass . '.fusion-modal-content .select-arrow{display: none;}';
+			$cssHtml .= $bodyClass . '.select-arrow{display: none;}';
+			$cssHtml .= $bodyClass . '#customer_login .col-1{      padding: 0;}';
+			$cssHtml .= $bodyClass . '#customer_login .col-2{     padding: 0;}';
+			$cssHtml .= $bodyClass . '.checkout_coupon{       padding: 0;}';
+			$cssHtml .= $bodyClass . '.coupon{      padding: 0;}';
+			$cssHtml .= $bodyClass . '.shop_table tfoot{  border:none; }';
+			$cssHtml .= $bodyClass . '.shop_table tfoot th{text-align:inherit;}';
+			$cssHtml .= $bodyClass . '.shop_table tfoot td{text-align:inherit;}';
+			$cssHtml .= $bodyClass . '.shop_table tfoot td:last-child{ text-align:right;}';
+			$cssHtml .= '.wfacp_mini_cart_start_h .shop_table tr.order-total{  border:inherit; }';
+			$cssHtml .= '.wfacp_mini_cart_start_h .checkout_coupon{padding: 0;border:none;}';
+			$cssHtml .= 'body .shop_table tbody tr{    height: auto;}';
+			$cssHtml .= 'body .shop_table  tr{     border: none;}';
+			$cssHtml .= '</style>';
 
 			echo $cssHtml;
-
 		}
 
 		public function do_not_execute_shortcode( $status ) {
@@ -158,9 +162,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_Avada' ) ) {
 
 			return $status;
 		}
-
-
-
 	}
 
 

@@ -79,13 +79,14 @@ class WPDesk_Flexible_Shipping_Logger_Settings {
 	 * @return array
 	 */
 	public function add_fields_to_settings( array $settings ) {
-		$settings[ self::DEBUG_LOG_OPTION ] = array(
-			'type'  => 'checkbox',
-			'label' => __( 'Enable Debug Mode', 'flexible-shipping' ),
-			'title' => __( 'Debug mode', 'flexible-shipping' ),
-		);
+		$settings[ self::DEBUG_LOG_OPTION ] = [
+			'type'        => 'checkbox',
+			'label'       => __( 'Enable Debug Mode', 'flexible-shipping' ),
+			'title'       => __( 'Debug mode', 'flexible-shipping' ),
+			'description' => __( "See why a shipping method is or isn't showing in the cart.", 'flexible-shipping' ),
+		];
 		if ( 'yes' === $this->saas_settings->get_option( self::DEBUG_LOG_OPTION ) ) {
-			$settings[ self::DEBUG_LOG_OPTION ]['description'] = sprintf(
+			$settings[ self::DEBUG_LOG_OPTION ]['description'] .= ' ' . sprintf(
 				// Translators: URL.
 				__( '%1$sDownload debug.log file%2$s', 'flexible-shipping' ),
 				sprintf( '<a href="%1$s" target="_blank">', admin_url( 'admin.php?page=wc-status&tab=logs&source=flexible-shipping&paged=1' ) ),

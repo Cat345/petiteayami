@@ -72,7 +72,7 @@ if ( ! class_exists( '\WfocuFunnelKit\Variation_Selector' ) ) {
 			if ( ! empty( (array) $products ) ) {
 				$product_options = array();
 				foreach ( $products as $key => $product ) {
-					$product_options[ $key ] = $product->data->get_name();
+					$product_options[ $key ] = $product->name;
 
 					if ( in_array( $product->type, array( 'variable', 'variable-subscription' ), true ) ) {
 						array_push( $variables, $key );

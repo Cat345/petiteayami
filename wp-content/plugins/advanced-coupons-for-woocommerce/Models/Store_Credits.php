@@ -403,6 +403,33 @@ class Store_Credits extends Base_Model implements Model_Interface {
         }
     }
 
+    /**
+     * Hide the store credit redemption UI when a coupon is applied to the cart.
+     *
+     * @since 4.0.9
+     * @access public
+     *
+     * @param bool $is_allowed Whether store credits are allowed on checkout.
+     * @return bool Filtered allowed value.
+     */
+    public function maybe_hide_store_credits_when_coupon_applied( $is_allowed ) {
+        // Skip if store credits are already disallowed or the setting is disabled.
+        if ( ! $is_allowed || 'yes' !== get_option( $this->_constants->HIDE_STORE_CREDITS_WHEN_COUPON_APPLIED, 'no' ) ) {
+            return $is_allowed;
+        }
+
+        if ( ! \WC()->cart instanceof \WC_Cart ) {
+            return $is_allowed;
+        }
+
+        // Exclude the store credit pseudo-coupon (used by the "before tax" apply type) from the check.
+        $store_credit_coupon_code = \ACFWF()->Store_Credits_Checkout->get_store_credit_coupon_code();
+        $applied_coupons          = array_diff( \WC()->cart->get_applied_coupons(), array( $store_credit_coupon_code ) );
+
+        // Hide the store credit redemption UI when an actual coupon is applied to the cart.
+        return empty( $applied_coupons ) ? $is_allowed : false;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Fulfill implemented interface contracts
@@ -426,6 +453,7 @@ class Store_Credits extends Base_Model implements Model_Interface {
         add_action( 'template_redirect', array( $this, 'maybe_auto_apply_store_credits' ), 10 );
         add_filter( 'acfw_store_credits_redeem_amount', array( $this, 'maybe_flag_manual_store_credits_removal_after_tax' ), 10, 2 );
         add_filter( 'acfw_should_clear_store_credit_session', array( $this, 'maybe_flag_manual_store_credits_removal_before_tax' ), 10, 2 );
+        add_filter( 'acfw_is_allow_store_credits', array( $this, 'maybe_hide_store_credits_when_coupon_applied' ), 10, 1 );
         add_action( 'woocommerce_checkout_order_created', array( $this, 'reset_manually_removed_store_credits_flag_on_order_created' ), 10 );
         add_action( 'woocommerce_cart_item_removed', array( $this, 'reset_manually_removed_store_credits_flag_on_cart_emptied' ), 10, 2 );
     }

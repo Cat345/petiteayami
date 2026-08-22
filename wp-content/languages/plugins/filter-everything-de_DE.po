@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Filter Everything&nbsp;— WordPress &amp; WooCommerce Filters - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-07-06 19:22:48+0000\n"
+"PO-Revision-Date: 2026-08-16 05:17:42+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -11,37 +11,259 @@ msgstr ""
 "Language: de\n"
 "Project-Id-Version: Plugins - Filter Everything&nbsp;— WordPress &amp; WooCommerce Filters - Stable (latest release)\n"
 
-#: src/Settings/Tabs/AboutProTab.php:656
+#: views/admin/review-popup.php:82
+msgid "Don't show this again"
+msgstr "Nicht erneut anzeigen"
+
+#: views/admin/review-popup.php:80
+msgid "Maybe later"
+msgstr "Vielleicht später"
+
+#: views/admin/review-popup.php:78
+msgid "Rate Filter Everything"
+msgstr "Filter Everything bewerten"
+
+#. translators: %s: active installs count, e.g. "50,000+"
+#: views/admin/review-popup.php:70
+msgid "Trusted by %s active installs"
+msgstr "Bewährt bei %s aktiven Installationen"
+
+#: views/admin/review-popup.php:64
+msgid "Rate us on WordPress.org and help the plugin grow"
+msgstr "Bewerte uns auf WordPress.org und hilf dem Plugin zu wachsen."
+
+#: views/admin/review-popup.php:58
+msgid "Filter Everything?"
+msgstr "Filter Everything?"
+
+#: views/admin/review-popup.php:56
+msgid "Enjoying"
+msgstr "Gefällt dir"
+
+#. translators: %1$s: opening link tag to the support forum, %2$s: closing link
+#. tag
+#: views/admin/review-popup.php:42
+msgid "Something not working right? %1$sContact support%2$s — we'd rather fix it first."
+msgstr "Funktioniert etwas nicht richtig? %1$sKontaktiere den Support%2$s — wir würden das Problem lieber zuerst beheben."
+
+#: views/admin/review-popup.php:34
+msgid "Your feedback shapes what we build next"
+msgstr "Dein Feedback beeinflusst, was wir als Nächstes entwickeln"
+
+#: views/admin/pro-modal.php:139
+msgid "30-day money-back guarantee"
+msgstr "30 Tage Geld-zurück-Garantie"
+
+#: views/admin/pro-modal.php:133
+msgid "Plugin keeps working after expiry"
+msgstr "Das Plugin funktioniert auch nach Ablauf weiter"
+
+#: views/admin/pro-modal.php:130
+msgid "1-year updates & support"
+msgstr "1 Jahr Updates & Support"
+
+#: views/admin/pro-modal.php:128
+msgid "/yr"
+msgstr "/Jahr"
+
+#: views/admin/pro-modal.php:124
+msgid "Always<br />WP & Woo compatible"
+msgstr "Immer<br />WP- und Woo-kompatibel"
+
+#: src/Admin/Widgets/beaver/filters/includes/frontend.php:14
+#: src/Admin/Widgets/breakdance/widgets/elements/Filters/element.php:38
+#: src/Admin/Widgets/DiviWidgets/FiltersDiviWidget.php:47
+#: src/Admin/Widgets/gutenberg/build/filters/index.js:1
+#: src/Admin/Widgets/gutenberg/src/filters/edit.js:79
+msgid "Filter Everything - Filters"
+msgstr "Filter Everything - Filter"
+
+#: src/Admin/Widgets/beaver/chips/includes/frontend.php:9
+#: src/Admin/Widgets/breakdance/widgets/elements/Chips/element.php:38
+#: src/Admin/Widgets/DiviWidgets/ChipsDiviWidget.php:32
+#: src/Admin/Widgets/gutenberg/build/chips/index.js:1
+#: src/Admin/Widgets/gutenberg/src/chips/edit.js:79
+msgid "Filter Everything - Chips"
+msgstr "Filter Everything - Chips"
+
+#: src/Settings/Tabs/AboutProTab.php:544
+msgctxt "benefits-landing"
+msgid "Premium support"
+msgstr "Premium-Support"
+
+#: src/Settings/Tabs/AboutProTab.php:540
+msgctxt "benefits-landing"
+msgid "Regular updates"
+msgstr "Regelmäßige Updates"
+
+#: src/Settings/Tabs/AboutProTab.php:536
+msgctxt "benefits-landing"
+msgid "Risk-free purchase"
+msgstr "Risikofreier Kauf"
+
+#: src/Settings/Tabs/AboutProTab.php:263 views/admin/pro-modal.php:47
+msgctxt "benefits-landing"
+msgid "Instant filter counts"
+msgstr "Sofortige Filteranzahlen"
+
+#: src/Settings/Tabs/AboutProTab.php:101
+msgctxt "benefits-landing"
+msgid "SEO ready & instant"
+msgstr "SEO-optimiert & sofort verfügbar"
+
+#: src/Plugin.php:2112
+msgid "Saving..."
+msgstr "Wird gespeichert …"
+
+#: src/Plugin.php:2110
+msgid "Error: No element selected"
+msgstr "Fehler: Es wurde kein Element ausgewählt"
+
+#: src/Plugin.php:2109
+msgid "Error saving selector"
+msgstr "Fehler beim Speichern des Selektors"
+
+#: src/Plugin.php:2102
+msgid "Choose another"
+msgstr "Anderes auswählen"
+
+#: src/Plugin.php:2101
+msgid "The element does not have any CSS selectors"
+msgstr "Das Element hat keine CSS-Selektoren"
+
+#: src/Plugin.php:2100
+msgid "Chosen Class: "
+msgstr "Gewählte Klasse: "
+
+#: src/Plugin.php:2099
+msgid "Chosen ID: "
+msgstr "Ausgewählte ID: "
+
+#: src/Plugin.php:1591
+msgctxt "Date Picker applyText"
+msgid "Apply"
+msgstr "Anwenden"
+
+#: src/Plugin.php:284 src/Settings/Tabs/SettingsTab.php:71
+msgid "Results container"
+msgstr "Ergebniscontainer"
+
+#: src/Entities/PostMetaNumEntity.php:484
+msgid "max"
+msgstr "max."
+
+#: src/Entities/PostMetaNumEntity.php:483
+msgid "min"
+msgstr "min."
+
+#: src/Admin/Widgets/DiviWidgets/SortingDiviWidget.php:124
+#: src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:191
+msgid "Add sorting option"
+msgstr "Sortieroption hinzufügen"
+
+#: src/Admin/Widgets/DiviWidgets/SortingDiviWidget.php:43
+msgid "Filter sorting title"
+msgstr "Filter nach Titel sortieren"
+
+#: src/Admin/Widgets/DiviWidgets/ChipsDiviWidget.php:44
+#: src/Admin/Widgets/DiviWidgets/FiltersDiviWidget.php:59
+msgid "Filter settings"
+msgstr "Filtereinstellungen"
+
+#: src/Admin/Widgets/bricks/SortingBricksWidget.php:44
+msgid "Sorting option"
+msgstr "Sortierungsoption"
+
+#: src/Admin/Widgets/beaver/sorting/SortingBeaverWidget.php:87
+#: src/Admin/Widgets/breakdance/widgets/elements/Sorting/element.php:172
+#: src/Admin/Widgets/bricks/SortingBricksWidget.php:52
+msgid "Order by"
+msgstr "Sortieren nach"
+
+#: src/Admin/Widgets/beaver/sorting/SortingBeaverWidget.php:55
+msgid "Sorting Options"
+msgstr "Sortierungsoptionen"
+
+#: src/Admin/Widgets/beaver/sorting/includes/frontend.php:13
+#: src/Admin/Widgets/breakdance/widgets/elements/Sorting/element.php:39
+#: src/Admin/Widgets/DiviWidgets/SortingDiviWidget.php:29
+#: src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:198
+msgid "Filter Everything - Sorting"
+msgstr "Filter Everything - Sortieren"
+
+#: src/Admin/Widgets/gutenberg/build/sorting/block.json
+#: src/Admin/Widgets/gutenberg/src/sorting/block.json
+msgctxt "block keyword"
+msgid "sorting"
+msgstr "Sortierung"
+
+#: src/Admin/Widgets/gutenberg/build/filter-button/block.json
+#: src/Admin/Widgets/gutenberg/src/filter-button/block.json
+msgctxt "block keyword"
+msgid "button"
+msgstr "Button"
+
+#: src/Admin/Widgets/gutenberg/build/chips/block.json
+#: src/Admin/Widgets/gutenberg/src/chips/block.json
+msgctxt "block keyword"
+msgid "chips"
+msgstr "Chips"
+
+#: src/Admin/Widgets/gutenberg/build/chips/block.json
+#: src/Admin/Widgets/gutenberg/build/filter-button/block.json
+#: src/Admin/Widgets/gutenberg/build/filters/block.json
+#: src/Admin/Widgets/gutenberg/build/sorting/block.json
+#: src/Admin/Widgets/gutenberg/src/chips/block.json
+#: src/Admin/Widgets/gutenberg/src/filter-button/block.json
+#: src/Admin/Widgets/gutenberg/src/filters/block.json
+#: src/Admin/Widgets/gutenberg/src/sorting/block.json
+msgctxt "block keyword"
+msgid "filter"
+msgstr "Filter"
+
+#: src/Settings/Tabs/AboutProTab.php:909
+msgctxt "benefits-landing"
+msgid "%s ago"
+msgstr "vor %s"
+
+#: src/Settings/Tabs/AboutProTab.php:883
+msgctxt "benefits-landing"
+msgid "Play video"
+msgstr "Video abspielen"
+
+#: src/Settings/Tabs/AboutProTab.php:477
 msgctxt "benefits-landing"
 msgid "Additional filtering options"
 msgstr "Zusätzliche Filteroptionen"
 
-#: src/Settings/Tabs/AboutProTab.php:647
+#: src/Settings/Tabs/AboutProTab.php:468
 msgctxt "benefits-landing"
 msgid "Advanced AJAX support"
 msgstr "Erweiterter AJAX-Support"
 
-#: src/Settings/Tabs/AboutProTab.php:548
+#: src/Settings/Tabs/AboutProTab.php:369
 msgctxt "benefits-landing"
 msgid "Filtering any post type"
 msgstr "Filterung beliebiger Beitragstypen"
 
-#: src/Settings/Tabs/AboutProTab.php:762
+#: src/Settings/Tabs/AboutProTab.php:770
 msgctxt "benefits-landing"
 msgid "For larger projects, Freelancer and Agency licenses are available and allow you to use the plugin on multiple websites."
 msgstr "Für größere Projekte sind Freelancer- und Agency-Lizenzen verfügbar, mit denen Sie das Plugin auf mehreren Websites nutzen können."
 
-#: src/Settings/Tabs/AboutProTab.php:611
+#: src/Settings/Tabs/AboutProTab.php:432
 msgctxt "benefits-landing"
 msgid "Multilingual compatibility"
 msgstr "Mehrsprachige Kompatibilität"
 
-#: src/Settings/Tabs/AboutProTab.php:313
+#: src/Settings/Tabs/AboutProTab.php:786
 msgctxt "benefits-landing"
-msgid "16&nbsp;100+"
-msgstr "16&nbsp;100+"
+msgid "We follow a standard refund period — 30 days from the date of purchase."
+msgstr "Wir gewähren eine Standard-Rückerstattungsfrist — 30 Tage ab dem Kaufdatum."
 
-#: src/Settings/Tabs/AboutProTab.php:309
+#: src/Settings/Tabs/AboutProTab.php:626
 msgctxt "benefits-landing"
 msgid "160&nbsp;000+"
 msgstr "160&nbsp;000+"
@@ -51,42 +273,42 @@ msgctxt "benefits-landing"
 msgid "<span>Full control</span> over filtering,"
 msgstr "<span>Volle Kontrolle</span> über die Filterung,"
 
-#: src/Settings/Tabs/AboutProTab.php:298
+#: src/Settings/Tabs/AboutProTab.php:615
 msgctxt "benefits-landing"
 msgid "Accurate variation filtering, proper handling of out-of-stock products, auto-hiding empty filters, and more — the details that make the difference."
 msgstr "Präzise Variantenfilterung, korrekte Behandlung nicht vorrätiger Produkte, automatisches Ausblenden leerer Filter und mehr — die Details, die den Unterschied machen."
 
-#: src/Settings/Tabs/AboutProTab.php:359 src/Settings/Tabs/AboutProTab.php:469
+#: src/Settings/Tabs/AboutProTab.php:290 src/Settings/Tabs/AboutProTab.php:676
 msgctxt "benefits-landing"
 msgid "Accurate WooCommerce variation filtering"
 msgstr "Präzise WooCommerce-Variantenfilterung"
 
-#: src/Settings/Tabs/AboutProTab.php:186
+#: src/Settings/Tabs/AboutProTab.php:570
 msgctxt "benefits-landing"
 msgid "Auto-generate SEO data for filtered pages"
 msgstr "Automatische Generierung von SEO-Daten für gefilterte Seiten"
 
-#: src/Settings/Tabs/AboutProTab.php:293
+#: src/Settings/Tabs/AboutProTab.php:610
 msgctxt "benefits-landing"
 msgid "Back up, duplicate, transfer, and reuse your filters, Filter Sets, and settings with ease."
 msgstr "Sichern, duplizieren, übertragen und verwenden Sie Ihre Filter, Filtersets und Einstellungen mühelos erneut."
 
-#: src/Settings/Tabs/AboutProTab.php:376
+#: src/Settings/Tabs/AboutProTab.php:693
 msgctxt "benefits-landing"
 msgid "Convenience for everyone"
 msgstr "Komfort für jeden"
 
-#: src/Settings/Tabs/AboutProTab.php:288
+#: src/Settings/Tabs/AboutProTab.php:605
 msgctxt "benefits-landing"
 msgid "Create a dedicated Filter Set for every section of your site instead of using the same filters everywhere."
 msgstr "Erstellen Sie ein dediziertes Filterset für jeden Bereich Ihrer Website, anstatt überall dieselben Filter zu verwenden."
 
-#: src/Settings/Tabs/AboutProTab.php:180
+#: src/Settings/Tabs/AboutProTab.php:564
 msgctxt "benefits-landing"
 msgid "Create unique filters for every section of your site and let visitors filter content by relevant criteria — e.g. smartphones by brand, clothing by size, or cars by fuel type."
 msgstr "Erstellen Sie einzigartige Filter für jeden Bereich Ihrer Website und lassen Sie Besucher Inhalte nach relevanten Kriterien filtern — z. B. Smartphones nach Marke, Kleidung nach Größe oder Autos nach Kraftstoffart."
 
-#: src/Settings/Tabs/AboutProTab.php:282
+#: src/Settings/Tabs/AboutProTab.php:599
 msgctxt "benefits-landing"
 msgid "Filter Any Content"
 msgstr "Filtern Sie beliebige Inhalte"
@@ -96,72 +318,67 @@ msgctxt "benefits-landing"
 msgid "Filter any posts list, custom query, or page builder content"
 msgstr "Filtern Sie beliebige Beitragslisten, benutzerdefinierte Abfragen oder Page-Builder-Inhalte"
 
-#: src/Settings/Tabs/AboutProTab.php:352
+#: src/Settings/Tabs/AboutProTab.php:669
 msgctxt "benefits-landing"
 msgid "Filtering accuracy"
 msgstr "Filtergenauigkeit"
 
-#: src/Settings/Tabs/AboutProTab.php:335
+#: src/Settings/Tabs/AboutProTab.php:652
 msgctxt "benefits-landing"
 msgid "Filtering any content — including page builders and custom queries"
 msgstr "Filterung beliebiger Inhalte — einschließlich Page Builder und benutzerdefinierter Abfragen"
 
-#: src/Settings/Tabs/AboutProTab.php:277
+#: src/Settings/Tabs/AboutProTab.php:594
 msgctxt "benefits-landing"
 msgid "Full control over SEO"
 msgstr "Volle Kontrolle über SEO"
 
-#: src/Settings/Tabs/AboutProTab.php:328
+#: src/Settings/Tabs/AboutProTab.php:645
 msgctxt "benefits-landing"
 msgid "Full power of filtering"
 msgstr "Volle Filterleistung"
 
-#: src/Settings/Tabs/AboutProTab.php:187
+#: src/Settings/Tabs/AboutProTab.php:571
 msgctxt "benefits-landing"
 msgid "Generate SEO titles, H1s, descriptions, and SEO texts based on selected filters to attract more organic traffic from search engines and AI services."
 msgstr "Generieren Sie SEO-Titel, H1-Überschriften, Beschreibungen und SEO-Texte basierend auf ausgewählten Filtern, um mehr organischen Traffic von Suchmaschinen und KI-Diensten zu gewinnen."
 
-#: src/Settings/Tabs/AboutProTab.php:153
+#: src/Settings/Tabs/AboutProTab.php:157
 msgctxt "benefits-landing"
 msgid "Get more organic traffic with SEO tools for filtered pages"
 msgstr "Mehr organischen Traffic dank SEO-Tools für gefilterte Seiten"
 
-#: src/Settings/Tabs/AboutProTab.php:278
+#: src/Settings/Tabs/AboutProTab.php:595
 msgctxt "benefits-landing"
 msgid "Get the most out of filtered pages with full control over SEO titles, H1s, descriptions, SEO text, and XML sitemaps. Better indexation means more organic traffic."
 msgstr "Holen Sie das Maximum aus gefilterten Seiten heraus — mit voller Kontrolle über SEO-Titel, H1, Beschreibungen, SEO-Texte und XML-Sitemaps. Bessere Indexierung bedeutet mehr organischen Traffic."
 
-#: src/Settings/Tabs/AboutProTab.php:157
+#: src/Settings/Tabs/AboutProTab.php:153
 msgctxt "benefits-landing"
 msgid "Improve conversions and user experience with advanced filtering capabilities"
 msgstr "Steigern Sie Conversions und das Nutzererlebnis mit erweiterten Filterfunktionen"
 
-#: src/Settings/Tabs/AboutProTab.php:391
+#: src/Settings/Tabs/AboutProTab.php:708
 msgctxt "benefits-landing"
 msgid "Instant Filter Set duplication"
 msgstr "Sofortige Duplizierung von Filtersets"
 
-#: src/Settings/Tabs/AboutProTab.php:101
-msgctxt "benefits-landing"
-msgid "mobile & SEO ready<span>.</span>"
-msgstr "mobil- und SEO-bereit<span>.</span>"
-
-#: src/Settings/Tabs/AboutProTab.php:283
+#: src/Settings/Tabs/AboutProTab.php:600
 msgctxt "benefits-landing"
 msgid "Page builder content, WooCommerce products, custom post types, and even custom WP_Query — the PRO version handles it all!"
 msgstr "Page-Builder-Inhalte, WooCommerce-Produkte, benutzerdefinierte Beitragstypen und sogar benutzerdefinierte WP_Query — die PRO-Version meistert das alles!"
 
-#: src/Settings/Tabs/AboutProTab.php:400
+#: src/Settings/Tabs/AboutProTab.php:717
 msgctxt "benefits-landing"
 msgid "SEO & organic traffic"
 msgstr "SEO & organischer Traffic"
 
-#: src/Settings/Tabs/AboutProTab.php:274
+#: src/Settings/Tabs/AboutProTab.php:591
 msgctxt "benefits-landing"
 msgid "The PRO version includes tools that <strong>increase conversions</strong><br />by helping visitors find the right content faster."
 msgstr "Die PRO-Version enthält Tools, die <strong>Conversions steigern</strong><br />indem sie Besuchern helfen, schneller die richtigen Inhalte zu finden."
 
-#: src/Settings/Tabs/AboutProTab.php:292
+#: src/Settings/Tabs/AboutProTab.php:609
 msgctxt "benefits-landing"
 msgid "Tools for faster workflow"
 msgstr "Tools für einen schnelleren Workflow"
@@ -171,10 +388,49 @@ msgctxt "benefits-landing"
 msgid "Upgrade to Filter Everything PRO to unlock the full power of filtering, advanced SEO tools, page builder support, and provide a <strong>much better navigation experience</strong> for your visitors."
 msgstr "Steigen Sie auf Filter Everything PRO um, um die volle Filterleistung, erweiterte SEO-Tools und Page-Builder-Unterstützung freizuschalten und Ihren Besuchern ein <strong>deutlich besseres Navigationserlebnis</strong> zu bieten."
 
-#: src/Settings/Tabs/AboutProTab.php:343
+#: src/Settings/Tabs/AboutProTab.php:660
 msgctxt "benefits-landing"
 msgid "Works with your existing content — no need to rebuild your site"
 msgstr "Funktioniert mit Ihren bestehenden Inhalten — kein Neuaufbau der Website nötig"
+
+#: src/Settings/Tabs/AboutProTab.php:630
+msgctxt "benefits-landing"
+msgid "16&nbsp;200+"
+msgstr "16.200+"
+
+#: src/Settings/Tabs/AboutProTab.php:614
+msgctxt "benefits-landing"
+msgid "Precision filtering"
+msgstr "Präzise Filterung"
+
+#: src/Settings/Tabs/AboutProTab.php:100
+msgctxt "benefits-landing"
+msgid "page builder support,"
+msgstr "Unterstützung für Page-Builder,"
+
+#: src/wpc-default-hooks.php:702 src/wpc-default-hooks.php:715
+#: src/wpc-default-hooks.php:732
+msgid "filter by Product height"
+msgstr "nach Produkthöhe filtern"
+
+#: src/wpc-default-hooks.php:691 src/wpc-default-hooks.php:708
+#: src/wpc-default-hooks.php:726
+msgid "filter by Product price"
+msgstr "nach Produktpreis filtern"
+
+#: src/wpc-default-hooks.php:693 src/wpc-default-hooks.php:711
+msgid "filter by Product sale price"
+msgstr "nach Angebotspreis des Produkts filtern"
+
+#: src/wpc-default-hooks.php:692 src/wpc-default-hooks.php:712
+#: src/wpc-default-hooks.php:729
+msgid "filter by Product stock status"
+msgstr "nach Lagerstatus des Produkts filtern"
+
+#: src/wpc-default-hooks.php:701 src/wpc-default-hooks.php:714
+#: src/wpc-default-hooks.php:731
+msgid "filter by Product width"
+msgstr "nach Produktbreite filtern"
 
 #: views/admin/auto-create-filter.php:41
 msgid "%sCreate Filters Automatically%s — instantly generate filters from your site’s categories and fields. You can always edit them later."
@@ -188,10 +444,6 @@ msgstr "%sFilter manuell erstellen%s — volle Kontrolle — Filter genau nach I
 msgid "%sTo display filters, add the %sFilter Everything — Filters%s widget to a widget area or sidebar,%sor use the %s[fe_widget]%s shortcode to place them anywhere on your site.%s"
 msgstr "%sUm Filter anzuzeigen, fügen Sie das %sFilter Everything — Filters%s-Widget zu einem Widget-Bereich oder einer Seitenleiste hinzu,%soder verwenden Sie den %s[fe_widget]%s-Shortcode, um sie überall auf Ihrer Website zu platzieren.%s"
 
-#: views/admin/pro-modal.php:114
-msgid "6 month of support included"
-msgstr "6 Monate Support inklusive"
-
 #: src/wpc-utility-functions.php:314 src/wpc-utility-functions.php:362
 msgid "Any %s (for a common query across all %s pages)"
 msgstr "Beliebige %s (zur allgemeinen Suche über alle %s Seiten)"
@@ -204,228 +456,213 @@ msgstr "Beliebige %s Seite"
 msgid "Any %s page (for a common query across all %s pages)"
 msgstr "Beliebige %s Seite (zur allgemeinen Suche über alle %s Seiten)"
 
-#: src/Settings/Tabs/SettingsTab.php:115
+#: src/Settings/Tabs/SettingsTab.php:159
 msgid "Appear as a Pop-up"
 msgstr "Als Pop-up erscheinen"
 
-#: src/Settings/Tabs/AboutProTab.php:723
-msgctxt "benefits-landing"
-msgid "6 months of support included"
-msgstr "6 Monate Support inklusive"
-
-#: src/Settings/Tabs/AboutProTab.php:437
+#: src/Settings/Tabs/AboutProTab.php:249
 msgctxt "benefits-landing"
 msgid "Advanced Filtering & Core Value"
 msgstr "Erweiterte Filterung & Kernfunktionen"
 
-#: src/Settings/Tabs/AboutProTab.php:633
+#: src/Settings/Tabs/AboutProTab.php:454
 msgctxt "benefits-landing"
 msgid "Advanced Workflow & Flexibility"
 msgstr "Erweiterter Workflow & Flexibilität"
 
-#: src/Settings/Tabs/AboutProTab.php:575
+#: src/Settings/Tabs/AboutProTab.php:396
 msgctxt "benefits-landing"
 msgid "AJAX filtering"
 msgstr "AJAX-Filterung"
 
-#: src/Settings/Tabs/AboutProTab.php:566
+#: src/Settings/Tabs/AboutProTab.php:387
 msgctxt "benefits-landing"
 msgid "Auto-generated filters"
 msgstr "Automatisch generierte Filter"
 
-#: src/Settings/Tabs/AboutProTab.php:367 src/Settings/Tabs/AboutProTab.php:487
-#: views/admin/pro-modal.php:74
+#: src/Settings/Tabs/AboutProTab.php:308 src/Settings/Tabs/AboutProTab.php:684
+#: views/admin/pro-modal.php:77
 msgctxt "benefits-landing"
 msgid "Auto-hiding empty filters"
 msgstr "Automatisches Ausblenden leerer Filter"
 
-#: src/Settings/Tabs/AboutProTab.php:707
+#: src/Settings/Tabs/AboutProTab.php:528
 msgctxt "benefits-landing"
 msgid "Buy PRO"
 msgstr "PRO kaufen"
 
-#: src/Settings/Tabs/AboutProTab.php:425
+#: src/Settings/Tabs/AboutProTab.php:237
 msgctxt "benefits-landing"
 msgid "Choose the right version<br>for you"
 msgstr "Wählen Sie die richtige Version<br>für sich"
 
-#: src/Settings/Tabs/AboutProTab.php:430
+#: src/Settings/Tabs/AboutProTab.php:242
 msgctxt "benefits-landing"
 msgid "Current version"
 msgstr "Aktuelle Version"
 
-#: src/Settings/Tabs/AboutProTab.php:429
+#: src/Settings/Tabs/AboutProTab.php:241
 msgctxt "benefits-landing"
 msgid "Features"
 msgstr "Funktionen"
 
-#: src/Settings/Tabs/AboutProTab.php:557
+#: src/Settings/Tabs/AboutProTab.php:378
 msgctxt "benefits-landing"
 msgid "Filter by any criteria"
 msgstr "Filtern nach beliebigen Kriterien"
 
-#: src/Settings/Tabs/AboutProTab.php:733
+#: src/Settings/Tabs/AboutProTab.php:741
 msgctxt "benefits-landing"
 msgid "Frequently Asked Questions"
 msgstr "Häufig gestellte Fragen"
 
-#: src/Settings/Tabs/AboutProTab.php:757
+#: src/Settings/Tabs/AboutProTab.php:765
 msgctxt "benefits-landing"
 msgid "How many sites does my license cover?"
 msgstr "Wie viele Websites deckt meine Lizenz ab?"
 
-#: src/Settings/Tabs/AboutProTab.php:638
+#: src/Settings/Tabs/AboutProTab.php:459
 msgctxt "benefits-landing"
 msgid "Import & export settings"
 msgstr "Import- und Exporteinstellungen"
 
-#: src/Settings/Tabs/AboutProTab.php:766
+#: src/Settings/Tabs/AboutProTab.php:774
 msgctxt "benefits-landing"
 msgid "Is support included with the PRO upgrade?"
 msgstr "Ist Support im PRO-Upgrade enthalten?"
 
-#: src/Settings/Tabs/AboutProTab.php:749
+#: src/Settings/Tabs/AboutProTab.php:757
 msgctxt "benefits-landing"
 msgid "Is the PRO version compatible with my theme or page builder?"
 msgstr "Ist die PRO-Version mit meinem Theme oder Page Builder kompatibel?"
 
-#: src/Settings/Tabs/AboutProTab.php:719
-msgctxt "benefits-landing"
-msgid "Lifetime updates"
-msgstr "Lebenslange Updates"
-
-#: src/Settings/Tabs/AboutProTab.php:195
+#: src/Settings/Tabs/AboutProTab.php:579
 msgctxt "benefits-landing"
 msgid "Maximum convenience for Mobile devices"
 msgstr "Maximaler Komfort für mobile Geräte"
 
-#: src/Settings/Tabs/AboutProTab.php:191
+#: src/Settings/Tabs/AboutProTab.php:575
 msgctxt "benefits-landing"
 msgid "Mobile Devices"
 msgstr "Mobile Geräte"
 
-#: src/Settings/Tabs/AboutProTab.php:743
-msgctxt "benefits-landing"
-msgid "No, the PRO version will not slow down your site. The plugin itself is optimized for fast performance and does not add unnecessary load on its own.<br><br>However, keep in mind that the speed of filtering depends on the number of posts, attributes, and your hosting resources. With large datasets, performance is primarily determined by server capacity rather than the plugin version."
-msgstr "Nein, die PRO-Version verlangsamt Ihre Website nicht. Das Plugin selbst ist auf schnelle Leistung optimiert und verursacht keine unnötige Last.<br><br>Beachten Sie jedoch, dass die Filtergeschwindigkeit von der Anzahl der Beiträge, Attribute und Ihren Hosting-Ressourcen abhängt. Bei großen Datenmengen wird die Leistung in erster Linie durch die Serverkapazität bestimmt, nicht durch die Plugin-Version."
-
-#: src/Settings/Tabs/AboutProTab.php:387
+#: src/Settings/Tabs/AboutProTab.php:704
 msgctxt "benefits-landing"
 msgid "One-click import & export for Filters, Filter Sets, and settings"
 msgstr "Ein-Klick-Import und -Export für Filter, Filtersets und Einstellungen"
 
-#: src/Settings/Tabs/AboutProTab.php:715
-msgctxt "benefits-landing"
-msgid "One-time payment"
-msgstr "Einmalige Zahlung"
-
-#: src/Settings/Tabs/AboutProTab.php:691
+#: src/Settings/Tabs/AboutProTab.php:512
 msgctxt "benefits-landing"
 msgid "Priority support"
 msgstr "Priorisierter Support"
 
-#: src/Settings/Tabs/AboutProTab.php:323
+#: src/Settings/Tabs/AboutProTab.php:640
 msgctxt "benefits-landing"
 msgid "PRO Features Overview"
 msgstr "Übersicht der PRO-Funktionen"
 
-#: src/Settings/Tabs/AboutProTab.php:785
+#: src/Settings/Tabs/AboutProTab.php:793
 msgctxt "benefits-landing"
 msgid "Ready to unlock the full power of Filter Everything PRO?"
 msgstr "Bereit, die volle Leistung von Filter Everything PRO freizuschalten?"
 
-#: src/Settings/Tabs/AboutProTab.php:620
+#: src/Settings/Tabs/AboutProTab.php:751
+msgctxt "benefits-landing"
+msgid "No, the PRO version will not slow down your site. The plugin itself is optimized for fast performance and does not add unnecessary load on its own.<br><br>However, keep in mind that the speed of filtering depends on the number of posts, attributes, and your hosting resources. With large datasets, performance is primarily determined by server capacity rather than the plugin version."
+msgstr "Nein, die PRO-Version verlangsamt Ihre Website nicht. Das Plugin selbst ist auf schnelle Leistung optimiert und verursacht keine unnötige Last.<br><br>Beachten Sie jedoch, dass die Filtergeschwindigkeit von der Anzahl der Beiträge, Attribute und Ihren Hosting-Ressourcen abhängt. Bei großen Datenmengen wird die Leistung in erster Linie durch die Serverkapazität bestimmt, nicht durch die Plugin-Version."
+
+#: src/Settings/Tabs/AboutProTab.php:441
 msgctxt "benefits-landing"
 msgid "Responsive design"
 msgstr "Responsives Design"
 
-#: src/Settings/Tabs/AboutProTab.php:499
+#: src/Settings/Tabs/AboutProTab.php:320
 msgctxt "benefits-landing"
 msgid "SEO & Traffic Growth"
 msgstr "SEO & Traffic-Wachstum"
 
-#: src/Settings/Tabs/AboutProTab.php:184
+#: src/Settings/Tabs/AboutProTab.php:568
 msgctxt "benefits-landing"
 msgid "SEO Capabilities"
 msgstr "SEO-Funktionen"
 
-#: src/Settings/Tabs/AboutProTab.php:602
+#: src/Settings/Tabs/AboutProTab.php:423
 msgctxt "benefits-landing"
 msgid "Sorting widget"
 msgstr "Sortier-Widget"
 
-#: src/Settings/Tabs/AboutProTab.php:682
+#: src/Settings/Tabs/AboutProTab.php:503
 msgctxt "benefits-landing"
 msgid "Standard support"
 msgstr "Standard-Support"
 
-#: src/Settings/Tabs/AboutProTab.php:584
+#: src/Settings/Tabs/AboutProTab.php:405
 msgctxt "benefits-landing"
 msgid "Step-by-step filtering"
 msgstr "Schritt-für-Schritt-Filterung"
 
-#: src/Settings/Tabs/AboutProTab.php:677
+#: src/Settings/Tabs/AboutProTab.php:498
 msgctxt "benefits-landing"
 msgid "Support"
 msgstr "Support"
 
-#: src/Settings/Tabs/AboutProTab.php:711
+#: src/Settings/Tabs/AboutProTab.php:532
 msgctxt "benefits-landing"
 msgid "Unlock all PRO features"
 msgstr "Alle PRO-Funktionen freischalten"
 
-#: src/Settings/Tabs/AboutProTab.php:786
+#: src/Settings/Tabs/AboutProTab.php:794
 msgctxt "benefits-landing"
 msgid "Upgrade to PRO and take full control over filtering, SEO, and user experience."
 msgstr "Steigen Sie auf PRO um und übernehmen Sie die volle Kontrolle über Filterung, SEO und Nutzererlebnis."
 
-#: src/Settings/Tabs/AboutProTab.php:198
+#: src/Settings/Tabs/AboutProTab.php:582
 msgctxt "benefits-landing"
 msgid "Use the built-in, user-friendly filter widget for mobile devices."
 msgstr "Nutzen Sie das integrierte, benutzerfreundliche Filter-Widget für mobile Geräte."
 
-#: src/Settings/Tabs/AboutProTab.php:383 src/Settings/Tabs/AboutProTab.php:478
-#: views/admin/pro-modal.php:53
+#: src/Settings/Tabs/AboutProTab.php:299 src/Settings/Tabs/AboutProTab.php:700
+#: views/admin/pro-modal.php:87
 msgctxt "benefits-landing"
 msgid "User-friendly mobile filters widget"
 msgstr "Benutzerfreundliches Filter-Widget für Mobilgeräte"
 
-#: src/Settings/Tabs/AboutProTab.php:272
+#: src/Settings/Tabs/AboutProTab.php:589
 msgctxt "benefits-landing"
 msgid "What does Filter Everything PRO<br>unlock?"
 msgstr "Was schaltet Filter Everything PRO<br>frei?"
 
-#: src/Settings/Tabs/AboutProTab.php:772
+#: src/Settings/Tabs/AboutProTab.php:780
 msgctxt "benefits-landing"
 msgid "What is the refund policy?"
 msgstr "Wie lautet die Rückgaberichtlinie?"
 
-#: src/Settings/Tabs/AboutProTab.php:741
+#: src/Settings/Tabs/AboutProTab.php:749
 msgctxt "benefits-landing"
 msgid "Will the PRO version slow down my site?"
 msgstr "Verlangsamt die PRO-Version meine Website?"
 
-#: src/Settings/Tabs/AboutProTab.php:305
+#: src/Settings/Tabs/AboutProTab.php:622
 msgctxt "benefits-landing"
 msgid "Works and is trusted<br>worldwide"
 msgstr "Funktioniert und genießt Vertrauen<br>weltweit"
 
-#: src/Settings/Tabs/AboutProTab.php:415 src/Settings/Tabs/AboutProTab.php:531
+#: src/Settings/Tabs/AboutProTab.php:352 src/Settings/Tabs/AboutProTab.php:732
 msgctxt "benefits-landing"
 msgid "XML sitemap for filtered pages"
 msgstr "XML-Sitemap für gefilterte Seiten"
 
-#: src/Settings/Tabs/AboutProTab.php:768
+#: src/Settings/Tabs/AboutProTab.php:759
 msgctxt "benefits-landing"
-msgid "Yes, support is included with the PRO purchase. You receive 6 months of support with the option to extend it at any time, along with lifetime plugin updates that include all new features and bug fixes at no additional cost."
-msgstr "Ja, der Support ist im PRO-Kauf enthalten. Sie erhalten 6 Monate Support mit der Möglichkeit, ihn jederzeit zu verlängern, sowie lebenslange Plugin-Updates, die alle neuen Funktionen und Fehlerkorrekturen ohne zusätzliche Kosten umfassen."
+msgid "Yes, the PRO version is compatible with most WordPress themes and popular page builders. The plugin relies on the standard WP_Query mechanism, which allows it to integrate correctly with Gutenberg, Elementor, WPBakery, Divi, Avada, and other page builders.<br><br>In most cases, no additional configuration is required — filters will work with your theme out of the box. For highly customized or non-standard templates, flexible integration options are also available."
+msgstr "Ja, die PRO-Version ist mit den meisten WordPress-Themes und beliebten Page Buildern kompatibel. Das Plugin basiert auf dem standardmäßigen WP_Query-Mechanismus, wodurch es sich korrekt in Gutenberg, Elementor, WPBakery, Divi, Avada und andere Page Builder integrieren lässt.<br><br>In den meisten Fällen ist keine zusätzliche Konfiguration erforderlich — Filter funktionieren mit Ihrem Theme sofort einsatzbereit. Für stark angepasste oder nicht standardmäßige Templates stehen außerdem flexible Integrationsoptionen zur Verfügung."
 
-#: src/Settings/Tabs/AboutProTab.php:179
+#: src/Settings/Tabs/AboutProTab.php:563
 msgctxt "benefits-landing"
 msgid "∞ Create Unlimited Filter Sets"
 msgstr "∞ Erstellen Sie unbegrenzte Filtersets"
 
-#: src/Settings/Tabs/AboutProTab.php:287
+#: src/Settings/Tabs/AboutProTab.php:604
 msgctxt "benefits-landing"
 msgid "∞ Unlimited Filter Sets"
 msgstr "∞ Unbegrenzte Filtersets"
@@ -433,11 +670,6 @@ msgstr "∞ Unbegrenzte Filtersets"
 #: src/wpc-utility-functions.php:162
 msgid "Blog page"
 msgstr "Beitragsseite"
-
-#: src/Settings/Tabs/AboutProTab.php:751
-msgctxt "benefits-landing"
-msgid "Yes, the PRO version is compatible with most WordPress themes and popular page builders. The plugin relies on the standard WP_Query mechanism, which allows it to integrate correctly with Gutenberg, Elementor, WPBakery, Divi, Avada, and other page builders.<br><br>In most cases, no additional configuration is required — filters will work with your theme out of the box. For highly customized or non-standard templates, flexible integration options are also available."
-msgstr "Ja, die PRO-Version ist mit den meisten WordPress-Themes und beliebten Page Buildern kompatibel. Das Plugin basiert auf dem standardmäßigen WP_Query-Mechanismus, wodurch es sich korrekt in Gutenberg, Elementor, WPBakery, Divi, Avada und andere Page Builder integrieren lässt.<br><br>In den meisten Fällen ist keine zusätzliche Konfiguration erforderlich — Filter funktionieren mit Ihrem Theme sofort einsatzbereit. Für stark angepasste oder nicht standardmäßige Templates stehen außerdem flexible Integrationsoptionen zur Verfügung."
 
 #: src/wpc-utility-functions.php:29
 msgid "Common"
@@ -475,11 +707,11 @@ msgstr "Fehler: Die Erstellung der XML-Sitemap ist aufgrund eines Serverfehlers 
 msgid "Failed to generate XML"
 msgstr "XML konnte nicht erstellt werden"
 
-#: views/admin/pro-modal.php:101
+#: views/admin/pro-modal.php:113
 msgid "Filter Everything PRO"
 msgstr "Filter Everything PRO"
 
-#: views/admin/pro-modal.php:25
+#: views/admin/pro-modal.php:28
 msgid "Free"
 msgstr "Kostenlos"
 
@@ -491,7 +723,7 @@ msgstr "XML-Sitemap generieren"
 msgid "Generates an XML sitemap of URLs available for indexing to help search engines crawl your site faster. You need to submit this sitemap to search engines for proper indexing."
 msgstr "Erstellt eine XML-Sitemap der URLs, die für die Indexierung verfügbar sind, um Suchmaschinen beim schnelleren Crawlen Ihrer Website zu unterstützen. Sie müssen diese Sitemap bei Suchmaschinen einreichen, damit eine ordnungsgemäße Indexierung erfolgt."
 
-#: src/wpc-helpers.php:2246
+#: src/wpc-helpers.php:2417
 msgid "If checked, filtering will take into account variations with this attribute or meta key"
 msgstr "Wenn diese Option aktiviert ist, werden bei der Filterung Variationen mit diesem Attribut oder Metaschlüssel berücksichtigt."
 
@@ -503,17 +735,9 @@ msgstr "Indexierte Filter"
 msgid "Indexing Depth"
 msgstr "Indizierungstiefe"
 
-#: views/admin/pro-modal.php:111
-msgid "Lifetime updates"
-msgstr "Lebenslange Updates"
-
 #: src/wpc-utility-functions.php:19
 msgid "No page selected"
 msgstr "Keine Seite gewählt"
-
-#: views/admin/pro-modal.php:107
-msgid "Pay once"
-msgstr "Einmalige Zahlung"
 
 #: views/admin/xml-create-row.php:16
 msgid "Please keep this tab open until the process is complete."
@@ -559,19 +783,11 @@ msgstr "Die gleiche Seite wie für gefilterte Beiträge"
 msgid "This function should not be called before the pre_get_posts hook has fired."
 msgstr "Diese Funktion sollte nicht aufgerufen werden, bevor der Hook „pre_get_posts“ ausgelöst wurde."
 
-#: views/admin/pro-modal.php:104
-msgid "Unlock all PRO features and capabilities"
-msgstr "Zugriff auf alle PRO-Funktionen und -Möglichkeiten"
-
-#: views/admin/pro-modal.php:118
-msgid "Unlock PRO"
-msgstr "Freischaltung von PRO"
-
-#: views/admin/pro-modal.php:99
+#: views/admin/pro-modal.php:111
 msgid "Upgrade to"
 msgstr "Upgrade auf"
 
-#: src/wpc-helpers.php:2243
+#: src/wpc-helpers.php:2414
 msgid "Use for Variations"
 msgstr "Verwendung für Variationen"
 
@@ -583,20 +799,128 @@ msgstr "— Keine Seite zur Auswahl —"
 msgid "— There is no any %s yet —"
 msgstr "— Es gibt noch kein %s —"
 
+#: views/admin/pro-modal.php:138
+msgid "Unlock PRO"
+msgstr "PRO freischalten"
+
+#: src/Settings/Tabs/AboutProTab.php:343
+msgctxt "benefits-landing"
+msgid "No empty filter pages or 404s"
+msgstr "Keine leeren Filterseiten oder 404-Fehler"
+
+#: src/Settings/Tabs/AboutProTab.php:767
+msgctxt "benefits-landing"
+msgid "The <a href=\"%s\" target=\"_blank\">Personal license</a> covers two sites — your main production website and its development copy (DEV / staging). This means you can use the plugin on the live site and simultaneously on its test copy for development, updates, and verification before applying changes to the production environment."
+msgstr "Die <a href=\"%s\" target=\"_blank\">Persönliche Lizenz</a> gilt für zwei Websites – deine Haupt-Produktionswebsite und deren Entwicklungskopie (DEV/Staging). Das bedeutet, dass du das Plugin auf der Live-Website und gleichzeitig auf ihrer Testkopie für die Entwicklung, für Aktualisierungen und zur Überprüfung verwenden kannst, bevor du Änderungen auf die Produktionsumgebung überträgst."
+
+#: views/admin/xml-create-row.php:20
+msgid "Error: Unable to connect to the server. Please check your network connection or try again later."
+msgstr "Fehler: Es konnte keine Verbindung zum Server hergestellt werden. Bitte überprüfe deine Netzwerkverbindung oder versuche es später erneut."
+
+#: src/wpc-default-hooks.php:705 src/wpc-default-hooks.php:722
+#: src/wpc-default-hooks.php:739 src/wpc-default-hooks.php:741
+msgid "filter by Featured image"
+msgstr "nach Beitragsbild filtern"
+
+#: src/wpc-default-hooks.php:704 src/wpc-default-hooks.php:717
+#: src/wpc-default-hooks.php:734
+msgid "filter by Product average rating"
+msgstr "nach durchschnittlicher Produktbewertung filtern"
+
+#: src/wpc-default-hooks.php:696 src/wpc-default-hooks.php:718
+#: src/wpc-default-hooks.php:735
+msgid "filter by Product backorders status"
+msgstr "nach Nachbestellungsstatus filtern"
+
+#: src/wpc-default-hooks.php:698 src/wpc-default-hooks.php:720
+#: src/wpc-default-hooks.php:737
+msgid "filter by Product downloadable status"
+msgstr "nach Downloadstatus des Produkts filtern"
+
+#: src/wpc-default-hooks.php:700 src/wpc-default-hooks.php:713
+#: src/wpc-default-hooks.php:730
+msgid "filter by Product length"
+msgstr "nach Produktlänge filtern"
+
+#: src/wpc-default-hooks.php:725
+msgid "filter by Product on sale status"
+msgstr "nach Angebotsstatus des Produkts filtern"
+
+#: src/wpc-default-hooks.php:697 src/wpc-default-hooks.php:719
+#: src/wpc-default-hooks.php:736
+msgid "filter by Product sold individually status"
+msgstr "nach Status „Einzeln verkauft“ filtern"
+
+#: src/wpc-default-hooks.php:694 src/wpc-default-hooks.php:709
+#: src/wpc-default-hooks.php:727
+msgid "filter by Product stock quantity"
+msgstr "nach Lagerbestandsmenge filtern"
+
+#: src/wpc-default-hooks.php:695 src/wpc-default-hooks.php:710
+#: src/wpc-default-hooks.php:728
+msgid "filter by Product total sales"
+msgstr "nach Gesamtverkäufen des Produkts filtern"
+
+#: src/Settings/Tabs/AboutProTab.php:635
+msgctxt "benefits-landing"
+msgid "rating based on real reviews"
+msgstr "Bewertung basierend auf echten Rezensionen"
+
+#: src/Settings/Tabs/AboutProTab.php:263 views/admin/pro-modal.php:47
+msgctxt "benefits-landing"
+msgid "New"
+msgstr "Neu"
+
+#: views/frontend/apply-button.php:39
+msgid "Show"
+msgstr "Anzeigen"
+
+#: src/wpc-utility-functions.php:176
+msgid "Homepage"
+msgstr "Homepage"
+
+#: src/wpc-default-hooks.php:761
+msgid "Forbidden"
+msgstr "Verboten"
+
+#: src/Settings/Tabs/SeoTabTrait.php:15
+msgid "SEO settings saved successfully"
+msgstr "SEO-Einstellungen wurden erfolgreich gespeichert"
+
+#: src/Settings/Tabs/AboutProTab.php:364
+msgctxt "benefits-landing"
+msgid "Core Features (Free + Pro)"
+msgstr "Kernfunktionen (kostenlose Version + Pro)"
+
+#: src/Settings/Tabs/AboutProTab.php:334 src/Settings/Tabs/AboutProTab.php:728
+msgctxt "benefits-landing"
+msgid "Clean, SEO-friendly filter URLs"
+msgstr "Saubere, SEO-freundliche Filter-URLs"
+
+#: src/Settings/Tabs/AboutProTab.php:631
+msgctxt "benefits-landing"
+msgid "customers on CodeCanyon"
+msgstr "Kunden auf CodeCanyon"
+
+#: src/Settings/Tabs/AboutProTab.php:627
+msgctxt "benefits-landing"
+msgid "websites / users worldwide"
+msgstr "Websites / Benutzer weltweit"
+
 #: src/Admin/AutoFilterSet.php:242
 msgid "(auto-generated)"
 msgstr "(automatisch-erstellt)"
 
-#: src/PluginHelpers.php:434 src/wpc-utility-functions.php:151
+#: src/PluginHelpers.php:459 src/wpc-utility-functions.php:151
 msgid "All archive pages for this Post Type"
 msgstr "Alle Archivseiten für diesen Beitragstyp"
 
-#: src/PluginHelpers.php:476 src/PluginHelpers.php:488
-#: src/PluginHelpers.php:497 src/wpc-utility-functions.php:316
+#: src/PluginHelpers.php:501 src/PluginHelpers.php:513
+#: src/PluginHelpers.php:522 src/wpc-utility-functions.php:316
 msgid "Any %s"
 msgstr "Beliebige %s"
 
-#: src/PluginHelpers.php:391
+#: src/PluginHelpers.php:416
 msgid "Available on"
 msgstr "Erhältlich bei"
 
@@ -605,7 +929,7 @@ msgctxt "benefits-landing"
 msgid "160,000+"
 msgstr "160.000+"
 
-#: src/Settings/Tabs/AboutProTab.php:124 src/Settings/Tabs/AboutProTab.php:317
+#: src/Settings/Tabs/AboutProTab.php:124 src/Settings/Tabs/AboutProTab.php:634
 msgctxt "benefits-landing"
 msgid "4.88/5"
 msgstr "4,88/5"
@@ -615,9 +939,9 @@ msgctxt "benefits-landing"
 msgid "from real customers"
 msgstr "von echten Kunden"
 
-#: src/Settings/Tabs/AboutProTab.php:93 src/Settings/Tabs/AboutProTab.php:327
-#: src/Settings/Tabs/AboutProTab.php:351 src/Settings/Tabs/AboutProTab.php:375
-#: src/Settings/Tabs/AboutProTab.php:399 src/Settings/Tabs/AboutProTab.php:431
+#: src/Settings/Tabs/AboutProTab.php:93 src/Settings/Tabs/AboutProTab.php:243
+#: src/Settings/Tabs/AboutProTab.php:644 src/Settings/Tabs/AboutProTab.php:668
+#: src/Settings/Tabs/AboutProTab.php:692 src/Settings/Tabs/AboutProTab.php:716
 msgctxt "benefits-landing"
 msgid "PRO"
 msgstr "PRO"
@@ -627,28 +951,32 @@ msgctxt "benefits-landing"
 msgid "Trusted by over"
 msgstr "Vertrauen von über"
 
-#: src/Settings/Tabs/AboutProTab.php:177 src/Settings/Tabs/AboutProTab.php:339
-#: src/Settings/Tabs/AboutProTab.php:451 views/admin/pro-modal.php:44
+#: src/Settings/Tabs/AboutProTab.php:272 src/Settings/Tabs/AboutProTab.php:561
+#: src/Settings/Tabs/AboutProTab.php:656 views/admin/pro-modal.php:56
 msgctxt "benefits-landing"
 msgid "Unlimited Filter Sets"
 msgstr "Unbegrenzte Filtersets"
 
-#: src/Settings/Tabs/AboutProTab.php:162 src/Settings/Tabs/AboutProTab.php:787
+#: src/Settings/Tabs/AboutProTab.php:162 src/Settings/Tabs/AboutProTab.php:795
 msgctxt "benefits-landing"
 msgid "Upgrade to PRO"
 msgstr "Auf PRO umsteigen"
 
-#: src/Settings/Tabs/AboutProTab.php:163 views/admin/pro-modal.php:89
+#: src/Settings/Tabs/AboutProTab.php:163 views/admin/pro-modal.php:101
 msgctxt "benefits-landing"
 msgid "View all PRO features"
 msgstr "Alle PRO-Funktionen anzeigen"
 
-#: src/Settings/Tabs/AboutProTab.php:171
+#: src/Settings/Tabs/AboutProTab.php:555
 msgctxt "benefits-landing"
 msgid "Why Upgrade to<br>Filter Everything PRO?"
 msgstr "Warum auf<br>Filter Everything PRO umsteigen?"
 
+#: src/Admin/Widgets/beaver/chips/ChipsBeaverWidget.php:22
+#: src/Admin/Widgets/bricks/ChipsBricksWidget.php:13
 #: src/Admin/Widgets/ElementorWidgets/ChipsElementorWidget.php:16
+#: src/Admin/Widgets/gutenberg/build/chips/index.js:1
+#: src/Admin/Widgets/gutenberg/src/chips/index.js:32
 msgid "Chips"
 msgstr "Chips"
 
@@ -656,7 +984,7 @@ msgstr "Chips"
 msgid "Custom Field Date"
 msgstr "Benutzerdefiniertes Feld: Datum"
 
-#: src/Plugin.php:388
+#: src/Plugin.php:418
 msgid "Display filters side by side instead of one per row"
 msgstr "Filter nebeneinander anzeigen statt einer pro Zeile"
 
@@ -676,7 +1004,7 @@ msgstr "Sortierlabel eingeben"
 msgid "Error: Automatic filters were not created. Please try again, or set them up manually."
 msgstr "Fehler: Automatische Filter wurden nicht erstellt. Bitte versuchen Sie es erneut oder richten Sie sie manuell ein."
 
-#: src/Admin/FilterFields.php:1754
+#: src/Admin/FilterFields.php:1798
 msgid "Error: invalid Horizontal layout field."
 msgstr "Fehler: Ungültiges Feld für das horizontale Layout."
 
@@ -692,23 +1020,23 @@ msgstr "Fehler: Keine Taxonomien gefunden. Bitte erstellen Sie Ihre erste Taxono
 msgid "filters"
 msgstr "filter"
 
-#: src/Plugin.php:270
+#: src/Plugin.php:297
 msgid "Hide empty Filters"
 msgstr "Leere Filter ausblenden"
 
-#: src/Plugin.php:275
+#: src/Plugin.php:302
 msgid "Hide the Entire Filter if no one term contains posts"
 msgstr "Gesamten Filter ausblenden, wenn ein Begriff keine Beiträge enthält"
 
-#: src/Admin/Widgets/FiltersWidget.php:582 src/Plugin.php:383
+#: src/Admin/Widgets/FiltersWidget.php:721 src/Plugin.php:413
 msgid "Horizontal filters"
 msgstr "Horizontale Filter"
 
-#: src/Plugin.php:410
+#: src/Plugin.php:440
 msgid "Horizontal priority"
 msgstr "Horizontale Priorität"
 
-#: src/Plugin.php:403 src/Plugin.php:416
+#: src/Plugin.php:433 src/Plugin.php:446
 msgid "How many columns to use in horizontal mode"
 msgstr "Wie viele Spalten im horizontalen Modus verwendet werden sollen"
 
@@ -720,12 +1048,12 @@ msgstr "Importieren/Exportieren"
 msgid "Name of the Custom Field"
 msgstr "Name des benutzerdefinierten Feldes"
 
-#: src/PluginHelpers.php:211
+#: src/PluginHelpers.php:213
 msgid "No %s enabled lists found on the page"
 msgstr "Keine %s-aktivierten Listen auf der Seite gefunden"
 
-#: src/PluginHelpers.php:221 src/PluginHelpers.php:252
-#: src/PluginHelpers.php:295
+#: src/PluginHelpers.php:223 src/PluginHelpers.php:254
+#: src/PluginHelpers.php:297
 msgid "No list of %s found on this page"
 msgstr "Auf dieser Seite wurde keine Liste von %s gefunden."
 
@@ -733,7 +1061,7 @@ msgstr "Auf dieser Seite wurde keine Liste von %s gefunden."
 msgid "No taxonomies are associated with the selected post type."
 msgstr "Mit dem ausgewählten Beitragstyp sind keine Taxonomien verknüpft."
 
-#: src/Plugin.php:397
+#: src/Plugin.php:427
 msgid "Number of columns"
 msgstr "Anzahl der Spalten"
 
@@ -745,7 +1073,7 @@ msgstr "Öffnen"
 msgid "Price"
 msgstr "Preis"
 
-#: src/Admin/AdminHooks.php:36 src/Settings/Tabs/AboutProTab.php:917
+#: src/Admin/AdminHooks.php:36 src/Settings/Tabs/AboutProTab.php:925
 msgid "PRO benefits"
 msgstr "PRO-Vorteile"
 
@@ -757,8 +1085,14 @@ msgstr "Suche"
 msgid "SEO Rules"
 msgstr "SEO Regeln"
 
+#: src/Admin/Widgets/beaver/sorting/includes/frontend.php:18
+#: src/Admin/Widgets/beaver/sorting/SortingBeaverWidget.php:19
+#: src/Admin/Widgets/beaver/sorting/SortingBeaverWidget.php:49
+#: src/Admin/Widgets/bricks/SortingBricksWidget.php:13
 #: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:20
 #: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:59
+#: src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/sorting/index.js:32
 msgid "Sorting"
 msgstr "Sortieren"
 
@@ -766,11 +1100,11 @@ msgstr "Sortieren"
 msgid "Sorting is unavailable on this page. It works only with content filtered by Filter Everything. To enable sorting, assign a Filter Set to this page."
 msgstr "Sortieren ist auf dieser Seite nicht verfügbar. Es funktioniert nur mit Inhalten, die durch Filter Everything gefiltert werden. Um das Sortieren zu aktivieren, weisen Sie dieser Seite ein Filterset zu."
 
-#: src/Admin/FilterSet.php:1225
+#: src/Admin/FilterSet.php:1242
 msgid "The request could not be verified. Please try again."
 msgstr "Die Anfrage konnte nicht überprüft werden. Bitte versuchen Sie es erneut."
 
-#: src/Admin/Widgets/FiltersWidget.php:594
+#: src/Admin/Widgets/FiltersWidget.php:733
 msgid "This setting has moved to the Filter Set"
 msgstr "Diese Einstellung wurde in das Filterset verschoben."
 
@@ -778,7 +1112,7 @@ msgstr "Diese Einstellung wurde in das Filterset verschoben."
 msgid "Type to search for a custom field key"
 msgstr "Geben Sie ein, um nach einem Schlüssel für ein benutzerdefiniertes Feld zu suchen."
 
-#: src/Admin/AdminHooks.php:334 src/wpc-helpers.php:2223
+#: src/Admin/AdminHooks.php:324 src/wpc-helpers.php:2394
 msgid "Unlock with PRO"
 msgstr "Freischaltung mit PRO"
 
@@ -790,7 +1124,7 @@ msgstr "Upgrade auf PRO"
 msgid "What to filter?"
 msgstr "Was soll gefiltert werden?"
 
-#: src/Admin/FilterSet.php:1221
+#: src/Admin/FilterSet.php:1238
 msgid "You do not have sufficient permissions to perform this action."
 msgstr "Sie verfügen nicht über ausreichende Berechtigungen, um diese Aktion auszuführen."
 
@@ -798,7 +1132,43 @@ msgstr "Sie verfügen nicht über ausreichende Berechtigungen, um diese Aktion a
 msgid "— Select Query —"
 msgstr "— Query wählen —"
 
-#: views/frontend/dropdown.php:141
+#: src/Settings/Tabs/AboutProTab.php:125
+msgctxt "benefits-landing"
+msgid "average rating"
+msgstr "Durchschnittliche Bewertung"
+
+#: src/Settings/Tabs/AboutProTab.php:121
+msgctxt "benefits-landing"
+msgid "users worldwide"
+msgstr "Benutzer weltweit"
+
+#: src/Admin/Widgets/beaver/sorting/SortingBeaverWidget.php:111
+#: src/Admin/Widgets/bricks/SortingBricksWidget.php:70
+#: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:110
+msgid "DESC"
+msgstr "Absteigend"
+
+#: src/Admin/Widgets/beaver/sorting/SortingBeaverWidget.php:110
+#: src/Admin/Widgets/bricks/SortingBricksWidget.php:69
+#: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:109
+msgid "ASC"
+msgstr "Aufsteigend"
+
+#: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:70
+msgid "Item"
+msgstr "Element"
+
+#: src/PluginHelpers.php:505 src/PluginHelpers.php:516
+#: src/PluginHelpers.php:526
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#. Plugin Name of the plugin
+#: filter-everything.php
+msgid "Filter Everything&nbsp;— WordPress & WooCommerce Filters"
+msgstr "Filter Everything&nbsp;— WordPress- und WooCommerce-Filter"
+
+#: views/frontend/dropdown.php:196
 msgid "%d star"
 msgid_plural "%d stars"
 msgstr[0] "%d Sterne"
@@ -816,19 +1186,19 @@ msgstr "Filter-Widget auf dem Handy sollte sein"
 msgid "Open XML sitemap"
 msgstr "XML-Sitemap öffnen"
 
-#: src/WpManager.php:746
+#: src/WpManager.php:763
 msgid "Posts list"
 msgstr "Beitragsliste"
 
-#: views/frontend/rating.php:83
+#: views/frontend/rating.php:90
 msgid "Show products rated %d stars"
 msgstr "Produkte mit %d Sternen anzeigen"
 
-#: views/frontend/rating.php:82
+#: views/frontend/rating.php:89
 msgid "Show products rated %d+ stars"
 msgstr "Produkte mit %d+ Sternen anzeigen"
 
-#: views/frontend/rating.php:85
+#: views/frontend/rating.php:92
 msgid "Show products with %d star rating"
 msgstr "Produkte mit %d Sternenbewertung anzeigen"
 
@@ -840,7 +1210,7 @@ msgstr "Dasselbe wie auf einem Desktop"
 msgid "copy"
 msgstr "kopie"
 
-#: src/Admin/FilterSet.php:1168
+#: src/Admin/FilterSet.php:1185
 msgid "Duplicate"
 msgstr "Duplikat"
 
@@ -848,15 +1218,15 @@ msgstr "Duplikat"
 msgid "Duplicate Filter Set"
 msgstr "Filtersatz duplizieren"
 
-#: src/Admin/FilterFields.php:159
+#: src/Admin/FilterFields.php:167
 msgid "E.g. if 3 stars are selected, all products with rating 3+ will be shown"
 msgstr "Wenn z.B. 3 Sterne ausgewählt werden, werden alle Produkte mit der Bewertung 3+ angezeigt"
 
-#: src/Admin/FilterFields.php:156
+#: src/Admin/FilterFields.php:164
 msgid "Mode «All stars+»"
 msgstr "Modus «Alle Sterne+»"
 
-#: src/Admin/FilterFields.php:328
+#: src/Admin/FilterFields.php:336
 msgid "Rating"
 msgstr "Bewertung"
 
@@ -864,7 +1234,8 @@ msgstr "Bewertung"
 msgid "The post was not found or is not a Filter Set."
 msgstr "Der Beitrag wurde nicht gefunden oder ist kein Filterset."
 
-#: src/Admin/Widgets/FiltersWidget.php:316
+#: src/Admin/Widgets/FiltersWidget.php:361
+#: src/Admin/Widgets/FiltersWidget.php:405
 msgid "First, select another filter"
 msgstr "Wählen Sie zunächst einen anderen Filter"
 
@@ -876,57 +1247,57 @@ msgstr "Machen Sie Farbmuster rund"
 msgid "Rounded swatches"
 msgstr "Abgerundete Farbfelder"
 
-#: src/Admin/FilterFields.php:306
+#: src/Admin/FilterFields.php:314
 msgid "ACF Fields"
 msgstr "ACF-Felder"
 
-#: src/Admin/FilterFields.php:309
+#: src/Admin/FilterFields.php:317
 msgid "Contains the IDs of ACF fields that are related to the Custom Field"
 msgstr "Enthält die ID der ACF-Felder, die mit dem benutzerdefinierten Feld dieses Filters verbunden sind."
 
-#: src/Admin/FilterFields.php:113
+#: src/Admin/FilterFields.php:121
 msgid "Dropdown Label"
 msgstr "Name der Dropdown-Liste"
 
-#: src/Admin/FilterFields.php:116
+#: src/Admin/FilterFields.php:124
 msgid "e.g. - Select color -"
 msgstr "z.B. - Farbe wählen -"
 
-#: src/Admin/FilterFields.php:270
+#: src/Admin/FilterFields.php:278
 msgid "e.g. From {value}"
 msgstr "z.B. Von {Wert}"
 
-#: src/Admin/FilterFields.php:279
+#: src/Admin/FilterFields.php:287
 msgid "e.g. To {value}"
 msgstr "z.B. An {Wert}"
 
-#: src/Plugin.php:1593
+#: src/Plugin.php:2001
 msgid "For example, \"Price from <span class=\"wpc-variable-inserter\" data-field=\"%s\" title=\"Click to insert the variable\">{value}</span> $\" will be displayed as \"Price from 150 $\""
 msgstr "Zum Beispiel wird \"Preis ab <span class=\"wpc-variable-inserter\" data-field=\"%s\" title=\"Klicken Sie, um die Variable einzufügen\">{value}</span> $\" als \"Preis ab 150 $\" angezeigt"
 
-#: src/Admin/FilterFields.php:117
+#: src/Admin/FilterFields.php:125
 msgid "Label for the default dropdown option"
 msgstr "Name der Standardoption in der Dropdown-Liste"
 
-#: src/Admin/FilterFields.php:267
+#: src/Admin/FilterFields.php:275
 msgid "Labels for Chips"
 msgstr "Namen für Chips"
 
-#: src/Admin/FilterFields.php:133
+#: src/Admin/FilterFields.php:141
 msgid "Date Format"
 msgstr "Datumsformat"
 
-#: src/Plugin.php:1443
+#: src/Plugin.php:1571
 msgctxt "Date Time Picker hourText"
 msgid "Hour"
 msgstr "Stunde"
 
-#: src/Plugin.php:1444
+#: src/Plugin.php:1572
 msgctxt "Date Time Picker minuteText"
 msgid "Minute"
 msgstr "Minute"
 
-#: src/Plugin.php:1446
+#: src/Plugin.php:1574
 msgctxt "Date Time Picker timezoneText"
 msgid "Time Zone"
 msgstr "Zeitzone"
@@ -935,104 +1306,106 @@ msgstr "Zeitzone"
 msgid "Post Date"
 msgstr "Veröffentlichungsdatum"
 
-#: src/Entities/PostDateEntity.php:368 views/frontend/date.php:79
+#: src/Entities/PostDateEntity.php:383 views/frontend/date.php:103
+#: views/frontend/date.php:111
 msgid "After"
 msgstr "Nach"
 
-#: src/Entities/PostDateEntity.php:370 views/frontend/date.php:83
+#: src/Entities/PostDateEntity.php:385 views/frontend/date.php:116
+#: views/frontend/date.php:124
 msgid "Before"
 msgstr "Vor"
 
-#: src/Admin/FilterFields.php:371
+#: src/Admin/FilterFields.php:379
 msgid "Custom:"
 msgstr "Benutzerdefiniert:"
 
-#: src/Plugin.php:1436
+#: src/Plugin.php:1564
 msgctxt "Date Picker closeText"
 msgid "Filter"
 msgstr "Filter"
 
-#: src/Plugin.php:1437
+#: src/Plugin.php:1565
 msgctxt "Date Picker currentText"
 msgid "Today"
 msgstr "Heute"
 
-#: src/Plugin.php:1438
+#: src/Plugin.php:1566
 msgctxt "Date Picker nextText"
 msgid "Next"
 msgstr "Nächst"
 
-#: src/Plugin.php:1439
+#: src/Plugin.php:1567
 msgctxt "Date Picker prevText"
 msgid "Prev"
 msgstr "Vorherige"
 
-#: src/Plugin.php:1440
+#: src/Plugin.php:1568
 msgctxt "Date Picker weekHeader"
 msgid "Wk"
 msgstr "Wo."
 
-#: src/Admin/FilterFields.php:324
+#: src/Admin/FilterFields.php:332
 msgid "Date range"
 msgstr "Datumsbereich"
 
-#: src/Plugin.php:1449
+#: src/Plugin.php:1577
 msgctxt "Date Time Picker amText"
 msgid "AM"
 msgstr "AM"
 
-#: src/Plugin.php:1450
+#: src/Plugin.php:1578
 msgctxt "Date Time Picker amTextShort"
 msgid "A"
 msgstr "A"
 
-#: src/Plugin.php:1453
+#: src/Plugin.php:1581
 msgctxt "Date Time Picker pmText"
 msgid "PM"
 msgstr "PM"
 
-#: src/Plugin.php:1454
+#: src/Plugin.php:1582
 msgctxt "Date Time Picker pmTextShort"
 msgid "P"
 msgstr "P"
 
-#: src/Plugin.php:1445
+#: src/Plugin.php:1573
 msgctxt "Date Time Picker secondText"
 msgid "Second"
 msgstr "Sekunden"
 
-#: src/Plugin.php:1447
+#: src/Plugin.php:1575
 msgctxt "Date Time Picker selectText"
 msgid "Select"
 msgstr "Auswählen"
 
-#: src/Plugin.php:1441
+#: src/Plugin.php:1569
 msgctxt "Date Time Picker timeOnlyTitle"
 msgid "Choose Time"
 msgstr "Zeit auswählen"
 
-#: src/Plugin.php:1442
+#: src/Plugin.php:1570
 msgctxt "Date Time Picker timeText"
 msgid "Time"
 msgstr "Zeit"
 
-#: src/Admin/FilterFields.php:121
+#: src/Admin/FilterFields.php:129
 msgid "Date Type"
 msgstr "Datentyp"
 
-#: src/Admin/FilterFields.php:1788
+#: src/Admin/FilterFields.php:1832
 msgid "Error: Invalid date format."
 msgstr "Fehler: Ungültiges Datumsformat."
 
-#: src/Admin/FilterFields.php:1790
+#: src/Admin/FilterFields.php:1834
 msgid "Error: Invalid date or time format."
 msgstr "Fehler: Ungültiges Datums- oder Zeitformat."
 
-#: src/Admin/FilterFields.php:1773
+#: src/Admin/FilterFields.php:1817
 msgid "Error: invalid Date Type parameter."
 msgstr "Fehler: Ungültiger Datentyp-Parameter."
 
-#: src/Admin/FilterFields.php:1789
+#: src/Admin/FilterFields.php:1833
 msgid "Error: Invalid time format."
 msgstr "Fehler: Ungültiges Zeitformat."
 
@@ -1040,7 +1413,7 @@ msgstr "Fehler: Ungültiges Zeitformat."
 msgid "Hide out of stock items from filtering results"
 msgstr "Verstecken Sie nicht vorrätige Artikel vor der Filterung der Ergebnisse"
 
-#: src/Admin/FilterFields.php:137
+#: src/Admin/FilterFields.php:145
 msgid "How the date will be displayed in the Filters widget"
 msgstr "Wie das Datum im Filter-Widget angezeigt werden soll"
 
@@ -1048,11 +1421,11 @@ msgstr "Wie das Datum im Filter-Widget angezeigt werden soll"
 msgid "It also hides variable products if their variations are out of stock. Please do not use it together with the Filter by the Stock status!"
 msgstr "Außerdem werden variable Produkte ausgeblendet, wenn deren Varianten nicht vorrätig sind. Bitte nicht zusammen mit dem Filter nach Bestandsstatus verwenden!"
 
-#: src/Admin/FilterFields.php:139
+#: src/Admin/FilterFields.php:147
 msgid "More PHP date formats can be found on <a href=\"%1$s\" target=\"_blank\">this page</a>."
 msgstr "Weitere PHP-Datumsformate finden Sie auf <a href=\"%1$s\" target=\"_blank\">dieser Seite</a>."
 
-#: src/Admin/FilterFields.php:323
+#: src/Admin/FilterFields.php:331
 msgid "Numeric range"
 msgstr "Numerischer Bereich"
 
@@ -1060,13 +1433,32 @@ msgstr "Numerischer Bereich"
 msgid "Out of stock visibility"
 msgstr "Nicht vorrätig Sichtbarkeit"
 
-#: src/Admin/FilterFields.php:126
+#: src/Admin/FilterFields.php:134
 msgid "Time"
 msgstr "Zeit"
 
-#: src/Admin/FilterFields.php:125
+#: src/Admin/FilterFields.php:133
 msgid "Date Time"
 msgstr "Datum und Uhrzeit"
+
+#: src/Admin/FilterFields.php:369 src/Admin/FilterFields.php:373
+#: src/Admin/FilterFields.php:1414 src/Admin/FilterFields.php:1469
+#: src/wpc-helpers.php:1918
+msgid "g:i a"
+msgstr "G:i"
+
+#: src/Admin/FilterFields.php:358 src/Admin/FilterFields.php:363
+#: src/Admin/FilterFields.php:1411 src/Admin/FilterFields.php:1468
+#: src/wpc-helpers.php:1915
+msgid "F j, Y g:i a"
+msgstr "j. F Y, G:i"
+
+#: src/Admin/FilterFields.php:144 src/Admin/FilterFields.php:346
+#: src/Admin/FilterFields.php:351 src/Admin/FilterFields.php:1406
+#: src/Admin/FilterFields.php:1463 src/Admin/FilterFields.php:1467
+#: src/wpc-helpers.php:1908 src/wpc-helpers.php:1912
+msgid "F j, Y"
+msgstr "j. F Y"
 
 #: src/PostTypes.php:30
 msgid "No Filter Sets were found in Trash"
@@ -1115,7 +1507,7 @@ msgstr "1 Filter Set wurde nicht aktualisiert, jemand anders bearbeitet es gerad
 msgid "Edit, drag filter prefixes, and arrange them in the order you need.<br />This order determines the order of the filters in the URL."
 msgstr "Bearbeiten Sie die Filterpräfixe, ziehen Sie sie und ordnen Sie sie in der gewünschten Reihenfolge an.<br />Diese Reihenfolge bestimmt die Reihenfolge der Filter in der URL."
 
-#: src/Admin/FilterFields.php:1775
+#: src/Admin/FilterFields.php:1819
 msgid "Error: invalid the Sort Terms by parameter"
 msgstr "Fehler: Ungültiger \"Sortieren nach\" Parameter"
 
@@ -1167,10 +1559,6 @@ msgstr "Es ist schnell, bequem und intuitiv und enthält auch einzigartige Funkt
 msgid "Show counters"
 msgstr "Zähler anzeigen"
 
-#: src/Admin/FilterSet.php:109
-msgid "Determines what exactly the Posts list (WP_Query) on a page should be filtered"
-msgstr "Legt fest, welche Beitrags-Liste (WP_Query) auf einer Seite genau gefiltert werden soll"
-
 #: src/Admin/FilterSet.php:110
 msgid "Every Posts list, like \"Popular products\" or \"Recent posts\" on a page, is related to some WP_Query. This field allows you to set desired Posts list by choosing its WP_Query.<br /><br />If the filtering process does not change the Posts you need, it means you selected the wrong WP_Query. Please, try to experiment with different ones until it starts to filter."
 msgstr "Jede Beitragsliste wie z.B. „Beliebte Produkte“ oder „Neueste Beiträge“ auf einer Seite ist mit einer WP_Query verknüpft. In diesem Feld können Sie die gewünschte Beitragsliste festlegen, indem Sie deren WP_Query auswählen.<br /><br />Wenn der Filtervorgang die gewünschten Beiträge nicht ändert, bedeutet das, dass Sie die falsche WP_Query ausgewählt haben. Versuchen Sie bitte, mit verschiedenen zu experimentieren, bis die Filterung funktioniert."
@@ -1179,47 +1567,47 @@ msgstr "Jede Beitragsliste wie z.B. „Beliebte Produkte“ oder „Neueste Beit
 msgid "How to?"
 msgstr "Wie geht das?"
 
-#: src/Admin/FilterSet.php:363
+#: src/Admin/FilterSet.php:374
 msgid "Note: if you modify the selected Posts list on the page, please update this Filter Set"
 msgstr "Hinweis: Wenn Sie die Liste der ausgewählten Beiträge auf der Seite ändern, aktualisieren Sie bitte diesen Filtersatz."
 
-#: src/Plugin.php:304
+#: src/Admin/FilterSet.php:109
+msgid "Determines what exactly the Posts list (WP_Query) on a page should be filtered"
+msgstr "Legt fest, worauf genau die Beitragsliste (WP_Query) auf einer Seite angewendet werden soll."
+
+#: src/Plugin.php:334
 msgid "Allows you to search by text among filtered posts"
 msgstr "Ermöglicht die Suche nach Text innerhalb gefilterter Beiträge"
 
-#: src/Plugin.php:335
+#: src/Plugin.php:365
 msgid "e.g. Search products, Search posts"
 msgstr "z.B. Produkte suchen, Beiträge suchen"
 
-#: src/Plugin.php:320
+#: src/Plugin.php:350
 msgid "Search Field Title"
 msgstr "Suchfeld Titel"
 
-#: src/Chips.php:147
+#: src/Chips.php:217 src/Plugin.php:1543
 msgid "search: %s"
 msgstr "suchen: %s"
 
-#: src/Plugin.php:325
+#: src/Plugin.php:355
 msgid "Specify if needed or leave empty"
 msgstr "Bei Bedarf angeben oder leer lassen"
 
-#: src/Admin/FilterFields.php:246
+#: src/Admin/FilterFields.php:254
 msgid "Terms Search"
 msgstr "Suche nach Begriff"
 
-#: src/Admin/FilterFields.php:249
+#: src/Admin/FilterFields.php:257
 msgid "Adds a search field that allows you to quickly find filter terms"
 msgstr "Fügen Sie ein Suchfeld hinzu, welches Ihnen erlaubt, schnell Filter-Begriffe zu finden"
-
-#: src/Plugin.php:1417
-msgid "It appears that this page does not contain a container with the specified «HTML id or class of the Posts Container». Try to specify the correct one in the Filter Set settings or the common plugin Settings."
-msgstr "Es scheint, dass diese Seite keinen Container mit der angegebenen \"HTML Id oder Klasse des Beitrags-Containers\" enthält. Versuchen Sie, den korrekten Container in den Filter-Set-Einstellungen oder in den allgemeinen Plugin-Einstellungen anzugeben."
 
 #: views/admin/filter-search-field.php:9 views/frontend/search.php:20
 msgid "Search ..."
 msgstr "Suchen ..."
 
-#: src/Plugin.php:331
+#: src/Plugin.php:361
 msgid "Search Field Placeholder"
 msgstr "Suchfeld Platzhalter"
 
@@ -1227,7 +1615,7 @@ msgstr "Suchfeld Platzhalter"
 msgid "Filter Title"
 msgstr "Filter Titel"
 
-#: src/wpc-helpers.php:976
+#: src/wpc-helpers.php:1081
 msgid "There are no filter terms yet"
 msgstr "Es gibt noch keine Filterbegriffe"
 
@@ -1235,27 +1623,27 @@ msgstr "Es gibt noch keine Filterbegriffe"
 msgid "Will appear in the Filters widget"
 msgstr "Wird im Filter-Widget angezeigt"
 
-#: src/Admin/Widgets/FiltersWidget.php:584
+#: src/Admin/Widgets/FiltersWidget.php:723
 msgid "Columns"
 msgstr "Spalten"
 
-#: src/Swatches.php:187 src/Swatches.php:231 src/Swatches.php:235
+#: src/Swatches.php:194 src/Swatches.php:238 src/Swatches.php:242
 msgid "Remove image"
 msgstr "Bild entfernen"
 
-#: src/Swatches.php:186 src/Swatches.php:234
+#: src/Swatches.php:193 src/Swatches.php:241
 msgid "Upload image"
 msgstr "Bild hochladen"
 
-#: src/Swatches.php:185 src/Swatches.php:224
+#: src/Swatches.php:192 src/Swatches.php:231
 msgid "Image"
 msgstr "Bild"
 
-#: src/Swatches.php:175 src/Swatches.php:204
+#: src/Swatches.php:182 src/Swatches.php:211
 msgid "Color"
 msgstr "Farbe"
 
-#: src/Plugin.php:1235
+#: src/Plugin.php:1341
 msgid "Click to select taxonomies"
 msgstr "Zum Auswählen von Taxonomien anklicken"
 
@@ -1267,7 +1655,7 @@ msgstr "Farbmuster für Filter"
 msgid "Enable Color swatches"
 msgstr "Farbfelder aktivieren"
 
-#: src/Admin/FilterFields.php:148
+#: src/Admin/FilterFields.php:156
 msgid "Show Term names"
 msgstr "Namen der Begridffe anzeigen"
 
@@ -1275,15 +1663,15 @@ msgstr "Namen der Begridffe anzeigen"
 msgid "Taxonomies for Color swatches"
 msgstr "Taxonomien für Farmbuster"
 
-#: src/Admin/FilterFields.php:151
+#: src/Admin/FilterFields.php:159
 msgid "Term names for filters with swatches or brand images may be hidden"
 msgstr "Begriffsnamen für Filter mit Farbfeldern oder Markenbildern können ausgeblendet werden"
 
-#: src/Swatches.php:189 src/Swatches.php:238
+#: src/Swatches.php:196 src/Swatches.php:245
 msgid "The image will be shown in the filter term."
 msgstr "Das Bild wird im Filterbegriff angezeigt."
 
-#: src/Swatches.php:177 src/Swatches.php:207
+#: src/Swatches.php:184 src/Swatches.php:214
 msgid "The selected color will be shown in the filter term."
 msgstr "Die ausgewählte Farbe wird im Filterbegriff angezeigt."
 
@@ -1291,7 +1679,7 @@ msgstr "Die ausgewählte Farbe wird im Filterbegriff angezeigt."
 msgid "(Elementor Library)"
 msgstr "(Elementor Bibliothek)"
 
-#: src/Admin/FilterFields.php:1802
+#: src/Admin/FilterFields.php:1846
 msgid "Error: you can not update settings because the Filter Everything Pro plugin is locked. Please, ask your site Superadmin to enter the plugin license key to unlock it."
 msgstr "Fehler: Sie können die Einstellungen nicht aktualisieren, weil das Plugin Filter Everything Pro gesperrt ist. Bitten Sie den Superadmin Ihrer Website, den Lizenzschlüssel für das Plugin einzugeben, um es zu entsperren."
 
@@ -1299,31 +1687,31 @@ msgstr "Fehler: Sie können die Einstellungen nicht aktualisieren, weil das Plug
 msgid "Please specify taxonomies whose filters should display color swatches"
 msgstr "Bitte geben Sie Taxonomien an, deren Filter Farbmuster anzeigen sollen"
 
-#: src/wpc-helpers.php:998
+#: src/wpc-helpers.php:1106
 msgid "See less"
 msgstr "Weniger anzeigen"
 
-#: src/wpc-helpers.php:997
+#: src/wpc-helpers.php:1104
 msgid "See more"
 msgstr "Mehr anzeigen"
 
-#: src/Admin/FilterFields.php:574 src/Admin/FilterSet.php:308
+#: src/Admin/FilterFields.php:587 src/Admin/FilterSet.php:308
 msgid "Taxonomy"
 msgstr "Taxonomie"
 
-#: src/Admin/FilterFields.php:1780
+#: src/Admin/FilterFields.php:1824
 msgid "Error: only AND logic is supported for numeric filters."
 msgstr "Fehler: Für numerische Filter wird nur die UND-Logik unterstützt."
 
-#: src/Admin/FilterFields.php:292
+#: src/Admin/FilterFields.php:300
 msgid "More/Less"
 msgstr "Mehr/weniger"
 
-#: src/Admin/FilterFields.php:295
+#: src/Admin/FilterFields.php:303
 msgid "Show a toggle link after %s terms"
 msgstr "Einen Toggle-Link nach %s Begriffen anzeigen"
 
-#: src/Admin/FilterFields.php:1779
+#: src/Admin/FilterFields.php:1823
 msgid "Error: numeric filter can not be in the URL path."
 msgstr "Fehler: Numerischer Filter kann nicht im URL-Pfad enthalten sein."
 
@@ -1331,7 +1719,7 @@ msgstr "Fehler: Numerischer Filter kann nicht im URL-Pfad enthalten sein."
 msgid "Custom Field Numeric"
 msgstr "Benutzerdefiniertes Feld: Numerisch"
 
-#: src/Admin/FilterFields.php:1771
+#: src/Admin/FilterFields.php:1815
 msgid "Error: invalid Taxonomy"
 msgstr "Fehler: Ungültige Taxonomie"
 
@@ -1339,11 +1727,11 @@ msgstr "Fehler: Ungültige Taxonomie"
 msgid "Taxonomy Numeric - Available in PRO"
 msgstr "Taxonomie Numerisch - Verfügbar in PRO"
 
-#: src/Admin/FilterFields.php:575 src/Admin/FilterSet.php:309
+#: src/Admin/FilterFields.php:588 src/Admin/FilterSet.php:309
 msgid "Taxonomy with numeric values you need to filter by"
 msgstr "Taxonomie mit numerischen Werten, nach denen Sie filtern müssen"
 
-#: src/Admin/FilterFields.php:1793
+#: src/Admin/FilterFields.php:1837
 msgid "Error: you can not update settings because the Filter Everything Pro plugin is locked. Please, enter your <a href=\"%1$s\" target=\"_blank\">license key</a> to unlock it."
 msgstr "Fehler: Sie können die Einstellungen nicht aktualisieren, da das Plugin Filter Everything Pro gesperrt ist. Bitte geben Sie Ihren <a href=\"%1$s\" target=\"_blank\">Lizenzschlüssel</a> ein, um es zu entsperren."
 
@@ -1355,11 +1743,11 @@ msgstr "Zeigt Filter an"
 msgid "Displays selected terms"
 msgstr "Zeigt gewählte Begriffe an"
 
-#: src/Admin/FilterFields.php:299
+#: src/Admin/FilterFields.php:307
 msgid "Show in Chips"
 msgstr "Chips anzeigen"
 
-#: views/frontend/date.php:112 views/frontend/range.php:90
+#: views/frontend/date.php:164 views/frontend/range.php:236
 msgid "There are no posts with such filtering criteria on this site."
 msgstr "Auf dieser Website gibt es keine Beiträge mit solchen Filterkriterien."
 
@@ -1371,11 +1759,11 @@ msgstr "Dieser Filter ist inaktiv, da er sich nicht auf den ausgewählten Beitra
 msgid "Displays a dropdown with sort options"
 msgstr "Zeigt ein Dropdown-Menü mit Sortieroptionen an"
 
-#: src/Admin/FilterFields.php:1750
+#: src/Admin/FilterFields.php:1794
 msgid "Error: invalid value of the Where to filter? field."
 msgstr "Fehler: Ungültiger Wert im \"Wo filtern\" Feld."
 
-#: src/Admin/FilterFields.php:1770
+#: src/Admin/FilterFields.php:1814
 msgid "Error: you must enter Meta Key"
 msgstr "Fehler: Sie müssen einen Meta Key eingeben"
 
@@ -1383,56 +1771,57 @@ msgstr "Fehler: Sie müssen einen Meta Key eingeben"
 msgid "There are no Sorting widgets on this site yet. Please, create it first."
 msgstr "Es gibt noch keine Sortier-Widgets auf dieser Seite. Bitte erstellen Sie sie zuerst."
 
-#: src/Admin/FilterFields.php:182
+#: src/Admin/FilterFields.php:190
 msgid "The \"Default\" option means that terms will be sorted in the order as they were received from the Database<br />The \"Menu order\" option is available for WooCommerce attributes only."
 msgstr "\"Standard\" Option heisst, dass die Begriffe in der Reihenfolge sortiert werden, wie sie von der Datenbank her kommen<br />Die Option \"Menu Reihenfolge\" ist nur für WooCommerce Attribute verfügbar."
 
-#: src/Admin/FilterFields.php:206
+#: src/Admin/FilterFields.php:214
 msgid "exclude"
 msgstr "ausschliessen"
 
-#: src/Admin/FilterFields.php:206
+#: src/Admin/FilterFields.php:214
 msgid "include"
 msgstr "einbeziehen"
 
-#: src/Admin/FilterFields.php:208
+#: src/Admin/FilterFields.php:216
 msgid "Include selected terms only"
 msgstr "Nur gewählte Begriffe einbeziehen"
 
-#: src/Admin/FilterFields.php:195
+#: src/Admin/FilterFields.php:203
 msgid "Include/Exclude Terms"
 msgstr "Begriffe einbeziehen/ausschliessen"
 
-#: src/Admin/FilterFields.php:253
+#: src/Admin/FilterFields.php:261
 msgid "Parent Filter"
 msgstr "Übergeordneter Filter"
 
-#: src/Admin/FilterFields.php:255 src/Admin/FilterFields.php:422
+#: src/Admin/FilterFields.php:263 src/Admin/FilterFields.php:430
 #: src/Admin/FilterSet.php:299
 msgid "Please, add filters first"
 msgstr "Bitte zuerst Filter hinzufügen"
 
-#: src/Admin/Widgets/FiltersWidget.php:314
+#: src/Admin/Widgets/FiltersWidget.php:359
+#: src/Admin/Widgets/FiltersWidget.php:403
 msgid "Select %s first"
 msgstr "%s zuerst wählen"
 
-#: src/Admin/FilterFields.php:263
+#: src/Admin/FilterFields.php:271
 msgid "Do not show this Filter until a parent is selected. Useful for step-by-step filtering"
 msgstr "Dieser Filter wird erst angezeigt, wenn ein übergeordneter ausgewählt wurde. Nützlich für schrittweises Filtern"
 
-#: src/Admin/FilterFields.php:260
+#: src/Admin/FilterFields.php:268
 msgid "Hide until the Parent selected"
 msgstr "Ausblenden bis übergeordneter Filter ausgewählt"
 
-#: src/Admin/FilterFields.php:256
+#: src/Admin/FilterFields.php:264
 msgid "If specified, current Filter terms become available only after the parent Filter selected"
 msgstr "Wenn angegeben, werden die aktuellen Filterbegriffe erst verfügbar, nachdem der übergeordnete Filter ausgewählt wurde"
 
-#: src/Plugin.php:347
+#: src/Plugin.php:377
 msgid "Enables filtering by clicking the Apply button"
 msgstr "Ermöglicht die Filterung durch Klicken auf die Schaltfläche Anwenden"
 
-#: src/Admin/FilterFields.php:1777
+#: src/Admin/FilterFields.php:1821
 msgid "Error: invalid include checkbox value"
 msgstr "Fehler: Ungültiger Wert im Kontrollkästchen \"Einbeziehen\""
 
@@ -1444,34 +1833,34 @@ msgstr "Wählen Sie Begriffe und"
 msgid "Specify page(s) where the Posts list should be filtered is located"
 msgstr "Geben Sie die Seite(n) an, auf der/denen sich die Beitragsliste befindet, die gefiltert werden soll"
 
-#: src/Admin/FilterFields.php:420 src/Admin/FilterSet.php:300
+#: src/Admin/FilterFields.php:428 src/Admin/FilterSet.php:300
 msgid "— Select Filter —"
 msgstr "— Filter wählen —"
 
-#: src/Admin/AutoFilterSet.php:97 src/Plugin.php:377
-#: views/admin/filter-apply-button.php:10 views/frontend/apply-button.php:34
-#: views/frontend/range.php:56 views/frontend/range.php:62
+#: src/Admin/AutoFilterSet.php:97 src/Plugin.php:407
+#: views/admin/filter-apply-button.php:10 views/frontend/apply-button.php:43
+#: views/frontend/range.php:199 views/frontend/range.php:208
 msgid "Reset"
 msgstr "Zurücksetzen"
 
-#: src/Admin/AutoFilterSet.php:96 src/Plugin.php:367
+#: src/Admin/AutoFilterSet.php:96 src/Plugin.php:397
 #: views/admin/filter-apply-button.php:9
 msgid "Apply"
 msgstr "Anwenden"
 
-#: src/Admin/FilterSet.php:370
+#: src/Admin/FilterSet.php:381
 msgid "Apply filtering if the page is:"
 msgstr "Filter anwenden, wenn Seite:"
 
-#: src/Plugin.php:363
+#: src/Plugin.php:393
 msgid "Apply Button label"
 msgstr "\"Anwenden-Knopf\" Bezeichnung"
 
-#: src/Admin/FilterFields.php:1755
+#: src/Admin/FilterFields.php:1799
 msgid "Error: invalid «Apply Button» mode field."
 msgstr "Fehler: Ungültiges \"Anwenden-Schaltfläche\" Modus Feld"
 
-#: src/Plugin.php:373
+#: src/Plugin.php:403
 msgid "Reset Button label"
 msgstr "Name der Reset-Taste"
 
@@ -1479,25 +1868,37 @@ msgstr "Name der Reset-Taste"
 msgid "Where to filter?"
 msgstr "Wo filtern"
 
-#: src/Plugin.php:342
+#: src/Plugin.php:372
 msgid "«Apply Button» mode"
 msgstr "«Anwenden Knopf» Modus"
 
-#: src/wpc-helpers.php:1017 views/frontend/search.php:35
+#: src/wpc-helpers.php:1128 views/frontend/search.php:35
 msgid "Clear search"
 msgstr "Suche löschen"
 
+#: src/Admin/Widgets/beaver/chips/ChipsBeaverWidget.php:68
+#: src/Admin/Widgets/beaver/filters/FiltersBeaverWidget.php:59
+#: src/Admin/Widgets/beaver/filters/FiltersBeaverWidget.php:68
+#: src/Admin/Widgets/DiviWidgets/ChipsDiviWidget.php:73
+#: src/Admin/Widgets/DiviWidgets/FiltersDiviWidget.php:82
+#: src/Admin/Widgets/DiviWidgets/FiltersDiviWidget.php:93
 #: src/Admin/Widgets/ElementorWidgets/ChipsElementorWidget.php:73
 #: src/Admin/Widgets/ElementorWidgets/FiltersElementorWidget.php:64
 #: src/Admin/Widgets/ElementorWidgets/FiltersElementorWidget.php:76
-#: src/wpc-default-hooks.php:52
+#: src/wpc-default-hooks.php:56
 msgid "No"
 msgstr "Nein"
 
+#: src/Admin/Widgets/beaver/chips/ChipsBeaverWidget.php:67
+#: src/Admin/Widgets/beaver/filters/FiltersBeaverWidget.php:58
+#: src/Admin/Widgets/beaver/filters/FiltersBeaverWidget.php:67
+#: src/Admin/Widgets/DiviWidgets/ChipsDiviWidget.php:74
+#: src/Admin/Widgets/DiviWidgets/FiltersDiviWidget.php:83
+#: src/Admin/Widgets/DiviWidgets/FiltersDiviWidget.php:94
 #: src/Admin/Widgets/ElementorWidgets/ChipsElementorWidget.php:72
 #: src/Admin/Widgets/ElementorWidgets/FiltersElementorWidget.php:63
 #: src/Admin/Widgets/ElementorWidgets/FiltersElementorWidget.php:75
-#: src/wpc-default-hooks.php:50
+#: src/wpc-default-hooks.php:54
 msgid "Yes"
 msgstr "Ja"
 
@@ -1526,25 +1927,25 @@ msgctxt "sorting"
 msgid "Author"
 msgstr "Autor"
 
-#: src/Plugin.php:1234
+#: src/Plugin.php:1340
 msgid "Select or enter hooks"
 msgstr "Hooks auswählen oder eingeben"
 
 #: src/Admin/Widgets/SortingWidget.php:127
 #: src/Admin/Widgets/SortingWidget.php:175
+#: src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:175
 msgctxt "sorting"
 msgid "DESC"
 msgstr "DESC"
 
 #: src/Admin/Widgets/SortingWidget.php:127
 #: src/Admin/Widgets/SortingWidget.php:175
+#: src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:171
 msgctxt "sorting"
 msgid "ASC"
 msgstr "ASC"
-
-#: src/Plugin.php:299
-msgid "Search Field"
-msgstr "Suchfeld"
 
 #: src/Admin/FilterSet.php:58
 msgid "Always hide"
@@ -1566,7 +1967,7 @@ msgstr "Nur im ersten Filter ausblenden"
 msgid "Never hide"
 msgstr "Nie verbergen"
 
-#: src/Settings/Tabs/SettingsTab.php:97
+#: src/Settings/Tabs/SettingsTab.php:141
 msgid "Selected Filters (Chips) integration"
 msgstr "Integration ausgewählter Filter (Chips)"
 
@@ -1575,19 +1976,19 @@ msgctxt "sorting"
 msgid "Product reviews number"
 msgstr "Produkt Anzahl Bewertungen"
 
-#: src/Admin/Admin.php:192
+#: src/Admin/Admin.php:186
 msgid "WooCommerce archive description"
 msgstr "Beschreibung für WooCommerce Archiv"
 
-#: src/Admin/Admin.php:195
+#: src/Admin/Admin.php:189
 msgid "WooCommerce before main content"
 msgstr "WooCommerce vor Hauptinhalt"
 
-#: src/Admin/Admin.php:194
+#: src/Admin/Admin.php:188
 msgid "WooCommerce before Shop loop"
 msgstr "WooCommerce vor Shop-Schleife"
 
-#: src/Admin/Admin.php:193
+#: src/Admin/Admin.php:187
 msgid "WooCommerce no products found"
 msgstr "WooCommerce keine Produkte gefunden"
 
@@ -1595,7 +1996,7 @@ msgstr "WooCommerce keine Produkte gefunden"
 msgid "Styled checkboxes and radio buttons"
 msgstr "Gestaltete Kontrollkästchen und Optionsfelder"
 
-#: src/wpc-helpers.php:983
+#: src/wpc-helpers.php:1088
 msgid "N/A"
 msgstr "n. a."
 
@@ -1603,19 +2004,15 @@ msgstr "n. a."
 msgid "Appearance"
 msgstr "Aussehen"
 
-#: src/wpc-default-hooks.php:64
-msgid "In stock"
-msgstr "An Lager"
-
-#: src/wpc-default-hooks.php:68
+#: src/wpc-default-hooks.php:72
 msgid "On backorder"
 msgstr "Im Rückstand"
 
-#: src/wpc-default-hooks.php:72
+#: src/wpc-default-hooks.php:76
 msgid "Out of stock"
 msgstr "Nicht auf Lager"
 
-#: src/Settings/Tabs/SettingsTab.php:102
+#: src/Settings/Tabs/SettingsTab.php:146
 msgid "Select where to show Chips on your site. Or enter your theme's hooks. For example: before_main_content"
 msgstr "Wählen Sie aus, wo Chips auf Ihrer Website angezeigt werden soll. Oder geben Sie die Hooks Ihres Themes ein. Zum Beispiel: before_main_content"
 
@@ -1647,22 +2044,25 @@ msgstr "Filterbegriffe, die keine Beiträge enthalten, ausblenden oder nicht"
 msgid "Wait Cursor (on desktop only)"
 msgstr "\"Warten\" Cursor (nur auf Desktop)"
 
+#: src/wpc-default-hooks.php:68
+msgid "In stock"
+msgstr "Vorrätig"
+
+#: src/Admin/Widgets/DiviWidgets/SortingDiviWidget.php:145
 #: views/admin/sorting-item.php:29
+#: src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:152
 msgid "Order By"
 msgstr "Sortieren nach"
 
+#: src/Admin/Widgets/beaver/sorting/SortingBeaverWidget.php:101
+#: src/Admin/Widgets/breakdance/widgets/elements/Sorting/element.php:181
+#: src/Admin/Widgets/bricks/SortingBricksWidget.php:61
+#: src/Admin/Widgets/DiviWidgets/SortingDiviWidget.php:153
 #: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:91
 #: views/admin/sorting-item.php:33
 msgid "Meta key"
 msgstr "Meta-Schlüssel"
-
-#: src/Admin/Widgets/ElementorWidgets/ChipsElementorWidget.php:49
-#: src/Admin/Widgets/ElementorWidgets/FiltersElementorWidget.php:50
-#: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:56
-#: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:68
-#: views/admin/filters-set.php:58 views/admin/sorting-item.php:25
-msgid "Title"
-msgstr "Titel"
 
 #: src/Sorting.php:21
 msgid "By ID"
@@ -1672,19 +2072,52 @@ msgstr "Nach ID"
 msgid "No title"
 msgstr "Kein Titel"
 
-#: src/Sorting.php:50
+#: src/Admin/Widgets/beaver/chips/ChipsBeaverWidget.php:50
+#: src/Admin/Widgets/beaver/filters/FiltersBeaverWidget.php:49
+#: src/Admin/Widgets/beaver/sorting/SortingBeaverWidget.php:48
+#: src/Admin/Widgets/beaver/sorting/SortingBeaverWidget.php:82
+#: src/Admin/Widgets/breakdance/widgets/elements/Chips/element.php:127
+#: src/Admin/Widgets/breakdance/widgets/elements/Filters/element.php:129
+#: src/Admin/Widgets/breakdance/widgets/elements/Sorting/element.php:151
+#: src/Admin/Widgets/bricks/ChipsBricksWidget.php:29
+#: src/Admin/Widgets/bricks/FiltersBricksWidget.php:29
+#: src/Admin/Widgets/bricks/SortingBricksWidget.php:32
+#: src/Admin/Widgets/bricks/SortingBricksWidget.php:48
+#: src/Admin/Widgets/DiviWidgets/ChipsDiviWidget.php:55
+#: src/Admin/Widgets/DiviWidgets/FiltersDiviWidget.php:71
+#: src/Admin/Widgets/DiviWidgets/SortingDiviWidget.php:59
+#: src/Admin/Widgets/DiviWidgets/SortingDiviWidget.php:138
+#: src/Admin/Widgets/ElementorWidgets/ChipsElementorWidget.php:49
+#: src/Admin/Widgets/ElementorWidgets/FiltersElementorWidget.php:50
+#: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:56
+#: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:68
+#: views/admin/filters-set.php:58 views/admin/sorting-item.php:25
+#: src/Admin/Widgets/gutenberg/build/chips/index.js:1
+#: src/Admin/Widgets/gutenberg/build/filters/index.js:1
+#: src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/chips/edit.js:43
+#: src/Admin/Widgets/gutenberg/src/filters/edit.js:43
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:101
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:145
+msgid "Title"
+msgstr "Titel"
+
+#: src/Sorting.php:50 src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:23
 msgid "By date: newest first"
 msgstr "Nach Datum (neustes zuerst):"
 
-#: src/Sorting.php:49
+#: src/Sorting.php:49 src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:22
 msgid "By date: oldest first"
 msgstr "Nach Datum (ältestes zuerst):"
 
-#: src/Admin/FilterFields.php:379 src/Sorting.php:20
+#: src/Admin/FilterFields.php:387 src/Sorting.php:20
 msgid "Default (no sorting)"
 msgstr "Standard (keine Sortierung)"
 
-#: src/Sorting.php:46
+#: src/Sorting.php:46 src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:19
 msgid "Default sorting"
 msgstr "Standard-Sortierung"
 
@@ -1698,12 +2131,15 @@ msgstr "Filter Everything &mdash; Sortieren"
 msgid "Name (post slug)"
 msgstr "Name (Beitrags-Slug)"
 
-#: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:133
+#: src/Admin/Widgets/breakdance/widgets/elements/Sorting/element.php:160
+#: src/Admin/Widgets/bricks/SortingBricksWidget.php:40
+#: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:118
 #: src/Admin/Widgets/SortingWidget.php:107
 msgid "Sorting options:"
 msgstr "Sortieroptionen:"
 
-#: src/Sorting.php:47
+#: src/Sorting.php:47 src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:20
 msgid "By title: alphabetical"
 msgstr "Nach Titel: alphabetisch"
 
@@ -1711,11 +2147,11 @@ msgstr "Nach Titel: alphabetisch"
 msgid "+ Add sorting option"
 msgstr "+ Sortieroption hinzufügen"
 
-#: src/Admin/FilterFields.php:1768
+#: src/Admin/FilterFields.php:1812
 msgid "Error: var name is not allowed because it matches a taxonomy or term name already used on your site."
 msgstr "Fehler: Variablenname ist nicht zulässig, da er mit einem bereits auf Ihrer Website verwendeten Taxonomie- oder Begriffsnamen übereinstimmt."
 
-#: src/Admin/FilterSet.php:343
+#: src/Admin/FilterSet.php:354
 msgid "Preview the selected location in a new tab"
 msgstr "Vorschau des ausgewählten Ortes in einer neuen Registerkarte"
 
@@ -1724,15 +2160,16 @@ msgstr "Vorschau des ausgewählten Ortes in einer neuen Registerkarte"
 msgid "Author"
 msgstr "Autor"
 
-#: src/Sorting.php:48
+#: src/Sorting.php:48 src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:21
 msgid "By title: reverse"
 msgstr "Nach Titel (umgekehrt)"
 
-#: src/Admin/FilterFields.php:124
+#: src/Admin/FilterFields.php:132
 msgid "Date"
 msgstr "Datum"
 
-#: src/Admin/FilterFields.php:1767
+#: src/Admin/FilterFields.php:1811
 msgid "Error: this prefix is not allowed because it matches a taxonomy or term name already used on your site. Please use a different prefix."
 msgstr "Fehler: Dieses Präfix ist nicht zulässig, da es mit einem Taxonomie- oder Begriffsnamen übereinstimmt, der bereits auf Ihrer Website verwendet wird. Bitte verwenden Sie ein anderes Präfix."
 
@@ -1744,14 +2181,23 @@ msgstr "Filter Sets sind gruppierte Filter. Erstellen Sie Ihr erstes Filter-Set.
 msgid "Hide Woocommerce default sorting dropdown"
 msgstr "Woocommerce Standard-Sortier-Dropdown ausblenden"
 
-#: src/Plugin.php:1247 src/Plugin.php:1294 src/wpc-third-party.php:414
+#: src/Plugin.php:1354 src/Plugin.php:1410 src/wpc-third-party.php:433
 #: views/admin/sorting-item.php:9 views/admin/sorting-item.php:20
+#: src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:49
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:132
 msgid "Item #"
 msgstr "Element #"
 
+#: src/Admin/Widgets/beaver/sorting/SortingBeaverWidget.php:107
+#: src/Admin/Widgets/breakdance/widgets/elements/Sorting/element.php:190
+#: src/Admin/Widgets/bricks/SortingBricksWidget.php:66
+#: src/Admin/Widgets/DiviWidgets/SortingDiviWidget.php:163
 #: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:80
 #: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:104
 #: views/admin/sorting-item.php:37
+#: src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:167
 msgid "Order"
 msgstr "Reihenfolge"
 
@@ -1776,31 +2222,27 @@ msgstr "Woocommerce \"Sortieren nach\" Dropdown"
 msgid "Wrong Sorting widget id. Please, specify the correct."
 msgstr "Falsche Sortier-Widget-ID. Bitte geben Sie die korrekte an."
 
-#: src/Admin/Widgets/FiltersWidget.php:536
-msgid "<a href=\"%s\">Edit</a> Filter Set"
-msgstr "Filtersatz <a href=\"%s\">bearbeiten</a>"
-
-#: src/Settings/Tabs/SettingsTab.php:106
+#: src/Settings/Tabs/SettingsTab.php:150
 msgid "Debug mode"
 msgstr "Debug-Modus"
 
-#: src/Settings/Tabs/SettingsTab.php:108
+#: src/Settings/Tabs/SettingsTab.php:152
 msgid "Enable debugging messages to help to configure filters"
 msgstr "Debugging-Meldungen zur Unterstützung bei der Konfiguration von Filtern aktivieren"
 
-#: src/wpc-helpers.php:1326
+#: src/wpc-helpers.php:1442
 msgid "Filter Everything debug"
 msgstr "Filter Everything Debuggen"
 
-#: src/wpc-helpers.php:1329
+#: src/wpc-helpers.php:1445
 msgid "Debug messages are visible for logged in administrators only. You can disable them in Filters -> <a href=\"%s\">Settings</a> -> Debug mode."
 msgstr "Debug-Meldungen sind nur für eingeloggte Administratoren sichtbar. Sie können sie in Filter -> <a href=\"%s\">Einstellungen</a> ->Debug-Modus deaktivieren."
 
-#: src/Admin/Widgets/FiltersWidget.php:666
+#: src/Admin/Widgets/FiltersWidget.php:805
 msgid "No one Filter Set is configured for this post type pages. You can create a new <a href=\"%s\">Filter Set</a> for them."
 msgstr "Für diese Betrags-Seiten ist kein Filterset konfiguriert. Sie können für diese ein neues <a href=\"%s\">Filter-Set</a> erstellen."
 
-#: src/Admin/Widgets/FiltersWidget.php:627
+#: src/Admin/Widgets/FiltersWidget.php:766
 msgid "No one Filter Set is related to this page. You can configure it in the <a href=\"%s\">Filter Set</a> -> \"Where to filter?\" field."
 msgstr "Mit dieser Seite ist kein Filter-Set verknüpft. Sie können es im <a href=\"%s\">Filter-Set</a> -> \"Wo filtern\" Feld konfigurieren."
 
@@ -1808,17 +2250,21 @@ msgstr "Mit dieser Seite ist kein Filter-Set verknüpft. Sie können es im <a hr
 msgid "Please enable this option only after you have ensured that the filtering is working correctly"
 msgstr "Bitte aktivieren Sie diese Option erst, wenn Sie sichergestellt haben, dass die Filterung korrekt funktioniert."
 
-#: src/wpc-helpers.php:979
+#: src/wpc-helpers.php:1084
 msgid "Possible reasons: 1) Filter's criterion doesn't contain any terms yet, and you have to add them 2) Terms may be created, but no one post that should be filtered attached to these terms 3) You excluded all possible terms in Filter's options."
 msgstr "Mögliche Gründe: 1) Die Kriterien des Filters enthalten noch keine Begriffe und Sie müssen sie hinzufügen 2) Es wurden zwar Begriffe erstellt, aber kein Beitrag, der gefiltert werden soll, ist mit diesen Begriffen verknüpft 3) Sie haben in den Optionen des Filters alle möglichen Begriffe ausgeschlossen."
 
-#: src/Admin/Widgets/FiltersWidget.php:167
+#: src/Admin/Widgets/FiltersWidget.php:183
 msgid "There are no filters in the Filter Set yet. Please add them to the <a href=\"%s\">Filter Set</a> related to this page."
 msgstr "Es sind noch keine Filter im Filter-Set vorhanden. Bitte fügen Sie sie zu dem <a href=\"%s\">Filter-Set</a> für diese Seite hinzu."
 
-#: src/Settings/BaseSettings.php:114 src/Settings/BaseSettings.php:151
-msgid "You must specify Posts Container, otherwise AJAX will not work properly"
-msgstr "Sie müssen den Beitrags-Container angeben, andernfalls funktioniert AJAX nicht ordnungsgemäss"
+#: src/Settings/BaseSettings.php:117 src/Settings/BaseSettings.php:155
+msgid "You must specify the Results container, otherwise AJAX will not work properly"
+msgstr "Du musst den Ergebniscontainer angeben, andernfalls funktioniert AJAX nicht ordnungsgemäß."
+
+#: src/Admin/Widgets/FiltersWidget.php:675
+msgid "<a href=\"%s\">Edit</a> Filter Set"
+msgstr "<a href=\"%s\">Bearbeiten</a> des Filtersets"
 
 #: views/frontend/posts-found.php:28
 msgid "<span class=\"%s\">%d</span> %s found"
@@ -1838,40 +2284,41 @@ msgstr "WooCommerce"
 msgid "Delete"
 msgstr "Löschen"
 
-#: src/WpManager.php:1012 src/WpManager.php:1282
+#: src/WpManager.php:1029 src/WpManager.php:1299
 msgid "A variable mismatch has been detected."
 msgstr "Es wurde eine Variable Nichtübereinstimmung erkannt."
 
-#: src/wpc-helpers.php:1169 src/wpc-third-party.php:808
+#: src/Admin/Widgets/beaver/chips/ChipsBeaverWidget.php:24
+#: src/Admin/Widgets/beaver/filters/FiltersBeaverWidget.php:23
+#: src/Admin/Widgets/beaver/sorting/SortingBeaverWidget.php:21
+#: src/Admin/Widgets/breakdance/widgets/breakdance.php:62
+#: src/Admin/Widgets/gutenberg/gutenberg.php:92 src/wpc-helpers.php:1277
+#: src/wpc-third-party.php:852 src/wpc-third-party.php:1163
 msgid "Filter Everything"
 msgstr "Filter Everything"
 
-#: src/wpc-helpers.php:1167
+#: src/wpc-helpers.php:1275
 msgid "Filter Everything Pro"
 msgstr "Filter Everything Pro"
 
-#: src/wpc-helpers.php:737
-msgid "item"
-msgstr "Artikel"
-
-#: src/wpc-helpers.php:736
-msgid "items"
-msgstr "Artikel"
-
-#: src/wpc-default-hooks.php:90
+#: src/wpc-default-hooks.php:94
 msgid "Regular price"
 msgstr "Regulärer Preis"
 
-#: src/wpc-default-hooks.php:87
+#: src/wpc-default-hooks.php:91
 msgid "On Sale"
 msgstr "Im Angebot"
 
-#: src/Settings/Tabs/SettingsTab.php:126
+#: src/Admin/Widgets/beaver/chips/ChipsBeaverWidget.php:43
+#: src/Admin/Widgets/beaver/filters/FiltersBeaverWidget.php:42
+#: src/Admin/Widgets/beaver/sorting/SortingBeaverWidget.php:41
+#: src/Admin/Widgets/beaver/sorting/SortingBeaverWidget.php:75
+#: src/Settings/Tabs/SettingsTab.php:170
 msgid "General"
 msgstr "Allgemein"
 
 #: src/Settings/Tabs/ExperimentalTab.php:108
-#: src/Settings/Tabs/SettingsTab.php:80
+#: src/Settings/Tabs/SettingsTab.php:109
 msgid "Other"
 msgstr "Andere"
 
@@ -1888,9 +2335,9 @@ msgstr "Mobile Geräte"
 msgid "AJAX"
 msgstr "AJAX"
 
-#: src/Admin/FilterSet.php:1179 src/Admin/MetaBoxes.php:306
-#: src/wpc-helpers.php:2193 src/wpc-third-party.php:802
-#: views/admin/pro-modal.php:28
+#: src/Admin/FilterSet.php:1196 src/Admin/MetaBoxes.php:306
+#: src/wpc-helpers.php:2364 src/wpc-third-party.php:846
+#: views/admin/pro-modal.php:31
 msgid "PRO"
 msgstr "PRO"
 
@@ -1906,13 +2353,21 @@ msgstr "Filter bearbeiten"
 msgid "Add New Filter"
 msgstr "Neuen Filter hinzufügen"
 
+#: src/Admin/Widgets/beaver/filters/FiltersBeaverWidget.php:50
+#: src/Admin/Widgets/beaver/filters/includes/frontend.php:20
+#: src/Admin/Widgets/bricks/FiltersBricksWidget.php:32
 #: src/Admin/Widgets/ElementorWidgets/FiltersElementorWidget.php:53
 #: src/PostTypes.php:47
 msgid "Filter"
 msgstr "Filter"
 
-#: src/Admin/Widgets/ChipsWidget.php:75
+#: src/Admin/Widgets/beaver/chips/ChipsBeaverWidget.php:58
+#: src/Admin/Widgets/bricks/ChipsBricksWidget.php:40
+#: src/Admin/Widgets/ChipsWidget.php:80
+#: src/Admin/Widgets/DiviWidgets/ChipsDiviWidget.php:65
 #: src/Admin/Widgets/ElementorWidgets/ChipsElementorWidget.php:62
+#: src/Admin/Widgets/gutenberg/build/chips/index.js:1
+#: src/Admin/Widgets/gutenberg/src/chips/edit.js:58
 msgid "e.g. 2745, 324"
 msgstr "z.B. 2745, 324"
 
@@ -1929,11 +2384,6 @@ msgstr "Zur Überprüfung einreichen"
 #: src/Admin/MetaBoxes.php:317
 msgid "Move to Trash"
 msgstr "In den Papierkorb verschieben"
-
-#. translators: %s: URL to the Customizer.
-#: src/Admin/MetaBoxes.php:241
-msgid "This draft comes from your <a href=\"%s\">unpublished customization changes</a>. You can edit, but there&#8217;s no need to publish now. It will be published automatically with those changes."
-msgstr "Dieser Entwurf stammt aus Deinen <a href=\"%s\">nicht veröffentlichten Customizer-Änderungen</a>. Du kannst ihn bearbeiten, musst ihn aber nicht sofort veröffentlichen. Er wird automatisch mit diesen Änderungen veröffentlicht."
 
 #: src/Admin/MetaBoxes.php:218
 msgctxt "revisions"
@@ -1988,7 +2438,8 @@ msgstr "Intern veröffentlicht"
 msgid "Status:"
 msgstr "Status:"
 
-#: src/Admin/MetaBoxes.php:124 assets/js/wpc-widgets.js:37
+#: src/Admin/MetaBoxes.php:124 src/Plugin.php:2103 src/Plugin.php:2113
+#: assets/js/wpc-widgets.js:37
 msgid "Save"
 msgstr "Speichern"
 
@@ -2001,33 +2452,33 @@ msgstr "Veröffentlichen"
 msgid "Less options"
 msgstr "Weniger Optionen"
 
-#: src/Admin/FilterFields.php:608 src/Admin/FilterFields.php:612
-#: src/Plugin.php:261 src/Settings/Tabs/SettingsTab.php:115
-#: src/wpc-helpers.php:423 src/wp_query_source_detector.php:426
+#: src/Admin/FilterFields.php:621 src/Admin/FilterFields.php:625
+#: src/Settings/Tabs/SettingsTab.php:159 src/wpc-helpers.php:461
+#: src/wp_query_source_detector.php:426
 msgid "Available in PRO"
 msgstr "Verfügbar in PRO"
 
-#: src/Admin/FilterFields.php:319
+#: src/Admin/FilterFields.php:327
 msgid "Checkboxes"
 msgstr "Checkboxen"
 
-#: src/Admin/FilterFields.php:231
+#: src/Admin/FilterFields.php:239
 msgid "If disabled, visitors must type numeric values in text inputs"
 msgstr "Wenn deaktiviert, müssen Besucher numerische Werte in Texteingaben eingeben"
 
-#: src/Admin/FilterFields.php:224
+#: src/Admin/FilterFields.php:232
 msgid "Display the term hierarchy in the filter widget. Child terms will be collapsed by default"
 msgstr "Zeigt die Begriffshierarchie im Filter-Widget an. Untergeordnete Begriffe werden standardmäßig ausgeblendet"
 
-#: src/Admin/FilterFields.php:176
+#: src/Admin/FilterFields.php:184
 msgid "Sort Terms by"
 msgstr "Begriffe sortieren nach"
 
-#: src/Admin/FilterFields.php:166
+#: src/Admin/FilterFields.php:174
 msgid "AND"
 msgstr "UND"
 
-#: src/Admin/FilterFields.php:166
+#: src/Admin/FilterFields.php:174
 msgid "OR"
 msgstr "ODER"
 
@@ -2035,7 +2486,7 @@ msgstr "ODER"
 msgid "View in Widget"
 msgstr "Im Widget anzeigen"
 
-#: src/Admin/FilterFields.php:71 src/Admin/FilterFields.php:1549
+#: src/Admin/FilterFields.php:71 src/Admin/FilterFields.php:1593
 #: views/admin/filters-set.php:59
 msgid "Filter by"
 msgstr "Filtern nach"
@@ -2055,16 +2506,35 @@ msgstr "Information"
 
 #: src/Admin/Admin.php:74 src/Admin/AdminHooks.php:123
 #: src/Admin/MetaBoxes.php:39
+#: src/Admin/Widgets/beaver/chips/ChipsBeaverWidget.php:46
+#: src/Admin/Widgets/beaver/filters/FiltersBeaverWidget.php:45
+#: src/Admin/Widgets/beaver/sorting/SortingBeaverWidget.php:44
+#: src/Admin/Widgets/breakdance/widgets/elements/Chips/element.php:124
+#: src/Admin/Widgets/breakdance/widgets/elements/Filters/element.php:126
+#: src/Admin/Widgets/breakdance/widgets/elements/Sorting/element.php:148
+#: src/Admin/Widgets/bricks/ChipsBricksWidget.php:21
+#: src/Admin/Widgets/bricks/FiltersBricksWidget.php:21
+#: src/Admin/Widgets/bricks/SortingBricksWidget.php:21
 #: src/Admin/Widgets/ElementorWidgets/ChipsElementorWidget.php:40
 #: src/Admin/Widgets/ElementorWidgets/FiltersElementorWidget.php:41
 #: src/Admin/Widgets/ElementorWidgets/SortingElementorWidget.php:46
+#: src/Admin/Widgets/gutenberg/build/chips/index.js:1
+#: src/Admin/Widgets/gutenberg/build/filters/index.js:1
+#: src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/chips/edit.js:40
+#: src/Admin/Widgets/gutenberg/src/filters/edit.js:40
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:98
 msgid "Settings"
 msgstr "Einstellungen"
 
 #: src/Admin/Admin.php:52 src/Admin/MetaBoxes.php:21
+#: src/Admin/Widgets/beaver/filters/FiltersBeaverWidget.php:21
+#: src/Admin/Widgets/bricks/FiltersBricksWidget.php:13
 #: src/Admin/Widgets/ElementorWidgets/FiltersElementorWidget.php:17
-#: src/Admin/Widgets/FiltersWidget.php:44 src/PostTypes.php:46
-#: views/frontend/filters-button.php:27
+#: src/Admin/Widgets/FiltersWidget.php:56 src/PostTypes.php:46
+#: views/frontend/filters-button.php:39
+#: src/Admin/Widgets/gutenberg/build/filters/index.js:1
+#: src/Admin/Widgets/gutenberg/src/filters/index.js:32
 msgid "Filters"
 msgstr "Filter"
 
@@ -2098,7 +2568,7 @@ msgstr "Doppelte Präfixe. Präfixe sollten eindeutig sein."
 msgid "Edit var names."
 msgstr "Variablennamen bearbeiten."
 
-#: src/Admin/FilterFields.php:228
+#: src/Admin/FilterFields.php:236
 msgid "Enable Range Slider?"
 msgstr "Schieberegler aktivieren"
 
@@ -2108,75 +2578,75 @@ msgid_plural "Error: following filter prefixes <strong>%s</strong> are not allow
 msgstr[0] "Fehler: <strong>%s</strong> Filterpräfix ist nicht erlaubt und muss in den Filter %s-<a href=\"%s\" target=\"_blank\">Einstellungen</a> geändert werden. Andernfalls wird diese Seite nicht richtig funktionieren."
 msgstr[1] "Fehler: <strong>%s</strong> Die folgenden Filterpräfixe sind nicht erlaubt und müssen in den Filter %s-<a href=\"%s\" target=\"_blank\">Einstellungen</a> geändert werden. Andernfalls wird diese Seite nicht richtig funktionieren."
 
-#: src/Admin/FilterFields.php:1784
+#: src/Admin/FilterFields.php:1828
 msgid "Error: all SEO data fields could not be empty."
 msgstr "Fehler: Alle SEO-Datenfelder können nicht leer sein."
 
-#: src/Admin/FilterFields.php:1763
+#: src/Admin/FilterFields.php:1807
 msgid "Error: filter prefix is already used for another entity."
 msgstr "Fehler: Das Filterpräfix wird bereits für eine andere Entität verwendet."
 
-#: src/Admin/FilterFields.php:1765
+#: src/Admin/FilterFields.php:1809
 msgid "Error: filter prefix should not be empty."
 msgstr "Fehler: Filterpräfix sollte nicht leer sein."
 
-#: src/Admin/FilterFields.php:1759
+#: src/Admin/FilterFields.php:1803
 msgid "Error: invalid fields present."
 msgstr "Fehler: Ungültige Felder vorhanden."
 
-#: src/Admin/FilterFields.php:1762
+#: src/Admin/FilterFields.php:1806
 msgid "Error: invalid filter entity."
 msgstr "Fehler: Unfültige Filer-Entität."
 
-#: src/Admin/FilterFields.php:1760
+#: src/Admin/FilterFields.php:1804
 msgid "Error: invalid filter ID."
 msgstr "Fehler: Ungültige Filter ID."
 
-#: src/Admin/FilterFields.php:1752
+#: src/Admin/FilterFields.php:1796
 msgid "Error: invalid Hide empty field."
 msgstr "Fehler: Ungültig Leeres Feld ausblenden."
 
-#: src/Admin/FilterFields.php:1774
+#: src/Admin/FilterFields.php:1818
 msgid "Error: invalid Logic parameter"
 msgstr "Fehler: Ungültiger Logik Parameter"
 
-#: src/Admin/FilterFields.php:1769
+#: src/Admin/FilterFields.php:1813
 msgid "Error: invalid Meta key value"
 msgstr "Fehler: Ungültiger Meta-Schlüssel Wert"
 
-#: src/Admin/FilterFields.php:1785
+#: src/Admin/FilterFields.php:1829
 msgid "Error: invalid or forbidden filter presents."
 msgstr "Fehler: Ungültiger oder verbotener Filter vorhanden."
 
-#: src/Admin/FilterFields.php:1749
+#: src/Admin/FilterFields.php:1793
 msgid "Error: invalid post type."
 msgstr "Fehler: Ungültiger Betrags-Typ"
 
-#: src/Admin/FilterFields.php:1751
+#: src/Admin/FilterFields.php:1795
 msgid "Error: invalid query."
 msgstr "Fehler: Ungültige Abfrage."
 
-#: src/Admin/FilterFields.php:1786
+#: src/Admin/FilterFields.php:1830
 msgid "Error: invalid SEO Rule ID."
 msgstr "Fehler: Ungültige SEO Id."
 
-#: src/Admin/FilterFields.php:1761
+#: src/Admin/FilterFields.php:1805
 msgid "Error: invalid set ID."
 msgstr "Fehler: Ungültige SET Id."
 
-#: src/Admin/FilterFields.php:1772
+#: src/Admin/FilterFields.php:1816
 msgid "Error: invalid View parameter."
 msgstr "Fehler: Ungültiger Ansichts-Parameter"
 
-#: src/Admin/FilterFields.php:1783
+#: src/Admin/FilterFields.php:1827
 msgid "Error: SEO Rule must contain at least one filter."
 msgstr "Fehler: Die SEO-Regel muss mindestens einen Filter enthalten."
 
-#: src/Admin/FilterFields.php:1782
+#: src/Admin/FilterFields.php:1826
 msgid "Error: SEO Rule must have specified Post Type."
 msgstr "Fehler: SEO-Regel muss Beitrags-Typ angegeben haben."
 
-#: src/Admin/FilterFields.php:1787
+#: src/Admin/FilterFields.php:1831
 msgid "Error: SEO rule with selected Filters Combination already exists."
 msgstr "Fehler: SEO-Regel mit ausgewählter Filterkombination existiert bereits."
 
@@ -2184,11 +2654,7 @@ msgstr "Fehler: SEO-Regel mit ausgewählter Filterkombination existiert bereits.
 msgid "Experimental"
 msgstr "Experimentell"
 
-#: src/Settings/Tabs/SettingsTab.php:91
-msgid "Filter Container max height, px"
-msgstr "Maximale Höhe des Filter Containers (px)"
-
-#: views/frontend/filters-button.php:25
+#: views/frontend/filters-button.php:37
 msgid "Filtered %s"
 msgstr "Filter %s"
 
@@ -2204,16 +2670,12 @@ msgstr "Globale Filter Präfixe und Reihenfolge"
 msgid "Global URL Var Names"
 msgstr "Globale URL Variablennamen"
 
-#: src/Plugin.php:256 src/Settings/Tabs/SettingsTab.php:71
-msgid "HTML id or class of the Posts Container"
-msgstr "HTML Id oder Klasse des Beitrags-Containers"
-
 #. Author URI of the plugin
 #: filter-everything.php
 msgid "https://filtereverything.pro/about/"
 msgstr "https://filtereverything.pro/about/"
 
-#: src/Admin/FilterFields.php:188
+#: src/Admin/FilterFields.php:196
 msgid "In URL"
 msgstr "In der URL"
 
@@ -2221,11 +2683,13 @@ msgstr "In der URL"
 msgid "Insert variable"
 msgstr "Variable einfügen"
 
-#: src/WpManager.php:768
+#: src/WpManager.php:785
 msgid "Main Query."
 msgstr "Haupt-Abfrage"
 
 #: src/Admin/FilterFields.php:80 src/Admin/FilterSet.php:304
+#: src/Admin/Widgets/gutenberg/build/sorting/index.js:1
+#: src/Admin/Widgets/gutenberg/src/sorting/edit.js:160
 msgid "Meta Key"
 msgstr "Metaschlüssel"
 
@@ -2233,7 +2697,7 @@ msgstr "Metaschlüssel"
 msgid "Post Type to filter"
 msgstr "Beitragstyp zum Filtern"
 
-#: views/frontend/chips.php:25 views/frontend/chips.php:27
+#: src/Plugin.php:1544 views/frontend/chips.php:33 views/frontend/chips.php:35
 msgid "Remove %s from results"
 msgstr "%s aus den Ergebnissen entfernen"
 
@@ -2241,8 +2705,14 @@ msgstr "%s aus den Ergebnissen entfernen"
 msgid "Select Post Type for SEO Rule"
 msgstr "Beitragstyp für SEO-Regel wählen"
 
+#: src/Admin/Widgets/beaver/filters/FiltersBeaverWidget.php:64
+#: src/Admin/Widgets/breakdance/widgets/elements/Filters/element.php:147
+#: src/Admin/Widgets/bricks/FiltersBricksWidget.php:49
+#: src/Admin/Widgets/DiviWidgets/FiltersDiviWidget.php:89
 #: src/Admin/Widgets/ElementorWidgets/FiltersElementorWidget.php:73
-#: src/Admin/Widgets/FiltersWidget.php:578
+#: src/Admin/Widgets/FiltersWidget.php:717
+#: src/Admin/Widgets/gutenberg/build/filters/index.js:1
+#: src/Admin/Widgets/gutenberg/src/filters/edit.js:66
 msgid "Show selected terms (Chips)"
 msgstr "Gewählte Begriffe (Chips) anzeigen"
 
@@ -2250,7 +2720,7 @@ msgstr "Gewählte Begriffe (Chips) anzeigen"
 msgid "Sidebar on top"
 msgstr "Seitenleiste oben"
 
-#: src/Admin/FilterFields.php:235
+#: src/Admin/FilterFields.php:243
 msgid "Slider Step"
 msgstr "Schieberegler Schritte"
 
@@ -2258,19 +2728,19 @@ msgstr "Schieberegler Schritte"
 msgid "Taxonomy Filters"
 msgstr "Taxonomie-Filter"
 
-#: src/Admin/FilterFields.php:380
+#: src/Admin/FilterFields.php:388
 msgid "Term name &laquo;abc&raquo;"
 msgstr "Name des Begriffs &laquo;abc&raquo;"
 
-#: src/Admin/FilterFields.php:384
+#: src/Admin/FilterFields.php:392
 msgid "Term name &laquo;cba&raquo;"
 msgstr "Name des Begriffs &laquo;cba&raquo;"
 
-#: src/Settings/Tabs/SettingsTab.php:84
+#: src/Settings/Tabs/SettingsTab.php:113
 msgid "Widget Primary Color"
 msgstr "Widget primäre Farbe"
 
-#: src/WpManager.php:1012 src/WpManager.php:1282
+#: src/WpManager.php:1029 src/WpManager.php:1299
 msgid "Sorry, you are not allowed to view this item."
 msgstr "Du haben keine Erlaubnis, diesen Ordner einzusehen."
 
@@ -2291,17 +2761,13 @@ msgctxt "post action/button label"
 msgid "Schedule"
 msgstr "Planen"
 
-#: src/Settings/Tabs/PermalinksTab.php:409
-msgid "URL Var Names"
-msgstr "URL Variablen namen"
-
-#: src/wpc-default-hooks.php:182
+#: src/wpc-default-hooks.php:186
 msgid "a-z, 0-9, \"_\" and \"-\" symbols supported only"
 msgstr "Nur a-z, 0-9, \"_\" und \"-\" werden als Zeichen unterstützt"
 
 #: src/Admin/Widgets/ChipsWidget.php:14 src/Admin/Widgets/ChipsWidget.php:35
-#: src/Admin/Widgets/ChipsWidget.php:40 src/wpc-default-hooks.php:305
-#: src/wpc-default-hooks.php:310
+#: src/Admin/Widgets/ChipsWidget.php:40 src/wpc-default-hooks.php:310
+#: src/wpc-default-hooks.php:315
 msgid "Filter Everything &mdash; Chips"
 msgstr "Filter Everything &mdash; Chips"
 
@@ -2337,11 +2803,11 @@ msgctxt "publish box time format"
 msgid "H:i"
 msgstr "G:i"
 
-#: views/frontend/range.php:78
+#: views/frontend/range.php:224
 msgid "%s: %d &mdash; %d"
 msgstr "%s: %d &mdash; %d"
 
-#: src/wpc-default-hooks.php:403
+#: src/wpc-default-hooks.php:408
 msgid "- Select %s -"
 msgstr "- %s wählen -"
 
@@ -2353,7 +2819,7 @@ msgstr "<a href=\"%s\" target=\"_blank\">Dokumentation</a>. Allgemeine Informati
 msgid "<a href=\"%s\" target=\"_blank\">Support</a>. Create a technical support request if you are unable to resolve the issue yourself."
 msgstr "<a href=\"%s\" target=\"_blank\">Support</a>. Erstellen Sie eine technische Support Anfrage, wenn Sie das Problem nicht selbst lösen können."
 
-#: src/Admin/FilterFields.php:75 src/Admin/FilterFields.php:1556
+#: src/Admin/FilterFields.php:75 src/Admin/FilterFields.php:1600
 msgid "A thing by which posts will be filtered"
 msgstr "Eine Sache, nach welcher Beiträge gefiltert werden"
 
@@ -2369,24 +2835,24 @@ msgstr "Hinzufügen"
 msgid "AJAX loading icon (on desktop only)"
 msgstr "AJAX \"laden\" Icon (nur auf Desktop)"
 
-#: src/Admin/FilterFields.php:1557
+#: src/Admin/FilterFields.php:1601
 msgid "An already selected value cannot be changed. But you can always delete the current one and create a new filter if you need."
 msgstr "Ein bereits gewählter Wert kann nicht geändert werden. Aber Sie können jederzeit den aktuellen Filter löschen und einen neuen erstellen, falls erforderlich."
 
-#: src/Admin/FilterFields.php:1745
+#: src/Admin/FilterFields.php:1789
 msgid "An error occurred. Filter Set fields were not saved, please try again."
 msgstr "Es ist ein Fehler aufgetreten. Die Set-Felder wurden nicht gespeichert. Bitte versuchen Sie es nochmals."
 
-#: src/Admin/FilterFields.php:1331 src/Admin/FilterFields.php:1403
-#: src/Admin/FilterFields.php:1464 src/PluginHelpers.php:20
+#: src/Admin/FilterFields.php:1375 src/Admin/FilterFields.php:1447
+#: src/Admin/FilterFields.php:1508 src/PluginHelpers.php:20
 msgid "An error occurred. Please, refresh the page and try again."
 msgstr "Es ist ein Fehler aufgetreten. Bitte aktualisieren Sie die Seite und versuchen Sie es nochmals."
 
-#: src/Admin/FilterFields.php:1746
+#: src/Admin/FilterFields.php:1790
 msgid "An error occurred. SEO Rule fields were not saved, please try again."
 msgstr "Es ist ein Fehler aufgetreten. Die Regel-Felder wurden nicht gespeichert. Bitte versuchen Sie es nochmals."
 
-#: src/Admin/FilterFields.php:1747
+#: src/Admin/FilterFields.php:1791
 msgid "An error occurred. You do not have permission to edit this."
 msgstr "Es ist ein Fehler aufgetreten. Sie haben nicht die Berechtigung zur Bearbeitung."
 
@@ -2402,7 +2868,7 @@ msgstr "Abbrechen"
 msgid "Chips widget"
 msgstr "Chips-Widget"
 
-#: views/admin/filter-row.php:94
+#: views/admin/filter-row.php:94 views/admin/review-popup.php:18
 msgid "Close"
 msgstr "Schliessen"
 
@@ -2426,11 +2892,11 @@ msgstr "Anpassungen"
 msgid "Delete, I'm sure"
 msgstr "Löschen, ja sicher."
 
-#: src/Admin/FilterFields.php:237
+#: src/Admin/FilterFields.php:245
 msgid "Determines how the numeric value will be changed when you move slider controls"
 msgstr "Legt fest, wie der numerische Wert geändert wird, wenn Sie die Schieberegler bewegen"
 
-#: src/Admin/FilterFields.php:168
+#: src/Admin/FilterFields.php:176
 msgid "Determines how to select posts when two or more terms of this filter are selected"
 msgstr "Legt fest, wie Beiträge ausgewählt werden sollen, wenn zwei oder mehr Begriffe dieses Filters ausgewählt wurden"
 
@@ -2442,7 +2908,7 @@ msgstr "Diese Mitteilung schliessen."
 msgid "Displays the number of posts in a term"
 msgstr "Zeigt die Anzahl der Beiträge in einem Begriff an"
 
-#: src/Admin/FilterFields.php:322
+#: src/Admin/FilterFields.php:330
 msgid "Dropdown"
 msgstr "Dropdown"
 
@@ -2450,45 +2916,45 @@ msgstr "Dropdown"
 msgid "Edit Filter Set"
 msgstr "Filter Set bearbeiten"
 
-#: src/Plugin.php:1233 src/Settings/BaseSettings.php:422
+#: src/Plugin.php:1339 src/Settings/BaseSettings.php:426
 msgid "Editing the order of URL prefixes is available in the PRO version"
 msgstr "Die Bearbeitung der Reihenfolge der URL-Präfixe ist in der PRO-Version verfügbar"
 
-#: src/Admin/FilterFields.php:1764
+#: src/Admin/FilterFields.php:1808
 msgid "Error: filter prefix should have at least one alphabetic symbol."
 msgstr "Fehler: Das Filterpräfix muss mindestens ein alphabetisches Zeichen enthalten."
 
-#: src/Admin/FilterFields.php:1778
+#: src/Admin/FilterFields.php:1822
 msgid "Error: for filter Post Author logic OR is acceptable only."
 msgstr "Fehler: Für die Logik des Filters Beitrags-Autor wird nur ODER akzeptiert."
 
-#: src/Admin/FilterFields.php:1776
+#: src/Admin/FilterFields.php:1820
 msgid "Error: invalid exclude terms"
 msgstr "Fehler: Ungültige Ausschluss-Begriffe"
 
-#: src/Admin/FilterFields.php:1753
+#: src/Admin/FilterFields.php:1797
 msgid "Error: invalid Show count field."
 msgstr "Fehler: Ungültiger \"Zeige Anzahl\" Feld."
 
-#: src/Admin/FilterFields.php:1748
+#: src/Admin/FilterFields.php:1792
 msgid "Error: invalid WP Page type."
 msgstr "Fehler: Ungültiger WP-Seiten Typ"
 
-#: src/Admin/FilterFields.php:1766
+#: src/Admin/FilterFields.php:1810
 msgid "Error: prefix part before \"-\" character can not be equal to another existing prefix."
 msgstr "Fehler: Der Präfix-Teil vor dem \"-\"-Zeichen kann nicht mit einem anderen bestehenden Präfix übereinstimmen."
 
-#: src/Admin/FilterFields.php:1781
+#: src/Admin/FilterFields.php:1825
 msgid "Error: Range slider is acceptable for Post Meta Num filters only."
 msgstr "Fehler: Schieberegler ist nur für Post-Meta-Num-Filter zulässig."
 
-#: src/Admin/FilterFields.php:1758
+#: src/Admin/FilterFields.php:1802
 msgid "Error: two or more filters with equal Filter By and Meta key values are forbidden in the same Set. Please, remove or change equal filters."
 msgstr "Fehler: zwei oder mehr Filter mit gleichen \"Filtern nach\" und Meta-Schlüsselwerten sind im selben Set verboten. Bitte, entfernen oder ändern Sie gleiche Filter."
 
 #: src/Admin/Widgets/FiltersWidget.php:16
-#: src/Admin/Widgets/FiltersWidget.php:56
-#: src/Admin/Widgets/FiltersWidget.php:61
+#: src/Admin/Widgets/FiltersWidget.php:68
+#: src/Admin/Widgets/FiltersWidget.php:73
 msgid "Filter Everything &mdash; Filters"
 msgstr "Filter Everything &mdash; Filter"
 
@@ -2496,7 +2962,7 @@ msgstr "Filter Everything &mdash; Filter"
 msgid "Filter Everything — WordPress & WooCommerce product filter plugin that allows you to design a flexible filtering system."
 msgstr "Filter Everything — WordPress & WooCommerce Produktfiler Plugin, das es Ihnen ermöglicht, ein flexibles Filtersystem zu entwerfen."
 
-#: src/Admin/FilterFields.php:164
+#: src/Admin/FilterFields.php:172
 msgid "Filter Logic"
 msgstr "Filter Logik"
 
@@ -2512,27 +2978,23 @@ msgstr "Filter Sets"
 msgid "Filters Settings"
 msgstr "Filter Einstellungen"
 
-#: src/Admin/FilterFields.php:213
+#: src/Admin/FilterFields.php:221
 msgid "Folding"
 msgstr "Einklappen"
-
-#: views/admin/filters-seo-rules.php:38
-msgid "For example, you need to set SEO data for the page with URL path:<br />/color-blue/size-large/<br />For this purpose, you have to select filters «Color» and «Size» only.<br />If you want to create a common template for all color and size values, please choose <br />«Any Color» and «Any Size». If you need to set SEO data for specific Color and Size, please choose specific values like «Blue» and «Large»."
-msgstr "Zum Beispiel müssen Sie SEO-Daten für die Seite mit dem URL-Pfad:<br />/color-blue/size-large/<br />festlegen. Zu diesem Zweck müssen Sie nur die Filter \"Farbe\" und \"Grösse\" auswählen.<br />Wenn Sie eine gemeinsame Vorlage für alle Farb- und Grössenwerte erstellen möchten, wählen Sie bitte<br/>\"Beliebige Farbe\" und \"Beliebige Grösse\". Wenn Sie SEO-Daten für eine bestimmte Farbe und Grösse festlegen möchten, wählen Sie bitte bestimmte Werte wie \"Blau\" und \"Gross\"."
 
 #: src/Admin/AdminHooks.php:129
 msgid "Get PRO"
 msgstr "Hole dir PRO"
 
-#: src/Admin/AdminHooks.php:66 src/Admin/AdminHooks.php:68
-msgid "Help & Support"
-msgstr "Hilfe & Support"
+#: views/admin/filters-seo-rules.php:38
+msgid "For example, you need to set SEO data for the page with URL path:<br />/color-blue/size-large/<br />For this purpose, you have to select filters «Color» and «Size» only.<br />If you want to create a common template for all color and size values, please choose <br />«Any Color» and «Any Size». If you need to set SEO data for specific Color and Size, please choose specific values like «Blue» and «Large»."
+msgstr "Zum Beispiel müssen Sie SEO-Daten für die Seite mit dem URL-Pfad:<br />/color-blue/size-large/<br />festlegen. Zu diesem Zweck müssen Sie nur die Filter \"Farbe\" und \"Grösse\" auswählen.<br />Wenn Sie eine gemeinsame Vorlage für alle Farb- und Grössenwerte erstellen möchten, wählen Sie bitte<br/>\"Beliebige Farbe\" und \"Beliebige Grösse\". Wenn Sie SEO-Daten für eine bestimmte Farbe und Grösse festlegen möchten, wählen Sie bitte bestimmte Werte wie \"Blau\" und \"Gross\"."
 
 #: src/Settings/Tabs/ExperimentalTab.php:77
 msgid "Improved dropdowns"
 msgstr "Verbesserte Dropdowns"
 
-#: src/Admin/FilterFields.php:321
+#: src/Admin/FilterFields.php:329
 msgid "Labels list"
 msgstr "Liste der Labels"
 
@@ -2540,15 +3002,15 @@ msgstr "Liste der Labels"
 msgid "Location"
 msgstr "Standort"
 
-#: src/Admin/FilterFields.php:216
+#: src/Admin/FilterFields.php:224
 msgid "Makes filter collapsible in the widget"
 msgstr "Macht den Filter im Widget einklappbar"
 
-#: src/Admin/FilterFields.php:383
+#: src/Admin/FilterFields.php:391
 msgid "Menu order &laquo;123&raquo;"
 msgstr "Menue Reihenfolge &laquo;123&raquo;"
 
-#: src/Admin/FilterFields.php:387
+#: src/Admin/FilterFields.php:395
 msgid "Menu order &laquo;321&raquo;"
 msgstr "Menue Reihenfolger &laquo;321&raquo;"
 
@@ -2592,11 +3054,11 @@ msgstr "Beitragstyp"
 msgid "Post type"
 msgstr "Beitragstyp"
 
-#: src/Admin/FilterFields.php:381
+#: src/Admin/FilterFields.php:389
 msgid "Posts count &laquo;123&raquo;"
 msgstr "Anzahl Beiträge &laquo;123&raquo;"
 
-#: src/Admin/FilterFields.php:385
+#: src/Admin/FilterFields.php:393
 msgid "Posts count &laquo;321&raquo;"
 msgstr "Anzahl Beiträge &laquo;321&raquo;"
 
@@ -2608,16 +3070,16 @@ msgstr "Der Präfix-Teil vor dem \"-\" Zeichen kann nicht mit einem anderen best
 msgid "Prefix «%s» is not allowed because such a term already exists. Please, use another prefix."
 msgstr "Das Präfix \"%s\" ist nicht zulässig, da dieser Begriff bereits existiert. Bitte verwenden Sie ein anderes Präfix."
 
-#: src/Admin/FilterFields.php:320
+#: src/Admin/FilterFields.php:328
 msgid "Radio buttons"
 msgstr "Optionsfelder"
 
-#: src/Chips.php:64 views/frontend/chips.php:23
+#: src/Chips.php:96 src/Plugin.php:1545 views/frontend/chips.php:31
 msgid "Reset all"
 msgstr "Alles zurücksetzen"
 
-#: src/Admin/AutoFilterSet.php:94 src/Plugin.php:324 src/wpc-helpers.php:1016
-#: src/WpManager.php:733 views/admin/filter-search-field.php:10
+#: src/Admin/AutoFilterSet.php:94 src/Plugin.php:354 src/wpc-helpers.php:1126
+#: src/WpManager.php:750 views/admin/filter-search-field.php:10
 #: views/frontend/search.php:21 views/frontend/search.php:35
 msgid "Search"
 msgstr "Suchen"
@@ -2638,30 +3100,46 @@ msgstr "Wählen Sie den zu filternden Beitragstyp"
 msgid "Show %s"
 msgstr "Anwenden %s"
 
-#: src/Admin/Widgets/ChipsWidget.php:74
+#: src/Admin/Widgets/breakdance/widgets/elements/Chips/element.php:136
+#: src/Admin/Widgets/bricks/ChipsBricksWidget.php:38
+#: src/Admin/Widgets/ChipsWidget.php:79
 #: src/Admin/Widgets/ElementorWidgets/ChipsElementorWidget.php:60
+#: src/Admin/Widgets/gutenberg/build/chips/index.js:1
+#: src/Admin/Widgets/gutenberg/src/chips/edit.js:54
 msgid "Show Chips only for Set with IDs:"
 msgstr "Chips nur für Set mit IDs anzeigen:"
 
-#: src/Admin/FilterFields.php:302
+#: src/Admin/FilterFields.php:310
 msgid "Show filter selected terms in the list of all chosen items"
 msgstr "Gefilterten Begriffe in der Liste aller ausgewählten Artikel anzeigen"
 
-#: src/Admin/FilterFields.php:221
+#: src/Admin/FilterFields.php:229
 msgid "Show Hierarchy"
 msgstr "Hierarchie anzeigen"
 
-#: src/Admin/Widgets/ChipsWidget.php:79
+#: src/Admin/Widgets/beaver/chips/ChipsBeaverWidget.php:64
+#: src/Admin/Widgets/breakdance/widgets/elements/Chips/element.php:145
+#: src/Admin/Widgets/bricks/ChipsBricksWidget.php:47
+#: src/Admin/Widgets/ChipsWidget.php:84
+#: src/Admin/Widgets/DiviWidgets/ChipsDiviWidget.php:69
 #: src/Admin/Widgets/ElementorWidgets/ChipsElementorWidget.php:70
+#: src/Admin/Widgets/gutenberg/build/chips/index.js:1
+#: src/Admin/Widgets/gutenberg/src/chips/edit.js:66
 msgid "Show on mobile"
 msgstr "Auf Mobilgerät anzeigen"
 
+#: src/Admin/Widgets/beaver/filters/FiltersBeaverWidget.php:55
+#: src/Admin/Widgets/breakdance/widgets/elements/Filters/element.php:138
+#: src/Admin/Widgets/bricks/FiltersBricksWidget.php:38
+#: src/Admin/Widgets/DiviWidgets/FiltersDiviWidget.php:78
 #: src/Admin/Widgets/ElementorWidgets/FiltersElementorWidget.php:61
-#: src/Admin/Widgets/FiltersWidget.php:574
+#: src/Admin/Widgets/FiltersWidget.php:713
+#: src/Admin/Widgets/gutenberg/build/filters/index.js:1
+#: src/Admin/Widgets/gutenberg/src/filters/edit.js:54
 msgid "Show the number of posts found"
 msgstr "Anzahl gefundener Beiträge anzeigen"
 
-#: src/Admin/FilterSet.php:375
+#: src/Admin/FilterSet.php:386
 msgid "Show this Filter Set if the page is:"
 msgstr "Diesen Filter anzeigen, wenn die Seite:"
 
@@ -2677,19 +3155,19 @@ msgstr "Entschuldigung. Es sind keine Filter für SEO für den ausgewählten Bei
 msgid "Specify the filter or filters combination for which you need to set SEO data"
 msgstr "Geben Sie den Filter oder die Filterkombinationen an, für die Sie SEO-Daten festlegen müssen"
 
-#: src/Admin/FilterFields.php:239
+#: src/Admin/FilterFields.php:247
 msgid "Step 1 means possible values are 1,2,3,4 ...<br />Step 0.1 means possible values are 5.1, 5.2, 5.3, 5.4 ...<br />Step 15 means possible values are 15, 30, 45, 60..."
 msgstr "Schritt 1 bedeutet mögliche Werte sind 1,2,3,4 ...<br />Schritt 0,1 bedeutet mögliche Werte sind 5.1, 5.2, 5.3, 5.4 ...<br />Schritt 15 bedeutet mögliche Werte sind 15, 30, 45, 60 ..."
 
-#: src/Admin/FilterFields.php:382
+#: src/Admin/FilterFields.php:390
 msgid "Term ID &laquo;123&raquo;"
 msgstr "ID des Begriffs &laquo;123&raquo;"
 
-#: src/Admin/FilterFields.php:386
+#: src/Admin/FilterFields.php:394
 msgid "Term ID &laquo;321&raquo;"
 msgstr "ID des Begriffs &laquo;321&raquo;"
 
-#: src/Admin/FilterFields.php:180
+#: src/Admin/FilterFields.php:188
 msgid "The order in which terms appear in the widget"
 msgstr "Die Reihenfolge, in der die Begriffe im Widget erscheinen"
 
@@ -2701,22 +3179,18 @@ msgstr "Das Präfix muss mindestens ein alphabetisches Zeichen enthalten."
 msgid "There are no filters yet. Click the <strong>Add Filter</strong> button to create your first one."
 msgstr "Noch keine Filter. Klicken Sie auf die Schaltfläche <strong>Filter hinzufügen</strong>, um Ihren ersten Filter zu erstellen."
 
-#: src/Admin/Widgets/ChipsWidget.php:70 src/Admin/Widgets/FiltersWidget.php:569
+#: src/Admin/Widgets/ChipsWidget.php:75 src/Admin/Widgets/FiltersWidget.php:708
 #: src/Admin/Widgets/SortingWidget.php:104
 msgid "Title:"
 msgstr "Title:"
 
-#: src/Admin/FilterFields.php:285
+#: src/Admin/FilterFields.php:293
 msgid "Tooltip"
 msgstr "Kurzinfo"
 
 #: src/Settings/Tabs/SettingsTab.php:55
 msgid "Try to move the sidebar to the top on mobile devices"
 msgstr "Versuchen Sie, die Seitenleiste auf mobilen Geräten nach oben zu verschieben"
-
-#: src/Settings/Tabs/SettingsTab.php:99
-msgid "Try to show selected terms above the posts container"
-msgstr "Versuchen Sie, ausgewählte Begriffe oberhalb des Beitrags-Containers anzuzeigen"
 
 #: src/Settings/Tabs/SettingsTab.php:66
 msgid "Try to use AJAX"
@@ -2742,7 +3216,7 @@ msgstr "Verbesserte Dropdowns statt normaler Dropdowns verwenden (jQuery-Plugin 
 msgid "Use Wait Cursor for AJAX"
 msgstr "\"Warten\" Cursor für AJAX verwenden"
 
-#: src/Admin/FilterFields.php:217
+#: src/Admin/FilterFields.php:225
 msgid "Useful in situations when the filter is rarely applied but takes up some space in the widget. Collapsed by default."
 msgstr "Nützlich in Situationen, in denen der Filter nur selten angewandt wird, aber etwas Platz im Widget benötigt. Standardmäßig eingeklappt."
 
@@ -2774,14 +3248,61 @@ msgstr "Filter-Set ansehen"
 msgid "Visit website"
 msgstr "Webseite besuchen"
 
-#: src/Admin/FilterFields.php:287
+#: src/Admin/FilterFields.php:295
 msgid "Will appear next to the Filter Title"
 msgstr "Wird neben dem Filtertitel angezeigt"
 
-#: src/Admin/FilterFields.php:170
+#: src/Admin/FilterFields.php:178
 msgid "«OR» means to show posts if they are at least in one of the selected terms. <br />«AND» means that posts should belong to all selected terms at the same time."
 msgstr "«ODER» heisst, dass Beiträge angezeigt werden, wenn sie wenigstens einem der Begriffe entsprechen. <br />«UND» bedeutet, dass Beiträge angezeigt werden, wenn sie allen gewählten Begriffen entsprechen."
 
-#: src/Admin/Admin.php:175
+#: src/Admin/Admin.php:169
 msgid "Sorry, you are not allowed to access this page."
 msgstr "Du bist leider nicht berechtigt, auf diese Seite zuzugreifen."
+
+#: src/Settings/Tabs/SettingsTab.php:143
+msgid "Try to show selected terms above the Results container"
+msgstr "Versuche, die ausgewählten Begriffe über dem Ergebniscontainer anzuzeigen."
+
+#: src/Settings/Tabs/SettingsTab.php:135
+msgid "Filter Container max height, px"
+msgstr "Maximale Höhe des Filtercontainers, in px"
+
+#: src/wpc-default-hooks.php:699 src/wpc-default-hooks.php:721
+#: src/wpc-default-hooks.php:738
+msgid "filter by Product virtual status"
+msgstr "nach virtuellem Status des Produkts filtern"
+
+#: src/wpc-default-hooks.php:703 src/wpc-default-hooks.php:716
+#: src/wpc-default-hooks.php:733
+msgid "filter by Product weight"
+msgstr "nach Produktgewicht filtern"
+
+#: src/Admin/FilterFields.php:98
+msgid "For example, in the URL path:<br />/?color=blue&size=large<br />\"color\" and \"size\" are the names of the URL vars.<br />In the PRO version of the plugin, the URL part after \"?\" becomes <br />/color-blue/size-large/"
+msgstr "Zum Beispiel im URL-Pfad:<br />/?color=blue&size=large<br />„color“ und „size“ sind die Namen der URL-Variablen.<br />In der PRO-Version des Plugins wird der Teil der URL nach „?“ zu:<br />/color-blue/size-large/"
+
+#: src/Admin/FilterSet.php:322 src/FormFields/Input.php:338
+msgid "Label"
+msgstr "Beschriftung"
+
+#: src/Settings/Tabs/PermalinksTab.php:409
+msgid "URL Var Names"
+msgstr "Namen der URL-Variablen"
+
+#: src/wpc-helpers.php:789
+msgid "item"
+msgstr "Element"
+
+#: src/wpc-helpers.php:788
+msgid "items"
+msgstr "Elemente"
+
+#: src/Admin/AdminHooks.php:66 src/Admin/AdminHooks.php:68
+msgid "Help & Support"
+msgstr "Hilfe und Support"
+
+#. translators: %s: URL to the Customizer.
+#: src/Admin/MetaBoxes.php:241
+msgid "This draft comes from your <a href=\"%s\">unpublished customization changes</a>. You can edit, but there&#8217;s no need to publish now. It will be published automatically with those changes."
+msgstr "Dieser Entwurf stammt aus deinen <a href=\"%s\">nicht veröffentlichten Customizer-Änderungen</a>. Du kannst ihn bearbeiten, musst ihn aber nicht sofort veröffentlichen. Er wird automatisch mit diesen Änderungen veröffentlicht."

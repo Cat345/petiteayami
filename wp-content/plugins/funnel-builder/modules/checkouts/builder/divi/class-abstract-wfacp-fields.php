@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFACP_Divi_Field extends ET_Builder_Module {
@@ -53,7 +54,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 
 		protected function add_switcher( $tab_id, $key, $label = '', $default = 'off', $conditions = array() ) {
 			if ( empty( $label ) ) {
-				$label = __( 'Enable', 'woofunnels-aero-checkout' );
+				$label = __( 'Enable', 'funnel-builder' );
 			}
 			$this->modules_fields[ $key ] = array(
 				'label'           => $label,
@@ -553,12 +554,12 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			$exclude_border_keys = array();
 
 			$border_option = array(
-				'none'   => __( 'None', 'woofunnels-aero-checkout' ),
-				'solid'  => __( 'Solid', 'woofunnels-aero-checkout' ),
-				'double' => __( 'Double', 'woofunnels-aero-checkout' ),
-				'dotted' => __( 'Dotted', 'woofunnels-aero-checkout' ),
-				'dashed' => __( 'Dashed', 'woofunnels-aero-checkout' ),
-				'groove' => __( 'Groove', 'woofunnels-aero-checkout' ),
+				'none'   => __( 'None', 'funnel-builder' ),
+				'solid'  => __( 'Solid', 'funnel-builder' ),
+				'double' => __( 'Double', 'funnel-builder' ),
+				'dotted' => __( 'Dotted', 'funnel-builder' ),
+				'dashed' => __( 'Dashed', 'funnel-builder' ),
+				'groove' => __( 'Groove', 'funnel-builder' ),
 			);
 
 			// if ( empty( $default_args ) ) {
@@ -593,27 +594,27 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 
 			$type_condition = array();
 			if ( ! in_array( $key, $exclude_border_keys ) ) {
-				$fields_keys[]  = $this->add_heading( $tab_id, __( 'Border', 'woofunnels-aero-checkout', '', $conditions ) );
-				$border_type    = $this->add_select( $tab_id, $key . '_border_type', __( 'Type', 'woofunnels-aero-checkout' ), $border_option, $default['border_type'] );
+				$fields_keys[]  = $this->add_heading( $tab_id, __( 'Border', 'funnel-builder', '', $conditions ) );
+				$border_type    = $this->add_select( $tab_id, $key . '_border_type', __( 'Type', 'funnel-builder' ), $border_option, $default['border_type'] );
 				$fields_keys[]  = $border_type;
 				$type_condition = array( $border_type => 'none' );
 				if ( ! empty( $conditions ) ) {
 					$type_condition = array_merge( $type_condition, $conditions );
 				}
 
-				$fields_keys[] = $this->add_heading( $tab_id, __( 'Width', 'woofunnels-aero-checkout' ), '', $conditions, $type_condition );
-				$fields_keys[] = $this->add_text( $tab_id, $key . '_border_width_top', __( 'Top', 'woofunnels-aero-checkout' ), $default['border_width_top'], $conditions, $type_condition );
-				$fields_keys[] = $this->add_text( $tab_id, $key . '_border_width_bottom', __( 'Bottom', 'woofunnels-aero-checkout' ), $default['border_width_bottom'], $conditions, $type_condition );
-				$fields_keys[] = $this->add_text( $tab_id, $key . '_border_width_left', __( 'Left', 'woofunnels-aero-checkout' ), $default['border_width_left'], $conditions, $type_condition );
-				$fields_keys[] = $this->add_text( $tab_id, $key . '_border_width_right', __( 'Right', 'woofunnels-aero-checkout' ), $default['border_width_right'], $conditions, $type_condition );
+				$fields_keys[] = $this->add_heading( $tab_id, __( 'Width', 'funnel-builder' ), '', $conditions, $type_condition );
+				$fields_keys[] = $this->add_text( $tab_id, $key . '_border_width_top', __( 'Top', 'funnel-builder' ), $default['border_width_top'], $conditions, $type_condition );
+				$fields_keys[] = $this->add_text( $tab_id, $key . '_border_width_bottom', __( 'Bottom', 'funnel-builder' ), $default['border_width_bottom'], $conditions, $type_condition );
+				$fields_keys[] = $this->add_text( $tab_id, $key . '_border_width_left', __( 'Left', 'funnel-builder' ), $default['border_width_left'], $conditions, $type_condition );
+				$fields_keys[] = $this->add_text( $tab_id, $key . '_border_width_right', __( 'Right', 'funnel-builder' ), $default['border_width_right'], $conditions, $type_condition );
 				$fields_keys[] = $this->add_color( $tab_id, $key . '_border_color', $selectors, '', $default['border_color'], $conditions, $type_condition );
 			}
 
-			$fields_keys[] = $this->add_heading( $tab_id, __( 'Border Radius', 'woofunnels-aero-checkout' ), '', $conditions, $type_condition );
-			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_top', __( 'Top', 'woofunnels-aero-checkout' ), $default['border_radius_top'], $conditions, $type_condition );
-			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_bottom', __( 'Bottom', 'woofunnels-aero-checkout' ), $default['border_radius_bottom'], $conditions, $type_condition );
-			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_left', __( 'Left', 'woofunnels-aero-checkout' ), $default['border_radius_left'], $conditions, $type_condition );
-			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_right', __( 'Right', 'woofunnels-aero-checkout' ), $default['border_radius_right'], $conditions, $type_condition );
+			$fields_keys[] = $this->add_heading( $tab_id, __( 'Border Radius', 'funnel-builder' ), '', $conditions, $type_condition );
+			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_top', __( 'Top', 'funnel-builder' ), $default['border_radius_top'], $conditions, $type_condition );
+			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_bottom', __( 'Bottom', 'funnel-builder' ), $default['border_radius_bottom'], $conditions, $type_condition );
+			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_left', __( 'Left', 'funnel-builder' ), $default['border_radius_left'], $conditions, $type_condition );
+			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_right', __( 'Right', 'funnel-builder' ), $default['border_radius_right'], $conditions, $type_condition );
 
 			$wfacp_end_border                          = $this->get_unique_id();
 			$this->modules_fields[ $wfacp_end_border ] = array(
@@ -652,10 +653,10 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				);
 			}
 
-			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_top', __( 'Top', 'woofunnels-aero-checkout' ), $default['border_radius_top'], $conditions );
-			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_bottom', __( 'Bottom', 'woofunnels-aero-checkout' ), $default['border_radius_bottom'], $conditions );
-			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_left', __( 'Left', 'woofunnels-aero-checkout' ), $default['border_radius_left'], $conditions );
-			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_right', __( 'Right', 'woofunnels-aero-checkout' ), $default['border_radius_right'], $conditions );
+			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_top', __( 'Top', 'funnel-builder' ), $default['border_radius_top'], $conditions );
+			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_bottom', __( 'Bottom', 'funnel-builder' ), $default['border_radius_bottom'], $conditions );
+			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_left', __( 'Left', 'funnel-builder' ), $default['border_radius_left'], $conditions );
+			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_right', __( 'Right', 'funnel-builder' ), $default['border_radius_right'], $conditions );
 
 			$this->add_class( $key . '_border_radius_top', 'wfacp_divi_border_width_start wfacp_border_width_top' );
 			$this->add_class( $key . '_border_radius_bottom', 'wfacp_border_width_bottom' );
@@ -668,8 +669,8 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 		protected function add_box_shadow( $tab_id, $key, $selectors, $default = array(), $conditions = array() ) {
 
 			$border_option = array(
-				''      => __( 'Ouline', 'woofunnels-upstroke-one-click-upsell' ),
-				'inset' => __( 'Inset', 'woofunnels-upstroke-one-click-upsell' ),
+				''      => __( 'Ouline', 'funnel-builder' ),
+				'inset' => __( 'Inset', 'funnel-builder' ),
 			);
 
 			$default_args = array(
@@ -693,19 +694,19 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'selector'  => $selectors,
 			);
 
-			$fields_keys[] = $this->add_heading( $tab_id, __( 'Box Shadow', 'woofunnels-upstroke-one-click-upsell', '', $conditions ) );
-			$enabled       = $this->add_switcher( $tab_id, $key . '_shadow_enable', __( 'Enable', 'woofunnels-upstroke-one-click-upsell' ), $default['enable'], $conditions );
+			$fields_keys[] = $this->add_heading( $tab_id, __( 'Box Shadow', 'funnel-builder', '', $conditions ) );
+			$enabled       = $this->add_switcher( $tab_id, $key . '_shadow_enable', __( 'Enable', 'funnel-builder' ), $default['enable'], $conditions );
 
 			$type_condition = array( $enabled => 'on' );
 			if ( ! empty( $conditions ) ) {
 				$type_condition = array_merge( $type_condition, $conditions );
 			}
-			$fields_keys[] = $this->add_select( $tab_id, $key . '_shadow_type', __( 'Position', 'woofunnels-upstroke-one-click-upsell' ), $border_option, $default['type'], $type_condition );
+			$fields_keys[] = $this->add_select( $tab_id, $key . '_shadow_type', __( 'Position', 'funnel-builder' ), $border_option, $default['type'], $type_condition );
 			$fields_keys[] = $this->add_color( $tab_id, $key . '_shadow_color', $selectors, '', $default['color'], $type_condition );
-			$fields_keys[] = $this->add_text( $tab_id, $key . '_shadow_horizontal', __( 'Horizontal', 'woofunnels-upstroke-one-click-upsell' ), $default['horizontal'], $type_condition );
-			$fields_keys[] = $this->add_text( $tab_id, $key . '_shadow_vertical', __( 'Vertical', 'woofunnels-upstroke-one-click-upsell' ), $default['vertical'], $type_condition );
-			$fields_keys[] = $this->add_text( $tab_id, $key . '_shadow_blur', __( 'Blur', 'woofunnels-upstroke-one-click-upsell' ), $default['blur'], $type_condition );
-			$fields_keys[] = $this->add_text( $tab_id, $key . '_shadow_spread', __( 'Spread', 'woofunnels-upstroke-one-click-upsell' ), $default['spread'], $type_condition );
+			$fields_keys[] = $this->add_text( $tab_id, $key . '_shadow_horizontal', __( 'Horizontal', 'funnel-builder' ), $default['horizontal'], $type_condition );
+			$fields_keys[] = $this->add_text( $tab_id, $key . '_shadow_vertical', __( 'Vertical', 'funnel-builder' ), $default['vertical'], $type_condition );
+			$fields_keys[] = $this->add_text( $tab_id, $key . '_shadow_blur', __( 'Blur', 'funnel-builder' ), $default['blur'], $type_condition );
+			$fields_keys[] = $this->add_text( $tab_id, $key . '_shadow_spread', __( 'Spread', 'funnel-builder' ), $default['spread'], $type_condition );
 
 			$wfacp_end_border                          = $this->get_unique_id();
 			$this->modules_fields[ $wfacp_end_border ] = array(
@@ -1025,10 +1026,10 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 
 		protected function get_class_options() {
 			return array(
-				'wfacp-col-full'       => __( 'Full', 'woofunnels-aero-checkout' ),
-				'wfacp-col-left-half'  => __( 'One Half', 'woofunnels-aero-checkout' ),
-				'wfacp-col-left-third' => __( 'One Third', 'woofunnels-aero-checkout' ),
-				'wfacp-col-two-third'  => __( 'Two Third', 'woofunnels-aero-checkout' ),
+				'wfacp-col-full'       => __( 'Full', 'funnel-builder' ),
+				'wfacp-col-left-half'  => __( 'One Half', 'funnel-builder' ),
+				'wfacp-col-left-third' => __( 'One Third', 'funnel-builder' ),
+				'wfacp-col-two-third'  => __( 'Two Third', 'funnel-builder' ),
 			);
 		}
 

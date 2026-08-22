@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 return array(
 	'tracking_analysis' => array(
 		'title'    => __( 'Tracking Analytics', 'funnel-builder' ),

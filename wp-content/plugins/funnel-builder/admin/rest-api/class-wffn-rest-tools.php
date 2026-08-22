@@ -61,22 +61,33 @@ if ( ! class_exists( 'WFFN_REST_Tools' ) ) {
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => array( $this, 'tools_action' ),
 						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-						'args'                => array(
-							'woofunnels_transient' => array(
-								'description'       => __( 'Clear woofunnels transient', 'funnel-builder' ),
-								'type'              => 'string',
-								'validate_callback' => 'rest_validate_request_arg',
-							),
-							'woofunnels_tracking'  => array(
-								'description'       => __( 'Clear woofunnels tracking', 'funnel-builder' ),
-								'type'              => 'boolean',
-								'validate_callback' => 'rest_validate_request_arg',
-							),
-							'index_past_order'     => array(
-								'description'       => __( 'Clear woofunnels tracking', 'funnel-builder' ),
-								'type'              => 'string',
-								'validate_callback' => 'rest_validate_request_arg',
-							),
+						/**
+						 * Filters the arguments accepted by the tools action route.
+						 *
+						 * Modules registering a tool through `wffn_rest_tools_list` declare
+						 * the argument carrying their tool's value here.
+						 *
+						 * @param array $args Route arguments keyed by request parameter.
+						 */
+						'args'                => apply_filters(
+							'wffn_rest_tools_action_args',
+							array(
+								'woofunnels_transient' => array(
+									'description'       => __( 'Clear woofunnels transient', 'funnel-builder' ),
+									'type'              => 'string',
+									'validate_callback' => 'rest_validate_request_arg',
+								),
+								'woofunnels_tracking'  => array(
+									'description'       => __( 'Clear woofunnels tracking', 'funnel-builder' ),
+									'type'              => 'boolean',
+									'validate_callback' => 'rest_validate_request_arg',
+								),
+								'index_past_order'     => array(
+									'description'       => __( 'Clear woofunnels tracking', 'funnel-builder' ),
+									'type'              => 'string',
+									'validate_callback' => 'rest_validate_request_arg',
+								),
+							)
 						),
 					),
 				)
@@ -277,6 +288,19 @@ if ( ! class_exists( 'WFFN_REST_Tools' ) ) {
 				),
 
 			);
+
+			/**
+			 * Filters the tools listed on the Tools screen.
+			 *
+			 * Modules append their own tools here. An entry needs a `title`, a `desc`
+			 * and a `cta` array whose `slug` is the parameter posted back to
+			 * `tools_action()`. The index tool is prepended after this filter runs, so
+			 * appended tools always sit below the core ones.
+			 *
+			 * @param array $tools_array List of tools.
+			 */
+			$tools_array = apply_filters( 'wffn_rest_tools_list', $tools_array );
+
 			$index = $this->get_index_orders();
 			if ( count( $index ) > 0 ) {
 				return array_merge( array( $index ), $tools_array );
@@ -480,6 +504,18 @@ if ( ! class_exists( 'WFFN_REST_Tools' ) ) {
 
 				return rest_ensure_response( $resp );
 			}
+
+			/**
+			 * Filters the response for a tool action this controller does not handle.
+			 *
+			 * A module that registered a tool through `wffn_rest_tools_list` acts on its
+			 * own request parameter here and returns a response array carrying at least
+			 * a `status` key, leaving `$resp` untouched for every other parameter.
+			 *
+			 * @param array           $resp    Response array.
+			 * @param WP_REST_Request $request Current request.
+			 */
+			$resp = apply_filters( 'wffn_rest_tools_action_response', $resp, $request );
 
 			return rest_ensure_response( $resp );
 		}

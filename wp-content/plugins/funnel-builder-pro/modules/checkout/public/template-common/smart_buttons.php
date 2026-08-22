@@ -34,32 +34,66 @@ if ( ! $show_smart_button_shimmer ) {
 <style>
 
 	@media (min-width: 768px) {
-		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="1"] .wfacp_smart_button_container {
-			width: 100%;
-			float: none;
+		/*
+		 * Flex layout for the express buttons row.
+		 *
+		 * The wrap is a flex container and every visible button gets `flex: 1 1 0`,
+		 * so the buttons always share the row in equal width and equal height and
+		 * flow into a single line. Hidden containers (display:none) are dropped from
+		 * the flex flow automatically, so the layout no longer depends on the
+		 * `[count]` attribute matching the number of rendered buttons.
+		 */
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_wrap_st {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: stretch;
+			justify-content: center;
+			gap: 20px;
+			margin: 0 !important;
 		}
 
-		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="2"] .wfacp_smart_button_container {
-			width: 50%;
+		/*
+		 * Max 3 buttons per row. The basis is one-third of the row (40px = 2 x
+		 * the 20px gap), so a 4th button wraps and remainder rows stretch to
+		 * fill: 4 buttons = 3+1 full-width, 5 = 3+2 halves, 6 = 3+3. The 150px
+		 * floor matches the SDKs' hard minimums (Google Pay min-width:150px,
+		 * PayPal ~150px) - a basis of 0 never triggered flex-wrap, so columns
+		 * shrank below that and the buttons overflowed onto each other.
+		 */
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_outer_buttons .wfacp_smart_button_container {
+			flex: 1 1 calc((100% - 40px) / 3);
+			width: auto !important;
+			max-width: 100%;
+			min-width: 150px;
+			float: none !important;
+			margin: 0 !important;
+			padding: 0 !important;
 		}
 
-
-		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="3"] .wfacp_smart_button_container {
-			width: 33.33%;
-
+		/*
+		 * The wrap's clearfix ::before/::after (content:""; display:block)
+		 * become zero-width flex ITEMS, each consuming a 20px gap slot and
+		 * shifting wrapped lines out of alignment. Clearing is meaningless in
+		 * a flex container, so drop them.
+		 */
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_wrap_st::before,
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_wrap_st::after {
+			display: none;
 		}
 
-		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="4"] .wfacp_smart_button_container {
-			width: 25%;
-
-		}
-
-		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="4"] .wfacp_smart_button_container:nth-child(2) {
-			padding-left: 0;
-		}
-
-		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="3"] .wfacp_smart_button_container:nth-child(2) {
-			padding-left: 0;
+		/*
+		 * Third-party SDK buttons render at their intrinsic width (Google Pay
+		 * 150px, PayPal 150-160px) and overflow or under-fill their flex
+		 * column - force them to fill it. The PayPal SDK re-renders its
+		 * iframes to the container width automatically.
+		 */
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container .fkwcppcp-express-button-container,
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container .paypal-buttons,
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container .gpay-button,
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container .gpay-card-info-container,
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container .gpay-button-fill {
+			width: 100% !important;
+			max-width: 100% !important;
 		}
 
 		#wfacp_smart_buttons .wfacp_smart_button_outer_buttons[count="1"] #pay_with_amazon {
@@ -80,16 +114,11 @@ if ( ! $show_smart_button_shimmer ) {
 			background-size: 50%;
 		}
 
-		#wfacp_smart_buttons .wfacp_smart_button_wrap_st {
-			margin: 0 -10px !important;
-		}
-
 		#wfacp_smart_buttons.wfacp_smart_buttons .wc-amazon-checkout-message.wc-amazon-payments-advanced-populated {
 			display: block;
 		}
 
 		#wfacp_smart_buttons.wfacp_smart_buttons div#pay_with_amazon,
-		#wfacp_smart_buttons #wfacp_smart_button_stripe_gpay_apay div#wc-stripe-payment-request-wrapper,
 		#wfacp_smart_buttons #wfacp_smart_button_stripe_gpay_apay div#wc-stripe-payment-request-wrapper,
 		#wfacp_smart_buttons .wfacp_smart_button_wrap_st div#paypal_box_button > div {
 			width: 100%;
@@ -99,26 +128,28 @@ if ( ! $show_smart_button_shimmer ) {
 			max-width: 100%;
 		}
 
-		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container {
-			display: block;
-			margin: 0 !important;
-			padding: 0 10px;
-			float: left;
+		/*
+		 * Tablet/iPad fix (>=768px): the gateway *wrapper* is stretched to 100%
+		 * above, but the INNER express button element keeps its intrinsic ~150px
+		 * and left-aligns, leaving a misaligned sliver inside the full-width
+		 * column. Force the inner Stripe / WooPayments / FunnelKit Stripe button
+		 * element (and the Stripe request iframe) to fill and center its column.
+		 * Gated by the media query only -- do NOT rely on the JS/UA-derived
+		 * `.wfacp_mac` class (added after DOM-ready, flaky on iPad).
+		 */
+		#wfacp_smart_buttons #wfacp_smart_button_stripe_gpay_apay #wc-stripe-payment-request-button.StripeElement,
+		#wfacp_smart_buttons #wfacp_smart_button_stripe_gpay_apay #wc-stripe-payment-request-button.StripeElement > div,
+		#wfacp_smart_buttons #wfacp_smart_button_stripe_gpay_apay div#wc-stripe-payment-request-wrapper iframe,
+		#wfacp_smart_buttons #wfacp_smart_button_wc_payment_gpay_apay #wcpay-payment-request-wrapper,
+		#wfacp_smart_buttons #wfacp_smart_button_wc_payment_gpay_apay #wcpay-express-checkout-button,
+		#wfacp_smart_buttons #fkwcs_custom_express_button .fkwcs_smart_buttons {
+			width: 100% !important;
+			margin: 0 auto;
 		}
 
 		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container iframe {
 			max-height: 42px !important;
 			height: 100% !important;
-		}
-
-		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container:after,
-		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container:before {
-			content: '';
-			display: block;
-		}
-
-		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container:after {
-			clear: both;
 		}
 
 		#wfacp_smart_buttons .wfacp_smart_button_wrap_st div#paypal_box_button .paypal-buttons {
@@ -193,7 +224,7 @@ if ( ! $show_smart_button_shimmer ) {
 		<?php
 		if ( '' !== $or_title ) {
 			?>
-			<div class="wfacp_smart_button_inner wfacp_smart_button_or_text_placeholder"><label><?php echo $or_title; ?></label></div>
+			<div class="wfacp_smart_button_inner wfacp_smart_button_or_text_placeholder"><label><?php echo esc_html( $or_title ); ?></label></div>
 			<?php
 		}
 		?>

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFOP_Divi_HTML_BLOCK' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFOP_Divi_HTML_BLOCK extends WFOP_Divi_Field {

@@ -49,31 +49,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 		 */
 		public function register_routes() {
 
-			// Route for Search and retrieve template list.
-			register_rest_route(
-				$this->namespace,
-				'/funnels/templates/search',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'search_templates' ),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-						'args'                => array(
-							'builder' => array(
-								'description'       => __( 'Page Builder', 'funnel-builder' ),
-								'type'              => 'string',
-								'validate_callback' => 'rest_validate_request_arg',
-							),
-							'type'    => array(
-								'description'       => __( 'Funnel type', 'funnel-builder' ),
-								'type'              => 'string',
-								'validate_callback' => 'rest_validate_request_arg',
-							),
-						),
-					),
-				)
-			);
-
 			// Route to Search Pages.
 			register_rest_route(
 				$this->namespace,
@@ -146,48 +121,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 				)
 			);
 
-			// Search Coupons
-			register_rest_route(
-				$this->namespace,
-				'/' . 'funnels' . '/coupons/search',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'search_coupons' ),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-						'args'                => array(
-							'term' => array(
-								'description'       => __( 'Coupon name', 'funnel-builder' ),
-								'type'              => 'string',
-								'validate_callback' => 'rest_validate_request_arg',
-								'required'          => true,
-							),
-						),
-					),
-				)
-			);
-
-			// Search Coupons
-			register_rest_route(
-				$this->namespace,
-				'/' . 'funnels' . '/customers/search',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'search_customers' ),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-						'args'                => array(
-							'term' => array(
-								'description'       => __( 'Customer User Name', 'funnel-builder' ),
-								'type'              => 'string',
-								'validate_callback' => 'rest_validate_request_arg',
-								'required'          => true,
-							),
-						),
-					),
-				)
-			);
-
 			// Routes for Step Design.
 			register_rest_route(
 				$this->namespace,
@@ -238,26 +171,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => array( $this, 'get_customization_options' ),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					),
-					'schema' => array( $this, 'get_public_item_schema' ),
-				)
-			);
-
-			// Route for Customize Tab get configurations.
-			register_rest_route(
-				$this->namespace,
-				'/' . $this->rest_base . '/(?P<step_id>[\d]+)/customize/configurations',
-				array(
-					'args'   => array(
-						'step_id' => array(
-							'description' => __( 'Current step id.', 'funnel-builder' ),
-							'type'        => 'integer',
-						),
-					),
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_customization_config' ),
 						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
 					),
 					'schema' => array( $this, 'get_public_item_schema' ),
@@ -365,39 +278,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			return wffn_rest_api_helpers()->get_api_permission_check( 'funnel', 'write' );
 		}
 
-		public function search_templates( WP_REST_Request $request ) {
-
-			$resp                      = array();
-			$resp['success']           = false;
-			$resp['data']['templates'] = array();
-
-			do_action( 'wffn_rest_before_get_templates' );
-
-			$templates = WooFunnels_Dashboard::get_all_templates();
-
-			$builder   = ! empty( $request->get_param( 'builder' ) ) ? wffn_clean( $request->get_param( 'builder' ) ) : '';
-			$page_type = ! empty( $request->get_param( 'type' ) ) ? wffn_clean( $request->get_param( 'type' ) ) : '';
-
-			$template_data = array();
-
-			if ( ! empty( $page_type ) ) {
-				$templates = $templates[ $page_type ];
-				if ( ! empty( $builder ) ) {
-					$templates = $templates[ $builder ];
-				}
-
-				$template_data['funnel'] = $templates;
-				$templates               = $template_data;
-			}
-
-			if ( is_array( $templates ) && count( $templates ) > 0 ) {
-				$resp['success']           = true;
-				$resp['data']['templates'] = $templates;
-			}
-
-			return rest_ensure_response( $resp );
-		}
-
 		public function product_list( WP_REST_Request $request ) {
 			$term = $request->get_param( 'term' );
 
@@ -423,11 +303,9 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 						if ( ! wc_products_array_filter_readable( $product_object ) ) {
 							continue;
 						}
-						$formatted_name = $product_object->get_formatted_name();
-						$product_id     = $product_object->get_id();
-						$products[]     = array(
-							'id'   => $product_id,
-							'name' => rawurldecode( wp_strip_all_tags( $formatted_name ) ) . '(#' . $product_id . ')',
+						$products[] = array(
+							'id'   => $product_object->get_id(),
+							'name' => rawurldecode( $this->get_product_label_with_id( $product_object ) ),
 						);
 					}
 				}
@@ -578,137 +456,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 				$resp['success']          = true;
 				$resp['data']['products'] = $products;
 				$resp['msg']              = __( 'Products Loaded', 'funnel-builder' );
-			}
-
-			return rest_ensure_response( $resp );
-		}
-
-		public function search_coupons( WP_REST_Request $request ) {
-
-			$resp            = array();
-			$resp['success'] = false;
-			$resp['msg']     = __( 'No Coupon Found', 'funnel-builder' );
-
-			$term = $request->get_param( 'term' );
-
-			if ( empty( $term ) ) {
-				rest_ensure_response( $resp );
-			}
-
-			$ids = array();
-			// Search by ID.
-			if ( is_numeric( $term ) ) {
-				$coupon = get_posts(
-					array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
-					'post__in'         => array( intval( $term ) ),
-					'post_type'        => 'shop_coupon',
-					'fields'           => 'ids',
-					'numberposts'      => 100,
-					'paged'            => 1,
-					'suppress_filters' => false,
-					)
-				);
-				if ( count( $coupon ) > 0 ) {
-					$ids = array( current( $coupon ) );
-				}
-			}
-
-			$args = array(
-				'post_type'        => 'shop_coupon',
-				'numberposts'      => 100,
-				'paged'            => 1,
-				's'                => $term,
-				'post_status'      => 'publish',
-				'suppress_filters' => false,
-			);
-
-			$posts = get_posts( $args ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
-			if ( $posts && is_array( $posts ) && count( $posts ) > 0 ) {
-				foreach ( $posts as $post ) {
-					array_push( $ids, $post->ID );
-					$ids = array_unique( $ids );
-				}
-			}
-
-			$found_coupons = array();
-
-			foreach ( $ids as $id ) {
-				$coupon_title    = esc_html( get_the_title( $id ) );
-				$coupon['id']    = sanitize_title( $coupon_title );
-				$coupon['name']  = $coupon_title;
-				$found_coupons[] = $coupon;
-			}
-
-			if ( count( $found_coupons ) ) {
-				$resp['success']         = true;
-				$resp['data']['coupons'] = $found_coupons;
-				$resp['msg']             = __( 'Coupons Loaded', 'funnel-builder' );
-			}
-
-			return rest_ensure_response( $resp );
-		}
-
-		public function search_customers( WP_REST_Request $request ) {
-
-			$resp            = array();
-			$resp['success'] = false;
-			$resp['msg']     = __( 'No Customer Found', 'funnel-builder' );
-
-			$term = $request->get_param( 'term' );
-
-			if ( empty( $term ) ) {
-				rest_ensure_response( $resp );
-			}
-
-			$ids = array();
-
-			$limit = 0;
-
-			if ( empty( $term ) ) {
-				wp_die();
-			}
-
-			// Search by ID.
-			if ( is_numeric( $term ) ) {
-				$customer = new WC_Customer( intval( $term ) );
-
-				// Customer does not exists.
-				if ( 0 !== $customer->get_id() ) {
-					$ids = array( $customer->get_id() );
-				}
-			}
-
-			// Usernames can be numeric so we first check that no users was found by ID before searching for numeric username, this prevents performance issues with ID lookups.
-			if ( empty( $ids ) ) {
-				$data_store = WC_Data_Store::load( 'customer' );
-
-				// If search is smaller than 3 characters, limit result set to avoid
-				// too many rows being returned.
-				if ( 3 > strlen( $term ) ) {
-					$limit = 20;
-				}
-				$ids = $data_store->search_customers( $term, $limit );
-			}
-
-			$found_customers = array();
-
-			if ( ! empty( $_GET['exclude'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
-				$ids = array_diff( $ids, array_map( 'absint', (array) wp_unslash( $_GET['exclude'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification
-			}
-			$customers = array();
-			foreach ( $ids as $id ) {
-				$customer = new WC_Customer( $id );
-				/* translators: 1: user display name 2: user ID 3: user email */
-				$customers['id']   = (string) $id;
-				$customers['name'] = sprintf( /* translators: $1: customer name, $2 customer id, $3: customer email */ esc_html__( '%1$s (#%2$s &ndash; %3$s)', 'woocommerce' ), $customer->get_display_name(), $customer->get_id(), $customer->get_email() ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Intentional: reuse WooCommerce's translation for this format string.
-
-				$found_customers[] = $customers;
-			}
-
-			if ( count( $found_customers ) ) {
-				$resp['success']           = true;
-				$resp['data']['customers'] = $found_customers;
-				$resp['msg']               = __( 'Customers Loaded', 'funnel-builder' );
 			}
 
 			return rest_ensure_response( $resp );
@@ -2014,29 +1761,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			return $edit_url;
 		}
 
-
-		// Get details for Customization configuration.
-		public function get_customization_config( WP_REST_Request $request ) {
-
-			$resp            = array();
-			$resp['success'] = false;
-			$resp['msg']     = __( 'Failed', 'funnel-builder' );
-			$resp['data']    = array();
-
-			$step_id = $request->get_param( 'step_id' );
-
-			if ( absint( $step_id ) > 0 ) {
-				$fetch_fonts_list = bwf_get_fonts_list();
-
-				$fonts_json = str_replace( array( 'id', 'name' ), array( 'label', 'value' ), wp_json_encode( $fetch_fonts_list, 1 ) );
-
-				$resp['data']['fonts_list'] = json_decode( $fonts_json, 1 );
-				$resp['success']            = true;
-				$resp['msg']                = __( 'Configuration Loaded', 'funnel-builder' );
-			}
-
-			return rest_ensure_response( $resp );
-		}
 
 		// Get details for Customize design.
 		public function get_customization_options( WP_REST_Request $request ) {

@@ -21,11 +21,11 @@ class OnboardingOption
     /**
      * @var string
      */
-    private $option_name_suffix;
+    private string $option_name_suffix;
     /**
      * @var string
      */
-    private $option_name_prefix = self::OPTION_PREFIX;
+    private string $option_name_prefix = self::OPTION_PREFIX;
     /**
      * @param string $option_name_suffix
      * @param string $option_name_prefix

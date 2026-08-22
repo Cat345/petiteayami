@@ -11,6 +11,7 @@ class Xoo_Wl_Back_In_Stock_Email extends Xoo_Wl_Email{
 
 		$this->id 			= 'back_in_stock';
 		$this->template 	= 'emails/xoo-wl-back-in-stock-email.php';
+		$this->WCTitle 		= 'Back in Stock';
 		$this->hooks();
 
 	}
@@ -67,16 +68,16 @@ class Xoo_Wl_Back_In_Stock_Email extends Xoo_Wl_Email{
 				$product = $product_id ? wc_get_product( $product_id ) : $this->product; 
 
 				if( !$product ){
-					throw new Xoo_Exception( new WP_Error( 'no-product',  'No product found' ) );
+					throw new XooWL\Framework\Xoo_Exception( new WP_Error( 'no-product',  'No product found' ) );
 				}
 
 				if( xoo_wl_helper()->get_email_option( 'bis-check-stock' ) === "yes" && xoo_wl_is_product_out_of_stock( $product->get_id() ) ){
-					throw new Xoo_Exception( new WP_Error( 'in-stock', 'Product is currently out of stock, cannot send email. <br>  If you do not want the stock status check, disable option "Force check product stock status" from the settings -> email' ) );
+					throw new XooWL\Framework\Xoo_Exception( new WP_Error( 'in-stock', 'Product is currently out of stock, cannot send email. <br>  If you do not want the stock status check, disable option "Force check product stock status" from the settings -> email' ) );
 				}
 
 				$this->productValidateResult = true;
 				
-			} catch (Xoo_Exception $e) {
+			} catch (XooWL\Framework\Xoo_Exception $e) {
 				$this->productValidateResult 	= $e->to_wp_error();
 			}
 
@@ -89,23 +90,26 @@ class Xoo_Wl_Back_In_Stock_Email extends Xoo_Wl_Email{
 
 	public function get_template(){
 
-		$show_pimage = xoo_wl_helper()->get_email_option( 'bis-show-pimg' ) === "yes" && $this->row->get_product_image_src();
 
-
+		$img_location 	= xoo_wl_helper()->get_email_option( 'bis-show-pimg' );
+		$show_pimage 	= $img_location !== "disable" && $this->row->get_product_image_src();
+		
 		$args = array(
-			'show_pimage' 	=> $show_pimage,
-			'product_image'	=> $this->row->get_product_image_src(),
-			'product_name' 	=> $this->product->get_name(),
-			'product_link'	=> $this->product->get_permalink(),
-			'heading' 		=> xoo_wl_helper()->get_email_option( 'bis-heading' ),
-			'body_text' 	=> xoo_wl_helper()->get_email_option( 'bis-content' ),
-			'buy_now_text' 	=> xoo_wl_helper()->get_email_option( 'bis-buy-btn-txt' ),
-			'headingColor' 	=> xoo_wl_helper()->get_email_style_option( 'bis-heading-color' ),
-			'headingFsize' 	=> xoo_wl_helper()->get_email_style_option( 'bis-heading-fsize' ),
-			'pimgWidth' 	=> $show_pimage ? xoo_wl_helper()->get_email_style_option( 'bis-pimg-width' ) : 0,
-			'pimgHeight' 	=> xoo_wl_helper()->get_email_style_option( 'bis-pimg-height' ),
-			'enBuyBtn' 		=> xoo_wl_helper()->get_email_style_option( 'bis-en-buy' ),
-			'emailObj' 		=> $this
+			'show_pimage' 			=> $show_pimage,
+			'img_location' 			=> $img_location,
+			'product_image'			=> $this->row->get_product_image_src(),
+			'product_image_html' 	=> $this->get_product_image_html(),
+			'product_name' 			=> $this->product->get_name(),
+			'product_link'			=> $this->product->get_permalink(),
+			'heading' 				=> xoo_wl_helper()->get_email_option( 'bis-heading' ),
+			'body_text' 			=> xoo_wl_helper()->get_email_option( 'bis-content' ),
+			'buy_now_text' 			=> xoo_wl_helper()->get_email_option( 'bis-buy-btn-txt' ),
+			'headingColor' 			=> xoo_wl_helper()->get_email_style_option( 'bis-heading-color' ),
+			'headingFsize' 			=> xoo_wl_helper()->get_email_style_option( 'bis-heading-fsize' ),
+			'pimgWidth' 			=> $show_pimage ? xoo_wl_helper()->get_email_style_option( 'bis-pimg-width' ) : 0,
+			'pimgHeight' 			=> xoo_wl_helper()->get_email_style_option( 'bis-pimg-height' ),
+			'enBuyBtn' 				=> xoo_wl_helper()->get_email_style_option( 'bis-en-buy' ),
+			'emailObj' 				=> $this
 		);
 
 		return xoo_wl_helper()->get_template( $this->template, $args, '', true );

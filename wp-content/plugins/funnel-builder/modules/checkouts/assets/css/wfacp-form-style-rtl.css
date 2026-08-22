@@ -1236,7 +1236,7 @@ body .wfacp_product_restore_wrap {
     text-align: right;
 }
 
-#wfacp-e-form .iti--allow-dropdown .iti__flag-container, .iti--separate-dial-code .iti__flag-container {
+#wfacp-e-form .iti--has-country-selector .iti__country-container, .iti--separate-dial-code .iti__country-container {
     right: auto;
     left: auto;
 }

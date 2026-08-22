@@ -138,12 +138,19 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
             }
 
             // Apply discount directly to rate cost.
+            // In "coupon" discount application mode the rate cost is left unchanged — the
+            // discount is attributed to the coupon amount instead (see
+            // register_coupon_amount_contributions).
             $original_cost = (float) $shipping_rate->get_cost();
             $new_cost      = max( 0, $original_cost - $discount );
 
-            $shipping_rate->set_cost( $new_cost );
+            if ( ! $this->_is_coupon_amount_mode() ) {
+                $shipping_rate->set_cost( $new_cost );
+            }
 
-            // Recalculate taxes proportionally based on the new cost.
+            // Recalculate taxes proportionally based on the new cost. This runs in both
+            // discount application modes so the customer pays the same shipping tax either
+            // way (in "coupon" mode only the cost presentation moves to the coupon line).
             $taxes = $shipping_rate->get_taxes();
             if ( ! empty( $taxes ) && $original_cost > 0 ) {
                 $ratio = $new_cost / $original_cost;
@@ -192,7 +199,7 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
                 }
 
                 // check if shipping method option selected has a specific shipping class.
-                if ( strpos( $data['shipping_method'], 'class' ) !== false ) {
+                if ( str_contains( $data['shipping_method'], 'class' ) ) {
                     $temp            = explode( '_class_', $data['shipping_method'] );
                     $shipping_method = absint( $temp[0] );
                     $shipping_class  = absint( $temp[1] );
@@ -330,6 +337,13 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
      * @param WC_Order $order       Order object.
      */
     public function save_shipping_discounts_to_coupon_order_item( $order_id, $posted_data, $order ) {
+        // In "coupon" discount application mode the shipping override discount is already
+        // part of the native order coupon line discount. Skip the extra meta so downstream
+        // consumers (edit order coupon value display, extra discount totals) don't count
+        // it twice.
+        if ( $this->_is_coupon_amount_mode() ) {
+            return;
+        }
 
         $discount_totals = array();
 
@@ -367,7 +381,7 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
                 array_filter(
                     $order->get_coupons(),
                     function ( $oc ) use ( $key ) {
-                        return strpos( $oc->get_code(), $key ) !== false;
+                        return str_contains( $oc->get_code(), $key );
                     }
                 )
             );
@@ -380,6 +394,196 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
             $order_coupon->update_meta_data( $this->_constants->ORDER_COUPON_SHIPPING_OVERRIDES_DISCOUNT, wc_remove_number_precision( $discount_total ) );
             $order_coupon->save_meta_data();
         }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Coupon amount discount application mode.
+    |--------------------------------------------------------------------------
+     */
+
+    /**
+     * Check if Shipping Overrides discounts should be applied to the coupon amount instead
+     * of reducing the shipping rate cost.
+     *
+     * Guarded with method_exists so the premium plugin degrades gracefully to price
+     * modification mode when running alongside an older free plugin version without
+     * the discount application mode resolver.
+     *
+     * @since 4.1
+     * @access private
+     *
+     * @return bool True when the "coupon amount" discount application mode is selected.
+     */
+    private function _is_coupon_amount_mode() {
+        return method_exists( \ACFWF()->Helper_Functions, 'get_discount_application_mode' )
+            && 'coupon' === \ACFWF()->Helper_Functions->get_discount_application_mode( 'shipping_overrides' );
+    }
+
+    /**
+     * Get the shipping override discounts recorded on the currently chosen shipping rates.
+     *
+     * @since 4.1
+     * @access private
+     *
+     * @return array List of `array( 'coupon' => string, 'discount' => float, 'label' => string )`
+     *               entries for chosen rates that carry a shipping override discount.
+     */
+    private function _get_chosen_rates_override_discounts() {
+        if ( ! \WC()->session || ! \WC()->shipping() ) {
+            return array();
+        }
+
+        $chosen_methods = \WC()->session->get( 'chosen_shipping_methods' );
+        $chosen_methods = is_array( $chosen_methods ) ? $chosen_methods : array();
+        $discounts      = array();
+
+        foreach ( \WC()->shipping()->get_packages() as $key => $package ) {
+
+            $chosen_rate_id = isset( $chosen_methods[ $key ] ) ? $chosen_methods[ $key ] : '';
+
+            if ( ! $chosen_rate_id || ! isset( $package['rates'][ $chosen_rate_id ] ) ) {
+                continue;
+            }
+
+            $rate        = $package['rates'][ $chosen_rate_id ];
+            $meta        = $rate->get_meta_data();
+            $discount    = isset( $meta['_acfw_shipping_override_discount'] ) ? $meta['_acfw_shipping_override_discount'] : null;
+            $coupon_code = isset( $meta['_acfw_shipping_override_coupon'] ) ? (string) $meta['_acfw_shipping_override_coupon'] : '';
+
+            if ( ! $coupon_code || ! is_numeric( $discount ) || 0.0 >= (float) $discount ) {
+                continue;
+            }
+
+            $discounts[] = array(
+                'coupon'   => $coupon_code,
+                'discount' => (float) $discount,
+                'label'    => $rate->get_label(),
+            );
+        }
+
+        return $discounts;
+    }
+
+    /**
+     * Register Shipping Overrides discounts as coupon amount contributions.
+     *
+     * Runs on the `acfw_coupon_amount_total_contributions` filter (free plugin discount
+     * application engine) in "coupon" discount application mode. The shipping rate keeps
+     * its full cost, and the discount recorded on the chosen rate's meta is attributed to
+     * the coupon's discount total and subtracted from the cart grand total instead.
+     *
+     * @since 4.1
+     * @access public
+     *
+     * @param array    $contributions Coupon code keyed list of contribution amounts.
+     * @param \WC_Cart $cart          Cart object.
+     * @return array Filtered contributions.
+     */
+    public function register_coupon_amount_contributions( $contributions, $cart ) {
+        if ( ! $this->_is_coupon_amount_mode() ) {
+            return $contributions;
+        }
+
+        foreach ( $this->_get_chosen_rates_override_discounts() as $data ) {
+            $coupon_code                   = $data['coupon'];
+            $contributions[ $coupon_code ] = isset( $contributions[ $coupon_code ] ) ? $contributions[ $coupon_code ] + $data['discount'] : $data['discount'];
+        }
+
+        return $contributions;
+    }
+
+    /**
+     * Add the discount application mode to the shipping packages data.
+     *
+     * WooCommerce caches calculated shipping rates in the session keyed by a hash of the
+     * package data. The rate cost and taxes we produce depend on the discount application
+     * mode, so the mode is added to every package to invalidate that cache whenever the
+     * store owner switches modes.
+     *
+     * @since 4.1
+     * @access public
+     *
+     * @param array $packages Shipping packages.
+     * @return array Filtered shipping packages.
+     */
+    public function add_discount_mode_to_shipping_packages( $packages ) {
+        $mode = $this->_is_coupon_amount_mode() ? 'coupon' : 'price';
+
+        foreach ( $packages as $key => $package ) {
+            $packages[ $key ]['acfw_shipping_discount_application_mode'] = $mode;
+        }
+
+        return $packages;
+    }
+
+    /**
+     * Get the shipping override discounts summary for a coupon.
+     *
+     * Only used in "coupon" discount application mode — in price modification mode the
+     * discount is visible on the shipping line itself.
+     *
+     * @since 4.1
+     * @access public
+     *
+     * @param \WC_Coupon $coupon Coupon object.
+     * @return string Shipping override discounts summary markup, or empty string.
+     */
+    public function get_shipping_override_summary_for_coupon( $coupon ) {
+        if ( ! $this->_is_coupon_amount_mode() ) {
+            return '';
+        }
+
+        $coupon_code = $coupon->get_code();
+        $summary     = '';
+
+        foreach ( $this->_get_chosen_rates_override_discounts() as $data ) {
+
+            if ( $data['coupon'] !== $coupon_code ) {
+                continue;
+            }
+
+            $summary .= sprintf(
+                '<li><span class="label">%1$s</span> <span class="discount">%2$s</span></li>',
+                sprintf(
+                    /* translators: %s: shipping method label */
+                    esc_html__( 'Shipping discount (%s):', 'advanced-coupons-for-woocommerce' ),
+                    esc_html( $data['label'] )
+                ),
+                wc_price( $data['discount'] * -1 )
+            );
+        }
+
+        return $summary ? sprintf( '<ul class="acfw-shipping-overrides-summary %s-shipping-overrides-summary">%s</ul>', sanitize_html_class( $coupon_code ), $summary ) : '';
+    }
+
+    /**
+     * Display the shipping override discounts summary on the coupons cart total row.
+     *
+     * @since 4.1
+     * @access public
+     *
+     * @param string     $coupon_html          Coupon row html.
+     * @param \WC_Coupon $coupon               Coupon object.
+     * @param string     $discount_amount_html Discount amount html.
+     * @return string Filtered coupon row html.
+     */
+    public function display_shipping_override_discount_summary( $coupon_html, $coupon, $discount_amount_html ) {
+        return $coupon_html . $this->get_shipping_override_summary_for_coupon( $coupon );
+    }
+
+    /**
+     * Add the shipping override discounts summary to the cart/checkout block coupon summary.
+     *
+     * @since 4.1
+     * @access public
+     *
+     * @param string     $summary Summary content.
+     * @param \WC_Coupon $coupon  Coupon object.
+     * @return string Filtered summary content.
+     */
+    public function append_shipping_override_summary_to_cart_checkout_block( $summary, $coupon ) {
+        return $summary . $this->get_shipping_override_summary_for_coupon( $coupon );
     }
 
     /*
@@ -671,8 +875,8 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
 
         foreach ( $order->get_fees() as $fee ) {
             if (
-                strpos( $fee->get_name(), '[shipping_discount]' ) !== false ||
-                strpos( $fee->get_meta( 'acfw_fee_cart_id' ), 'acfw-shipping-discount' ) !== false
+                str_contains( $fee->get_name(), '[shipping_discount]' ) ||
+                str_contains( $fee->get_meta( 'acfw_fee_cart_id' ), 'acfw-shipping-discount' )
             ) {
                 $discount += (float) $fee->get_total( 'edit' );
             }
@@ -855,6 +1059,14 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
 
         // Apply shipping overrides by adjusting package rate costs directly.
         add_filter( 'woocommerce_package_rates', array( $this, 'filter_package_rates' ), 10, 2 );
+
+        // "Coupon amount" discount application mode: deliver shipping override discounts
+        // through the coupon amount (free plugin discount application engine) and show a
+        // breakdown summary on the coupon row.
+        add_filter( 'acfw_coupon_amount_total_contributions', array( $this, 'register_coupon_amount_contributions' ), 10, 2 );
+        add_filter( 'woocommerce_cart_shipping_packages', array( $this, 'add_discount_mode_to_shipping_packages' ), 10, 1 );
+        add_filter( 'woocommerce_cart_totals_coupon_html', array( $this, 'display_shipping_override_discount_summary' ), 10, 3 );
+        add_filter( 'acfwf_cart_checkout_block_coupon_summary', array( $this, 'append_shipping_override_summary_to_cart_checkout_block' ), 10, 2 );
 
         // Save shipping override discount data to coupon order item meta.
         add_action( 'woocommerce_checkout_order_processed', array( $this, 'save_shipping_discounts_to_coupon_order_item' ), 10, 3 );

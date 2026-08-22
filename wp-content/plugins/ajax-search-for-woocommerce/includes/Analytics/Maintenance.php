@@ -11,8 +11,8 @@ class Maintenance {
 	const ANALYTICS_EXPIRATION_IN_DAYS = 30;
 
 	public function init() {
-		$this->schedule();
 		$this->listenCron();
+		add_action( 'init', [ $this, 'schedule' ] );
 	}
 
 	/**

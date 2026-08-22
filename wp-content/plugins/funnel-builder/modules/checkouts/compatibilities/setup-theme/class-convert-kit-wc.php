@@ -52,7 +52,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Convert_kit_WC' ) ) {
 					'class'      => [ 'ckcw_subscribe' ],
 					'id'         => 'ckwc_opt_in',
 					'field_type' => 'advanced',
-					'label'      => __( 'ConvertKit', 'woofunnels-aero-checkout' ),
+					'label'      => __( 'ConvertKit', 'funnel-builder' ),
 
 				];
 			}

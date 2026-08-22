@@ -207,6 +207,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller_Custom_Form' ) ) {
 
 					}
 					$is_preview = wffn_string_to_bool( filter_input( INPUT_GET, 'preview' ) );
+					do_action( 'wfopp_inside_form_before_submit', $optinPageId, $optin_settings, $this );
 					?>
 					<div class="bwfac_form_sec submit_button">
 						<input type="hidden" value="<?php echo esc_attr( is_admin() ); ?>" name="optin_is_admin">
@@ -264,13 +265,27 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller_Custom_Form' ) ) {
 				<script>
 					<?php if ( 1 === $this->render_count ) { ?>
 					var onloadCallback = function () {
-						grecaptcha.execute();
+						try {
+							grecaptcha.execute();
+							/**
+							 * reCAPTCHA v2 invisible tokens are single-use and expire in ~120s.
+							 * The token is only read at form submit (serialized hidden field), so refresh it
+							 * before it expires; otherwise legitimate visitors who linger or retry submit a
+							 * stale token that now (fail-closed validation) gets rejected.
+							 */
+							setInterval(function () {
+								try { grecaptcha.reset(); grecaptcha.execute(); } catch (e) { console.log(e); }
+							}, 110000);
+						} catch (e) { console.log(e); }
 					};
 					<?php } ?>
 					try {
-						function <?php echo esc_js( $captcha_callback ); ?>(response) {<?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-							document.getElementById(<?php echo esc_js( $captcha_id ); ?>).value = response;
-						}
+						// Assign on window so reCAPTCHA's data-callback can always resolve it (a function
+						// declared inside this try{} block is block-scoped in strict contexts and may be unreachable).
+                        window[<?php echo wp_json_encode( $captcha_callback ); //phpcs:ignore ?>] = function (response) {
+                            var wffnCaptchaField = document.getElementById(<?php echo wp_json_encode( $captcha_id ); //phpcs:ignore ?>);
+							if (wffnCaptchaField) { wffnCaptchaField.value = response; }
+						};
 					}catch (error) {
 						console.log( error );
 					}
@@ -320,8 +335,20 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller_Custom_Form' ) ) {
 		 */
 		public function handle_submission() {
 			$optin_page_id = filter_input( INPUT_POST, 'optin_page_id', FILTER_SANITIZE_NUMBER_INT ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce not applicable on cacheable pages
-			$posted_data   = $this->get_posted_data( $optin_page_id );
-			$response      = $this->wffn_recaptcha_response( $posted_data );
+
+			/**
+			 * Defense-in-depth: when reCAPTCHA is enabled and configured, reject token-less requests early.
+			 * Operates on the raw $_POST because get_posted_data() strips empty tokens before they reach the validator.
+			 */
+			$db_options = WFOPP_Core()->optin_pages->get_option();
+			if ( 'true' === $db_options['op_recaptcha'] && '' !== $db_options['op_recaptcha_secret'] && empty( $_POST['wffn-captcha-response'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint; nonce not applicable on cacheable pages
+				WFFN_Core()->logger->log( 'Custom form submission rejected: missing reCAPTCHA token' );  //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				wp_send_json( array( 'message' => $db_options['op_recaptcha_msg'] ) );
+			}
+
+			$posted_data = $this->get_posted_data( $optin_page_id );
+			$response    = $this->wffn_recaptcha_response( $posted_data );
+			$response    = apply_filters( 'wffn_optin_captcha_verification', $response, $posted_data );
 
 			$result = array();
 			if ( $response['success'] ) {

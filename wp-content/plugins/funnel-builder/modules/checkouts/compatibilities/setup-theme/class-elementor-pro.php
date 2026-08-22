@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( defined( 'ELEMENTOR_VERSION' ) && ! class_exists( 'WFACP_Compatibility_With_Elementor_Pro' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_Elementor_Pro {

@@ -147,10 +147,6 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 			 * Check if the respective method exists to go further
 			 */
 			if ( method_exists( WFFN_Core()->admin, 'get_license_config' ) ) {
-				$License               = WooFunnels_licenses::get_instance();
-				$License->plugins_list = null;
-				$License->get_plugins_list();
-
 				$state = $this->get_current_app_state();
 
 				if ( in_array( $state, array( 'pro_without_license', 'license_expired' ), true ) ) {

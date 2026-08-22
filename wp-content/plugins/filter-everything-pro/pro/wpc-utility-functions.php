@@ -23,6 +23,69 @@ function flrt_is_first_order_clause( $query ) {
     return isset( $query['key'] ) || isset( $query['value'] );
 }
 
+/**
+ * Whether the current page's Filter Set targets a query that lists WooCommerce
+ * VARIATIONS as standalone catalog items (e.g. XStore's variable_products_detach
+ * mode: variable parents are hidden and their variations fill the grid).
+ *
+ * On such shops the visitor-facing item unit is a variation, so term counters
+ * and the "N products found" total must count variations too — collapsing them
+ * back to their parents would make the counters disagree with the visible grid.
+ *
+ * Detection: the matched query (its stored clone, or the set's saved query vars
+ * as a fallback) carries XStore's single_variations_filter flag or lists
+ * product_variation among its post types.
+ *
+ * @return bool
+ */
+function flrt_variations_listed_as_products() {
+    static $result = null;
+
+    if ( $result !== null ) {
+        return $result;
+    }
+
+    $result    = false;
+    $wpManager = Container::instance()->getWpManager();
+    $sets      = $wpManager->getQueryVar( 'wpc_page_related_set_ids' );
+
+    if ( empty( $sets ) || ! is_array( $sets ) ) {
+        $result = null; // sets not resolved yet — re-detect on the next call
+        return false;
+    }
+
+    foreach ( $sets as $set ) {
+        if ( empty( $set['ID'] ) ) {
+            continue;
+        }
+
+        // Runtime clone of the query this set matched on the current page.
+        $set_query = $wpManager->getQueryVar( 'wpc_set_filter_query_' . $set['ID'] );
+
+        if ( $set_query instanceof \WP_Query ) {
+            if ( $set_query->get( 'single_variations_filter' ) === 'yes'
+                || in_array( 'product_variation', (array) $set_query->get( 'post_type' ), true ) ) {
+                $result = true;
+                break;
+            }
+            continue;
+        }
+
+        // Fallback — the query vars saved with the set in the admin.
+        $saved = maybe_unserialize( get_post_meta( $set['ID'], 'wpc_filter_set_query_vars', true ) );
+        if ( is_array( $saved ) ) {
+            $saved_post_types = isset( $saved['post_type'] ) ? (array) $saved['post_type'] : [];
+            if ( ( isset( $saved['single_variations_filter'] ) && $saved['single_variations_filter'] === 'yes' )
+                || in_array( 'product_variation', $saved_post_types, true ) ) {
+                $result = true;
+                break;
+            }
+        }
+    }
+
+    return $result;
+}
+
 function flrt_build_variations_meta_query( $parent_ids, $meta_query = [] ) {
     global $wpdb;
     $variations_sql = [];
@@ -265,26 +328,9 @@ function flrt_init_common()
         add_action( 'in_plugin_update_message-' . FLRT_PLUGIN_BASENAME, 'flrt_plugin_update_message', 10, 2 );
         add_action( 'upgrader_process_complete', 'flrt_after_increase_count', 10, 2 );
 
-        $license_data = get_option( FLRT_LICENSE_KEY );
-        $license_key  = false;
-        $parts        = false;
-        $hare         = true;
-
-        if ( $license_data && isset( $license_data[ 'license_key' ] ) ) {
-            $decoded = maybe_unserialize( base64_decode( $license_data[ 'license_key' ] ) );
-
-            if ( $decoded[ 'key' ] ) {
-                $license_key = $decoded[ 'key' ];
-            }
-
-            $parts = explode( "|", base64_decode( $license_key ) );
-
-            if ( count( $parts ) === 3  ) {
-                $hare = false;
-            }
-        }
-
-        if ( ! $license_key || $hare || count( $parts ) !== 3 ) {
+        // Unlicensed if there is no valid signed token and (during rollout) no
+        // legitimately shaped license key -- see flrt_is_licensed().
+        if ( ! flrt_is_licensed() ) {
             $the_trident = get_option( 'wpc_trident' );
             if ( ! $the_trident ) {
                 flrt_set_the_trident();
@@ -320,26 +366,10 @@ function flrt_init_common_multisite()
 
     if ( is_admin() ) {
         $main_site_id = get_main_site_id();
-        $license_data = get_blog_option( $main_site_id, FLRT_LICENSE_KEY );
-        $license_key  = false;
-        $parts        = false;
-        $hare         = true;
 
-        if ( $license_data && isset( $license_data[ 'license_key' ] ) ) {
-            $decoded = maybe_unserialize( base64_decode( $license_data[ 'license_key' ] ) );
-
-            if ( $decoded[ 'key' ] ) {
-                $license_key = $decoded[ 'key' ];
-            }
-
-            $parts = explode( "|", base64_decode( $license_key ) );
-
-            if ( count( $parts ) === 3  ) {
-                $hare = false;
-            }
-        }
-
-        if ( ! $license_key || $hare || count( $parts ) !== 3 ) {
+        // On a subsite flrt_is_licensed() checks the main site's key (the network
+        // license); token domain-binding is per-site and not applied here.
+        if ( ! flrt_is_licensed() ) {
             $the_trident = get_blog_option( $main_site_id,'wpc_trident' );
 
             if ( isset( $the_trident[ 'first_install' ] ) && isset( $the_trident[ 'last_message' ] ) && isset( $the_trident[ 'messages_count' ] ) ) {
@@ -536,3 +566,201 @@ add_filter('wpc_get_broken_builders', function ($array){
 add_filter('wpc_builder_key_pro', function ($i, $o){
     return (int) sprintf("%u", crc32($i . $o));
 }, 10, 2);
+
+if( ! function_exists('flrt_indexable_link_target') ){
+    /**
+     * Whether the page a filter-term link points to would be indexable by the
+     * SEO layer. Mirrors the full indexability criteria:
+     *  - numeric and date filters never qualify (SeoFrontend drops them from
+     *    queried values — their URLs are query-string duplicates);
+     *  - the target must stay within the post type Indexing Depth and keep
+     *    one value per filter (SeoFrontend::isNoindex() core rules);
+     *  - a SEO Rule must exist for the target combination, specific terms or
+     *    «Any» (SeoFrontend::replaceSeoVariables() sets noIndex without one);
+     *  - zero-result targets are noindexed at runtime (countTerms()).
+     *
+     * Used by wpc_replace_links_with_spans() to keep real <a> tags for
+     * crawlable pages when «Disable filter links for crawlers» is enabled:
+     * hiding pages the SEO layer indexes would starve them of internal links.
+     *
+     * Cheap checks run first (the depth cut prunes most links before any rule
+     * matching), the rule-key lookup hits a hash set of the published rule
+     * post_names preloaded once per request. With no Indexing Depth configured
+     * (the default 0) or no published SEO Rules every filter link stays a
+     * <span> — the option's pre-existing behaviour.
+     *
+     * @param object $term   Term object of the rendered link
+     * @param array  $filter Filter configuration the link belongs to
+     * @return bool
+     */
+    function flrt_indexable_link_target( $term, $filter )
+    {
+        static $ctx = null;
+
+        $nonPathEntities = array( 'post_meta_num', 'tax_numeric', 'post_date', 'post_meta_date' );
+
+        if ( ! isset( $filter['entity'] ) || in_array( $filter['entity'], $nonPathEntities, true ) ) {
+            return false;
+        }
+
+        if ( $ctx === null ) {
+            $ctx = array( 'enabled' => false );
+
+            $wpManager = Container::instance()->getWpManager();
+            $sets      = $wpManager->getQueryVar( 'wpc_page_related_set_ids' );
+            $mainSet   = is_array( $sets ) ? reset( $sets ) : false;
+            $postType  = isset( $mainSet['filtered_post_type'] ) ? $mainSet['filtered_post_type'] : '';
+
+            $depth = 0;
+            if ( $postType ) {
+                $indexDeepOptions = get_option( 'wpc_indexing_deep_settings' );
+                if ( isset( $indexDeepOptions[ $postType . '_index_deep' ] ) ) {
+                    $depth = (int) $indexDeepOptions[ $postType . '_index_deep' ];
+                }
+            }
+
+            if ( $depth > 0 ) {
+                global $wpdb;
+                // Rule post_name IS the canonical combination key (generateRuleKey)
+                $ruleKeys = $wpdb->get_col( $wpdb->prepare(
+                    "SELECT post_name FROM {$wpdb->posts} WHERE post_type = %s AND post_status = 'publish'",
+                    FLRT_SEO_RULES_POST_TYPE
+                ) );
+
+                if ( ! empty( $ruleKeys ) ) {
+                    // The exact selection state the SEO layer judges: path filters
+                    // (numeric/date dropped) merged with the native archive term
+                    $seoFrontend = new \FilterEverything\Filter\Pro\SeoFrontend();
+                    $seoFrontend->configureAllQueriedValues();
+
+                    $seoRules = new SeoRules();
+                    $seoRules->setPostType( $postType );
+
+                    $ctx = array(
+                        'enabled'  => true,
+                        'depth'    => $depth,
+                        'state'    => (array) $seoFrontend->get( 'allqueriedvalues' ),
+                        'ruleKeys' => array_flip( $ruleKeys ),
+                        'seoRules' => $seoRules,
+                        'anyTitle' => $seoRules->getAnyTitle(),
+                    );
+                }
+            }
+        }
+
+        if ( empty( $ctx['enabled'] ) ) {
+            return false;
+        }
+
+        if ( ! isset( $term->slug ) || $term->slug === '' || empty( $filter['e_name'] ) ) {
+            return false;
+        }
+
+        $eName    = $filter['e_name'];
+        $termSlug = (string) $term->slug;
+        $target   = $ctx['state'];
+
+        // The current entry of this filter; a native archive term of the same
+        // taxonomy may share it (configureAllQueriedValues merges them)
+        $entryKey = null;
+        foreach ( $target as $key => $entry ) {
+            if ( isset( $entry['e_name'] ) && $entry['e_name'] === $eName ) {
+                $entryKey = $key;
+                break;
+            }
+        }
+
+        $selected = $entryKey !== null
+            && in_array( $termSlug, array_map( 'strval', (array) $target[ $entryKey ]['values'] ), true );
+
+        // Zero-result targets get noindexed at runtime (countTerms) — only
+        // relevant for links that apply the term, removal targets differ
+        if ( ! $selected && isset( $term->cross_count ) && (int) $term->cross_count < 1 ) {
+            return false;
+        }
+
+        // Views where a click on an unselected term ADDS it to the current
+        // selection of that filter; radio-like views replace the value instead
+        $toggleViews = array( 'checkboxes', 'labels' );
+        $view        = isset( $filter['view'] ) ? $filter['view'] : '';
+
+        if ( $selected ) {
+            // The link of a selected term removes it from the selection
+            $values = array_values( array_diff(
+                array_map( 'strval', (array) $target[ $entryKey ]['values'] ),
+                array( $termSlug )
+            ) );
+            if ( empty( $values ) ) {
+                unset( $target[ $entryKey ] );
+            } else {
+                $target[ $entryKey ]['values'] = $values;
+            }
+        } elseif ( $entryKey !== null && in_array( $view, $toggleViews, true ) ) {
+            // A second value for the same filter — isNoindex() never indexes those
+            return false;
+        } elseif ( $entryKey !== null && empty( $target[ $entryKey ]['wp_entity'] ) ) {
+            // Radio-like views replace the value
+            $target[ $entryKey ]['values'] = array( $termSlug );
+        } else {
+            $target[ $eName ] = array(
+                'entity' => $filter['entity'],
+                'e_name' => $eName,
+                'values' => array( $termSlug ),
+            );
+        }
+
+        // isNoindex() core rules: one value per filter; the filter count
+        // (native archive terms aside) within the Indexing Depth
+        $filtersCount = 0;
+        foreach ( $target as $entry ) {
+            if ( count( (array) $entry['values'] ) > 1 ) {
+                return false;
+            }
+            if ( empty( $entry['wp_entity'] ) ) {
+                $filtersCount++;
+            }
+        }
+
+        if ( $filtersCount > $ctx['depth'] ) {
+            return false;
+        }
+
+        if ( $filtersCount === 0 ) {
+            // The link removes the last filter — its target is the plain page,
+            // which the SEO layer indexes without any rule
+            return true;
+        }
+
+        // A page is indexable only when a published SEO Rule matches its
+        // combination — try every specific-or-«Any» variant, the same
+        // expansion getRelatedSeoRules() performs for the current page
+        $combos = array( array() );
+        foreach ( $target as $entry ) {
+            $withValue = $entry;
+            $withValue['values'] = array( (string) reset( $entry['values'] ) );
+            $withAny = $entry;
+            $withAny['values'] = array( $ctx['anyTitle'] );
+
+            $next = array();
+            foreach ( $combos as $combo ) {
+                $comboValue   = $combo;
+                $comboValue[] = $withValue;
+                $next[]       = $comboValue;
+
+                $comboAny   = $combo;
+                $comboAny[] = $withAny;
+                $next[]     = $comboAny;
+            }
+            $combos = $next;
+        }
+
+        foreach ( $combos as $combo ) {
+            $ruleKey = $ctx['seoRules']->generateRuleKey( $combo );
+            if ( isset( $ctx['ruleKeys'][ $ruleKey ] ) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}

@@ -2,6 +2,8 @@
 
 namespace Pelago\Emogrifier\HtmlProcessor;
 
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
+
 /**
  * Normalizes HTML:
  * - add a document type (HTML5) if missing

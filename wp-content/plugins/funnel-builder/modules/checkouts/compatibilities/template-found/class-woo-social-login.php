@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_Woo_Social_login' ) ) {
 	/**
 	 * WooCommerce - Social Login

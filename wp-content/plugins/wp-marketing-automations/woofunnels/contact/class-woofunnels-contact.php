@@ -639,6 +639,19 @@ if ( ! class_exists( 'WooFunnels_Contact' ) ) {
 
 			$contact['last_modified'] = current_time( 'mysql' );
 
+			/**
+			 * Filter the assembled contact column=>value array just before it is persisted.
+			 *
+			 * Lets other FunnelKit products augment or override the columns written by save()
+			 * without a second UPDATE/INSERT. Fires on every contact save, so keep callbacks cheap.
+			 *
+			 * @since 1.10.13
+			 *
+			 * @param array             $contact Column => value map staged for insert/update.
+			 * @param WooFunnels_Contact $this   The contact instance being saved.
+			 */
+			$contact = apply_filters( 'bwf_contact_save_data', $contact, $this );
+
 			if ( $this->get_id() > 0 ) {
 				/** Existing contact */
 				$contact['id'] = $this->get_id();

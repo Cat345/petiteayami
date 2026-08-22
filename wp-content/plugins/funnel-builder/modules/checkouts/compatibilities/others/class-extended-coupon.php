@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_Extended_Coupon_Pro' ) ) {
 	/**
 	 * WooCommerce Extended Coupon Features PRO

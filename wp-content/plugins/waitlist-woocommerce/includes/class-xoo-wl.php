@@ -20,19 +20,8 @@ class Xoo_Wl{
 
 	
 	public function __construct(){
-
-		$this->defining_constants();
 		$this->includes();
 		$this->hooks();
-	}
-
-
-	public function defining_constants(){
-		$this->define( "XOO_WL_PATH", plugin_dir_path( XOO_WL_PLUGIN_FILE ) ); // Plugin path
-		$this->define( "XOO_WL_PLUGIN_BASENAME",plugin_basename( XOO_WL_PLUGIN_FILE ) );
-		$this->define( "XOO_WL_URL", untrailingslashit( plugins_url( '/', XOO_WL_PLUGIN_FILE ) ) ); // plugin url
-		$this->define( "XOO_WL_VERSION", "2.8.9" ); //Plugin version
-		$this->define( "XOO_WL_LITE", true );
 	}
 
 
@@ -48,13 +37,16 @@ class Xoo_Wl{
 	*/
 	public function includes(){
 
+		require_once XOO_WL_PATH.'includes/class-xoo-wl-helper.php';
+
 		//Field framework
 		require_once XOO_WL_PATH.'/xoo-form-fields-fw/xoo-aff.php';
-		$this->aff = xoo_aff_fire( 'waitlist-woocommerce', 'xoo-wl-fields' ); // start framework
+
+		$this->aff = \XooWL\Aff\xoo_aff_fire( 'waitlist-woocommerce', 'xoo-wl-fields', xoo_wl_helper() ); // start framework
 		
-		require_once XOO_WL_PATH.'includes/xoo-framework/xoo-framework.php';
+		
 		require_once XOO_WL_PATH.'includes/xoo-wl-functions.php';
-		require_once XOO_WL_PATH.'includes/class-xoo-wl-helper.php';
+		
 		require_once XOO_WL_PATH.'includes/class-xoo-wl-db.php';
 		require_once XOO_WL_PATH.'includes/class-xoo-wl-core.php';
 		require_once XOO_WL_PATH.'includes/class-xoo-wl-row.php';
@@ -215,6 +207,27 @@ class Xoo_Wl{
 					$glOptions['m-btn-show'][] = 'backorder_out';
 				}
 
+
+
+			}
+
+
+			if( version_compare( $db_version, '2.9.0', '<')  ){
+
+				
+				$syOptions['btn-newlayout'] = 'no';
+
+				$glOptions['txt-new-form-desc'] = 'no';
+
+				$glOptions['m-show-waitlist'] = array('product');
+
+				if( $glOptions['m-en-shop'] === "yes" ){
+					$glOptions['m-show-waitlist'][] = 'shop';
+				}
+
+				update_option( 'xoo-wl-old-btn-layout', 'yes' );
+
+				$emailOptions['bis-show-pimg'] = $emailOptions['bis-show-pimg'] === "yes" ? 'side' : 'disable';
 
 
 			}

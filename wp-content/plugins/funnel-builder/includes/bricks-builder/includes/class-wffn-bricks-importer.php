@@ -2,6 +2,8 @@
 
 namespace FunnelKit;
 
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
+
 use WFFN_Import_Export;
 use WFFN_Template_Importer;
 if ( ! class_exists( '\FunnelKit\WFFN_Bricks_Importer' ) ) {

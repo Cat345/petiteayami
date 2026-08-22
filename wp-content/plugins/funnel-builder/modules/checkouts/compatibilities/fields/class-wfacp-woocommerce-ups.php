@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_UPS_Shipping_Access_Point' ) ) {
 	/**
 	 * Order WooCommerce UPS Shipping Plugin with Print Label
@@ -26,8 +27,8 @@ if ( ! class_exists( 'WFACP_Compatibility_UPS_Shipping_Access_Point' ) ) {
 		public function add_field( $fields ) {
 
 			$fields['ups_woocommerce_access_point'] = [
-				'label'       => __( 'Access Point Locations', 'woofunnels-aero-checkout' ),
-				'data_label'  => __( 'Access Point Locations', 'woofunnels-aero-checkout' ),
+				'label'       => __( 'Access Point Locations', 'funnel-builder' ),
+				'data_label'  => __( 'Access Point Locations', 'funnel-builder' ),
 				'type'        => 'wfacp_html',
 				'id'          => 'ups_woocommerce_access_point',
 				'field_type'  => 'advanced',

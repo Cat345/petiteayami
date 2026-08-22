@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 	#[\AllowDynamicProperties]
 	class WFACP_Divi_Form extends WFACP_Divi_HTML_BLOCK {
@@ -130,7 +131,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 
 				$this->add_select( $tab_id, 'wfacp_' . $template_slug . '_' . $field_key . '_field', $field['label'], $options, $field_default_cls );
 				if ( ! empty( $this->custom_class_tab_id ) ) {
-					$this->add_text( $this->custom_class_tab_id, 'wfacp_' . $template_slug . '_' . $field_key . '_field_class', $field['label'], '', array(), '', __( 'Custom Class', 'woofunnels-aero-checkout' ) );
+					$this->add_text( $this->custom_class_tab_id, 'wfacp_' . $template_slug . '_' . $field_key . '_field_class', $field['label'], '', array(), '', __( 'Custom Class', 'funnel-builder' ) );
 				}
 			}
 		}
@@ -296,7 +297,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 			$this->add_responsive_control( 'enable_callapse_order_summary' );
 
 			// Add the enable_order_field_collapsed setting with responsive controls
-			$this->add_switcher( $tab_id, 'enable_order_field_collapsed', __( 'Expanded Order Summary', 'woofunnels-aero-checkout' ), 'off' );
+			$this->add_switcher( $tab_id, 'enable_order_field_collapsed', __( 'Expanded Order Summary', 'funnel-builder' ), 'off' );
 			$this->add_responsive_control( 'enable_order_field_collapsed' );
 
 			$this->add_switcher( $tab_id, 'order_summary_enable_product_image_collapsed', __( 'Enable Image', 'funnel-builder' ), 'yes' );
@@ -377,7 +378,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 			);
 			$this->add_typography( $tab_id, 'tab_heading_typography', '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-order2StepTitle.wfacp-order2StepTitleS1', 'Heading', array(), $tab_condition, $font_side_default );
 			$this->add_heading( $tab_id, 'Subheading Typography', '', $tab_condition );
-			$this->add_typography( $tab_id, 'tab_subheading_typography', '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-order2StepSubTitle.wfacp-order2StepSubTitleS1', __( 'Sub Heading', 'woofunnels-aero-checkout' ), array(), $tab_condition );
+			$this->add_typography( $tab_id, 'tab_subheading_typography', '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-order2StepSubTitle.wfacp-order2StepSubTitleS1', __( 'Sub Heading', 'funnel-builder' ), array(), $tab_condition );
 			$alignmentOption = array( '%%order_class%% #wfacp-e-form .wfacp-payment-tab-list .wfacp-order2StepHeaderText' );
 			$this->add_text_alignments( $tab_id, 'tab_text_alignment', $alignmentOption, '', 'center', $tab_condition );
 			$this->add_typography( $tab_id, 'progress_bar_heading_typography', '%%order_class%% #wfacp-e-form .wfacp_custom_breadcrumb .wfacp_steps_sec ul li a', 'Heading', array(), $progress_bar_condition );
@@ -399,7 +400,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				'%%order_class%% #wfacp-e-form .wfacp_custom_breadcrumb .wfacp_steps_sec ul li.df_cart_link.wfacp_bred_visited:before',
 			);
 			$this->add_background_color( $tab_id, 'progress_bar_line_color', array( '%%order_class%% #wfacp-e-form .wfacp_custom_breadcrumb .wfacp_steps_sec ul:before' ), '', 'Line', $progress_bar_condition );
-			$this->add_border_color( $tab_id, 'progress_bar_circle_color', array( '%%order_class%% #wfacp-e-form .wfacp_custom_breadcrumb .wfacp_steps_sec ul li:before' ), '', __( 'Circle Border', 'woofunnels-aero-checkout' ), false, $progress_bar_condition );
+			$this->add_border_color( $tab_id, 'progress_bar_circle_color', array( '%%order_class%% #wfacp-e-form .wfacp_custom_breadcrumb .wfacp_steps_sec ul li:before' ), '', __( 'Circle Border', 'funnel-builder' ), false, $progress_bar_condition );
 			$this->add_background_color( $tab_id, 'progress_bar_active_color', $activeColor, '', 'Active Step', $progress_bar_condition );
 			$this->add_color( $tab_id, 'progressbar_text_color', array( '%%order_class%%  #wfacp-e-form .wfacp_custom_breadcrumb .wfacp_steps_sec ul li a' ), '', 'Text ', $progress_bar_condition );
 			$this->add_color( $tab_id, 'progressbar_text_hover_color', array( '%%order_class%%  #wfacp-e-form .wfacp_custom_breadcrumb .wfacp_steps_sec ul li a:hover' ), '', 'Text Hover', $progress_bar_condition );
@@ -408,28 +409,28 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 			$field_keys              = array();
 			$field_keys[]            = $this->add_background_color( $tab_id, 'active_step_bg_color', array( '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active' ), '', 'Background Color', $tab_condition );
 			$field_keys[]            = $this->add_color( $tab_id, 'active_step_text_color', array( '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp_tcolor' ), 'Text Color', '', $tab_condition );
-			$field_keys[]            = $this->add_border_color( $tab_id, 'active_tab_border_bottom_color', array( '%%order_class%% #wfacp-e-form .wfacp-payment-tab-list.wfacp-active' ), '#000000', __( 'Tab Border Color', 'woofunnels-aero-checkout' ), false, $tab_condition );
+			$field_keys[]            = $this->add_border_color( $tab_id, 'active_tab_border_bottom_color', array( '%%order_class%% #wfacp-e-form .wfacp-payment-tab-list.wfacp-active' ), '#000000', __( 'Tab Border Color', 'funnel-builder' ), false, $tab_condition );
 			if ( $number_of_steps > 1 ) {
 				$field_keys[] = $this->add_background_color( $tab_id, 'active_step_count_bg_color', array( '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber' ), '#000000', 'Count Background Color', $tab_condition );
-				$field_keys[] = $this->add_border_color( $tab_id, 'active_step_count_border_color', array( '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber' ), '#000000', __( 'Count Border Color', 'woofunnels-aero-checkout' ), false, $tab_condition );
+				$field_keys[] = $this->add_border_color( $tab_id, 'active_step_count_border_color', array( '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber' ), '#000000', __( 'Count Border Color', 'funnel-builder' ), false, $tab_condition );
 				$field_keys[] = $this->add_color( $tab_id, 'active_step_count_text_color', array( '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber' ), 'Count Text Color', '', $tab_condition );
 			}
 			// Put All active step Field to control Tab
-			$this->add_controls_tab( $wfacp_progress_bar_tabs, __( 'Active Step', 'woofunnels-aero-checkout' ), $field_keys );
+			$this->add_controls_tab( $wfacp_progress_bar_tabs, __( 'Active Step', 'funnel-builder' ), $field_keys );
 			$inactiveBgcolor = array(
 				'%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list',
 			);
 			$field_keys      = array();
-			$field_keys[]    = $this->add_background_color( $tab_id, 'inactive_step_bg_color', $inactiveBgcolor, '', __( 'Background Color', 'woofunnels-aero-checkout' ), $tab_condition );
-			$field_keys[]    = $this->add_color( $tab_id, 'inactive_step_text_color', array( '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp_tcolor' ), __( 'Text Color', 'woofunnels-aero-checkout' ), '', $tab_condition );
-			$field_keys[]    = $this->add_border_color( $tab_id, 'inactive_tab_border_bottom_color', array( '%%order_class%% #wfacp-e-form .wfacp-payment-tab-list' ), '#000000', __( 'Tab Border Color', 'woofunnels-aero-checkout' ), false, $tab_condition );
+			$field_keys[]    = $this->add_background_color( $tab_id, 'inactive_step_bg_color', $inactiveBgcolor, '', __( 'Background Color', 'funnel-builder' ), $tab_condition );
+			$field_keys[]    = $this->add_color( $tab_id, 'inactive_step_text_color', array( '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp_tcolor' ), __( 'Text Color', 'funnel-builder' ), '', $tab_condition );
+			$field_keys[]    = $this->add_border_color( $tab_id, 'inactive_tab_border_bottom_color', array( '%%order_class%% #wfacp-e-form .wfacp-payment-tab-list' ), '#000000', __( 'Tab Border Color', 'funnel-builder' ), false, $tab_condition );
 			$field_keys[]    = $this->add_background_color( $tab_id, 'inactive_step_count_bg_color', array( '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp-order2StepNumber' ), '#000000', 'Count Background Color', $tab_condition );
-			$field_keys[]    = $this->add_border_color( $tab_id, 'inactive_step_count_border_color', array( '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp-order2StepNumber' ), '#000000', __( 'Count Border Color', 'woofunnels-aero-checkout' ), false, $tab_condition );
+			$field_keys[]    = $this->add_border_color( $tab_id, 'inactive_step_count_border_color', array( '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp-order2StepNumber' ), '#000000', __( 'Count Border Color', 'funnel-builder' ), false, $tab_condition );
 			$field_keys[]    = $this->add_color( $tab_id, 'inactive_step_count_text_color', array( '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp-order2StepNumber' ), 'Count Text Color', '', $tab_condition );
 			// Put In Active step Field to control Tab
-			$this->add_controls_tab( $wfacp_progress_bar_tabs, __( 'Inactive Step', 'woofunnels-aero-checkout' ), $field_keys );
+			$this->add_controls_tab( $wfacp_progress_bar_tabs, __( 'Inactive Step', 'funnel-builder' ), $field_keys );
 			/** Tab settings completed */
-			$this->add_heading( $tab_id, __( 'Border Radius', 'woofunnels-aero-checkout' ), '', $tab_condition );
+			$this->add_heading( $tab_id, __( 'Border Radius', 'funnel-builder' ), '', $tab_condition );
 			$this->add_border_radius_new( $tab_id, 'border_radius_steps', '%%order_class%% #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list', $tab_condition );
 			$this->add_heading( $tab_id, 'Margin', '', $tab_condition );
 			$default = '0px || 15px || 0px || 0px';
@@ -451,17 +452,17 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 			if ( is_rtl() ) {
 				$alignment = 'Right';
 			}
-			$tab_id            = $this->add_tab( __( 'Heading', 'woofunnels-aero-checkout' ), 2 );
+			$tab_id            = $this->add_tab( __( 'Heading', 'funnel-builder' ), 2 );
 			$font_side_default = array(
 				'default' => '18px',
 				'unit'    => 'px',
 			);
-			$this->add_heading( $tab_id, __( 'Heading', 'woofunnels-aero-checkout' ) );
+			$this->add_heading( $tab_id, __( 'Heading', 'funnel-builder' ) );
 			$this->add_typography( $tab_id, 'section_heading_typo', implode( ',', $sectionTitleOption ), '', '', array(), $font_side_default );
 			$this->add_color( $tab_id, 'form_heading_color', $sectionTitleOption, '', '#333333' );
 			$this->add_text_alignments( $tab_id, 'form_heading_align', $sectionTitleOption, '', $alignment, array() );
 			// Sub heading start here
-			$this->add_heading( $tab_id, __( 'Sub Heading', 'woofunnels-aero-checkout' ), 2 );
+			$this->add_heading( $tab_id, __( 'Sub Heading', 'funnel-builder' ), 2 );
 			$subheadingOption  = array( '%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-comm-title h4' );
 			$font_side_default = array(
 				'default' => '14px',
@@ -472,7 +473,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 			$this->add_text_alignments( $tab_id, 'form_sub_heading_align', $subheadingOption );
 			// Sub heading end here
 			$advanceOption = array( '%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-section .wfacp-comm-title' );
-			$this->add_heading( $tab_id, __( 'Advanced', 'woofunnels-aero-checkout' ) );
+			$this->add_heading( $tab_id, __( 'Advanced', 'funnel-builder' ) );
 			$this->add_background_color( $tab_id, 'form_heading_bg_color', $advanceOption, 'transparent' );
 			$this->add_padding( $tab_id, 'form_heading_padding', implode( ',', $advanceOption ) );
 			$this->add_margin( $tab_id, 'form_heading_margin', implode( ',', $advanceOption ), '', '', array() );
@@ -492,18 +493,18 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 		}
 
 		private function fields_typo_settings() {
-			$tabs_id = $this->add_tab( __( 'Fields', 'woofunnels-aero-checkout' ), 2 );
-			$this->add_heading( $tabs_id, __( 'Label', 'woofunnels-aero-checkout' ) );
+			$tabs_id = $this->add_tab( __( 'Fields', 'funnel-builder' ), 2 );
+			$this->add_heading( $tabs_id, __( 'Label', 'funnel-builder' ) );
 
 			/* Label Position */
 
 			$options = array(
-				'wfacp-modern-label' => __( 'Floating', 'woofunnels-aero-checkout' ),
-				'wfacp-top'          => __( 'Outside', 'woofunnels-aero-checkout' ),
-				'wfacp-inside'       => __( 'Inside', 'woofunnels-aero-checkout' ),
+				'wfacp-modern-label' => __( 'Floating', 'funnel-builder' ),
+				'wfacp-top'          => __( 'Outside', 'funnel-builder' ),
+				'wfacp-inside'       => __( 'Inside', 'funnel-builder' ),
 
 			);
-			$this->add_select( $tabs_id, 'wfacp_label_position', __( 'Label Position', 'woofunnels-aero-checkout' ), $options, 'wfacp-inside' );
+			$this->add_select( $tabs_id, 'wfacp_label_position', __( 'Label Position', 'funnel-builder' ), $options, 'wfacp-inside' );
 
 			$form_fields_label_typo = array(
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce p.wfacp-form-control-wrapper:not(.wfacp-anim-wrap) label.wfacp-form-control-label',
@@ -551,7 +552,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 			);
 			$optionString   = implode( ',', $fields_options );
 			/* Input field typography */
-			$this->add_heading( $tabs_id, __( 'Input', 'woofunnels-aero-checkout' ) );
+			$this->add_heading( $tabs_id, __( 'Input', 'funnel-builder' ) );
 			$font_side_default = array(
 				'default' => '14px',
 				'unit'    => 'px',
@@ -574,7 +575,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				'%%order_class%% #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper input[type="text"].wfacp-form-control',
 				'%%order_class%% #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper input[type="emal"].wfacp-form-control',
 				'%%order_class%% #wfacp-e-form .wfacp_allowed_countries strong',
-				'%%order_class%% #wfacp-e-form .iti__selected-flag',
+				'%%order_class%% #wfacp-e-form .iti__selected-country',
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .select2-container .select2-selection--single .select2-selection__rendered',
 			);
 
@@ -613,18 +614,18 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce p.woocommerce-invalid-email .wfacp-form-control',
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_coupon_failed .wfacp_coupon_code',
 			);
-			$this->add_border_color( $tabs_id, 'wfacp_form_fields_focus_color', array( '%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-email) .wfacp-form-control:not(.wfacp_coupon_code):focus' ), '', __( 'Focus Color', 'woofunnel-aero-checkout' ), true );
+			$this->add_border_color( $tabs_id, 'wfacp_form_fields_focus_color', array( '%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-email) .wfacp-form-control:not(.wfacp_coupon_code):focus' ), '', __( 'Focus Color', 'funnel-builder' ), true );
 
-			$this->add_border_color( $tabs_id, 'wfacp_form_fields_validation_color', $validation_error, '#d50000', __( 'Error Validation Color', 'woofunnel-aero-checkout' ), true );
+			$this->add_border_color( $tabs_id, 'wfacp_form_fields_validation_color', $validation_error, '#d50000', __( 'Error Validation Color', 'funnel-builder' ), true );
 		}
 
 		private function section_typo_settings() {
-			$tab_id                = $this->add_tab( __( 'Section', 'woofunnels-aero-checkout' ), 2 );
+			$tab_id                = $this->add_tab( __( 'Section', 'funnel-builder' ), 2 );
 			$form_section_bg_color = array(
 				'%%order_class%% #wfacp-e-form .wfacp-section',
 			);
 
-			$this->add_background_color( $tab_id, 'form_section_bg_color', $form_section_bg_color, '', __( 'Background Color', 'woofunnels-aero-checkout' ) );
+			$this->add_background_color( $tab_id, 'form_section_bg_color', $form_section_bg_color, '', __( 'Background Color', 'funnel-builder' ) );
 			$this->add_box_shadow( $tab_id, 'form_section_box_shadow', implode( ',', $form_section_bg_color ) );
 
 			$this->add_padding( $tab_id, 'form_section_padding', '%%order_class%% #wfacp-e-form .wfacp-section', '', 'Padding' );
@@ -648,7 +649,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 
 
 		private function payment_buttons_styling() {
-			$tab_id    = $this->add_tab( __( 'Checkout Button(s)', 'woofunnel-aero-checkout' ), 2 );
+			$tab_id    = $this->add_tab( __( 'Checkout Button(s)', 'funnel-builder' ), 2 );
 			$selector  = array(
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button',
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce #payment button#place_order',
@@ -666,7 +667,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .button.button#place_order',
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .button.wfacp_next_page_button',
 			);
-			$this->add_switcher( $tab_id, 'wfacp_make_button_sticky_on_mobile', __( 'Sticky on Mobile', 'woofunnels-aero-checkout' ), 'off', array() );
+			$this->add_switcher( $tab_id, 'wfacp_make_button_sticky_on_mobile', __( 'Sticky on Mobile', 'funnel-builder' ), 'off', array() );
 			$default = array(
 				'default' => '100%',
 				'unit'    => '%',
@@ -705,11 +706,11 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 			$field_keys     = array();
 			$field_keys[]   = $this->add_background_color( $tab_id, 'wfacp_button_bg_color', $selector1, '', 'Background' );
 			$field_keys[]   = $this->add_color( $tab_id, 'wfacp_button_label_color', $selector1, '', 'Label' );
-			$this->add_controls_tab( $control_tab_id, __( 'Normal', 'woofunnels-aero-checkout' ), $field_keys );
+			$this->add_controls_tab( $control_tab_id, __( 'Normal', 'funnel-builder' ), $field_keys );
 			$field_keys   = array();
 			$field_keys[] = $this->add_background_color( $tab_id, 'wfacp_button_bg_hover_color', $button_bg_hover_color, '', 'Background' );
 			$field_keys[] = $this->add_color( $tab_id, 'wfacp_button_label_hover_color', $button_bg_hover_color, '', 'Label' );
-			$this->add_controls_tab( $control_tab_id, __( 'Hover', 'woofunnels-aero-checkout' ), $field_keys );
+			$this->add_controls_tab( $control_tab_id, __( 'Hover', 'funnel-builder' ), $field_keys );
 			$this->add_divider( 'none' );
 			$default = '15px || 15px || 25px || 25px';
 			$this->add_padding( $tab_id, 'wfacp_button_padding', implode( ',', $selector ), $default, 'Padding' );
@@ -726,7 +727,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce #wfacp_checkout_form .place_order_back_btn a:hover',
 			);
 
-			$this->add_heading( $tab_id, __( 'Return Link', 'woofunnels-aero-checkout' ), 'none' );
+			$this->add_heading( $tab_id, __( 'Return Link', 'funnel-builder' ), 'none' );
 			/* Back Link color setting */
 			$back_control_tab_id = $this->add_controls_tabs( $tab_id, '' );
 			$field_keys          = array();
@@ -737,7 +738,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 			$field_keys[] = $this->add_controls_tab( $back_control_tab_id, 'Hover', $field_keys );
 
 			/* Back link color setting End*/
-			$this->add_heading( $tab_id, __( 'Additional Text', 'woofunnels-aero-checkout' ) );
+			$this->add_heading( $tab_id, __( 'Additional Text', 'funnel-builder' ) );
 			$this->add_color( $tab_id, 'additional_text_color', array( '%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-payment-dec' ), '', '' );
 			$this->add_background_color( $tab_id, 'additional_bg_color', array( '%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-payment-dec' ), '', 'Background' );
 		}
@@ -777,7 +778,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 		}
 
 		private function payment_method_styling() {
-			$tab_id = $this->add_tab( __( 'Payment Methods', 'woofunnel-aero-checkout' ), 2 );
+			$tab_id = $this->add_tab( __( 'Payment Methods', 'funnel-builder' ), 2 );
 
 			$payment_method_typo = array(
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods p',
@@ -797,7 +798,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 			$this->add_typography( $tab_id, 'wfacp_form_payment_method_typo', implode( ',', $payment_method_typo ), '', '', array(), $font_side_default );
 
 			/* Color Setting  */
-			$this->add_heading( $tab_id, __( 'Colors', 'woofunnel-aero-checkout' ) );
+			$this->add_heading( $tab_id, __( 'Colors', 'funnel-builder' ) );
 
 			$payment_method_label_color = array(
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li label',
@@ -805,7 +806,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li label a',
 			);
 
-			$this->add_color( $tab_id, 'wfacp_form_payment_method_label_color', implode( ',', $payment_method_label_color ), __( 'Text Color', 'woofunnel-aero-checkout' ), '' );
+			$this->add_color( $tab_id, 'wfacp_form_payment_method_label_color', implode( ',', $payment_method_label_color ), __( 'Text Color', 'funnel-builder' ), '' );
 
 			$payment_method_description_color = array(
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box p',
@@ -813,18 +814,18 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box  p strong',
 
 			);
-			$this->add_color( $tab_id, 'wfacp_form_payment_method_description_color', implode( ',', $payment_method_description_color ), __( 'Description Color', 'woofunnel-aero-checkout' ), '' );
+			$this->add_color( $tab_id, 'wfacp_form_payment_method_description_color', implode( ',', $payment_method_description_color ), __( 'Description Color', 'funnel-builder' ), '' );
 
 			$payment_method_description_bg_color = array(
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box',
 			);
-			$this->add_background_color( $tab_id, 'wfacp_form_payment_method_description_bg_color', implode( ',', $payment_method_description_bg_color ), '#ffffff', __( 'Information Background Color', 'woofunnel-aero-checkout' ) );
+			$this->add_background_color( $tab_id, 'wfacp_form_payment_method_description_bg_color', implode( ',', $payment_method_description_bg_color ), '#ffffff', __( 'Information Background Color', 'funnel-builder' ) );
 		}
 
 
 		private function global_typography() {
 
-			$tab_id = $this->add_tab( __( 'Checkout Form', 'woofunnel-aero-checkout' ), 2 );
+			$tab_id = $this->add_tab( __( 'Checkout Form', 'funnel-builder' ), 2 );
 
 			/* Typography */
 
@@ -1036,7 +1037,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				'unit'    => 'px',
 			);
 			$this->add_typography( $tab_id, 'wfacp_font_family_typography', implode( ',', $globalSettingOptions ), '', '', array() );
-			$this->add_background_color( $tab_id, 'form_background_color', '%%order_class%% .wfacp_form_divi_container', '#ffffff', __( 'Form Background Color', 'woofunnels-aero-checkout' ) );
+			$this->add_background_color( $tab_id, 'form_background_color', '%%order_class%% .wfacp_form_divi_container', '#ffffff', __( 'Form Background Color', 'funnel-builder' ) );
 
 			/* Colors */
 
@@ -1055,7 +1056,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				'%%order_class%% #wfacp-e-form .wfacp_main_form .button.wfacp_next_page_button',
 			);
 
-			$this->add_background_color( $tab_id, 'default_primary_color', $primary_color, '', __( 'Primary Color', 'woofunnels-aero-checkout' ) );
+			$this->add_background_color( $tab_id, 'default_primary_color', $primary_color, '', __( 'Primary Color', 'funnel-builder' ) );
 
 			$fields_contentColor = array(
 				'%%order_class%% #wfacp-e-form .wfacp_main_form .woocommerce-form-login.login p',
@@ -1076,7 +1077,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				'%%order_class%% #wfacp-e-form .wfacp_main_form #payment .woocommerce-terms-and-conditions-wrapper .form-row',
 			);
 
-			$this->add_color( $tab_id, 'default_text_color', $fields_contentColor, __( 'Content Color', 'woofunnels-aero-checkout' ), '' );
+			$this->add_color( $tab_id, 'default_text_color', $fields_contentColor, __( 'Content Color', 'funnel-builder' ), '' );
 
 			$default_link_color_option = array(
 				'%%order_class%% #wfacp-e-form .woocommerce-form-login-toggle .woocommerce-info a',
@@ -1109,16 +1110,16 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 
 			$control_id = $this->add_controls_tabs( $tab_id, 'Form Link Color' );
 			$fields     = array();
-			$fields[]   = $this->add_color( $tab_id, 'default_link_color', $default_link_color_option, __( 'Link Color', 'woofunnels-aero-checkout' ) );
+			$fields[]   = $this->add_color( $tab_id, 'default_link_color', $default_link_color_option, __( 'Link Color', 'funnel-builder' ) );
 			$this->add_controls_tab( $control_id, 'Normal', $fields );
 			$fields   = array();
-			$fields[] = $this->add_color( $tab_id, 'default_link_hover_color', $default_link_hover_color_option, __( 'Link Hover Color', 'woofunnels-aero-checkout' ) );
+			$fields[] = $this->add_color( $tab_id, 'default_link_hover_color', $default_link_hover_color_option, __( 'Link Hover Color', 'funnel-builder' ) );
 			$this->add_controls_tab( $control_id, 'Hover', $fields );
 
-			$spacing_tab_id = $this->add_tab( __( 'Spacing', 'woofunnel-aero-checkout' ), 2 );
+			$spacing_tab_id = $this->add_tab( __( 'Spacing', 'funnel-builder' ), 2 );
 			$this->add_margin( $tab_id, 'form_margin', '%%order_class%% #wfacp-e-form .wfacp-form' );
 			$this->add_padding( $tab_id, 'form_padding', '%%order_class%% #wfacp-e-form .wfacp-form' );
-			$border_tab_id = $this->add_tab( __( 'Border', 'woofunnel-aero-checkout' ), 2 );
+			$border_tab_id = $this->add_tab( __( 'Border', 'funnel-builder' ), 2 );
 			$default       = array(
 				'top'    => 0,
 				'right'  => 0,
@@ -1143,10 +1144,10 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 
 
 		private function collapsible_order_summary() {
-			$tab_id = $this->add_tab( __( 'Collapsible Order Summary', 'woofunnels-aero-checkout' ), 2 );
+			$tab_id = $this->add_tab( __( 'Collapsible Order Summary', 'funnel-builder' ), 2 );
 
-			$this->add_background_color( $tab_id, 'collapsible_order_summary_bg_color', '%%order_class%% #wfacp-e-form .wfacp_mb_mini_cart_wrap .wfacp_mb_cart_accordian', '#f7f7f7', __( 'Collapsed Background', 'woofunnels-aero-checkout' ) );
-			$this->add_background_color( $tab_id, 'expanded_order_summary_bg_color', '%%order_class%% #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content', '#f7f7f7', __( 'Expanded Background', 'woofunnels-aero-checkout' ) );
+			$this->add_background_color( $tab_id, 'collapsible_order_summary_bg_color', '%%order_class%% #wfacp-e-form .wfacp_mb_mini_cart_wrap .wfacp_mb_cart_accordian', '#f7f7f7', __( 'Collapsed Background', 'funnel-builder' ) );
+			$this->add_background_color( $tab_id, 'expanded_order_summary_bg_color', '%%order_class%% #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content', '#f7f7f7', __( 'Expanded Background', 'funnel-builder' ) );
 			$this->add_color(
 				$tab_id,
 				'expanded_order_summary_link_color',
@@ -1154,7 +1155,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 					'%%order_class%% #wfacp-e-form .wfacp_show_icon_wrap a span',
 					'%%order_class%% #wfacp-e-form .wfacp_show_price_wrap span',
 				),
-				__( 'Text Color', 'woofunnels-aero-checkout' ),
+				__( 'Text Color', 'funnel-builder' ),
 				'#323232'
 			);
 			$default = '0px || 10px || 0px || 0px';
@@ -1313,7 +1314,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 		}
 
 		private function privacy_policy_styling() {
-			$tab_id = $this->add_tab( __( 'Privacy Policy', 'woofunnel-aero-checkout' ), 2 );
+			$tab_id = $this->add_tab( __( 'Privacy Policy', 'funnel-builder' ), 2 );
 
 			$default = array(
 				'range_settings' => array(
@@ -1352,7 +1353,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 		}
 
 		private function terms_policy_styling() {
-			$tab_id = $this->add_tab( __( 'Terms & Conditions', 'woofunnel-aero-checkout' ), 2 );
+			$tab_id = $this->add_tab( __( 'Terms & Conditions', 'funnel-builder' ), 2 );
 
 			$default = array(
 				'range_settings' => array(
@@ -1387,20 +1388,20 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 		/* Button Icon and Text  */
 		private function icon_text( $tab_id, $counter_step ) {
 
-			$this->add_text( $tab_id, 'step_' . $counter_step . '_text_after_place_order', __( ' Sub Text', 'woofunnel-aero-checkout' ), '', array(), 'wfacp_field_text_wrap' );
+			$this->add_text( $tab_id, 'step_' . $counter_step . '_text_after_place_order', __( ' Sub Text', 'funnel-builder' ), '', array(), 'wfacp_field_text_wrap' );
 			$icon_list = array(
-				'aero-e902' => __( 'Arrow 1', 'woofunnels-aero-checkout' ),
-				'aero-e906' => __( 'Arrow 2', 'woofunnels-aero-checkout' ),
-				'aero-e907' => __( 'Arrow 3', 'woofunnels-aero-checkout' ),
-				'aero-e908' => __( 'Checkmark', 'woofunnels-aero-checkout' ),
-				'aero-e905' => __( 'Cart 1', 'woofunnels-aero-checkout' ),
-				'aero-e901' => __( 'Lock 1', 'woofunnels-aero-checkout' ),
-				'aero-e900' => __( 'Lock 2', 'woofunnels-aero-checkout' ),
+				'aero-e902' => __( 'Arrow 1', 'funnel-builder' ),
+				'aero-e906' => __( 'Arrow 2', 'funnel-builder' ),
+				'aero-e907' => __( 'Arrow 3', 'funnel-builder' ),
+				'aero-e908' => __( 'Checkmark', 'funnel-builder' ),
+				'aero-e905' => __( 'Cart 1', 'funnel-builder' ),
+				'aero-e901' => __( 'Lock 1', 'funnel-builder' ),
+				'aero-e900' => __( 'Lock 2', 'funnel-builder' ),
 			);
 
 			$bwf_icon_list = apply_filters( 'bwf_icon_list', $icon_list );
 
-			$this->add_switcher( $tab_id, 'enable_icon_with_place_order_' . $counter_step, __( 'Enable Icon', 'woofunnels-aero-checkout' ), '' );
+			$this->add_switcher( $tab_id, 'enable_icon_with_place_order_' . $counter_step, __( 'Enable Icon', 'funnel-builder' ), '' );
 
 			$condition = array(
 				'enable_icon_with_place_order_' . $counter_step => 'on',
@@ -1413,7 +1414,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 
 		private function coupon_fields() {
 			$coupon_id = $this->add_tab( __( 'Coupon', 'woocommerce' ), 5 );
-			$this->add_text( $coupon_id, 'form_coupon_button_text', __( 'Coupon Button Text', 'woofunnels-aero-checkout' ), __( 'Apply', 'woocommerce' ) );
+			$this->add_text( $coupon_id, 'form_coupon_button_text', __( 'Coupon Button Text', 'funnel-builder' ), __( 'Apply', 'woocommerce' ) );
 		}
 
 		/* -------------------------------End--------------------------------------- */
@@ -1422,8 +1423,8 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 		/* ----------------Order Summary field Under Content Section----------------------- */
 
 		private function order_summary_fields() {
-			$tab_id = $this->add_tab( __( 'Order Summary', 'woofunnel-aero-checkout' ), 5 );
-			$this->add_switcher( $tab_id, 'order_summary_enable_product_image', __( 'Enable Image', 'woofunnels-aero-checkout' ), 'on' );
+			$tab_id = $this->add_tab( __( 'Order Summary', 'funnel-builder' ), 5 );
+			$this->add_switcher( $tab_id, 'order_summary_enable_product_image', __( 'Enable Image', 'funnel-builder' ), 'on' );
 
 			$this->price_strike_through_content_settings( $tab_id, 'order_summary_field' );
 		}

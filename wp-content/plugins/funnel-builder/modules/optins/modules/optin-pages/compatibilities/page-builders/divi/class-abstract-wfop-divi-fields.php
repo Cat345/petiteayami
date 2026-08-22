@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFOP_Divi_Field' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFOP_Divi_Field extends ET_Builder_Module {

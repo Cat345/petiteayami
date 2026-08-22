@@ -1151,7 +1151,7 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 
 						self::$product_options[ $key ] = array(
 							'value'               => $key,
-							'label'               => $product->data->get_name(),
+							'label'               => $product->name,
 							'images'              => $this->get_gallery_images( $product ),
 							'product_id'          => $product->data->get_id(),
 							'product_description' => $product->data->get_short_description(),

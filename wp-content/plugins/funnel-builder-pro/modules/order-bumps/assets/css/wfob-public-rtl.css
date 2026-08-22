@@ -392,4 +392,75 @@ body #wfob_wrap .wfob_wrapper input[type=checkbox]:after {
 
 }
 
+/*-------------------------------------------- Skin 12 (Join Flow 2026 card) RTL --------------------------------------------*/
+body #wfob_wrap .wfob_wrapper .wfob_bump.wfob_layout_12 .wfob_l12_card,
+body #wfob_wrap .wfob_wrapper .wfob_bump.wfob_layout_12 .wfob_title_wrap_center,
+body #wfob_wrap .wfob_wrapper .wfob_bump.wfob_layout_12 .wfob_skin_description,
+body #wfob_wrap .wfob_wrapper .wfob_bump.wfob_layout_12 .wfob_exclusive_content.wfob_exclusive_above_title {
+    text-align: center;
+}
+
+/* Skin 12's social-proof tooltip is a symmetric full-width popover anchored above the price/ADD
+   row (LTR wfob-public.css:2430). It needs NO directional mirroring — only its TEXT must read RTL,
+   which the direction:rtl on .wfob_l12_action_row (below) already provides. The old caret-era RTL
+   override (left:50% + translateX(-50%) translateY(-100%)) fought the LTR bottom:calc(100%+8px) and
+   shoved the popover off its anchor, hiding the copy on the frontend and misplacing it in the editor
+   preview. Re-assert the LTR full-width geometry so the popover sits correctly under RTL too. */
+body #wfob_wrap .wfob_wrapper .wfob_bump.wfob_layout_12 .wfob_add_to_cart_button .wfob-social-proof-tooltip {
+    top: auto;
+    bottom: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    transform: none;
+    width: auto;
+    max-width: none;
+    margin: 0;
+}
+
+/* Keep the Skin 12 card a centered vertical column for every image position under RTL.
+   .wfob_l12_card also carries .bwf_display_flex, which the generic img-position-right rule
+   (L155-161) flips to row-reverse; this layout_12-scoped override out-ranks that leak by
+   specificity and keeps the card from collapsing into a reversed horizontal row. */
+body #wfob_wrap .wfob_wrapper .wfob_bump.wfob_layout_12.wfob_img_position_left .wfob_l12_card,
+body #wfob_wrap .wfob_wrapper .wfob_bump.wfob_layout_12.wfob_img_position_center .wfob_l12_card,
+body #wfob_wrap .wfob_wrapper .wfob_bump.wfob_layout_12.wfob_img_position_top .wfob_l12_card,
+body #wfob_wrap .wfob_wrapper .wfob_bump.wfob_layout_12.wfob_img_position_right .wfob_l12_card {
+    flex-direction: column;
+}
+
+/* The backend checkout-builder preview renders inline with no dir="rtl" on #wfob_wrap, so
+   Skin 12's direction-relative flex keywords (align-self/justify-content: flex-start/flex-end)
+   don't resolve RTL there. Scope direction:rtl onto the card subtree so the image tile and the
+   price/add-to-cart row mirror in the editor; on the frontend html[dir=rtl] already cascades,
+   so this is redundant-but-harmless (it must not re-flip, hence no row-reverse override). */
+body #wfob_wrap .wfob_wrapper .wfob_bump.wfob_layout_12 .wfob_l12_card,
+body #wfob_wrap .wfob_wrapper .wfob_bump.wfob_layout_12 .wfob_l12_action_row {
+    direction: rtl;
+}
+
+/* Skin 12 also carries .bump_skin_type_4, so it inherits that skin's price-container
+   padding-right (L243/L265) which nudges the centered price off-center under RTL. Zero it
+   out — the LTR sheet already does the mirror of this with padding-left:0. */
+body #wfob_wrap .wfob_wrapper .wfob_bump.wfob_layout_12 .wfob_l12_price .wfob_price_container {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+/*-------------------------------------------- Skin 12 — multi-product slider RTL --------------------------------------------*/
+/* The drag-to-scroll track flips automatically with the page direction. The prev/next arrows are
+   positioned with physical left/right, so swap sides and flip the chevrons: under RTL "prev"
+   (toward the start of the track) is the RIGHT edge. public.js flips the scroll direction. */
+body #wfob_wrap .wfob_l12_slider .wfob_l12_nav_prev {
+    left: auto;
+    right: 2px;
+}
+
+body #wfob_wrap .wfob_l12_slider .wfob_l12_nav_next {
+    right: auto;
+    left: 2px;
+}
+
+body #wfob_wrap .wfob_l12_slider .wfob_l12_nav svg {
+    transform: scaleX(-1);
+}
 

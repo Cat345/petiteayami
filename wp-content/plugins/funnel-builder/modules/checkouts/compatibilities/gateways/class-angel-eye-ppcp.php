@@ -99,7 +99,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye_PPCP' ) ) {
 		public function print_html() {
 			?>
 			<p>
-				<strong><?php _e( 'Full Name', 'woofunnels-aero-checkout' ); ?></strong> <?php echo esc_html( WFACP_Core()->public->billing_details['first_name'] . ' ' . WFACP_Core()->public->billing_details['last_name'] ); ?>
+				<strong><?php _e( 'Full Name', 'funnel-builder' ); ?></strong> <?php echo esc_html( WFACP_Core()->public->billing_details['first_name'] . ' ' . WFACP_Core()->public->billing_details['last_name'] ); ?>
 			</p>
 			<?php
 		}
@@ -212,10 +212,22 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye_PPCP' ) ) {
 				$bodyClass = 'body #wfacp-e-form ';
 			}
 
-			$cssHtml  = '<style>';
-			$cssHtml .= $bodyClass . '#wfacp_smart_buttons .wfacp_smart_button_inner #angelleye_ppcp_checkout_top{    height: auto;line-height: 1;}';
-			$cssHtml .= '</style>';
-			echo $cssHtml;
+			$cssHtml = $bodyClass . '#wfacp_smart_buttons .wfacp_smart_button_inner #angelleye_ppcp_checkout_top{    height: auto;line-height: 1;}';
+
+			// Restore full-width normalization for the AngelEye PPCP button chain. The mobile-only blanket
+			// rule that forced every descendant of .wfacp_smart_button_container to width:100% was removed
+			// (FB#9228 regression window), which collapsed the PayPal/Venmo/Pay-Later button to its intrinsic
+			// SDK width. Re-add it scoped to the PPCP chain only — never a blanket `*` selector — so PayPal
+			// SVG logos and other gateways sharing the wrapper stay untouched. Leading space makes this a
+			// proper descendant selector for both pre_built (`body`) and standard (`body #wfacp-e-form `) prefixes.
+			$ppcpChain = $bodyClass . ' #wfacp_smart_buttons .wfacp_smart_button_container ';
+			$cssHtml  .= $ppcpChain . '.angelleye_ppcp-button-container,';
+			$cssHtml  .= $ppcpChain . '.angelleye_ppcp-button-container .paypal-buttons,';
+			$cssHtml  .= $ppcpChain . '.zoid-outlet{width:100% !important;}';
+
+			// Static selector-only CSS (no `content:''` rules), so esc_html() is safe here and
+			// does not decode-break any declarations while satisfying the output-escaping gate.
+			echo '<style>' . esc_html( $cssHtml ) . '</style>';
 		}
 	}
 

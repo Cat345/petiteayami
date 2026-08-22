@@ -112,6 +112,14 @@ if ( ! class_exists( 'WFACP_WC_Order_Pay' ) ) {
 			$cssHtml .= $bodyClass . '.woocommerce ul.order_details li:nth-child(2n) {border: none;padding: 0 0 0 15px;    text-align: right;}';
 			$cssHtml .= $bodyClass . '.woocommerce ul.order_details ul.order_details{margin: 0;}';
 			$cssHtml .= '}';
+
+			// The Elementor page template still renders its mini-cart summary widget
+			// (wfacp_form_summary) on the order-pay page, but order-pay has no cart
+			// session so get_mini_cart_widget() outputs nothing — leaving just the
+			// widget's 1px spacer inside an empty styled box. The real summary here is
+			// the order-pay form's own #order_review panel (get_order_pay_summary()),
+			// so hide the empty mini-cart widget on order-pay.
+			$cssHtml .= 'body.woocommerce-order-pay .elementor-widget-wfacp_form_summary{display:none !important;}';
 			$cssHtml .= '</style>';
 
 			echo $cssHtml;

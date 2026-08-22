@@ -247,11 +247,12 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 
 
 		public static function subscription_summary() {
+			$result = '';
 			if ( self::$pro instanceof WC_Product_Subscription || self::$pro instanceof WC_Product_Subscription_Variation ) {
-				return WFOB_Common::subscription_product_string( self::$pro, self::$price_data, self::$cart_item, self::$cart_item_key );
-			} else {
-				return '';
+				$result = WFOB_Common::subscription_product_string( self::$pro, self::$price_data, self::$cart_item, self::$cart_item_key );
 			}
+
+			return apply_filters( 'wfob_merge_tag_subscription_summary', $result, self::$pro, self::$cart_item, self::$cart_item_key, self::$product_data );
 		}
 
 
@@ -270,7 +271,7 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 					$product_name = self::$pro->get_name();
 				}
 
-				return apply_filters( 'wfob_product_name_merge_tags', $product_name, self::$pro, self::$cart_item_key );
+				return apply_filters( 'wfob_product_name_merge_tags', $product_name, self::$pro, self::$cart_item_key, self::$product_data );
 			}
 
 			return '';
@@ -287,12 +288,33 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 					$actual_quantity = ( self::$cart_item['quantity'] / self::$product_data['quantity'] );
 				}
 
+				// Derive step from WooCommerce's quantity-input filters so decimal-quantity plugins apply; defaults to 1.
+				$wfob_qty_step = apply_filters( 'woocommerce_quantity_input_step', 1, self::$pro );
+				$wfob_qty_args = apply_filters(
+					'woocommerce_quantity_input_args',
+					array(
+						'min_value' => 0,
+						'max_value' => '',
+						'step'      => $wfob_qty_step,
+					),
+					self::$pro
+				);
+				if ( is_array( $wfob_qty_args ) && isset( $wfob_qty_args['step'] ) ) {
+					$wfob_qty_step = $wfob_qty_args['step'];
+				}
+				if ( 'any' !== $wfob_qty_step ) {
+					$wfob_qty_step = is_numeric( $wfob_qty_step ) ? (float) $wfob_qty_step : 1;
+					if ( $wfob_qty_step <= 0 ) {
+						$wfob_qty_step = 1;
+					}
+				}
+
 				ob_start();
 				?>
 				<div class="wfob_quantity q_h">
 					<div class="wfob_qty_wrap">
 						<div class="value-button wfob_decrease_item"></div>
-						<input type="number" class="wfob_quantity_increment" min="0" value="<?php echo absint( $actual_quantity ); ?>">
+						<input type="number" class="wfob_quantity_increment" step="<?php echo esc_attr( $wfob_qty_step ); ?>" min="0" value="<?php echo esc_attr( wc_stock_amount( $actual_quantity ) ); ?>">
 						<div class="value-button wfob_increase_item"></div>
 					</div>
 				</div>

@@ -203,11 +203,11 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 		public function woofunnels_handle_db_upgrade_actions() {
 			if ( isset( $_GET['_bwf_remove_updated_db_notice'] ) && isset( $_GET['_bwf_updated_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_bwf_updated_nonce'] ) ), '_bwf_hide_updated_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				if ( ! current_user_can( 'manage_woocommerce' ) ) {
-					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'funnel-builder' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				$hide_notice = sanitize_text_field( wp_unslash( $_GET['_bwf_remove_updated_db_notice'] ) );
@@ -219,11 +219,11 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 
 			if ( isset( $_GET['bwf_update_db'] ) && isset( $_GET['_bwf_update_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_bwf_update_nonce'] ) ), '_bwf_start_update_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				if ( ! current_user_can( 'manage_woocommerce' ) ) {
-					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'funnel-builder' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				$update_db = sanitize_text_field( wp_unslash( $_GET['bwf_update_db'] ) );
@@ -235,11 +235,11 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 
 			if ( isset( $_GET['_bwf_remove_declined_notice'] ) && isset( $_GET['_bwf_declined_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_bwf_declined_nonce'] ) ), '_bwf_hide_declined_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				if ( ! current_user_can( 'manage_woocommerce' ) ) {
-					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'funnel-builder' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				$hide_notice = sanitize_text_field( wp_unslash( $_GET['_bwf_remove_declined_notice'] ) );
@@ -282,8 +282,8 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
                     </div>
 
                     <div class="bwf-message-content">
-                        <strong><?php esc_html_e( 'Indexing of orders has started', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></strong>
-                        <p><?php esc_html_e( 'It may take sometime to finish the process. We will update this notice once the process completes.', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
+                        <strong><?php esc_html_e( 'Indexing of orders has started', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></strong>
+                        <p><?php esc_html_e( 'It may take sometime to finish the process. We will update this notice once the process completes.', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
                     </div>
                 </div>
 				<?php
@@ -295,12 +295,12 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
                     </div>
 
                     <div class="bwf-message-content">
-                        <strong><?php esc_html_e( 'Success', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></strong>
-                        <p><?php esc_html_e( 'Order indexing completed successfully.', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></p>
+                        <strong><?php esc_html_e( 'Success', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></strong>
+                        <p><?php esc_html_e( 'Order indexing completed successfully.', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></p>
                     </div>
 
                     <div class="bwf-message-action">
-                        <a class="button-secondary" href="<?php echo esc_url( wp_nonce_url( add_query_arg( '_bwf_remove_updated_db_notice', 'yes' ), '_bwf_hide_updated_nonce', '_bwf_updated_nonce' ) ); ?>"><?php esc_html_e( 'Dismiss', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
+                        <a class="button-secondary" href="<?php echo esc_url( wp_nonce_url( add_query_arg( '_bwf_remove_updated_db_notice', 'yes' ), '_bwf_hide_updated_nonce', '_bwf_updated_nonce' ) ); ?>"><?php esc_html_e( 'Dismiss', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
                     </div>
                 </div>
 				<?php
@@ -313,13 +313,13 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
                     </div>
 
                     <div class="bwf-message-content">
-                        <strong><?php esc_html_e( 'FunnelKit Notice', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></strong>
-                        <p><?php echo sprintf( wp_kses_post( __( 'Unable to complete indexing of orders. Please <a target="_blank" href="%s">contact support</a> to get the issue resolved.', 'woofunnels' ) ), esc_url( 'https://funnelkit.com/support/' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment ?></p>
+                        <strong><?php esc_html_e( 'FunnelKit Notice', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></strong>
+                        <p><?php echo sprintf( wp_kses_post( __( 'Unable to complete indexing of orders. Please <a target="_blank" href="%s">contact support</a> to get the issue resolved.', 'funnel-builder' ) ), esc_url( 'https://funnelkit.com/support/' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment ?></p>
                     </div>
 
                     <div class="bwf-message-action">
-                        <a class="button-secondary" target="_blank" href="<?php echo esc_url( 'https://funnelkit.com/support/' ); ?>"><?php esc_html_e( 'Contact Support', 'woofunnels' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
-                        <a class="button-secondary" href="<?php echo esc_url( wp_nonce_url( add_query_arg( '_bwf_remove_declined_notice', 'yes' ), '_bwf_hide_declined_nonce', '_bwf_declined_nonce' ) ); ?>"><?php esc_html_e( 'Dismiss', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
+                        <a class="button-secondary" target="_blank" href="<?php echo esc_url( 'https://funnelkit.com/support/' ); ?>"><?php esc_html_e( 'Contact Support', 'funnel-builder' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
+                        <a class="button-secondary" href="<?php echo esc_url( wp_nonce_url( add_query_arg( '_bwf_remove_declined_notice', 'yes' ), '_bwf_hide_declined_nonce', '_bwf_declined_nonce' ) ); ?>"><?php esc_html_e( 'Dismiss', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
                     </div>
                 </div>
 				<?php
@@ -381,6 +381,10 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 		 * @see woofunnels_maybe_update_customer_database()
 		 */
 		public function woofunnels_init_background_updater() {
+			/** Background-process hooks fire only via admin-ajax, cron healthcheck or CLI — skip loading on frontend views. All consumers null-check $this->updater. */
+			if ( ! BWF_Kernel::is_background_updater_context() ) {
+				return;
+			}
 			if ( class_exists( 'WooFunnels_Background_Updater' ) ) {
 				$this->updater = new WooFunnels_Background_Updater();
 			}
@@ -391,6 +395,10 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 		 * @see woofunnels_maybe_update_customer_database()
 		 */
 		public function woofunnels_init_background_contacts_updater() {
+			/** Same context gate as woofunnels_init_background_updater() */
+			if ( ! BWF_Kernel::is_background_updater_context() ) {
+				return;
+			}
 			if ( class_exists( 'WooFunnels_Contacts_Background_Updater' ) ) {
 				$this->contacts_updater = new WooFunnels_Contacts_Background_Updater();
 			}
@@ -856,36 +864,36 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 				$bwf_db_upgrade = '5';
 			}
 			if ( '5' !== $bwf_db_upgrade && '4' !== $bwf_db_upgrade && $get_threshold_order > 0 ) {
-				$remaining_text = sprintf( __( 'This store has <strong>%s orders</strong> to index.', 'woofunnels' ), $get_threshold_order ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
+				$remaining_text = sprintf( __( 'This store has <strong>%s orders</strong> to index.', 'funnel-builder' ), $get_threshold_order ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
 			}
 
 			if ( true === apply_filters( 'bwf_needs_order_indexing', false ) ) {
 				?>
                 <tr>
                     <th>
-                        <strong class="name"><?php esc_html_e( 'Index Past Orders', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></strong>
-                        <p class="description"><?php echo wp_kses_post( sprintf( 'This tool will scan all the previous orders and create an optimized index to run efficient queries. %s', $remaining_text ), 'woofunnels' ); ?></p>
+                        <strong class="name"><?php esc_html_e( 'Index Past Orders', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></strong>
+                        <p class="description"><?php echo wp_kses_post( sprintf( /* translators: %s: remaining order count */ __( 'This tool will scan all the previous orders and create an optimized index to run efficient queries. %s', 'funnel-builder' ), $remaining_text ) ); ?></p>
 						<?php if ( '1' === $bwf_db_upgrade || '6' === $bwf_db_upgrade ) { ?>
-                            <span style="width:100%; color: red;"><?php esc_html_e( 'Unable to complete indexing of orders.', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></span><br/>
-							<?php esc_html_e( 'Please', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
-                            <a target="_blank" href="<?php echo esc_url( 'https://funnelkit.com/support/' ); ?>"><?php esc_html_e( 'contact support', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a><?php esc_html_e( ' to get the issue resolved.', 'woofunnels' ); ?>
+                            <span style="width:100%; color: red;"><?php esc_html_e( 'Unable to complete indexing of orders.', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></span><br/>
+							<?php esc_html_e( 'Please', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
+                            <a target="_blank" href="<?php echo esc_url( 'https://funnelkit.com/support/' ); ?>"><?php esc_html_e( 'contact support', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a><?php esc_html_e( ' to get the issue resolved.', 'funnel-builder' ); ?>
                             <br/><br/>
 						<?php } ?>
-                        <a href="https://funnelkit.com/docs/upstroke/miscellaneous/index-past-order/"><?php esc_html_e( 'Learn more about this process', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
+                        <a href="https://funnelkit.com/docs/upstroke/miscellaneous/index-past-order/"><?php esc_html_e( 'Learn more about this process', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
                     </th>
                     <td class="run-tool">
 						<?php if ( '3' === $bwf_db_upgrade ) { ?>
-                            <a href="javascript:void(0);" class="button button-large disabled"><?php esc_html_e( 'Running', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
+                            <a href="javascript:void(0);" class="button button-large disabled"><?php esc_html_e( 'Running', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
 						<?php } elseif ( '4' === $bwf_db_upgrade || '5' === $bwf_db_upgrade ) { ?>
-                            <a href="javascript:void(0);" class="button button-large disabled"><?php esc_html_e( 'Completed', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
+                            <a href="javascript:void(0);" class="button button-large disabled"><?php esc_html_e( 'Completed', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
 
 						<?php } elseif ( '1' === $bwf_db_upgrade || '6' === $bwf_db_upgrade ) { ?>
-                            <a href="javascript:void(0);" class="button button-large disabled"><?php esc_html_e( 'Start', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
+                            <a href="javascript:void(0);" class="button button-large disabled"><?php esc_html_e( 'Start', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
 							<?php
 						} else {
 							$start_url = esc_url( wp_nonce_url( add_query_arg( 'bwf_update_db', 'yes' ), '_bwf_start_update_nonce', '_bwf_update_nonce' ) );
 							?>
-                            <a class="button button-large <?php echo esc_attr(( $get_threshold_order > 0 ) ? '' : 'disabled'); ?>" href="<?php echo ( $get_threshold_order > 0 ) ? esc_url($start_url) : 'javascript:void(0);'; ?>"><?php esc_html_e( 'Start', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
+                            <a class="button button-large <?php echo esc_attr(( $get_threshold_order > 0 ) ? '' : 'disabled'); ?>" href="<?php echo ( $get_threshold_order > 0 ) ? esc_url($start_url) : 'javascript:void(0);'; ?>"><?php esc_html_e( 'Start', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></a>
 						<?php } ?>
                     </td>
                 </tr>
@@ -1198,11 +1206,11 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 
 			if ( isset( $_GET['bwf_update_db'] ) && isset( $_GET['_bwf_update_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_bwf_update_nonce'] ) ), '_bwf_start_update_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				if ( ! current_user_can( 'manage_woocommerce' ) ) {
-					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'woofunnels' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'You don&#8217;t have permission to do this.', 'funnel-builder' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 
 				$bwf_update_db = sanitize_text_field( wp_unslash( $_GET['bwf_update_db'] ) );
@@ -1293,10 +1301,16 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 		}
 
 		public function maybe_re_dispatch_background_process() {
+			if ( is_null( $this->updater ) ) {
+				return;
+			}
 			$this->updater->maybe_re_dispatch_background_process();
 		}
 
 		public function maybe_dispatch_contact_table_indexing() {
+			if ( is_null( $this->contacts_updater ) ) {
+				return;
+			}
 			$task_list = array(
 				'bwf_contacts_v1_0_init_db_setup',
 			);
@@ -1341,6 +1355,16 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 		}
 
 		public function maybe_create_db_tables() {
+			/**
+			 * Schema reconciliation (dbDelta) belongs in admin/cron/CLI/REST — not on every frontend
+			 * page view. Tables are created during activation (an admin request) and reconciled on the
+			 * next worker request after any upgrade (cron/AS worker run at least per minute), so a plain
+			 * frontend view can safely assume they already exist. Mirrors BWF_Kernel::get_eager_classes(),
+			 * which drops WooFunnels_DB_Tables (the schema provider) on the same non-worker requests.
+			 */
+			if ( class_exists( 'BWF_Kernel' ) && ! BWF_Kernel::is_backend_context() ) {
+				return;
+			}
 			WooFunnels_Create_DB_Tables::get_instance()->create();
 		}
 

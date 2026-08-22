@@ -4,13 +4,13 @@
  * Plugin Name: Advanced Coupons for WooCommerce Free
  * Plugin URI: https://advancedcouponsplugin.com
  * Description: Advanced Coupons for WooCommerce (Free Version) gives WooCommerce store owners extra coupon features so they can market their stores better.
- * Version: 4.7.3
+ * Version: 4.7.5
  * Author: Rymera Web Co
  * Author URI: https://rymera.com.au
  * Requires at least: 5.9
- * Tested up to: 7.0
+ * Tested up to: 7.0.2
  * WC requires at least: 4.0
- * WC tested up to: 10.7.0
+ * WC tested up to: 10.9.4
  *
  * Text Domain: advanced-coupons-for-woocommerce-free
  * Domain Path: /languages/
@@ -29,6 +29,7 @@ use ACFWF\Abstracts\Abstract_Main_Plugin_Class;
 use ACFWF\Helpers\Helper_Functions;
 use ACFWF\Helpers\Plugin_Constants;
 use ACFWF\Interfaces\Model_Interface;
+use ACFWF\Models\Abilities;
 use ACFWF\Models\Admin_App;
 use ACFWF\Models\BOGO\Admin as BOGO_Admin;
 use ACFWF\Models\BOGO\Frontend as BOGO_Frontend;
@@ -36,12 +37,14 @@ use ACFWF\Models\BOGO_Deals; // deprecated.
 use ACFWF\Models\Bootstrap;
 use ACFWF\Models\General;
 use ACFWF\Models\Cart_Conditions;
+use ACFWF\Models\Discount_Application;
 use ACFWF\Models\Scheduler;
 use ACFWF\Models\Editor_Blocks;
 use ACFWF\Models\Edit_Coupon;
 use ACFWF\Models\Help_Links;
 use ACFWF\Models\Notices;
 use ACFWF\Models\Notices\SaveTo_Wishlist_Notice;
+use ACFWF\Models\Notices\StoreAgent_Notice;
 use ACFWF\Models\Order_Details;
 use ACFWF\Models\Role_Restrictions;
 use ACFWF\Models\Emails;
@@ -423,6 +426,7 @@ class ACFWF extends Abstract_Main_Plugin_Class { // phpcs:ignore
         $url_coupons             = URL_Coupons::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $role_restriction        = Role_Restrictions::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $cart_conditions         = Cart_Conditions::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        $discount_application    = Discount_Application::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $scheduler               = Scheduler::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $plugin_installer        = Plugin_Installer::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $admin_app               = Admin_App::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions, $plugin_installer );
@@ -447,8 +451,11 @@ class ACFWF extends Abstract_Main_Plugin_Class { // phpcs:ignore
         ACFWF\Models\Coupon_Templates::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         ACFWF\Models\Send_Coupon::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         SaveTo_Wishlist_Notice::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        StoreAgent_Notice::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
 
         General::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+
+        Abilities::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
 
         $store_credits_calculate = Store_Credits_Calculate::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         Store_Credits_Registry::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );

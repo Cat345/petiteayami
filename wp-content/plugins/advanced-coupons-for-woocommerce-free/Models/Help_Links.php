@@ -130,10 +130,11 @@ class Help_Links implements Model_Interface, Initializable_Interface {
         $error_texts = array(
             __( 'There was an error trying to load the content.', 'advanced-coupons-for-woocommerce-free' ),
             sprintf(
-                /* Translators: %1$s: link to WC status page. %2$s: 'cURL' feature (non-translatable). */
-                __( 'Please make sure <a href="%1$s"><strong>%2$s</strong> is working on your server</a>.', 'advanced-coupons-for-woocommerce-free' ),
-                admin_url( 'admin.php?page=wc-status' ),
-                'cURL'
+                /* Translators: %1$s: opening anchor tag linking to the WC status page. %2$s: 'cURL' feature name (non-translatable) wrapped in bold. %3$s: closing anchor tag. */
+                __( 'Please make sure %1$s%2$s is working on your server%3$s.', 'advanced-coupons-for-woocommerce-free' ),
+                '<a href="' . esc_url( admin_url( 'admin.php?page=wc-status' ) ) . '">',
+                '<strong>cURL</strong>',
+                '</a>'
             ),
             __( 'Refresh the page and try again.', 'advanced-coupons-for-woocommerce-free' ),
             __( 'An administrator or shop manager account is required to do this action.', 'advanced-coupons-for-woocommerce-free' ),

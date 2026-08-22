@@ -76,7 +76,7 @@ if ( ! class_exists( 'WFACP_Sg_Checkout_Location_Picker_For_WC' ) ) {
 
 			new WFACP_Add_Address_Field( 'sg_checkout_location_picker', array(
 				'type'     => 'wfacp_html',
-				'label'    => __( 'SG Checkout Location Picker', 'woofunnels-aero-checkout' ),
+				'label'    => __( 'SG Checkout Location Picker', 'funnel-builder' ),
 				'cssready' => [ 'wfacp-col-left-third' ],
 				'class'    => array( 'form-row-third first', 'wfacp-col-full' ),
 				'required' => false,
@@ -93,7 +93,7 @@ if ( ! class_exists( 'WFACP_Sg_Checkout_Location_Picker_For_WC' ) ) {
 
 			new WFACP_Add_Address_Field( 'sg_checkout_location_picker', array(
 				'type'  => 'wfacp_html',
-				'label' => __( 'SG Checkout Location Picker', 'woofunnels-aero-checkout' ),
+				'label' => __( 'SG Checkout Location Picker', 'funnel-builder' ),
 
 				'cssready' => [ 'wfacp-col-left-third' ],
 				'class'    => array( 'form-row-third first', 'wfacp-col-full' ),

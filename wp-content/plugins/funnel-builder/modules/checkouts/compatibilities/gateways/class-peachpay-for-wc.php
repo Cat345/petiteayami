@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /*
  * PeachPay for WooCommerce | One-Click Checkout by PeachPay, Inc. v(1.54.5)

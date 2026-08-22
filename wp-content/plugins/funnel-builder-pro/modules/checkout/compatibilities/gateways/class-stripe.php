@@ -37,6 +37,16 @@ if ( ! class_exists( 'WFACP_Stripe_GPAY_AND_APAY' ) ) {
 				return $buttons;
 			}
 
+			// Honor the Stripe gateway's own "Display Locations" (WC Stripe >= 5.5.0):
+			// if the merchant removed "Checkout" from Stripe's locations, do not add
+			// Stripe's own button key — otherwise an empty Stripe container is emitted
+			// that other gateways' Express Checkout buttons should not be collapsed for.
+			// An ABSENT key means the location setting was never configured and must
+			// default to "show on checkout", matching WC Stripe's get_button_locations().
+			if ( defined( 'WC_STRIPE_VERSION' ) && version_compare( WC_STRIPE_VERSION, '5.5.0', '>=' ) && array_key_exists( 'payment_request_button_locations', $settings ) && ! in_array( 'checkout', (array) $settings['payment_request_button_locations'], true ) ) {
+				return $buttons;
+			}
+
 			if ( defined( 'WC_STRIPE_VERSION' ) && version_compare( WC_STRIPE_VERSION, '5.5.0', '<' ) ) {
 				add_filter( 'wc_stripe_show_payment_request_on_checkout', '__return_true' );
 			}

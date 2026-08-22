@@ -56,9 +56,6 @@
             // Update product image if variation has one
             wfacp_inline_ps.update_image($row, matching_variation);
 
-            // Update price display
-            wfacp_inline_ps.update_price($row, matching_variation);
-
             // Trigger cart update
             wfacp_inline_ps.update_cart($row, item_key, matching_variation);
         },
@@ -102,10 +99,12 @@
             var field_type = $row.find('[name=wfacp_product_choosen]').attr('type');
             var variation_id = variation.variation_id;
             var selected_attrs = variation.attributes;
+            var row_qty = parseInt($row.find('input.wfacp_product_switcher_quantity').val(), 10);
+            row_qty = Number.isNaN(row_qty) ? 1 : row_qty;
 
             var vars_data = {
                 'variation_id': variation_id,
-                'quantity': 1,
+                'quantity': row_qty,
                 'attributes': selected_attrs
             };
 
@@ -114,7 +113,7 @@
                 var data = {};
                 data.wfacp_id = $('._wfacp_post_id').val();
                 data.cart_key = cart_key;
-                data.quantity = 1;
+                data.quantity = row_qty;
                 data.variation_id = 0;
 
                 if (typeof window.set_variation_data === 'function') {
@@ -136,7 +135,7 @@
                     var data = {};
                     data.wfacp_id = $('._wfacp_post_id').val();
                     data.new_item = item_key;
-                    data.quantity = 1;
+                    data.quantity = row_qty;
                     data.variation_id = 0;
                     data.field_type = field_type;
 

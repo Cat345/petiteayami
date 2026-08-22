@@ -216,10 +216,15 @@ if ( ! class_exists( 'WCS_WFOCU_PayPal_Standard_IPN_Handler' ) ) {
 
 			$is_renewal_sign_up_after_failure = false;
 
-			// If the invoice ID doesn't match the default invoice ID and contains the string '-wcsfrp-', the IPN is for a subscription payment to fix up a failed payment
-			if ( in_array( $transaction_details['txn_type'], array( 'recurring_payment_profile_created', 'recurring_payment' ) ) && false !== strpos( $transaction_details['invoice'], '-wcsfrp-' ) ) {
+			// PayPal only echoes back 'invoice' when the merchant supplied one, and recurring_payment
+			// IPNs frequently omit it. Fall back to an empty string so the strpos() checks below stay
+			// false instead of warning (and, on PHP 9, throwing).
+			$invoice = isset( $transaction_details['invoice'] ) ? $transaction_details['invoice'] : '';
 
-				$renewal_order = wc_get_order( substr( $transaction_details['invoice'], strrpos( $transaction_details['invoice'], '-' ) + 1 ) );
+			// If the invoice ID doesn't match the default invoice ID and contains the string '-wcsfrp-', the IPN is for a subscription payment to fix up a failed payment
+			if ( in_array( $transaction_details['txn_type'], array( 'recurring_payment_profile_created', 'recurring_payment' ) ) && false !== strpos( $invoice, '-wcsfrp-' ) ) {
+
+				$renewal_order = wc_get_order( substr( $invoice, strrpos( $invoice, '-' ) + 1 ) );
 
 				// check if the failed signup has been previously recorded
 				if ( wcs_get_objects_property( $renewal_order, 'id' ) != WooFunnels_UpStroke_PowerPack::get_order_meta( $subscription, '_paypal_failed_sign_up_recorded' ) ) {
@@ -228,7 +233,7 @@ if ( ! class_exists( 'WCS_WFOCU_PayPal_Standard_IPN_Handler' ) ) {
 			}
 
 			// If the invoice ID doesn't match the default invoice ID and contains the string '-wcscpm-', the IPN is for a subscription payment method change
-			if ( 'recurring_payment_profile_created' == $transaction_details['txn_type'] && false !== strpos( $transaction_details['invoice'], '-wcscpm-' ) ) {
+			if ( 'recurring_payment_profile_created' == $transaction_details['txn_type'] && false !== strpos( $invoice, '-wcscpm-' ) ) {
 				$is_payment_change = true;
 			} else {
 				$is_payment_change = false;

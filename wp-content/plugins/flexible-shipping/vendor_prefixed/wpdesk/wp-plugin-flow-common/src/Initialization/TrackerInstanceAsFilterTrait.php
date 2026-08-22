@@ -2,7 +2,7 @@
 
 namespace FSVendor\WPDesk\Plugin\Flow\Initialization\Simple;
 
-use FSVendor\WPDesk\Tracker\OptInOptOut;
+use FSVendor\WPDesk\Tracker\Tracker;
 /**
  * Trait helps with tracker initialization
  *
@@ -10,63 +10,24 @@ use FSVendor\WPDesk\Tracker\OptInOptOut;
  */
 trait TrackerInstanceAsFilterTrait
 {
-    /** @var \WPDesk_Tracker_Interface */
-    private static $tracker_instance;
     /**
-     * Returns filter action name for tracker instance
+     * Register tracker hooks without constructing its payload providers.
      *
-     * @return string
-     */
-    private function get_tracker_action_name()
-    {
-        return 'wpdesk_tracker_instance';
-    }
-    /**
-     * Returns version of the tracker. Inc when trackker is changed and should be instantiated fist.
-     *
-     * @return int
-     */
-    private function get_tracker_version()
-    {
-        return 2;
-    }
-    /**
-     * @return \WPDesk_Tracker_Interface
-     */
-    private function get_tracker_instance()
-    {
-        return apply_filters($this->get_tracker_action_name(), null);
-    }
-    /**
-     * Prepare tracker to be instantiated using wpdesk_tracker_instance filter
-     *
-     * @return void|\WPDesk_Tracker
+     * @return void
      */
     private function prepare_tracker_action()
     {
-        class_exists(\WPDesk_Tracker_Factory::class);
-        //autoload this class
-        add_filter($this->get_tracker_action_name(), function ($tracker_instance) {
-            if (is_object($tracker_instance)) {
-                return $tracker_instance;
-            }
-            if (is_object(self::$tracker_instance)) {
-                return self::$tracker_instance;
-            }
-            if (apply_filters('wpdesk_can_start_tracker', \true, $this->plugin_info)) {
-                $tracker_factory = new \FSVendor\WPDesk_Tracker_Factory_Prefixed();
-                self::$tracker_instance = $tracker_factory->create_tracker(basename($this->plugin_info->get_plugin_file_name()));
-                do_action('wpdesk_tracker_started', self::$tracker_instance, $this->plugin_info);
-                return self::$tracker_instance;
-            }
-        }, 10 - $this->get_tracker_version());
-    }
-    private function register_tracker_ui_extensions()
-    {
+        if (!apply_filters('wpdesk_can_start_tracker', \true, $this->plugin_info)) {
+            return;
+        }
         $shops = $this->plugin_info->get_plugin_shops();
         $shop_url = $shops[get_locale()] ?? $shops['default'] ?? 'https://wpdesk.net';
-        $tracker_ui = new OptInOptOut($this->plugin_info->get_plugin_file_name(), $this->plugin_info->get_plugin_slug(), $shop_url, $this->plugin_info->get_plugin_name());
-        $tracker_ui->create_objects();
-        $tracker_ui->hooks();
+        $plugin_file = rtrim($this->plugin_info->get_plugin_dir(), '/\\') . '/' . basename($this->plugin_info->get_plugin_file_name());
+        add_action('wpdesk/tracker/plugin_started', function ($tracker, $plugin_basename, $plugin_slug) {
+            if ($plugin_basename === $this->plugin_info->get_plugin_file_name() && $plugin_slug === $this->plugin_info->get_plugin_slug()) {
+                do_action('wpdesk_tracker_started', $tracker, $this->plugin_info);
+            }
+        }, 10, 3);
+        Tracker::register_plugin($plugin_file, $this->plugin_info->get_plugin_slug(), $shop_url, $this->plugin_info->get_plugin_name());
     }
 }

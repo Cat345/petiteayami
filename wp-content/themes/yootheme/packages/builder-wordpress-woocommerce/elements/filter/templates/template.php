@@ -22,7 +22,10 @@ $filters['attributes'] = [];
 if ($props['show_attribute_filters']) {
     foreach (wc_get_attribute_taxonomies() as $tax) {
         if (taxonomy_exists(wc_attribute_taxonomy_name($tax->attribute_name))) {
-            $widget = Helper::renderLayeredNavWidget(['attribute' => $tax->attribute_name]);
+            $widget = Helper::renderLayeredNavWidget([
+                'attribute' => $tax->attribute_name,
+                'query_type' => $props['filter_attribute_query_type'],
+            ]);
             if ($widget) {
                 $filters['attributes'][$tax->attribute_label] = "<div class=\"woocommerce widget_layered_nav woocommerce-widget-layered-nav uk-panel uk-text-nowrap\">{$widget}</div>";
             }

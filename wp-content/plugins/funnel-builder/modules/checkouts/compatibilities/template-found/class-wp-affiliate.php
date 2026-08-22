@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 add_action( 'wfacp_after_checkout_page_found', function () {
 	if ( ! class_exists( 'Affiliate_WP' ) ) {

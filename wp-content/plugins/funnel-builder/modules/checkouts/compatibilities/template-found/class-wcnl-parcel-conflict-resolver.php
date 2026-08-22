@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_wcnl_parcel_conflict_resolver' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_wcnl_parcel_conflict_resolver {

@@ -55,7 +55,7 @@ if ( isset( $data['advance_setting']['rbox_border_type'] ) && $data['advance_set
 						?>
 
 						<h2 class="wfacp-sidebar-text loop_head_sec wfacp_section_title  <?php echo $align_text . ' ' . $font_weight; ?>">
-							<?php echo esc_html( $val['mwidget_heading'] ); ?>
+							<?php echo wp_kses( $val['mwidget_heading'], array( 'br' => array(), 'span' => array( 'class' => array(), 'style' => array() ), 'b' => array(), 'strong' => array(), 'i' => array(), 'em' => array() ) ); ?>
 						</h2>
 						<?php
 					}

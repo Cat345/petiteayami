@@ -11,7 +11,8 @@ if (!\class_exists('FSVendor\WPDesk_Tracker_Sender_Exception_WpError')) {
         public function __construct($message, \WP_Error $wp_error)
         {
             $message = $message . ' WP_Error: ' . $wp_error->get_error_message();
-            parent::__construct($message, $wp_error->get_error_code());
+            $code = $wp_error->get_error_code();
+            parent::__construct($message, \is_int($code) ? $code : 0);
         }
     }
 }

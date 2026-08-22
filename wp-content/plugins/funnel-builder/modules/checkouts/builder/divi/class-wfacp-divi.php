@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_DIVI' ) ) {
 	#[\AllowDynamicProperties]
 	class WFACP_DIVI {
@@ -120,7 +121,9 @@ if ( ! class_exists( 'WFACP_DIVI' ) ) {
 				global $post;
 				$post                       = get_post( $post_id );
 				$this->set_our_page_content = $post->post_content;
-				remove_filter( 'the_content', 'et_builder_add_builder_content_wrapper' );
+				if ( ! $this->is_divi5_active() ) {
+					remove_filter( 'the_content', 'et_builder_add_builder_content_wrapper' );
+				}
 				add_filter( 'wfacp_assign_default_theme_template', '__return_false' );
 				add_filter( 'the_content', array( $this, 'replace_divi_our_page_content' ), 1 );
 				// D5: wrap after do_blocks so the block parser can't drop the freeform wrapper.
@@ -516,6 +519,29 @@ if ( ! class_exists( 'WFACP_DIVI' ) ) {
 				$rewrite_slug = WFACP_Common::get_url_rewrite_slug();
 				if ( ! empty( $rewrite_slug ) && false !== strpos( $uri, '/' . $rewrite_slug . '/' ) ) {
 					return true;
+				}
+			}
+
+			// 5. Base-less checkout permalink. The "remove checkout base" setting (empty
+			// checkout_page_base) strips the '/checkouts/' segment, so the checkout opens at
+			// /post-slug/ with no base. url_to_postid() can't resolve it here (the CPT rewrite
+			// registers at init:98) and step 4 has no base to match, so resolve the URL's
+			// trailing slug directly against the checkout post type. Using the last path
+			// segment keeps this correct on sub-directory installs and language-prefixed URLs
+			// (/subdir/slug/, /en/slug/). get_page_by_path() is a direct DB lookup that works
+			// before the CPT is registered. Gated to the base-less config so normal sites
+			// never run the extra query.
+			if ( ! empty( $_SERVER['REQUEST_URI'] ) && class_exists( 'BWF_Admin_General_Settings' ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$checkout_base = trim( (string) BWF_Admin_General_Settings::get_instance()->get_option( 'checkout_page_base' ) );
+				if ( '' === $checkout_base ) {
+					$path = wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ), PHP_URL_PATH ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$slug = is_string( $path ) ? basename( untrailingslashit( $path ) ) : '';
+					if ( '' !== $slug ) {
+						$maybe_post = get_page_by_path( $slug, OBJECT, $post_type );
+						if ( $maybe_post instanceof WP_Post && $post_type === $maybe_post->post_type ) {
+							return true;
+						}
+					}
 				}
 			}
 

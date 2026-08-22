@@ -583,7 +583,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				'%%order_class%% #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper input[type="text"].wfacp-form-control',
 				'%%order_class%% #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper input[type="emal"].wfacp-form-control',
 				'%%order_class%% #wfacp-e-form .wfacp_allowed_countries strong',
-				'%%order_class%% #wfacp-e-form .iti__selected-flag',
+				'%%order_class%% #wfacp-e-form .iti__selected-country',
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .select2-container .select2-selection--single .select2-selection__rendered',
 			);
 

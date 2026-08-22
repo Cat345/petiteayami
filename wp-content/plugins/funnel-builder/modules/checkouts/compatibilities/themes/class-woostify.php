@@ -69,10 +69,37 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Woostify' ) ) {
 
 			// Dequeue Woostify multi-step checkout script.
 			add_action( 'wp_enqueue_scripts', array( $this, 'dequeue_scripts' ), 999 );
+
+			// Surface failed ajax checkout errors hidden by Woostify's remove-notice.js.
+			add_action( 'wp_footer', array( $this, 'force_checkout_notice' ), 99 );
 		}
 
 		public function dequeue_scripts() {
 			wp_dequeue_script( 'woostify-multi-step-checkout' );
+		}
+
+		/**
+		 * Woostify's remove-notice.js can strip the error WooCommerce prepends on a failed ajax
+		 * checkout. Re-insert it into the form on `checkout_error` and scroll it into view.
+		 */
+		public function force_checkout_notice() {
+			?>
+			<script>
+				jQuery( document.body ).on( 'checkout_error', function ( e, message ) {
+					var $form = jQuery( 'form.checkout.woocommerce-checkout' );
+					setTimeout( function () {
+						var $err = $form.find( '.woocommerce-error:visible' );
+						if ( ! $err.length && message ) {
+							$form.prepend( '<div class="woocommerce-notices-wrapper">' + message + '</div>' );
+							$err = $form.find( '.woocommerce-error' );
+						}
+						if ( $err.length ) {
+							jQuery( 'html, body' ).animate( { scrollTop: $err.offset().top - 120 } );
+						}
+					}, 50 );
+				} );
+			</script>
+			<?php
 		}
 
 		public function internal_css() {

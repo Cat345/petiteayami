@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Compatibility Plugin:       Mailchimp for WooCommerce By Mailchimp
@@ -68,7 +69,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Mailchimp_For_WC' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_mailchimp_for_wc' ],
 				'id'         => 'wfacp_mailchimp_for_wc',
 				'field_type' => 'wfacp_mailchimp_for_wc',
-				'label'      => __( 'MailChimp', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'MailChimp', 'funnel-builder' ),
 			];
 
 			return $fields;

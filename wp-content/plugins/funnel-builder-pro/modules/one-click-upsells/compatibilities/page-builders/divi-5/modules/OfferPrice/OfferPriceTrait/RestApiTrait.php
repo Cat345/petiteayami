@@ -124,7 +124,7 @@ trait RestApiTrait {
 				}
 
 				$response[ (string) $key ] = array(
-					'label'           => $product->data->get_name(),
+					'label'           => $product->name,
 					'isSubscription'  => $is_subscription,
 					'regularPrice'    => $regular_price,
 					'offerPrice'      => $offer_price,

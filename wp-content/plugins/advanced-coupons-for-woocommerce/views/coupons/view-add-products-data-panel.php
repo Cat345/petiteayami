@@ -57,6 +57,22 @@ endforeach;
                 </tr>
             </tfoot>
         </table>
+
+        <div class="acfw-nodiscount-notice" style="display:none;">
+            <span class="dashicons dashicons-info-outline" aria-hidden="true"></span>
+            <p>
+                <?php
+                printf(
+                    /* translators: 1: opening bold tag, 2: closing bold tag, 3: opening bold tag, 4: closing bold tag */
+                    esc_html__( 'Products added with %1$sNo discount%2$s are not attached to the coupon, so they won\'t be automatically removed, quantity-locked, or recalculated when the coupon\'s conditions change. To have an added product behave as a coupon-attached free gift, use %3$sPercentage discount%4$s set to 0%% instead.', 'advanced-coupons-for-woocommerce' ),
+                    '<strong>',
+                    '</strong>',
+                    '<strong>',
+                    '</strong>'
+                );
+                ?>
+            </p>
+        </div>
     </div>
 
     <div class="add-products-actions-block">

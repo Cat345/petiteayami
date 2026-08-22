@@ -255,6 +255,16 @@ return [
             'type' => 'checkbox',
             'text' => 'Break into multiple columns',
         ],
+        'filter_attribute_query_type' => [
+            'label' => 'Attribute Query Type',
+            'description' =>
+                'Set whether products must match all selected terms or any selected term for each attribute filter.',
+            'type' => 'select',
+            'options' => [
+                'All selected terms (AND)' => '',
+                'Any selected term (OR)' => 'or',
+            ],
+        ],
         'filter_dropnav_style' => [
             'label' => 'Style',
             'description' => 'Select the filter navigation style.',
@@ -532,6 +542,7 @@ return [
                                 'filter_active_display',
                                 'filter_active_count',
                                 'filter_attribute_columns',
+                                'filter_attribute_query_type',
                             ],
                         ],
                         [

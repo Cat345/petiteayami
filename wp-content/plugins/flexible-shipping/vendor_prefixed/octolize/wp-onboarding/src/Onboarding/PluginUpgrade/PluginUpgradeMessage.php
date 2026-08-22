@@ -10,27 +10,27 @@ class PluginUpgradeMessage
     /**
      * @var string
      */
-    private $plugin_version;
+    private string $plugin_version;
     /**
      * @var string
      */
-    private $image_url;
+    private string $image_url;
     /**
      * @var string
      */
-    private $title;
+    private string $title;
     /**
      * @var string
      */
-    private $message;
+    private string $message;
     /**
      * @var string
      */
-    private $link_text;
+    private string $link_text;
     /**
      * @var string
      */
-    private $link_url;
+    private string $link_url;
     /**
      * @param string $plugin_version
      * @param string $image_url

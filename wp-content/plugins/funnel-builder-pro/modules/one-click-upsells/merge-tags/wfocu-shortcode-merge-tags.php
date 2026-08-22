@@ -770,7 +770,7 @@ if ( ! class_exists( 'WFOCU_ShortCode_Merge_Tags' ) ) {
 			$regular_price = self::product_price_regular( $attr, true );
 			$sale_price    = self::product_price( $attr, true );
 
-			if ( 0 === $regular_price ) {
+			if ( 0.0 === floatval( $regular_price ) ) {
 				return '';
 			}
 
@@ -789,7 +789,7 @@ if ( ! class_exists( 'WFOCU_ShortCode_Merge_Tags' ) ) {
 			$regular_price = self::product_price_regular( $attr, true );
 			$sale_price    = self::product_price( $attr, true );
 
-			if ( 0 === $regular_price ) {
+			if ( 0.0 === floatval( $regular_price ) ) {
 				return '';
 			}
 			$diff    = ( ( $regular_price - $sale_price ) / $regular_price ) * 100;
@@ -807,7 +807,7 @@ if ( ! class_exists( 'WFOCU_ShortCode_Merge_Tags' ) ) {
 			);
 			$regular_price = self::product_price_regular( $attr, true );
 			$sale_price    = self::product_price( $attr, true );
-			if ( 0 === $regular_price ) {
+			if ( 0.0 === floatval( $regular_price ) ) {
 				return '';
 			}
 			$diff         = $regular_price - $sale_price;

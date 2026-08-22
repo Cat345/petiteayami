@@ -54,7 +54,7 @@ class Xoo_Wl_Core{
 			$error = apply_filters( 'xoo_wl_process_errors', $error, $product_id, $email );
 
 			if ( $error->get_error_code() ) {
-				throw new Xoo_Exception( $error );
+				throw new XooWL\Framework\Xoo_Exception( $error );
 			}
 
 			$fieldValues = xoo_wl()->aff->fields->validate_submitted_field_values( $_POST );
@@ -70,7 +70,7 @@ class Xoo_Wl_Core{
 					$message = $fieldValues;
 				}
 
-				throw new Xoo_Exception( $message );
+				throw new XooWL\Framework\Xoo_Exception( $message );
 			}
 
 			$waitlist_meta_data = $fieldValues;
@@ -90,7 +90,7 @@ class Xoo_Wl_Core{
 			$inserted_id = xoo_wl_db()->update_waitlist_row( $waitlist_data );
 
 			if( is_wp_error( $inserted_id ) ){
-				throw new Xoo_Exception( $inserted_id->get_error_message() );	
+				throw new XooWL\Framework\Xoo_Exception( $inserted_id->get_error_message() );	
 			}
 
 			do_action( 'xoo_wl_form_submit_success', $inserted_id );
@@ -103,7 +103,7 @@ class Xoo_Wl_Core{
 			) );
 
 			
-		} catch ( Xoo_Exception $e) {
+		} catch ( XooWL\Framework\Xoo_Exception $e) {
 
 
 			$message = apply_filters( 'xoo_wl_form_submit_error', $e->getMessage(), $e->getWpErrorCode() );

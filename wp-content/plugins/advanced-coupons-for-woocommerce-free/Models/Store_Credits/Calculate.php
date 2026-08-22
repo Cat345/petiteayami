@@ -395,8 +395,7 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
         }
 
         $expire_date     = clone $this->get_last_active( $user_id );
-        $interval        = get_option( Plugin_Constants::STORE_CREDIT_EXPIRY );
-        $interval_string = intval( $interval ) > 1 ? "$interval years" : "$interval year";
+        $interval_string = $this->get_store_credit_expiry_interval_string();
         $expire_date->add( \DateInterval::createFromDateString( $interval_string ) );
 
         // Return as valid if expiry date is not a valid datetime object.
@@ -457,7 +456,9 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
             return;
         }
 
-        $expire_timestamp = time() - ( get_option( Plugin_Constants::STORE_CREDIT_EXPIRY ) * YEAR_IN_SECONDS );
+        // Pre-filter candidate users whose most recent entry is older than the configured expiry period.
+        // Per-user expiry is still validated precisely by validate_user_last_active() below.
+        $expire_timestamp = strtotime( '-' . $this->get_store_credit_expiry_interval_string() );
 
         $raw_data = $wpdb->get_results(
             "SELECT u.ID, s.entry_date FROM {$wpdb->users} AS u
@@ -696,7 +697,40 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
      */
     public function should_store_credits_expire() {
 
-        return apply_filters( 'acfw_should_store_credits_expire', 'noexpiry' !== get_option( Plugin_Constants::STORE_CREDIT_EXPIRY, 'noexpiry' ) );
+        $expiry = get_option( Plugin_Constants::STORE_CREDIT_EXPIRY, 'noexpiry' );
+
+        // Store credits expire only when a positive expiry value is set. 'noexpiry' (legacy) and 0 both disable expiry.
+        $should_expire = 'noexpiry' !== $expiry && absint( $expiry ) > 0;
+
+        return apply_filters( 'acfw_should_store_credits_expire', $should_expire );
+    }
+
+    /**
+     * Get the store credits expiry period as a relative date string (e.g. "30 days", "6 months", "2 years").
+     *
+     * The value is derived from the configured expiry quantity and unit, so it works for periods
+     * shorter than a year. Legacy installs that stored a plain integer default to the "years" unit.
+     *
+     * @since 4.7.5
+     * @access public
+     *
+     * @return string Relative date string, or empty string when expiry is disabled.
+     */
+    public function get_store_credit_expiry_interval_string() {
+
+        if ( ! $this->should_store_credits_expire() ) {
+            return '';
+        }
+
+        $quantity = absint( get_option( Plugin_Constants::STORE_CREDIT_EXPIRY, 0 ) );
+        $unit     = get_option( Plugin_Constants::STORE_CREDIT_EXPIRY_UNIT, 'years' );
+
+        // Guard against unexpected unit values so the relative date string stays valid.
+        if ( ! in_array( $unit, array( 'days', 'months', 'years' ), true ) ) {
+            $unit = 'years';
+        }
+
+        return "$quantity $unit";
     }
 
     /**
@@ -749,8 +783,7 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
         }
 
         $expire_date     = clone $this->get_last_active( $user_id );
-        $interval        = get_option( Plugin_Constants::STORE_CREDIT_EXPIRY );
-        $interval_string = intval( $interval ) > 1 ? "$interval years" : "$interval year";
+        $interval_string = $this->get_store_credit_expiry_interval_string();
         $expire_date->add( \DateInterval::createFromDateString( $interval_string ) );
 
         // Return as null if expiry date is not a valid datetime object.

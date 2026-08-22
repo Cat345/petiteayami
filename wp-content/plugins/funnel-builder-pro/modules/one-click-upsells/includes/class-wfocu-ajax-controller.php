@@ -1535,7 +1535,33 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			$script = preg_replace( '#<\s*meta\b[^>]*http-equiv\s*=\s*["\']?\s*refresh[^>]*>#i', '', $script );
 			$script = preg_replace( '#<\s*/?\s*(?:object|embed)\b[^>]*>#i', '', $script );
 			$script = preg_replace( '#<\s*/?\s*(?:svg|math|mglyph|mtext|annotation-xml|foreignObject)\b[^>]*>#i', '', $script );
-			$script = preg_replace( '#<\s*/?\s*iframe\b[^>]*>#i', '', $script );
+			// Strip iframes EXCEPT those whose src is allow-listed (e.g. Google Tag Manager's
+			// <noscript> fallback). Reuses WFFN_Common's list when available (guarded so a
+			// missing class/method can't fatal), with a self-contained fallback otherwise.
+			$allowed_iframe_src = ( class_exists( 'WFFN_Common' ) && method_exists( 'WFFN_Common', 'get_allowed_iframe_src' ) )
+				? WFFN_Common::get_allowed_iframe_src()
+				: array( 'https://www.googletagmanager.com' );
+			$script             = preg_replace_callback(
+				'#<\s*iframe\b[^>]*>#i',
+				static function ( $m ) use ( $allowed_iframe_src ) {
+					if ( is_array( $allowed_iframe_src ) && count( $allowed_iframe_src ) > 0 && preg_match( '#\ssrc\s*=\s*["\']?\s*([^"\'\s>]+)#i', $m[0], $src_m ) ) {
+						$src        = strtolower( $src_m[1] );
+						$src_scheme = wp_parse_url( $src, PHP_URL_SCHEME ) ?: '';
+						$src_host   = wp_parse_url( $src, PHP_URL_HOST ) ?: '';
+						$src_port   = wp_parse_url( $src, PHP_URL_PORT );
+						foreach ( $allowed_iframe_src as $prefix ) {
+							$pfx      = strtolower( $prefix );
+							$pfx_host = wp_parse_url( $pfx, PHP_URL_HOST ) ?: '';
+							if ( '' !== $pfx_host && $src_host === $pfx_host && $src_scheme === ( wp_parse_url( $pfx, PHP_URL_SCHEME ) ?: '' ) && $src_port === wp_parse_url( $pfx, PHP_URL_PORT ) ) {
+								return $m[0];
+							}
+						}
+					}
+
+					return '';
+				},
+				$script
+			);
 
 			// (2) Dangerous attributes / inline-URI protocols.
 			$script = preg_replace( '#\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $script );

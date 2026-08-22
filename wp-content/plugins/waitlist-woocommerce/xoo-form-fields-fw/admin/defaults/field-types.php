@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
+
 //array( 'id', 'type', Title', extra args = array() )
 $field_types =  array(
 	'xoo_aff_text' => array(

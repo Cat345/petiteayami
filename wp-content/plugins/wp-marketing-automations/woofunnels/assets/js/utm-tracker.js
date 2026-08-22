@@ -4,7 +4,7 @@ var wffnUtm_terms = wffnUtm.cookieKeys, wffnCookieManage = {
         var r = new Date();
         r.setTime(r.getTime() + 24 * t * 60 * 60 * 1e3);
         var c = "expires=" + r.toUTCString();
-        var basehost = ';domain=.' + wffnGetHost(document.location.hostname);
+        var basehost = (typeof wffnUtm !== 'undefined' && wffnUtm.cookie_domain) ? (';domain=' + wffnUtm.cookie_domain) : (';domain=.' + wffnGetHost(document.location.hostname));
 
          document.cookie = e + "=" + o + ";" + c + basehost + ";path=/";
     }, getCookie: function (e) {
@@ -17,6 +17,10 @@ var wffnUtm_terms = wffnUtm.cookieKeys, wffnCookieManage = {
         var o = new Date();
         o.setTime(o.getTime() - 864e5);
         var t = "expires=" + o.toUTCString();
+        var basehost = (typeof wffnUtm !== 'undefined' && wffnUtm.cookie_domain) ? (';domain=' + wffnUtm.cookie_domain) : (';domain=.' + wffnGetHost(document.location.hostname));
+        // Cookies are set with domain=.<host>; deletion must use the same domain to match,
+        // otherwise the scoped cookie survives. Also clear any host-only legacy cookie.
+        document.cookie = e + "=;" + t + basehost + ";path=/";
         document.cookie = e + "=;" + t + ";path=/";
     }, commons: {
         inArray: function (e, o) {
@@ -182,6 +186,29 @@ function wffnGetTrafficSource() {
 
 }
 
+/**
+ * Capture the first-touch UTM/referrer into the *_last cookies the first time a value
+ * is seen. Written once and never overwritten, so they preserve the original campaign
+ * that acquired the visitor. Persisted server-side into the existing *_last columns.
+ */
+function wffnSetUTMLastForFirstTime() {
+    try {
+        const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "referrer"];
+        const lastKeys = ["utm_source_last", "utm_medium_last", "utm_campaign_last", "utm_term_last", "utm_content_last", "referrer_last"];
+
+        for (let i = 0; i < utmKeys.length; i++) {
+            const currentValue = wffnCookieManage.getCookie('wffn_' + utmKeys[i]);
+            const lastValue = wffnCookieManage.getCookie('wffn_' + lastKeys[i]);
+
+            if (currentValue && !lastValue) {
+                wffnCookieManage.setCookie('wffn_' + lastKeys[i], currentValue, 2);
+            }
+        }
+    } catch (e) {
+        console.log(e, 'WFFN UTM First-Touch');
+    }
+}
+
 function wffnManageCookies() {
     if (true === window.wffnUtmCookiesInitialized) {
         return;
@@ -213,12 +240,181 @@ function wffnManageCookies() {
             }
         }
 
+        /**
+         * Capture first-touch UTM/referrer into the *_last cookies once set.
+         */
+        wffnSetUTMLastForFirstTime();
+
+        /**
+         * Build the page-by-page customer journey. On the thank-you page we drop the
+         * cookie (the server has already persisted the journey onto the order), so a
+         * fresh visit starts a clean journey.
+         */
+        if ('1' == wffnUtm.is_thankyou_page) {
+            wffnCookieManage.remove('wffn_journey');
+        } else {
+            wffnJourney();
+        }
+
         window.wffnUtmCookiesInitialized = true;
     } catch (e) {
         console.log(e);
     }
 
 
+}
+
+/**
+ * Normalize any decoded journey value into the v2 {j, s} shape. Legacy flat
+ * journeys ({ts:{u,t,i}}) are wrapped as {j: <legacy>, s: {}} so their entries
+ * still render (they simply lack an `s` field).
+ */
+function wffnJourneyNormalize(data) {
+    if (data && typeof data === 'object' && data.j && typeof data.j === 'object') {
+        if (typeof data.s !== 'object' || data.s === null) {
+            data.s = {};
+        }
+        return data;
+    }
+    return { j: (data && typeof data === 'object') ? data : {}, s: {} };
+}
+
+/**
+ * Return the index of `origin` in store.s, assigning the next integer (from 1)
+ * if absent. Indexes are shared across sub-sites via the shared cookie.
+ */
+function wffnJourneySiteIndex(store, origin) {
+    var keys = Object.keys(store.s);
+    for (var i = 0; i < keys.length; i++) {
+        if (store.s[keys[i]] === origin) {
+            return parseInt(keys[i], 10);
+        }
+    }
+    var next = 1;
+    for (var k = 0; k < keys.length; k++) {
+        var n = parseInt(keys[k], 10);
+        if (n >= next) { next = n + 1; }
+    }
+    store.s[next] = origin;
+    return next;
+}
+
+/**
+ * Append the current page to the journey cookie.
+ *
+ * Each entry is keyed by epoch second and stores { u: url, t: title, i: page_id }.
+ * Consecutive duplicate URLs are skipped and the cookie is capped to keep it under
+ * the browser cookie size budget (oldest entries are dropped first).
+ */
+function wffnJourney() {
+    if (wffnUtm.journeyControl === 'disable') {
+        return;
+    }
+
+    let raw = wffnCookieManage.getCookie('wffn_journey');
+    let parsed = {};
+    if ('' !== raw) { try { parsed = JSON.parse(raw); } catch (e) { wffnCookieManage.remove('wffn_journey'); parsed = {}; } }
+    let store = wffnJourneyNormalize(parsed);
+    let basePath = (typeof window.location.pathname !== "undefined") ? window.location.pathname : '/';
+
+    const queryVars = wffnGetQueryVars();
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+    let utmQueryString = '';
+    let hasUtm = false;
+    for (let i = 0; i < utmKeys.length; i++) {
+        const key = utmKeys[i];
+        if (Object.prototype.hasOwnProperty.call(queryVars, key)) {
+            utmQueryString += (hasUtm ? '&' : '?') + key + '=' + queryVars[key];
+            hasUtm = true;
+        }
+    }
+
+    // Relative path; the host is recorded once in store.s via the site index.
+    let fullPath = basePath + utmQueryString;
+    let origin = (typeof window.location.origin !== "undefined") ? window.location.origin : '';
+    let siteIdx = wffnJourneySiteIndex(store, origin);
+
+    let pageData = {};
+    pageData.u = encodeURIComponent(wffnAddSlashes(fullPath));
+    pageData.t = encodeURIComponent(document.title);
+    pageData.i = wffnUtm.page_id;
+    pageData.s = siteIdx;
+
+    // Dedup on the (path, site) pair so the same path on two sites is not collapsed.
+    if (wffnGetLastEntry(store.j, 'u') === pageData.u && wffnGetLastEntry(store.j, 's') === pageData.s) {
+        return;
+    }
+
+    let wffnTime = Math.round(Date.now() / 1000);
+    store.j[wffnTime] = pageData;
+
+    store = wffn_MaxCookieLength(store, 3872);
+    wffnCookieManage.setCookie('wffn_journey', JSON.stringify(store), 2);
+}
+
+/**
+ * Add slashes to the string.
+ *
+ * @param str
+ * @returns {string}
+ */
+function wffnAddSlashes(str) {
+    return (str + '').replace(/[\\"']/g, '\\$&');
+}
+
+/**
+ * Value of `field` on the most recently inserted journey entry (for dedup).
+ */
+function wffnGetLastEntry(jmap, field) {
+    var keys = Object.keys(jmap);
+    var lastKey = keys[keys.length - 1];
+    if (typeof jmap[lastKey] !== "undefined" && typeof jmap[lastKey][field] !== "undefined") {
+        return jmap[lastKey][field];
+    }
+    return '';
+}
+
+/**
+ * Trim oldest journey entries when the cookie would exceed maxSize bytes.
+ * Operates on store.j (the entry map); store.s is pruned of orphans.
+ */
+/**
+ * Trim oldest journey entries when the cookie would exceed maxSize bytes.
+ * Operates on store.j (v2 entry map); tolerates a flat legacy store (no .j)
+ * by trimming its own keys directly.
+ */
+function wffn_MaxCookieLength(store, maxSize) {
+    var totalCookieSize = document.cookie.length;
+    if (totalCookieSize + JSON.stringify(store).length > maxSize) {
+        while (JSON.stringify(store).length > maxSize / 2 && Object.keys(store.j ? store.j : store).length > 0) {
+            store = wffnDeleteFirstEl(store);
+        }
+    }
+    return store;
+}
+
+/**
+ * Delete the earliest journey entry. For a v2 store also prune any site
+ * index no longer used; for a flat legacy store delete its first key.
+ */
+function wffnDeleteFirstEl(store) {
+    var map = store.j ? store.j : store;
+    var keys = Object.keys(map);
+    if (keys.length === 0) {
+        return store;
+    }
+    delete map[keys[0]];
+
+    if (store.j && store.s) {
+        var used = {};
+        Object.keys(store.j).forEach(function (k) {
+            if (typeof store.j[k].s !== "undefined") { used[store.j[k].s] = true; }
+        });
+        Object.keys(store.s).forEach(function (sIdx) {
+            if (!used[sIdx]) { delete store.s[sIdx]; }
+        });
+    }
+    return store;
 }
 
 /**

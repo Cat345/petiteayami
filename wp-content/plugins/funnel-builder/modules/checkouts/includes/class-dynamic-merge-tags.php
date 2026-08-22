@@ -142,15 +142,15 @@ if ( ! class_exists( 'WFACP_Product_Switcher_Merge_Tags' ) ) {
 
 			$tags = array(
 				array(
-					'name' => __( 'Subscription Product String', 'woofunnels-aero-checkout' ),
+					'name' => __( 'Subscription Product String', 'funnel-builder' ),
 					'tag'  => 'subscription_product_string',
 				),
 				array(
-					'name' => __( 'You Save', 'woofunnels-aero-checkout' ),
+					'name' => __( 'You Save', 'funnel-builder' ),
 					'tag'  => 'saving_value',
 				),
 				array(
-					'name' => __( 'You Save', 'woofunnels-aero-checkout' ),
+					'name' => __( 'You Save', 'funnel-builder' ),
 					'tag'  => 'saving_percentage',
 				),
 				array(

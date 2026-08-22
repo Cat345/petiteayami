@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_WooCommerce_Zoom_By_MB' ) ) {
 	/**
 	 * WooCommerce to Zoom Meetings
@@ -47,7 +48,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WooCommerce_Zoom_By_MB' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'deliveryDatePosition' ],
 				'id'         => 'wc_to_zoom_checkout',
 				'field_type' => 'wc_to_zoom_checkout',
-				'label'      => __( 'Zoom Meetings', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'Zoom Meetings', 'funnel-builder' ),
 			];
 
 

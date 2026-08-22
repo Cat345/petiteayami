@@ -86,6 +86,13 @@ if ( ! class_exists( 'WFFN_Pro_Optin_Pages_Divi' ) ) {
 			// Divi 4: enqueue builder bundle when Visual Builder is active
 			if ( function_exists( 'et_core_is_fb_enabled' ) && et_core_is_fb_enabled() ) {
 				wp_enqueue_script( 'woofunnels-op-divi-popup-builder-bundle', "{$this->plugin_dir_url}scripts/loader.min.js", array( 'react-dom' ), $this->version, true );
+				wp_localize_script(
+					'woofunnels-op-divi-popup-builder-bundle',
+					'wfop_divi_data',
+					array(
+						'nonce' => wp_create_nonce( 'wfop_divi_ajax' ),
+					)
+				);
 			}
 		}
 

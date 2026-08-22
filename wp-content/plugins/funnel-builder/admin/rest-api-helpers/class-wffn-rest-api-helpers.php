@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 	#[\AllowDynamicProperties]
 	class WFFN_REST_API_Helpers extends WFFN_REST_Controller {
@@ -509,12 +510,20 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 					}
 				}
 
-				$product['product_image']        = $product_image;
-				$product['product_type']         = $product['type'];
-				$product['product_attribute']    = ! empty( $variation_name ) ? $variation_name : '-';
-				$product['regular_price']        = ! empty( $regular_price ) ? $regular_price : 0;
-				$product['sale_price']           = ! empty( $sale_price ) ? $sale_price : 0;
-				$product['is_on_sale']           = $chk_product->is_on_sale();
+				$product['product_image']     = $product_image;
+				$product['product_type']      = $product['type'];
+				$product['product_attribute'] = ! empty( $variation_name ) ? $variation_name : '-';
+				// When a plan_id is present, a Pro add-on (e.g. Sublium plan compatibility) has already
+				// computed the correct regular_price/sale_price/is_on_sale for this plan via the
+				// wffn_rest_api_checkout_add_product / wffn_rest_api_bump_add_product / etc. filters run
+				// just before this call — re-fetching raw WooCommerce product data here would silently
+				// overwrite that with the plan-less price (e.g. showing the full regular price as the
+				// offer price for a product that's actually on a discounted subscription plan).
+				if ( empty( $product['plan_id'] ) ) {
+					$product['regular_price'] = ! empty( $regular_price ) ? $regular_price : 0;
+					$product['sale_price']    = ! empty( $sale_price ) ? $sale_price : 0;
+					$product['is_on_sale']    = $chk_product->is_on_sale();
+				}
 				$product['currency_symbol']      = get_woocommerce_currency_symbol();
 				$product['product_stock_status'] = $stock_status;
 				$product['product_stock']        = $product_stock;

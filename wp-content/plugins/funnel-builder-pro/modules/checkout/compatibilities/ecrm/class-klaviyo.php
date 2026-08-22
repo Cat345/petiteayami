@@ -53,7 +53,20 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Klaviyo' ) ) {
 
 			add_action( 'wfacp_after_checkout_page_found', array( $this, 'remove_other_action' ) );
 
+			// Klaviyo prints its compliance disclaimer on woocommerce_after_checkout_billing_form, which
+			// Aero fires inside the Billing block. remove_other_action() also removes it, but runs on a
+			// hook that doesn't fire on every template (e.g. Divi); priority 9 here runs just before
+			// Klaviyo's priority 10 on every template. We render it next to the checkbox instead. FB #9191.
+			add_action( 'woocommerce_after_checkout_billing_form', array( $this, 'remove_kl_billing_compliance' ), 9 );
+
 			add_action( 'wfacp_after_kl_sms_consent_checkbox_field', array( $this, 'kl_sms_consent' ) );
+		}
+
+		public function remove_kl_billing_compliance() {
+			// Remove both the legacy (kl_sms_compliance_text) and current (kl_mobile_compliance_text)
+			// callback names — Klaviyo renamed it across versions.
+			remove_filter( 'woocommerce_after_checkout_billing_form', 'kl_sms_compliance_text' );
+			remove_filter( 'woocommerce_after_checkout_billing_form', 'kl_mobile_compliance_text' );
 		}
 
 
@@ -76,7 +89,13 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Klaviyo' ) ) {
 				)
 			);
 
-			if ( isset( $klaviyo_settings['klaviyo_sms_subscribe_checkbox'] ) && $klaviyo_settings['klaviyo_sms_subscribe_checkbox'] && ! empty( $klaviyo_settings['klaviyo_sms_list_id'] ) ) {
+			/**
+			 * Register the SMS consent checkbox as a placeable field whenever the merchant has
+			 * enabled the Klaviyo SMS subscribe checkbox. The list id is only required for the
+			 * compliance text to render (see kl_sms_consent()), so gating field availability on it
+			 * left merchants unable to place the field while still configuring Klaviyo. FB #9191.
+			 */
+			if ( isset( $klaviyo_settings['klaviyo_sms_subscribe_checkbox'] ) && wc_string_to_bool( $klaviyo_settings['klaviyo_sms_subscribe_checkbox'] ) ) {
 				new WFACP_Add_Address_Field(
 					'kl_sms_consent_checkbox',
 					array(
@@ -256,7 +275,14 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Klaviyo' ) ) {
 					}
 				}
 				if ( $kl_sms_consent_checkbox ) {
-					add_action( 'wfacp_divider_billing_end', array( $this, 'kl_sms_consent' ), 99999 );
+					/**
+					 * Render the SMS compliance text immediately after the consent checkbox so it
+					 * travels with the field wherever the merchant places it. Previously this was
+					 * silently hooked to `wfacp_divider_billing_end`, which anchored the legally
+					 * sensitive disclaimer at the tail of the billing block — under the
+					 * "use a different billing address" toggle — with no merchant intent. FB #9191.
+					 */
+					$this->kl_sms_consent();
 				}
 			}
 		}
@@ -266,21 +292,40 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Klaviyo' ) ) {
 			$this->klavio_settings = get_option( 'klaviyo_settings' );
 
 			remove_filter( 'woocommerce_after_checkout_billing_form', 'kl_sms_compliance_text' );
+			remove_filter( 'woocommerce_after_checkout_billing_form', 'kl_mobile_compliance_text' );
 		}
 
 		public function kl_sms_consent() {
 
-			if ( ! function_exists( 'kl_sms_compliance_text' ) || ! is_array( $this->klavio_settings ) || count( $this->klavio_settings ) <= 0 ) {
+			if ( ! is_array( $this->klavio_settings ) || count( $this->klavio_settings ) <= 0 ) {
+				// remove_other_action() (which populates this) runs on a hook that doesn't fire on every
+				// template, e.g. Divi — so lazy-load here, otherwise the disclaimer never renders. FB #9191.
+				$this->klavio_settings = get_option( 'klaviyo_settings', array() );
+			}
+
+			if ( ! is_array( $this->klavio_settings ) || count( $this->klavio_settings ) <= 0 ) {
 				return;
 			}
 			if ( $this->sms_consent_text == true ) {
 				return;
 			}
 
-			if ( isset( $this->klavio_settings['klaviyo_sms_subscribe_checkbox'] ) && ! empty( $this->klavio_settings['klaviyo_sms_subscribe_checkbox'] ) && isset( $this->klavio_settings['klaviyo_sms_list_id'] ) && ! empty( $this->klavio_settings['klaviyo_sms_list_id'] ) ) {
+			// Klaviyo renamed its compliance function across versions
+			// (kl_sms_compliance_text -> kl_mobile_compliance_text); use whichever exists, else fall back
+			// to the configured text. Needs the SMS subscribe checkbox enabled + text set (no list id).
+			$disclosure  = isset( $this->klavio_settings['klaviyo_sms_consent_disclosure_text'] ) ? trim( (string) $this->klavio_settings['klaviyo_sms_consent_disclosure_text'] ) : '';
+			$sms_enabled = ! empty( $this->klavio_settings['klaviyo_sms_subscribe_checkbox'] );
+
+			if ( $sms_enabled && '' !== $disclosure ) {
 				$this->sms_consent_text = true;
 				echo '<p class="kl_sms_compliance_text form-row wfacp-form-control-wrapper wfacp-col-full kl_sms_consent_checkbox_field ">';
-				kl_sms_compliance_text();
+				if ( function_exists( 'kl_sms_compliance_text' ) ) {
+					kl_sms_compliance_text();
+				} elseif ( function_exists( 'kl_mobile_compliance_text' ) ) {
+					kl_mobile_compliance_text();
+				} else {
+					echo esc_html( $disclosure );
+				}
 				echo '</p>';
 			}
 		}

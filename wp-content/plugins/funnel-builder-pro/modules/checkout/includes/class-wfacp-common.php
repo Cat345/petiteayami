@@ -524,6 +524,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				'discount_amount' => 0,
 				'discount_price'  => 0,
 				'quantity'        => 1,
+				'plan_id'         => 0,
 			);
 		}
 
@@ -938,7 +939,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				$required = '&nbsp;<span class="optional">(' . esc_html__( 'optional', 'woocommerce' ) . ')</span>';
 			}
 			$sort              = $args['priority'] ? $args['priority'] : '';
-			$field_container   = '<p class="form-row %1$s" id="%2$s" data-priority="' . esc_attr( $sort ) . '">%3$s</p>';
+			$field_container   = '<p class="form-row %1$s" id="%2$s" data-priority="' . esc_attr( $sort ) . '" data-fkcf-default="' . esc_attr( $value ) . '">%3$s</p>';
 			$field             = '';
 			$custom_attributes = array();
 
@@ -1855,15 +1856,22 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			if ( ! is_null( $cart_item ) ) {
-				$qty = absint( ( isset( $cart_item['quantity'] ) ? $cart_item['quantity'] : 1 ) / ( isset( $product_data['org_quantity'] ) ? $product_data['org_quantity'] : 1 ) );
-				if ( ( isset( $cart_item['quantity'] ) && isset( $product_data['org_quantity'] ) ) && absint( $cart_item['quantity'] ) < absint( $product_data['org_quantity'] ) ) {
+				/**
+				 * How many of the switcher's packs the cart holds. wc_stock_amount() keeps
+				 * this in the same number space the cart itself uses — absint() collapsed a
+				 * legitimate 0.5 to 0 on stores running a decimal-quantity plugin, and the
+				 * old "less than one pack" clamp then forced it to a full 1, so the regular
+				 * price this feeds was computed for a quantity the customer never chose.
+				 */
+				$qty = wc_stock_amount( ( isset( $cart_item['quantity'] ) ? $cart_item['quantity'] : 1 ) / ( isset( $product_data['org_quantity'] ) ? $product_data['org_quantity'] : 1 ) );
+				if ( $qty <= 0 ) {
 					$qty = 1;
 				}
 			} else {
 				$qty = 1;
 			}
 
-			$price_data = apply_filters( 'wfacp_product_switcher_price_data', array(), $pro, $cart_item_key );
+			$price_data = apply_filters( 'wfacp_product_switcher_price_data', array(), $pro, $cart_item_key, $product_data );
 			if ( is_string( $cart_item_key ) && '' !== $cart_item_key && isset( WC()->cart->cart_contents[ $cart_item_key ] ) ) {
 				// calculate price data for cart item
 				$price_data = self::get_cart_product_price_data( $pro, $cart_item, $qty );
@@ -2851,15 +2859,38 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			if ( $strike_through == true ) {
-				$quantity              = isset( $cart_item['quantity'] ) ? (int) $cart_item['quantity'] : 1;
+				// (int) turned a 0.5 cart quantity into 0, so the struck-through regular
+				// price rendered as 0 instead of the real amount.
+				$quantity              = isset( $cart_item['quantity'] ) ? wc_stock_amount( $cart_item['quantity'] ) : 1;
 				$product_regular_price = $product->get_regular_price();
 
 				if ( empty( $product_regular_price ) ) {
 					$product_regular_price = 0;
 				}
 
-				$product_regular_price = floatval( $product_regular_price ) * $quantity;
-				$subtotal              = $row_price;
+				$reg = floatval( $product_regular_price );
+
+				if ( $product->is_taxable() ) {
+					$product_regular_price = WC()->cart->display_prices_including_tax()
+						? wc_get_price_including_tax(
+							$product,
+							array(
+								'qty'   => $quantity,
+								'price' => $reg,
+							)
+						)
+						: wc_get_price_excluding_tax(
+							$product,
+							array(
+								'qty'   => $quantity,
+								'price' => $reg,
+							)
+						);
+				} else {
+					$product_regular_price = $reg * $quantity;
+				}
+
+				$subtotal = $row_price;
 
 				if ( $product_regular_price > 0 && ( round( $subtotal, 2 ) !== round( $product_regular_price, 2 ) ) ) {
 					if ( $subtotal > $product_regular_price ) {
@@ -3069,7 +3100,8 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				$qty = $cart_item['quantity'];
 			}
 
-			$temp_price *= ( isset( $qty ) && $qty > 0 ) ? absint( $qty ) : 1;
+			// absint() zeroed a fractional quantity, wiping the subscription price out.
+			$temp_price *= ( isset( $qty ) && $qty > 0 ) ? wc_stock_amount( $qty ) : 1;
 			$temp_data   = array(
 				'price' => wc_price( $temp_price ),
 			);
@@ -3254,9 +3286,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			if ( isset( $data['footer_script'] ) ) {
 				$data['footer_script'] = self::sanitize_global_script( $data['footer_script'] );
 			}
-			if ( isset( $data['header_css'] ) ) {
-				$data['header_css'] = self::sanitize_global_css( $data['header_css'] );
-			}
+
+			// Store header_css raw and rely on output-side sanitization (WFACP_Template::global_css()).
+			// Sanitizing on save could irreversibly corrupt a merchant's stored CSS once persisted. See FB#9228.
 
 			$data['update_time'] = time();
 			$data['user_id']     = get_current_user_id();
@@ -3266,12 +3298,42 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		}
 
 		public static function sanitize_global_css( $css ) {
-			$css = wp_strip_all_tags( $css );
-			$css = preg_replace( '/expression\s*\(/i', '', $css );
-			$css = preg_replace( '/javascript\s*:/i', '', $css );
-			$css = preg_replace( '/behavior\s*:/i', '', $css );
-			$css = preg_replace( '/vbscript\s*:/i', '', $css );
-			$css = preg_replace( '/-moz-binding\s*:/i', '', $css );
+			if ( ! is_string( $css ) || '' === $css ) {
+				return '';
+			}
+
+			// Unwrap, don't delete, <style> wrappers a merchant may have pasted around their CSS —
+			// strip only the literal tags and keep the declarations inside (wp_strip_all_tags used to
+			// wipe the whole block, silently destroying legitimate CSS).
+			$css = preg_replace( '#</?\s*style\b[^>]*>#i', '', $css );
+
+			// Remove only tag openers (`<` followed by a letter, `!` or `/`) so a `</style><script>…`
+			// breakout is neutralized without eating `>` child combinators or a literal `<` in a value.
+			$css = preg_replace( '#<\s*(?=[a-z!/])#i', '', $css );
+
+			// Legacy CSS-context vectors, scoped so they never touch selector/identifier names.
+			$css = preg_replace( '/expression\s*\(/i', '', $css );   // IE expression().
+			$css = preg_replace( '/-moz-binding\s*:/i', '', $css );  // XBL binding.
+
+			// Strip javascript:/vbscript: only when used as a protocol inside url( … ) — a bare
+			// `javascript:` elsewhere in CSS is inert, and stripping it globally mangled selectors.
+			$css = preg_replace_callback(
+				'#url\(\s*([\'"]?)(.*?)\1\s*\)#is',
+				static function ( $matches ) {
+					$clean = preg_replace( '/(?:javascript|vbscript)\s*:/i', '', $matches[2] );
+					if ( $clean === $matches[2] ) {
+						return $matches[0]; // No dangerous protocol — keep the url() token byte-identical.
+					}
+
+					return 'url(' . $matches[1] . $clean . $matches[1] . ')';
+				},
+				$css
+			);
+
+			// `behavior:` only as a declaration (start of file, or after `;`/`{`), never inside a
+			// selector such as `.behavior:hover`.
+			$css = preg_replace( '/(^|[;{]\s*)behavior\s*:/i', '$1', $css );
+
 			return $css;
 		}
 
@@ -3282,7 +3344,33 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$script = preg_replace( '#<\s*meta\b[^>]*http-equiv\s*=\s*["\']?\s*refresh[^>]*>#i', '', $script );
 			$script = preg_replace( '#<\s*/?\s*(?:object|embed)\b[^>]*>#i', '', $script );
 			$script = preg_replace( '#<\s*/?\s*(?:svg|math|mglyph|mtext|annotation-xml|foreignObject)\b[^>]*>#i', '', $script );
-			$script = preg_replace( '#<\s*/?\s*iframe\b[^>]*>#i', '', $script );
+			// Strip iframes EXCEPT those whose src is allow-listed (e.g. Google Tag Manager's
+			// <noscript> fallback). Reuses WFFN_Common's list when available (guarded so a
+			// missing class/method can't fatal), with a self-contained fallback otherwise.
+			$allowed_iframe_src = ( class_exists( 'WFFN_Common' ) && method_exists( 'WFFN_Common', 'get_allowed_iframe_src' ) )
+				? WFFN_Common::get_allowed_iframe_src()
+				: array( 'https://www.googletagmanager.com' );
+			$script             = preg_replace_callback(
+				'#<\s*iframe\b[^>]*>#i',
+				static function ( $m ) use ( $allowed_iframe_src ) {
+					if ( is_array( $allowed_iframe_src ) && count( $allowed_iframe_src ) > 0 && preg_match( '#\ssrc\s*=\s*["\']?\s*([^"\'\s>]+)#i', $m[0], $src_m ) ) {
+						$src        = strtolower( $src_m[1] );
+						$src_scheme = wp_parse_url( $src, PHP_URL_SCHEME ) ?: '';
+						$src_host   = wp_parse_url( $src, PHP_URL_HOST ) ?: '';
+						$src_port   = wp_parse_url( $src, PHP_URL_PORT );
+						foreach ( $allowed_iframe_src as $prefix ) {
+							$pfx      = strtolower( $prefix );
+							$pfx_host = wp_parse_url( $pfx, PHP_URL_HOST ) ?: '';
+							if ( '' !== $pfx_host && $src_host === $pfx_host && $src_scheme === ( wp_parse_url( $pfx, PHP_URL_SCHEME ) ?: '' ) && $src_port === wp_parse_url( $pfx, PHP_URL_PORT ) ) {
+								return $m[0];
+							}
+						}
+					}
+
+					return '';
+				},
+				$script
+			);
 
 			// (2) Dangerous attributes / inline-URI protocols.
 			$script = preg_replace( '#\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $script );
@@ -4624,8 +4712,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				}
 
 				$regular_price = 0;
+				$display_incl  = WC()->cart->display_prices_including_tax();
 
-				foreach ( $cart_contents as $content ) {
+				foreach ( $cart_contents as $cart_item_key => $content ) {
 					// Validate cart item data
 					if ( ! isset( $content['data'] ) || ! isset( $content['quantity'] ) ) {
 						continue;
@@ -4636,7 +4725,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 						continue;
 					}
 
-					$quantity   = absint( $content['quantity'] );
+					$quantity   = wc_stock_amount( $content['quantity'] );
 					$product_id = $product->get_id();
 
 					// Get fresh instance of the product
@@ -4645,19 +4734,24 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 						continue;
 					}
 
-					$item_regular_price = $product->get_regular_price();
+					// Lets extensions override the savings baseline per item. Return '' to skip.
+					$item_regular_price = apply_filters( 'wfacp_saving_price_item_regular_price', $product->get_regular_price(), $content, $product, $cart_item_key );
+
 					if ( '' === $item_regular_price || ! is_numeric( $item_regular_price ) ) {
 						continue;
 					}
 
-					$regular_price += wc_get_price_including_tax(
-						$product,
-						array(
+					// Keep the baseline in the same tax context as the displayed totals.
+					if ( $product->is_taxable() ) {
+						$price_args = array(
 							'qty'   => $quantity,
 							'price' => $item_regular_price,
-						)
-					);
+						);
 
+						$regular_price += $display_incl ? wc_get_price_including_tax( $product, $price_args ) : wc_get_price_excluding_tax( $product, $price_args );
+					} else {
+						$regular_price += floatval( $item_regular_price ) * $quantity;
+					}
 				}
 
 				// Prevent division by zero
@@ -4665,7 +4759,28 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					return;
 				}
 
-				$total = WC()->cart->get_cart_contents_total() + WC()->cart->get_cart_contents_tax();
+				$total = WC()->cart->get_cart_contents_total();
+				if ( $display_incl ) {
+					$total += WC()->cart->get_cart_contents_tax();
+				}
+
+				// Reflect cart-level discounts from third-party plugins (e.g. Discount Rules PRO)
+				// that are applied as negative (discount-style) fee lines, since
+				// get_cart_contents_total() excludes fee lines. Native coupons and product-level
+				// dynamic discounts are already reflected in get_cart_contents_total(), so they
+				// must NOT be subtracted again (that would double-count the saving).
+				$fees = WC()->cart->get_fees();
+				if ( is_array( $fees ) ) {
+					foreach ( $fees as $fee ) {
+						if ( isset( $fee->total ) && is_numeric( $fee->total ) && (float) $fee->total < 0 && true === apply_filters( 'wfacp_display_save_price_include_fee', true, $fee ) ) {
+							// Fee total is negative, so adding it reduces the paid total.
+							$total += (float) $fee->total;
+							if ( isset( $fee->tax ) && is_numeric( $fee->tax ) ) {
+								$total += (float) $fee->tax;
+							}
+						}
+					}
+				}
 
 				$regular_price = round( $regular_price, 2 );
 				$total         = round( $total, 2 );

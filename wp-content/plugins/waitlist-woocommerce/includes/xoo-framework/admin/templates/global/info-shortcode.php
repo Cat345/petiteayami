@@ -1,4 +1,12 @@
-<?php if( empty( $shortcodes ) ) return; ?>
+<?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
+if( empty( $shortcodes ) ) return;
+
+?>
 
 <div class="xoo-sc-shortcodes">
 	<h3>Shortcodes</h3>

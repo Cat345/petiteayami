@@ -36,6 +36,24 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 			);
 			add_action( 'wfacp_before_form', array( $this, 'remove_action' ) );
 			add_filter( 'wfacp_smart_container_display_hook', array( $this, 'smart_button_display_hook' ), 999 );
+
+			add_action( 'wp_head', array( $this, 'pay_with_amazon_css' ), 99 );
+		}
+
+		public function pay_with_amazon_css() {
+			?>
+			<style>
+				#pay_with_amazon {
+					margin: 4px !important;
+					width: calc(100% - 8px) !important;
+				}
+				@media(max-width:481px){
+					#pay_with_amazon{
+						margin-bottom:0!important;
+					}
+				}
+			</style>
+			<?php
 		}
 
 		public function add_message() {

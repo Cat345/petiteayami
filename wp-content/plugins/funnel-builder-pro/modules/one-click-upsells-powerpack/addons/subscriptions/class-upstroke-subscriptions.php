@@ -32,7 +32,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 			add_action( 'wfocu_offer_payment_failed_event', array( $this, 'create_pending_subscription' ), 10, 1 );
 
-			add_action( 'footer_after_print_scripts', array( $this, 'render_js' ) );
+			add_action( 'wfocu_footer_after_print_scripts', array( $this, 'render_js' ) );
 			add_action( 'wfocu_front_before_custom_offer_page', array( $this, 'maybe_register_js_print' ) );
 
 			add_filter( 'wfocu_offer_validation_result', array( $this, 'maybe_validate_subscriptions' ), 10, 2 );
@@ -242,9 +242,23 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 					// link subscription product & copy address details
 
-					WFOCU_Core()->log->log( 'Creating Subscription For:' . $args['_recurring_price'] );
-					$product->set_price( $args['_recurring_price'] );
-					$qty                  = ( is_array( $offer_data ) && isset( $offer_data['qty'] ) && (int) $offer_data['qty'] > 1 ) ? $offer_data['qty'] : 1;
+					$qty = max( 1, absint( is_array( $offer_data ) && isset( $offer_data['qty'] ) ? $offer_data['qty'] : 1 ) );
+					$rp  = (float) $args['_recurring_price'];
+
+					// Same branch as update_upsell_package: get_product_price() is line total only when subscription_discount is on — unit price for set_price()+add_product(qty).
+					$offer = WFOCU_Core()->data->get( '_current_offer', '' );
+					if ( empty( $offer ) || ! is_object( $offer ) ) {
+						$oid = WFOCU_Core()->data->get( 'current_offer', 0 );
+						if ( ! empty( $oid ) ) {
+							$offer = WFOCU_Core()->offers->get_offer( $oid, true );
+						}
+					}
+					if ( is_object( $offer ) && isset( $offer->settings->subscription_discount ) && true === $offer->settings->subscription_discount && $qty > 1 ) {
+						$rp = wc_format_decimal( $rp / $qty );
+					}
+
+					WFOCU_Core()->log->log( 'Creating Subscription For:' . $rp );
+					$product->set_price( $rp );
 					$subscription_item_id = $subscription->add_product( $product, $qty ); // $args
 
 					if ( defined( 'WC_PB_ABSPATH' ) ) {

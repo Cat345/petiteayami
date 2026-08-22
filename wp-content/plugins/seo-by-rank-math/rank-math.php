@@ -9,7 +9,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:       Rank Math SEO
- * Version:           1.0.273
+ * Version:           1.0.276
  * Plugin URI:        https://rankmath.com/
  * Description:       Rank Math SEO is the Best WordPress SEO plugin with the features of many SEO and AI SEO tools in a single package to help multiply your SEO traffic.
  * Author:            Rank Math SEO
@@ -34,7 +34,7 @@ final class RankMath {
 	 *
 	 * @var string
 	 */
-	public $version = '1.0.273';
+	public $version = '1.0.276';
 
 	/**
 	 * Rank Math database version.
@@ -415,6 +415,11 @@ final class RankMath {
 			new \RankMath\ThirdParty\WPML();
 		}
 
+		// Hook into `pll_init` when Polylang is active, unless the manual KB integration is already enabled.
+		if ( is_plugin_active( 'polylang/polylang.php' ) && ! class_exists( 'PLL_RankMath' ) ) {
+			new \RankMath\ThirdParty\Polylang\Polylang();
+		}
+
 		// Divi theme.
 		add_action(
 			'after_setup_theme',
@@ -460,11 +465,17 @@ final class RankMath {
 			];
 		}
 
+		$plugin_links = [];
 		foreach ( $options as $link => $label ) {
 			$plugin_links[] = '<a href="' . \RankMath\Helper::get_admin_url( $link ) . '">' . esc_html( $label ) . '</a>';
 		}
 
-		return array_merge( $links, $plugin_links );
+		$pro_links = [];
+		if ( ! defined( 'RANK_MATH_PRO_FILE' ) ) {
+			$pro_links[] = '<a href="' . esc_url( \RankMath\KB::get( 'pro', 'upgrade-plugins-screen-link' ) ) . '" style="color: #10AC84; font-weight: 600;" target="_blank">' . esc_html__( 'Unlock PRO', 'seo-by-rank-math' ) . '</a>';
+		}
+
+		return array_merge( $pro_links, $links, $plugin_links );
 	}
 
 	/**

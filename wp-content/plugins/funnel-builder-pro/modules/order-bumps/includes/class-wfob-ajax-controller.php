@@ -216,6 +216,29 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 					'product' => rawurldecode( WFOB_Common::get_formatted_product_name( $product_object ) ),
 				);
 			}
+
+			if ( class_exists( '\Sublium_WCS\Plugin', false ) ) {
+				foreach ( $product_objects as $product_object ) {
+					$plans = \Sublium_WCS\Includes\Main\Product::get_instance()->get_cached_plans_for_product( $product_object );
+					if ( empty( $plans ) ) {
+						continue;
+					}
+					$product_name = rawurldecode( WFOB_Common::get_formatted_product_name( $product_object ) );
+					foreach ( $plans as $plan ) {
+						$price = $plan->get_recurring_cart_price( $product_object->get_price(), $product_object );
+						if ( $plan->get_billing_frequency() === 1 ) {
+							$desc = '/ ' . $plan->get_billing_interval_string();
+						} else {
+							$desc = 'every ' . $plan->get_billing_frequency() . ' ' . $plan->get_billing_interval_string() . 's';
+						}
+						$products[] = array(
+							'id'      => $product_object->get_id() . '-' . $plan->get_id(),
+							'product' => $product_name . ' - (' . get_woocommerce_currency_symbol() . number_format( (float) $price, 2 ) . ' ' . $desc . ')',
+						);
+					}
+				}
+			}
+
 			wp_send_json( apply_filters( 'wfob_woocommerce_json_search_found_products', $products ) );
 		}
 
@@ -232,7 +255,13 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				$existing_product = WFOB_Common::get_bump_products( $wfob_id );
 				foreach ( $products as $pid ) {
 					$unique_id = uniqid( 'wfob_' );
-					$product   = wc_get_product( $pid );
+					$plan_id   = 0;
+					if ( strpos( $pid, '-' ) !== false ) {
+						list( $pid, $plan_id ) = explode( '-', $pid, 2 );
+						$pid     = absint( $pid );
+						$plan_id = absint( $plan_id );
+					}
+					$product = wc_get_product( $pid );
 					if ( $product instanceof WC_Product ) {
 						$product_type = $product->get_type();
 						$image_id     = $product->get_image_id();
@@ -254,6 +283,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 						$default['parent_product_id']    = $product->get_parent_id();
 						$default['title']                = $product->get_title();
 						$default['is_sold_individually'] = $product->is_sold_individually();
+						$default['plan_id']              = $plan_id;
 						if ( in_array( $product_type, WFOB_Common::get_variable_product_type(), true ) ) {
 							$default['variable'] = 'yes';
 							$default['price']    = $product->get_price_html();
@@ -373,7 +403,17 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 			if ( isset( $_POST['wfob_id'] ) && $_POST['wfob_id'] > 0 && isset( $_POST['settings'] ) && count( $_POST['settings'] ) > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
 
-				WFOB_Common::update_design_data( absint( $_POST['wfob_id'] ), map_deep( wp_unslash( $_POST['settings'] ), 'sanitize_text_field' ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$wfob_settings = map_deep( wp_unslash( $_POST['settings'] ), 'sanitize_text_field' ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+				// Strip merge tags from social proof fields before saving
+				foreach ( $wfob_settings as $key => $value ) {
+					if ( is_string( $value ) && preg_match( '/^product_\d+_social_proof_(heading|content)$/', $key ) ) {
+						$stripped              = preg_replace( '/\{\{[^}]+\}\}/', '', $value );
+						$wfob_settings[ $key ] = ( null !== $stripped ) ? $stripped : $value;
+					}
+				}
+
+				WFOB_Common::update_design_data( absint( $_POST['wfob_id'] ), $wfob_settings ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$resp = array(
 					'msg'    => __( 'Changes saved' ),
 					'status' => true,
@@ -595,7 +635,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				return $resp;
 			}
 			$wfob_id    = absint( $post['wfob_id'] );
-			$posted_qty = absint( $post['qty'] );
+			$posted_qty = wc_stock_amount( wc_clean( $post['qty'] ?? 0 ) );
 			WFOB_Common::set_id( absint( $wfob_id ) );
 			$products         = WFOB_Common::get_bump_products( absint( $wfob_id ) );
 			$product_design   = WFOB_Common::get_design_data_meta( $wfob_id );
@@ -715,7 +755,6 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			$custom_data['_wfob_options']                 = $product;
 			$custom_data['_wfob_options']['_wfob_id']     = $wfob_id;
 			$custom_data['_wfob_options']['custom_image'] = $custom_image_url;
-
 			$post['product_id']                          = $product_id;
 			$custom_data['_wfob_options']['posted_data'] = $post;
 
@@ -775,14 +814,14 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 			$qty         = wc_clean( $post['qty'] );
 			$cart_key    = wc_clean( $post['cart_key'] );
 			$product_key = wc_clean( $post['product_key'] );
-			$qty         = absint( $qty );
+			$qty         = wc_stock_amount( $qty );
 			$wfob_id     = absint( wc_clean( $post['wfob_id'] ) );
 			$products    = WFOB_Common::get_bump_products( absint( $wfob_id ) );
 			if ( ! isset( $products[ $product_key ] ) ) {
 
 				return $resp;
 			}
-			if ( 0 === $qty ) {
+			if ( $qty <= 0 ) {
 				$temp = WFOB_Common::remove_bump_from_cart( $post );
 				if ( ! empty( $temp ) ) {
 					$resp = $temp;

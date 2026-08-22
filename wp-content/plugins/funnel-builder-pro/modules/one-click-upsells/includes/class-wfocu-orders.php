@@ -1163,8 +1163,12 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 			if ( ! isset( $get_package['_diff_charged'] ) ) {
 				/*
 				 * maintain old refund behaviour if primary order amount greater than upsell
+				 * Note: get_total() returns a string ("0.00"), so cast to float — a strict 0 === check
+				 * never matches and a zero-total order (e.g. free trial) would hit the refund path,
+				 * where gateways reject 0 amounts and the order was silently left uncancelled.
+				 * $gateway is false when the order has no payment method (fully discounted orders).
 				 */
-				if ( ! $gateway->supports( 'refunds' ) || ( 0 === $get_parent_order->get_total() ) ) {
+				if ( false === $gateway || ! $gateway->supports( 'refunds' ) || 0 >= (float) $get_parent_order->get_total() ) {
 					$get_parent_order->update_status( 'wc-cancelled' );
 				} else {
 					wc_create_refund(
@@ -1367,6 +1371,9 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 				foreach ( $results as $rows ) {
 					$order = wc_get_order( $rows->meta_value );
+					if ( ! $order instanceof WC_Order ) {
+						continue;
+					}
 					echo '<div class="wfocu-additional-order-wrapper">';
 
 					woocommerce_order_details_table( $order->get_id() );

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bundle name="FunnelKit Funnel Builder">
+  <exclude>
+    <directory>node_modules</directory>
+    <directory>admin/app/src</directory>
+    <directory>admin/app/wasm-pkg</directory>
+    <directory>modules/thankyou-pages/compatibilities/page-builders/gutenberg/node_modules</directory>
+    <directory>modules/optins/modules/optin-pages/compatibilities/page-builders/gutenberg/node_modules</directory>
+  </exclude>
+  <domain name="funnel-builder">
+    <project name="FunnelKit Funnel Builder" slug="funnel-builder">
+      <source>
+        <directory>.</directory>
+        <exclude>
+          <directory>admin/app/dist</directory>
+          <directory>admin/app/src</directory>
+          <directory>woofunnels</directory>
+          <directory>node_modules</directory>
+        </exclude>
+      </source>
+      <target>
+        <directory>languages</directory>
+      </target>
+      <template locked="true">
+        <file>languages/funnel-builder.pot</file>
+      </template>
+    </project>
+  </domain>
+</bundle>

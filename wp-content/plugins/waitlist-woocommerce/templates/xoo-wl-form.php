@@ -8,7 +8,7 @@
  * maintain compatibility. We try to do this as little as possible, but it does
  * happen.
  * @see     https://docs.xootix.com/waitlist-for-woocommerce/
- * @version 2.4
+ * @version 2.9.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) { 
@@ -21,8 +21,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 <?php do_action( 'xoo_wl_before_form' ); ?>
 
 <div class="xoo-wl-header">
-	<span class="xwh-heading"><?php echo esc_html( xoo_wl_helper()->get_general_option( 'txt-head' ) ); ?></span>
-	<span class="xwh-subheading"><?php echo esc_html( xoo_wl_helper()->get_general_option( 'txt-subhead' ) ); ?></span>
+
+	<?php if( get_option('xoo-wl-old-btn-layout') && xoo_wl_helper()->get_general_option( 'txt-new-form-desc' ) !== "yes" ): ?>
+
+		<span class="xwh-heading"><?php echo esc_html( xoo_wl_helper()->get_general_option( 'txt-head' ) ); ?></span>
+		<span class="xwh-subheading"><?php echo esc_html( xoo_wl_helper()->get_general_option( 'txt-subhead' ) ); ?></span>
+
+	<?php else: ?>
+
+		<?php echo wp_kses_post( xoo_wl_helper()->get_general_option( 'txt-form-desc' ) ); ?>
+
+	<?php endif; ?>
+
 </div>
 
 <?php if( !is_user_logged_in() && xoo_wl_helper()->get_general_option( 'm-en-guest' ) !== "yes" ): ?>

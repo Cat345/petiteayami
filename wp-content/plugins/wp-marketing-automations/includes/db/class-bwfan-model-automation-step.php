@@ -8,6 +8,16 @@ class BWFAN_Model_Automation_Step extends BWFAN_Model {
 	static $primary_key = 'ID';
 
 	/**
+	 * Step lifecycle status values stored in the `status` column.
+	 *
+	 * @since 3.8.1
+	 */
+	const STATUS_ACTIVE     = 1; // Default — runs at runtime
+	const STATUS_INCOMPLETE = 2; // Required config fields missing (visual-only via bwf-draft-node)
+	const STATUS_ARCHIVED   = 4; // Set by delete (update_steps_status)
+	const STATUS_DISABLED   = 5; // User-toggled "skip me at runtime"
+
+	/**
 	 * Get Steps
 	 *
 	 * @param int $aid
@@ -162,7 +172,14 @@ class BWFAN_Model_Automation_Step extends BWFAN_Model {
 
 		return $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
-
+	
+	/**	
+	 * Get step data by id
+	 *
+	 * @param $step_id
+	 *
+	 * @return array|bool
+	 */
 	public static function get_step_data_by_id( $step_id ) {
 		$result = BWFAN_Model_Automation_Step::get_specific_rows( 'ID', $step_id );
 
@@ -240,6 +257,61 @@ class BWFAN_Model_Automation_Step extends BWFAN_Model {
 		$query = $wpdb->prepare( "SELECT ID FROM {$table} WHERE `status` != %d AND ID = %d", 3, $id );
 
 		return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	}
+
+	/**
+	 * Routable check for the runtime hot path (jump / wait-skip targets).
+	 * Returns the step ID if the target is Active (1) OR Disabled (5).
+	 *
+	 * A disabled target is intentionally allowed through: the contact is routed
+	 * onto it and process_disabled_step() then fast-forwards past it — the same
+	 * graceful skip a normal edge into a disabled step already gets. Deleted
+	 * (row gone), Archived (4) and Incomplete (2) targets remain unroutable.
+	 *
+	 * Distinct from is_step_active(), whose looser "not archived (!= 3)" semantic
+	 * is required by editor-load (so disabling a jump target does not silently
+	 * clear jump_to).
+	 *
+	 * @param int $id step ID
+	 *
+	 * @since 3.8.1
+	 *
+	 * @return string|null
+	 */
+	public static function is_step_runtime_routable( $id ) {
+		if ( empty( $id ) ) {
+			return 0;
+		}
+
+		global $wpdb;
+		$table = self::_table();
+		$query = $wpdb->prepare( "SELECT ID FROM {$table} WHERE `status` IN ( %d, %d ) AND ID = %d", self::STATUS_ACTIVE, self::STATUS_DISABLED, $id );
+
+		return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	}
+
+	/**
+	 * Fresh list of disabled (status 5) step IDs for an automation.
+	 * The automation meta `steps` array caches a stale step_status after a disable
+	 * toggle, so callers that need the live disabled set (e.g. the async goal-jump
+	 * traversal) must read the DB directly.
+	 *
+	 * @param int $aid automation id
+	 *
+	 * @since 3.8.1
+	 *
+	 * @return int[] step IDs
+	 */
+	public static function get_disabled_step_ids( $aid ) {
+		if ( empty( $aid ) ) {
+			return [];
+		}
+
+		global $wpdb;
+		$table = self::_table();
+		$query = $wpdb->prepare( "SELECT ID FROM {$table} WHERE `aid` = %d AND `status` = %d", $aid, self::STATUS_DISABLED );
+
+		return array_map( 'intval', (array) $wpdb->get_col( $query ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	/**

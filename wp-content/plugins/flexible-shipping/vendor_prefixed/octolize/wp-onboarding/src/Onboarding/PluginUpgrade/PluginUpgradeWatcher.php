@@ -12,11 +12,11 @@ class PluginUpgradeWatcher implements Hookable
     /**
      * @var string
      */
-    private $plugin_file_name;
+    private string $plugin_file_name;
     /**
      * @var OnboardingOption
      */
-    private $onboarding_option;
+    private OnboardingOption $onboarding_option;
     /**
      * @param string $plugin_file_name
      * @param OnboardingOption $onboarding_option

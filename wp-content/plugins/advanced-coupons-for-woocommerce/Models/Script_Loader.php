@@ -466,13 +466,19 @@ class Script_Loader extends Base_Model implements Model_Interface {
                 'include_users'      => __( 'Include Users', 'advanced-coupons-for-woocommerce' ),
                 'exclude_users'      => __( 'Exclude Users', 'advanced-coupons-for-woocommerce' ),
                 'user_search_holder' => __( 'Search by name or email...', 'advanced-coupons-for-woocommerce' ),
+                'combine_hint'       => __( 'Users must match all of the filters you set.', 'advanced-coupons-for-woocommerce' ),
                 'preview_button'     => __( 'Preview Users', 'advanced-coupons-for-woocommerce' ),
+                'preview_disabled'   => __( 'Set at least one filter or user to preview.', 'advanced-coupons-for-woocommerce' ),
                 'reset_button'       => __( 'Reset Filters', 'advanced-coupons-for-woocommerce' ),
+                'reset_confirm'      => __( 'Clear all filters?', 'advanced-coupons-for-woocommerce' ),
+                'reset_confirm_ok'   => __( 'Reset', 'advanced-coupons-for-woocommerce' ),
+                'reset_confirm_no'   => __( 'Cancel', 'advanced-coupons-for-woocommerce' ),
             ),
             'preview_table'      => array(
                 /* translators: %s: number of users matched. */
                 'matched_count'     => __( '%s users matched', 'advanced-coupons-for-woocommerce' ),
                 'no_results'        => __( 'No users matched the selected filters.', 'advanced-coupons-for-woocommerce' ),
+                'no_results_hint'   => __( 'Try loosening or removing some filters.', 'advanced-coupons-for-woocommerce' ),
                 'empty_state'       => __( 'Set your filters and click "Preview Users" to see the matched customers.', 'advanced-coupons-for-woocommerce' ),
                 'name'              => __( 'Name', 'advanced-coupons-for-woocommerce' ),
                 'email'             => __( 'Email', 'advanced-coupons-for-woocommerce' ),
@@ -482,27 +488,37 @@ class Script_Loader extends Base_Model implements Model_Interface {
                 'new_balance'       => __( 'New Balance', 'advanced-coupons-for-woocommerce' ),
             ),
             'adjustment_form'    => array(
-                'title'            => __( 'Configure Adjustment', 'advanced-coupons-for-woocommerce' ),
-                'adjustment_type'  => __( 'Adjustment Type', 'advanced-coupons-for-woocommerce' ),
-                'increase'         => __( 'Increase', 'advanced-coupons-for-woocommerce' ),
-                'decrease'         => __( 'Decrease', 'advanced-coupons-for-woocommerce' ),
-                'amount_mode'      => __( 'Amount Mode', 'advanced-coupons-for-woocommerce' ),
-                'fixed'            => __( 'Fixed', 'advanced-coupons-for-woocommerce' ),
-                'percentage'       => __( 'Percentage', 'advanced-coupons-for-woocommerce' ),
-                'amount'           => __( 'Amount', 'advanced-coupons-for-woocommerce' ),
-                'note'             => __( 'Note', 'advanced-coupons-for-woocommerce' ),
-                'note_placeholder' => __( 'e.g. Q2 loyalty bonus', 'advanced-coupons-for-woocommerce' ),
-                'send_email'       => __( 'Send email to users', 'advanced-coupons-for-woocommerce' ),
-                'apply_button'     => __( 'Apply Adjustment', 'advanced-coupons-for-woocommerce' ),
+                'title'                => __( 'Configure Adjustment', 'advanced-coupons-for-woocommerce' ),
+                'adjustment_type'      => __( 'Adjustment Type', 'advanced-coupons-for-woocommerce' ),
+                'increase'             => __( 'Increase', 'advanced-coupons-for-woocommerce' ),
+                'decrease'             => __( 'Decrease', 'advanced-coupons-for-woocommerce' ),
+                'amount_mode'          => __( 'Amount Mode', 'advanced-coupons-for-woocommerce' ),
+                'fixed'                => __( 'Fixed', 'advanced-coupons-for-woocommerce' ),
+                'percentage'           => __( 'Percentage', 'advanced-coupons-for-woocommerce' ),
+                'amount'               => __( 'Amount', 'advanced-coupons-for-woocommerce' ),
+                // Live projected-impact summary shown directly beneath the Amount input so the
+                // effect of the entered amount is visible without scrolling up to the preview table.
+                'impact_title'         => __( 'Projected impact', 'advanced-coupons-for-woocommerce' ),
+                'impact_users'         => __( 'Users matched', 'advanced-coupons-for-woocommerce' ),
+                'impact_total'         => __( 'Projected total', 'advanced-coupons-for-woocommerce' ),
+                'impact_sample'        => __( 'Sample new balance', 'advanced-coupons-for-woocommerce' ),
+                /* translators: 1: current balance, 2: projected new balance. */
+                'impact_sample_format' => __( '%1$s → %2$s', 'advanced-coupons-for-woocommerce' ),
+                'impact_updating'      => __( 'Updating preview…', 'advanced-coupons-for-woocommerce' ),
+                'note'                 => __( 'Note', 'advanced-coupons-for-woocommerce' ),
+                'note_placeholder'     => __( 'e.g. Q2 loyalty bonus', 'advanced-coupons-for-woocommerce' ),
+                'send_email'           => __( 'Send email to users', 'advanced-coupons-for-woocommerce' ),
             ),
             'operation_type'     => array(
-                'label'   => __( 'Operation', 'advanced-coupons-for-woocommerce' ),
-                'options' => array(
+                'label'          => __( 'Operation', 'advanced-coupons-for-woocommerce' ),
+                // Heading that visually separates the destructive operations from the safe "Adjust" default in the radio group.
+                'danger_divider' => __( 'Destructive actions', 'advanced-coupons-for-woocommerce' ),
+                'options'        => array(
                     'adjust' => __( 'Adjust', 'advanced-coupons-for-woocommerce' ),
                     'reset'  => __( 'Reset to Zero', 'advanced-coupons-for-woocommerce' ),
                     'delete' => __( 'Delete All Entries', 'advanced-coupons-for-woocommerce' ),
                 ),
-                'help'    => array(
+                'help'           => array(
                     'adjust' => __( 'Increase or decrease balances by a fixed or percentage amount.', 'advanced-coupons-for-woocommerce' ),
                     'reset'  => __( 'Set balance to zero, keep history.', 'advanced-coupons-for-woocommerce' ),
                     'delete' => __( 'Remove all entries for matched users — history will be lost.', 'advanced-coupons-for-woocommerce' ),
@@ -519,12 +535,35 @@ class Script_Loader extends Base_Model implements Model_Interface {
                 'email_notify'      => __( 'Email notify', 'advanced-coupons-for-woocommerce' ),
                 'yes'               => __( 'Yes', 'advanced-coupons-for-woocommerce' ),
                 'no'                => __( 'No', 'advanced-coupons-for-woocommerce' ),
-                'cancel_button'     => __( 'Cancel', 'advanced-coupons-for-woocommerce' ),
                 'confirm_button'    => __( 'Confirm', 'advanced-coupons-for-woocommerce' ),
+                // Action-specific confirm labels for the destructive operations. The safe
+                // "adjust" path keeps the generic `confirm_button` above.
+                'confirm_reset'     => __( 'Reset Balances', 'advanced-coupons-for-woocommerce' ),
+                'confirm_delete'    => __( 'Delete Entries', 'advanced-coupons-for-woocommerce' ),
+                // Typed-acknowledgment gate for the irreversible "delete" operation. The user
+                // must type `ack_phrase` before the Delete Entries button is enabled.
+                'ack_phrase'        => _x( 'DELETE', 'bulk store credit delete confirmation phrase the user must type', 'advanced-coupons-for-woocommerce' ),
+                /* translators: %s: the word the user must type (e.g. DELETE). */
+                'ack_label'         => __( 'Type %s to confirm', 'advanced-coupons-for-woocommerce' ),
                 'warning'           => array(
                     'reset'  => __( 'This will set every matched user\'s store credit balance to zero. The ledger history is preserved, but the operation cannot be reversed.', 'advanced-coupons-for-woocommerce' ),
                     'delete' => __( 'This will permanently delete every store credit entry for the matched users. Both the balance and the full ledger history will be wiped, and the operation cannot be reversed.', 'advanced-coupons-for-woocommerce' ),
                 ),
+            ),
+            'steps'              => array(
+                // Guided 3-step wizard header (antd Steps) titles/descriptions plus the
+                // forward/back navigation and the first-run orientation intro.
+                'find_title'            => __( 'Find users', 'advanced-coupons-for-woocommerce' ),
+                'find_description'      => __( 'Filter & preview', 'advanced-coupons-for-woocommerce' ),
+                'configure_title'       => __( 'Configure', 'advanced-coupons-for-woocommerce' ),
+                'configure_description' => __( 'Set the adjustment', 'advanced-coupons-for-woocommerce' ),
+                'review_title'          => __( 'Review & run', 'advanced-coupons-for-woocommerce' ),
+                'review_description'    => __( 'Confirm & apply', 'advanced-coupons-for-woocommerce' ),
+                'next_button'           => __( 'Next', 'advanced-coupons-for-woocommerce' ),
+                'back_button'           => __( 'Back', 'advanced-coupons-for-woocommerce' ),
+                'next_disabled_preview' => __( 'Preview at least one matching user to continue.', 'advanced-coupons-for-woocommerce' ),
+                'how_it_works_title'    => __( 'How it works', 'advanced-coupons-for-woocommerce' ),
+                'how_it_works_body'     => __( 'Adjust store credit for many customers in three steps: (1) find users with filters, (2) configure the adjustment, (3) review and run. Nothing changes until you run it on the final step.', 'advanced-coupons-for-woocommerce' ),
             ),
             'progress_view'      => array(
                 'title_queued'              => __( 'Bulk Adjustment Queued', 'advanced-coupons-for-woocommerce' ),

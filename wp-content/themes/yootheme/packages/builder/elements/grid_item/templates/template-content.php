@@ -21,6 +21,14 @@ $title = $this->el($element['title_element'], [
 
 ]);
 
+$titleInner = $element['title_color'] == 'background' || $element['title_decoration'] == 'line' ? $this->el('span', [
+
+    'class' => [
+        'uk-text-background' => $element['title_color'] == 'background',
+    ],
+
+]) : null;
+
 // Meta
 $meta = $this->el($element['meta_element'], [
 
@@ -108,15 +116,7 @@ $cell_content = $this->el('div', [
         <?php endif ?>
 
         <?php if ($props['title'] != '') : ?>
-        <?= $title($element) ?>
-            <?php if ($element['title_color'] == 'background') : ?>
-            <span class="uk-text-background"><?= $props['title'] ?></span>
-            <?php elseif ($element['title_decoration'] == 'line') : ?>
-            <span><?= $props['title'] ?></span>
-            <?php else : ?>
-            <?= $props['title'] ?>
-            <?php endif ?>
-        <?= $title->end() ?>
+        <?= $title($element, $titleInner ? $titleInner([], $props['title']) : $props['title']) ?>
         <?php endif ?>
 
         <?php if ($props['meta'] != '' && $element['meta_align'] == 'below-title') : ?>

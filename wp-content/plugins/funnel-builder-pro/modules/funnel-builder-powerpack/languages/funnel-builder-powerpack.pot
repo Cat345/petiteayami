@@ -1,0 +1,2375 @@
+# Copyright (C) 2026 funnelkit
+# This file is distributed under the GPLv3 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: FunnelKit Funnel Builder Powerpack 0.9.2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/funnel-builder-powerpack\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-08-20T13:40:41+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: funnel-builder-powerpack\n"
+
+#. Plugin Name of the plugin
+#: funnel-builder-powerpack.php
+msgid "FunnelKit Funnel Builder Powerpack"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: funnel-builder-powerpack.php
+msgid "https://funnelkit.com"
+msgstr ""
+
+#. Description of the plugin
+#: funnel-builder-powerpack.php
+msgid "Its a development addon to any pro functionalities inside funnel builder, it works as submodule for funnel-builder-pro"
+msgstr ""
+
+#. Author of the plugin
+#: funnel-builder-powerpack.php
+msgid "funnelkit"
+msgstr ""
+
+#: admin/class-wffn-pro-admin.php:206
+msgid "Facebook Pixel ID"
+msgstr ""
+
+#: admin/class-wffn-pro-admin.php:216
+msgid "Conversion API Access Token"
+msgstr ""
+
+#: admin/class-wffn-pro-admin.php:224
+msgid "Conversion API Test event code"
+msgstr ""
+
+#: admin/class-wffn-pro-admin.php:229
+msgid "Google Analytics ID"
+msgstr ""
+
+#: admin/class-wffn-pro-admin.php:233
+msgid "Google Ads Conversion ID"
+msgstr ""
+
+#: admin/class-wffn-pro-admin.php:237
+msgid "Google Ads Conversion Label"
+msgstr ""
+
+#: admin/class-wffn-pro-admin.php:241
+msgid "Pinterest Tag ID"
+msgstr ""
+
+#: admin/class-wffn-pro-admin.php:245
+msgid "TikTok Pixel ID"
+msgstr ""
+
+#: admin/class-wffn-pro-admin.php:249
+msgid "Snapchat Pixel ID"
+msgstr ""
+
+#: includes/class-wffn-conversion-data.php:414
+msgid "No Referrer Founds"
+msgstr ""
+
+#: includes/class-wffn-rest-api-endpoint.php:111
+msgid "steps"
+msgstr ""
+
+#: includes/class-wffn-rest-api-endpoint.php:1763
+#: includes/class-wffn-rest-api-endpoint.php:3056
+msgid "success"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:112
+msgid "Export ids"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:130
+msgid "Export Type"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:152
+#: includes/class-wffn-rest-import-export.php:198
+msgid "title"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:157
+#: includes/class-wffn-rest-import-export.php:203
+msgid "fields"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:175
+msgid "Offset"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:180
+msgid "Limit"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:341
+msgid "No Running Export data found"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:379
+msgid "Export already running"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:391
+msgid "Get all column heads"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:396
+#: includes/exporter/export-actions/class-wffn-export-leads.php:49
+#: includes/exporter/export-actions/class-wffn-export-orders.php:50
+msgid "Email"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:397
+msgid "First Name"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:398
+msgid "Last Name"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:403
+msgid "Order ID"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:404
+#: includes/exporter/export-actions/class-wffn-export-orders.php:56
+msgid "Checkout Name"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:405
+msgid "Products Purchased"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:406
+msgid "Order Total"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:407
+msgid "Coupon Applied"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:412
+msgid "Bump Name"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:413
+#: includes/exporter/export-actions/class-wffn-export-orders.php:61
+msgid "Bump Accepted"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:414
+msgid "Product Purchased"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:415
+#: includes/exporter/export-actions/class-wffn-export-orders.php:64
+msgid "Bump Total"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:420
+msgid "Offer Name"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:421
+#: includes/exporter/export-actions/class-wffn-export-orders.php:66
+msgid "Offer Accepted"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:422
+msgid "Offer Price"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:427
+msgid "Optin Custom Field"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:438
+msgid "No Export data found"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:466
+msgid "Got Export data"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:479
+#: includes/class-wffn-rest-import-export.php:522
+msgid "Error in exporting contacts"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:489
+#: includes/class-wffn-rest-import-export.php:609
+#: includes/class-wffn-rest-import-export.php:681
+#: includes/class-wffn-rest-import-export.php:791
+#: includes/class-wffn-rest-import-export.php:860
+msgid "Not a valid funnel id"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:513
+#: includes/class-wffn-rest-import-export.php:541
+#: includes/class-wffn-rest-import-export.php:624
+#: includes/class-wffn-rest-import-export.php:651
+#: includes/class-wffn-rest-import-export.php:696
+#: includes/class-wffn-rest-import-export.php:725
+#: includes/class-wffn-rest-import-export.php:762
+#: includes/class-wffn-rest-import-export.php:806
+#: includes/class-wffn-rest-import-export.php:835
+#: includes/class-wffn-rest-import-export.php:875
+msgid "Export Added to Queue"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:552
+msgid "Unable to get export data with id"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:575
+msgid "Successfully fetched export data with id"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:595
+#: includes/class-wffn-rest-import-export.php:633
+#: includes/class-wffn-rest-import-export.php:844
+msgid "Error in exporting referrer"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:668
+msgid "Error in exporting orders"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:706
+msgid "Error in exporting Orders"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:741
+msgid "Error in exporting UTM Campaigns"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:753
+msgid "Global UTM Campaign Export"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:778
+#: includes/class-wffn-rest-import-export.php:816
+msgid "Error in exporting Leads"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:885
+msgid "Something wrong"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:901
+msgid "Deleted Successfully"
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:914
+msgid "Invalid Export ID."
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:919
+msgid "Export file is not ready yet."
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:924
+msgid "Export file url is missing."
+msgstr ""
+
+#: includes/class-wffn-rest-import-export.php:945
+msgid "Sorry, we are unable to locate export file. Please try exporting again."
+msgstr ""
+
+#: includes/expiry-email-template/email-body.php:15
+#: includes/expiry-email-template/email-body.php:17
+msgid "there"
+msgstr ""
+
+#: includes/exporter/class-wffn-abstract-exporter.php:60
+#: includes/exporter/export-actions/class-wffn-export-campaign.php:103
+msgid "wffn export"
+msgstr ""
+
+#: includes/exporter/class-wffn-abstract-exporter.php:121
+#: includes/exporter/export-actions/class-wffn-export-campaign.php:96
+msgid "Error in export create export"
+msgstr ""
+
+#: includes/exporter/class-wffn-abstract-exporter.php:134
+msgid "No Data Found"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-campaign.php:45
+#: includes/exporter/export-actions/class-wffn-export-orders.php:23
+#: includes/exporter/export-actions/class-wffn-export-referrers.php:49
+#: includes/exporter/export-actions/class-wffn-export-utms-global.php:55
+msgid "Orders"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-campaign.php:46
+#: includes/exporter/export-actions/class-wffn-export-utms-global.php:57
+msgid "Revenue"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-campaign.php:47
+msgid "Type"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-campaign.php:48
+#: includes/exporter/export-actions/class-wffn-export-referrers.php:52
+msgid "Average Order Value"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-campaign.php:61
+msgid "Error in exporting Referrers"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-campaign.php:73
+msgid "Error in exporting Referrers check funnel logs"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-campaign.php:82
+msgid "No Referrers found"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-campaign.php:111
+msgid "No data found"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads-global.php:23
+#: includes/exporter/export-actions/class-wffn-export-leads.php:23
+msgid "Leads"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:48
+#: includes/exporter/export-actions/class-wffn-export-orders.php:48
+msgid "Order Id"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:50
+#: includes/exporter/export-actions/class-wffn-export-orders.php:49
+msgid "Name"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:51
+#: includes/exporter/export-actions/class-wffn-export-orders.php:51
+msgid "Phone"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:52
+msgid "Others"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:53
+#: includes/exporter/export-actions/class-wffn-export-orders.php:53
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:317
+msgid "Date"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:54
+#: includes/exporter/export-actions/class-wffn-export-orders.php:71
+msgid "Device"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:55
+#: includes/exporter/export-actions/class-wffn-export-orders.php:72
+#: includes/exporter/export-actions/class-wffn-export-referrers.php:23
+msgid "Referrers"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:56
+#: includes/exporter/export-actions/class-wffn-export-orders.php:73
+msgid "Utm Campaign"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:57
+#: includes/exporter/export-actions/class-wffn-export-orders.php:74
+msgid "Utm Source"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:58
+#: includes/exporter/export-actions/class-wffn-export-orders.php:75
+msgid "Utm Medium"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:59
+#: includes/exporter/export-actions/class-wffn-export-orders.php:76
+msgid "Utm Term"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:60
+msgid "Contact ID"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:61
+#: includes/exporter/export-actions/class-wffn-export-orders.php:52
+msgid "Funnel"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-leads.php:62
+#: includes/exporter/export-actions/class-wffn-export-orders.php:77
+msgid "Time to Convert"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-orders.php:55
+msgid "Total Spent"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-orders.php:57
+msgid "Checkout Total"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-orders.php:58
+msgid "Checkout Product"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-orders.php:59
+msgid "Checkout Coupons"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-orders.php:62
+msgid "Bump Rejected"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-orders.php:63
+msgid "Bump Products"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-orders.php:67
+msgid "Offer Rejected"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-orders.php:68
+msgid "Offer Products"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-orders.php:69
+msgid "Offer Total"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-referrers.php:48
+msgid "Referring Sites"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-referrers.php:50
+msgid "Optins"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-referrers.php:51
+msgid "Gross Sales"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-utms-global.php:20
+msgid "utms"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-utms-global.php:50
+msgid "UTM Campaign"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-utms-global.php:51
+msgid "UTM Source"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-utms-global.php:52
+msgid "UTM Medium"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-utms-global.php:53
+msgid "UTM Content"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-utms-global.php:54
+msgid "UTM Term"
+msgstr ""
+
+#: includes/exporter/export-actions/class-wffn-export-utms-global.php:56
+msgid "Opt-ins"
+msgstr ""
+
+#: includes/optin-pro/actions/class-wffn-optin-action-assign-ld-course.php:204
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "None"
+msgstr ""
+
+#: includes/optin-pro/actions/class-wffn-optin-action-assign-ld-course.php:219
+#, php-format
+msgid "Non-enrolled students will redirect to the selected Funnel template. If you have not created any Funnel already, add new Funnel from %1$shere%2$s."
+msgstr ""
+
+#: includes/optin-pro/actions/class-wffn-optin-action-assign-ld-course.php:222
+msgid "Select Funnel step for this Course"
+msgstr ""
+
+#: includes/optin-pro/class-wffn-wp-user-autologin.php:176
+msgid "Invalid autologin link."
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-checkbox.php:46
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-checkbox.php:87
+msgid "Checkbox"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-checkbox.php:98
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-hidden.php:98
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-radio.php:104
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-select.php:116
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:158
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:288
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:329
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:345
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:351
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Label"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-checkbox.php:106
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-radio.php:112
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-select.php:124
+msgid "Required"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-checkbox.php:115
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-hidden.php:106
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-radio.php:121
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-select.php:134
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:283
+msgid "Default"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-checkbox.php:120
+msgid "Checked"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-checkbox.php:122
+msgid "Un-Checked"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-checkbox.php:128
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-radio.php:129
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-select.php:142
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:56
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:269
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Width"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-hidden.php:45
+msgid "Hidden"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-hidden.php:87
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-select.php:45
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-select.php:103
+msgid "Select"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-html.php:45
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-html.php:66
+msgid "HTML"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-phone.php:105
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-phone.php:187
+msgid "Phone Number"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-radio.php:45
+msgid "Radios"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-radio.php:92
+msgid "Radio"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-radio.php:144
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-select.php:158
+msgid "Options"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-radio.php:147
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-select.php:161
+msgid "Enter options comma separated. Example: apple,grapes"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-text.php:46
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-text.php:85
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:285
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:71
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:97
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:106
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:121
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:127
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:200
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:205
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:290
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:295
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:149
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:171
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:241
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:360
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:439
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:488
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:69
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:124
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Text"
+msgstr ""
+
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-textarea.php:45
+#: includes/optin-pro/form-fields/class-wffn-optin-form-field-textarea.php:84
+msgid "Textarea"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:107
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:136
+msgid "Assign Course"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:108
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:137
+msgid "LMS Course"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:109
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:110
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:138
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:139
+msgid "Select Course"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:111
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:140
+msgid "Enter minimum 3 letters."
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:112
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:141
+msgid "Oops! No elements found. Consider changing the search query."
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:145
+msgid "AffiliateWP"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:146
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:67
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:104
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:106
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:117
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Enable"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:245
+msgid "Text Below Footer"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:256
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:696
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Font Size"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:268
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Font Family"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:299
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi-5/modules/OptinFormPopup/OptinFormPopupTrait/RenderCallbackTrait.php:204
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:107
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:181
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:79
+msgid "You're just one step away!"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:305
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi-5/modules/OptinFormPopup/OptinFormPopupTrait/RenderCallbackTrait.php:205
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:108
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:191
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:80
+msgid "Enter your details below and we'll get you signed up"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:313
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:151
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:69
+msgid "75% Complete"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:325
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi-5/modules/OptinFormPopup/OptinFormPopupTrait/RenderCallbackTrait.php:209
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:163
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:243
+msgid "Your Information is 100% Secure"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:530
+msgid "ActiveCampaign"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:531
+msgid "Drip"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:532
+msgid "ConvertKit"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:533
+msgid "InfusionSoft"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:534
+msgid "Mailchimp"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:535
+msgid "Mad Mimi"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:536
+msgid "Raw HTML"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:547
+msgid "Send contacts to"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:550
+msgid "Select Services"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:566
+msgid "Paste form embed code."
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:570
+msgid "Continue"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:571
+msgid "Form title must not be empty."
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/class-wffn-pro-optin-pages.php:580
+msgid "Map Fields"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi-5/modules/OptinFormPopup/OptinFormPopupTrait/RenderCallbackTrait.php:202
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:170
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:202
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:90
+msgid "Signup Now"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi-5/modules/OptinFormPopup/OptinFormPopupTrait/RenderCallbackTrait.php:206
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:160
+msgid "Send Me My Free Guide"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi-5/modules/OptinFormPopup/OptinFormPopupTrait/RenderCallbackTrait.php:208
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:162
+msgid "Submitting..."
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi-5/modules/OptinFormPopup/OptinFormPopupTrait/RenderCallbackTrait.php:210
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:71
+msgid "Almost Complete..."
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi-5/modules/OptinFormPopup/OptinFormPopupTrait/RenderCallbackTrait.php:405
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:24
+msgid "Optin Form Popup"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi-5/modules/OptinFormPopup/OptinFormPopupTrait/RenderCallbackTrait.php:406
+msgid "Popup configuration is required. Please configure your optin form fields."
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/class-wffn-pro-optin-pages-divi.php:55
+msgid "WF Optin Form Popup"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:24
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Popup Form"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:34
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:50
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:220
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:562
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:143
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Popup"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:36
+msgid "View Popup"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:43
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:230
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:146
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Fade"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:44
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:231
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:147
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Slide Up"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:45
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:232
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:148
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Slide Down"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:65
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:73
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:88
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:95
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:252
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:51
+msgid "Progress Bar"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:69
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:115
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:67
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Show progress text above the bar"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:70
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:134
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:68
+msgid "Animation"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:77
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:254
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:260
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:692
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Size"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:83
+msgid "Popup Bar Width"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:89
+msgid "Popup Bar Height"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:92
+msgid "Popup Bar Padding"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:94
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:340
+msgid "Styling"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:98
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:266
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:269
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:275
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:372
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:792
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:817
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:850
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:72
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:122
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:171
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Color"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:99
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:199
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:204
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:268
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:274
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:296
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:346
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:352
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:383
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:805
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:838
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:73
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Background"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:104
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:107
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:111
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:112
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:214
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:164
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:179
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:397
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:406
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:78
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:79
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Heading"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:108
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:217
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:189
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:80
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:138
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Sub Heading"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:125
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:452
+msgid "Sub-Heading"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:132
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:286
+msgid "Form"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:141
+msgid "Full"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:142
+msgid "One Half"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:143
+msgid "One Third"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:144
+msgid "Two Third"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:159
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:332
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Submit Button"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:160
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:170
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:202
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:90
+msgid "Title"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:161
+msgid "Sub Title"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:161
+msgid "Enter subtitle"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:162
+msgid "Submitting Text"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:163
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:325
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:237
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:567
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Text After Button"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:169
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:190
+msgid "Call To Action Button"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:171
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:91
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Subtitle"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:172
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:101
+msgid "Button Alignment"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:173
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:341
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:205
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:103
+msgid "Text Alignment"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:175
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:207
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:108
+msgid "Button Icon"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:181
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:112
+msgid "Icon Position"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:183
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:113
+msgid "Before"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:184
+msgid "After"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:202
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:271
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:348
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:798
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Normal"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:206
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:277
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:354
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:831
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Hover"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:208
+msgid "Title Typography"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:216
+msgid "SubTitle Typography"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:245
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:618
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:161
+msgid "Close Button"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:246
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:623
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Position"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:291
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Asterisk"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:293
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Input"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:297
+msgid "Field Size"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:299
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:362
+msgid "Advanced"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:315
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:179
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Spacing"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:321
+msgid "Columns"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:323
+msgid "Columns Row"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:338
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:511
+msgid "Button width (in %)"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:340
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Alignment"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:356
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:81
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Heading Typography"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:359
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:82
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Sub Heading Typography"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:389
+msgid "Small"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:390
+msgid "Medium"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:391
+msgid "Large"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/divi/modules/optin-form-popup.php:392
+msgid "Extra Large"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:33
+msgid "Optin Popup"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:107
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:118
+msgid "Disable"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:136
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:18
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:197
+msgid "Yes"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:137
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:19
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:198
+msgid "No"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:201
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:503
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:89
+msgid "Button"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:292
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Height"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:316
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:729
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Padding"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:540
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:168
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Typography"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:587
+msgid "Button width (in px)"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:627
+msgid "Vertical Position"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:660
+msgid "Horizontal Position"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/elementor/widgets/class-elementor-wffn-pro-optin-popup-widget.php:762
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Border Radius"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:46
+msgid "Popup Inline Button"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:99
+msgid "Heading Typography "
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:109
+msgid "Show Icon"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:127
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Text Hover"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:128
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Background Hover"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/oxygen/widgets/class-oxygen-wffn-pro-optin-popup-widget.php:151
+msgid "popup_bar_width"
+msgstr ""
+
+#: includes/wc_thankyou-pro/class-wffn-rest-thankyou-api-endpoint.php:36
+msgid "Current step id."
+msgstr ""
+
+#: includes/wc_thankyou-pro/class-wffn-rest-thankyou-api-endpoint.php:75
+#: includes/wc_thankyou-pro/class-wffn-rest-thankyou-api-endpoint.php:143
+msgid "Failed"
+msgstr ""
+
+#: includes/wc_thankyou-pro/class-wffn-rest-thankyou-api-endpoint.php:129
+msgid "Rules list loaded"
+msgstr ""
+
+#: includes/wc_thankyou-pro/class-wffn-rest-thankyou-api-endpoint.php:157
+msgid "Rules Updated"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:284
+msgid "No Rules"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:286
+msgid "Order"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:287
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/cart-product-select.php:31
+msgid "Products"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:288
+msgid "Product Category"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:289
+msgid "Product Tag"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:290
+msgid "Total"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:292
+msgid "Item Count"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:293
+msgid "Item Type"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:294
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/coupon-select.php:52
+msgid "Coupons"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:295
+msgid "If Coupon(s)"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:296
+msgid "Coupons - Text Match"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:297
+msgid "Payment Gateway"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:298
+msgid "Shipping Method"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:299
+msgid "Order Custom Field"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:301
+msgid "Customer"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:302
+msgid "Customer - Is First Order"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:303
+msgid "Customer - Is Guest"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:305
+msgid "Customer - User Name"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:306
+msgid "Customer - User Role"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:307
+msgid "Customer - Purchased Product: All Time"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:308
+msgid "Customer - Purchased Category: All Time"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:310
+msgid "Geography"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:311
+msgid "Shipping Country"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:312
+msgid "   Billing Country"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:315
+msgid "Date/Time"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:316
+msgid "Day"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:318
+msgid "Time"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:356
+msgid "Rules"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/includes/class-wfty-rules.php:391
+msgid "Rules Updated successfully"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/cart-category-select.php:32
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/cart-product-select.php:30
+msgid "Quantity"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/cart-category-select.php:33
+msgid "Categories"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/cart-category-select.php:40
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/chosen-select.php:32
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/order-state-select.php:30
+msgid "Search..."
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/coupon-exist.php:13
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:710
+msgid "In parent order"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/coupon-exist.php:28
+msgid "Coupon Exist"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/coupon-exist.php:32
+msgid "Select option&hellip;"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/coupon-select.php:56
+msgid "Select coupons&hellip;"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/coupon-text-match.php:16
+msgid "Enter the search key..."
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/custom-meta.php:12
+msgid "Enter custom meta key"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/custom-meta.php:13
+msgid "Enter custom meta value"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/geo-postal-code-entry.php:30
+msgid "Distance ( km )"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/geo-postal-code-entry.php:31
+msgid "Zip/Postal code ( One per line )"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/html-custome-rule-unavailable.php:20
+msgid "Indexing of orders is underway. This setting will work once the process completes."
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/html-custome-rule-unavailable.php:22
+msgid "This rule needs indexing of past orders. Go to <a target=\"_blank\" href=\""
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/html-funnel-onetime.php:18
+msgid "Run this funnel only if the user hasn't visited it yet."
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/html-funnel-products.php:18
+msgid "Run this funnel only if any of funnel product is not present in primary offer. "
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/html-rule-is-downgrade.php:18
+msgid "This Thank You Page will show up on orders that have downgraded subscriptions."
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/html-rule-is-first-order.php:18
+msgid "This Thank You Page will show up on very first order for the customer."
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/html-rule-is-guest.php:18
+msgid "This Thank You Page will show up on guest orders."
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/html-rule-is-renewal.php:18
+msgid "This Thank You Page will show on orders that are renewals."
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/html-rule-is-upgrade.php:18
+msgid "This Page will show on orders that have upgraded subscriptions."
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/user-select.php:58
+msgid "Users"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/inputs/user-select.php:62
+msgid "Select users&hellip;"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:38
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:80
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:159
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:11
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:82
+msgid "is equal to"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:39
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:81
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:160
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:12
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:83
+msgid "is not equal to"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:213
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:23
+msgid "Sunday"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:214
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:24
+msgid "Monday"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:215
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:25
+msgid "Tuesday"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:216
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:26
+msgid "Wednesday"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:217
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:27
+msgid "Thursday"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:218
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:28
+msgid "Friday"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:219
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:29
+msgid "Saturday"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:263
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:82
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:161
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:13
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:84
+msgid "is greater than"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:266
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:83
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:162
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:14
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:85
+msgid "is less than"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:269
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:84
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:163
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:15
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:86
+msgid "is greater or equal to"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:272
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:85
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:164
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:16
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:87
+msgid "is less or equal to"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:275
+msgid "has"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/base.php:278
+msgid "does not have"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/bwf-customer.php:76
+#, php-format
+msgid "Customer ever purchased product %1$s <strong>%2$s</strong>"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/bwf-customer.php:166
+#, php-format
+msgid "Customer ever purchased products %1$s category <strong>%2$s</strong>"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:64
+msgid "Is First order of a customer. "
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:80
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:127
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:14
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:849
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:913
+msgid "is"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:81
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:128
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:15
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:850
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:914
+msgid "is not"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:111
+#, php-format
+msgid "Customer is %s"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:178
+#, php-format
+msgid "Customer role %1$s %2$s"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/customer.php:218
+#, php-format
+msgid "Customer %s a guest user."
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:65
+#, php-format
+msgid "Current Day %1$s %2$s"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:143
+#, php-format
+msgid "Current Date %1$s %2$s"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/date-time.php:232
+#, php-format
+msgid "Current Time %1$s %2$s"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:67
+#, php-format
+msgid "Order Total %1$s  <strong>%2$s</strong>"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:140
+#, php-format
+msgid "Order Items count %1$s  <strong>%2$s</strong>"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:155
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:274
+msgid "contains at least"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:156
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:277
+msgid "contains less than"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:158
+msgid "contains exactly"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:159
+msgid "does not contain at least"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:261
+#, php-format
+msgid "Order items %1$s <strong>%2$s qty</strong> of <strong>%3$s</strong>"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:295
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:400
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:504
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:607
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:988
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:1064
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:1151
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:1229
+msgid "matched any of"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:296
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:401
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:505
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:608
+msgid "matches all of "
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:297
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:402
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:989
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:1065
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:1152
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:1230
+msgid "matches none of "
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:383
+#, php-format
+msgid "Order items %1$s Products with catergory(s) <strong>%2$s</strong>"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:488
+#, php-format
+msgid "Order items %1$s Products with term(s) <strong>%2$s</strong>"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:591
+#, php-format
+msgid "Order items %1$s Products with type(s) <strong>%2$s</strong>"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:609
+msgid "matched none of"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:686
+#, php-format
+msgid "Order %1$s coupons(s) <strong>%2$s</strong>"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:702
+msgid "exist"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:703
+msgid "not exist"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:745
+#, php-format
+msgid "Order %s any coupon. "
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:761
+msgid "any contains"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:762
+msgid "any starts with"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:763
+msgid "any ends with"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:764
+msgid "doesn't contain"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:833
+#, php-format
+msgid "Order %1$s coupon that matches with %2$s"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:897
+#, php-format
+msgid "Order %1$s meta %2$s with value %3$s"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:971
+#, php-format
+msgid "Order payment method %1$s of %2$s"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:1047
+#, php-format
+msgid "Order shipping country %1$s %2$s"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:1134
+#, php-format
+msgid "Order shipping method %1$s of %2$s"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:1211
+#, php-format
+msgid "Order Billing country %1$s %2$s"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/rules/order.php:1286
+#, php-format
+msgid "Order Billing state %1$s of %2$s"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/metabox-rules-rule-template-basic.php:24
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/metabox-rules-rule-template-product.php:27
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-basic.php:76
+msgid "Loading..."
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/metabox-rules-rule-template-basic.php:25
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/metabox-rules-rule-template-product.php:28
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-basic.php:79
+msgid "AND"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-basic.php:31
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-basic.php:94
+msgid "OR"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-basic.php:83
+msgid "Remove condition"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-basic.php:94
+msgid "Add a set of conditions"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-blocked.php:7
+msgid "Rules for this variant are already set"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-blocked.php:9
+msgid "Rules for this Thank You Page variant will be the same as that of the original variant."
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-create.php:9
+msgid "You’re Ready To Go"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-create.php:12
+msgid "Setup rules to trigger this Thank You Page."
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-create.php:13
+msgid " Add Rules"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-create.php:53
+msgid "Add rules to show conditional thank you page"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-create.php:56
+msgid ""
+"Want to show different thank you pages based on buyer purchase?\n"
+"<br> Use this section to add rules."
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-create.php:61
+msgid "Add Rules"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-head.php:8
+msgid "Rules to trigger the thank you page"
+msgstr ""
+
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-head.php:13
+#: includes/wc_thankyou-pro/modules/wc_thankyou/rules/views/rules-head.php:15
+msgid "Save changes"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Black"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Cyan bluish gray"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "White"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Pale pink"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Vivid red"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Luminous vivid orange"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Luminous vivid amber"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Light green cyan"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Vivid green cyan"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Pale cyan blue"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Vivid cyan blue"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Vivid purple"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Left"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Center"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Right"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Justify"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Line Through"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Underline"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Overline"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Capitalize"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Uppercase"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Lowercase"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Standard Fonts"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Google Fonts"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Inherit"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Thin 100"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Extra-Light 200"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Light 300"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Regular"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Medium 500"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Semi-Bold 600"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Bold 700"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Extra-Bold 800"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Ultra-Bold 900"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Margin"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Border"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Button Color"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Color Hover"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Button Secondary Color"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Secondary Color Hover"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Offer Price Color"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Offer Price Color Hover"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Background Color"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Button Background"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Z Index"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Font"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Box Shadow"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Structure"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Button Typography"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Button Secondary Typography"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Call to Action Button"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Popup Heading"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Popup Sub Heading"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Popup Text After"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Heading Color"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Popup Sub Heading Color"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Popup Progress Bar"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Popup Close Button"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Thumbnails"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Featured Image"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+msgid "Button Hover"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Min Width"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Max Width"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Min Height"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Max Height"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:1
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Box Shadow Hover"
+msgstr ""
+
+#. translators: %s: color hex code e.g: "#f00".
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid " Color"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid " Gradient"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid " Image"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Top"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Bottom"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Border Style"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Not Set"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Solid"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Dotted"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Double"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Inset"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Outset"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Ridge"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Dashed"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Border Width"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Border Color"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "All"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Select a font family"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Weight"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Type to search icon"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Upload SVG"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Clear icon"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "No matches found"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Reset"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Icon"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "H Offset"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "V Offests"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Blur"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Spread"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Enable Box Shadow Inset"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Letter Spacing"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Line Height"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Text Decoration Line"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Text Decoration Style"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Text Decoration Color"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Text Shadow"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Opens in new tab"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Nofollow link"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Search or type url"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Align Left"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Align Center"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Align Right"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Align Top"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Align Bottom"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Stretch"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Justified"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Align"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+#, js-format
+msgid "%s Top"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Enable Subtitle Text"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Subtitle Text"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Enable Progress bar Animation"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Popup Effect"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Effect"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Sizing"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Vertical"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Horizontal"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Subtitle Text Hover"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid " Hover"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Fill color"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Text Color"
+msgstr ""
+
+#: includes/optin-pro/modules/optin-pages/compatibilities/page-builders/gutenberg/dist/optin-popup-block.js:10
+msgid "Background Color Hover"
+msgstr ""

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_PaysonCheckout_For_WC' ) ) {
 	/**
 	 * PaysonCheckout for WooCommerce BY  Krokedril

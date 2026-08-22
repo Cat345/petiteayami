@@ -1223,6 +1223,14 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 		public static function update_setting_data( $wfob_id, $settings = array() ) {
 
+			// Settings must be an associative array. A scalar string or an
+			// indexed/list array (e.g. ['w']) comes from a garbled AJAX/import
+			// payload and would later fatal when read as an assoc array in
+			// get_setting_data(). Reject anything that isn't a proper assoc array.
+			if ( ! is_array( $settings ) || ( array() !== $settings && array_keys( $settings ) === range( 0, count( $settings ) - 1 ) ) ) {
+				return;
+			}
+
 			update_post_meta( $wfob_id, '_wfob_settings', $settings );
 			if ( isset( $settings['priority'] ) ) {
 				wp_update_post(
@@ -1236,7 +1244,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 		public static function get_setting_data( $wfob_id ) {
 			$data = self::$bump_settings[ $wfob_id ] ?? get_post_meta( $wfob_id, '_wfob_settings', true );
-			if ( empty( $data ) ) {
+			if ( empty( $data ) || ! is_array( $data ) ) {
 				$data = array(
 					'priority'                         => 0,
 					'order_bump_position_hooks'        => self::default_bump_position(),
@@ -1513,6 +1521,31 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		}
 
 
+		/**
+		 * Resolve the image position a skin wants when a product image is seeded for the first time.
+		 *
+		 * Skins declare it as a CSS class in their default model (wfob_img_position_left / _right /
+		 * _top). The horizontal card skins want "left"; a vertical card skin like Skin 12 wants "top"
+		 * so the image sits centred above the content instead of inheriting the horizontal default.
+		 *
+		 * @param array $default_data The skin's default model.
+		 *
+		 * @return string
+		 */
+		public static function get_skin_default_image_position( $default_data ) {
+			$prefix = 'wfob_img_position_';
+
+			if ( is_array( $default_data ) && isset( $default_data['product_image_position_class'] ) && 0 === strpos( $default_data['product_image_position_class'], $prefix ) ) {
+				$position = substr( $default_data['product_image_position_class'], strlen( $prefix ) );
+
+				if ( '' !== $position ) {
+					return $position;
+				}
+			}
+
+			return 'left';
+		}
+
 		public static function add_product_details_default_layout( $products, $default_data ) {
 
 			if ( ! is_array( $products ) || empty( $products ) ) {
@@ -1579,7 +1612,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 						'custom_url' => '',
 						'image_url'  => $product['image'],
 						'width'      => '96',
-						'position'   => 'left',
+						'position'   => self::get_skin_default_image_position( $default_data ),
 						'type'       => 'product', // Product,Custom
 					);
 				}
@@ -1724,6 +1757,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				'discount_amount' => 0,
 				'discount_price'  => 0,
 				'quantity'        => 1,
+				'plan_id'         => 0,
 			);
 		}
 
@@ -2153,7 +2187,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				update_post_meta( $new_post_id, '_wfob_rules', get_post_meta( $post_id, '_wfob_rules', true ) );
 				update_post_meta( $new_post_id, '_wfob_is_rules_saved', get_post_meta( $post_id, '_wfob_is_rules_saved', true ) );
 				update_post_meta( $new_post_id, '_wfob_design_data', $design_data );
-				update_post_meta( $new_post_id, '_wfob_settings', get_post_meta( $post_id, '_wfob_settings', true ) );
+				self::update_setting_data( $new_post_id, get_post_meta( $post_id, '_wfob_settings', true ) );
 				update_post_meta( $new_post_id, '_wfob_product_settings', get_post_meta( $post_id, '_wfob_product_settings', true ) );
 				do_action( 'wfob_duplicate_pages', $new_post_id, $post_id );
 			}
@@ -2220,16 +2254,23 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		 *
 		 * @return array
 		 */
-		public static function get_cart_product_price_data( $pro, $cart_item, $qty = 1 ) {
+		public static function get_cart_product_price_data( $pro, $cart_item, $qty = 1, $original_price_data = array() ) {
 			$price_data = array();
 			if ( $pro instanceof WC_Product ) {
 				$display_type = get_option( 'woocommerce_tax_display_cart' );
+
+				// Respect bump-specific price overrides (e.g. from wfob_product_switcher_price_data filter).
+				// $original_price_data['regular_org'] is qty-multiplied, so divide back to unit price.
+				$unit_regular = ( ! empty( $original_price_data['regular_org'] ) && $qty > 0 )
+					? ( floatval( $original_price_data['regular_org'] ) / $qty )
+					: $pro->get_regular_price();
+
 				if ( 'incl' == $display_type ) {
 					$price_data['regular_org'] = wc_get_price_including_tax(
 						$pro,
 						array(
 							'qty'   => $qty,
-							'price' => $pro->get_regular_price(),
+							'price' => $unit_regular,
 						)
 					);
 					$price_data['price']       = round( $cart_item['line_subtotal'] + $cart_item['line_subtotal_tax'], wc_get_price_decimals() );
@@ -2238,7 +2279,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 						$pro,
 						array(
 							'qty'   => $qty,
-							'price' => $pro->get_regular_price(),
+							'price' => $unit_regular,
 						)
 					);
 					$price_data['price']       = round( $cart_item['line_subtotal'], wc_get_price_decimals() );
@@ -2343,7 +2384,17 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			if ( ! $product_obj instanceof WC_Product ) {
 				return false;
 			}
-			if ( $new_qty < 1 ) {
+
+			/**
+			 * Reject nothing-to-add, not "less than one unit".
+			 *
+			 * Bump quantities used to be absint()'d, so anything under 1 was already 0 by
+			 * the time it arrived here and `< 1` read as an emptiness check. Now that
+			 * quantities go through wc_stock_amount(), a site running a decimal-quantity
+			 * plugin legitimately sends 0.1 / 0.5 — and `< 1` rejected those as
+			 * out of stock no matter how much stock the product actually had.
+			 */
+			if ( $new_qty <= 0 ) {
 				return false;
 			}
 
@@ -2844,17 +2895,61 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 		public static function swap_product( $swap_product, $bump_product_key = '' ) {
 			$replace_key = array();
-			foreach ( WC()->cart->cart_contents as $key => $cart ) {
-				$product_id   = $cart['product_id'];
-				$variation_id = isset( $cart['variation_id'] ) ? $cart['variation_id'] : '';
-				if ( 'all' == $swap_product || in_array( $product_id, $swap_product ) || in_array( $variation_id, $swap_product ) ) {
-					WC()->cart->cart_contents[ $key ]['_wfob_replace_by'] = $bump_product_key;
-					WC()->cart->remove_cart_item( $key );
-					$replace_key[] = $key;
+			$public      = WFOB_Public::get_instance();
+			$swap_ids    = ( 'all' === $swap_product ) ? array() : array_filter( array_map( 'intval', (array) $swap_product ) );
+
+			/**
+			 * Suppress WFOB listeners on woocommerce_remove_cart_item while swapping:
+			 * restore_replaced_products() would restore swapped items mid-iteration and
+			 * unset_selected_bump_in_session() would clear bump session state for displaced bumps.
+			 */
+			remove_action( 'woocommerce_remove_cart_item', array( $public, 'woocommerce_remove_cart_item' ), 10 );
+			remove_action( 'woocommerce_remove_cart_item', array( $public, 'unset_selected_bump_in_session' ), 25 );
+
+			try {
+				foreach ( WC()->cart->cart_contents as $key => $cart ) {
+					// Bump products are never direct swap targets in 'all' mode; displaced bumps are resolved to their originals below.
+					if ( 'all' === $swap_product && ! empty( $cart['_wfob_product'] ) ) {
+						continue;
+					}
+
+					$product_id   = intval( $cart['product_id'] );
+					$variation_id = isset( $cart['variation_id'] ) ? intval( $cart['variation_id'] ) : 0;
+					if ( 'all' === $swap_product || in_array( $product_id, $swap_ids, true ) || in_array( $variation_id, $swap_ids, true ) ) {
+						WC()->cart->cart_contents[ $key ]['_wfob_replace_by'] = $bump_product_key;
+						WC()->cart->remove_cart_item( $key );
+						$replace_key[] = $key;
+					}
 				}
+			} finally {
+				add_action( 'woocommerce_remove_cart_item', array( $public, 'woocommerce_remove_cart_item' ), 10, 1 );
+				add_action( 'woocommerce_remove_cart_item', array( $public, 'unset_selected_bump_in_session' ), 25, 2 );
 			}
 
-			return $replace_key;
+			// Resolve displaced bumps down to the original items they replaced, across multi-hop chains.
+			$removed_contents = WC()->cart->get_removed_cart_contents();
+			$resolved         = array();
+			$visited          = array();
+			$queue            = $replace_key;
+			while ( ! empty( $queue ) ) {
+				$removed_key = array_shift( $queue );
+				if ( isset( $visited[ $removed_key ] ) ) {
+					continue;
+				}
+				$visited[ $removed_key ] = true;
+				$removed_item            = isset( $removed_contents[ $removed_key ] ) ? $removed_contents[ $removed_key ] : null;
+				if ( $removed_item && ! empty( $removed_item['_wfob_swap_cart_key'] ) ) {
+					$original_keys = $removed_item['_wfob_swap_cart_key'];
+					$original_keys = is_array( $original_keys ) ? $original_keys : array( $original_keys );
+					foreach ( $original_keys as $original_key ) {
+						$queue[] = $original_key;
+					}
+					continue;
+				}
+				$resolved[] = $removed_key;
+			}
+
+			return array_values( array_unique( $resolved ) );
 		}
 
 		public static function wcct_get_restricted_action( $actions ) {

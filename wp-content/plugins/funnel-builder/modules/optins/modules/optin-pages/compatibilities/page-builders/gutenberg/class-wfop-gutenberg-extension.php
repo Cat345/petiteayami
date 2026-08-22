@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 	/**
 	 * Class Gutenberg
@@ -199,7 +200,7 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 				wp_enqueue_script( 'wfoptin-script', $frontend_dir . $js_path, $script_deps, $version, true );
 
 				$system_font_path = __DIR__ . '/font/standard-fonts.php';
-				WFFN_Common::enqueue_block_editor_remote_assets( 'wfoptin-font-awesome-kit', 'wfoptin-font' );
+				WFFN_Common::enqueue_block_editor_webfont_loader( 'wfoptin-font' );
 
 					$get_fields = WFOPP_Core()->optin_pages->form_builder->get_form_fields( $post->ID );
 				wp_localize_script( 'wfoptin-script', 'bwf_funnels_widgets', $this->widgets_json );
@@ -219,9 +220,7 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 					)
 				);
 
-				if ( defined( 'WFOPP_PRO_PLUGIN_FILE' ) ) {
-					wp_enqueue_script( 'phone_flag_intl', plugin_dir_url( WFOPP_PRO_PLUGIN_FILE ) . 'assets/phone/js/intltelinput.min.js', array(), WFFN_VERSION_DEV, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
-				}
+				WFFN_Optin_Pages::enqueue_phone_flag_editor_assets( true );
 
 				if ( function_exists( 'wp_set_script_translations' ) ) {
 					wp_set_script_translations( 'wfoptin-script', 'funnel-builder' );
@@ -246,11 +245,8 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 				$style_path   = "/$app_name.css";
 
 				wp_enqueue_style( 'wfoptin-default', $frontend_dir . $style_path, array(), time() );
-				wp_enqueue_style( 'wfoptin-fonts', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css', array(), WFFN_VERSION_DEV ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 
-				if ( defined( 'WFOPP_PRO_PLUGIN_FILE' ) ) {
-					wp_enqueue_style( 'flag_style', plugin_dir_url( WFOPP_PRO_PLUGIN_FILE ) . 'assets/phone/css/phone-flag.css', array(), WFFN_VERSION_DEV );
-				}
+				WFFN_Optin_Pages::enqueue_phone_flag_editor_assets( true );
 
 				// Enqueue saved default font so it's baked into the iframe editor
 				$default_font = get_post_meta( $post->ID, 'bwfblock_default_font', true );

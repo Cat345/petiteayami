@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Uncanny Groups for LearnDash by Uncanny Owl (upto v.4.0.5)
@@ -38,7 +39,7 @@ if ( ! class_exists( 'WFACP_Uncanny_Groups_For_LearnDash' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_ulgm_group_name' ],
 				'id'         => 'ulgm_group_name',
 				'field_type' => 'ulgm_group_name',
-				'label'      => __( 'ULGM Group Name', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'ULGM Group Name', 'funnel-builder' ),
 
 			];
 

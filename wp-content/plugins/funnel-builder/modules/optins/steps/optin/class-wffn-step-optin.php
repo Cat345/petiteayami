@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class contains all the Optin page related funnel functionality
@@ -8,10 +8,10 @@ defined( 'ABSPATH' ) || exit; //Exit if accessed directly
 if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 	#[AllowDynamicProperties]
 
-  class WFFN_Step_Optin extends WFFN_Step {
+	class WFFN_Step_Optin extends WFFN_Step {
 
-		private static $ins = null;
-		public $slug = 'optin';
+		private static $ins   = null;
+		public $slug          = 'optin';
 		public $list_priority = 15;
 
 		/**
@@ -19,10 +19,10 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 		 */
 		public function __construct() {
 			parent::__construct();
-			add_action( 'bwf_funnels_funnels_display_admin_footer_text', [ $this, 'maybe_show_footer_text' ], 10, 2 );
+			add_action( 'bwf_funnels_funnels_display_admin_footer_text', array( $this, 'maybe_show_footer_text' ), 10, 2 );
 			add_action( 'wffn_optin_action_woo_order_created', array( $this, 'maybe_set_order_in_data' ) );
 			add_filter( 'wffn_optin_redirect', array( $this, 'maybe_redirect_to_thankyou_page' ), 10, 2 );
-			add_filter( 'maybe_setup_funnel_for_breadcrumb', [ $this, 'maybe_funnel_breadcrumb' ] );
+			add_filter( 'maybe_setup_funnel_for_breadcrumb', array( $this, 'maybe_funnel_breadcrumb' ) );
 		}
 
 		/**
@@ -30,7 +30,7 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -40,7 +40,7 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 		 * @return array|void
 		 */
 		public function get_supports() {
-			return array_unique( array_merge( parent::get_supports(), [ 'open_link', 'next_link', 'track_views', 'track_conversions' ] ) );
+			return array_unique( array_merge( parent::get_supports(), array( 'open_link', 'next_link', 'track_views', 'track_conversions' ) ) );
 		}
 
 		/**
@@ -72,12 +72,12 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 
 		public function get_step_designs( $term, $funnel_id = 0 ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 			$active_pages    = WFOPP_Core()->optin_pages->get_optin_pages( $term );
-			$inside_funnels  = [];
-			$outside_funnels = [];
+			$inside_funnels  = array();
+			$outside_funnels = array();
 			foreach ( $active_pages as $active_page ) {
 				$post_type     = get_post_type( $active_page->ID );
 				$bwf_funnel_id = get_post_meta( $active_page->ID, '_bwf_in_funnel', true );
-				$data          = [];
+				$data          = array();
 				if ( 'cartflows_step' === $post_type ) {
 					$meta = get_post_meta( $active_page->ID, 'wcf-step-type', true );
 					if ( 'optin' === $meta ) {
@@ -99,16 +99,25 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 				$funnel = new WFFN_Funnel( $bwf_funnel_id );
 				if ( absint( $bwf_funnel_id ) > 0 && ! empty( $funnel->get_title() ) ) {
 					if ( ! isset( $inside_funnels[ $bwf_funnel_id ] ) ) {
-						$inside_funnels[ $bwf_funnel_id ] = [ 'name' => $funnel->get_title(), 'id' => $bwf_funnel_id, "steps" => [] ];
+						$inside_funnels[ $bwf_funnel_id ] = array(
+							'name'  => $funnel->get_title(),
+							'id'    => $bwf_funnel_id,
+							'steps' => array(),
+						);
 					}
 					$inside_funnels[ $bwf_funnel_id ]['steps'][] = $data;
 				} else {
 					$outside_funnels[] = $data;
 				}
-
 			}
 			if ( ! empty( $outside_funnels ) ) {
-				$outside_funnels = [ [ 'name' => __( 'Other Pages', 'funnel-builder' ), 'id' => 0, 'steps' => $outside_funnels ] ];
+				$outside_funnels = array(
+					array(
+						'name'  => __( 'Other Pages', 'funnel-builder' ),
+						'id'    => 0,
+						'steps' => $outside_funnels,
+					),
+				);
 			}
 
 			return array_merge( $inside_funnels, $outside_funnels );
@@ -123,13 +132,15 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 		public function add_step( $funnel_id, $posted_data ) {
 			$title = isset( $posted_data['title'] ) ? $posted_data['title'] : '';
 
-			$step_id           = wp_insert_post( array(
-				'post_type'    => WFOPP_Core()->optin_pages->get_post_type_slug(),
-				'post_title'   => $title,
-				'post_name'    => sanitize_title( $title ),
-				'post_status'  => 'publish',
-				'post_content' => isset( $posted_data['post_content'] ) ? $posted_data['post_content'] : '',
-			) );
+			$step_id           = wp_insert_post(
+				array(
+					'post_type'    => WFOPP_Core()->optin_pages->get_post_type_slug(),
+					'post_title'   => $title,
+					'post_name'    => sanitize_title( $title ),
+					'post_status'  => 'publish',
+					'post_content' => isset( $posted_data['post_content'] ) ? $posted_data['post_content'] : '',
+				)
+			);
 			$posted_data['id'] = ( $step_id > 0 ) ? $step_id : 0;
 			if ( $step_id > 0 ) {
 				update_post_meta( $step_id, '_wp_page_template', 'wfop-boxed.php' );
@@ -154,7 +165,10 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 			if ( $duplicate_id > 0 ) {
 				$posted_data['id'] = $duplicate_id;
 				$new_title         = isset( $posted_data['title'] ) ? $posted_data['title'] : '';
-				$arr               = [ 'ID' => $duplicate_id, 'post_status' => $post_status ];
+				$arr               = array(
+					'ID'          => $duplicate_id,
+					'post_status' => $post_status,
+				);
 
 				if ( ! empty( $new_title ) ) {
 					$arr['post_title'] = $new_title;
@@ -171,7 +185,6 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 			}
 
 			return $final_data;
-
 		}
 
 		/**
@@ -187,7 +200,7 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 			if ( $this->is_disabled( $this->get_entity_status( $environment['id'] ) ) ) {
 				return false;
 			}
-			WFFN_Core()->logger->log( 'Showing step type: ' . $this->get_title() . ", ID : " . $environment['id'] );
+			WFFN_Core()->logger->log( 'Showing step type: ' . $this->get_title() . ', ID : ' . $environment['id'] );
 
 			return true;
 		}
@@ -211,10 +224,17 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 		 * @return mixed
 		 */
 		public function get_entity_edit_link( $step_id ) {
-			return esc_url( BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
-				'page' => 'bwf',
-				'path' => '/funnel-optin/' . $step_id . '/design',
-			], admin_url( 'admin.php' ) ) ) );
+			return esc_url(
+				BWF_Admin_Breadcrumbs::maybe_add_refs(
+					add_query_arg(
+						array(
+							'page' => 'bwf',
+							'path' => '/funnel-optin/' . $step_id . '/design',
+						),
+						admin_url( 'admin.php' )
+					)
+				)
+			);
 		}
 
 		public function get_color() {
@@ -253,7 +273,6 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 						$new_all_meta[ $meta_key ] = $value[0];
 					}
 				}
-
 			}
 
 			return $new_all_meta;
@@ -270,7 +289,10 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 		public function _process_import( $funnel_id, $step_data ) {
 
 			$post_content = ( isset( $step_data['post_content'] ) && ! empty( $step_data['post_content'] ) ) ? $step_data['post_content'] : '';
-			$posted_data  = [ 'title' => $step_data['title'], 'post_content' => $post_content ];
+			$posted_data  = array(
+				'title'        => $step_data['title'],
+				'post_content' => $post_content,
+			);
 			$data         = $this->add_step( $funnel_id, $posted_data );
 			if ( isset( $step_data['meta'] ) ) {
 				$this->copy_metadata( $data->id, $step_data['meta'] );
@@ -307,7 +329,7 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 			if ( ! empty( $template ) ) {
 				return array(
 					'template'      => $template,
-					'template_type' => get_post_meta( $id, '_tobe_import_template_type', true )
+					'template_type' => get_post_meta( $id, '_tobe_import_template_type', true ),
 
 				);
 			}
@@ -350,17 +372,9 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 			$optin_id     = isset( $current_page['id'] ) ? $current_page['id'] : 0;
 			if ( $optin_id > 0 ) {
 				WFFN_Core()->logger->log( __FUNCTION__ . ':: ' . $optin_id );
-				$this->increase_optin_visit_session_view( $optin_id );
 			}
 			do_action( 'wffn_event_step_viewed', $optin_id, $current_page );
 			do_action( 'wffn_event_step_viewed_' . $this->slug, $optin_id, $current_page );
-		}
-
-		public function increase_optin_visit_session_view( $optin_id ) {
-			if ( $optin_id < 1 ) {
-				return;
-			}
-			WFCO_Model_Report_views::update_data( gmdate( 'Y-m-d', current_time( 'timestamp' ) ), $optin_id, 8 );
 		}
 
 		/**
@@ -398,14 +412,12 @@ if ( ! class_exists( 'WFFN_Step_Optin' ) ) {
 				return get_permalink( $id );
 			}
 
-
 			return $url_from_filter;
 		}
 
 		public function maybe_ecomm_events( $events ) {
 			WFFN_Ecomm_Tracking_Optin::get_instance()->maybe_ecomm_events( $events );
 		}
-
 	}
 
 	if ( class_exists( 'WFFN_Core' ) && is_object( WFFN_Core()->steps ) && method_exists( WFFN_Core()->steps, 'register' ) ) {

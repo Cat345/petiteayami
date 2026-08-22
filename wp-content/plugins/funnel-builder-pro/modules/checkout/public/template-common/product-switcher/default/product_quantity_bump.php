@@ -345,12 +345,26 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 												}
 												if ( ! $_product->is_sold_individually() && ! $hide_quantity_switcher ) {
 
+													// Derive step from WooCommerce's quantity-input filters so decimal-quantity plugins apply; defaults to 1.
+													$wfacp_qty_step = apply_filters( 'woocommerce_quantity_input_step', 1, $_product );
+													$wfacp_qty_args = apply_filters(
+														'woocommerce_quantity_input_args',
+														array(
+															'min_value' => 0,
+															'max_value' => '',
+															'step' => $wfacp_qty_step,
+														),
+														$_product
+													);
+													if ( is_array( $wfacp_qty_args ) && isset( $wfacp_qty_args['step'] ) ) {
+														$wfacp_qty_step = $wfacp_qty_args['step'];
+													}
 													$minMax = apply_filters(
 														'wfacp_cart_item_min_max_quantity',
 														array(
 															'min'  => 0,
 															'max'  => '',
-															'step' => '1',
+															'step' => $wfacp_qty_step,
 														),
 														$cart_item,
 														$cart_item_key
@@ -360,7 +374,7 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 														<div class="wfacp_quantity q_h">
 															<div class="wfacp_qty_wrap">
 																<div class="value-button wfacp_decrease_item" onclick="decreaseItmQty(this,'')" value="Decrease Value">-</div>
-																<input type="number" step="<?php echo $minMax['step']; ?>" min="<?php echo $minMax['min']; ?>" max="<?php echo $minMax['max']; ?>" value="<?php echo $cart_item_quantity; ?>" data-value="<?php echo $cart_item['quantity']; ?>" onfocusout="this.value = (Math.abs(this.value)==0?0:Math.abs(this.value))" class="wfacp_product_switcher_quantity wfacp_product_global_quantity_bump wfacp_product_quantity_number_field">
+																<input type="number" step="<?php echo esc_attr( $minMax['step'] ); ?>" min="<?php echo esc_attr( $minMax['min'] ); ?>" max="<?php echo esc_attr( $minMax['max'] ); ?>" value="<?php echo $cart_item_quantity; ?>" data-value="<?php echo $cart_item['quantity']; ?>" aria-label="<?php esc_attr_e( 'Quantity', 'woofunnels-aero-checkout' ); ?>" onfocusout="this.value = (Math.abs(this.value)==0?0:Math.abs(this.value))" class="wfacp_product_switcher_quantity wfacp_product_global_quantity_bump wfacp_product_quantity_number_field">
 																<div class="value-button wfacp_increase_item" onclick="increaseItmQty(this,'')" value="Increase Value">+</div>
 															</div>
 														</div>

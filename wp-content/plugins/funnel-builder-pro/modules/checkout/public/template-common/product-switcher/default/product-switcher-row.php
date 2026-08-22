@@ -273,12 +273,26 @@ add_filter( 'wp_get_attachment_image_attributes', 'WFACP_Common::remove_src_set'
 							} elseif ( $type == 'radio' ) {
 									$disableQty = 'disabled';
 							}
+							// Derive step from WooCommerce's quantity-input filters so decimal-quantity plugins apply; defaults to 1.
+							$wfacp_qty_step = apply_filters( 'woocommerce_quantity_input_step', 1, $pro );
+							$wfacp_qty_args = apply_filters(
+								'woocommerce_quantity_input_args',
+								array(
+									'min_value' => 0,
+									'max_value' => '',
+									'step'      => $wfacp_qty_step,
+								),
+								$pro
+							);
+							if ( is_array( $wfacp_qty_args ) && isset( $wfacp_qty_args['step'] ) ) {
+								$wfacp_qty_step = $wfacp_qty_args['step'];
+							}
 							$minMax = apply_filters(
 								'wfacp_product_item_min_max_quantity',
 								array(
 									'min'  => $qty_step,
 									'max'  => '',
-									'step' => 1,
+									'step' => $wfacp_qty_step,
 								),
 								$pro,
 								$item_key,
@@ -294,7 +308,7 @@ add_filter( 'wp_get_attachment_image_attributes', 'WFACP_Common::remove_src_set'
 								<div class="wfacp_quantity q_h">
 									<div class="wfacp_qty_wrap">
 										<div class="value-button wfacp_decrease_item" data-item-key='<?php echo $item_key; ?>' onclick="decreaseItmQty(this,'')" value="Decrease Value">-</div>
-										<input type="number" step="<?php echo $minMax['step']; ?>" min="<?php echo $minMax['min']; ?>" max="<?php echo $minMax['max']; ?>" value="<?php echo $rqty; ?>" data-value="<?php echo $rqty; ?>" name="wfacp_product_switcher_quantity_<?php echo $item_key; ?>" class="<?php echo $quantity_input_cls; ?>" onfocusout="this.value = (Math.abs(this.value)<0?0:Math.abs(this.value))" <?php echo $disableQty; ?>>
+										<input type="number" step="<?php echo esc_attr( $minMax['step'] ); ?>" min="<?php echo esc_attr( $minMax['min'] ); ?>" max="<?php echo esc_attr( $minMax['max'] ); ?>" value="<?php echo $rqty; ?>" data-value="<?php echo $rqty; ?>" name="wfacp_product_switcher_quantity_<?php echo $item_key; ?>" class="<?php echo $quantity_input_cls; ?>" aria-label="<?php esc_attr_e( 'Quantity', 'woofunnels-aero-checkout' ); ?>" onfocusout="this.value = (Math.abs(this.value)<0?0:Math.abs(this.value))" <?php echo $disableQty; ?>>
 										<div class="value-button wfacp_increase_item" data-item-key='<?php echo $item_key; ?>' onclick="increaseItmQty(this,'')" value="Increase Value">+</div>
 									</div>
 								</div>

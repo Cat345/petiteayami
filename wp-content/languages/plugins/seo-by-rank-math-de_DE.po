@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Rank Math SEO – AI SEO Tools to Dominate SEO Rankings - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-06-13 20:55:00+0000\n"
+"PO-Revision-Date: 2026-08-15 22:56:37+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,143 @@ msgstr ""
 "X-Generator: GlotPress/4.0.3\n"
 "Language: de\n"
 "Project-Id-Version: Plugins - Rank Math SEO – AI SEO Tools to Dominate SEO Rankings - Stable (latest release)\n"
+
+#: includes/admin/class-admin-menu.php:281 rank-math.php:475
+msgid "Unlock PRO"
+msgstr "PRO freischalten"
+
+#: includes/abilities/link-genius/class-subscriber.php:66
+#: includes/module/class-manager.php:165
+#: includes/modules/links/Admin/class-admin.php:51
+#: includes/modules/links/Admin/class-admin.php:55
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/LinksPage.js:86
+msgid "AI Link Genius"
+msgstr "AI Link Genius"
+
+#: includes/abilities/content-analysis/class-subscriber.php:67
+msgid "Abilities to retrieve on-page SEO analysis scores for posts."
+msgstr "Möglichkeit, On-Page-SEO-Analysewerte für Beiträge abzurufen."
+
+#: includes/abilities/content-analysis/class-subscriber.php:66
+msgid "Content Analysis"
+msgstr "Inhaltsanalyse"
+
+#: includes/abilities/content-analysis/class-get-seo-scores.php:338
+msgid "Needs improvement"
+msgstr "Verbesserungsbedarf"
+
+#: includes/abilities/content-analysis/class-get-seo-scores.php:85
+msgid "Post type to filter by (e.g. \"post\", \"page\"). Defaults to all public post types."
+msgstr "Inhaltstyp, nach dem gefiltert werden soll (z. B. „post\", „page\"). Standardmäßig werden alle öffentlichen Inhaltstypen berücksichtigt."
+
+#: includes/abilities/content-analysis/class-get-seo-scores.php:78
+msgid "Number of recently modified posts to retrieve. Defaults to 10, maximum 100."
+msgstr "Anzahl der zuletzt geänderten Beiträge, die abgerufen werden sollen. Standardmäßig 10, maximal 100."
+
+#: includes/abilities/content-analysis/class-get-seo-scores.php:89
+msgid "Ask the user which posts they want to review before running this ability. Available options: \"bad\" (score ≤ 50, needs improvement), \"good\" (score 51–80, ok), \"great\" (score > 80), \"empty-fk\" (no focus keyword set), \"unscored\" (never analyzed). If the user does not specify, omit this parameter to return the most recently modified posts."
+msgstr "Frage den Benutzer, welche Beiträge er überprüfen möchte, bevor du diese Fähigkeit ausführst. Verfügbare Optionen: „bad\" (Wert ≤ 50, verbesserungswürdig), „good\" (Wert 51–80, ok), „great\" (Wert > 80), „empty-fk\" (kein Fokus-Keyword festgelegt), „unscored\" (noch nie analysiert). Macht der Benutzer keine Angabe, lasse diesen Parameter weg, um die zuletzt geänderten Beiträge zurückzugeben."
+
+#: includes/abilities/content-analysis/class-get-seo-scores.php:68
+msgid "Returns SEO scores and grades for posts. Before running, ask the user which posts they want to review: posts needing improvement (bad score), posts with no focus keyword, unscored posts, or simply the most recently modified posts. Use this to surface which posts need SEO attention without needing to know post IDs in advance."
+msgstr "Gibt SEO-Werte und -Noten für Beiträge zurück. Frage den Benutzer vor der Ausführung, welche Beiträge er überprüfen möchte: verbesserungswürdige Beiträge (niedriger SEO-Wert), Beiträge ohne Fokus-Keyword, noch nicht analysierte Beiträge oder einfach die zuletzt geänderten Beiträge. Nutze dies, um herauszufinden, welche Beiträge SEO-Aufmerksamkeit benötigen, ohne die Beitrags-IDs vorab kennen zu müssen."
+
+#: includes/abilities/content-analysis/class-get-seo-scores.php:67
+msgid "Get SEO scores"
+msgstr "SEO-Werte abrufen"
+
+#: includes/abilities/content-analysis/class-analyze-post-content.php:131
+msgid "No post found with the given ID, or the post status is not supported."
+msgstr "Kein Beitrag mit der angegebenen ID gefunden, oder der Beitragsstatus wird nicht unterstützt."
+
+#: includes/abilities/content-analysis/class-analyze-post-content.php:86
+msgid "Optional focus keyword to analyze against, overriding the post's saved focus keyword."
+msgstr "Optionales Fokus-Keyword für die Analyse, das das gespeicherte Fokus-Keyword des Beitrags überschreibt."
+
+#: includes/abilities/content-analysis/class-analyze-post-content.php:82
+msgid "ID of the post to analyze."
+msgstr "ID des zu analysierenden Beitrags."
+
+#: includes/abilities/content-analysis/class-analyze-post-content.php:145
+msgid "Evaluate each test ID in tests_to_run against the fields in content, using kb_link as the scoring rubric for how each test is scored. Return a per-test breakdown with score, max_score, status (pass/fail), and a message with a specific fix. For the contentHasTOC test, when suggesting a fix or drafting content, tell the user to insert the Rank Math Table of Contents block (block name rank-math/toc-block, available in the block inserter as \"Table of Contents\") right after the intro, instead of a manual list of links — it auto-generates from the post headings."
+msgstr "Bewerte jede Test-ID in tests_to_run anhand der Felder in content und verwende kb_link als Bewertungsgrundlage für die jeweilige Test-Bewertung. Gib eine Aufschlüsselung pro Test zurück mit score, max_score, status (pass/fail) und einer Nachricht mit einer konkreten Lösung. Weise beim Test contentHasTOC den Benutzer beim Vorschlagen einer Lösung oder beim Entwerfen von Inhalten darauf hin, den Rank Math-Inhaltsverzeichnis-Block (Blockname rank-math/toc-block, im Block-Inserter als „Inhaltsverzeichnis\" verfügbar) direkt nach der Einleitung einzufügen, anstelle einer manuellen Liste von Links – er wird automatisch aus den Beitragsüberschriften generiert."
+
+#: includes/abilities/content-analysis/class-analyze-post-content.php:72
+msgid "Gathers the raw content, metadata, and list of on-page SEO tests for a saved post so an AI agent can run Rank Math's full on-page analysis itself, since the scoring engine only runs client-side. Use tests_to_run and content together with kb_link (the scoring rubric for all 24 tests) to evaluate each test and produce a per-test score, status, and fix message."
+msgstr "Erfasst den Rohinhalt, die Metadaten und die Liste der On-Page-SEO-Tests für einen gespeicherten Beitrag, damit ein KI-Agent die vollständige On-Page-Analyse von Rank Math selbst durchführen kann, da die Bewertungs-Engine nur clientseitig läuft. Nutze tests_to_run zusammen mit content und kb_link (die Bewertungsgrundlage für alle 24 Tests) für die Bewertung jedes Tests sowie die Erstellung von Wert, Status und Lösungsvorschlag pro Test."
+
+#: includes/abilities/content-analysis/class-analyze-post-content.php:71
+msgid "Analyze post content"
+msgstr "Beitrags-Kontent analysieren"
+
+#: includes/abilities/analytics/class-subscriber.php:66
+msgid "Abilities to query Google Search Console and analytics data."
+msgstr "Möglichkeiten zur Abfrage von Google Search Console- und Analytics-Daten."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:228
+msgid "Whether Google Search Console is connected."
+msgstr "Ob die Google Search Console verbunden ist."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:214
+msgid "Relative URL path of the page."
+msgstr "Relativer URL-Pfad der Seite."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:210
+msgid "Post title."
+msgstr "Beitragstitel."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:206
+msgid "WordPress post ID."
+msgstr "WordPress Beitrags-ID."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:200
+msgid "Pages on your site that rank for this keyword. Provided by Rank Math PRO."
+msgstr "Seiten auf deiner Website, die für dieses Keyword ranken. Bereitgestellt von Rank Math PRO."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:196
+msgid "Whether this keyword is tracked in Rank Math PRO Rank Tracker."
+msgstr "Ob dieses Keyword im Rank Math PRO Rank Tracker verfolgt wird."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:192
+msgid "Position trend vs. the previous period. Provided by Rank Math PRO for tracked keywords."
+msgstr "Positionstrend im Vergleich zum vorherigen Zeitraum. Bereitgestellt von Rank Math PRO für verfolgte Keywords."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:187
+msgid "Average position in Google Search results."
+msgstr "Durchschnittliche Position in den Google-Suchergebnissen."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:183
+msgid "Click-through rate as a percentage (0–100)."
+msgstr "Klickrate in Prozent (0–100)."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:179
+msgid "Total impressions from Google Search Console."
+msgstr "Gesamtimpressionen aus der Google Search Console."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:175
+msgid "Total clicks from Google Search Console."
+msgstr "Gesamtklicks aus der Google Search Console."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:171
+msgid "The search query keyword."
+msgstr "Das Such-Abfragen-Keyword."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:97
+msgid "Maximum number of keywords to return."
+msgstr "Maximale Anzahl der zurückzugebenden Keywords."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:90
+msgid "Date range for which to fetch keyword data."
+msgstr "Zeitraum, für den Keyword-Daten abgerufen werden sollen."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:78
+msgid "Returns the top-performing keywords by clicks from Google Search Console, with impressions, CTR, and average position for the selected date range."
+msgstr "Gibt die Schlüsselwörter mit der besten Leistung (nach Klicks) aus der Google Search Console zurück, einschließlich Impressionen, CTR und durchschnittlicher Position für den ausgewählten Zeitraum."
+
+#: includes/abilities/analytics/class-get-top-keywords.php:77
+msgid "Get top keywords"
+msgstr "Die besten Schlüsselwörter abrufen"
 
 #: includes/modules/content-ai/class-rest.php:125
 msgid "Per-tool usage data returned by the API."
@@ -84,18 +221,9 @@ msgstr "Elemente pro Seite."
 msgid "You do not have permission to access this resource."
 msgstr "Du hast keine Berechtigung, auf diese Ressource zuzugreifen."
 
-#: includes/module/class-manager.php:159
+#: includes/module/class-manager.php:166
 msgid "An advanced internal linking tool that analyzes your posts, tracks link data, highlights opportunities, and offers detailed report."
 msgstr "Ein fortschrittliches Tool zur internen Verlinkung, das deine Beiträge analysiert, Linkdaten verfolgt, Optimierungspotenziale aufzeigt und detaillierte Berichte erstellt."
-
-#: includes/abilities/link-genius/class-subscriber.php:66
-#: includes/module/class-manager.php:158
-#: includes/modules/links/Admin/class-admin.php:51
-#: includes/modules/links/Admin/class-admin.php:55
-#: includes/modules/links/assets/js/links-page.js:1
-#: includes/modules/links/assets/src/features/links-page/LinksPage.js:86
-msgid "Link Genius"
-msgstr "Link Genius"
 
 #: includes/admin/watcher/class-watcher.php:157
 msgid "Please keep only one Redirection plugin active to avoid redirect conflicts or unexpected behavior."
@@ -123,7 +251,7 @@ msgstr "Das Format des Tabellen-Arrays hat sich geändert. Bitte aktualisiere de
 msgid "The React Settings UI is currently disabled, and the classic settings interface is active. Note: The PHP-based settings interface will be removed in an upcoming release. %1$sEnable the React Settings UI%2$s to switch back."
 msgstr "Die React-Einstellungsoberfläche ist derzeit deaktiviert, die klassische Einstellungsoberfläche ist aktiv. Hinweis: Die PHP-basierte Einstellungsoberfläche wird in einer zukünftigen Version entfernt. %1$sAktiviere die React-Einstellungsoberfläche%2$s, um zurück zu wechseln."
 
-#: includes/admin/class-admin-menu.php:266
+#: includes/admin/class-admin-menu.php:251
 msgid "Halloween Sale"
 msgstr "Halloween-Angebot"
 
@@ -189,7 +317,7 @@ msgstr "Beitragstypen auswählen"
 msgid "%s The URLs will be submitted to Bing and Yandex only, and not to Google."
 msgstr "%s Die URLs werden nur an Bing und Yandex übermittelt, nicht an Google."
 
-#: includes/module/class-manager.php:195
+#: includes/module/class-manager.php:201
 msgid "LLMS Txt"
 msgstr "LLMS-Text"
 
@@ -228,7 +356,7 @@ msgstr "Konfiguriere deine llms.txt-Datei für benutzerdefinierte Crawling-/Inde
 msgid "Edit llms.txt"
 msgstr "Bearbeite die llms.txt"
 
-#: includes/module/class-manager.php:196
+#: includes/module/class-manager.php:202
 msgid "Serve a custom llms.txt file to guide AI models with posts, terms, and most important content on your website."
 msgstr "Stelle eine benutzerdefinierte llms.txt-Datei bereit, um KI-Modelle mit Beiträgen, Begriffen und den wichtigsten Inhalten deiner Website zu versorgen."
 
@@ -824,23 +952,23 @@ msgstr "Setzen auf noindex"
 msgid "&#8595; Rank Math"
 msgstr "&#8595; Rank Math"
 
-#: includes/admin/class-admin-menu.php:281
+#: includes/admin/class-admin-menu.php:266
 msgid "Cyber Monday Sale"
 msgstr "Cyber ​​Monday Sale"
 
-#: includes/admin/class-admin-menu.php:276
+#: includes/admin/class-admin-menu.php:261
 msgid "Black Friday Sale"
 msgstr "Black Friday Sale"
 
-#: includes/admin/class-admin-menu.php:271
+#: includes/admin/class-admin-menu.php:256
 msgid "Anniversary Sale"
 msgstr "Jubiläums Sale"
 
-#: includes/admin/class-admin-menu.php:291
+#: includes/admin/class-admin-menu.php:276
 msgid "New Year Sale"
 msgstr "Neujahrs Sale"
 
-#: includes/admin/class-admin-menu.php:286
+#: includes/admin/class-admin-menu.php:271
 msgid "Christmas Sale"
 msgstr "Weihnachts Sale"
 
@@ -898,15 +1026,15 @@ msgstr "Englisch (UK)"
 msgid "US English"
 msgstr "Englisch (US)"
 
-#: includes/modules/content-ai/class-admin.php:150
+#: includes/modules/content-ai/class-admin.php:153
 msgid "Content AI Refresh Date"
 msgstr "Inhalt-KI Aktualisierungsdatum"
 
-#: includes/modules/content-ai/class-admin.php:146
+#: includes/modules/content-ai/class-admin.php:149
 msgid "Content AI Credits"
 msgstr "Inhalt-KI Guthaben"
 
-#: includes/modules/content-ai/class-admin.php:142
+#: includes/modules/content-ai/class-admin.php:145
 msgid "Content AI Plan"
 msgstr "Inhalt-KI Plan"
 
@@ -930,10 +1058,9 @@ msgctxt "block keyword"
 msgid "content"
 msgstr "inhalt"
 
-#: includes/modules/content-ai/blocks/command/assets/src/block.json
-msgctxt "block keyword"
-msgid "ai"
-msgstr "ki"
+#: includes/module/class-manager.php:572 assets/admin/js/modules.js:1
+msgid "Buy Now"
+msgstr "Jetzt kaufen"
 
 #: includes/modules/content-ai/blocks/command/assets/src/block.json
 msgctxt "block keyword"
@@ -949,6 +1076,11 @@ msgstr "KI-Assistent [Inhalt-KI]"
 msgctxt "block description"
 msgid "Generate content without any hassle, powered by Rank Math's Content AI."
 msgstr "Generiere mühelos Inhalte, unterstützt durch die Inhalt-KI von Rank Math."
+
+#: includes/modules/content-ai/blocks/command/assets/src/block.json
+msgctxt "block keyword"
+msgid "ai"
+msgstr "KI"
 
 #: includes/helpers/class-content-ai.php:504
 msgid "The output was stopped as it was identified as potentially unsafe by the content filter."
@@ -1610,8 +1742,8 @@ msgstr "Die Anfrage der Google Analytics Console ist fehlgeschlagen."
 #: includes/modules/analytics/class-ajax.php:190
 #: includes/modules/analytics/class-ajax.php:213
 #: includes/modules/analytics/class-ajax.php:243
-#: includes/modules/analytics/class-ajax.php:583
-#: includes/modules/analytics/class-ajax.php:618
+#: includes/modules/analytics/class-ajax.php:590
+#: includes/modules/analytics/class-ajax.php:625
 msgid "Data import will not work for this service as sufficient permissions are not given."
 msgstr "Der Datenimport funktioniert für diesen Dienst nicht, da keine ausreichenden Berechtigungen vorhanden sind."
 
@@ -1634,7 +1766,7 @@ msgstr "https://rankmath.com/"
 msgid "Additional Profiles"
 msgstr "Zusätzliche Profile"
 
-#: includes/admin/class-admin.php:551 includes/settings/titles/social.php:88
+#: includes/admin/class-admin.php:525 includes/settings/titles/social.php:88
 #: assets/admin/js/titleSettings.js:1
 msgid "Additional Profiles to add in the <code>sameAs</code> Schema property."
 msgstr "Zusätzliche Profile, die der <code>sameAs</code> Schema-Eigenschaft hinzugefügt werden sollen."
@@ -1661,7 +1793,7 @@ msgid "(No Title)"
 msgstr "(Kein Titel)"
 
 #. Translators: placeholder is the new Rank Math label.
-#: includes/module/class-manager.php:269
+#: includes/module/class-manager.php:276
 #: includes/modules/seo-analysis/class-admin.php:85
 #: includes/modules/seo-analysis/class-seo-analysis.php:59
 #: includes/modules/seo-analysis/class-seo-analysis.php:72
@@ -1924,7 +2056,7 @@ msgstr "Füge Autorenarchive in die XML-Sitemap ein."
 msgid "Ctrl/Cmd + Enter"
 msgstr "Strg/Befehlstaste + Eingabetaste"
 
-#: includes/admin/class-admin.php:535
+#: includes/admin/class-admin.php:509
 msgid "Exclusive Offer!"
 msgstr "Exklusives Angebot!"
 
@@ -1999,40 +2131,40 @@ msgstr "Dieses Tool berechnet das SEO-Ergebniss für alle Beiträge/Seiten neu, 
 msgid "<strong>Min Size: 112Χ112px</strong>.<br /> A squared image is preferred by the search engines."
 msgstr "<strong>Mindestgröße: 112Χ112px</strong>.<br /> Ein quadratisches Bild wird von den Suchmaschinen bevorzugt."
 
-#: includes/module/class-manager.php:457 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:464 assets/admin/js/modules.js:1
 msgid "PRO options are enabled."
 msgstr "PRO-Optionen sind aktiviert."
 
-#: includes/module/class-manager.php:452 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:459 assets/admin/js/modules.js:1
 msgid "More powerful options are available in the PRO version."
 msgstr "Leistungsfähigere Optionen sind in der PRO-Version verfügbar."
 
-#: includes/module/class-manager.php:221
+#: includes/module/class-manager.php:227
 msgid "Podcast"
 msgstr "Podcast"
 
-#: includes/module/class-manager.php:212
+#: includes/module/class-manager.php:218
 msgid "Video Sitemap"
 msgstr "Video Sitemap"
 
-#: includes/module/class-manager.php:163 includes/module/class-manager.php:208
-#: includes/module/class-manager.php:217 includes/module/class-manager.php:226
+#: includes/module/class-manager.php:170 includes/module/class-manager.php:214
+#: includes/module/class-manager.php:223 includes/module/class-manager.php:232
 msgid "This module is available in the PRO version."
 msgstr "Dieses Modul ist in der PRO-Version verfügbar."
 
-#: includes/module/class-manager.php:203
+#: includes/module/class-manager.php:209
 msgid "News Sitemap"
 msgstr "News Sitemap"
 
-#: includes/module/class-manager.php:222
+#: includes/module/class-manager.php:228
 msgid "Make your podcasts discoverable via Google Podcasts, Apple Podcasts, and similar services with Podcast RSS feed and Schema Markup generated by Rank Math."
 msgstr "Mache deine Podcasts über Google Podcasts, Apple Podcasts und ähnliche Dienste mit dem Podcast-RSS-Feed und dem von Rank Math generierten Schema-Markup auffindbar."
 
-#: includes/module/class-manager.php:213
+#: includes/module/class-manager.php:219
 msgid "For your video content, a Video Sitemap is a recommended step for better rankings and inclusion in the Video search."
 msgstr "Für deine Videoinhalte ist eine Video-Sitemap ein empfohlener Schritt für bessere Rankings und die Aufnahme in die Videosuche."
 
-#: includes/module/class-manager.php:204
+#: includes/module/class-manager.php:210
 msgid "Create a News Sitemap for your news-related content. You only need a News sitemap if you plan on posting news-related content on your website."
 msgstr "Erstelle eine News-Sitemap für deine nachrichtenbezogenen Inhalte. Eine News-Sitemap benötigst du nur, wenn du auf deiner Webseite nachrichtenbezogene Inhalte veröffentlichen möchtest."
 
@@ -2480,12 +2612,12 @@ msgid "Invalid API key."
 msgstr "Ungültiger API-Schlüssel."
 
 #. Translators: placeholder is "IndexNow API".
-#: includes/module/class-manager.php:178
+#: includes/module/class-manager.php:185
 msgid "IndexNow API"
 msgstr "IndexNow API"
 
 #. Translators: placeholder is "IndexNow API".
-#: includes/module/class-manager.php:178
+#: includes/module/class-manager.php:185
 msgid "Directly notify search engines like Bing & Yandex using the %s when pages are added, updated and removed, or submit URLs manually."
 msgstr "Benachrichtige Suchmaschinen wie Bing und Yandex direkt mit dem %s, wenn Seiten hinzugefügt, aktualisiert und entfernt werden, oder melde URLs manuell an."
 
@@ -2494,25 +2626,21 @@ msgstr "Benachrichtige Suchmaschinen wie Bing und Yandex direkt mit dem %s, wenn
 msgid "%s ago"
 msgstr "vor %s"
 
-#: includes/module/class-manager.php:565 assets/admin/js/modules.js:1
-msgid "Buy"
-msgstr "Kaufen"
-
-#: includes/module/class-manager.php:559 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:566 assets/admin/js/modules.js:1
 msgid "Track 500 Keywords"
 msgstr "500 Schlüsselwörter verfolgen"
 
-#: includes/module/class-manager.php:557 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:564 assets/admin/js/modules.js:1
 msgid "Unlimited personal websites"
 msgstr "Unbegrenzte persönliche Websites"
 
 #: includes/admin/class-pro-notice.php:220
 #: includes/admin/class-pro-notice.php:239
-#: includes/module/class-manager.php:560 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:567 assets/admin/js/modules.js:1
 msgid "Powerful Schema Generator"
 msgstr "Leistungsstarker Schema-Generator"
 
-#: includes/module/class-manager.php:555 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:562 assets/admin/js/modules.js:1
 msgid "Take SEO to the Next Level!"
 msgstr "Bring SEO auf die nächste Stufe!"
 
@@ -2528,7 +2656,7 @@ msgstr "Hol dir Rank Math PRO!"
 msgid "Take your SEO to the Next Level!"
 msgstr "Bring dein SEO auf die nächste Stufe!"
 
-#: includes/module/class-manager.php:561 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:568 assets/admin/js/modules.js:1
 msgid "24/7 Support"
 msgstr "24/7-Support"
 
@@ -2626,7 +2754,7 @@ msgstr "Für das recherchierte Schlüsselwort wurden keine Daten gefunden."
 msgid "Sorry, only authenticated users can research the keyword."
 msgstr "Leider können nur authentifizierte Benutzer das Schlüsselwort recherchieren."
 
-#: includes/module/class-manager.php:443 assets/admin/js/modules.js:1
+#: includes/module/class-manager.php:450 assets/admin/js/modules.js:1
 msgid "NEW!"
 msgstr "NEU!"
 
@@ -2790,7 +2918,7 @@ msgstr "Diese Funktion ist auf dem localhost nicht verfügbar."
 msgid "Content AI is not enabled on this Post type."
 msgstr "Inhalt-KI ist für diesen Beitragstyp nicht aktiviert."
 
-#: includes/module/class-manager.php:185
+#: includes/module/class-manager.php:192
 #: includes/modules/content-ai/class-admin.php:87
 #: includes/modules/content-ai/class-admin.php:119
 #: includes/modules/content-ai/class-content-ai-page.php:75
@@ -2815,11 +2943,11 @@ msgstr "Belarus"
 msgid "You have used all the free credits which are allowed to this domain."
 msgstr "Du hast für diese Domäne das kostenlose Guthaben aufgebraucht."
 
-#: includes/module/class-manager.php:405
+#: includes/module/class-manager.php:412
 msgid "You cant access this page."
 msgstr "Du kannst diese Seite nicht aufrufen."
 
-#: includes/module/class-manager.php:186
+#: includes/module/class-manager.php:193
 msgid "Get sophisticated AI suggestions for related Keywords, Questions & Links to include in the SEO meta & Content Area. Supports 80+ Countries."
 msgstr "Erhalte ausgefeilte KI-Vorschläge für verwandte Schlüsselwörter, Fragen und Links, die du in den SEO-Meta- und Inhaltsbereich aufnehmen kannst. Unterstützt 80+ Länder."
 
@@ -2924,11 +3052,11 @@ msgstr "Nein, ich will es nicht"
 msgid "Yes, I want to learn more"
 msgstr "Ja, ich möchte mehr erfahren"
 
-#: rank-math.php:492
+#: rank-math.php:503
 msgid "This action is IRREVERSIBLE."
 msgstr "Diese Aktion ist NICHT UMKEHRBAR."
 
-#: rank-math.php:491
+#: rank-math.php:502
 msgid "CAUTION:"
 msgstr "VORSICHT:"
 
@@ -2996,7 +3124,7 @@ msgstr "Symbol für externe Links"
 msgid "FULL REPORT"
 msgstr "KOMPLETTER BERICHT"
 
-#: includes/modules/analytics/views/email-reports/header-after.php:17
+#: includes/modules/analytics/views/email-reports/header-after.php:16
 #: includes/modules/analytics/views/email-reports/header.php:16
 #: includes/modules/analytics/views/email-reports/header.php:21
 msgid "SEO Report of Your Website"
@@ -3220,7 +3348,7 @@ msgstr "Warnung:"
 msgid "Cancel Fetch"
 msgstr "Abrufen abbrechen"
 
-#: includes/modules/analytics/class-ajax.php:279
+#: includes/modules/analytics/class-ajax.php:282
 msgid "Data fetching cancelled."
 msgstr "Datenabruf abgebrochen."
 
@@ -3232,7 +3360,7 @@ msgstr "Abrufen abbrechen"
 msgid "Table re-creation started. It might take a couple of minutes."
 msgstr "Die Neuerstellung der Tabelle wurde gestartet. Das kann ein paar Minuten dauern."
 
-#: includes/module/class-manager.php:176
+#: includes/module/class-manager.php:183
 #: includes/modules/instant-indexing/class-instant-indexing.php:251
 #: includes/modules/instant-indexing/class-instant-indexing.php:252
 #: assets/admin/js/components.js:1
@@ -3264,7 +3392,7 @@ msgstr "Nicht vergegeben"
 msgid "Given"
 msgstr "Vergeben"
 
-#: includes/modules/analytics/class-ajax.php:313
+#: includes/modules/analytics/class-ajax.php:320
 msgid "Data fetching started in the background."
 msgstr "Das Abrufen der Daten wurde im Hintergrund gestartet."
 
@@ -3310,7 +3438,7 @@ msgstr "Token vorhanden"
 msgid "No token"
 msgstr "Kein Token"
 
-#: includes/module/class-manager.php:437
+#: includes/module/class-manager.php:444
 #: includes/modules/status/class-system-status.php:63
 #: assets/admin/js/modules.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
@@ -3480,6 +3608,13 @@ msgstr "Neu verbinden"
 msgid "Sorry, no post found for given id."
 msgstr "Es wurde leider kein Beitrag für diese ID gefunden."
 
+#: includes/abilities/content-analysis/class-get-seo-scores.php:336
+#: includes/modules/analytics/assets/js/stats.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:243
+msgid "Good"
+msgstr "Gut"
+
 #: includes/modules/analytics/views/email-reports/sections/positions.php:44
 msgid "11-50 Positions"
 msgstr "10-50 Positionen"
@@ -3548,7 +3683,7 @@ msgstr "Angemeldete Benutzer ausschließen"
 #: includes/admin/wizard/views/search-console-ui.php:284
 #: includes/admin/wizard/views/search-console-ui.php:309
 #: includes/admin/wizard/views/search-console-ui.php:365
-#: includes/module/class-manager.php:445
+#: includes/module/class-manager.php:452
 #: includes/modules/analytics/views/options.php:149
 #: assets/admin/js/components.js:1 assets/admin/js/generalSettings.js:1
 #: assets/admin/js/modules.js:1 assets/admin/js/wizard.js:1
@@ -4115,19 +4250,27 @@ msgstr "Unerwartete API-Antwort."
 msgid "HTTP %d error."
 msgstr "HTTP-Fehler %d."
 
+#: includes/abilities/content-analysis/class-get-seo-scores.php:308
+#: includes/abilities/content-analysis/class-get-seo-scores.php:341
+#: assets/admin/js/classic.js:1
+#: includes/modules/analytics/assets/js/admin-bar.js:1
+#: includes/modules/analytics/assets/js/stats.js:1
+msgid "Not available"
+msgstr "Nicht verfügbar"
+
 #: includes/admin/class-post-filters.php:171
 msgid "SEO Score: Ok"
 msgstr "SEO Score: In Ordnung"
 
-#: includes/module/class-manager.php:377
+#: includes/module/class-manager.php:384
 msgid "Google Web Stories"
 msgstr "Google Web Stories"
 
-#: includes/module/class-manager.php:382
+#: includes/module/class-manager.php:389
 msgid "Please activate Web Stories plugin to use this module."
 msgstr "Bitte aktiviere das Plugin Web Stories, um dieses Modul zu verwenden."
 
-#: includes/module/class-manager.php:378
+#: includes/module/class-manager.php:385
 msgid "Make any Story created with the Web Stories WordPress plugin SEO-Ready with automatic support for Schema and Meta tags."
 msgstr "Mach jede Story, die mit dem WordPress-Plugin Web Stories erstellt wurde, mit automatischer Unterstützung für Schema und Meta-Tags SEO-ready."
 
@@ -4230,7 +4373,7 @@ msgstr "Das Fehler-Log kann nicht abgerufen werden: die Fehler-Log-Datei ist zu 
 msgid "The error log cannot be retrieved."
 msgstr "Das Fehler-Log kann nicht abgerufen werden."
 
-#: includes/module/class-manager.php:167
+#: includes/module/class-manager.php:174
 msgid "Image SEO"
 msgstr "Bilder-SEO"
 
@@ -4304,36 +4447,36 @@ msgstr "Hier kannst du die Breadcrumbs-Funktion einrichten. %s"
 msgid "Change how some of the links open and operate on your website. %s."
 msgstr "Lege fest, wie einige der Links auf deiner Website sich öffnen und verhalten. %s."
 
-#: includes/module/class-manager.php:358
+#: includes/module/class-manager.php:365
 msgid "Optimize WooCommerce Pages for Search Engines by adding required metadata and Product Schema which will make your site stand out in the SERPs."
 msgstr "Optimiere WooCommerce-Seiten für Suchmaschinen, indem du die nötigen Metadaten und Product Schema hinzufügst, damit deine Seite in den Suchergebnissen auffällt."
 
 #. translators: Link to AMP plugin
-#: includes/module/class-manager.php:330
+#: includes/module/class-manager.php:337
 msgid "Install %s to make Rank Math work with Accelerated Mobile Pages. Rank Math automatically adds required meta tags in all the AMP pages."
 msgstr "Installiere %s, damit Rank Math mit AMP-Seiten funktioniert. Rank Math fügt automatisch die nötigen Meta-Tags in alle AMP-Seiten ein."
 
-#: includes/module/class-manager.php:251 assets/admin/js/wizard.js:1
+#: includes/module/class-manager.php:258 assets/admin/js/wizard.js:1
 msgid "The Role Manager allows you to use WordPress roles to control which of your site users can have edit or view access to Rank Math's settings."
 msgstr "Mit dem Rollen-Manager kannst du über die Benutzerrollen von WordPress festlegen, welche Nutzer deiner Seite die Einstellungen von Rank Math sehen oder bearbeiten können."
 
-#: includes/module/class-manager.php:168
+#: includes/module/class-manager.php:175
 msgid "Advanced Image SEO options to supercharge your website. Automate the task of adding the ALT and Title tags to your images on the fly."
 msgstr "Fortgeschrittene Bilder-SEO-Einstellungen als Turbolader für deine Website. Automatisiere das direkte Hinzufügen von ALT- und Titel-Tags zu deinen Bildern."
 
-#: includes/module/class-manager.php:152
+#: includes/module/class-manager.php:159
 msgid "Counts the total number of internal, external links, to and from links inside your posts. You can also see the same count in the Posts List Page."
 msgstr "Zählt sämtliche internen und externen, ein- und ausgehenden Links in deinen Beiträgen. Den gleichen Zähler findest du auch in der Beitragsübersicht."
 
-#: includes/module/class-manager.php:144
+#: includes/module/class-manager.php:151
 msgid "Enable Rank Math's sitemap feature, which helps search engines intelligently crawl your website's content. It also supports hreflang tag."
 msgstr "Schalte die Sitemap-Funktion von Rank Math ein, mit der Suchmaschinen die Inhalte deiner Website intelligent durchforsten können. Unterstützt auch das hreflang-Tag."
 
-#: includes/module/class-manager.php:126
+#: includes/module/class-manager.php:133
 msgid "Redirect non-existent content easily with 301 and 302 status code. This can help improve your site ranking. Also supports many other response codes."
 msgstr "Leite nicht vorhandene Inhalte einfach über die Statuscodes 301 und 302 um. Dies kann das Ranking deiner Site verbessern. Unterstützt noch viele weitere Response Codes."
 
-#: includes/module/class-manager.php:117
+#: includes/module/class-manager.php:124
 msgid "Dominate the search results for the local audiences by optimizing your website for Local SEO and it also helps you to acquire the Knowledge Graph."
 msgstr "Dominiere die Suchergebnisse für das lokale Publikum, indem du deine Website für Lokales SEO optimierst und es hilft dir auch, den Knowledge Graph zu erwerben."
 
@@ -4410,10 +4553,6 @@ msgstr "Konfigurationsdatei"
 msgid "Invalid post ID."
 msgstr "Die Beitrags-ID ist ungültig."
 
-#: includes/rest/class-rest-helper.php:139
-msgid "Sorry, you are not allowed to edit this post."
-msgstr "Du darfst diesen Beitrag leider nicht bearbeiten."
-
 #: includes/rest/class-rest-helper.php:123
 msgid "Sorry, you are not allowed to edit this post type."
 msgstr "Du darfst diesen Beitragstyp leider nicht bearbeiten."
@@ -4425,6 +4564,10 @@ msgstr "Entschuldigung, du hast keine Erlaubnis Weiterleitungen zu erstellen ode
 #: includes/modules/sitemap/class-admin.php:379
 msgid "Click here to see the code."
 msgstr "Klicke hier, um den Code zu sehen."
+
+#: includes/rest/class-rest-helper.php:139
+msgid "Sorry, you are not allowed to edit this post."
+msgstr "Du bist leider nicht berechtigt, diesen Beitrag zu bearbeiten."
 
 #: includes/modules/schema/shortcode/event.php:21
 msgid "Online + Offline"
@@ -4551,7 +4694,7 @@ msgstr "Konvertiere den mit AIOSEO erstellten TOC-Block. Mit dieser Option kanns
 msgid "Yoast Block Converter"
 msgstr "Yoast-Block-Konverter"
 
-#: includes/module/class-manager.php:303
+#: includes/module/class-manager.php:310
 #: includes/modules/status/assets/js/status.js:1
 msgid "Database Tools"
 msgstr "Datenbank-Tools"
@@ -4573,7 +4716,7 @@ msgstr "Rollback Plugin"
 msgid "This update will install a beta version of Rank Math."
 msgstr "Dieses Update installiert eine Beta-Version von Rank Math."
 
-#: includes/module/class-manager.php:297 assets/admin/js/components.js:1
+#: includes/module/class-manager.php:304 assets/admin/js/components.js:1
 #: assets/admin/js/modules.js:1 includes/modules/status/assets/js/status.js:1
 msgid "Version Control"
 msgstr "Versionsverwaltung"
@@ -4598,7 +4741,7 @@ msgstr "Schemas importieren"
 msgid "On-Page Schema Settings"
 msgstr "On-Page Schema Einstellungen"
 
-#: includes/module/class-manager.php:134
+#: includes/module/class-manager.php:141
 msgid "Schema (Structured Data)"
 msgstr "Schema (Strukturierte Daten)"
 
@@ -4628,7 +4771,7 @@ msgid "Custom or Generated SEO Title of the current post/page"
 msgstr "Individueller oder generierter SEO-Titel des aktuellen Beitrags/der aktuellen Seite"
 
 #. translators: 1. Bold text 2. Bold text
-#: rank-math.php:490
+#: rank-math.php:501
 msgid "%1$s A filter to remove the Rank Math data from the database is present. Deactivating & Deleting this plugin will remove everything related to the Rank Math plugin. %2$s"
 msgstr "%1$s In deinem Theme ist ein Filter zum Entfernen der Rank Math Daten aus der Datenbank vorhanden. Das Deaktivieren dieses Plugins entfernt alles, was mit dem Rank Math-Plugin zusammenhängt. %2$s"
 
@@ -4686,7 +4829,7 @@ msgstr "Ich kann die Umleitung nicht aktualisieren."
 msgid "Rank Math plugin could not be connected."
 msgstr "Das Rank Math Plugin konnte nicht verbunden werden."
 
-#: includes/module/class-manager.php:349
+#: includes/module/class-manager.php:356
 msgid "Enable the BuddyPress module for Rank Math SEO to make your BuddyPress forum SEO friendly by adding proper meta tags to all forum pages."
 msgstr "Aktiviere das BuddyPress-Modul für Rank Math SEO, um dein BuddyPress-Forum SEO-freundlich zu gestalten, indem du die richtigen Meta-Tags auf allen Forenseiten hinzufügst."
 
@@ -4840,7 +4983,7 @@ msgstr "Füge <code>rel=\"sponsored\"</code> hinzu"
 msgid "Advanced Robots Meta"
 msgstr "Erweiterte Robots-Meta"
 
-#: includes/module/class-manager.php:368
+#: includes/module/class-manager.php:375
 msgid "ACF"
 msgstr "ACF"
 
@@ -4903,11 +5046,11 @@ msgstr "Möchtest du wirklich alle Umleitungsregeln löschen? Diese Aktion kann 
 msgid "Are you sure you want to delete Internal Links Data? This action is irreversible."
 msgstr "Möchtest du die internen Links wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
 
-#: includes/module/class-manager.php:373
+#: includes/module/class-manager.php:380
 msgid "Please activate ACF plugin to use this module."
 msgstr "Bitte aktiviere ACF Plugin für dieses Modul."
 
-#: includes/module/class-manager.php:369
+#: includes/module/class-manager.php:376
 msgid "ACF support helps Rank Math SEO read and analyze content written in the Advanced Custom Fields. If your theme uses ACF, you should enable this option."
 msgstr "Der ACF-Support hilft Rank Math SEO, Inhalte zu lesen und zu analysieren, die in den erweiterten individuellen Feldern geschrieben wurden. Wenn dein Design ACF verwendet, solltest du diese Option aktivieren."
 
@@ -4984,15 +5127,15 @@ msgstr "Wähle individuelle Roboter-Metas für Gruppenarchivseiten. Andernfalls 
 msgid "<strong>Warning:</strong> your site's search engine visibility is set to Hidden in <a href=\"%1$s\" target=\"_blank\">Settings &gt; Reading</a>. This means that the changes you make here will not take effect. Set the search engine visibility to Public to be able to change the robots.txt content."
 msgstr "<strong>Warnung:</strong> Die Sichtbarkeit deiner Website in der Suchmaschine ist auf Versteckt gesetzt in <a href=\"%1$s\" target=\"_blank\">Einstellungen &gt; Lesen</a>. Das bedeutet, dass die hier vorgenommenen Änderungen nicht wirksam werden. Stelle die Sichtbarkeit der Suchmaschine auf Öffentlich, um die Inhalte der robots.txt ändern zu können."
 
-#: includes/module/class-manager.php:353
+#: includes/module/class-manager.php:360
 msgid "Please activate BuddyPress plugin to use this module."
 msgstr "Bitte aktiviere das BuddyPress-Plugin, um dieses Modul zu nutzen."
 
-#: includes/module/class-manager.php:348
+#: includes/module/class-manager.php:355
 msgid "BuddyPress"
 msgstr "BuddyPress"
 
-#: includes/module/class-manager.php:291
+#: includes/module/class-manager.php:298
 msgid "Robots Txt"
 msgstr "Robots Txt"
 
@@ -5114,7 +5257,7 @@ msgstr "Inhaltstyp der SEO-Wertung"
 msgid "Shortcode"
 msgstr "Shortcode"
 
-#: includes/module/class-manager.php:338
+#: includes/module/class-manager.php:345
 msgid "bbPress"
 msgstr "bbPress"
 
@@ -5225,11 +5368,6 @@ msgstr "Individuelle Werte für Robots Meta-Tag auf der Datumseite."
 msgid "Custom values for robots meta tag on author page."
 msgstr "Individuelle Werte für die Roboter-Metadaten auf der Autoren-Seite."
 
-#: includes/3rdparty/divi/class-divi.php:158
-#: includes/admin/class-assets.php:106
-msgid "Please enter a valid email address."
-msgstr "Bitte gebe eine gültige E-Mail-Adresse ein."
-
 #: includes/3rdparty/divi/class-divi.php:156
 #: includes/admin/class-assets.php:104
 msgid "Please use the correct format."
@@ -5262,11 +5400,11 @@ msgstr "Ändere das Styling für das Frontend-SEO-Wertungs Abzeichen."
 msgid "Select custom robots meta for author page, such as <code>nofollow</code>, <code>noarchive</code>, etc. Otherwise the default meta will be used, as set in the Global Meta tab."
 msgstr "Wähle individuelle Roboter-Metas für die Autorenseite, wie z.B. <code>nofollow</code>, <code>noarchive</code>, etc. Andernfalls wird die Standard-Meta verwendet, wie auf der Registerkarte Globale Meta eingestellt."
 
-#: includes/module/class-manager.php:343
+#: includes/module/class-manager.php:350
 msgid "Please activate bbPress plugin to use this module."
 msgstr "Bitte aktiviere das bbPress-Plugin, um dieses Modul zu verwenden."
 
-#: includes/module/class-manager.php:339
+#: includes/module/class-manager.php:346
 msgid "Add proper Meta tags to your bbPress forum posts, categories, profiles, etc. Get more options to take control of what search engines see and how they see it."
 msgstr "Füge deinen bbPress-Forumseinträgen, Kategorien, Profilen usw. passende Meta-Tags hinzu. Erhalte mehr Optionen, um die Kontrolle darüber zu übernehmen, was Suchmaschinen sehen und wie sie es sehen."
 
@@ -5280,6 +5418,11 @@ msgstr "Berufsbezeichnung"
 #: includes/admin/class-assets.php:107
 msgid "Please enter a valid URL."
 msgstr "Bitte gib eine gültige URL ein."
+
+#: includes/3rdparty/divi/class-divi.php:158
+#: includes/admin/class-assets.php:106
+msgid "Please enter a valid email address."
+msgstr "Bitte gib eine gültige E-Mail-Adresse ein."
 
 #: includes/helpers/class-choices.php:74
 msgid "Instructs search engines to index and show these pages in the search results."
@@ -5461,7 +5604,7 @@ msgstr "Preis gültig bis"
 msgid "Page %s"
 msgstr "Seite %s"
 
-#: includes/admin/class-post-columns.php:288
+#: includes/admin/class-post-columns.php:291
 msgid "Is Pillar"
 msgstr "Ist Säule"
 
@@ -5471,7 +5614,7 @@ msgstr "Ist Säule"
 msgid "Performer"
 msgstr "Darsteller"
 
-#: includes/admin/class-post-columns.php:297
+#: includes/admin/class-post-columns.php:300
 #: includes/modules/links/assets/js/links-page.js:1
 #: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:55
 #: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:245
@@ -5862,11 +6005,6 @@ msgstr "RSS nach dem Inhalt"
 msgid "RSS Before Content"
 msgstr "RSS vor dem Inhalt"
 
-#: includes/settings/general/others.php:101
-#: assets/admin/js/generalSettings.js:1
-msgid "Usage Tracking"
-msgstr "Nutzungsverfolgung"
-
 #: includes/settings/general/links.php:81 assets/admin/js/generalSettings.js:1
 msgid "Nofollow Domains"
 msgstr "Nofollow Domains"
@@ -6114,6 +6252,7 @@ msgstr "Links"
 msgid "Page %1$d of %2$d"
 msgstr "Seite %1$d von %2$d"
 
+#: includes/abilities/content-analysis/class-get-seo-scores.php:337
 #: includes/modules/instant-indexing/views/history.php:32
 #: assets/admin/js/instantIndexingSettings.js:1
 #: includes/modules/seo-analysis/assets/js/seo-analysis.js:1
@@ -6313,7 +6452,7 @@ msgstr "Wiederherstellen"
 msgid "Export"
 msgstr "Exportieren"
 
-#: rank-math.php:510 assets/admin/js/wizard.js:1
+#: rank-math.php:521 assets/admin/js/wizard.js:1
 msgid "Getting Started"
 msgstr "Erste Schritte"
 
@@ -6427,11 +6566,11 @@ msgid "Unable to perform action this time."
 msgstr "Diesmal kann keine Aktion ausgeführt werden."
 
 #: includes/admin/class-option-center.php:159
-#: includes/module/class-manager.php:116 assets/admin/js/titleSettings.js:1
+#: includes/module/class-manager.php:123 assets/admin/js/titleSettings.js:1
 msgid "Local SEO"
 msgstr "Lokales SEO"
 
-#: includes/module/class-manager.php:327
+#: includes/module/class-manager.php:334
 msgid "AMP"
 msgstr "AMP"
 
@@ -6497,11 +6636,11 @@ msgstr "Dauer"
 msgid "Menu URL"
 msgstr "Menü-URL"
 
-#: includes/modules/analytics/class-ajax.php:290
+#: includes/modules/analytics/class-ajax.php:293
 msgid "Google oAuth is not authorized."
 msgstr "Google oAuth ist nicht autorisiert."
 
-#: includes/modules/analytics/class-ajax.php:325
+#: includes/modules/analytics/class-ajax.php:332
 msgid "Not a valid settings founds to delete cache."
 msgstr "Es wurde keine gültige Einstellung zum Löschen des Caches gefunden."
 
@@ -6768,7 +6907,7 @@ msgstr "Deaktivieren"
 msgid "Activate"
 msgstr "Aktivieren"
 
-#: includes/module/class-manager.php:309 assets/admin/js/components.js:1
+#: includes/module/class-manager.php:316 assets/admin/js/components.js:1
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
 #: includes/modules/ai-visibility/assets/src/BrandDetail/QueriesTable.js:155
 #: includes/modules/analytics/assets/js/stats.js:1
@@ -7401,7 +7540,7 @@ msgstr "Aktuelle Laufzeit"
 msgid "Post Title"
 msgstr "Beitragstitel"
 
-#: rank-math.php:511
+#: rank-math.php:522
 msgid "Documentation"
 msgstr "Dokumentation"
 
@@ -7424,7 +7563,7 @@ msgstr "Aktiv"
 #: includes/module/class-module.php:105
 #: includes/modules/404-monitor/class-admin.php:222
 #: includes/modules/instant-indexing/class-instant-indexing.php:222
-#: includes/modules/redirections/class-admin.php:319 rank-math.php:453
+#: includes/modules/redirections/class-admin.php:319 rank-math.php:458
 #: assets/admin/js/instantIndexingSettings.js:1 assets/admin/js/modules.js:1
 #: assets/admin/js/rank-math-app.js:1
 #: includes/modules/schema/blocks/schema/assets/js/index.js:1
@@ -7441,7 +7580,7 @@ msgstr "Einstellungen"
 msgid "SEO Settings for %s"
 msgstr "SEO-Einstellungen für %s"
 
-#: includes/module/class-manager.php:143
+#: includes/module/class-manager.php:150
 #: includes/modules/sitemap/sitemap-xsl.php:259 assets/admin/js/wizard.js:1
 msgid "Sitemap"
 msgstr "Sitemap"
@@ -7515,7 +7654,7 @@ msgstr "Kein Bildverzeichnis"
 msgid "No Archive"
 msgstr "Kein Archiv"
 
-#: includes/admin/class-post-columns.php:271
+#: includes/admin/class-post-columns.php:274
 #: includes/helpers/class-choices.php:75 assets/admin/js/rank-math-app.js:1
 msgid "No Index"
 msgstr "Kein Index"
@@ -7638,13 +7777,13 @@ msgstr "Beitragstitel der übergeordneten Seite"
 msgid "Title of the current post/page"
 msgstr "Titel des aktuellen Beitrags/Seite"
 
-#: includes/module/class-manager.php:357
+#: includes/module/class-manager.php:364
 #: includes/modules/woocommerce/class-admin.php:75
 #: assets/admin/js/generalSettings.js:1
 msgid "WooCommerce"
 msgstr "WooCommerce"
 
-#: includes/module/class-manager.php:331
+#: includes/module/class-manager.php:338
 msgid "AMP plugin"
 msgstr "AMP Plugin"
 
@@ -7925,7 +8064,7 @@ msgstr "Veröffentlichungsdatum des aktuellen Beitrags/der aktuellen Seite <stro
 msgid "Date Published"
 msgstr "Veröffentlichungsdatum"
 
-#: includes/module/class-manager.php:151
+#: includes/module/class-manager.php:158
 msgid "Link Counter"
 msgstr "Linkzähler"
 
@@ -8203,7 +8342,7 @@ msgstr "Fokus-Schlüsselwörter"
 msgid "Focus Keyword of the current post"
 msgstr "Fokus-Schlüsselwort des aktuellen Beitrags"
 
-#: includes/admin/class-post-columns.php:292
+#: includes/admin/class-post-columns.php:295
 #: includes/replace-variables/class-advanced-variables.php:44
 #: assets/admin/js/rank-math-app.js:1
 #: includes/modules/content-ai/assets/js/content-ai-page.js:1
@@ -8294,7 +8433,7 @@ msgstr "URL"
 msgid "Rank Math Dashboard"
 msgstr "Rank Math Dashboard"
 
-#: includes/module/class-manager.php:250
+#: includes/module/class-manager.php:257
 #: includes/modules/role-manager/class-capability-manager.php:62
 #: includes/modules/role-manager/class-role-manager.php:60
 #: assets/admin/js/components.js:1 assets/admin/js/wizard.js:1
@@ -8709,6 +8848,10 @@ msgstr "Lese <a href=\"%1$s\" target=\"_blank\">diesen Artikel</a> für detailli
 msgid "You can integrate the Google Search Console with Rank math in the <a href=\"%1$s\" target=\"_blank\">Search Console tab</a>. of Rank Math's General Settings menu."
 msgstr "Du kannst die Google Search Console mit Rank Math in die <a href=\"%1$s\" target=\"_blank\">Search Console Tab</a> aus dem Menü Allgemeine Einstellungen von Rank Math integrieren."
 
+#: includes/modules/seo-analysis/seo-analysis-tests.php:121
+msgid "Google's Search Console is a vital source of information concerning your rankings and click-through rates.  Rank Math can import this data, so you don't have to log into your Google account to get the data you need."
+msgstr "Die Suchkonsole von Google ist eine wichtige Informationsquelle für deine Rankings und Klickraten. Rank Math kann diese Daten importieren, so dass du dich nicht in dein Google-Konto einloggen musst, um die benötigten Daten zu erhalten."
+
 #: includes/modules/seo-analysis/seo-analysis-tests.php:135
 msgid "If you don't have an XML sitemap, the best option is to install a plugin that creates sitemaps for you. That way you'll know the sitemap will always be up-to-date. Plugins can also automatically ping the search engines when the XML file is updated. The Rank Math WordPress plugin gives you complete control over your site's XML sitemaps. You can control the settings for each page as you write or edit it, and Rank Math will ping Google as soon as you submit your edits. This results in fast crawls and indexing."
 msgstr "Wenn du keine XML-Sitemap hast, ist die beste Option, ein Plugin zu installieren, das Sitemaps für dich erstellt. Auf diese Weise weisst du, dass die Sitemap immer aktuell ist. Plugins können auch automatisch die Suchmaschinen pingen, wenn die XML-Datei aktualisiert wird. Das Rank Math WordPress Plugin gibt dir die volle Kontrolle über die XML-Sitemaps deiner Website. Du kannst die Einstellungen für jede Seite steuern, während du sie schreibst oder bearbeitest, und Rank Math wird Google an pingen, sobald deine Änderungen übermittelt sind. Dies führt zu schnellen Crawls und Indexierungen."
@@ -8716,10 +8859,6 @@ msgstr "Wenn du keine XML-Sitemap hast, ist die beste Option, ein Plugin zu inst
 #: includes/modules/seo-analysis/seo-analysis-tests.php:134
 msgid "XML sitemaps are a special type of text file that tells search engines about the structure of your site. They're a list of all the resources (pages and files) you would like the search engine to index. You can assign different priorities, so certain pages will be crawled first. Before XML sitemaps, search engines were limited to indexing the content they could find by following links. That's still an important feature for search engine spiders, but XML sitemaps have made it easier for content creators and search engines to collaborate."
 msgstr "XML-Sitemaps sind eine spezielle Art von Textdatei, die Suchmaschinen über die Struktur deiner Website informiert. Es handelt sich um eine Liste aller Ressourcen (Seiten und Dateien), die die Suchmaschine indizieren soll. du kannst verschiedene Prioritäten vergeben, so dass bestimmte Seiten zuerst durchsucht werden. Vor XML-Sitemaps beschränkten sich Suchmaschinen auf die Indizierung von Inhalten, die sie über folgende Links finden konnten. Das ist immer noch ein wichtiges Feature für Suchmaschinen-Spider, aber XML-Sitemaps haben es für Inhaltsersteller und Suchmaschinen einfacher gemacht, zusammenzuarbeiten."
-
-#: includes/modules/seo-analysis/seo-analysis-tests.php:121
-msgid "Google's Search Console is a vital source of information concerning your rankings and click-through rates.  Rank Math can import this data, so you don't have to log into your Google account to get the data you need."
-msgstr "Die Suchkonsole von Google ist eine wichtige Informationsquelle für deine Rankings und Klickraten. Rank Math kann diese Daten importieren, so dass du dich nicht in dein Google-Konto einloggen musst, um die benötigten Daten zu erhalten."
 
 #. translators: link to plugin setting screen
 #: includes/modules/seo-analysis/seo-analysis-tests.php:117
@@ -8807,8 +8946,9 @@ msgstr "Elemente"
 msgid "Bad request. Please check the code."
 msgstr "Fehlerhafte Anfrage. Bitte überprüfe den Code."
 
+#: includes/abilities/analytics/class-subscriber.php:65
 #: includes/admin/wizard/views/search-console-ui.php:192
-#: includes/module/class-manager.php:259
+#: includes/module/class-manager.php:266
 #: includes/modules/analytics/class-analytics-common.php:75
 #: includes/modules/analytics/class-analytics-common.php:146
 #: includes/modules/analytics/class-analytics.php:76
@@ -8820,7 +8960,7 @@ msgstr "Fehlerhafte Anfrage. Bitte überprüfe den Code."
 msgid "Analytics"
 msgstr "Analysen"
 
-#: includes/admin/class-admin.php:467 includes/traits/class-ajax.php:59
+#: includes/admin/class-admin.php:441 includes/traits/class-ajax.php:59
 msgid "You are not authorized to perform this action."
 msgstr "Du bist nicht berechtigt, diese Aktion durchzuführen."
 
@@ -9042,23 +9182,23 @@ msgstr "Veröffentliche das Datum mit einem individuellen Formatierungsmuster."
 msgid "Site Description"
 msgstr "Seitenbeschreibung"
 
-#: includes/module/class-manager.php:363
+#: includes/module/class-manager.php:370
 msgid "Please activate WooCommerce plugin to use this module."
 msgstr "Bitte aktiviere das WooCommerce Plugin, um dieses Modul zu nutzen."
 
-#: includes/module/class-manager.php:270
+#: includes/module/class-manager.php:277
 msgid "Let Rank Math analyze your website and your website's content using 28+ different tests to provide tailor-made SEO Analysis to you."
 msgstr "Lasse Rank Math deine Website und den Inhalt deiner Website anhand von 28+ verschiedenen Tests analysieren, um dir eine maßgeschneiderte SEO-Analyse bereitzustellen."
 
-#: includes/module/class-manager.php:260
+#: includes/module/class-manager.php:267
 msgid "Connect Rank Math with Google Search Console to see the most important information from Google directly in your WordPress dashboard."
 msgstr "Verbinde Rank Math mit der Google Search Console, um die wichtigsten Informationen von Google direkt in deinem WordPress-Dashboard anzuzeigen."
 
-#: includes/module/class-manager.php:135
+#: includes/module/class-manager.php:142
 msgid "Enable support for the structured data, which adds Schema code in your website, resulting in rich search results, better CTR and more traffic."
 msgstr "Aktiviere die Unterstützung für die strukturierten Daten, mit denen Metadaten zu deiner Website hinzugefügt werden, was zu besseren Suchergebnissen und mehr Traffic führt."
 
-#: includes/module/class-manager.php:108
+#: includes/module/class-manager.php:115
 msgid "Records the URLs on which visitors & search engines run into 404 Errors. You can also turn on Redirections to redirect the error causing URLs to other URLs."
 msgstr "Zeichnet die URLs auf, unter denen Besucher und Suchmaschinen auf 404-Fehler stoßen. Du kannst auch Umleitungen aktivieren, um die fehlerhaften URLs auf andere URLs umzuleiten."
 
@@ -9128,7 +9268,7 @@ msgstr "Google erlaubt Person nicht als Publisher für Artikel. Organisation wir
 msgid "None (Click here to set one)"
 msgstr "Keiner (Klicke hier, um einen einzustellen)"
 
-#: includes/module/class-manager.php:125
+#: includes/module/class-manager.php:132
 #: includes/modules/redirections/class-admin.php:155
 #: includes/modules/redirections/class-admin.php:220
 #: includes/modules/redirections/class-redirections.php:67
@@ -9139,7 +9279,7 @@ msgstr "Keiner (Klicke hier, um einen einzustellen)"
 msgid "Redirections"
 msgstr "Weiterleitungen"
 
-#: includes/module/class-manager.php:107
+#: includes/module/class-manager.php:114
 #: includes/modules/404-monitor/class-admin.php:143
 #: includes/modules/404-monitor/class-admin.php:197
 #: includes/modules/404-monitor/class-monitor.php:91
@@ -9263,6 +9403,11 @@ msgstr "Datumsarchiv"
 msgid "Author Archives"
 msgstr "Autorenarchiv"
 
+#: includes/settings/general/others.php:101
+#: assets/admin/js/generalSettings.js:1
+msgid "Usage Tracking"
+msgstr "Nutzungsdatenerfassung"
+
 #: includes/admin/metabox/class-taxonomy-screen.php:140
 #: includes/modules/local-seo/views/titles-options.php:64
 #: includes/settings/general/rss-vars-table.php:20
@@ -9276,17 +9421,17 @@ msgstr "Autorenarchiv"
 msgid "Description"
 msgstr "Beschreibung"
 
-#: includes/admin/class-post-columns.php:231
-#: includes/admin/class-post-columns.php:252
-#: includes/admin/class-post-columns.php:307
-#: includes/admin/class-post-columns.php:327
-#: includes/admin/class-post-columns.php:340
+#: includes/admin/class-post-columns.php:234
+#: includes/admin/class-post-columns.php:255
+#: includes/admin/class-post-columns.php:310
+#: includes/admin/class-post-columns.php:330
+#: includes/admin/class-post-columns.php:343
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
 #: includes/modules/schema/assets/js/schema-template.js:1
 msgid "Save"
 msgstr "Speichern"
 
-#: includes/admin/class-admin-menu.php:77
+#: includes/admin/class-admin-menu.php:74
 #: includes/admin/class-post-filters.php:169
 #: includes/admin/class-registration.php:211 includes/class-cmb2.php:177
 #: includes/modules/analytics/views/email-reports/header.php:38
@@ -9334,7 +9479,7 @@ msgstr "Hilfe"
 #: includes/admin/class-admin-bar-menu.php:185
 #: includes/admin/class-admin-bar-menu.php:187
 #: includes/admin/class-admin-breadcrumbs.php:33
-#: includes/admin/class-admin-menu.php:141 assets/admin/js/components.js:1
+#: includes/admin/class-admin-menu.php:138 assets/admin/js/components.js:1
 #: assets/admin/js/modules.js:1
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
 #: includes/modules/ai-visibility/assets/src/App.js:39
@@ -9344,7 +9489,7 @@ msgstr "Dashboard"
 
 #: includes/admin/class-admin-dashboard-nav.php:111
 #: includes/admin/class-setup-wizard.php:68
-#: includes/admin/class-setup-wizard.php:69 rank-math.php:454 rank-math.php:459
+#: includes/admin/class-setup-wizard.php:69 rank-math.php:459 rank-math.php:464
 #: assets/admin/js/modules.js:1
 msgid "Setup Wizard"
 msgstr "Einrichtungsassistent"
@@ -9359,11 +9504,11 @@ msgstr "Ein"
 msgid "Off"
 msgstr "Aus"
 
-#: includes/admin/class-post-columns.php:232
-#: includes/admin/class-post-columns.php:253
-#: includes/admin/class-post-columns.php:308
-#: includes/admin/class-post-columns.php:328
-#: includes/admin/class-post-columns.php:341 assets/admin/js/post-list.js:1
+#: includes/admin/class-post-columns.php:235
+#: includes/admin/class-post-columns.php:256
+#: includes/admin/class-post-columns.php:311
+#: includes/admin/class-post-columns.php:331
+#: includes/admin/class-post-columns.php:344 assets/admin/js/post-list.js:1
 #: includes/modules/ai-visibility/assets/js/ai-visibility.js:1
 #: includes/modules/ai-visibility/assets/src/shared/Modals/AddBrandModal.js:433
 #: includes/modules/ai-visibility/assets/src/shared/Modals/ConfirmModal.js:39
@@ -9408,16 +9553,8 @@ msgstr "Aktion nicht zulässig."
 msgid "Cleanup of %s data failed."
 msgstr "Die Bereinigung der %s-Daten ist fehlgeschlagen."
 
-#: includes/admin/class-admin.php:437
-msgid "Insert Link in Content"
-msgstr "Link in Inhalt einfügen"
-
-#: includes/admin/class-admin.php:436
-msgid "Copy Link URL to Clipboard"
-msgstr "Link URL in die Zwischenablage kopieren"
-
-#: includes/admin/metabox/class-metabox.php:230
-#: includes/settings/titles/post-types.php:273
+#: includes/admin/metabox/class-metabox.php:234
+#: includes/settings/titles/post-types.php:273 assets/admin/js/gutenberg.js:1
 #: assets/admin/js/titleSettings.js:1
 msgid "Link Suggestions"
 msgstr "Linkvorschläge"
@@ -9425,11 +9562,11 @@ msgstr "Linkvorschläge"
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: rank-math.php includes/admin/class-admin-bar-menu.php:175
-#: includes/admin/class-admin-menu.php:125
+#: includes/admin/class-admin-menu.php:122
 #: includes/admin/class-registration.php:212
 #: includes/admin/metabox/class-metabox.php:163
 #: includes/admin/metabox/class-metabox.php:203
-#: includes/admin/metabox/class-metabox.php:389
+#: includes/admin/metabox/class-metabox.php:383
 msgid "Rank Math SEO"
 msgstr "Rank Math SEO"
 
@@ -9535,7 +9672,7 @@ msgstr "Die Bereinigung der %s-Daten wurde erfolgreich durchgeführt."
 msgid "Insert/edit link"
 msgstr "Link einfügen/bearbeiten"
 
-#: includes/admin/class-admin-menu.php:151
+#: includes/admin/class-admin-menu.php:148
 msgid "Help &amp; Support"
 msgstr "Hilfe und Support"
 
@@ -9580,7 +9717,7 @@ msgstr "Einstellungen konnten nicht importiert werden:"
 msgid "Focus Keyword Not Set"
 msgstr "Fokus-Schlüsselwort nicht gesetzt"
 
-#: includes/admin/class-post-columns.php:294
+#: includes/admin/class-post-columns.php:297
 msgid "Keyword"
 msgstr "Schlüsselwort"
 
@@ -9609,12 +9746,12 @@ msgid "Other Business Website"
 msgstr "Andere Firmen-Website"
 
 #: includes/admin/class-post-columns.php:132
-#: includes/admin/class-post-columns.php:176
+#: includes/admin/class-post-columns.php:179
 msgid "SEO Desc"
 msgstr "SEO-Beschreibung"
 
 #: includes/admin/class-post-columns.php:131
-#: includes/admin/class-post-columns.php:175
+#: includes/admin/class-post-columns.php:178
 #: includes/replace-variables/class-post-variables.php:81
 #: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
@@ -9625,15 +9762,7 @@ msgstr "SEO-Titel"
 msgid "SEO Details"
 msgstr "SEO-Details"
 
-#: includes/admin/metabox/class-metabox.php:250
-msgid "We can't show any link suggestions for this post. Try selecting categories and tags for this post, and mark other posts as Pillar Content to make them show up here."
-msgstr "Wir können keine Linkvorschläge für diesen Beitrag machen. Versuche, Kategorien und Tags für diesen Beitrag auszuwählen, und markiere andere Beiträge als Säuleninhalt, damit sie hier angezeigt werden."
-
-#: includes/admin/metabox/class-metabox.php:245
-msgid "Click on the button to copy URL or insert link in content. You can also drag and drop links in the post content."
-msgstr "Klicke auf die Schaltfläche, um die URL zu kopieren oder einen Link in den Inhalt einzufügen. Du kannst auch Links per Drag & Drop in den Inhalt des Beitrags ziehen."
-
-#: includes/admin/metabox/class-post-screen.php:129
+#: includes/admin/metabox/class-post-screen.php:130
 msgid "The featured image should be at least 200 by 200 pixels to be picked up by Facebook and other social media sites."
 msgstr "Das angezeigte Beitragsbild sollte mindestens 200x200 px groß sein, damit Facebook und andere Social-Media-Websites es übernehmen."
 

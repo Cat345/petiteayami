@@ -12,7 +12,7 @@ class PluginUpgradeAjax extends OnboardingAjax
     /**
      * @var string
      */
-    private $plugin_version;
+    private string $plugin_version;
     /**
      * @param string $plugin_version
      */

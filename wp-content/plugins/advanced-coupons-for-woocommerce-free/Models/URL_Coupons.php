@@ -27,6 +27,23 @@ class URL_Coupons implements Model_Interface {
      */
 
     /**
+     * Query arg used to carry the URL Coupon redirect chain depth across hops (loop guard).
+     *
+     * @since 4.8
+     */
+    const REDIRECT_DEPTH_ARG = 'acfw_url_coupon_redirect_depth';
+
+    /**
+     * Default cart-add query args stripped from the post-apply redirect URL so WooCommerce does not
+     * re-process add-to-cart and add the product a second time. Shared by both the endpoint and
+     * query-string redirect paths via the acfw_after_apply_coupon_redirect_url_excluded_query_args
+     * filter so the two entry points stay in parity.
+     *
+     * @since 4.8
+     */
+    private const REDIRECT_EXCLUDED_CART_ARGS = array( 'add-to-cart', 'quantity', 'variation_id', 'add-to-cart-nonce' );
+
+    /**
      * Property that holds the single main instance of URL_Coupon.
      *
      * @since 1.0
@@ -186,6 +203,8 @@ class URL_Coupons implements Model_Interface {
      * @since 1.0
      * @since 4.2   append coupon URL attributes to the redirect URL
      * @since 4.5.1 Add redirect to origin URL feature.
+     * @since 4.7.3 Exclude cart-related query args (add-to-cart, quantity, variation_id, add-to-cart-nonce) and, when add-to-cart is present, attribute_* selections from the forwarded redirect URL so WooCommerce does not re-add the product; add the acfw_after_apply_coupon_redirect_url_excluded_query_args filter to customize the excluded args.
+     * @since 4.8   Guard against endless redirect loops when the resolved redirect URL points back at a URL Coupon endpoint: cap the number of coupon-to-coupon redirect hops (acfw_url_coupon_max_redirect_depth, default 1) via a carried depth query arg and break to a safe fallback URL (acfw_url_coupon_redirect_loop_fallback_url, default cart URL) once the cap is reached; add the acfw_after_apply_coupon_forward_query_args opt-out filter.
      * @access private
      *
      * @param Advanced_Coupon $coupon      Advanced coupon object.
@@ -225,19 +244,134 @@ class URL_Coupons implements Model_Interface {
             $redirect_url = $referrer;
         }
 
+        // Loop guard: when the resolved redirect URL points back at a URL Coupon endpoint (another
+        // coupon URL, or this same one), the redirect re-triggers implement_url_coupon() on the next
+        // hop, which applies + redirects again — an endless chain whose forwarded query string keeps
+        // growing ("too many redirects"). Cap how many coupon-to-coupon redirect hops a single chain
+        // may take via a carried depth query arg; once the cap is reached, break out to a safe fallback
+        // URL instead of looping. The guard is inert unless the target is itself a coupon URL, so normal
+        // redirects (to the cart, shop, an external URL, etc.) are unaffected.
+        $targets_coupon_url  = $this->_url_targets_coupon_endpoint( $redirect_url );
+        $current_depth       = isset( $_GET[ self::REDIRECT_DEPTH_ARG ] ) ? absint( wp_unslash( $_GET[ self::REDIRECT_DEPTH_ARG ] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $max_redirect_depth  = (int) apply_filters( 'acfw_url_coupon_max_redirect_depth', 1, $coupon );
+        $break_redirect_loop = $targets_coupon_url && $current_depth >= $max_redirect_depth;
+
+        if ( $break_redirect_loop ) {
+            $redirect_url = apply_filters( 'acfw_url_coupon_redirect_loop_fallback_url', wc_get_cart_url(), $coupon, $redirect_url );
+        }
+
         // append attributes that was added in the coupon to the redirect URL.
-        if ( ! empty( $_GET ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        // exclude cart-related params (e.g. add-to-cart) so WooCommerce does not re-process
+        // them on the redirect page, which would add the product to the cart a second time.
+        // Skipped entirely when breaking a redirect loop so the fallback URL stays clean, and can be
+        // opted out of via the acfw_after_apply_coupon_forward_query_args filter.
+        $forward_query_args = apply_filters( 'acfw_after_apply_coupon_forward_query_args', true, $coupon, $redirect_url );
+        if ( $forward_query_args && ! $break_redirect_loop && ! empty( $_GET ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $excluded_args = apply_filters(
+                'acfw_after_apply_coupon_redirect_url_excluded_query_args',
+                self::REDIRECT_EXCLUDED_CART_ARGS
+            );
+
+            // drop the exact excluded args plus any variable-product attribute selections (e.g. attribute_pa_color)
+            // that ride along with add-to-cart. The attribute_* prefix strip is gated on add-to-cart being
+            // present, so attribute_* params forwarded outside a cart-add context are preserved. The loop-guard
+            // depth arg is always dropped here and re-added explicitly below so it can never accumulate.
+            $has_add_to_cart = isset( $_GET['add-to-cart'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $safe_get        = array_filter(
+                $_GET, // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                function ( $key ) use ( $excluded_args, $has_add_to_cart ) {
+                    if ( self::REDIRECT_DEPTH_ARG === $key || in_array( $key, $excluded_args, true ) ) {
+                        return false;
+                    }
+
+                    return ! ( $has_add_to_cart && str_starts_with( $key, 'attribute_' ) );
+                },
+                ARRAY_FILTER_USE_KEY
+            );
+
+            if ( ! empty( $safe_get ) ) {
+                $connector     = ! str_contains( $redirect_url, '?' ) ? '?' : '&';
+                $redirect_url .= $connector . http_build_query( $safe_get );
+            }
+        }
+
+        // Still redirecting to a coupon URL and under the cap: carry an incremented depth so the next
+        // hop can detect the chain and break once the cap is reached.
+        if ( $targets_coupon_url && ! $break_redirect_loop ) {
             $connector     = ! str_contains( $redirect_url, '?' ) ? '?' : '&';
-            $redirect_url .= $connector . http_build_query( $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $redirect_url .= $connector . self::REDIRECT_DEPTH_ARG . '=' . ( $current_depth + 1 );
         }
 
         // Clear notices when redirecting to an external URL.
-        if ( ! str_contains( $redirect_url, home_url() ) ) {
+        if ( ! $this->_is_internal_url( $redirect_url ) ) {
             wc_clear_notices();
         }
 
         wp_redirect( $redirect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
         exit();
+    }
+
+    /**
+     * Check if a URL points at this site's URL Coupon endpoint.
+     *
+     * Used by the redirect loop guard: a redirect target under the coupon endpoint
+     * (e.g. home_url/coupon/CODE) will re-trigger implement_url_coupon() on the next
+     * request, so such targets must be capped to avoid an endless redirect chain.
+     *
+     * @since 4.8
+     * @access private
+     *
+     * @param string $url URL to check.
+     * @return bool True when the URL points at the coupon endpoint, false otherwise.
+     */
+    private function _url_targets_coupon_endpoint( $url ) {
+        if ( ! is_string( $url ) || '' === $url ) {
+            return false;
+        }
+
+        // Resolve both the target and the coupon base URL to absolute form, then compare only the path
+        // component. A plain substring match on the whole URL would false-positive when the coupon base
+        // URL merely rides along inside a query string (e.g. ?redirect_to=<coupon URL>) and would miss a
+        // relative target when the base URL is absolute.
+        $base = trailingslashit( $this->_coupon_base_url );
+        if ( ! str_starts_with( $base, 'http' ) ) {
+            $base = home_url( $base );
+        }
+        if ( ! str_starts_with( $url, 'http' ) ) {
+            $url = home_url( $url );
+        }
+
+        $url_path  = (string) wp_parse_url( $url, PHP_URL_PATH );
+        $base_path = (string) wp_parse_url( $base, PHP_URL_PATH );
+
+        return '' !== $base_path && str_starts_with( $url_path, $base_path );
+    }
+
+    /**
+     * Check whether a redirect URL points back at this site.
+     *
+     * Compares only the host component against the site host rather than substring-matching the
+     * whole home_url(). Under WPML directory-based language negotiation home_url() is language
+     * prefixed (e.g. http://site/fr/) while wc_get_cart_url() returns the default-language cart
+     * (http://site/cart/), so a str_contains( $url, home_url() ) test wrongly classifies an internal
+     * cart URL as external on secondary languages — which cleared the URL Coupon notice before the
+     * redirect and suppressed the invalid-coupon notice. Same-host comparison is language-agnostic.
+     *
+     * @since 4.8
+     * @access private
+     *
+     * @param string $url URL to check.
+     * @return bool True when the URL is on the same host as the site, false otherwise.
+     */
+    private function _is_internal_url( $url ) {
+        if ( ! is_string( $url ) || '' === $url ) {
+            return false;
+        }
+
+        $url_host  = wp_parse_url( $url, PHP_URL_HOST );
+        $site_host = wp_parse_url( home_url(), PHP_URL_HOST );
+
+        return ! empty( $url_host ) && ! empty( $site_host ) && strtolower( $url_host ) === strtolower( $site_host );
     }
 
     /**
@@ -260,7 +394,7 @@ class URL_Coupons implements Model_Interface {
         }
 
         // Display error notice if redirecting to an internal page.
-        if ( str_contains( $redirect_url, home_url() ) ) {
+        if ( $this->_is_internal_url( $redirect_url ) ) {
             $adv_error_message = $coupon->get_advanced_error_message();
             wc_add_notice( $adv_error_message ? $adv_error_message : $error_message, 'error' );
         }
@@ -401,6 +535,7 @@ class URL_Coupons implements Model_Interface {
      * Main code implementation for applying the coupon via a query string.
      *
      * @since 4.5.6
+     * @since 4.8   Exclude cart-related query args (add-to-cart, quantity, variation_id, add-to-cart-nonce) and, when add-to-cart is present, attribute_* selections from the "stay on the same page" redirect URL so WooCommerce does not re-add the product to the cart.
      * @access public
      */
     public function apply_coupon_from_query_string() {
@@ -448,7 +583,28 @@ class URL_Coupons implements Model_Interface {
                 case 'same_page':
                 default:
                     $redirect_url = home_url( $_SERVER['REQUEST_URI'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-                    $redirect_url = remove_query_arg( 'coupon', $redirect_url );
+
+                    // Strip the coupon arg plus cart-add params (add-to-cart, quantity, variation_id,
+                    // add-to-cart-nonce) so WooCommerce does not re-process add-to-cart on the redirected
+                    // request and add the product a second time. Shares the endpoint redirect's excluded
+                    // args filter so both entry points stay consistent.
+                    $excluded_args = apply_filters(
+                        'acfw_after_apply_coupon_redirect_url_excluded_query_args',
+                        self::REDIRECT_EXCLUDED_CART_ARGS
+                    );
+
+                    // Drop the coupon arg, the excluded cart-add args, and — when add-to-cart is present —
+                    // any variable-product attribute_* selections that ride along with it, mirroring the
+                    // endpoint redirect path so both entry points settle on the same clean URL.
+                    $args_to_remove = array_merge( array( 'coupon' ), $excluded_args );
+                    if ( isset( $_GET['add-to-cart'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                        foreach ( array_keys( $_GET ) as $key ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                            if ( str_starts_with( $key, 'attribute_' ) ) {
+                                $args_to_remove[] = $key;
+                            }
+                        }
+                    }
+                    $redirect_url = remove_query_arg( $args_to_remove, $redirect_url );
                     break;
             }
 

@@ -19,7 +19,7 @@ if ( 'single_step' != $step ) {
 		<?php
 		if ( '' !== $preview_heading || '' != $preview_subheading ) {
 			?>
-			<div class="wfacp-comm-title none">
+            <div class="wfacp-comm-title wfacp_none">
 				<?php
 				if ( '' !== $preview_heading ) {
 					echo '<h2 class="wfacp_section_heading wfacp_section_title wfacp-normal">' . esc_html( wp_strip_all_tags( $preview_heading ) ) . '</h2>';

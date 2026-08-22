@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_With_WF_Cart_Hooper' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_WF_Cart_Hooper {
@@ -22,7 +23,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WF_Cart_Hooper' ) ) {
 			$output   = [];
 			$output[] = [
 				'id'   => '0',
-				'name' => __( 'Default WooCommerce Checkout Page', 'woofunnels-aero-checkout' ),
+				'name' => __( 'Default WooCommerce Checkout Page', 'funnel-builder' ),
 				'type' => 'default',
 			];
 			$data     = WFACP_Common::get_saved_pages();

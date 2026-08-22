@@ -279,7 +279,9 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 					if ( 'publish' === $may_be_post->post_status ) {
 						// wfacp pages
 						$this->override_checkout_page_id = apply_filters( 'wfacp_wpml_checkout_page_id', $this->override_checkout_page_id );
+
 						do_action( 'wfacp_changed_default_woocommerce_page', $this->override_checkout_page_id );
+
 						WFACP_Common::set_id( $this->override_checkout_page_id );
 
 						$this->checkout_post = $may_be_post;

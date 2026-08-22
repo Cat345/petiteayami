@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 if ( ! function_exists( 'wffn_clean' ) ) {
 	function wffn_clean( $var ) {
@@ -396,6 +397,42 @@ if ( ! function_exists( 'wffn_is_wc_active' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wffn_is_wc_ready' ) ) {
+	/**
+	 * Checks whether WooCommerce is not just active but fully installed.
+	 *
+	 * wffn_is_wc_active() only reports whether the plugin is active; on a fresh
+	 * site the wizard can activate WooCommerce without running its installer, so
+	 * its tables may still be missing. This probes for a core WooCommerce table to
+	 * confirm the install actually completed. A positive result is memoized for the
+	 * request, while the not-ready path re-probes so a call made right after an
+	 * install correctly reflects the freshly created tables.
+	 *
+	 * @since 3.15.0.9
+	 *
+	 * @return bool True when WooCommerce is active and its core tables exist.
+	 */
+	function wffn_is_wc_ready() {
+		static $is_ready = false;
+
+		// Memoize only the positive result — once ready it stays ready for the request.
+		if ( true === $is_ready ) {
+			return true;
+		}
+
+		// Fast-false: no point probing tables when WooCommerce isn't even loaded.
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return false;
+		}
+
+		global $wpdb;
+		$table    = $wpdb->prefix . 'wc_webhooks';
+		$is_ready = ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) === $table ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Schema-existence probe; no cache/meta API for SHOW TABLES.
+
+		return $is_ready;
+	}
+}
+
 
 
 if ( ! function_exists( 'wffn_is_plugin_active' ) ) {
@@ -679,7 +716,7 @@ WHERE sess.order_id IN ( " . implode( ', ', array_fill( 0, count( $order_ids ), 
 				$conversion_data['offer_rejected'] = ! empty( $rejected_offer ) ? wp_json_encode( $rejected_offer ) : $save_offer_rejected;
 				$conversion_data['offer_accepted'] = ! empty( $accepted_offer ) ? wp_json_encode( $accepted_offer ) : $save_offer_accepted;
 				$conversion_data['offer_total']    = floatval( $offer_total );
-				$conversion_data['referrer']       = $conversion_tracking->filter_referrer( $conversion['referrer'] );
+				$conversion_data['referrer']       = method_exists( $conversion_tracking, 'filter_referrer' ) ? $conversion_tracking->filter_referrer( $conversion['referrer'] ) : $conversion['referrer'];
 				$conversion_data['bump_total']     = $bump_total;
 				$conversion_data['funnel_id']      = ! empty( $fid ) ? $fid : $conversion['funnel_id'];
 				$conversion_data['contact_id']     = ! empty( $cid ) ? $cid : $conversion['contact_id'];
@@ -917,7 +954,7 @@ if ( ! function_exists( 'wffn_run_optin_conversion_migrator' ) ) {
 				foreach ( array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content' ) as $key ) {
 					$_conversion[ $key ] = $conversion_tracking->string_length( $_conversion[ $key ] );
 				}
-				$_conversion['referrer'] = $conversion_tracking->filter_referrer( $_conversion['referrer'] );
+				$_conversion['referrer'] = method_exists( $conversion_tracking, 'filter_referrer' ) ? $conversion_tracking->filter_referrer( $_conversion['referrer'] ) : $_conversion['referrer'];
 
 				$update_data[ $_conversion['id'] ] = $_conversion;
 
@@ -943,7 +980,7 @@ if ( ! function_exists( 'wffn_run_optin_conversion_migrator' ) ) {
 					foreach ( array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content' ) as $key ) {
 						$_conversion[ $key ] = $conversion_tracking->string_length( $_conversion[ $key ] );
 					}
-					$_conversion['referrer'] = $conversion_tracking->filter_referrer( $_conversion['referrer'] );
+					$_conversion['referrer'] = method_exists( $conversion_tracking, 'filter_referrer' ) ? $conversion_tracking->filter_referrer( $_conversion['referrer'] ) : $_conversion['referrer'];
 
 					$update_data[ $_conversion['id'] ] = $_conversion;
 

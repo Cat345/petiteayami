@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Tickera Bridge for WooCommerce by Tickera
@@ -42,7 +43,7 @@ if ( ! class_exists( 'Tickera_Bridge_For_WC' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'tickera_bridge_for_wc' ],
 				'id'         => 'tickera_bridge_for_wc',
 				'field_type' => 'tickera_bridge_for_wc',
-				'label'      => __( 'Tickera WC', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'Tickera WC', 'funnel-builder' ),
 
 			];
 

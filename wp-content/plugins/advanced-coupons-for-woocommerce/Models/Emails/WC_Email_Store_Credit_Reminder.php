@@ -162,7 +162,7 @@ class WC_Email_Store_Credit_Reminder extends \WC_Email {
         \ACFWP()->Helper_Functions->load_template(
             $this->template_html,
             array(
-				'email' => $this,
+                'email' => $this,
             )
         );
 
@@ -250,7 +250,7 @@ class WC_Email_Store_Credit_Reminder extends \WC_Email {
                     $products = wc_get_products( $args );
                     break;
 
-                case ( strpos( $option, 'cat-' ) !== false ):
+                case ( str_contains( $option, 'cat-' ) ):
                     $category = str_replace( 'cat-', '', $option );
                     $category = get_term_by( 'id', $category, 'product_cat' );
                     $args     = array(
@@ -330,5 +330,4 @@ class WC_Email_Store_Credit_Reminder extends \WC_Email {
             ),
         );
     }
-
 }

@@ -381,7 +381,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Paypal_Express' ) ) {
 		public function print_html() {
 			?>
             <p>
-                <strong><?php _e( 'Full Name', 'woofunnels-aero-checkout' ); ?></strong> <?php echo esc_html( $this->payer_details ['first_name'] . ' ' . $this->payer_details ['last_name'] ); ?>
+                <strong><?php _e( 'Full Name', 'funnel-builder' ); ?></strong> <?php echo esc_html( $this->payer_details ['first_name'] . ' ' . $this->payer_details ['last_name'] ); ?>
             </p>
 			<?php
 		}

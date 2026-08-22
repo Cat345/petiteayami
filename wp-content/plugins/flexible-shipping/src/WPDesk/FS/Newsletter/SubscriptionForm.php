@@ -12,7 +12,7 @@ class SubscriptionForm implements Hookable {
 
 	public function add_newsletter_form() {
 		if ( isset( $_GET['page'], $_GET['tab'], $_GET['section'] ) && $_GET['page'] === 'wc-settings' && $_GET['tab'] === 'shipping' && $_GET['section'] === 'flexible_shipping_info' ) {
-			$shipping_analytics_banner_end_date = new \DateTimeImmutable( '2026-06-20 00:00:00', wp_timezone() );
+			$shipping_analytics_banner_end_date = new \DateTimeImmutable( '2026-09-30 00:00:00', wp_timezone() );
 			$show_shipping_analytics_banner    = current_datetime() < $shipping_analytics_banner_end_date;
 			$email                             = '';
 

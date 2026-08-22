@@ -10,12 +10,22 @@ use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 
 class StatsResponseBuilder {
   const DATE_FORMAT = 'Y-m-d H:i:s';
+
+  /** @var TimeZoneCampaignScheduler */
+  private $timeZoneCampaignScheduler;
+
+  public function __construct(
+    TimeZoneCampaignScheduler $timeZoneCampaignScheduler
+  ) {
+    $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
+  }
 
   /**
    * @param NewsletterEntity $newsletter
@@ -67,11 +77,16 @@ class StatsResponseBuilder {
     if ($queue instanceof SendingQueueEntity) {
       $task = $queue->getTask();
       if ($task instanceof ScheduledTaskEntity) {
+        // For a time zone campaign the aggregate data is authoritative: it spans
+        // all sibling batch queues and its meta carries the timezoneBreakdown the
+        // stats page renders.
+        $aggregateData = $this->timeZoneCampaignScheduler->getAggregateQueueData($queue);
+        $scheduledAt = $aggregateData ? $aggregateData['scheduledAt'] : $task->getScheduledAt();
         $result['queue'] = [
           'id' => $queue->getId(),
-          'scheduled_at' => is_null($task->getScheduledAt()) ? null : $task->getScheduledAt()->format(self::DATE_FORMAT),
+          'scheduled_at' => is_null($scheduledAt) ? null : $scheduledAt->format(self::DATE_FORMAT),
           'created_at' => ($createdAt = $task->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
-          'meta' => $queue->getMeta(),
+          'meta' => $aggregateData ? $aggregateData['meta'] : $queue->getMeta(),
         ];
       }
     }

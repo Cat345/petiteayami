@@ -354,9 +354,8 @@ if ( ! class_exists( 'BWFABT_Controller_Optin' ) ) {
 					}
 				}
 
-				if ( $content !== '' ) {
-					WFFN_Common::maybe_elementor_template( $winner_variant_id, $control_id );
-				}
+				// Elementor data is already copied raw via $wpdb in the loop above.
+				// maybe_elementor_template() re-runs validate_elementor_content() which strips <script>/<style> tags.
 
 				if ( true === $is_oxy ) {
 					$this->replace_oxygen_page_css_with_winner( $winner_variant_id, $control_id );
@@ -507,6 +506,10 @@ if ( ! class_exists( 'BWFABT_Controller_Optin' ) ) {
 		 */
 		public function update_ab_optin_visited( $optin_id ) {
 			$running_ab_test_id = $this->get_running_test_id_on_step( $optin_id );
+			if ( $this->is_ab_crawler_request() ) {
+				WFFN_Core()->logger->log( "Skipped AB optin id: $optin_id visited for crawler, running AB test id: $running_ab_test_id" );
+				return;
+			}
 			WFFN_Core()->logger->log( "Updating AB optin id: $optin_id visited, running AB test id: $running_ab_test_id" );
 			if ( $optin_id > 0 && $running_ab_test_id > 0 && class_exists( 'WFCO_Model_Report_views' ) ) {
 				WFCO_Model_Report_views::update_data( date( 'Y-m-d', current_time( 'timestamp' ) ), $optin_id, 16 );

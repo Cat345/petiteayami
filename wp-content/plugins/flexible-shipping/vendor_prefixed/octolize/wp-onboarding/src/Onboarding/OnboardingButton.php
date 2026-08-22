@@ -19,19 +19,19 @@ class OnboardingButton implements \JsonSerializable
     /**
      * @var string
      */
-    private $label = 'button';
+    private string $label = 'button';
     /**
      * @var string
      */
-    private $type = self::TYPE_STEP;
+    private string $type = self::TYPE_STEP;
     /**
      * @var string
      */
-    private $popup = 'step_0';
+    private string $popup = 'step_0';
     /**
      * @var string
      */
-    private $classes = self::BTN_SUCCESS;
+    private string $classes = self::BTN_SUCCESS;
     /**
      * @return string
      */

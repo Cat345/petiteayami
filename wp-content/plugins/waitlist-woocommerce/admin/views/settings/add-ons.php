@@ -7,16 +7,17 @@ $addons = array(
 	'email_booster' => array(
 		'title' => 'Email Booster',
 		'icon' 	=> 'dashicons-email',
-		'desc' 	=> '- Send a notification email to the customer and the admin (or a specified email address) when someone joins the waitlist. <br>
-					- Auto send "back in stock email" when stock status is updated to "in stock"
+		'desc' 	=> '- Automatically send “Back in Stock” emails on updating stock status.<br>
+					- Send notification emails to customers and admins when someone joins the waitlist.
 					',
 		'link' 	=> $link
 	),
 
 	'manage' => array(
-		'title' => 'Unsubscribe/Manage Waitlist',
+		'title' => 'Unsubscribe / Manage Waitlist',
 		'icon' 	=> 'dashicons-admin-users',
-		'desc' 	=> 'Enable unsubscribe links in emails for easy opt-out. <br> Give users a dedicated view to see and manage all their waitlisted products. [GDPR-compliant]',
+		'desc' 	=> '-Add unsubscribe links to emails for easy opt-out. <br>
+					- Let users view and manage all their waitlisted products from one place. [GDPR-compliant]',
 		'link' 	=> $link
 	),
 
@@ -32,7 +33,7 @@ $addons = array(
 	'export' => array(
 		'title' => 'Export/Import Users',
 		'icon' 	=> 'dashicons-move',
-		'desc' 	=> 'Export & Import waitlist users & all the data in a CSV/Excel file.',
+		'desc' 	=> 'Export and import waitlist users, including all their data, using CSV/Excel files.',
 		'link' 	=> $link
 	),
 
@@ -47,12 +48,12 @@ $addons = array(
 	<?php foreach ( $addons as $id => $data ): ?>
 		<div class="xoo-addon">
 			<span class="dashicons <?php echo esc_attr( $data['icon'] ); ?>"></span>
-			<span class="xoo-ao-title"><?php echo $data['title'] ?></span>
-			<div class="xoo-ao-desc"><?php echo $data['desc']; ?></div>
+			<span class="xoo-ao-title"><?php echo wp_kses_post( $data['title'] ) ?></span>
+			<div class="xoo-ao-desc"><?php echo wp_kses_post( $data['desc'] ); ?></div>
 			<div class="xoo-ao-btns">
-				<a href="<?php echo esc_url( $data['link'] ) ?>">BUY</a>
+				<a class="xoo-btn xoo-btn-primary" target="_blank" href="<?php echo esc_url( $data['link'] ) ?>">BUY</a>
 				<?php if( isset( $data['demo'] ) ): ?>
-					<a href="<?php echo esc_url( $data['demo'] ) ?>">DEMO</a>
+					<a class="xoo-btn xoo-btn-secondary" target="_blank" href="<?php echo esc_url( $data['demo'] ) ?>">DEMO</a>
 				<?php endif; ?>
 			</div>
 		</div>

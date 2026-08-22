@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Oxy_Template' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFACP_Oxy_Template extends WFACP_Template_Common {

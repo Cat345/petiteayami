@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_With_WC_Timologia' ) ) {
 	/**
 	 * Plugin Name: Timologia for WooCommerce By John Athanasiou
@@ -42,10 +43,10 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Timologia' ) ) {
 			}
 
 
-			$invoice_text    = __( 'Invoice', 'woofunnels-aero-checkout' );
-			$vat_text        = __( 'VAT', 'woofunnels-aero-checkout' );
-			$tax_office_text = __( 'Tax Office', 'woofunnels-aero-checkout' );
-			$store_text      = __( 'Profession', 'woofunnels-aero-checkout' );
+			$invoice_text    = __( 'Invoice', 'funnel-builder' );
+			$vat_text        = __( 'VAT', 'funnel-builder' );
+			$tax_office_text = __( 'Tax Office', 'funnel-builder' );
+			$store_text      = __( 'Profession', 'funnel-builder' );
 
 
 			if ( isset( $labels['timologio'] ) ) {
@@ -53,16 +54,16 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Timologia' ) ) {
 			}
 
 			if ( isset( $labels['vat'] ) ) {
-				$vat_text = _x( $labels['vat'], 'placeholder' );
+				$vat_text = $labels['vat'];
 			}
 
 			if ( isset( $labels['irs'] ) ) {
-				$tax_office_text = _x( $labels['irs'], 'placeholder' );
+				$tax_office_text = $labels['irs'];
 			}
 
 
 			if ( isset( $labels['store'] ) ) {
-				$store_text = _x( $labels['store'], 'placeholder' );
+				$store_text = $labels['store'];
 			}
 
 			new WFACP_Add_Address_Field( 'timologio', array(

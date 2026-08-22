@@ -7,6 +7,37 @@ if ( ! class_exists( 'WFFN_License_Expiry_Mail_controller' ) ) {
 	#[\AllowDynamicProperties]
 	class WFFN_License_Expiry_Mail_controller {
 
+		/**
+		 * Option holding whether the licence expiry email may be sent.
+		 */
+		const NOTIFICATION_OPTION = '_wffn_license_expiry_email_notification';
+
+		/**
+		 * Whether the licence expiry notification email is allowed to go out.
+		 *
+		 * Enabled by default, so only a site that explicitly turned the notification
+		 * off from the Tools screen stops receiving it.
+		 *
+		 * @return bool
+		 */
+		public static function is_notification_enabled() {
+			return 'no' !== get_option( self::NOTIFICATION_OPTION, 'yes' );
+		}
+
+		/**
+		 * Stores the notification state chosen on the Tools screen.
+		 *
+		 * @param mixed $enabled Toggle value coming from the request.
+		 *
+		 * @return bool The state that was stored.
+		 */
+		public static function set_notification_state( $enabled ) {
+			$enabled = rest_sanitize_boolean( $enabled );
+
+			update_option( self::NOTIFICATION_OPTION, $enabled ? 'yes' : 'no', true );
+
+			return $enabled;
+		}
 
 		/**
 		 * Retrieves the email sections for the notification email.
@@ -16,7 +47,7 @@ if ( ! class_exists( 'WFFN_License_Expiry_Mail_controller' ) ) {
 		public function get_email_sections() {
 			$License = WooFunnels_licenses::get_instance();
 			$License->get_plugins_list();
-			$date_range            = WFFN_Core()->admin->get_license_expiry();
+			$date_range            = WFFN_License_Config::get_instance()->get_expiry();
 			$formatted_date        = date_i18n( 'F j, Y', strtotime( $date_range ) );
 			$upgrade_link          = 'https://funnelkit.com/exclusive-offer/';
 			$highlight_subtitle    = __( 'Please renew your license to continue using pro features without interruption', 'Funnelkit' );

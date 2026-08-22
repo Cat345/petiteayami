@@ -29,6 +29,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $this->registerFreeService($container, \MailPoet\Automation\Engine\Storage\AutomationRunStorage::class);
     $this->registerFreeService($container, \MailPoet\Newsletter\Sending\ScheduledTasksRepository::class);
     $this->registerFreeService($container, \MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository::class);
+    $this->registerFreeService($container, \MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler::class);
     $this->registerFreeService($container, \MailPoet\Tags\TagRepository::class);
     $this->registerFreeService($container, \MailPoet\Automation\Engine\Builder\UpdateStepsController::class);
     $this->registerFreeService($container, \MailPoet\Automation\Engine\Builder\UpdateAutomationController::class);
@@ -209,11 +210,17 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Premium\Segments\DynamicSegments\Filters\SubscriberTag::class)->setPublic(true);
     // Stats
     $container->autowire(\MailPoet\Premium\Newsletter\Stats\Bounces::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Newsletter\Stats\ClickedLinks::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Newsletter\Stats\PurchasedProducts::class);
+    $container->autowire(\MailPoet\Premium\Newsletter\Stats\PurchasedProductsListing::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Newsletter\Stats\RecipientsExporter::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Newsletter\Stats\SubscriberEngagement::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Newsletter\Stats\UnsubscribeReasons::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\BouncesEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\ClickedLinksEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\EngagementEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\ProductsEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\UnsubscribeReasonsEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Newsletter\StatisticsClicksRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Newsletter\StatisticsOpensRepository::class);
     $container->autowire(\MailPoet\Premium\Newsletter\StatisticsUnsubscribesRepository::class);

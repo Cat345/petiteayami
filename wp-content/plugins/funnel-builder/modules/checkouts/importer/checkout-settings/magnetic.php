@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 $product_field  = WFACP_Common::get_product_field();
 $advanced_field = WFACP_Common::get_advanced_fields();
 $settings       = [
@@ -18,21 +19,21 @@ $settings       = [
 
 $steps = [
 	'single_step' => [
-		'name'          => __( 'Step 1', 'woofunnels-aero-checkout' ),
+		'name'          => __( 'Step 1', 'funnel-builder' ),
 		'slug'          => 'single_step',
-		'friendly_name' => __( 'Single Step Checkout', 'woofunnels-aero-checkout' ),
+		'friendly_name' => __( 'Single Step Checkout', 'funnel-builder' ),
 		'active'        => 'yes',
 	],
 	'two_step'    => [
-		'name'          => __( 'Step 2', 'woofunnels-aero-checkout' ),
+		'name'          => __( 'Step 2', 'funnel-builder' ),
 		'slug'          => 'two_step',
-		'friendly_name' => __( 'Two Step Checkout', 'woofunnels-aero-checkout' ),
+		'friendly_name' => __( 'Two Step Checkout', 'funnel-builder' ),
 		'active'        => 'no',
 	],
 	'third_step'  => [
-		'name'          => __( 'Step 3', 'woofunnels-aero-checkout' ),
+		'name'          => __( 'Step 3', 'funnel-builder' ),
 		'slug'          => 'third_step',
-		'friendly_name' => __( 'Three Step Checkout', 'woofunnels-aero-checkout' ),
+		'friendly_name' => __( 'Three Step Checkout', 'funnel-builder' ),
 		'active'        => 'no',
 	],
 ];
@@ -43,7 +44,7 @@ $pageLayout = [
 	'fieldsets'                   => [
 		'single_step' => [
 			[
-				'name'        => WFACP_Common::translation_string_to_check(__( 'Select Your Plan', 'woofunnels-aero-checkout' )),
+				'name'        => WFACP_Common::translation_string_to_check(__( 'Select Your Plan', 'funnel-builder' )),
 				'class'       => '',
 				'sub_heading' => '',
 				'html_fields' => [
@@ -56,7 +57,7 @@ $pageLayout = [
 				],
 			],
 			[
-				'name'        => WFACP_Common::translation_string_to_check(__( 'Enter Customer Information', 'woofunnels-aero-checkout' )),
+				'name'        => WFACP_Common::translation_string_to_check(__( 'Enter Customer Information', 'funnel-builder' )),
 				'class'       => '',
 				'is_default'  => 'yes',
 				'sub_heading' => '',

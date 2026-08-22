@@ -19,19 +19,21 @@ $title = $view->el($props['title_element'], [
 
 ]);
 
+$titleInner = $props['title_color'] == 'background' || $props['title_decoration'] == 'line' ? $view->el('span', [
+
+    'class' => [
+        'uk-text-background' => $props['title_color'] == 'background',
+    ],
+
+]) : null;
+
+$titleText = sprintf(_n(__('Comment'), __('Comments (%s)', 'yootheme'), get_comments_number()), number_format_i18n(get_comments_number()))
+
 ?>
 
 <?php if (have_comments()) : ?>
 
-    <?= $title($props) ?>
-        <?php if ($props['title_color'] == 'background') : ?>
-        <span class="uk-text-background"><?php printf(_n(__('Comment'), __('Comments (%s)', 'yootheme'), get_comments_number()), number_format_i18n(get_comments_number())) ?></span>
-        <?php elseif ($props['title_decoration'] == 'line') : ?>
-        <span><?php printf(_n(__('Comment'), __('Comments (%s)', 'yootheme'), get_comments_number()), number_format_i18n(get_comments_number())) ?></span>
-        <?php else : ?>
-        <?php printf(_n(__('Comment'), __('Comments (%s)', 'yootheme'), get_comments_number()), number_format_i18n(get_comments_number())) ?>
-        <?php endif ?>
-    <?= $title->end() ?>
+    <?= $title($props, $titleInner ? $titleInner([], $titleText) : $titleText) ?>
 
     <ul class="uk-comment-list uk-margin-medium-top">
         <?php wp_list_comments([

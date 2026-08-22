@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /*
  * Bridge Core
  * https://qodeinteractive.com/

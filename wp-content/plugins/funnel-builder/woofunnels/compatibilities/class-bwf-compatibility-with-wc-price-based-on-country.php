@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'BWF_Compatibility_With_WC_Price_Based_On_Country' ) ) {
 	#[AllowDynamicProperties]
 	class BWF_Compatibility_With_WC_Price_Based_On_Country {

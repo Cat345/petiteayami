@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 if ( ! class_exists( 'BWF_Contact_Tags' ) ) {
 	#[\AllowDynamicProperties]
@@ -21,7 +22,18 @@ if ( ! class_exists( 'BWF_Contact_Tags' ) ) {
 			add_action( 'init', array( $this, 'maybe_set_contact' ) );
 
 			foreach ( $this->shortcodes as $code ) {
-				add_shortcode( 'bwf_contact_' . $code, array( $this, 'get_' . $code ) );
+				/**
+				 * All of these resolve to plain contact values -- name, email, a
+				 * custom meta field -- and WordPress prints what a shortcode
+				 * returns, so escape here rather than in the getters, which are
+				 * also used where markup is expected to survive.
+				 */
+				add_shortcode(
+					'bwf_contact_' . $code,
+					function ( $atts = array() ) use ( $code ) {
+						return esc_html( (string) call_user_func( array( $this, 'get_' . $code ), $atts ) );
+					}
+				);
 			}
 		}
 

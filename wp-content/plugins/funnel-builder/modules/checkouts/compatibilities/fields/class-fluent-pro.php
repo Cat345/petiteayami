@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * FluentCRM Pro  by Fluent CRM version 2.8.45
@@ -34,7 +35,7 @@ if ( ! class_exists( 'WFACP_FluentPro' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_fluent_wc_subscription_checkbox' ],
 				'id'         => 'wfacp_fluent_wc_subscription_checkbox',
 				'field_type' => 'wfacp_fluent_wc_subscription_checkbox',
-				'label'      => __( 'FluentCRM', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'FluentCRM', 'funnel-builder' ),
 
 			];
 

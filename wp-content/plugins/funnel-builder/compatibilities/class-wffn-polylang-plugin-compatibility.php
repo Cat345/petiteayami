@@ -115,7 +115,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Polylang_plugin' ) ) {
 					array(
 						'result'  => array(),
 						'status'  => false,
-						'message' => __( $e->getMessage(), 'funnel-builder' ), //phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
+						'message' => $e->getMessage(),
 					)
 				);
 			}
@@ -376,7 +376,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Polylang_plugin' ) ) {
 				return rest_ensure_response(
 					array(
 						'status'  => false,
-						'message' => __( $e->getMessage(), 'funnel-builder' ), //phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
+						'message' => $e->getMessage(),
 					)
 				);
 			}

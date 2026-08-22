@@ -1,5 +1,5 @@
 /*!
- * Filter Everything common admin 1.9.2
+ * Filter Everything common admin 1.9.5
  */
 (function($) {
     "use strict";
@@ -457,12 +457,51 @@
 
     function closeProVersionPopup(){
         $('#flrt-pro-modal-overlay').css('display', 'none');
-        
+
     }
 
     window.wpcGetProVersionPopup = function () {
         $('#flrt-pro-modal-overlay').css('display', 'flex');
     };
+
+    // --- Review request popup (free build) ---
+    // The server already auto-snoozed on render, so hiding is always safe;
+    // the AJAX call just records the explicit choice (later/never/rated).
+    function flrtReviewPopupClose(mode){
+        var $overlay = $('#flrt-review-popup-overlay');
+
+        if (!$overlay.length) {
+            return;
+        }
+
+        $overlay.remove();
+
+        $.post(ajaxurl, {
+            action: 'flrt_review_popup',
+            nonce: $overlay.data('nonce'),
+            mode: mode
+        });
+    }
+
+    $(document).on('click', '.flrt-review-popup-close-btn, .flrt-review-popup-later', function (){
+        flrtReviewPopupClose('later');
+    });
+
+    $(document).on('click', '#flrt-review-popup-overlay', function (e) {
+        if (e.target === this) {
+            flrtReviewPopupClose('later');
+        }
+    });
+
+    $(document).on('click', '.flrt-review-popup-never', function (){
+        flrtReviewPopupClose('never');
+    });
+
+    // Clicking through to the review (stars or the button) counts as done —
+    // never ask again. The links open in a new tab on their own.
+    $(document).on('click', '.flrt-review-popup-star, .flrt-review-popup-rate-btn', function (){
+        flrtReviewPopupClose('rated');
+    });
 
     $(document).on('click', '.wpc-create-auto-filter', function (e) {
         if(!$(this).hasClass('disabled')){
@@ -495,5 +534,67 @@
         $(activeTabHref).show();
     }
 
+    $(document).on('click', '#wpc-choose-selector-button', function(e){
+        e.preventDefault();
+        let href = $(this).attr('href');
+
+        // Create modal if it doesn't exist
+        if ($('#wpc-modal-overlay').length === 0) {
+            $('body').append(`<div id="wpc-modal-overlay">
+        <div class="wpc-modal-content">
+            <div class="wpc-modal-header">
+                <span class="wpc-modal-title"></span>
+                <span class="wpc-modal-description">${wpcFiltersAdminCommon.chooseElementHelpText}</span>
+                <button id="wpc-modal-close" class="wpc-modal-close">&times;</button>
+            </div>
+            <div id="wpc-choose-element-loading-spinner">
+                <div class="choose-element-spinner"></div>
+            </div>
+            <iframe id="wpc-selector-iframe" src="${href}" style="display: none;"></iframe>
+        </div>
+    </div>`);
+        } else {
+            $('#wpc-selector-iframe').attr('src', href);
+            $('#wpc-modal-overlay').show();
+            // Show loading spinner and hide iframe
+            $('#wpc-choose-element-loading-spinner').show();
+            $('#wpc-selector-iframe').hide();
+        }
+
+        // Handle iframe loading
+        $('#wpc-selector-iframe').on('load', function() {
+            // Hide loading spinner and show iframe
+           $('#wpc-choose-element-loading-spinner').hide();
+           $('#wpc-selector-iframe').show();
+        });
+
+        // Close modal event
+        $(document).off('click', '#wpc-modal-close').on('click', '#wpc-modal-close', function() {
+            $('#wpc-modal-overlay').hide().remove();
+        });
+
+        // Click outside modal to close
+        $(document).off('click', '#wpc-modal-overlay').on('click', '#wpc-modal-overlay', function(e) {
+            if ($(e.target).is('#wpc-modal-overlay')) {
+                $('#wpc-modal-overlay').hide().remove();
+            }
+        });
+
+        // Handle selector selection
+        const messageHandler = function(e) {
+            if (e.data.type === 'SELECTOR_CHOSEN') {
+                // Set selector value in multiple fields
+                const selector = e.data.elementSelector;
+                $('#posts_container').val(selector);
+                $('#wpc_set_fields-custom_posts_container').val(selector);
+
+                $('#wpc-modal-overlay').hide().remove();
+                window.removeEventListener('message', messageHandler);
+            }
+        };
+
+        window.removeEventListener('message', messageHandler);
+        window.addEventListener('message', messageHandler);
+    });
 
 })(jQuery);

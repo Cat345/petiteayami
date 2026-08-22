@@ -37,6 +37,7 @@ class PluginPro
         add_filter('wpc_filter_set_default_fields', [$this, 'filterSetDefaultFields'], 10, 2);
         add_filter('wpc_filter_set_default_fields', [$this, 'addFilterSetTailFields'], 30, 2);
         add_filter('wpc_filter_default_fields', [$this, 'filterDefaultFields'], 10, 2);
+        add_filter('wpc_filter_default_fields', [$this, 'filterDefaultFieldsRangeList'], 10, 2);
 
         add_action( 'wpc_cycle_filter_set_settings_fields', [$this, 'showApplyButtonLocationFields'] );
         add_filter('wpc_is_filtered_query_pro', [$this, 'isFilteredQuery'], 10, 2);
@@ -65,6 +66,10 @@ class PluginPro
 
             // Replace back variation IDs with Product IDs
             add_filter( 'wpc_from_variations_to_products', [ $this, 'replaceBackProdIdsVarIds' ] );
+
+            // Unconditional variation→parent mapping (no catalog-mode gate) —
+            // for spots that need the parent identity itself, not a count unit.
+            add_filter( 'wpc_variations_to_parents_always', [ $this, 'mapVariationIdsToParentIds' ] );
 
         }
 
@@ -104,6 +109,30 @@ class PluginPro
      */
     public function replaceBackProdIdsVarIds( $post_ids )
     {
+        // On shops that list variations as standalone catalog items (XStore's
+        // variable_products_detach) the visible item unit IS a variation —
+        // collapsing variation IDs back to their parents would make counters
+        // and the "N products found" total disagree with the visible grid
+        // (e.g. "2" while the archive lists 12+ variation items).
+        if ( function_exists( 'flrt_variations_listed_as_products' ) && flrt_variations_listed_as_products() ) {
+            return $post_ids;
+        }
+
+        return $this->mapVariationIdsToParentIds( $post_ids );
+    }
+
+    /**
+     * Unconditional variation-ID → parent-ID mapping. Unlike the counting-time
+     * collapse above (replaceBackProdIdsVarIds / wpc_from_variations_to_products),
+     * this one applies regardless of how the shop lists its catalog items — used
+     * where the PARENT identity itself is needed, e.g. treating a parent as
+     * "in universe" when any of its variations is (wpc_variations_to_parents_always).
+     *
+     * @param array $post_ids
+     * @return array
+     */
+    public function mapVariationIdsToParentIds( $post_ids )
+    {
         if( ! empty( $post_ids ) ){
 
             $variations_map  = $this->getVariationsMap();
@@ -111,15 +140,18 @@ class PluginPro
                 return $post_ids;
             }
 
+            // Keyed accumulation instead of list + array_unique(): array_unique()
+            // copies and sorts the whole array — on large catalogs this alone
+            // could exhaust the memory limit.
             $replaced_post_ids = [];
             foreach ( $post_ids as $post_id ){
                 if( isset( $variations_map[$post_id] ) ){
-                    $replaced_post_ids[] = (int) $variations_map[$post_id];
+                    $replaced_post_ids[ (int) $variations_map[$post_id] ] = true;
                 }else{
-                    $replaced_post_ids[] = (int) $post_id;
+                    $replaced_post_ids[ (int) $post_id ] = true;
                 }
             }
-            $post_ids = array_unique( $replaced_post_ids );
+            $post_ids = array_keys( $replaced_post_ids );
         }
 
         return $post_ids;
@@ -128,30 +160,28 @@ class PluginPro
     public function replaceProdIdsVarIds( $allPostsIds )
     {
         if( ! empty( $allPostsIds ) ){
-            $variations_map  = $this->getVariationsMap();
-            if( empty( $variations_map ) ){
+            $variations_reverse_map = $this->getVariationsReverseMap();
+            if( empty( $variations_reverse_map ) ){
                 return $allPostsIds;
             }
 
-            $variations_reverse_map = [];
-            foreach ( $variations_map as $variation_id => $parent_id ){
-                $variations_reverse_map[$parent_id][] = (int) $variation_id;
-            }
-
+            // Build the [id => position] result directly instead of a list +
+            // array_flip() copy. Values must stay unique: downstream code
+            // array_flip()s this array back, which would collapse duplicates.
             $replaced_posts = [];
-            $reverse_posts = array_keys($allPostsIds);
+            $position       = 0;
 
-            foreach ( $reverse_posts as $post_id ){
+            foreach ( $allPostsIds as $post_id => $unused ){
                 if( isset(  $variations_reverse_map[$post_id] ) ){
                     foreach ( $variations_reverse_map[$post_id] as $var_id ){
-                        $replaced_posts[] = (int) $var_id;
+                        $replaced_posts[$var_id] = $position++;
                     }
                 }else{
-                    $replaced_posts[] = (int) $post_id;
+                    $replaced_posts[(int) $post_id] = $position++;
                 }
             }
 
-            $allPostsIds = array_flip($replaced_posts);
+            $allPostsIds = $replaced_posts;
 
         }
         return $allPostsIds;
@@ -172,10 +202,7 @@ class PluginPro
             return $entity_items;
         }
 
-        $variations_reverse_map = [];
-        foreach ( $variations_map as $variation_id => $parent_id ) {
-            $variations_reverse_map[$parent_id][] = (int) $variation_id;
-        }
+        $variations_reverse_map = $this->getVariationsReverseMap();
 
         if ( $entity instanceof TaxonomyEntity ) {
 
@@ -198,11 +225,25 @@ class PluginPro
                         foreach ( $variations_reverse_map[$post_id] as $var_id ){
 
                             if( $is_pa_attribute && $used_for_variations === 'yes' ){
-                                // Add it to term_ids list only if variation has attribute_pa_...
-                                if( isset( $varitaions_meta_terms[$var_id] ) ){
+                                if( isset( $varitaions_meta_terms[$var_id] ) && $varitaions_meta_terms[$var_id] !== '' ){
+                                    // Variation defines this attribute — count it for
+                                    // the term only when the values match.
                                     if( $term_object->slug == $varitaions_meta_terms[$var_id] ){
                                         $new_posts[] = (int) $var_id;
                                     }
+                                }else{
+                                    // The variation does NOT define this attribute (no
+                                    // attribute_pa_… meta, or an explicit "Any …" empty
+                                    // value; also the case when the attribute is used at
+                                    // parent level only — e.g. Brand on XStore shops that
+                                    // list variations as standalone products). In
+                                    // WooCommerce semantics such a variation matches ANY
+                                    // value, so it inherits the parent's term — the parent
+                                    // carries it via term_relationships, which is exactly
+                                    // how this term got its $post_id. Without this
+                                    // fallback every counter dropped to 0 for parent-level
+                                    // attributes.
+                                    $new_posts[] = (int) $var_id;
                                 }
                             }else{
                                 $new_posts[] = (int) $var_id;
@@ -353,17 +394,17 @@ class PluginPro
             $new_posts = [];
 
             if( ! empty( $term_object->posts ) ){
+                // Keyed accumulation instead of list + array_unique() — see replaceBackProdIdsVarIds()
                 foreach ( $term_object->posts as $inn => $post_id ){
                     // Variable product
-//                    if( in_array( $post_id, array_keys( $variations_map ) ) ){
                     if( isset( $variations_map[$post_id] ) ){
-                        $new_posts[] = (int) $variations_map[$post_id];
+                        $new_posts[ (int) $variations_map[$post_id] ] = true;
                     }else{
-                        $new_posts[] = (int) $post_id;
+                        $new_posts[ (int) $post_id ] = true;
                     }
                 }
 
-                $term_object->posts     = array_unique( $new_posts );
+                $term_object->posts     = array_keys( $new_posts );
             }
 
             $new_entity_items[$in]  = $term_object;
@@ -374,7 +415,7 @@ class PluginPro
 
     public function setVariationsMap( $sets )
     {
-        global $wpdb;
+        global $wpdb, $flrt_json_data;
         $is_products = false;
         $variations_map = [];
         $container = Container::instance();
@@ -390,26 +431,36 @@ class PluginPro
             return false;
         }
 
-        $transient_key = 'wpc_posts_variations';
-        if ( false === ( $results = flrt_get_transient( $transient_key ) ) ) {
+        $transient_key  = 'wpc_posts_variations' . FLRT_CACHE_FORMAT_SUFFIX;
+        $variations_map = flrt_get_transient( $transient_key );
+
+        // Cache format v2: plain [variation_id => parent_id] int map.
+        // Legacy format cached raw wpdb rows (stdClass objects) — rebuild those.
+        if ( ! is_array( $variations_map ) || is_object( reset( $variations_map ) ) ) {
 
             $sql[] = "SELECT {$wpdb->posts}.ID, {$wpdb->posts}.post_parent";
             $sql[] = "FROM {$wpdb->posts}";
             $sql[] = "WHERE {$wpdb->posts}.post_type = 'product_variation'";
 
             $sql = implode(" ", $sql);
-            $results = $wpdb->get_results($sql);
 
-            flrt_set_transient( $transient_key, $results, FLRT_TRANSIENT_PERIOD_HOURS * HOUR_IN_SECONDS );
-        }
-
-        if (!empty($results)) {
-            foreach ($results as $single_result) {
-                $variations_map[$single_result->ID] = $single_result->post_parent;
+            $variations_map = [];
+            foreach ( $wpdb->get_results( $sql, ARRAY_N ) as $single_result ) {
+                $variations_map[ (int) $single_result[0] ] = (int) $single_result[1];
             }
+
+            flrt_set_transient( $transient_key, $variations_map, FLRT_TRANSIENT_PERIOD_HOURS * HOUR_IN_SECONDS );
         }
+
+        $variations_reverse_map = [];
+        foreach ( $variations_map as $variation_id => $parent_id ) {
+            $variations_reverse_map[ $parent_id ][] = $variation_id;
+        }
+
+        $flrt_json_data['product_variations_map'] = $variations_map;
 
         $container->storeParam('product_variations_map', $variations_map);
+        $container->storeParam('product_variations_reverse_map', $variations_reverse_map);
     }
 
     /**
@@ -428,11 +479,29 @@ class PluginPro
         return $variations_map;
     }
 
+    /**
+     * @return array pairs parent_id => [variation_ids], built once in setVariationsMap()
+     */
+    public function getVariationsReverseMap()
+    {
+        $container = Container::instance();
+        $variations_reverse_map = $container->getParam( 'product_variations_reverse_map' );
+
+        if( ! $variations_reverse_map ){
+            return [];
+        }
+
+        return $variations_reverse_map;
+    }
+
     public function getVariationsByMetaKey( $meta_key ){
-        $list = [];
 
         $transient_key = flrt_get_variations_transient_key($meta_key);
-        if ( false === ( $variations = flrt_get_transient( $transient_key ) ) ) {
+        $list          = flrt_get_transient( $transient_key );
+
+        // Cache format v2: plain [variation_id => meta_value] map.
+        // Legacy format cached raw SQL rows — rebuild those.
+        if ( ! is_array( $list ) || is_array( reset( $list ) ) ) {
             global $wpdb;
 
             $sql[] = "SELECT {$wpdb->posts}.ID, {$wpdb->postmeta}.meta_value";
@@ -444,14 +513,12 @@ class PluginPro
 
             $sql = implode(" ", $sql);
 
-            $variations = $wpdb->get_results($sql, ARRAY_A);
-            flrt_set_transient( $transient_key, $variations, FLRT_TRANSIENT_PERIOD_HOURS * HOUR_IN_SECONDS );
-        }
-
-        if( ! empty( $variations ) ){
-            foreach ( $variations as $pair ){
-                $list[ $pair['ID'] ] = $pair['meta_value'];
+            $list = [];
+            foreach ( $wpdb->get_results( $sql, ARRAY_N ) as $pair ){
+                $list[ (int) $pair[0] ] = $pair[1];
             }
+
+            flrt_set_transient( $transient_key, $list, FLRT_TRANSIENT_PERIOD_HOURS * HOUR_IN_SECONDS );
         }
 
         return $list;
@@ -640,11 +707,18 @@ class PluginPro
 
                 // Add variations query
                 $variations_sql = array_merge( $variations_sql, flrt_build_variations_meta_query( $variation_posts ) );
-                $inserted_sql   = " ( " . implode("\n", $variations_sql) . " ) AND ";
 
                 if( $where ){
-                    $pos = strpos( $where, '(' );
-                    $where = substr_replace( $where, '('.$inserted_sql, $pos, 1 );
+                    // Append as a self-contained top-level AND group. Previously this
+                    // group was spliced into the first '(' found in $where on the
+                    // assumption that it opens the tax_query group. But when the query
+                    // carries a post__not_in list (e.g. XStore's "single variations"
+                    // mode or membership plugins), WordPress renders "ID NOT IN (1,2,…)"
+                    // BEFORE the tax group, so the injection landed inside that NOT IN()
+                    // and produced broken SQL. $where is a top-level AND chain here,
+                    // so appending the same group at the end is logically identical
+                    // to placing it inside the tax group.
+                    $where .= " AND ( " . implode( "\n", $variations_sql ) . " ) ";
                 }
             }
         }
@@ -868,25 +942,24 @@ class PluginPro
                 $now = time();
 
                 if ( ( $the_trident[ 'last_license_check' ] + MONTH_IN_SECONDS ) < $now ) {
-                    // Fires one time per month
+                    // Fires about once a month: prove key possession so connect
+                    // re-issues a fresh signed token, and refresh the local copy.
                     $apiRequest = new ApiRequests();
-                    $site_data  = array( 'home_url' => home_url() );
+                    $site_data  = array(
+                        'home_url' => home_url(),
+                        'license'  => $license_key,
+                    );
                     $result     = $apiRequest->sendRequest('GET', 'license', $site_data );
 
-                    if ( ! $result ) {
-                        $the_trident[ 'last_license_check' ] = $now;
-                        update_option( 'wpc_trident', $the_trident );
+                    if ( isset( $result[ 'data' ][ 'token' ] ) && $result[ 'data' ][ 'token' ] ) {
+                        flrt_store_token( $result[ 'data' ][ 'token' ] );
                     }
 
-                    if ( isset( $result[ 'data' ][ 'license' ] ) ) {
-                        if ( $license_key === $result[ 'data' ][ 'license' ] ) {
-                            $the_trident[ 'last_license_check' ] = $now;
-                            update_option( 'wpc_trident', $the_trident );
-                        } else {
-                            update_option( FLRT_LICENSE_KEY , '' );
-                            delete_transient(FLRT_VERSION_TRANSIENT );
-                        }
-                    }
+                    // Defer the next check by a month regardless of the answer: a
+                    // connect outage or a legacy 204 must never lock a paying
+                    // customer. Token expiry (texp) is what eventually enforces.
+                    $the_trident[ 'last_license_check' ] = $now;
+                    update_option( 'wpc_trident', $the_trident );
                 }
             }
         }
@@ -950,13 +1023,17 @@ class PluginPro
 
         $defaultFields['custom_posts_container'] = array(
             'type'          => 'Text',
-            'label'         => esc_html__('HTML id or class of the Posts Container', 'filter-everything'),
+            'label'         => esc_html__('Results container', 'filter-everything'),
             'name'          => $filterSet->generateFieldName('custom_posts_container'),
             'id'            => $filterSet->generateFieldId('custom_posts_container'),
             'class'         => 'wpc-field-custom-posts-container',
             'placeholder'   => esc_html__( 'e.g. #primary or .main-content', 'filter-everything' ),
             'default'       => '',
-            'instructions'  => esc_html__('Specify individual HTML selector of Posts Container for AJAX', 'filter-everything'),
+            'instructions'  => esc_html__('Specify an individual Results container for AJAX', 'filter-everything'),
+            'tooltip'       => wp_kses(
+                __( 'The part of the page where your posts or products are listed. When AJAX is enabled, the plugin refreshes only this area after each filter click, without reloading the whole page.<br /><br />Click «Select visually» and simply click the area with your posts, or enter its CSS id or class if you know it.', 'filter-everything' ),
+                array( 'br' => array() )
+            ),
             'settings'      => true
         );
 
@@ -1055,6 +1132,32 @@ class PluginPro
             }
         }
 
+        return $updatedFields;
+    }
+
+    public function filterDefaultFieldsRangeList( $defaultFields, $filterFields  ){
+        $updatedFields = [];
+        unset($defaultFields['show_range_list']);
+        foreach ( $defaultFields as $key => $field ){
+            $updatedFields[$key] = $field;
+            if( $key === 'view' ){
+                $updatedFields['show_range_list'] = array(
+                        'type'    => 'Checkbox',
+                        'label'   => esc_html__('Show Range List', 'filter-everything'),
+                        'class'   => 'wpc-field-show-range-list',
+                        'default' => 'no',
+                        'tooltip' => '',
+                );
+                $updatedFields['range_list_input'] = array(
+                        'type'          => 'RangeList',
+                        'label'         => esc_html__( 'Add range list', 'filter-everything' ),
+                        'class'         => 'wpc-field-show-range-list-input',
+                        'default'       => '',
+                        'tooltip'       => '',
+                        'button_name'   => esc_html__( 'Add Range', 'filter-everything' ),
+                );
+            }
+        }
         return $updatedFields;
     }
 

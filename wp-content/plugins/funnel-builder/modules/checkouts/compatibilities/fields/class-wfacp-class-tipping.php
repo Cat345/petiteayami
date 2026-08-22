@@ -42,7 +42,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Tipping' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'wfacp-wc-tipping' ],
 				'id'         => 'wfacp_wc_tipping',
 				'field_type' => 'wfacp_wc_tipping',
-				'label'      => __( 'WooCommerce Tipping', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'WooCommerce Tipping', 'funnel-builder' ),
 
 			];
 

@@ -18,7 +18,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 		 * @return string The label for the "Order Details" element.
 		 */
 		public function get_label() {
-			return esc_html__( 'Order Details' );
+			return esc_html__( 'Order Details' , 'funnel-builder');
 		}
 
 		/**
@@ -36,12 +36,12 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 			$this->control_groups = array();
 
 			$this->control_groups['contentOrderDetails'] = array(
-				'title' => esc_html__( 'Order Details' ),
+				'title' => esc_html__( 'Order Details' , 'funnel-builder'),
 				'tab'   => 'content',
 			);
 
 			$this->control_groups['contentSubscription'] = array(
-				'title' => esc_html__( 'Subscription' ),
+				'title' => esc_html__( 'Subscription' , 'funnel-builder'),
 				'tab'   => 'content',
 			);
 
@@ -61,7 +61,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 			);
 
 			$this->control_groups['styleSubscription'] = array(
-				'title' => esc_html__( 'Subscription' ),
+				'title' => esc_html__( 'Subscription' , 'funnel-builder'),
 				'tab'   => 'style',
 			);
 
@@ -85,12 +85,12 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 				'group'   => 'contentOrderDetails',
 				'label'   => esc_html__( 'Heading' ),
 				'type'    => 'text',
-				'default' => isset( $defaults['order_details_heading'] ) ? $defaults['order_details_heading'] : __( 'Order Details' ),
+				'default' => isset( $defaults['order_details_heading'] ) ? $defaults['order_details_heading'] : __( 'Order Details' , 'funnel-builder'),
 			);
 
 			$this->controls['subscriptionHeadingNotice'] = array(
 				'group'   => 'contentSubscription',
-				'content' => esc_html__( 'This section will only show up in case of order will have subscription.' ),
+				'content' => esc_html__( 'This section will only show up in case of order will have subscription.' , 'funnel-builder'),
 				'type'    => 'info',
 			);
 
@@ -98,18 +98,18 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 				'group'   => 'contentSubscription',
 				'label'   => esc_html__( 'Heading' ),
 				'type'    => 'text',
-				'default' => isset( $defaults['order_subscription_heading'] ) ? $defaults['order_subscription_heading'] : __( 'Subscription' ),
+				'default' => isset( $defaults['order_subscription_heading'] ) ? $defaults['order_subscription_heading'] : __( 'Subscription' , 'funnel-builder'),
 			);
 
 			$this->controls['orderSubscriptionPreview'] = array(
 				'group' => 'contentSubscription',
-				'label' => esc_html__( 'Show Subscription Preview' ),
+				'label' => esc_html__( 'Show Subscription Preview' , 'funnel-builder'),
 				'type'  => 'checkbox',
 			);
 
 			$this->controls['downloadsHeadingNotice'] = array(
 				'group'   => 'contentDownload',
-				'content' => esc_html__( 'This section will only show up in case of order will have downloads.' ),
+				'content' => esc_html__( 'This section will only show up in case of order will have downloads.' , 'funnel-builder'),
 				'type'    => 'info',
 			);
 
@@ -117,31 +117,31 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 				'group'   => 'contentDownload',
 				'label'   => esc_html__( 'Heading' ),
 				'type'    => 'text',
-				'default' => isset( $defaults['order_download_heading'] ) ? $defaults['order_download_heading'] : __( 'Downloads' ),
+				'default' => isset( $defaults['order_download_heading'] ) ? $defaults['order_download_heading'] : __( 'Downloads' , 'funnel-builder'),
 			);
 
 			$this->controls['orderDownloadsBtnText'] = array(
 				'group'   => 'contentDownload',
-				'label'   => esc_html__( 'Download Button Text' ),
+				'label'   => esc_html__( 'Download Button Text' , 'funnel-builder'),
 				'type'    => 'text',
 				'default' => $defaults['order_downloads_btn_text'],
 			);
 
 			$this->controls['orderDownloadPreview'] = array(
 				'group' => 'contentDownload',
-				'label' => esc_html__( 'Show Download Preview' ),
+				'label' => esc_html__( 'Show Download Preview' , 'funnel-builder'),
 				'type'  => 'checkbox',
 			);
 
 			$this->controls['orderDownloadsShowFileDownloads'] = array(
 				'group' => 'contentDownload',
-				'label' => esc_html__( 'Show File Downloads Column' ),
+				'label' => esc_html__( 'Show File Downloads Column' , 'funnel-builder'),
 				'type'  => 'checkbox',
 			);
 
 			$this->controls['orderDownloadsShowFileExpiry'] = array(
 				'group' => 'contentDownload',
-				'label' => esc_html__( 'Show File Expiry Column' ),
+				'label' => esc_html__( 'Show File Expiry Column' , 'funnel-builder'),
 				'type'  => 'checkbox',
 			);
 
@@ -170,7 +170,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['headingAlign'] = array(
 				'group' => 'styleHeading',
-				'label' => esc_html__( 'Heading Alignment' ),
+				'label' => esc_html__( 'Heading Alignment' , 'funnel-builder'),
 				'type'  => 'text-align',
 				'css'   => array(
 					array(
@@ -182,7 +182,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['productLabel'] = array(
 				'group' => 'styleDetails',
-				'label' => esc_html__( 'Product' ),
+				'label' => esc_html__( 'Product' , 'funnel-builder'),
 				'type'  => 'separator',
 			);
 
@@ -216,7 +216,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['subtotalLabel'] = array(
 				'group' => 'styleDetails',
-				'label' => esc_html__( 'Subtotal' ),
+				'label' => esc_html__( 'Subtotal' , 'funnel-builder'),
 				'type'  => 'separator',
 			);
 
@@ -243,7 +243,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['totalLabel'] = array(
 				'group' => 'styleDetails',
-				'label' => esc_html__( 'Total' ),
+				'label' => esc_html__( 'Total' , 'funnel-builder'),
 				'type'  => 'separator',
 			);
 
@@ -297,7 +297,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['dividerLabel'] = array(
 				'group' => 'styleDetails',
-				'label' => esc_html__( 'Divider' ),
+				'label' => esc_html__( 'Divider' , 'funnel-builder'),
 				'type'  => 'separator',
 			);
 
@@ -340,7 +340,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['subscriptionLabel'] = array(
 				'group' => 'styleSubscription',
-				'label' => esc_html__( 'Subscription' ),
+				'label' => esc_html__( 'Subscription' , 'funnel-builder'),
 				'type'  => 'separator',
 			);
 
@@ -460,7 +460,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['downloadsStyleNotice'] = array(
 				'group'   => 'styleDownload',
-				'content' => esc_html__( 'This section will only show up in case of order will have downloads.' ),
+				'content' => esc_html__( 'This section will only show up in case of order will have downloads.' , 'funnel-builder'),
 				'type'    => 'info',
 			);
 		}

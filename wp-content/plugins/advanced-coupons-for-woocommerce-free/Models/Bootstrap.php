@@ -198,6 +198,27 @@ class Bootstrap extends Base_Model implements Model_Interface {
     }
 
     /**
+     * Normalize the legacy store credits expiry option value for the number-input UI.
+     *
+     * The store credits expiry field changed from a select ( 'noexpiry' / '1'-'5' ) to a
+     * number input in 4.7.5. Sites upgrading from an older version may still store the legacy
+     * 'noexpiry' string, which renders as empty in the number input. Behavior is unchanged
+     * either way ( should_store_credits_expire() treats 'noexpiry' and 0 identically ), so this
+     * only tidies the display by converting any non-numeric stored value to 0. Numeric year
+     * values ( '1'-'5' ) are left untouched. Idempotent and safe to run on every version bump.
+     *
+     * @since 4.7.5
+     * @access private
+     */
+    private function _migrate_store_credit_expiry_option() {
+        $expiry = get_option( Plugin_Constants::STORE_CREDIT_EXPIRY, false );
+
+        if ( false !== $expiry && ! is_numeric( $expiry ) ) {
+            update_option( Plugin_Constants::STORE_CREDIT_EXPIRY, 0 );
+        }
+    }
+
+    /**
      * Actual function that houses the code to execute on plugin activation.
      *
      * @since 1.0
@@ -229,6 +250,9 @@ class Bootstrap extends Base_Model implements Model_Interface {
 
         // Initialize settings options.
         $this->_initialize_plugin_settings_options();
+
+        // Normalize the legacy store credits expiry value for the 4.7.5 number-input UI.
+        $this->_migrate_store_credit_expiry_option();
 
         // Reconcile autoload flags for plugin options (handles existing installs).
         $this->_set_plugin_options_autoload();

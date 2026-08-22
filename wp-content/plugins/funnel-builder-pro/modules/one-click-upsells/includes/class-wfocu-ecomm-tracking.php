@@ -2555,6 +2555,45 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 		}
 
 		/**
+		 * Build a list of event payloads for Conversion API iteration.
+		 *
+		 * UpStroke normally passes a numeric list (server events + `wfocuCapiEvents`). Some integrations
+		 * or decoded JSON may use `array( 'events' => array( ... ) )`; unwrap so `foreach` receives each event.
+		 *
+		 * @param array $payload Raw `$events` or `$this->api_events`.
+		 * @return array<int, array<string, mixed>>
+		 */
+		private function normalize_conv_api_events_list( $payload ) {
+			if ( ! is_array( $payload ) ) {
+				return array();
+			}
+			$queue = $payload;
+			$depth = 0;
+			while ( isset( $queue['events'] ) && is_array( $queue['events'] ) && $depth < 10 ) {
+				$queue = $queue['events'];
+				++$depth;
+			}
+			if ( ! is_array( $queue ) ) {
+				return array();
+			}
+			if ( isset( $queue['event'], $queue['event_id'] ) ) {
+				$is_list = false;
+				if ( function_exists( 'array_is_list' ) ) {
+					$is_list = array_is_list( $queue );
+				} else {
+					$keys    = array_keys( $queue );
+					$n       = count( $keys );
+					$is_list = $n > 0 && $keys === range( 0, $n - 1 );
+				}
+				if ( ! $is_list ) {
+					return array( $queue );
+				}
+			}
+
+			return $queue;
+		}
+
+		/**
 		 * Render a JS to fire async ajax calls to fire further events
 		 */
 		public function maybe_render_conv_api_js() {
@@ -2567,22 +2606,6 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 					$this->maybe_render_conv_api();
 				}
 				$this->api_events = array();
-				?>
-				<script type="text/javascript">
-					function wfocuConvTrackingIn() {
-						var wfocu_shouldRender = 1;
-						<?php do_action( 'wfocu_allow_tracking_inline_js' ); ?>
-						if (1 === wfocu_shouldRender) {
-							if (window.history.pushState) {
-								history.pushState(null, document.title, location.href);
-								window.addEventListener('popstate', function (event) {
-									history.pushState(null, document.title, location.href);
-								});
-							}
-						}
-					}
-				</script>
-				<?php
 			}
 			if ( $this->should_render( true ) && $this->is_tracking_on() && $this->is_conversion_api() ) {
 				?>
@@ -2627,6 +2650,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 			 */
 			if ( $this->is_conversion_api() ) {
 				$events = ! empty( $events ) && $is_ajax ? $events : $this->api_events;
+				$events = $this->normalize_conv_api_events_list( $events );
 
 				$get_all_fb_pixel = $this->is_fb_pixel();
 				$access_token     = $this->get_conversion_api_access_token();
@@ -2890,7 +2914,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 				$purchase_params = array_merge( $purchase_params, $event_data );
 			}
 
-			return $purchase_params;
+			return apply_filters( 'wfocu_capi_purchase_params', $purchase_params, $get_data_from_session );
 		}
 
 		public function get_event_data() {
@@ -3006,9 +3030,6 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 
 						if (typeof wfocuFbTrackingIn === 'function') {
 							wfocuFbTrackingIn();
-						}
-						if (typeof wfocuConvTrackingIn === 'function') {
-							wfocuConvTrackingIn();
 						}
 						if (typeof wfocuConvBaseTrackingIn === 'function') {
 							wfocuConvBaseTrackingIn();

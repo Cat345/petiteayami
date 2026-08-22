@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Template_Importer {

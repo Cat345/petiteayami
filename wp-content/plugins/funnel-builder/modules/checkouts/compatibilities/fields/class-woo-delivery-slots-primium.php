@@ -51,7 +51,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_Delivery_Slots_Premium' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'wfacp_delivery_date_slote_iconic' ],
 				'id'         => 'delivery_date_slote_iconic',
 				'field_type' => 'delivery_date_slote_iconic',
-				'label'      => __( 'WC Delivery Slots (Iconic)', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'WC Delivery Slots (Iconic)', 'funnel-builder' ),
 
 			];
 

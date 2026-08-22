@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * plugin name : Woo Composite Products by WooCommerce v.10.0.2

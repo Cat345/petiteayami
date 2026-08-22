@@ -280,11 +280,21 @@ class Script_Loader extends Base_Model implements Model_Interface {
                         'shipping_zone_already_added'     => __( 'Selected shipping zone is already added.', 'advanced-coupons-for-woocommerce-free' ),
                         'fail_add_condition_field'        => __( 'Failed to add condition field.', 'advanced-coupons-for-woocommerce-free' ),
                         'add_new_and_rule'                => __( "Add a New 'AND' Rule", 'advanced-coupons-for-woocommerce-free' ),
-                        'each_product_same_product_error' => __( "Any products trigger type based on each product's quantity can only work with <em>Same Products</em> apply type.", 'advanced-coupons-for-woocommerce-free' ),
+                        'each_product_same_product_error' => sprintf(
+                            /* Translators: %1$s: opening emphasis tag. %2$s: closing emphasis tag. */
+                            __( "Any products trigger type based on each product's quantity can only work with %1\$sSame Products%2\$s apply type.", 'advanced-coupons-for-woocommerce-free' ),
+                            '<em>',
+                            '</em>'
+                        ),
                         'copied_label'                    => __( 'Copied', 'advanced-coupons-for-woocommerce-free' ),
                         'download_qr_image_label'         => __( 'Download QR Image', 'advanced-coupons-for-woocommerce-free' ),
                         'error_generate_qr_image'         => __( 'Coupon code is too long, failed to generate QR Code.', 'advanced-coupons-for-woocommerce-free' ),
-                        'invalid_scheduler_time'          => __( '<strong>Scheduler:</strong> Please enter a valid date and time range.', 'advanced-coupons-for-woocommerce-free' ),
+                        'invalid_scheduler_time'          => sprintf(
+                            /* Translators: %1$s: opening bold tag. %2$s: closing bold tag. */
+                            __( '%1$sScheduler:%2$s Please enter a valid date and time range.', 'advanced-coupons-for-woocommerce-free' ),
+                            '<strong>',
+                            '</strong>'
+                        ),
                         'product_table_buttons'           => array(
                             'add'    => __( 'Add', 'advanced-coupons-for-woocommerce-free' ),
                             'edit'   => __( 'Edit', 'advanced-coupons-for-woocommerce-free' ),
@@ -305,6 +315,8 @@ class Script_Loader extends Base_Model implements Model_Interface {
                             'combination_get_2' => __( 'Since it\'s not known which the products the customer wishes to use for the "Get" portion of the deal, they will need to add the products to the cart. You can communicate this with the Notice settings below which will be shown if they haven\'t added them yet.', 'advanced-coupons-for-woocommerce-free' ),
                             'categories_buy'    => __( 'If any products from the following categories are in the cart, they will be eligible for "Get" portion of the BOGO deal.', 'advanced-coupons-for-woocommerce-free' ),
                             'categories_get'    => __( 'Once the "Buy" portion of the BOGO deal is satisfied, grant the following discounts on additional products belonging to the following categories in the cart. If multiple items are present and eligible for the discount, the cheapest product will get the discount first. You can configure which product to be discounted in the additional settings option.', 'advanced-coupons-for-woocommerce-free' ),
+                            'brands_buy'        => __( 'If any products from the following brands are in the cart, they will be eligible for "Get" portion of the BOGO deal.', 'advanced-coupons-for-woocommerce-free' ),
+                            'brands_get'        => __( 'Once the "Buy" portion of the BOGO deal is satisfied, grant the following discounts on additional products belonging to the following brands in the cart. If multiple items are present and eligible for the discount, the cheapest product will get the discount first. You can configure which product to be discounted in the additional settings option.', 'advanced-coupons-for-woocommerce-free' ),
                             'anyproducts_buy'   => __( 'If the quantity of all products in the cart is met, they will be eligible for "Get" portion of the BOGO deal.', 'advanced-coupons-for-woocommerce-free' ),
                             'anyproducts_get'   => __( 'Once the "Buy" portion of the BOGO deal is satisfied, grant the following discount on any product in the cart. If multiple items are present and eligible for the discount, the cheapest product will get the discount first. You can configure which product to be discounted in the additional settings option.', 'advanced-coupons-for-woocommerce-free' ),
                             'sameproducts_get'  => __( 'Once the "Buy" portion of the BOGO deal is satisfied, grant the following discounts on the same product(s) already in the cart. You can configure which product to be discounted in the additional settings option.', 'advanced-coupons-for-woocommerce-free' ),
@@ -319,6 +331,7 @@ class Script_Loader extends Base_Model implements Model_Interface {
                             'products'            => __( 'Products', 'advanced-coupons-for-woocommerce-free' ),
                             'categories'          => __( 'Product Categories', 'advanced-coupons-for-woocommerce-free' ),
                             'product_cat'         => __( 'Product Category', 'advanced-coupons-for-woocommerce-free' ),
+                            'brands'              => __( 'Product Brands', 'advanced-coupons-for-woocommerce-free' ),
                             'price_discount'      => __( 'Price/Discount', 'advanced-coupons-for-woocommerce-free' ),
                             'discount_type'       => __( 'Discount Type', 'advanced-coupons-for-woocommerce-free' ),
                         ),
@@ -416,9 +429,11 @@ class Script_Loader extends Base_Model implements Model_Interface {
                             $this->_helper_functions->api_wc_price( $customer_store_credits_balance + $applied_store_credits_amount )
                         ),
                         'button_text'                => sprintf(
-                            /* Translators: %s: 0.00 amount in site currency. */
-                            __( 'Refund <span class="amount">%s</span> to Store Credits', 'advanced-coupons-for-woocommerce-free' ),
-                            $this->_helper_functions->api_wc_price( 0.0, array( 'currency' => $order->get_currency() ) )
+                            /* Translators: %1$s: opening amount span tag. %2$s: 0.00 amount in site currency. %3$s: closing span tag. */
+                            __( 'Refund %1$s%2$s%3$s to Store Credits', 'advanced-coupons-for-woocommerce-free' ),
+                            '<span class="amount">',
+                            $this->_helper_functions->api_wc_price( 0.0, array( 'currency' => $order->get_currency() ) ),
+                            '</span>'
                         ),
                         'store_credit_coupon_code'   => \ACFWF()->Store_Credits_Checkout->get_store_credit_coupon_code(),
                     )
@@ -605,9 +620,10 @@ class Script_Loader extends Base_Model implements Model_Interface {
                 'currentlySelectedCouponLabel' => __( 'Currently selected coupon:', 'advanced-coupons-for-woocommerce-free' ),
                 'searchAndSelectCouponLabel'   => __( 'Search and select coupon', 'advanced-coupons-for-woocommerce-free' ),
                 'premiumUpsellMessage'         => sprintf(
-                    /* Translators: %s: Advanced Coupons premium pricing page URL. */
-                    __( 'This block is only available in the <a href="%s" target="_blank" rel="noopener noreferer">Premium add-on for Advanced Coupons.</a>', 'advanced-coupons-for-woocommerce-free' ),
-                    $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'gutenberg' )
+                    /* Translators: %1$s: opening anchor tag linking to the premium pricing page. %2$s: closing anchor tag. */
+                    __( 'This block is only available in the %1$sPremium add-on for Advanced Coupons.%2$s', 'advanced-coupons-for-woocommerce-free' ),
+                    '<a href="' . esc_url( $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'gutenberg' ) ) . '" target="_blank" rel="noopener noreferrer">',
+                    '</a>'
                 ),
 
                 'emptyCouponSearch'            => __( 'No coupons found.', 'advanced-coupons-for-woocommerce-free' ),

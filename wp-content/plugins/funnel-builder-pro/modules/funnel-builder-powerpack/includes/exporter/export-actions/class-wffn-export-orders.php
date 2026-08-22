@@ -157,6 +157,9 @@ if ( ! class_exists( 'WFFN_Export_Orders' ) ) {
 			$file  = fopen( WFFN_PRO_EXPORT_DIR . '/' . $this->export_meta['file'], 'a' ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 			$count = 0;
 			foreach ( $data as $subdata ) {
+				if ( isset( $subdata['date'] ) ) {
+					$subdata['date'] = $this->format_export_conversion_timestamp( $subdata['date'] );
+				}
 				fputcsv( $file, $subdata, ',', '"', '\\' );
 				++$count;
 			}

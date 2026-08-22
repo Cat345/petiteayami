@@ -177,9 +177,10 @@ class BWFAN_AS_V2 {
 				return $result;
 			}
 
-			/** Check if the error is a deadlock */
-			if ( false === strpos( $wpdb->last_error, 'Deadlock found' ) ) {
-				/** Not a deadlock error, don't retry. Re-surface it since wpdb's native logging was suppressed, unless an outer context already suppressed errors. */
+			/** Check if the error is a deadlock or a lock-wait timeout — both are transient contention errors worth retrying */
+			$is_retryable = ( false !== strpos( $wpdb->last_error, 'Deadlock found' ) ) || ( false !== strpos( $wpdb->last_error, 'Lock wait timeout exceeded' ) );
+			if ( ! $is_retryable ) {
+				/** Not a retryable error, don't retry. Re-surface it since wpdb's native logging was suppressed, unless an outer context already suppressed errors. */
 				if ( ! $suppress && '' !== $wpdb->last_error ) {
 					$wpdb->print_error( $wpdb->last_error ); //phpcs:ignore
 				}
@@ -188,7 +189,7 @@ class BWFAN_AS_V2 {
 			}
 
 			if ( $attempt < $max_retries ) {
-				BWFAN_Common::log_test_data( 'BWFAN: Deadlock detected, retry attempt ' . ( $attempt + 1 ) . ' of ' . $max_retries, 'fka-db-deadlock', true );
+				BWFAN_Common::log_test_data( 'BWFAN: Transient DB contention (deadlock/lock-wait) detected, retry attempt ' . ( $attempt + 1 ) . ' of ' . $max_retries, 'fka-db-deadlock', true );
 				/** Brief pause before retry with exponential backoff */
 				usleep( ( $attempt + 1 ) * 100000 );
 			}

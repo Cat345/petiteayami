@@ -64,6 +64,7 @@ class PremiumCachedContainer extends Container
             'MailPoet\\Newsletter\\Options\\NewsletterOptionsRepository' => 'getNewsletterOptionsRepositoryService',
             'MailPoet\\Newsletter\\Sending\\ScheduledTaskSubscribersRepository' => 'getScheduledTaskSubscribersRepositoryService',
             'MailPoet\\Newsletter\\Sending\\ScheduledTasksRepository' => 'getScheduledTasksRepositoryService',
+            'MailPoet\\Newsletter\\Sending\\TimeZoneCampaignScheduler' => 'getTimeZoneCampaignSchedulerService',
             'MailPoet\\Newsletter\\Statistics\\NewsletterStatisticsRepository' => 'getNewsletterStatisticsRepositoryService',
             'MailPoet\\Newsletter\\Url' => 'getUrlService',
             'MailPoet\\Premium\\API\\JSON\\v1\\ResponseBuilders\\StatsResponseBuilder' => 'getStatsResponseBuilderService',
@@ -158,10 +159,16 @@ class PremiumCachedContainer extends Container
             'MailPoet\\Premium\\EmailEditor\\Integrations\\MailPoet\\PersonalizationTags\\WooCommerceSubscription' => 'getWooCommerceSubscriptionService',
             'MailPoet\\Premium\\Newsletter\\StatisticsClicksRepository' => 'getStatisticsClicksRepositoryService',
             'MailPoet\\Premium\\Newsletter\\Stats\\Bounces' => 'getBouncesService',
+            'MailPoet\\Premium\\Newsletter\\Stats\\ClickedLinks' => 'getClickedLinksService',
+            'MailPoet\\Premium\\Newsletter\\Stats\\PurchasedProductsListing' => 'getPurchasedProductsListingService',
             'MailPoet\\Premium\\Newsletter\\Stats\\RecipientsExporter' => 'getRecipientsExporterService',
             'MailPoet\\Premium\\Newsletter\\Stats\\RestApi\\Endpoints\\BouncesEndpoint' => 'getBouncesEndpointService',
+            'MailPoet\\Premium\\Newsletter\\Stats\\RestApi\\Endpoints\\ClickedLinksEndpoint' => 'getClickedLinksEndpointService',
             'MailPoet\\Premium\\Newsletter\\Stats\\RestApi\\Endpoints\\EngagementEndpoint' => 'getEngagementEndpointService',
+            'MailPoet\\Premium\\Newsletter\\Stats\\RestApi\\Endpoints\\ProductsEndpoint' => 'getProductsEndpointService',
+            'MailPoet\\Premium\\Newsletter\\Stats\\RestApi\\Endpoints\\UnsubscribeReasonsEndpoint' => 'getUnsubscribeReasonsEndpointService',
             'MailPoet\\Premium\\Newsletter\\Stats\\SubscriberEngagement' => 'getSubscriberEngagementService',
+            'MailPoet\\Premium\\Newsletter\\Stats\\UnsubscribeReasons' => 'getUnsubscribeReasonsService',
             'MailPoet\\Premium\\Segments\\DynamicSegments\\Filters\\SubscriberTag' => 'getSubscriberTagService',
             'MailPoet\\Premium\\Segments\\DynamicSegments\\SegmentCombinations' => 'getSegmentCombinationsService',
             'MailPoet\\Segments\\SegmentsRepository' => 'getSegmentsRepositoryService',
@@ -575,6 +582,16 @@ class PremiumCachedContainer extends Container
     }
 
     /**
+     * Gets the public 'MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler' shared service.
+     *
+     * @return \MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler
+     */
+    protected function getTimeZoneCampaignSchedulerService()
+    {
+        return $this->services['MailPoet\\Newsletter\\Sending\\TimeZoneCampaignScheduler'] = ($this->services['free_container'] ?? $this->get('free_container', 1))->get('MailPoet\\Newsletter\\Sending\\TimeZoneCampaignScheduler');
+    }
+
+    /**
      * Gets the public 'MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository' shared service.
      *
      * @return \MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository
@@ -601,7 +618,7 @@ class PremiumCachedContainer extends Container
      */
     protected function getStatsResponseBuilderService()
     {
-        return $this->services['MailPoet\\Premium\\API\\JSON\\v1\\ResponseBuilders\\StatsResponseBuilder'] = new \MailPoet\Premium\API\JSON\v1\ResponseBuilders\StatsResponseBuilder();
+        return $this->services['MailPoet\\Premium\\API\\JSON\\v1\\ResponseBuilders\\StatsResponseBuilder'] = new \MailPoet\Premium\API\JSON\v1\ResponseBuilders\StatsResponseBuilder(($this->services['MailPoet\\Newsletter\\Sending\\TimeZoneCampaignScheduler'] ?? $this->getTimeZoneCampaignSchedulerService()));
     }
 
     /**
@@ -611,9 +628,7 @@ class PremiumCachedContainer extends Container
      */
     protected function getStatsService()
     {
-        $a = ($this->services['MailPoet\\Newsletter\\NewslettersRepository'] ?? $this->getNewslettersRepositoryService());
-
-        return $this->services['MailPoet\\Premium\\API\\JSON\\v1\\Stats'] = new \MailPoet\Premium\API\JSON\v1\Stats(new \MailPoet\Premium\Newsletter\Stats\PurchasedProducts(($this->services['MailPoet\\WooCommerce\\Helper'] ?? $this->getHelperService()), ($this->services['MailPoet\\Statistics\\StatisticsWooCommercePurchasesRepository'] ?? $this->getStatisticsWooCommercePurchasesRepositoryService()), $a, ($this->services['MailPoet\\WP\\Functions'] ?? $this->getFunctionsService()), ($this->services['MailPoet\\WooCommerce\\OrderAttributionRevenueReader'] ?? $this->getOrderAttributionRevenueReaderService())), $a, ($this->services['MailPoet\\Premium\\API\\JSON\\v1\\ResponseBuilders\\StatsResponseBuilder'] ?? ($this->services['MailPoet\\Premium\\API\\JSON\\v1\\ResponseBuilders\\StatsResponseBuilder'] = new \MailPoet\Premium\API\JSON\v1\ResponseBuilders\StatsResponseBuilder())), ($this->services['MailPoet\\Premium\\Newsletter\\StatisticsClicksRepository'] ?? $this->getStatisticsClicksRepositoryService()), ($this->services['MailPoet\\Newsletter\\Statistics\\NewsletterStatisticsRepository'] ?? $this->getNewsletterStatisticsRepositoryService()), ($this->services['MailPoet\\Newsletter\\Url'] ?? $this->getUrlService()), ($this->services['MailPoet\\Statistics\\StatisticsUnsubscribesRepository'] ?? $this->getStatisticsUnsubscribesRepositoryService()));
+        return $this->services['MailPoet\\Premium\\API\\JSON\\v1\\Stats'] = new \MailPoet\Premium\API\JSON\v1\Stats(($this->privates['MailPoet\\Premium\\Newsletter\\Stats\\PurchasedProducts'] ?? $this->getPurchasedProductsService()), ($this->services['MailPoet\\Newsletter\\NewslettersRepository'] ?? $this->getNewslettersRepositoryService()), ($this->services['MailPoet\\Premium\\API\\JSON\\v1\\ResponseBuilders\\StatsResponseBuilder'] ?? $this->getStatsResponseBuilderService()), ($this->services['MailPoet\\Premium\\Newsletter\\StatisticsClicksRepository'] ?? $this->getStatisticsClicksRepositoryService()), ($this->services['MailPoet\\Newsletter\\Statistics\\NewsletterStatisticsRepository'] ?? $this->getNewsletterStatisticsRepositoryService()), ($this->services['MailPoet\\Newsletter\\Url'] ?? $this->getUrlService()), ($this->services['MailPoet\\Statistics\\StatisticsUnsubscribesRepository'] ?? $this->getStatisticsUnsubscribesRepositoryService()));
     }
 
     /**
@@ -1529,13 +1544,33 @@ class PremiumCachedContainer extends Container
     }
 
     /**
+     * Gets the public 'MailPoet\Premium\Newsletter\Stats\ClickedLinks' shared autowired service.
+     *
+     * @return \MailPoet\Premium\Newsletter\Stats\ClickedLinks
+     */
+    protected function getClickedLinksService()
+    {
+        return $this->services['MailPoet\\Premium\\Newsletter\\Stats\\ClickedLinks'] = new \MailPoet\Premium\Newsletter\Stats\ClickedLinks(($this->services['MailPoet\\Listing\\Handler'] ?? $this->getHandlerService()), ($this->services['MailPoetVendor\\Doctrine\\ORM\\EntityManager'] ?? $this->getEntityManagerService()), ($this->services['MailPoet\\Newsletter\\NewslettersRepository'] ?? $this->getNewslettersRepositoryService()));
+    }
+
+    /**
+     * Gets the public 'MailPoet\Premium\Newsletter\Stats\PurchasedProductsListing' shared autowired service.
+     *
+     * @return \MailPoet\Premium\Newsletter\Stats\PurchasedProductsListing
+     */
+    protected function getPurchasedProductsListingService()
+    {
+        return $this->services['MailPoet\\Premium\\Newsletter\\Stats\\PurchasedProductsListing'] = new \MailPoet\Premium\Newsletter\Stats\PurchasedProductsListing(($this->services['MailPoet\\Listing\\Handler'] ?? $this->getHandlerService()), ($this->services['MailPoet\\Newsletter\\NewslettersRepository'] ?? $this->getNewslettersRepositoryService()), ($this->privates['MailPoet\\Premium\\Newsletter\\Stats\\PurchasedProducts'] ?? $this->getPurchasedProductsService()));
+    }
+
+    /**
      * Gets the public 'MailPoet\Premium\Newsletter\Stats\RecipientsExporter' shared autowired service.
      *
      * @return \MailPoet\Premium\Newsletter\Stats\RecipientsExporter
      */
     protected function getRecipientsExporterService()
     {
-        return $this->services['MailPoet\\Premium\\Newsletter\\Stats\\RecipientsExporter'] = new \MailPoet\Premium\Newsletter\Stats\RecipientsExporter(($this->services['MailPoetVendor\\Doctrine\\ORM\\EntityManager'] ?? $this->getEntityManagerService()), ($this->services['MailPoet\\Settings\\TrackingConfig'] ?? $this->getTrackingConfigService()));
+        return $this->services['MailPoet\\Premium\\Newsletter\\Stats\\RecipientsExporter'] = new \MailPoet\Premium\Newsletter\Stats\RecipientsExporter(($this->services['MailPoetVendor\\Doctrine\\ORM\\EntityManager'] ?? $this->getEntityManagerService()), ($this->services['MailPoet\\Newsletter\\Sending\\TimeZoneCampaignScheduler'] ?? $this->getTimeZoneCampaignSchedulerService()), ($this->services['MailPoet\\Settings\\TrackingConfig'] ?? $this->getTrackingConfigService()));
     }
 
     /**
@@ -1549,6 +1584,16 @@ class PremiumCachedContainer extends Container
     }
 
     /**
+     * Gets the public 'MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\ClickedLinksEndpoint' shared autowired service.
+     *
+     * @return \MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\ClickedLinksEndpoint
+     */
+    protected function getClickedLinksEndpointService()
+    {
+        return $this->services['MailPoet\\Premium\\Newsletter\\Stats\\RestApi\\Endpoints\\ClickedLinksEndpoint'] = new \MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\ClickedLinksEndpoint(($this->services['MailPoet\\Newsletter\\NewslettersRepository'] ?? $this->getNewslettersRepositoryService()), ($this->services['MailPoet\\Util\\License\\Features\\CapabilitiesManager'] ?? $this->getCapabilitiesManagerService()), ($this->services['MailPoet\\WP\\Functions'] ?? $this->getFunctionsService()), ($this->services['MailPoet\\Premium\\Newsletter\\Stats\\ClickedLinks'] ?? $this->getClickedLinksService()));
+    }
+
+    /**
      * Gets the public 'MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\EngagementEndpoint' shared autowired service.
      *
      * @return \MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\EngagementEndpoint
@@ -1559,13 +1604,43 @@ class PremiumCachedContainer extends Container
     }
 
     /**
+     * Gets the public 'MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\ProductsEndpoint' shared autowired service.
+     *
+     * @return \MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\ProductsEndpoint
+     */
+    protected function getProductsEndpointService()
+    {
+        return $this->services['MailPoet\\Premium\\Newsletter\\Stats\\RestApi\\Endpoints\\ProductsEndpoint'] = new \MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\ProductsEndpoint(($this->services['MailPoet\\Newsletter\\NewslettersRepository'] ?? $this->getNewslettersRepositoryService()), ($this->services['MailPoet\\Util\\License\\Features\\CapabilitiesManager'] ?? $this->getCapabilitiesManagerService()), ($this->services['MailPoet\\WP\\Functions'] ?? $this->getFunctionsService()), ($this->services['MailPoet\\Premium\\Newsletter\\Stats\\PurchasedProductsListing'] ?? $this->getPurchasedProductsListingService()));
+    }
+
+    /**
+     * Gets the public 'MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\UnsubscribeReasonsEndpoint' shared autowired service.
+     *
+     * @return \MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\UnsubscribeReasonsEndpoint
+     */
+    protected function getUnsubscribeReasonsEndpointService()
+    {
+        return $this->services['MailPoet\\Premium\\Newsletter\\Stats\\RestApi\\Endpoints\\UnsubscribeReasonsEndpoint'] = new \MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\UnsubscribeReasonsEndpoint(($this->services['MailPoet\\Newsletter\\NewslettersRepository'] ?? $this->getNewslettersRepositoryService()), ($this->services['MailPoet\\Util\\License\\Features\\CapabilitiesManager'] ?? $this->getCapabilitiesManagerService()), ($this->services['MailPoet\\WP\\Functions'] ?? $this->getFunctionsService()), ($this->services['MailPoet\\Premium\\Newsletter\\Stats\\UnsubscribeReasons'] ?? $this->getUnsubscribeReasonsService()));
+    }
+
+    /**
      * Gets the public 'MailPoet\Premium\Newsletter\Stats\SubscriberEngagement' shared autowired service.
      *
      * @return \MailPoet\Premium\Newsletter\Stats\SubscriberEngagement
      */
     protected function getSubscriberEngagementService()
     {
-        return $this->services['MailPoet\\Premium\\Newsletter\\Stats\\SubscriberEngagement'] = new \MailPoet\Premium\Newsletter\Stats\SubscriberEngagement(($this->services['MailPoet\\Listing\\Handler'] ?? $this->getHandlerService()), ($this->services['MailPoetVendor\\Doctrine\\ORM\\EntityManager'] ?? $this->getEntityManagerService()), ($this->services['MailPoet\\Premium\\Newsletter\\StatisticsClicksRepository'] ?? $this->getStatisticsClicksRepositoryService()), ($this->services['MailPoet\\Cron\\Workers\\StatsNotifications\\NewsletterLinkRepository'] ?? $this->getNewsletterLinkRepositoryService()), ($this->services['MailPoet\\Newsletter\\NewslettersRepository'] ?? $this->getNewslettersRepositoryService()), ($this->services['MailPoet\\Statistics\\UnsubscribeReasonTracker'] ?? $this->getUnsubscribeReasonTrackerService()));
+        return $this->services['MailPoet\\Premium\\Newsletter\\Stats\\SubscriberEngagement'] = new \MailPoet\Premium\Newsletter\Stats\SubscriberEngagement(($this->services['MailPoet\\Listing\\Handler'] ?? $this->getHandlerService()), ($this->services['MailPoetVendor\\Doctrine\\ORM\\EntityManager'] ?? $this->getEntityManagerService()), ($this->services['MailPoet\\Premium\\Newsletter\\StatisticsClicksRepository'] ?? $this->getStatisticsClicksRepositoryService()), ($this->services['MailPoet\\Cron\\Workers\\StatsNotifications\\NewsletterLinkRepository'] ?? $this->getNewsletterLinkRepositoryService()), ($this->services['MailPoet\\Newsletter\\NewslettersRepository'] ?? $this->getNewslettersRepositoryService()), ($this->services['MailPoet\\Statistics\\UnsubscribeReasonTracker'] ?? $this->getUnsubscribeReasonTrackerService()), ($this->services['MailPoet\\Newsletter\\Sending\\TimeZoneCampaignScheduler'] ?? $this->getTimeZoneCampaignSchedulerService()));
+    }
+
+    /**
+     * Gets the public 'MailPoet\Premium\Newsletter\Stats\UnsubscribeReasons' shared autowired service.
+     *
+     * @return \MailPoet\Premium\Newsletter\Stats\UnsubscribeReasons
+     */
+    protected function getUnsubscribeReasonsService()
+    {
+        return $this->services['MailPoet\\Premium\\Newsletter\\Stats\\UnsubscribeReasons'] = new \MailPoet\Premium\Newsletter\Stats\UnsubscribeReasons(($this->services['MailPoet\\Listing\\Handler'] ?? $this->getHandlerService()), ($this->services['MailPoetVendor\\Doctrine\\ORM\\EntityManager'] ?? $this->getEntityManagerService()), ($this->services['MailPoet\\Newsletter\\NewslettersRepository'] ?? $this->getNewslettersRepositoryService()), ($this->services['MailPoet\\Statistics\\UnsubscribeReasonTracker'] ?? $this->getUnsubscribeReasonTrackerService()));
     }
 
     /**
@@ -1796,5 +1871,15 @@ class PremiumCachedContainer extends Container
     protected function getHelper3Service()
     {
         return $this->services['MailPoet\\WooCommerce\\WooCommerceSubscriptions\\Helper'] = ($this->services['free_container'] ?? $this->get('free_container', 1))->get('MailPoet\\WooCommerce\\WooCommerceSubscriptions\\Helper');
+    }
+
+    /**
+     * Gets the private 'MailPoet\Premium\Newsletter\Stats\PurchasedProducts' shared autowired service.
+     *
+     * @return \MailPoet\Premium\Newsletter\Stats\PurchasedProducts
+     */
+    protected function getPurchasedProductsService()
+    {
+        return $this->privates['MailPoet\\Premium\\Newsletter\\Stats\\PurchasedProducts'] = new \MailPoet\Premium\Newsletter\Stats\PurchasedProducts(($this->services['MailPoet\\WooCommerce\\Helper'] ?? $this->getHelperService()), ($this->services['MailPoet\\Statistics\\StatisticsWooCommercePurchasesRepository'] ?? $this->getStatisticsWooCommercePurchasesRepositoryService()), ($this->services['MailPoet\\Newsletter\\NewslettersRepository'] ?? $this->getNewslettersRepositoryService()), ($this->services['MailPoet\\WP\\Functions'] ?? $this->getFunctionsService()), ($this->services['MailPoet\\WooCommerce\\OrderAttributionRevenueReader'] ?? $this->getOrderAttributionRevenueReaderService()));
     }
 }

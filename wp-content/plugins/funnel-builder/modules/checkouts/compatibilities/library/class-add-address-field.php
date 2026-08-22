@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Elementor_exit_intent' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Add_Address_Field {
@@ -42,7 +43,7 @@ if ( ! class_exists( 'WFACP_Elementor_exit_intent' ) ) {
 				$this->id                  => 'true',
 				$this->id . '_label'       => $this->field['label'],
 				$this->id . '_placeholder' => isset( $this->field['placeholder'] ) ? $this->field['placeholder'] : false,
-				'hint'                     => __( 'Field ID: ', 'woofunnels-aero-checkout' ) . $this->type . '_' . $this->id,
+				'hint'                     => __( 'Field ID: ', 'funnel-builder' ) . $this->type . '_' . $this->id,
 				'required'                 => isset( $this->field['required'] ) ? $this->field['required'] : false,
 			);
 

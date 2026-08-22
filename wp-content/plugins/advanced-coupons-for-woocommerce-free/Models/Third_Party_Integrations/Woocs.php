@@ -152,11 +152,12 @@ class Woocs implements Model_Interface {
      * @since 4.1
      * @access public
      *
-     * @param float $amount Amount to convert.
+     * @param float $amount     Amount to convert.
      * @param bool  $is_reverse Convert from user to base currency if true.
+     * @param array $settings   List of settings.
      * @return float Converted amount.
      */
-    public function convert_amount_to_user_selected_currency( $amount, $is_reverse = false ) {
+    public function convert_amount_to_user_selected_currency( $amount, $is_reverse = false, $settings = array() ) {
         global $WOOCS;
 
         // Check if amount is null before doing the conversion.
@@ -164,14 +165,24 @@ class Woocs implements Model_Interface {
             return $amount;
         }
 
-        if ( $WOOCS->default_currency === $WOOCS->current_currency ) {
+        if ( ! is_object( $WOOCS ) ) {
+            return $amount;
+        }
+
+        // Use the currencies explicitly passed by the caller (e.g. order refund) when available, otherwise
+        // fall back to the runtime WOOCS currencies. During the backend refund AJAX the runtime current/default
+        // currency are both the store default, so the passed currencies are what make the conversion correct.
+        $user_currency = isset( $settings['user_currency'] ) ? $settings['user_currency'] : $WOOCS->current_currency;
+        $site_currency = isset( $settings['site_currency'] ) ? $settings['site_currency'] : $WOOCS->default_currency;
+
+        if ( $site_currency === $user_currency ) {
             return $amount;
         }
 
         if ( $is_reverse ) {
-            return $this->_convert_amount( $amount, $WOOCS->current_currency, $WOOCS->default_currency );
+            return $this->_convert_amount( $amount, $user_currency, $site_currency );
         } else {
-            return $this->_convert_amount( $amount, $WOOCS->default_currency, $WOOCS->current_currency );
+            return $this->_convert_amount( $amount, $site_currency, $user_currency );
         }
     }
 
@@ -193,6 +204,10 @@ class Woocs implements Model_Interface {
     public function save_user_currency_to_store_credits_discount_session( $sc_discount ) {
         global $WOOCS;
 
+        if ( ! is_object( $WOOCS ) ) {
+            return $sc_discount;
+        }
+
         $sc_discount['currency'] = $WOOCS->current_currency;
         return $sc_discount;
     }
@@ -211,6 +226,10 @@ class Woocs implements Model_Interface {
      */
     public function validate_user_currency_on_apply_store_credits_discount( $sc_discount, $session_name ) {
         global $WOOCS;
+
+        if ( ! is_object( $WOOCS ) ) {
+            return $sc_discount;
+        }
 
         if ( isset( $sc_discount['currency'] ) && $sc_discount['currency'] !== $WOOCS->current_currency ) {
 
@@ -249,7 +268,7 @@ class Woocs implements Model_Interface {
         }
 
         add_action( 'acfw_rest_api_context', array( $this, 'remove_currency_setting_filters' ) );
-        add_filter( 'acfw_filter_amount', array( $this, 'convert_amount_to_user_selected_currency' ), 10, 2 );
+        add_filter( 'acfw_filter_amount', array( $this, 'convert_amount_to_user_selected_currency' ), 10, 3 );
         add_filter( 'acfw_store_credits_discount_session', array( $this, 'save_user_currency_to_store_credits_discount_session' ) );
         add_filter( 'acfw_before_apply_store_credit_discount', array( $this, 'validate_user_currency_on_apply_store_credits_discount' ), 10, 2 );
     }

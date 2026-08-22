@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_EH_PAYPAL_Express' ) ) {
 	/**
 	 * Compatibility  for 'PayPal Express Checkout Payment Gateway for WooCommerce ( Basic )' plugin

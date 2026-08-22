@@ -103,27 +103,6 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 			add_action( 'wfacp_mini_cart_woocommerce_review_order_after_order_total', array( $this, 'mini_cart_saving_price' ), 9999 );
 			add_action( 'wfacp_order_summary_field_woocommerce_review_order_after_order_total', array( $this, 'order_summary_field_saving_price' ), 9999 );
 			add_action( 'wfacp_collapsible_mini_cart_woocommerce_review_order_after_order_total', array( $this, 'collapsible_mini_cart_saving_price' ), 9999 );
-			$this->delete_elementor_cache();
-		}
-
-		private function delete_elementor_cache() {
-			try {
-				$checkout_id = WFACP_Common::get_id();
-				$checkout_id = absint( $checkout_id );
-
-				if ( $checkout_id > 0 && class_exists( '\Elementor\Core\Base\Document' ) ) {
-					$cache_meta_key = \Elementor\Core\Base\Document::CACHE_META_KEY;
-					if ( ! empty( $cache_meta_key ) ) {
-						delete_post_meta( $checkout_id, $cache_meta_key );
-					}
-				}
-			} catch ( \Throwable $e ) {
-				// Log error silently to avoid breaking the checkout process.
-				// Using \Throwable catches both Exception and Error (PHP 7.0+).
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					error_log( 'WFACP Elementor cache deletion error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				}
-			}
 		}
 
 		public function display_button_icon_step_1( $current ) {
@@ -529,11 +508,9 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 
 			ob_start();
 			include $path . '/views/template-parts/order-total.php';
-			$fragments['.wfacp_mb_mini_cart_sec_accordion_content .wfacp_template_9_cart_total_details'] = ob_get_clean();
-
-			ob_start();
-			include $path . '/views/template-parts/order-total.php';
-			$fragments['.wfacp_mb_mini_cart_sec_accordion_content .wfacp_mini_cart_reviews'] = ob_get_clean();
+			$order_total_html = ob_get_clean();
+			$fragments['.wfacp_mb_mini_cart_sec_accordion_content .wfacp_template_9_cart_total_details'] = $order_total_html;
+			$fragments['.wfacp_mb_mini_cart_sec_accordion_content .wfacp_mini_cart_reviews']             = $order_total_html;
 
 			ob_start();
 			wc_cart_totals_order_total_html();

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Aweber_Compatibilities' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Aweber_Compatibilities {

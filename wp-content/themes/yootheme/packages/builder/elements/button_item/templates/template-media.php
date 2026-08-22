@@ -26,15 +26,7 @@ if ($this->isImage($src)) {
 // Media
 $media->attr([
 
-    'class' => [
-        'el-dialog',
-
-        'uk-object-{image_focal_point} {@link_target: offcanvas}' => $this->isImage($src),
-    ],
-
-    'style' => [
-        'width: 100%; height: 100%; {@link_target: offcanvas}',
-    ],
+    'class' => ['el-dialog'],
 
 ]);
 

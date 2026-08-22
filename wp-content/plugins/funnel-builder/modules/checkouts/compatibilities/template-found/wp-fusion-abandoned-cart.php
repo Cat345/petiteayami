@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_WP_Fusion_abandoned_cart' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_WP_Fusion_abandoned_cart {

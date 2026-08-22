@@ -2,6 +2,11 @@
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
+/** Lite's optin frontend JS speaks the intl-tel-input v29 API (Pro gates its library enqueue on this) */
+if ( ! defined( 'WFFN_INTL_V29' ) ) {
+	define( 'WFFN_INTL_V29', true );
+}
+
 /**
  * Funnel optin page module
  * Class WFFN_Optin_Pages
@@ -172,6 +177,42 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 					)
 				)
 			);
+		}
+
+		/**
+		 * Enqueues Pro's intl-tel-input bundle for page-builder editors, matched to
+		 * the build the installed Pro actually ships. The form renders through the
+		 * builder's own pipeline there, so the phone field's load_scripts() never
+		 * runs and the library must be enqueued directly.
+		 *
+		 * Pro keeps the v17 build at the legacy filenames (intltelinput.min.js /
+		 * phone-flag.css) because released Lite builds hard-code them; the v29
+		 * bundle ships alongside under -v29 names. An older Pro has only the
+		 * legacy names, which then hold its v17 build — either way the legacy
+		 * fallback below serves v17, which this Lite's consumers also accept.
+		 *
+		 * @param bool $in_footer Whether to print the script in the footer.
+		 *
+		 * @return void
+		 */
+		public static function enqueue_phone_flag_editor_assets( $in_footer = false ) {
+			if ( ! defined( 'WFOPP_PRO_PLUGIN_FILE' ) ) {
+				return;
+			}
+
+			$base_url = plugin_dir_url( WFOPP_PRO_PLUGIN_FILE );
+
+			if ( file_exists( plugin_dir_path( WFOPP_PRO_PLUGIN_FILE ) . 'assets/phone/js/intltelinput-v29.min.js' ) ) {
+				wp_enqueue_script( 'phone_flag_intl', $base_url . 'assets/phone/js/intltelinput-v29.min.js', array(), WFFN_VERSION_DEV, $in_footer );
+				// same snapshot Pro's field class adds: guards against another plugin overwriting window.intlTelInput
+				wp_add_inline_script( 'phone_flag_intl', 'window.wfopIntlTelInput = window.intlTelInput;', 'after' );
+				wp_enqueue_style( 'flag_style', $base_url . 'assets/phone/css/phone-flag-v29.css', array(), WFFN_VERSION_DEV );
+
+				return;
+			}
+
+			wp_enqueue_script( 'phone_flag_intl', $base_url . 'assets/phone/js/intltelinput.min.js', array(), WFFN_VERSION_DEV, $in_footer );
+			wp_enqueue_style( 'flag_style', $base_url . 'assets/phone/css/phone-flag.css', array(), WFFN_VERSION_DEV );
 		}
 
 		public function optin_page_frontend_scripts() {
@@ -353,6 +394,9 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 				'op_valid_text'        => __( 'This is a required field.', 'funnel-builder' ),
 				'op_valid_email'       => __( 'Enter a valid email address.', 'funnel-builder' ),
 				'op_valid_phone'       => __( 'Enter a valid phone number.', 'funnel-builder' ),
+				'op_intl_i18n'         => array(
+					'searchEmptyState' => __( 'No results found', 'funnel-builder' ),
+				),
 				'op_valid_short_phone' => __( 'Phone number is too short.', 'funnel-builder' ),
 				'op_valid_long_phone'  => __( 'Phone number is too long.', 'funnel-builder' ),
 				'op_valid_code_phone'  => __( 'Invalid country code.', 'funnel-builder' ),
@@ -912,6 +956,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			include_once $this->get_module_path() . 'compatibilities/page-builders/elementor/class-wffn-optin-pages-elementor.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 			include_once $this->get_module_path() . 'compatibilities/page-builders/divi/class-wffn-optin-pages-divi.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 			include_once $this->get_module_path() . 'compatibilities/page-builders/oxygen/class-wffn-optin-pages-oxygen.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+
 		}
 
 		public function get_edit_id() {
@@ -1123,7 +1168,15 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 					$localized['op_valid_text']  = '';
 					$localized['op_valid_email'] = '';
 				}
-				$localized['op_flag_country'] = 'auto';
+				/**
+				 * A concrete country, not 'auto'. 'auto' makes intl-tel-input wait on
+				 * a geo lookup callback, which the free plugin does not provide -- the
+				 * flag would never resolve. The store's own base country needs no
+				 * external service; the premium plugin switches this to 'auto' when it
+				 * supplies the lookup.
+				 */
+				$base_country                 = ( function_exists( 'WC' ) && ! empty( WC()->countries ) ) ? WC()->countries->get_base_country() : '';
+				$localized['op_flag_country'] = ! empty( $base_country ) ? $base_country : 'US';
 				$localized['onlyCountries']   = apply_filters( 'wffn_optin_phone_param_only_countries', array(), $post->ID );
 
 			}

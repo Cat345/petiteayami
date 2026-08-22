@@ -1,0 +1,180 @@
+@font-face {
+  font-family: 'Xoo-Admin';
+  src:  url('fonts/Xoo-Admin.eot?b4ddl');
+  src:  url('fonts/Xoo-Admin.eot?b4ddl#iefix') format('embedded-opentype'),
+    url('fonts/Xoo-Admin.ttf?b4ddl') format('truetype'),
+    url('fonts/Xoo-Admin.woff?b4ddl') format('woff'),
+    url('fonts/Xoo-Admin.svg?b4ddl#Xoo-Admin') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="xoo-icon-"], [class*=" xoo-icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'Xoo-Admin' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.xoo-icon-sendmail:before {
+  content: "\e92d";
+}
+.xoo-icon-send:before {
+  content: "\e92e";
+}
+.xoo-icon-check:before {
+  content: "\e92f";
+}
+.xoo-icon-lock:before {
+  content: "\e92b";
+}
+.xoo-icon-shield:before {
+  content: "\e92c";
+}
+.xoo-icon-mail:before {
+  content: "\e92a";
+}
+.xoo-icon-sms:before {
+  content: "\e926";
+}
+.xoo-icon-signup:before {
+  content: "\e927";
+}
+.xoo-icon-login2:before {
+  content: "\e928";
+}
+.xoo-icon-auto:before {
+  content: "\e922";
+}
+.xoo-icon-popup:before {
+  content: "\e923";
+}
+.xoo-icon-popup2:before {
+  content: "\e924";
+}
+.xoo-icon-redirect:before {
+  content: "\e925";
+}
+.xoo-icon-woo:before {
+  content: "\e921";
+}
+.xoo-icon-paint:before {
+  content: "\e905";
+}
+.xoo-icon-border:before {
+  content: "\e906";
+}
+.xoo-icon-cursor:before {
+  content: "\e901";
+}
+.xoo-icon-ruler:before {
+  content: "\e902";
+}
+.xoo-icon-light:before {
+  content: "\e904";
+}
+.xoo-icon-enter:before {
+  content: "\e929";
+}
+.xoo-icon-signin:before {
+  content: "\e929";
+}
+.xoo-icon-login:before {
+  content: "\e929";
+}
+.xoo-icon-help:before {
+  content: "\e91f";
+}
+.xoo-icon-window:before {
+  content: "\e920";
+}
+.xoo-icon-close:before {
+  content: "\e91e";
+}
+.xoo-icon-store:before {
+  content: "\e91b";
+}
+.xoo-icon-heartplus:before {
+  content: "\e91c";
+}
+.xoo-icon-globe:before {
+  content: "\e91d";
+}
+.xoo-icon-plus:before {
+  content: "\e916";
+}
+.xoo-icon-copy:before {
+  content: "\e917";
+}
+.xoo-icon-minus:before {
+  content: "\e918";
+}
+.xoo-icon-delete:before {
+  content: "\e919";
+}
+.xoo-icon-edit:before {
+  content: "\e91a";
+}
+.xoo-icon-save:before {
+  content: "\e90d";
+}
+.xoo-icon-refresh:before {
+  content: "\e914";
+}
+.xoo-icon-export:before {
+  content: "\e915";
+}
+.xoo-icon-footer:before {
+  content: "\e90c";
+}
+.xoo-icon-header:before {
+  content: "\e911";
+}
+.xoo-icon-page:before {
+  content: "\e90e";
+}
+.xoo-icon-code:before {
+  content: "\e90f";
+}
+.xoo-icon-link:before {
+  content: "\e910";
+}
+.xoo-icon-cart:before {
+  content: "\e912";
+}
+.xoo-icon-home:before {
+  content: "\e913";
+}
+.xoo-icon-info:before {
+  content: "\e903";
+}
+.xoo-icon-gift:before {
+  content: "\e907";
+}
+.xoo-icon-crown:before {
+  content: "\e908";
+}
+.xoo-icon-tune:before {
+  content: "\e909";
+}
+.xoo-icon-brush:before {
+  content: "\e90a";
+}
+.xoo-icon-setting:before {
+  content: "\e90b";
+}
+.xoo-icon-tools:before {
+  content: "\e900";
+}
+.xoo-icon-color:before {
+  content: "\ea0e";
+}

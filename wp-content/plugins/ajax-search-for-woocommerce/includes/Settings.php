@@ -630,11 +630,12 @@ class Settings {
                     'class' => 'dgwt-wcas-sgs-header js-dgwt-wcas-adv-settings',
                 ],
                 520 => [
-                    'name'  => 'search_synonyms',
-                    'label' => __( 'Synonyms', 'ajax-search-for-woocommerce' ) . ' ' . Helpers::createQuestionMark( 'synonyms', sprintf( __( 'The synonyms feature allows your users to find more relevant results. If your products have alternative names and users often misspell them, consider adding synonyms. <a target="_blank" href="%s">Read more</a> about this feature.', 'ajax-search-for-woocommerce' ), $synonymsLink ) ),
-                    'type'  => 'textarea',
-                    'desc'  => __( 'Synonyms should be separated by a comma. Each new synonyms group is entered in a new line. You can use a phrase instead of a single word. <br /> <br />Sample list:<br /> <br /><span class="dgwt-wcas-synonyms-sample">sofa, couch, davenport, divan, settee<br />big, grand, great, large, outsize</span>', 'ajax-search-for-woocommerce' ),
-                    'class' => 'dgwt-wcas-settings-synonyms js-dgwt-wcas-adv-settings dgwt-wcas-premium-only',
+                    'name'              => 'search_synonyms',
+                    'label'             => __( 'Synonyms', 'ajax-search-for-woocommerce' ) . ' ' . Helpers::createQuestionMark( 'synonyms', sprintf( __( 'The synonyms feature allows your users to find more relevant results. If your products have alternative names and users often misspell them, consider adding synonyms. <a target="_blank" href="%s">Read more</a> about this feature.', 'ajax-search-for-woocommerce' ), $synonymsLink ) ),
+                    'type'              => 'textarea',
+                    'desc'              => __( 'Synonyms should be separated by a comma. Each new synonyms group is entered in a new line. You can use a phrase instead of a single word. <br /> <br />Sample list:<br /> <br /><span class="dgwt-wcas-synonyms-sample">sofa, couch, davenport, divan, settee<br />big, grand, great, large, outsize</span>', 'ajax-search-for-woocommerce' ),
+                    'class'             => 'dgwt-wcas-settings-synonyms js-dgwt-wcas-adv-settings dgwt-wcas-premium-only',
+                    'sanitize_callback' => 'sanitize_textarea_field',
                 ],
                 600 => [
                     'name'  => 'filter_products_head',

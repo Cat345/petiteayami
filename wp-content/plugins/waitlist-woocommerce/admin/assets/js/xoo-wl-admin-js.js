@@ -14,4 +14,26 @@ jQuery(document).ready(function($){
 		}
 	}).trigger('change');
 
+	$( document ).on( 'click', '.xoo-placeholder', function() {
+
+		const $item = $( this );
+		const value = $item.data( 'placeholder' );
+		const $icon = $item.find( '.xoo-placeholder__copy i' );
+
+		navigator.clipboard.writeText( value ).then( function() {
+
+			$icon
+				.removeClass( 'xoo-icon-copy' )
+				.addClass( 'xoo-icon-check' );
+
+			setTimeout( function() {
+				$icon
+					.removeClass( 'xoo-icon-check' )
+					.addClass( 'xoo-icon-copy' );
+			}, 1500 );
+
+		} );
+
+	} );
+
 });

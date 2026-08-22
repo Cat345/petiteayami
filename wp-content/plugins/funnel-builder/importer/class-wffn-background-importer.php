@@ -7,11 +7,11 @@
 
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'WP_Async_Request', false ) ) {
-	include_once dirname( __DIR__ ) . '/woofunnels/libraries/wp-async-request.php';
+	include_once dirname( __DIR__ ) . '/woofunnels/includes/wp-async-request.php';
 }
 
 if ( ! class_exists( 'WP_Background_Process', false ) ) {
-	include_once dirname( __DIR__ ) . '/woofunnels/libraries/wp-background-process.php';
+	include_once dirname( __DIR__ ) . '/woofunnels/includes/wp-background-process.php';
 }
 
 if ( ! class_exists( 'WFFN_Background_Process', false ) ) {

@@ -28,7 +28,7 @@ if (!\class_exists('FSVendor\WPDesk_Tracker_Data_Provider_Gateways')) {
         public function get_data()
         {
             $active_gateways = [];
-            $gateways = \WC()->payment_gateways->payment_gateways();
+            $gateways = \WC()->payment_gateways()->payment_gateways();
             foreach ($gateways as $id => $gateway) {
                 if (isset($gateway->enabled) && 'yes' === $gateway->enabled) {
                     $active_gateways[$id] = ['title' => $gateway->title, 'supports' => $gateway->supports];

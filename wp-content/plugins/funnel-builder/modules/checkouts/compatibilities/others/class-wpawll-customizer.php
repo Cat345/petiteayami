@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Wpawll' ) ) {
 	/**
 	 * this plugin create a js error when we open customizer page

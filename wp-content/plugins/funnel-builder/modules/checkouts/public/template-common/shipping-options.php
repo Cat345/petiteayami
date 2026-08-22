@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -57,7 +58,7 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 			unset( $data );
 			$item_names_containing_subscriptions = array();
 			$item_names                          = array();
-			$label                               = isset( $field['label'] ) ? $field['label'] : __( 'Shipping', 'funnel-builder' );
+			$label                               = isset( $field['label'] ) ? WFACP_Common::translation_string_to_check( $field['label'] ) : __( 'Shipping', 'woocommerce' );
 			$cart_contents                       = WC()->cart->get_cart_contents();
 			$cart_content_count                  = count( $cart_contents );
 			/**
@@ -107,7 +108,7 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 				if ( $_wfacp_version == WFACP_VERSION ) {
 					$shippingTitle = WFACP_Common::translation_string_to_check( __( 'Select Shipping Method', 'funnel-builder' ) );
 				}
-				$shippingTitle = isset( $field['label'] ) ? $field['label'] : $shippingTitle;
+				$shippingTitle = isset( $field['label'] ) ? WFACP_Common::translation_string_to_check( $field['label'] ) : $shippingTitle;
 				?>
 				<div class="wfacp_border">
 					<label class="wfacp_main_form label label_shiping"><?php echo esc_html( $shippingTitle ); ?></label>

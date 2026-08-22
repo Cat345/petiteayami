@@ -36,6 +36,7 @@ if ( ! class_exists( 'WFOCU_Plugin_Compatibilities' ) ) {
 				'class-wfocu-compatibility-with-wp-grid-builder-multilingual.php' => defined( 'ICL_SITEPRESS_VERSION' ) && class_exists( 'WP_Grid_Builder_Multilingual\Includes\Translate' ),
 				'class-wfocu-compatibility-with-pys.php'   => class_exists( 'PixelYourSite\EventsManager' ),
 				'class-wfocu-cloudflare-turnstile-compatibility.php' => function_exists( 'cfturnstile_settings_redirect' ),
+				'class-wfocu-compatibility-with-cookieyes.php' => defined( 'CLI_VERSION' ),
 
 			);
 			self::add_files( $paths );
@@ -130,7 +131,11 @@ if ( ! class_exists( 'WFOCU_Plugin_Compatibilities' ) ) {
 
 				}
 			} catch ( Exception | Error $e ) {
-				WFOCU_Core()->log->log( $e->getMessage() );
+				/*
+				 * Fail silently. add_files() runs during load_commons(), before WFOCU_Core()->log
+				 * is registered, so logging here would itself fatal. A compatibility file that
+				 * cannot load must never take the site down.
+				 */
 			}
 		}
 	}

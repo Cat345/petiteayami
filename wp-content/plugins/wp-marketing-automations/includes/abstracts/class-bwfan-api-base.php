@@ -29,9 +29,13 @@ abstract class BWFAN_API_Base {
 	public $public_api = false;
 
 	public function __construct() {
-		$this->pagination         = new stdClass();
-		$this->pagination->limit  = 0;
-		$this->pagination->offset = 0;
+		// Only initialise when a subclass has not already set its own pagination
+		// defaults (some controllers set limit/offset BEFORE calling parent::__construct()).
+		if ( null === $this->pagination ) {
+			$this->pagination         = new stdClass();
+			$this->pagination->limit  = 0;
+			$this->pagination->offset = 0;
+		}
 	}
 
 	public function api_call( WP_REST_Request $request ) {

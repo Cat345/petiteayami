@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Przelewy24_Payment_Gateway' ) ) {
 	/**
 	 * Plugin Name: WooCommerce Przelewy24 Payment Gateway by Przelewy24 Sp. z o.o.(v1.0.6)

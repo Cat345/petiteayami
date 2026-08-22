@@ -24,16 +24,16 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 		}
 
 		public function get_categories() {
-			return [ 'woofunnels-aero-checkout' ];
+			return array( 'woofunnels-aero-checkout' );
 		}
 
 		/**
 		 * _register_controls function DEPRECATED in 3.1.0 version of elementor 24-01-2021
+		 *
 		 * @return void
 		 */
 		protected function register_controls() {
 			$this->mini_cart();
-
 		}
 
 		protected function mini_cart() {
@@ -43,9 +43,9 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 
 			$this->add_tab( __( 'Products', 'woofunnels-aero-checkout' ) );
 
-			$this->add_switcher( 'enable_product_image', __( 'Image', 'woofunnels-aero-checkout' ), '', '', 'yes', 'yes', [], 'yes', 'yes', 'wfacp_elementor_device_hide' );
-			$this->add_switcher( 'enable_quantity_box', __( 'Quantity Switcher', 'woofunnels-aero-checkout' ), '', '', 'no', 'yes', [], 'no', 'no', 'wfacp_elementor_device_hide' );
-			$this->add_switcher( 'enable_delete_item', __( 'Allow Deletion', 'woofunnels-aero-checkout' ), '', '', 'no', 'yes', [], 'no', 'no', 'wfacp_elementor_device_hide' );
+			$this->add_switcher( 'enable_product_image', __( 'Image', 'woofunnels-aero-checkout' ), '', '', 'yes', 'yes', array(), 'yes', 'yes', 'wfacp_elementor_device_hide' );
+			$this->add_switcher( 'enable_quantity_box', __( 'Quantity Switcher', 'woofunnels-aero-checkout' ), '', '', 'no', 'yes', array(), 'no', 'no', 'wfacp_elementor_device_hide' );
+			$this->add_switcher( 'enable_delete_item', __( 'Allow Deletion', 'woofunnels-aero-checkout' ), '', '', 'no', 'yes', array(), 'no', 'no', 'wfacp_elementor_device_hide' );
 
 			/**
 			 * -----------------------------Strike Through Price Setting on the mini cart-------------------------------------
@@ -54,15 +54,13 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 
 			/*-------------------------------------------------------- End -----------------------------------------------------*/
 
-
 			$this->end_tab();
 
-
 			$this->add_tab( __( 'Coupon', 'woofunnels-aero-checkout' ) );
-			$this->add_switcher_without_responsive( 'enable_coupon', __( 'Enable', 'woofunnels-aero-checkout' ), '', '', 'no', 'yes', [] );
-			$this->add_switcher_without_responsive( 'enable_coupon_collapsible', __( 'Collapsible', 'woofunnels-aero-checkout' ), '', '', 'false', 'true', [ 'enable_coupon' => 'yes' ] );
+			$this->add_switcher_without_responsive( 'enable_coupon', __( 'Enable', 'woofunnels-aero-checkout' ), '', '', 'no', 'yes', array() );
+			$this->add_switcher_without_responsive( 'enable_coupon_collapsible', __( 'Collapsible', 'woofunnels-aero-checkout' ), '', '', 'false', 'true', array( 'enable_coupon' => 'yes' ) );
 
-			$this->add_text( 'mini_cart_coupon_button_text', __( 'Coupon Button Text', 'woofunnels-aero-checkout' ), __( 'Apply', 'woocommerce' ), [ 'enable_coupon' => 'yes' ] );
+			$this->add_text( 'mini_cart_coupon_button_text', __( 'Coupon Button Text', 'woofunnels-aero-checkout' ), __( 'Apply', 'woocommerce' ), array( 'enable_coupon' => 'yes' ) );
 			$this->end_tab();
 
 			/**
@@ -71,14 +69,14 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 			/* Section */
 			$this->add_tab( __( 'Heading', 'woofunnels-aero-checkout' ), 2 );
 			$this->add_typography( 'mini_cart_section_typo', '{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-order-summary-label' );
-			$this->add_color( 'mini_cart_section_text_color', [ '{{WRAPPER}} .wfacp-order-summary-label' ], '#000000' );
-			$this->add_text_alignments( 'mini_cart_section_typo_alignment', [ '{{WRAPPER}} .wfacp-order-summary-label' ] );
+			$this->add_color( 'mini_cart_section_text_color', array( '{{WRAPPER}} .wfacp-order-summary-label' ), '#000000' );
+			$this->add_text_alignments( 'mini_cart_section_typo_alignment', array( '{{WRAPPER}} .wfacp-order-summary-label' ) );
 			$this->end_tab();
 
 			$this->add_tab( __( 'Products', 'woocommerce' ), 2 );
 			/* ------------------------------------ Products Start------------------------------------ */
 
-			$mini_cart_product_typo = [
+			$mini_cart_product_typo = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_items',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container tr.cart_item td:not(.product-total)',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_items .product-total > span bdi',
@@ -98,96 +96,100 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container tr.cart_item td .product-name span:not(.subscription-details)',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container tr.cart_item td .product-name',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container tr.cart_item td .product-name bdi',
-			];
-
+			);
 
 			$this->add_typography( 'mini_cart_product_typo', implode( ',', $mini_cart_product_typo ) );
 			$this->add_color( 'mini_cart_product_color', $mini_cart_product_typo );
-			$this->add_border_color( 'mini_cart_product_image_border_color', [ '{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_sum .product-image .wfacp-pro-thumb img' ], '', __( 'Image Border Color', 'woofunnel-aero-checkout' ), false );
+			$this->add_border_color( 'mini_cart_product_image_border_color', array( '{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_sum .product-image .wfacp-pro-thumb img' ), '', __( 'Image Border Color', 'woofunnel-aero-checkout' ), false );
 
 			$label = __( 'Border Radius', 'elementor' );
-			$this->add_border_radius( 'mini_cart_product_image_border_radius', '{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_sum .product-image .wfacp-pro-thumb img', [], '', '', $label );
-
+			$this->add_border_radius( 'mini_cart_product_image_border_radius', '{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_sum .product-image .wfacp-pro-thumb img', array(), '', '', $label );
 
 			/* Strike Through Style Setting Order Summary Field */
 			$this->price_strike_through_style_settings( 'mini_cart', '{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container.wfacp_min_cart_widget' );
 
 			/* ------------------------------------ End ------------------------------------ */
 
-
 			$this->end_tab();
-
 
 			/* ------------------------------------ Coupon Fields Start ------------------------------------ */
 
-			$this->add_tab( __( 'Coupon', 'woocommerce' ), 2, [ 'enable_coupon' => 'yes' ] );
+			$this->add_tab( __( 'Coupon', 'woocommerce' ), 2, array( 'enable_coupon' => 'yes' ) );
 
-			$this->add_heading( __( 'Link', 'woofunnel-aero-checkout' ), '', [ 'enable_coupon_collapsible' => 'true' ] );
+			$this->add_heading( __( 'Link', 'woofunnel-aero-checkout' ), '', array( 'enable_coupon_collapsible' => 'true' ) );
 
-			$this->add_typography( 'mini_cart_coupon_heading_typo', '{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-coupon-section .wfacp-coupon-page .wfacp_main_showcoupon', [], [ 'enable_coupon_collapsible' => 'true' ] );
-			$this->add_color( 'mini_cart_coupon_label_text_color', [
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .woocommerce-info',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-coupon-page .woocommerce-info a'
-			], '', '', [ 'enable_coupon_collapsible' => 'true' ] );
-
+			$this->add_typography( 'mini_cart_coupon_heading_typo', '{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-coupon-section .wfacp-coupon-page .wfacp_main_showcoupon', array(), array( 'enable_coupon_collapsible' => 'true' ) );
+			$this->add_color(
+				'mini_cart_coupon_label_text_color',
+				array(
+					'{{WRAPPER}} .wfacp_mini_cart_start_h .woocommerce-info',
+					'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-coupon-page .woocommerce-info a',
+				),
+				'',
+				'',
+				array( 'enable_coupon_collapsible' => 'true' )
+			);
 
 			$this->add_heading( __( 'Field', 'woofunnel-aero-checkout' ), 'none' );
-			$form_fields_label_typo = [
+			$form_fields_label_typo = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control-label',
-			];
-			$fields_options         = [
-				'font_weight' => [
+			);
+			$fields_options         = array(
+				'font_weight' => array(
 					'default' => '400',
-				],
-			];
+				),
+			);
 
-			$this->add_typography( 'wfacp_form_mini_cart_coupon_label_typo', implode( ',', $form_fields_label_typo ), $fields_options, [], __( 'Label Typography', 'woofunnels-aero-checkout' ) );
+			$this->add_typography( 'wfacp_form_mini_cart_coupon_label_typo', implode( ',', $form_fields_label_typo ), $fields_options, array(), __( 'Label Typography', 'woofunnels-aero-checkout' ) );
 
-			$form_fields_label_color_opt = [
+			$form_fields_label_color_opt = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control-label',
-			];
+			);
 			$this->add_color( 'wfacp_form_fields_label_color', $form_fields_label_color_opt, '', __( 'Label Color', 'woofunnels-aero-checkout' ) );
 
-
-			$fields_options = [
+			$fields_options = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control::placeholder',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control::-webkit-input-placeholder',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control::-moz-placeholder',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control:-ms-input-placeholder',
-			];
+			);
 
 			$optionString = implode( ',', $fields_options );
-			$this->add_typography( 'wfacp_form_mini_cart_coupon_input_typo', $optionString, [], [], __( 'Coupon Typography' ) );
+			$this->add_typography( 'wfacp_form_mini_cart_coupon_input_typo', $optionString, array(), array(), __( 'Coupon Typography' ) );
 
-
-			$inputColorOption = [
+			$inputColorOption = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control',
-			];
+			);
 			$this->add_color( 'wfacp_form_mini_cart_coupon_input_color', $inputColorOption, '', __( 'Coupon Color', 'woofunnels-aero-checkout' ) );
-			$this->add_border_color( 'wfacp_form_mini_cart_coupon_focus_color', [ '{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control:focus' ], '#61bdf7', __( 'Focus Color', 'woofunnel-aero-checkout' ), true );
-			$fields_options = [
+			$this->add_border_color( 'wfacp_form_mini_cart_coupon_focus_color', array( '{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control:focus' ), '#61bdf7', __( 'Focus Color', 'woofunnel-aero-checkout' ), true );
+			$fields_options = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control',
-			];
-			$default        = [ 'top' => 4, 'right' => 4, 'bottom' => 4, 'left' => 4, 'unit' => 'px' ];
-			$this->add_border( 'wfacp_form_mini_cart_coupon_border', implode( ',', $fields_options ), [], $default );
-
+			);
+			$default        = array(
+				'top'    => 4,
+				'right'  => 4,
+				'bottom' => 4,
+				'left'   => 4,
+				'unit'   => 'px',
+			);
+			$this->add_border( 'wfacp_form_mini_cart_coupon_border', implode( ',', $fields_options ), array(), $default );
 
 			$this->add_heading( __( 'Button', 'woofunnel-aero-checkout' ) );
 			/* Button color setting */
-			$this->add_controls_tabs( "wfacp_mini_cart_button_style" );
-			$this->add_controls_tab( "wfacp_mini_cart_button_normal_tab", 'Normal' );
-			$this->add_background_color( 'mini_cart_coupon_btn_color', [ '{{WRAPPER}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn' ], '', __( 'Background', 'woofunnels-aero-checkout' ) );
-			$this->add_color( 'mini_cart_coupon_btn_lable_color', [ '{{WRAPPER}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn' ], '', __( 'Label', 'woofunnels-aero-checkout' ) );
+			$this->add_controls_tabs( 'wfacp_mini_cart_button_style' );
+			$this->add_controls_tab( 'wfacp_mini_cart_button_normal_tab', 'Normal' );
+			$this->add_background_color( 'mini_cart_coupon_btn_color', array( '{{WRAPPER}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn' ), '', __( 'Background', 'woofunnels-aero-checkout' ) );
+			$this->add_color( 'mini_cart_coupon_btn_lable_color', array( '{{WRAPPER}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn' ), '', __( 'Label', 'woofunnels-aero-checkout' ) );
 			$this->close_controls_tab();
 
-			$this->add_controls_tab( "wfacp_mini_cart_hover_button_normal_tab", 'Hover' );
-			$this->add_background_color( 'mini_cart_coupon_btn_lable_hover_color', [ '{{WRAPPER}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn:hover' ], '', __( 'Background', 'woofunnels-aero-checkout' ) );
-			$this->add_color( 'mini_cart_coupon_btn_hover_label_color', [ '{{WRAPPER}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn:hover' ], '', __( 'Label', 'woofunnels-aero-checkout' ) );
+			$this->add_controls_tab( 'wfacp_mini_cart_hover_button_normal_tab', 'Hover' );
+			$this->add_background_color( 'mini_cart_coupon_btn_lable_hover_color', array( '{{WRAPPER}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn:hover' ), '', __( 'Background', 'woofunnels-aero-checkout' ) );
+			$this->add_color( 'mini_cart_coupon_btn_hover_label_color', array( '{{WRAPPER}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn:hover' ), '', __( 'Label', 'woofunnels-aero-checkout' ) );
 			$this->close_controls_tab();
 			$this->close_controls_tabs();
 
-			$this->add_typography( 'wfacp_form_mini_cart_coupon_button_typo', '{{WRAPPER}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn', [], [], __( 'Button Typography' ) );
+			$this->add_typography( 'wfacp_form_mini_cart_coupon_button_typo', '{{WRAPPER}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn', array(), array(), __( 'Button Typography' ) );
 			/* Button color setting End*/
 			$this->end_tab();
 
@@ -195,11 +197,10 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 
 			$this->add_tab( __( 'Cart Total', 'woocommerce' ), 2 );
 
-
 			/* ------------------------------------ Subtotal Start------------------------------------ */
 			$this->add_heading( __( 'Subtotal', 'woocommerce' ) );
 
-			$mini_cart_product_meta_typo = [
+			$mini_cart_product_meta_typo = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount)',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) th',
@@ -208,7 +209,7 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td small',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td bdi',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td a',
-			];
+			);
 
 			$this->add_typography( 'mini_cart_product_meta_typo', implode( ',', $mini_cart_product_meta_typo ) );
 			$this->add_color( 'mini_cart_product_meta_color', $mini_cart_product_meta_typo );
@@ -217,43 +218,42 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 			/* ------------------------------------ Coupon Start------------------------------------ */
 
 			$this->add_heading( __( 'Coupon code', 'woocommerce' ) );
-			$coupon_selector = [
+			$coupon_selector = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount th',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount th span',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount td',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount td span',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount td a',
-			];
+			);
 
-			$default = [
+			$default = array(
 				'unit' => 'px',
 				'size' => 14,
-			];
+			);
 
-			$this->add_font_size( 'mini_cart_coupon_display_font_size', implode( ',', $coupon_selector ), 'Font Size (in px)', $default, [], [ 'px' ], $default, $default );
+			$this->add_font_size( 'mini_cart_coupon_display_font_size', implode( ',', $coupon_selector ), 'Font Size (in px)', $default, array(), array( 'px' ), $default, $default );
 
-			$coupon_selector_label_color = [
+			$coupon_selector_label_color = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount th',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount th span:not(.wfacp_coupon_code)',
-			];
+			);
 			$this->add_color( 'mini_cart_coupon_display_label_color', $coupon_selector_label_color, '', __( 'Text Color', 'woofunnel-aero-checkout' ) );
-			$coupon_selector_val_color = [
+			$coupon_selector_val_color = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount td',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount td span',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount td a',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table .cart-discount td span',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table .cart-discount td span bdi',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table .cart-discount th .wfacp_coupon_code',
-			];
+			);
 			$this->add_color( 'mini_cart_coupon_display_val_color', $coupon_selector_val_color, '#24ae4e', __( 'Code Color', 'woofunnel-aero-checkout' ) );
 
 			/* ------------------------------------ End ------------------------------------ */
 
-
 			/* ------------------------------------ Total Start------------------------------------ */
 
 			$this->add_heading( __( 'Total', 'woocommerce' ) );
-			$cart_total_color_option = [
+			$cart_total_color_option = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total td span.amount',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total td span.amount bdi',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total td',
@@ -261,16 +261,16 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total td small',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total th',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total th span',
-			];
+			);
 
-			$cart_total_label_typo_option = [
+			$cart_total_label_typo_option = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h  table.shop_table tbody tr.order-total th',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h  table.shop_table tbody tr.order-total th',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h  table.shop_table tbody tr.order-total th span',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h  table.shop_table tbody tr.order-total th small',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h  table.shop_table tbody tr.order-total th a',
-			];
-			$cart_total_value_typo_option = [
+			);
+			$cart_total_value_typo_option = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h  table.shop_table tbody tr.order-total td',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h  table.shop_table tbody tr.order-total td',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h  table.shop_table tbody tr.order-total td span.woocommerce-Price-amount.amount',
@@ -281,18 +281,15 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 				'{{WRAPPER}} .wfacp_mini_cart_start_h  table.shop_table tbody tr.order-total td small',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h  table.shop_table tbody tr.order-total td a',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h  table.shop_table tbody tr.order-total td p',
-			];
+			);
 
-
-			$this->add_typography( 'mini_cart_total_label_typo', implode( ', ', $cart_total_label_typo_option ), [], [], __( 'Label Typography', 'woofunnel-aero-checkout' ) );
-			$this->add_typography( 'mini_cart_total_typo', implode( ', ', $cart_total_value_typo_option ), [], [], __( 'Price Typography', 'woofunnel-aero-checkout' ) );
+			$this->add_typography( 'mini_cart_total_label_typo', implode( ', ', $cart_total_label_typo_option ), array(), array(), __( 'Label Typography', 'woofunnel-aero-checkout' ) );
+			$this->add_typography( 'mini_cart_total_typo', implode( ', ', $cart_total_value_typo_option ), array(), array(), __( 'Price Typography', 'woofunnel-aero-checkout' ) );
 			$this->add_color( 'mini_cart_total_color', $cart_total_color_option );
-
 
 			/* ------------------------------------ End ------------------------------------ */
 
 			$this->end_tab();
-
 
 			/* ------------------------------------ Mini Cart Global Settings  ------------------------------------ */
 			$this->add_tab( __( 'Settings', 'woofunnels-aero-checkout' ), 2 );
@@ -301,7 +298,7 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 
 			// Global selectors with lower specificity than local settings
 			// Removed one class from each local selector to ensure local settings override global
-			$wfacp_mini_cart_global_selectors = [
+			$wfacp_mini_cart_global_selectors = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h *',
 				// Heading selectors (removed .wfacp_mini_cart_start_h)
 				'{{WRAPPER}} .wfacp-order-summary-label',
@@ -385,25 +382,29 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total td p',
 				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total td a',
 
-			];
+			);
 
-
-			$this->add_font_family( 'wfacp_mini_cart_font_family', $wfacp_mini_cart_global_selectors, 'Font family', 'Open Sans' );
+			$this->add_font_family( 'wfacp_mini_cart_font_family', $wfacp_mini_cart_global_selectors, 'Font family', '' );
 			$this->add_heading( __( 'Divider', 'woocommerce' ) );
 
-			$this->add_border_color( 'mini_cart_divider_color', [
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_mini_cart_elementor .cart_item',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.cart-subtotal',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.wfacp_ps_error_state td',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-coupon-section .wfacp-coupon-page',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfob_bump_wrapper.wfacp_below_mini_cart_items:empty',
-			], '', __( 'Color', 'woofunnel-aero-checkout' ), false );
+			$this->add_border_color(
+				'mini_cart_divider_color',
+				array(
+					'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_mini_cart_elementor .cart_item',
+					'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.cart-subtotal',
+					'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total',
+					'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.wfacp_ps_error_state td',
+					'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-coupon-section .wfacp-coupon-page',
+					'{{WRAPPER}} .wfacp_mini_cart_start_h .wfob_bump_wrapper.wfacp_below_mini_cart_items:empty',
+				),
+				'',
+				__( 'Color', 'woofunnel-aero-checkout' ),
+				false
+			);
 
 			$this->end_tab();
 
 			/* ------------------------------------ End ------------------------------------ */
-
 
 			$this->ajax_session_settings[] = 'mini_cart_heading';
 			$this->ajax_session_settings[] = 'enable_product_image';
@@ -419,21 +420,19 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 
 			$this->add_tab( __( 'Section', 'woofunnel-aero-checkout' ), 2 );
 
-
-			$form_section_bg_color = [
+			$form_section_bg_color = array(
 				'{{WRAPPER}} .wfacp_mini_cart_start_h',
-			];
+			);
 
 			$this->add_background_color( 'mini_form_section_bg_color', $form_section_bg_color, '', __( 'Background Color', 'woofunnels-aero-checkout' ) );
-			$this->add_divider( "none" );
+			$this->add_divider( 'none' );
 			$this->add_border( 'mini_form_section_border', implode( ',', $form_section_bg_color ) );
-			$this->add_divider( "none" );
+			$this->add_divider( 'none' );
 			$this->add_border_shadow( 'mini_form_section_box_shadow', implode( ', ', $form_section_bg_color ) );
-			$this->add_divider( "none" );
+			$this->add_divider( 'none' );
 			$this->add_padding( 'mini_form_section_padding', implode( ', ', $form_section_bg_color ) );
 			$this->add_margin( 'mini_form_section_margin', implode( ', ', $form_section_bg_color ) );
 			$this->end_tab();
-
 		}
 
 		protected function html() {

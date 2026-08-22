@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Maximum_Products_Per_User' ) ) {
 	/**
 	 * By Algoritmika

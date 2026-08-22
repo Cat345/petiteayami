@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $slug     = $VARS['slug'];
-$licenses = apply_filters( 'woofunnels_plugins_license_needed', array() );
+$licenses =  array();
 
 $confirmation_message      = '';
 $reasons                   = $VARS['reasons']['default'];
@@ -314,7 +314,7 @@ foreach ( $reasons as $reason ) {
                         'reason_info': (0 !== $input.length) ? $input.val().trim() : '',
                         'plugin_basename': currentPluginName,
                         'licenses': WooFunnelsallLicenses,
-                        '_nonce': bwf_secure.nonce
+                        '_nonce': '<?php echo wp_create_nonce( 'bwf_secure_key' ); ?>'
                     },
                     beforeSend: function () {
                         _parent.find('.button').addClass('disabled');

@@ -72,6 +72,13 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 				$requestBody['steps'] = $steps;
 			}
 
+			/** Same payload minus the license key, which must never reach a log file. */
+			$loggable_body = $requestBody;
+			if ( ! empty( $loggable_body['license'] ) ) {
+				$loggable_body['license'] = '***redacted***';
+			}
+			$loggable_body = wp_json_encode( $loggable_body );
+
 			$requestBody = wp_json_encode( $requestBody );
 
 			$endpoint_url = $this->get_template_api_url();
@@ -94,7 +101,7 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 			);
 			WFFN_Content_Validator::end_import();
 
-			BWF_Logger::get_instance()->log( 'Import $requestBody: ' . print_r( $requestBody, true ), 'wffn_template_import' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+			BWF_Logger::get_instance()->log( 'Import $requestBody: ' . $loggable_body, 'wffn_template_import' );
 			if ( $response instanceof WP_Error ) {
 				if ( is_object( $response ) && $response->errors ) {
 					if ( is_array( $response->errors ) && $response->errors['http_request_failed'] ) {

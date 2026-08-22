@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
@@ -47,7 +48,7 @@ $apply_coupon_button_text = apply_filters( 'wfacp_form_apply_coupon_button_text'
 			?>
 			<div class="wfacp-row wfacp_coupon_field_box" style="<?php echo ( wc_string_to_bool( $is_collapsible ) && count( WC()->cart->applied_coupons ) == 0 ) ? 'display:none' : ''; ?>">
 				<p class="form-row form-row-first wfacp-form-control-wrapper wfacp-col-left-half wfacp-input-form">
-					<label for="coupon_code" class="wfacp-form-control-label"><?php echo isset( $args['label'] ) ? $args['label'] : __( 'Enter the coupon code below', 'woofunnels-aero-checkout' ); ?></label>
+					<label for="coupon_code" class="wfacp-form-control-label"><?php echo isset( $args['label'] ) ? $args['label'] : __( 'Enter the coupon code below', 'funnel-builder' ); ?></label>
 					<input type="text" name="wfacp_coupon_field" id='wfacp_coupon_code_field' class="input-text wfacp-form-control wfacp_coupon_code" placeholder="<?php echo $args['label']; ?>" value=""/>
 				</p>
 				<p class="form-row form-row-last <?php echo $coupon_cls; ?> wfacp_coupon_btn_wrap">

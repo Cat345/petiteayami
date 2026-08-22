@@ -1,5 +1,7 @@
 <?php
 
+namespace XooWL\Aff;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
@@ -84,8 +86,8 @@ class Xoo_Aff_Options_Callbacks {
 		<?php foreach ($options as $option): ?>
 			<input type="checkbox" class="xoo-input-multiple-cb" id="<?php echo esc_attr( $id ); ?>" name="<?php echo esc_attr( $id ).'[]'; ?>" value="<?php echo esc_attr( $option['value'] ); ?>" <?php echo in_array( $option['value'], (array) $value ) ? 'checked' : null; ?>>
 			<span class="xoo-el-mcb-label"><?php echo esc_html( $option['title'] ); ?></span>
-		<?php endforeach; ?>
-		<?php
+		<?php endforeach; 
+
 	}
 
 
@@ -118,7 +120,7 @@ class Xoo_Aff_Options_Callbacks {
 	public function textarea( $args ){
 		extract( $this->simplify_args( $args ) );
 		?>
-		<textarea name="<?php echo esc_attr( $id ); ?>" class="xoo-input-textarea" rows="<?php echo $txtarea_rows ? $txtarea_rows : 2; ?>" cols="<?php echo $txtarea_cols ? $txtarea_cols : 8; ?>">
+		<textarea name="<?php echo esc_attr( $id ); ?>" class="xoo-input-textarea" rows="<?php echo $txtarea_rows ? (int) $txtarea_rows : 2; ?>" cols="<?php echo $txtarea_cols ? (int) $txtarea_cols : 8; ?>">
 			<?php echo esc_attr( $value ); ?>	
 		</textarea>
 		<?php
@@ -157,6 +159,4 @@ class Xoo_Aff_Options_Callbacks {
 	}
 }
 
-return new Xoo_Aff_Options_Callbacks(); 
-
-?>
+return new Xoo_Aff_Options_Callbacks();

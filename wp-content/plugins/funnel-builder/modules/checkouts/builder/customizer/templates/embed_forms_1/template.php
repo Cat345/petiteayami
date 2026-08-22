@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 	#[AllowDynamicProperties]
 	final class WFACP_Template_Custom_Page extends WFACP_Pre_Built {

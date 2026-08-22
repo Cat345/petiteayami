@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <bundle name="FunnelKit Funnel Builder Pro">
+  <exclude>
+    <directory>node_modules</directory>
+    <directory>modules/funnel-builder-powerpack/node_modules</directory>
+    <directory>modules/funnel-builder-powerpack/admin/app/src</directory>
+    <directory>modules/funnel-builder-powerpack/admin/app/lite-stubs</directory>
+    <directory>modules/funnel-builder-powerpack/admin/app/wasm-pkg</directory>
+    <directory>modules/checkout/node_modules</directory>
+    <directory>modules/order-bumps/node_modules</directory>
+    <directory>modules/one-click-upsells/node_modules</directory>
+    <directory>modules/one-click-upsells-powerpack/node_modules</directory>
+    <directory>modules/woofunnels-ab-tests/node_modules</directory>
+  </exclude>
   <domain name="funnel-builder-pro">
     <project name="FunnelKit Funnel Builder Pro" slug="funnel-builder-pro">
       <source>
         <directory>.</directory>
+        <exclude>
+          <directory>modules/funnel-builder-powerpack/admin/app</directory>
+          <directory>node_modules</directory>
+        </exclude>
       </source>
       <target>
         <directory>languages</directory>
@@ -13,13 +29,29 @@
       </template>
     </project>
   </domain>
+  <domain name="funnel-builder">
+    <project name="FunnelKit Admin App" slug="funnel-builder-app">
+      <source>
+        <directory>modules/funnel-builder-powerpack/admin/app/dist</directory>
+      </source>
+      <target>
+        <directory>modules/funnel-builder-powerpack/languages</directory>
+      </target>
+      <template locked="true">
+        <file>modules/funnel-builder-powerpack/languages/funnel-builder.pot</file>
+      </template>
+    </project>
+  </domain>
   <domain name="woofunnels-order-bump">
     <project name="FunnelKit Order Bumps" slug="woofunnels-order-bump">
       <source>
         <directory>modules/order-bumps</directory>
+        <exclude>
+          <directory>modules/order-bumps/node_modules</directory>
+        </exclude>
       </source>
       <target>
-        <directory>.</directory>
+        <directory>modules/order-bumps/languages</directory>
       </target>
       <template>
         <file>modules/order-bumps/languages/woofunnels-order-bump.pot</file>
@@ -30,9 +62,12 @@
     <project name="FunnelKit One Click Upsells" slug="woofunnels-upstroke-one-click-upsell">
       <source>
         <directory>modules/one-click-upsells</directory>
+        <exclude>
+          <directory>modules/one-click-upsells/node_modules</directory>
+        </exclude>
       </source>
       <target>
-        <directory>.</directory>
+        <directory>modules/one-click-upsells/languages</directory>
       </target>
       <template>
         <file>modules/one-click-upsells/languages/woofunnels-upstroke-one-click-upsell.pot</file>
@@ -43,9 +78,12 @@
     <project name="FunnelKit Checkout" slug="woofunnels-aero-checkout">
       <source>
         <directory>modules/checkout</directory>
+        <exclude>
+          <directory>modules/checkout/node_modules</directory>
+        </exclude>
       </source>
       <target>
-        <directory>.</directory>
+        <directory>modules/checkout/languages</directory>
       </target>
       <template>
         <file>modules/checkout/languages/woofunnels-aero-checkout.pot</file>
@@ -56,12 +94,31 @@
     <project name="FunnelKit AB Test" slug="woofunnels-ab-tests">
       <source>
         <directory>modules/woofunnels-ab-tests</directory>
+        <exclude>
+          <directory>modules/woofunnels-ab-tests/node_modules</directory>
+        </exclude>
       </source>
       <target>
-        <directory>.</directory>
+        <directory>modules/woofunnels-ab-tests/languages</directory>
       </target>
       <template>
         <file>modules/woofunnels-ab-tests/languages/woofunnels-ab-tests.pot</file>
+      </template>
+    </project>
+  </domain>
+  <domain name="funnel-builder-powerpack">
+    <project name="FunnelKit Powerpack" slug="funnel-builder-powerpack">
+      <source>
+        <directory>modules/funnel-builder-powerpack</directory>
+        <exclude>
+          <directory>modules/funnel-builder-powerpack/admin/app</directory>
+        </exclude>
+      </source>
+      <target>
+        <directory>modules/funnel-builder-powerpack/languages</directory>
+      </target>
+      <template>
+        <file>modules/funnel-builder-powerpack/languages/funnel-builder-powerpack.pot</file>
       </template>
     </project>
   </domain>

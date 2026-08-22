@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 
-$allowed_layouts = array( 'layout_1', 'layout_2', 'layout_3', 'layout_4', 'layout_5', 'layout_6', 'layout_7', 'layout_8', 'layout_9', 'layout_10', 'layout_11' );
+$allowed_layouts = array( 'layout_1', 'layout_2', 'layout_3', 'layout_4', 'layout_5', 'layout_6', 'layout_7', 'layout_8', 'layout_9', 'layout_10', 'layout_11', 'layout_12' );
 if ( ! in_array( $selected_layout, $allowed_layouts, true ) ) {
 	$selected_layout = 'layout_1';
 }
@@ -62,6 +62,12 @@ if ( $preview_bump == false ) {
 		$social_proof_content = isset( $design_data[ 'product_' . $product_key . '_social_proof_content' ] ) ? $design_data[ 'product_' . $product_key . '_social_proof_content' ] : $this->wfob_default_model['social_proof_content'];
 	}
 
+	// Strip merge tags before decoding — they are not supported in social proof tooltips
+	$stripped             = preg_replace( '/\{\{[^}]+\}\}/', '', $social_proof_content );
+	$social_proof_content = ( null !== $stripped ) ? $stripped : $social_proof_content;
+	$stripped             = preg_replace( '/\{\{[^}]+\}\}/', '', $social_proof_heading );
+	$social_proof_heading = ( null !== $stripped ) ? $stripped : $social_proof_heading;
+
 	$social_proof_content = WFOB_Common::decode_merge_tags( $social_proof_content, $price_data, $wc_product, $data, $cart_item, $cart_item_key, $product_key, $design_data );
 
 
@@ -78,7 +84,7 @@ if ( $preview_bump == false ) {
 	if ( isset( $data['variable'] ) && $cart_variation_id == 0 ) {
 		$variable_checkbox = 'wfob_choose_variation';
 	}
-	$price_data = apply_filters( 'wfob_product_switcher_price_data', array(), $wc_product, $qty );
+	$price_data = apply_filters( 'wfob_product_switcher_price_data', array(), $wc_product, $qty, $data ?? array() );
 
 	if ( empty( $price_data ) ) {
 		$price_data['regular_org'] = $wc_product->get_regular_price( 'edit' );
@@ -118,7 +124,7 @@ if ( $preview_bump == false ) {
 
 	$enable_pointer = '';
 	if ( '' !== $cart_item_key ) {
-		$price_data = WFOB_Common::get_cart_product_price_data( $wc_product, $cart_item, $cart_item['quantity'] );
+		$price_data = WFOB_Common::get_cart_product_price_data( $wc_product, $cart_item, $cart_item['quantity'], $price_data );
 	} else {
 		$price_data = WFOB_Common::get_product_price_data( $wc_product, $price_data );
 

@@ -933,7 +933,7 @@ if ( ! class_exists( 'WFOCU_OXY_Field' ) ) {
 				if ( ! empty( $products ) ) {
 					self::$product_options = array();
 					foreach ( $products as $key => $product ) {
-						self::$product_options[ $key ] = preg_replace( '/[\'"\\\\\/\n\r\t]/', '', $product->data->get_name() );
+						self::$product_options[ $key ] = preg_replace( '/[\'"\\\\\/\n\r\t]/', '', $product->name );
 					}
 				}
 			}

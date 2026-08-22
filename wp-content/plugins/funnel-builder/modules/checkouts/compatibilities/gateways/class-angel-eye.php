@@ -363,7 +363,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 		public function print_html() {
 			?>
 			<p>
-				<strong><?php _e( 'Full Name', 'woofunnels-aero-checkout' ); ?></strong> <?php echo esc_html( WFACP_Core()->public->billing_details['first_name'] . ' ' . WFACP_Core()->public->billing_details['last_name'] ); ?>
+				<strong><?php _e( 'Full Name', 'funnel-builder' ); ?></strong> <?php echo esc_html( WFACP_Core()->public->billing_details['first_name'] . ' ' . WFACP_Core()->public->billing_details['last_name'] ); ?>
 			</p>
 			<?php
 		}

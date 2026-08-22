@@ -11,12 +11,16 @@ class SimpleFactory implements InitializationFactory
 {
     /** @var bool */
     private $free;
+    /** @var bool */
+    private $tracker_enabled;
     /**
      * @param bool $free True for free/repository plugin
+     * @param bool $tracker_enabled True when tracker should be initialized
      */
-    public function __construct($free = \false)
+    public function __construct($free = \false, $tracker_enabled = \true)
     {
         $this->free = $free;
+        $this->tracker_enabled = $tracker_enabled;
     }
     /**
      * Create strategy according to the given flag
@@ -28,7 +32,7 @@ class SimpleFactory implements InitializationFactory
     public function create_initialization_strategy(\FSVendor\WPDesk_Plugin_Info $info)
     {
         if ($this->free) {
-            return new SimpleFreeStrategy($info);
+            return new SimpleFreeStrategy($info, $this->tracker_enabled);
         }
         return new SimplePaidStrategy($info);
     }

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * WC-AC Hook by Matthew Treherne
@@ -34,7 +35,7 @@ if ( ! class_exists( 'WFACP_WC_AC_Hook' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wc_ac_hook' ],
 				'id'         => 'wc_ac_hook',
 				'field_type' => 'wc_ac_hook',
-				'label'      => __( 'WC AC Hook', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'WC AC Hook', 'funnel-builder' ),
 
 			];
 

@@ -160,8 +160,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				);
 			}
 
-			add_action( 'after_plugin_row', array( $this, 'maybe_add_notice' ), 10 );
-			add_action( 'plugin_action_links', array( $this, 'plugin_action_link' ), 10, 2 );
 			add_action( 'current_screen', array( $this, 'conditional_includes' ), 1 );
 
 			add_action( 'fk_optimize_conversion_table_analytics', array( $this, 'optimize_conversion_table_analytics' ) );
@@ -798,6 +796,10 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 		public function bwf_funnel_pages() {
 
+			if ( WFFN_Pro_Update_Required::get_instance()->maybe_render() ) {
+				return;
+			}
+
 			?>
 			<div id="wffn-contacts" class="wffn-page">
 			</div>
@@ -805,7 +807,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 			wp_enqueue_style( 'wffn-flex-admin', $this->get_admin_url() . '/assets/css/admin.css', array(), WFFN_VERSION_DEV );
 		}
-
 
 		public function admin_enqueue_assets( $hook_suffix ) {
 			wp_enqueue_style( 'bwf-admin-font', $this->get_admin_url() . '/assets/css/bwf-admin-font.css', array(), WFFN_VERSION_DEV );
@@ -821,13 +822,10 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 				wp_enqueue_style( 'wffn-flex-admin', $this->get_admin_url() . '/assets/css/admin.css', array(), WFFN_VERSION_DEV );
 
-				if ( WFFN_Core()->admin->is_wffn_flex_page() ) {
-					$this->load_react_app( 'main-20260701122529' ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
+				if ( WFFN_Core()->admin->is_wffn_flex_page() && ! WFFN_Pro_Update_Required::get_instance()->is_outdated() ) {
+					$this->load_react_app( 'main-20260820133547' ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
 					if ( isset( $_GET['page'] ) && $_GET['page'] === 'bwf' && method_exists( 'BWF_Admin_General_Settings', 'get_localized_bwf_data' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						wp_localize_script( 'wffn-contact-admin', 'bwfAdminGen', BWF_Admin_General_Settings::get_instance()->get_localized_bwf_data() );
-
-					} else {
-						wp_localize_script( 'wffn-contact-admin', 'bwfAdminGen', BWF_Admin_General_Settings::get_instance()->get_localized_data() );
 
 					}
 
@@ -844,7 +842,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		}
 
 		public function get_local_app_path() {
-			return '/admin/views/contact/dist/';
+			return '/admin/app/dist/';
 		}
 
 		public function get_editor_priority_theme_name() {
@@ -904,11 +902,14 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				'is_wc_square_active'         => WFFN_Common::is_wc_square_active(),
 				'date_format'                 => get_option( 'date_format', 'F j, Y' ),
 				'time_format'                 => get_option( 'time_format', 'g:i a' ),
-				'lev'                         => $this->get_license_config(),
-				'app_path'                    => WFFN_Core()->get_plugin_url() . '/admin/views/contact/dist/',
+				'app_path'                    => WFFN_Core()->get_plugin_url() . '/admin/app/dist/',
 				'timezone'                    => $tz,
 				'flag_img'                    => WFFN_Core()->get_plugin_url() . '/admin/assets/img/phone/flags.png',
 				'updated_pro_version'         => defined( 'WFFN_PRO_VERSION' ) && version_compare( WFFN_PRO_VERSION, '3.0.0 beta', '>=' ),
+				'activation_date'             => array(
+					'lite' => $this->get_lite_activation_date(),
+					'pro'  => $this->get_pro_activation_date(),
+				),
 				'get_pro_link'                => WFFN_Core()->admin->get_pro_link(),
 				'wc_add_product_url'          => admin_url( 'post-new.php?post_type=product' ),
 				'admin_url'                   => admin_url(),
@@ -986,14 +987,12 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			$contact_page_data['localize_texts'] = apply_filters( 'wffn_localized_text_admin', array() );
 
 			wp_enqueue_style( 'wp-components' );
-			wp_enqueue_style( 'wffn_material_icons', 'https://fonts.googleapis.com/icon?family=Material+Icons+Outlined' );//phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 			wp_enqueue_style( 'wffn-contact-admin', $frontend_dir . "$app_name.css", array(), $version );
 			wp_register_script( 'wffn-contact-admin', $frontend_dir . "$app_name.js", $script_deps, $version, true );
 			wp_localize_script( 'wffn-contact-admin', 'wffn_contacts_data', $contact_page_data );
 			wp_enqueue_script( 'wffn-contact-admin' );
 			wp_set_script_translations( 'wffn-contact-admin', 'funnel-builder' );
 
-			$this->setup_js_for_localization( $app_name, $frontend_dir, $script_deps, $version );
 			wp_enqueue_editor();
 			wp_tinymce_inline_scripts();
 			wp_enqueue_media();
@@ -2042,93 +2041,30 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		}
 
 		public function settings_config( $config ) {
-			$License    = WooFunnels_licenses::get_instance();
-			$fields     = array();
-			$has_fb_pro = false;
-			if ( is_object( $License ) && is_array( $License->plugins_list ) && count( $License->plugins_list ) ) {
-				foreach ( $License->plugins_list as $license ) {
-					/**
-					 * Excluding data for automation and connector addon
-					 */
-					if ( in_array( $license['product_file_path'], array( '7b31c172ac2ca8d6f19d16c4bcd56d31026b1bd8', '913d39864d876b7c6a17126d895d15322e4fd2e8' ), true ) ) {
-						continue;
-					}
+			/**
+			 * The free plugin contributes only the upgrade panel. License fields are
+			 * premium-only -- the license classes ship with the premium plugin, which
+			 * registers them on this same filter at a later priority and drops the
+			 * panel below.
+			 */
+			$fields = array();
 
-					$license_data = array();
-					if ( isset( $license['_data'] ) && isset( $license['_data']['data_extra'] ) ) {
-						$license_data = $license['_data']['data_extra'];
-						if ( isset( $license_data['api_key'] ) ) {
-							$license_data['api_key'] = 'xxxxxxxxxxxxxxxxxxxxxxxxxx' . substr( $license_data['api_key'], - 6 );
-							$license_data['licence'] = 'xxxxxxxxxxxxxxxxxxxxxxxxxx' . substr( $license_data['api_key'], - 6 );
-						}
-					}
-
-					$data = array(
-						'id'                      => $license['product_file_path'],
-						'label'                   => $license['plugin'],
-						'type'                    => 'license',
-						'key'                     => $license['product_file_path'],
-						'license'                 => ! empty( $license_data ) ? $license_data : false,
-						'is_manually_deactivated' => ( isset( $license['_data']['manually_deactivated'] ) && true === wffn_string_to_bool( $license['_data']['manually_deactivated'] ) ) ? 1 : 0,
-						'activated'               => ( isset( $license['_data']['activated'] ) && true === wffn_string_to_bool( $license['_data']['activated'] ) ) ? 1 : 0,
-						'expired'                 => ( isset( $license['_data']['expired'] ) && true === wffn_string_to_bool( $license['_data']['expired'] ) ) ? 1 : 0,
-					);
-					if ( $license['plugin'] === 'FunnelKit Funnel Builder Pro' || $license['plugin'] === 'FunnelKit Funnel Builder Basic' ) {
-						$has_fb_pro     = true;
-						$data['module'] = 'f';
-						array_unshift( $fields, $data );
-					} else {
-						$fields[] = $data;
-					}
-				}
-			}
-
-			if ( empty( $has_fb_pro ) ) {
-				$field_no_license = array(
-					'type'         => 'label',
-					'key'          => 'label_no_license',
-					'label'        => __( 'FunnelKit Funnel Builder Pro', 'funnel-builder' ),
-					'styleClasses' => array( 'wfacp_setting_track_and_events_start', 'bwf_wrap_custom_html_tracking_general' ),
-				);
-				array_unshift( $fields, $field_no_license );
-				$field_no_license = array(
-					'key'          => 'no_license',
+			$fields[] = array(
+				'type'         => 'label',
+				'key'          => 'label_pro_control',
+				'label'        => __( 'FunnelKit Funnel Builder Pro', 'funnel-builder' ),
+				'styleClasses' => array( 'wfacp_setting_track_and_events_start', 'bwf_wrap_custom_html_tracking_general' ),
+			);
+			array_unshift(
+				$fields,
+				array(
+					'key'          => 'pro_control',
 					'type'         => 'upgrade_pro',
 					'label'        => __( '<strong>You are currently using FunnelKit Lite, which does not require a license.</strong><br/> To access more features, consider upgrading to FunnelKit PRO now.', 'funnel-builder' ),
 					'styleClasses' => array( 'wfacp_checkbox_wrap', 'wfacp_setting_track_and_events_end' ),
 					'hint'         => '',
-				);
-				array_unshift( $fields, $field_no_license );
-
-			} elseif ( is_multisite() ) {
-
-					/**
-					 * Check if sitewide installed, if yes then get the plugin info from primary site
-					 */
-					$active_plugins = get_site_option( 'active_sitewide_plugins', array() );
-
-				if ( is_array( $active_plugins ) && ( in_array( WFFN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( WFFN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) && ! is_main_site() ) {
-					$fields           = array();
-					$field_no_license = array(
-						'type'         => 'label',
-						'key'          => 'label_no_license',
-						'label'        => __( 'FunnelKit Funnel Builder Pro', 'funnel-builder' ),
-						'styleClasses' => array( 'wfacp_setting_track_and_events_start', 'bwf_wrap_custom_html_tracking_general' ),
-					);
-					array_unshift( $fields, $field_no_license );
-					$main_site_id        = 1; // Main site ID in Multisite
-					$main_site_admin_url = get_site_url( $main_site_id, 'wp-admin/admin.php?page=bwf&path=/settings' );
-					$field_no_license    = array(
-						'key'          => 'no_license',
-						'type'         => 'multisite_notice',
-						'linkButton'   => esc_url( $main_site_admin_url ),
-						'label'        => __( 'You have activated FunnelKit on a multisite network, So the licenses will be managed on the main site and not on the sub sites. ', 'funnel-builder' ),
-						'styleClasses' => array( 'wfacp_checkbox_wrap', 'wfacp_setting_track_and_events_end' ),
-						'hint'         => '',
-					);
-					array_unshift( $fields, $field_no_license );
-				}
-			}
+				)
+			);
 
 			return array_merge( $fields, $config );
 		}
@@ -2212,42 +2148,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 		public function get_pro_link() {
 			return esc_url( 'https://funnelkit.com/funnel-builder-lite-upgrade/' );
-		}
-
-		public function setup_js_for_localization( $app_name, $frontend_dir, $script_deps, $version ) {
-			/** enqueue other js file from the dist folder */
-			$path = WFFN_PLUGIN_DIR . $this->get_local_app_path();
-			foreach ( glob( $path . '*.js' ) as $dist_file ) {
-				$file_info = pathinfo( $dist_file );
-
-				if ( $app_name === $file_info['filename'] ) {
-					continue;
-				}
-				wp_register_script( 'wffn_admin_' . $file_info['filename'], $frontend_dir . '' . $file_info['basename'], $script_deps, $version, true );
-				wp_set_script_translations( 'wffn_admin_' . $file_info['filename'], 'funnel-builder' );
-			}
-			add_action(
-				'admin_print_footer_scripts',
-				function () {
-
-					if ( 0 === WFFN_REACT_ENVIRONMENT ) {
-						return;
-					}
-					$path = WFFN_PLUGIN_DIR . $this->get_local_app_path();
-					global $wp_scripts;
-					foreach ( glob( $path . '*.js' ) as $dist_file ) {
-
-						$file_info = pathinfo( $dist_file );
-
-						$translations = $wp_scripts->print_translations( 'wffn_admin_' . $file_info['filename'], false );
-						if ( $translations ) {
-							$translations = sprintf( "<script%s id='%s-js-translations'>\n%s\n</script>\n", '', esc_attr( 'wffn_admin_' . $file_info['filename'] ), $translations );
-						}
-						echo $translations; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					}
-				},
-				99999
-			);
 		}
 
 		/**
@@ -2544,48 +2444,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					}
 				</style>
 				<?php
-			} else {
-				$License = WooFunnels_licenses::get_instance();
-				$License->get_plugins_list();
-				$current = new DateTime( current_time( 'mysql', true ) );
-
-				$a = WFFn_Core()->admin->get_license_config( true );
-
-				if ( ! empty( $a['f']['ed'] ) ) {
-
-					$expiry = new DateTime( $a['f']['ed'] );
-
-					/**
-					 * the expiry should always be less than on current utc
-					 */
-					if ( $expiry->getTimestamp() < $current->getTimestamp() ) {
-						$link = add_query_arg(
-							array(
-								'utm_source'   => 'WordPress',
-								'utm_medium'   => 'Toolbar+Menu',
-								'utm_campaign' => 'FB+Lite+Plugin',
-							),
-							'https://funnelkit.com/my-account/'
-						);
-
-						$wp_admin_bar->add_menu(
-							array(
-								'id'     => 'wffn_funnel-license',
-								'parent' => 'wffn_funnel',
-								'title'  => __( 'License Expired', 'funnel-builder' ),
-								'href'   => $link,
-							)
-						);
-					}
-				}
-				?>
-				<style type="text/css">
-					ul#wp-admin-bar-wffn_funnel-default li#wp-admin-bar-wffn_funnel-license a.ab-item {
-						color: white;
-						background-color: #e15334;
-					}
-				</style>
-				<?php
 			}
 		}
 
@@ -2633,259 +2491,17 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		}
 
 
-		public function license_fb_pro_data() {
-
-			$License = WooFunnels_licenses::get_instance();
-
-			$data = array();
-			if ( is_object( $License ) && is_array( $License->plugins_list ) && count( $License->plugins_list ) ) {
-				foreach ( $License->plugins_list as $license ) {
-					/**
-					 * Excluding data for automation and connector addon
-					 */
-					if ( in_array( $license['product_file_path'], array( '7b31c172ac2ca8d6f19d16c4bcd56d31026b1bd8', '913d39864d876b7c6a17126d895d15322e4fd2e8' ), true ) ) {
-						continue;
-					}
-
-					$license_data = array();
-					if ( isset( $license['_data'] ) && isset( $license['_data']['data_extra'] ) ) {
-						$license_data = $license['_data']['data_extra'];
-						if ( isset( $license_data['api_key'] ) ) {
-							$license_data['api_key'] = 'xxxxxxxxxxxxxxxxxxxxxxxxxx' . substr( $license_data['api_key'], - 6 );
-							$license_data['licence'] = 'xxxxxxxxxxxxxxxxxxxxxxxxxx' . substr( $license_data['api_key'], - 6 );
-						}
-					}
-					if ( $license['plugin'] === 'FunnelKit Funnel Builder Pro' || $license['plugin'] === 'FunnelKit Funnel Builder Basic' ) {
-						$data = array(
-							'id'                      => $license['product_file_path'],
-							'label'                   => $license['plugin'],
-							'type'                    => 'license',
-							'key'                     => $license['product_file_path'],
-							'license'                 => ! empty( $license_data ) ? $license_data : false,
-							'is_manually_deactivated' => ( isset( $license['_data']['manually_deactivated'] ) && true === bwf_string_to_bool( $license['_data']['manually_deactivated'] ) ) ? 1 : 0,
-							'activated'               => ( isset( $license['_data']['activated'] ) && true === bwf_string_to_bool( $license['_data']['activated'] ) ) ? 1 : 0,
-							'expired'                 => ( isset( $license['_data']['expired'] ) && true === bwf_string_to_bool( $license['_data']['expired'] ) ) ? 1 : 0,
-						);
-
-					}
-				}
-			}
-
-			return $data;
-		}
-
+		/**
+		 * Expiry date of the premium license, empty when there is none.
+		 *
+		 * Kept as a seam: the premium plugin calls this directly and supplies the
+		 * value on the filter, since the free plugin ships no license data.
+		 *
+		 * @return string
+		 */
 		public function get_license_expiry() {
-
-			$licenses = $this->license_fb_pro_data();
-
-			if ( empty( $licenses ) || empty( $licenses['license'] ) ) {
-				return '';
-			}
-
-			$expiry = $licenses['license']['expires'];
-			if ( '' === $expiry ) {
-				return gmdate( 'Y-m-d H:i:s', strtotime( '+1 year' ) );
-			}
-
-			return $expiry;
+			return apply_filters( 'wffn_license_expiry', '' );
 		}
-
-
-		public function license_data( $hash ) {
-
-			$License = WooFunnels_licenses::get_instance();
-			if ( is_object( $License ) && is_array( $License->plugins_list ) && count( $License->plugins_list ) ) {
-				foreach ( $License->plugins_list as $license ) {
-					if ( $license['product_file_path'] !== $hash ) {
-						continue;
-					}
-					if ( isset( $license['_data'] ) && isset( $license['_data']['data_extra'] ) ) {
-						$license_data = $license['_data']['data_extra'];
-
-						return array(
-							'id'                      => $license['product_file_path'],
-							'label'                   => $license['plugin'],
-							'type'                    => 'license',
-							'key'                     => $license['product_file_path'],
-							'license'                 => ! empty( $license_data ) ? $license_data : false,
-							'is_manually_deactivated' => ( isset( $license['_data']['manually_deactivated'] ) && true === bwf_string_to_bool( $license['_data']['manually_deactivated'] ) ) ? 1 : 0,
-							'activated'               => ( isset( $license['_data']['activated'] ) && true === bwf_string_to_bool( $license['_data']['activated'] ) ) ? 1 : 0,
-							'expired'                 => ( isset( $license['_data']['expired'] ) && true === bwf_string_to_bool( $license['_data']['expired'] ) ) ? 1 : 0,
-						);
-					}
-				}
-			}
-
-			return array();
-		}
-
-		public function is_license_active_for_checkout() {
-			$hashes = $this->get_license_basename_sha1();
-
-			if ( $this->is_basic_exists() ) {
-				$license_basic = $this->license_data( $hashes['basic'] );
-
-				if ( empty( $license_basic ) ) {
-					return false;
-				} elseif ( isset( $license_basic['is_manually_deactivated'] ) && 1 === $license_basic['is_manually_deactivated'] ) {
-					return 'deactivated';
-				} elseif ( isset( $license_basic['expired'] ) && 1 === $license_basic['expired'] ) {
-					return 'expired';
-				} elseif ( isset( $license_basic['activated'] ) && 0 === $license_basic['activated'] ) {
-					return 'not-active';
-				}
-
-				return true;
-			}
-
-			if ( defined( 'WFFN_PRO_VERSION' ) & ! $this->is_basic_exists() ) {
-				$license_pro = $this->license_data( $hashes['pro'] );
-				if ( empty( $license_pro ) ) {
-					return false;
-				} elseif ( isset( $license_pro['is_manually_deactivated'] ) && 1 === $license_pro['is_manually_deactivated'] ) {
-					return 'deactivated';
-				} elseif ( isset( $license_pro['expired'] ) && 1 === $license_pro['expired'] ) {
-					return 'expired';
-				} elseif ( isset( $license_pro['activated'] ) && 0 === $license_pro['activated'] ) {
-					return 'not-active';
-				}
-
-				return true;
-			}
-
-			if ( class_exists( 'WFACP_Core' ) ) {
-				$license_checkout = $this->license_data( $hashes['checkout'] );
-
-				if ( empty( $license_checkout ) ) {
-					return false;
-				} elseif ( isset( $license_checkout['is_manually_deactivated'] ) && 1 === $license_checkout['is_manually_deactivated'] ) {
-					return 'deactivated';
-				} elseif ( isset( $license_checkout['expired'] ) && 1 === $license_checkout['expired'] ) {
-					return 'expired';
-				} elseif ( isset( $license_checkout['activated'] ) && 0 === $license_checkout['activated'] ) {
-					return 'not-active';
-				}
-
-				return true;
-			}
-
-			return false;
-		}
-
-		public function get_license_expiry_for_checkout() {
-			$hashes = $this->get_license_basename_sha1();
-
-			if ( $this->is_basic_exists() ) {
-				$licenses = $this->license_data( $hashes['basic'] );
-				if ( empty( $licenses ) || empty( $licenses['license'] ) ) {
-					return '';
-				}
-
-				if ( '' === $licenses['license']['expires'] ) {
-					return gmdate( 'Y-m-d H:i:s', strtotime( '+1 year' ) );
-				}
-
-				return $licenses['license']['expires'];
-			}
-
-			if ( defined( 'WFFN_PRO_VERSION' ) & ! $this->is_basic_exists() ) {
-				$licenses = $this->license_data( $hashes['pro'] );
-				if ( empty( $licenses ) || empty( $licenses['license'] ) ) {
-					return '';
-				}
-
-				if ( '' === $licenses['license']['expires'] ) {
-					return gmdate( 'Y-m-d H:i:s', strtotime( '+1 year' ) );
-				}
-
-				return $licenses['license']['expires'];
-			}
-
-			if ( class_exists( 'WFACP_Core' ) ) {
-				$licenses = $this->license_data( $hashes['checkout'] );
-				if ( empty( $licenses ) || empty( $licenses['license'] ) ) {
-					return '';
-				}
-
-				if ( '' === $licenses['license']['expires'] ) {
-					return gmdate( 'Y-m-d H:i:s', strtotime( '+1 year' ) );
-				}
-
-				return $licenses['license']['expires'];
-			}
-
-			return false;
-		}
-
-		public function is_license_active_for_upsell() {
-			$hashes = $this->get_license_basename_sha1();
-
-			if ( defined( 'WFFN_PRO_VERSION' ) & ! $this->is_basic_exists() ) {
-				$license_pro = $this->license_data( $hashes['pro'] );
-
-				if ( empty( $license_pro ) ) {
-					return false;
-				} elseif ( isset( $license_pro['is_manually_deactivated'] ) && 1 === $license_pro['is_manually_deactivated'] ) {
-					return 'deactivated';
-				} elseif ( isset( $license_pro['expired'] ) && 1 === $license_pro['expired'] ) {
-					return 'expired';
-				} elseif ( isset( $license_pro['activated'] ) && 0 === $license_pro['activated'] ) {
-					return 'not-active';
-				}
-
-				return true;
-			}
-
-			if ( class_exists( 'WFOCU_Core' ) ) {
-				$license_upsells = $this->license_data( $hashes['upsell'] );
-
-				if ( empty( $license_upsells ) ) {
-					return false;
-				} elseif ( isset( $license_upsells['is_manually_deactivated'] ) && 1 === $license_upsells['is_manually_deactivated'] ) {
-					return 'deactivated';
-				} elseif ( isset( $license_upsells['expired'] ) && 1 === $license_upsells['expired'] ) {
-					return 'expired';
-				} elseif ( isset( $license_upsells['activated'] ) && 0 === $license_upsells['activated'] ) {
-					return 'not-active';
-				}
-
-				return true;
-			}
-
-			return false;
-		}
-
-		public function get_license_expiry_for_upsell() {
-			$hashes = $this->get_license_basename_sha1();
-			if ( defined( 'WFFN_PRO_VERSION' ) & ! $this->is_basic_exists() ) {
-				$licenses = $this->license_data( $hashes['pro'] );
-				if ( empty( $licenses ) || empty( $licenses['license'] ) ) {
-					return '';
-				}
-
-				if ( '' === $licenses['license']['expires'] ) {
-					return gmdate( 'Y-m-d H:i:s', strtotime( '+1 year' ) );
-				}
-
-				return $licenses['license']['expires'];
-			}
-
-			if ( class_exists( 'WFOCU_Core' ) ) {
-				$licenses = $this->license_data( $hashes['upsell'] );
-				if ( empty( $licenses ) || empty( $licenses['license'] ) ) {
-					return '';
-				}
-
-				if ( '' === $licenses['license']['expires'] ) {
-					return gmdate( 'Y-m-d H:i:s', strtotime( '+1 year' ) );
-				}
-
-				return $licenses['license']['expires'];
-			}
-
-			return '';
-		}
-
 		public function get_license_basename_sha1() {
 			return array(
 				'checkout' => '742fc61c1b455e2b1efa4154a92da8fb7f9866d3',
@@ -2895,98 +2511,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 			);
 		}
-
-		/**
-		 * Get license hash from data_extra for a specific module
-		 * Follows the same pattern as get_license_expiry_for_checkout and get_license_expiry_for_upsell
-		 *
-		 * @param string $module Module identifier: 'f' (funnel builder), 'ck' (checkout), 'ul' (upsell)
-		 * @return string Hash value or empty string if not found
-		 */
-		private function get_license_hash( $module = 'f' ) {
-			$hashes = $this->get_license_basename_sha1();
-
-			// Handle module 'ck' (checkout) - same pattern as get_license_expiry_for_checkout
-			if ( 'ck' === $module ) {
-				if ( $this->is_basic_exists() ) {
-					$licenses = $this->license_data( $hashes['basic'] );
-					if ( ! empty( $licenses ) && ! empty( $licenses['license'] ) && is_array( $licenses['license'] ) ) {
-						if ( isset( $licenses['license']['h'] ) && ! empty( $licenses['license']['h'] ) ) {
-							return $licenses['license']['h'];
-						}
-					}
-				}
-
-				if ( defined( 'WFFN_PRO_VERSION' ) & ! $this->is_basic_exists() ) {
-					$licenses = $this->license_data( $hashes['pro'] );
-					if ( ! empty( $licenses ) && ! empty( $licenses['license'] ) && is_array( $licenses['license'] ) ) {
-						if ( isset( $licenses['license']['h'] ) && ! empty( $licenses['license']['h'] ) ) {
-							return $licenses['license']['h'];
-						}
-					}
-				}
-
-				if ( class_exists( 'WFACP_Core' ) ) {
-					$licenses = $this->license_data( $hashes['checkout'] );
-					if ( ! empty( $licenses ) && ! empty( $licenses['license'] ) && is_array( $licenses['license'] ) ) {
-						if ( isset( $licenses['license']['h'] ) && ! empty( $licenses['license']['h'] ) ) {
-							return $licenses['license']['h'];
-						}
-					}
-				}
-
-				return '';
-			}
-
-			// Handle module 'ul' (upsell) - same pattern as get_license_expiry_for_upsell
-			if ( 'ul' === $module ) {
-				if ( defined( 'WFFN_PRO_VERSION' ) & ! $this->is_basic_exists() ) {
-					$licenses = $this->license_data( $hashes['pro'] );
-					if ( ! empty( $licenses ) && ! empty( $licenses['license'] ) && is_array( $licenses['license'] ) ) {
-						if ( isset( $licenses['license']['h'] ) && ! empty( $licenses['license']['h'] ) ) {
-							return $licenses['license']['h'];
-						}
-					}
-				}
-
-				if ( class_exists( 'WFOCU_Core' ) ) {
-					$licenses = $this->license_data( $hashes['upsell'] );
-					if ( ! empty( $licenses ) && ! empty( $licenses['license'] ) && is_array( $licenses['license'] ) ) {
-						if ( isset( $licenses['license']['h'] ) && ! empty( $licenses['license']['h'] ) ) {
-							return $licenses['license']['h'];
-						}
-					}
-				}
-
-				return '';
-			}
-
-			// Handle module 'f' (funnel builder) - check basic first, then pro
-			if ( 'f' === $module ) {
-				if ( $this->is_basic_exists() ) {
-					$licenses = $this->license_data( $hashes['basic'] );
-					if ( ! empty( $licenses ) && ! empty( $licenses['license'] ) && is_array( $licenses['license'] ) ) {
-						if ( isset( $licenses['license']['h'] ) && ! empty( $licenses['license']['h'] ) ) {
-							return $licenses['license']['h'];
-						}
-					}
-				}
-
-				if ( defined( 'WFFN_PRO_VERSION' ) ) {
-					$licenses = $this->license_data( $hashes['pro'] );
-					if ( ! empty( $licenses ) && ! empty( $licenses['license'] ) && is_array( $licenses['license'] ) ) {
-						if ( isset( $licenses['license']['h'] ) && ! empty( $licenses['license']['h'] ) ) {
-							return $licenses['license']['h'];
-						}
-					}
-				}
-
-				return '';
-			}
-
-			return '';
-		}
-
 
 		public function blocks_incompatible_switch_to_classic_cart_checkout( $is_rest = false ) {
 
@@ -3105,51 +2629,78 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		 *
 		 * @return array a complete array for every product to handle license related info
 		 */
+		/**
+		 * License state consumed by this plugin, its React app and companion
+		 * plugins (upsells, order bumps, cart).
+		 *
+		 * The free plugin holds no license data of its own; the premium plugin
+		 * supplies the real payload on the wffn_license_config filter. The method
+		 * itself stays because it is a cross-plugin contract that callers probe
+		 * with method_exists().
+		 *
+		 * The default returned here is just a static array kept for backward
+		 * compatibility with the premium plugin; it carries a future expiry date
+		 * so all gated features stay unlocked. It is not real license state.
+		 *
+		 * The default handed to the filter is deliberately fail-open. A premium
+		 * build that predates this filter never answers it, so the default is
+		 * what its front-end gates (WFFN_Step_WC_Upsells / WFFN_Substep_WC_Order_Bump /
+		 * Cart Pro) see. An empty array would resolve to 'pro_without_license' in
+		 * their get_current_app_state() and silently suppress every upsell, order
+		 * bump and cart offer for a genuinely licensed store. So the default
+		 * instead reports an active license (la === true) with a far-future
+		 * expiry, keeping the older premium side working across the version-skew
+		 * window; the moment premium is updated it overrides this default wholesale
+		 * (its filter callback ignores the incoming value). On a free-only install
+		 * nothing consumes this, so the default is inert there.
+		 *
+		 * @param bool $expiry_only Return only expiry information.
+		 * @param bool $get_ad      Include activation dates.
+		 *
+		 * @return array
+		 */
 		public function get_license_config( $expiry_only = false, $get_ad = true ) {
+			/**
+			 * Static backward-compatibility default for the premium plugin.
+			 *
+			 * This array exists purely so older premium builds (which do not answer
+			 * the wffn_license_config filter) keep working. It is a fixed shape, not
+			 * real license data -- the free plugin has none. The expiry date ('ed')
+			 * is set to a future date on purpose so every gated feature (upsells,
+			 * order bumps, cart) stays unlocked; a past/empty value would read as an
+			 * expired/absent license and suppress those offers.
+			 */
+			$far_future = gmdate( 'Y-m-d H:i:s', strtotime( '+10 years' ) ); // Future expiry -> keeps all features unlocked for older premium builds.
 
 			if ( $expiry_only ) {
-				return array(
-					'f'  => array(
-						'ed' => $this->get_license_expiry(),
-					),
+				$default = array(
+					'f'  => array( 'ed' => $far_future ),
+					'ck' => array( 'ed' => $far_future ),
+					'ul' => array( 'ed' => $far_future ),
 					'gp' => array( 2, 2 ),
 				);
 			} else {
-				$license_config = array(
+				$default = array(
 					'f'  => array(
-						'e'  => defined( 'WFFN_PRO_VERSION' ),
-						'la' => $this->is_license_active(),  // false on not exist
-						// true when activated
-						// false when manually deactivated
-						// on expiry it could be both true and false, not recommended checking this value
-						'ed' => $this->get_license_expiry(),
-						'ib' => $this->is_basic_exists(),
-						'h'  => $this->get_license_hash( 'f' ), // License validation hash
+						'la' => true,
+						'ed' => $far_future,
+						'e'  => true,
 					),
 					'ck' => array(
-						'e'  => wfacp_pro_dependency(), // should cover aero, basic and pro addon
-						'la' => $this->is_license_active_for_checkout(),
-						'ed' => $this->get_license_expiry_for_checkout(),
-						'h'  => $this->get_license_hash( 'ck' ), // License validation hash
+						'la' => true,
+						'ed' => $far_future,
+						'e'  => true,
 					),
 					'ul' => array(
-						'e'  => function_exists( 'WFOCU_Core' ), // should cover upstroke & pro addon
-						'la' => $this->is_license_active_for_upsell(),
-						'ed' => $this->get_license_expiry_for_upsell(),
-						'h'  => $this->get_license_hash( 'ul' ), // License validation hash
+						'la' => true,
+						'ed' => $far_future,
+						'e'  => true,
 					),
 					'gp' => array( 2, 2 ),
 				);
-				if ( $get_ad === true ) {
-					$license_config['f']['adl'] = $this->get_lite_activation_date();
-					$license_config['f']['ad']  = $this->get_pro_activation_date();
-					$license_config['ck']['ad'] = $this->get_pro_activation_date();
-					$license_config['ul']['ad'] = $this->get_pro_activation_date();
-
-				}
-
-				return $license_config;
 			}
+
+			return apply_filters( 'wffn_license_config', $default, $expiry_only, $get_ad );
 		}
 
 		/**
@@ -3278,160 +2829,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		}
 
 
-		public function maybe_add_notice( $plugin_file ) {
 
-			if ( defined( 'WFFN_PRO_PLUGIN_BASENAME' ) && $plugin_file === WFFN_PRO_PLUGIN_BASENAME ) {
-
-				$render_css = false;
-				$License    = WooFunnels_licenses::get_instance();
-				$License->get_plugins_list();
-				$current = new DateTime( current_time( 'mysql', true ) );
-
-				$a = WFFn_Core()->admin->get_license_config( true );
-
-				if ( ! empty( $a['f']['ed'] ) ) {
-
-					$expiry = new DateTime( $a['f']['ed'] );
-
-					$diff_in_days = $expiry->diff( $current )->format( '%a' );
-
-					if ( ( $expiry->getTimestamp() < $current->getTimestamp() && absint( $diff_in_days ) <= 7 ) ) {
-						$render_css = true;
-
-						$time = $current->modify( '+7 days' )->format( 'F j, Y' );
-						?>
-						<tr class="plugin-update-tr fb_license_notice active fbk_renew" id="cart-for-woocommerce-update"
-							data-slug="cart-for-woocommerce" data-plugin="cart-for-woocommerce/plugin.php">
-							<td colspan="4" class="plugin-update colspanchange">
-								<div class="update-message notice inline notice-error notice-alt">
-
-									<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-										<path
-											d="M21.8012 18.6522L13.336 3.78261C13.0546 3.28702 12.5687 3 12.0061 3C11.4435 3 10.9575 3.28702 10.6763 3.78261L2.21104 18.6522C1.92965 19.1478 1.92965 19.7218 2.21104 20.2174C2.49242 20.713 2.97829 21 3.54089 21H20.4459C21.0085 21 21.4946 20.713 21.7758 20.2174C22.0572 19.7218 22.0827 19.1478 21.8013 18.6522H21.8012ZM20.9317 19.6956C20.8805 19.7739 20.7527 19.9564 20.4969 19.9564L3.56641 19.9566C3.31071 19.9566 3.15726 19.774 3.13157 19.6958C3.08036 19.6175 3.00363 19.4088 3.13157 19.174L11.5968 4.3044C11.7247 4.06962 11.9549 4.04359 12.0316 4.04359C12.1084 4.04359 12.3385 4.06962 12.4665 4.3044L20.9317 19.174C21.0596 19.4088 20.9829 19.6173 20.9317 19.6956V19.6956Z"
-											fill="#d63638" stroke="#d63638" stroke-width="0.3"/>
-										<path
-											d="M12.0316 10.5216C11.7502 10.5216 11.52 10.7564 11.52 11.0434V17.0435C11.52 17.3306 11.7502 17.5653 12.0316 17.5653C12.313 17.5653 12.5431 17.3306 12.5431 17.0435V11.0434C12.5431 10.7564 12.313 10.5216 12.0316 10.5216Z"
-											fill="#d63638" stroke="#d63638" stroke-width="0.3"/>
-										<path
-											d="M12.5433 8.95637C12.5433 9.24461 12.3141 9.47817 12.0317 9.47817C11.7493 9.47817 11.5201 9.24461 11.5201 8.95637C11.5201 8.66831 11.7493 8.43475 12.0317 8.43475C12.3141 8.43475 12.5433 8.66832 12.5433 8.95637Z"
-											fill="#d63638" stroke="#d63638" stroke-width="0.5"/>
-									</svg>
-
-									<p>
-										<?php
-										printf( wp_kses_post( __( '<strong>Your FunnelKit Pro license has expired!</strong> We\'ve extended its features until %1$s, after which they\'ll be limited. <a href="https://funnelkit.com/exclusive-offer/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Plugin+Inline+Notice">Renew Now</a> or <a href="%2$s">I have My License Key</a>', 'funnel-builder' ) ), esc_html( $time ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings/woofunnels_general_settings' ) ) );
-										?>
-									</p>
-
-
-								</div>
-							</td>
-						</tr>
-
-						<?php
-					} /**
-					 * the expiry should always be less than on current utc
-					 */ elseif ( $expiry->getTimestamp() < $current->getTimestamp() ) {
-						$render_css = true;
-						?>
-						<tr class="plugin-update-tr fb_license_notice active">
-							<td colspan="4" class="plugin-update colspanchange">
-								<div class="update-message notice inline notice-error notice-alt">
-									<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-										<path
-											d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47716 6.47715 2 12 2C17.5228 2 22 6.47716 22 12ZM16.119 9.45234C16.5529 9.01843 16.5529 8.31491 16.119 7.88099C15.6851 7.44708 14.9816 7.44708 14.5477 7.88099L12 10.4287L9.45234 7.88099C9.01843 7.44708 8.31491 7.44708 7.88099 7.88099C7.44708 8.31491 7.44708 9.01843 7.88099 9.45234L10.4287 12L7.88099 14.5477C7.44708 14.9816 7.44708 15.6851 7.88099 16.119C8.31491 16.5529 9.01842 16.5529 9.45234 16.119L12 13.5714L14.5477 16.119C14.9816 16.5529 15.6851 16.5529 16.119 16.119C16.5529 15.6851 16.5529 14.9816 16.119 14.5477L13.5713 12L16.119 9.45234Z"
-											fill="#d63638"/>
-									</svg>
-
-									<p>
-										<?php
-										printf( wp_kses_post( __( '<strong>Your FunnelKit Pro license has expired!</strong> Please renew your license to continue using premium features without interruption. <a href="https://funnelkit.com/my-account/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Plugin+Inline+Notice">Renew Now</a> or <a href="%s">I have My License Key</a>', 'funnel-builder' ) ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings/woofunnels_general_settings' ) ) );
-										?>
-									</p>
-								</div>
-							</td>
-						</tr>
-						<?php
-}
-				}
-
-				if ( $render_css ) {
-					?>
-					<style>
-						tr[data-slug="funnelkit-funnel-builder-pro"] th,
-						tr[data-slug="funnelkit-funnel-builder-pro"] td {
-							box-shadow: none !important;
-						}
-
-						.fb_license_notice .update-message {
-							position: relative;
-						}
-
-						.fb_license_notice .update-message svg {
-							position: absolute;
-							left: 12px;
-							top: 5px;
-							width: 20px;
-						}
-
-						.fb_license_notice .update-message p {
-							padding-left: 14px !important;
-						}
-
-						.fb_license_notice.fbk_renew .update-message svg {
-							top: 4px;
-							width: 16px;
-						}
-
-						.fb_license_notice .update-message.notice-error p::before {
-							content: "";
-						}
-					</style>
-					<?php
-				}
-			}
-		}
-
-		public function plugin_action_link( $actions, $plugin_file ) {
-			$new_action = array();
-
-			if ( ! is_array( $actions ) ) {
-				$actions = array();
-			}
-			if ( defined( 'WFFN_PRO_PLUGIN_BASENAME' ) && $plugin_file === WFFN_PRO_PLUGIN_BASENAME ) {
-
-				$License = WooFunnels_licenses::get_instance();
-				$License->get_plugins_list();
-				$current = new DateTime( current_time( 'mysql', true ) );
-
-				$a = WFFn_Core()->admin->get_license_config( true );
-
-				if ( ! empty( $a['f']['ed'] ) ) {
-
-					$expiry = new DateTime( $a['f']['ed'] );
-
-					if ( $expiry->getTimestamp() < $current->getTimestamp() ) {
-						$link                          = esc_url( 'https://funnelkit.com/my-account/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Plugin+Inline+Notice' );
-						$new_action['renewal_license'] = '<style>tr[data-slug="funnelkit-funnel-builder-pro"] .renewal_license{position: relative}tr[data-slug="funnelkit-funnel-builder-pro"] .renewal_license svg{position:absolute;top:1px;left:0}</style><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_835_18634)">
-<path d="M10.2957 1.75368C10.1928 1.76698 10.0983 1.81626 10.0298 1.89236C9.9613 1.96846 9.92347 2.06621 9.92333 2.16745C9.92336 2.18598 9.92462 2.2045 9.92711 2.22287L10.0257 2.94891C9.06453 2.28807 7.90358 1.96102 6.729 2.02021C5.55442 2.0794 4.43425 2.52139 3.54808 3.27532C2.66191 4.02926 2.06109 5.05145 1.84194 6.17802C1.6228 7.30459 1.79802 8.47027 2.33952 9.48816C2.88102 10.5061 3.75743 11.3172 4.82823 11.7915C5.89903 12.2659 7.10219 12.3759 8.2448 12.104C9.38741 11.8322 10.4033 11.1941 11.1295 10.2922C11.8558 9.39026 12.2504 8.2767 12.25 7.13005C12.25 7.0192 12.2048 6.9129 12.1244 6.83452C12.044 6.75614 11.935 6.7121 11.8213 6.7121C11.7076 6.7121 11.5986 6.75614 11.5182 6.83452C11.4378 6.9129 11.3926 7.0192 11.3926 7.13005C11.3936 8.09095 11.0634 9.02432 10.4552 9.78043C9.847 10.5366 8.9959 11.0716 8.03846 11.2997C7.08103 11.5279 6.07273 11.4359 5.17532 11.0386C4.27792 10.6412 3.5434 9.96156 3.0896 9.10856C2.6358 8.25557 2.48902 7.2787 2.6728 6.33466C2.85658 5.39061 3.36028 4.5341 4.10308 3.90251C4.84589 3.27093 5.78476 2.90087 6.76909 2.85171C7.75342 2.80255 8.72617 3.07712 9.53129 3.63139L8.58699 3.6711C8.47664 3.67573 8.37239 3.7217 8.29596 3.79943C8.21953 3.87715 8.17681 3.98064 8.17672 4.08832C8.17672 4.09444 8.17692 4.10046 8.17713 4.10658C8.18202 4.21732 8.23183 4.32162 8.3156 4.39656C8.39938 4.47149 8.51025 4.51092 8.62384 4.50616L10.6202 4.4223C10.6265 4.42202 10.6322 4.42021 10.6384 4.41973C10.6427 4.41935 10.647 4.41973 10.6515 4.41922C10.6536 4.41897 10.6557 4.41933 10.6581 4.41904H10.6583C10.6669 4.41791 10.6754 4.41498 10.684 4.41333C10.6969 4.41089 10.7094 4.40825 10.7218 4.40472C10.7283 4.40286 10.7351 4.402 10.7416 4.39983C10.7497 4.39711 10.7568 4.39281 10.7646 4.38965C10.7761 4.38499 10.7874 4.38027 10.7984 4.37469C10.8048 4.37139 10.8118 4.36918 10.8181 4.36552C10.8261 4.36098 10.8328 4.35507 10.8404 4.34995C10.8495 4.34387 10.8585 4.33775 10.8671 4.33102C10.8698 4.32893 10.8728 4.32725 10.8754 4.3251C10.8791 4.32209 10.8833 4.32011 10.8869 4.31695C10.8942 4.31068 10.8995 4.30314 10.9062 4.29649C10.913 4.28985 10.9188 4.2837 10.9248 4.27696C10.9307 4.27021 10.9373 4.26461 10.9427 4.25769C10.9494 4.24916 10.9543 4.23988 10.9603 4.23096C10.9643 4.22486 10.968 4.21865 10.9718 4.21234C10.9765 4.20436 10.9822 4.197 10.9864 4.18871C10.9911 4.17924 10.9942 4.16929 10.9982 4.15957C11.0012 4.15253 11.0037 4.14543 11.0062 4.1382C11.0092 4.12952 11.0132 4.12129 11.0156 4.11239C11.0182 4.10309 11.0191 4.09358 11.021 4.08416C11.0229 4.07473 11.0244 4.06535 11.0256 4.0559C11.0267 4.04784 11.0288 4.0401 11.0293 4.03191C11.0299 4.0233 11.0289 4.01474 11.0289 4.00608C11.0289 3.99961 11.0304 3.99342 11.0302 3.98686C11.0299 3.9803 11.028 3.97482 11.0275 3.96864C11.0272 3.9655 11.0275 3.96237 11.0271 3.95925C11.0267 3.95614 11.0272 3.95298 11.0268 3.94991V3.94916V3.94849L10.7773 2.11314C10.7699 2.05869 10.7516 2.00619 10.7234 1.95864C10.6952 1.9111 10.6577 1.86944 10.613 1.83605C10.5682 1.80266 10.5172 1.7782 10.4628 1.76407C10.4083 1.74994 10.3516 1.74641 10.2957 1.75368Z" fill="#C5443F"/>
-</g>
-<defs>
-<clipPath id="clip0_835_18634">
-<rect width="14" height="14" fill="white"/>
-</clipPath>
-</defs>
-</svg>
-<a href="' . $link . '" class="wffn_renew_license" style="color: #d63638;padding-left: 20px;">' . __( 'Renew Expired License', 'funnel-builder' ) . '</a>';
-					}
-				}
-				?>
-
-				<?php
-			}
-
-			return array_merge( $new_action, $actions );
-		}
 
 		/**
 		 * Clear wffn endpoints form cache plugins

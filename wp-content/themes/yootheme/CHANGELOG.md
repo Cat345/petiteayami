@@ -1,5 +1,51 @@
 # Changelog
 
+## 5.0.41 (August 21, 2026)
+
+### Security
+
+- [CVE-2026-75115](https://www.cve.org/CVERecord?id=CVE-2026-75115): Fix arbitrary file read exploitable by any contributor-level user
+- [CVE-2026-76613](https://www.cve.org/CVERecord?id=CVE-2026-76613): Fix SQL injection exploitable by any contributor-level user
+
+### Fixed
+
+- Fix tabs style in frontend editing (Joomla)
+
+## 5.0.40 (August 13, 2026)
+
+### Fixed
+
+- Fix language overrides in Newsletter element
+- Fix custom fields not being filtered by language (Joomla)
+- Fix do not show categories tab when in frontend customizer mode (Joomla)
+- Fix missing form-login ID on the offline page login form (Joomla)
+
+## 5.0.39 (August 5, 2026)
+
+### Fixed
+
+- Fix template assignments for product archive pages in WooCommerce 11 (WordPress)
+
+## 5.0.38 (July 28, 2026)
+
+### Fixed
+
+- Fix update quantity in cart menu item (WordPress)
+- Fix prevent generation of zero byte image cache files
+- Fix whitespace in title elements
+
+## 5.0.37 (July 9, 2026)
+
+### Added
+
+- Add option to set query type to WooCommerce Product Filter element (WordPress)
+
+### Fixed
+
+- Fix filter terms and pages by current admin language for Polylang plugin (WordPress)
+- Fix menu active state in language switcher items (Joomla)
+- Fix Google Analytics script loading with consent mode enabled
+
 ## 5.0.36 (June 24, 2026)
 
 ### Added

@@ -69,6 +69,43 @@ if ( ! class_exists( 'WFFN_Abstract_Exporter' ) ) {
 		}
 
 		/**
+		 * Applies the export-timestamp filter to a stored conversion datetime.
+		 *
+		 * Default output is unchanged — the stored site-local wall-clock string is returned
+		 * as-is. The `wffn_export_conversion_timestamp` filter lets a site transform it (e.g.
+		 * to a UTC instant for Google offline conversions) using the site-anchored DateTime
+		 * passed as the third argument.
+		 *
+		 * @param string $local_datetime Stored local wall-clock datetime, e.g. '2026-07-10 17:32:25'.
+		 *
+		 * @return string Timestamp for the CSV (unchanged unless a filter overrides it).
+		 */
+		protected function format_export_conversion_timestamp( $local_datetime ) {
+			$datetime = null;
+
+			if ( ! empty( $local_datetime ) && '0000-00-00 00:00:00' !== $local_datetime && method_exists( 'WFFN_REST_Controller', 'string_to_date' ) ) {
+				try {
+					$datetime = WFFN_REST_Controller::string_to_date( $local_datetime );
+				} catch ( Throwable $e ) {
+					$datetime = null;
+				}
+			}
+
+			/**
+			 * Filters the conversion timestamp written to row-level CSV exports.
+			 *
+			 * Default value is the raw site-local wall-clock string (unchanged). Return a UTC
+			 * instant (or any other representation) here when a consumer needs it — the
+			 * DateTime passed as the third argument is anchored in the site timezone.
+			 *
+			 * @param string        $value          Timestamp to output; defaults to the raw local string.
+			 * @param string        $local_datetime Raw stored site-local wall-clock string.
+			 * @param DateTime|null $datetime       DateTime anchored in the site timezone, or null on failure.
+			 */
+			return apply_filters( 'wffn_export_conversion_timestamp', $local_datetime, $local_datetime, $datetime );
+		}
+
+		/**
 		 * @param $args
 		 * @param $csv_header
 		 * @param $type

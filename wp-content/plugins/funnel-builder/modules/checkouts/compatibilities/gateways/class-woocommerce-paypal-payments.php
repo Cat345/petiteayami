@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * WooCommerce PayPal Payments by WooCommerce V 3.0.3

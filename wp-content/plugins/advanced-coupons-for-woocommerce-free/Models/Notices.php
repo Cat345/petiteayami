@@ -253,7 +253,12 @@ class Notices implements Model_Interface, Initializable_Interface, Activatable_I
             'type'           => 'success',
             'heading'        => __( 'FREE PLUGIN AVAILABLE', 'advanced-coupons-for-woocommerce-free' ),
             'content'        => array(
-                __( "Hey store owner! Do you sell to wholesale customers? Did you know that Advanced Coupons has a sister plugin called <strong>Wholesale Suite</strong> which lets you add wholesale pricing to your existing WooCommerce products? Best of all, it's free! You can add basic wholesale pricing to your store and have your wholesale customers make their orders online. ", 'advanced-coupons-for-woocommerce-free' ) . sprintf( '<strong>%s</strong>', __( 'Click here to install WooCommerce Wholesale Prices', 'advanced-coupons-for-woocommerce-free' ) ),
+                sprintf(
+                    /* Translators: %1$s: opening bold tag. %2$s: closing bold tag. */
+                    __( "Hey store owner! Do you sell to wholesale customers? Did you know that Advanced Coupons has a sister plugin called %1\$sWholesale Suite%2\$s which lets you add wholesale pricing to your existing WooCommerce products? Best of all, it's free! You can add basic wholesale pricing to your store and have your wholesale customers make their orders online. ", 'advanced-coupons-for-woocommerce-free' ),
+                    '<strong>',
+                    '</strong>'
+                ) . sprintf( '<strong>%s</strong>', __( 'Click here to install WooCommerce Wholesale Prices', 'advanced-coupons-for-woocommerce-free' ) ),
             ),
             'actions'        => array(
                 array(
@@ -281,7 +286,12 @@ class Notices implements Model_Interface, Initializable_Interface, Activatable_I
             'type'           => 'info',
             'heading'        => '',
             'content'        => array(
-                __( "Hey, I noticed you have been using <strong>Advanced Coupons</strong> for some time - that's awesome! Could you please do me a BIG favor and give it a 5-star rating on WordPress to help us spread the word and boost our motivation?", 'advanced-coupons-for-woocommerce-free' ),
+                sprintf(
+                    /* Translators: %1$s: opening bold tag. %2$s: closing bold tag. */
+                    __( "Hey, I noticed you have been using %1\$sAdvanced Coupons%2\$s for some time - that's awesome! Could you please do me a BIG favor and give it a 5-star rating on WordPress to help us spread the word and boost our motivation?", 'advanced-coupons-for-woocommerce-free' ),
+                    '<strong>',
+                    '</strong>'
+                ),
             ),
             'actions'        => array(
                 array(

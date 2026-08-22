@@ -88,7 +88,13 @@ class Same_Products extends Base_Model implements Model_Interface {
         $cart_items  = \WC()->cart->get_cart_contents();
         $trigger_qty = absint( $raw_triggers['quantity'] );
 
+        $qualified_ids = $this->_get_trigger_qualified_ids( $bogo_deal );
+
         foreach ( $cart_items as $cart_item ) {
+            if ( ! $this->_is_cart_item_qualified( $cart_item, $qualified_ids ) ) {
+                continue;
+            }
+
             $item_id = isset( $cart_item['variation_id'] ) && $cart_item['variation_id'] ? $cart_item['variation_id'] : $cart_item['product_id'];
 
             // Create trigger for this product.
@@ -123,11 +129,23 @@ class Same_Products extends Base_Model implements Model_Interface {
             return $deals;
         }
 
+        // $bogo_deal is always supplied by the acfw_bogo_advanced_prepare_deal_data filter
+        // (registered with 4 args), but guard against a null/legacy invocation before
+        // _get_trigger_qualified_ids() dereferences it.
+        if ( ! $bogo_deal instanceof Abstract_BOGO_Deal ) {
+            return $deals;
+        }
+
         // For same-products, create ONE deal per product in cart.
         // Each deal is specific to its product (trigger and deal must be from SAME product).
         $cart_items = \WC()->cart->get_cart_contents();
 
+        $qualified_ids = $this->_get_trigger_qualified_ids( $bogo_deal );
+
         foreach ( $cart_items as $cart_item ) {
+            if ( ! $this->_is_cart_item_qualified( $cart_item, $qualified_ids ) ) {
+                continue;
+            }
 
             $item_id = isset( $cart_item['variation_id'] ) && $cart_item['variation_id'] ? $cart_item['variation_id'] : $cart_item['product_id'];
 
@@ -144,6 +162,104 @@ class Same_Products extends Base_Model implements Model_Interface {
         }
 
         return $deals;
+    }
+
+    /**
+     * Resolve the ACFWP Advanced_Coupon instance for a BOGO deal.
+     * $bogo_deal->get_coupon() may return the free ACFWF Advanced_Coupon, which lacks the
+     * premium advanced props (e.g. bogo_deals), so re-wrap it as the ACFWP version when needed.
+     *
+     * @since 4.0.9
+     * @access private
+     *
+     * @param \ACFWF\Abstracts\Abstract_BOGO_Deal $bogo_deal BOGO Deal object.
+     * @return Advanced_Coupon Advanced coupon instance.
+     */
+    private function _resolve_coupon( $bogo_deal ) {
+        $coupon = $bogo_deal->get_coupon();
+
+        return $coupon instanceof Advanced_Coupon ? $coupon : new Advanced_Coupon( $coupon );
+    }
+
+    /**
+     * Get the product/variation IDs that qualify under the Customer BUY (trigger) criteria.
+     * For same-products deals the GET product is the BUY product, so both trigger and deal
+     * entries must be scoped to cart items matching the trigger criteria — otherwise products
+     * outside the configured categories/products get incorrectly duplicated.
+     *
+     * Returns null when every cart item qualifies (any-products) so callers can skip filtering.
+     *
+     * @since 4.0.9
+     * @access private
+     *
+     * @param \ACFWF\Abstracts\Abstract_BOGO_Deal $bogo_deal BOGO Deal object.
+     * @return array|null Qualifying product/variation IDs, or null when unrestricted.
+     */
+    private function _get_trigger_qualified_ids( $bogo_deal ) {
+        $trigger_type = $bogo_deal->trigger_type;
+
+        // Restricted trigger types resolve to a concrete product/variation ID set below.
+        // 'any-products' — and any unknown/custom type registered via the
+        // acfw_bogo_trigger_type_options filter — is treated as unrestricted (return null)
+        // so an unrecognised type fails open instead of silently producing no triggers/deals.
+        if ( ! in_array( $trigger_type, array( 'product-categories', 'combination-products', 'specific-products' ), true ) ) {
+            return null;
+        }
+
+        $coupon = $this->_resolve_coupon( $bogo_deal );
+
+        // The canonical resolvers for these conditions shapes live in
+        // Frontend::prepare_advanced_bogo_trigger_data() (categories/combination) and the
+        // free Advanced::_prepare_trigger_data() (specific-products); same-products
+        // short-circuits those (Frontend.php:103), so the IDs are re-resolved here. Keep
+        // this switch in sync with those resolvers if the conditions shape changes.
+        $raw_bogo_deals = $coupon->get_advanced_prop( 'bogo_deals' );
+        $conditions     = isset( $raw_bogo_deals['conditions'] ) ? $raw_bogo_deals['conditions'] : array();
+
+        $product_ids = array();
+
+        switch ( $trigger_type ) {
+            case 'product-categories':
+                $category_ids = isset( $conditions['categories'] ) ? array_column( $conditions['categories'], 'category_id' ) : array();
+                foreach ( $category_ids as $category_id ) {
+                    $product_ids = array_merge( $product_ids, \ACFWP()->BOGO_Frontend->get_products_under_category( $category_id ) );
+                }
+                break;
+
+            case 'combination-products':
+                $product_ids = isset( $conditions['products'] ) ? array_column( $conditions['products'], 'product_id' ) : array();
+                break;
+
+            case 'specific-products':
+                $product_ids = array_column( $conditions, 'product_id' );
+                break;
+        }
+
+        return array_unique( array_map( 'absint', $product_ids ) );
+    }
+
+    /**
+     * Check whether a cart item qualifies under the given list of trigger product IDs.
+     * A null list means unrestricted (any-products) and always qualifies.
+     *
+     * @since 4.0.9
+     * @access private
+     *
+     * @param array      $cart_item     Cart item data.
+     * @param array|null $qualified_ids Qualifying product/variation IDs, or null when unrestricted.
+     * @return bool True when the cart item qualifies.
+     */
+    private function _is_cart_item_qualified( $cart_item, $qualified_ids ) {
+        if ( is_null( $qualified_ids ) ) {
+            return true;
+        }
+
+        $item_ids = array( absint( $cart_item['product_id'] ) );
+        if ( ! empty( $cart_item['variation_id'] ) ) {
+            $item_ids[] = absint( $cart_item['variation_id'] );
+        }
+
+        return ! empty( array_intersect( $item_ids, $qualified_ids ) );
     }
 
     /**
@@ -199,8 +315,7 @@ class Same_Products extends Base_Model implements Model_Interface {
             return;
         }
 
-        $coupon = $bogo_deal->get_coupon();
-        $coupon = $coupon instanceof Advanced_Coupon ? $coupon : new Advanced_Coupon( $coupon );
+        $coupon = $this->_resolve_coupon( $bogo_deal );
 
         // Check if auto-add is enabled.
         $auto_add_enabled = $coupon->get_advanced_prop( 'bogo_auto_add_products' );
@@ -234,8 +349,11 @@ class Same_Products extends Base_Model implements Model_Interface {
             }
         }
 
-        // For "only once", we should only auto-add to ONE product.
-        $products_to_process = $bogo_deal->is_repeat ? $sorted_deals : array( reset( $sorted_deals ) );
+        // Auto-add the free quantity for every qualifying product. The "same product free" benefit
+        // applies per qualifying product, so each matched cart item needs its own free item added —
+        // not only the first. Per-product quantity (a single cycle vs. repeated cycles within one
+        // product's quantity) is handled by the is_repeat branch in the loop below.
+        $products_to_process = $sorted_deals;
 
         foreach ( $products_to_process as $deal ) {
             $deal_ids            = isset( $deal['ids'] ) ? (array) $deal['ids'] : array();

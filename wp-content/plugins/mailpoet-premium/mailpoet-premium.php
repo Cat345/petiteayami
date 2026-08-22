@@ -6,13 +6,13 @@ if (!defined('ABSPATH')) exit;
 /*
  * Plugin Name: MailPoet Premium
  * Requires Plugins: mailpoet
- * Version: 5.33.0
+ * Version: 5.36.0
  * Plugin URI: https://www.mailpoet.com
  * Description: This plugin adds Premium features to the free version of MailPoet and unlocks the subscribers limit. Enjoy!
  * Author: MailPoet
  * Author URI: https://www.mailpoet.com
  * Update URI: https://www.mailpoet.com
- * Requires at least: 6.9
+ * Requires at least: 7.0
  *
  * Text Domain: mailpoet-premium
  * Domain Path: /lang/
@@ -23,7 +23,7 @@ if (!defined('ABSPATH')) exit;
  */
 
 $mailpoetPremium = [
-  'version' => '5.33.0',
+  'version' => '5.36.0',
   'filename' => __FILE__,
   'path' => dirname(__FILE__),
   'autoloader' => dirname(__FILE__) . '/vendor/autoload.php',

@@ -466,8 +466,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 			 * Check if the respective method exists to go further
 			 */
 			if ( method_exists( WFFN_Core()->admin, 'get_license_config' ) ) {
-				$License = WooFunnels_licenses::get_instance();
-				$License->get_plugins_list();
 				$state = $this->get_current_app_state();
 
 				if ( in_array( $state, array( 'pro_without_license', 'license_expired' ), true ) ) {
@@ -1062,10 +1060,23 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 			$get_all_ids = array();
 			if ( $funnel_id > 0 ) {
 				$this->funnel_id = $funnel_id;
-				remove_all_filters( 'wfocu_add_control_meta_query' );
-				add_filter( 'wfocu_add_control_meta_query', array( $this, 'search_any_post_status' ), 9 );
-				$get_upstroke_posts = WFOCU_Core()->funnels->setup_funnels();
-				$get_all_ids        = wp_list_pluck( $get_upstroke_posts, 'id' );
+				/**
+				 * Look up this funnel's upstroke steps directly.
+				 */
+				$get_all_ids = get_posts(
+					array(
+						'post_type'   => array( WFOCU_Common::get_funnel_post_type_slug(), 'cartflows_step', 'page' ),
+						'post_status' => 'any',
+						'fields'      => 'ids',
+						'numberposts' => -1,
+						'meta_query'  => array(
+							array(
+								'key'   => '_bwf_in_funnel',
+								'value' => $funnel_id,
+							),
+						),
+					)
+				);
 			}
 			$args = array(
 				'post_type'      => array( WFOCU_Common::get_offer_post_type_slug(), 'cartflows_step', 'page' ),
@@ -1355,6 +1366,8 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 		}
 
 		function get_current_app_state() {
+			$License = WooFunnels_licenses::get_instance();
+			$License->get_plugins_list();
 			$license_config = WFFN_Core()->admin->get_license_config( true );
 
 			if ( isset( $license_config['ul']['ed'] ) && $license_config['ul']['ed'] ) {

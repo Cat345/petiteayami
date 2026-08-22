@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_WC_Affirm' ) ) {
 	/**
 	 * WooCommerce Affirm Gateway BY WooCommerce (v.1.2.2)

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Omnisend for Woocommerce by Omnisend
@@ -36,7 +37,7 @@ if ( ! class_exists( 'WFACP_Omnisend_For_WC' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_omnisend_wc' ],
 				'id'         => 'wfacp_omnisend_wc',
 				'field_type' => 'wfacp_omnisend_wc',
-				'label'      => __( 'Omnisend WC', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'Omnisend WC', 'funnel-builder' ),
 
 			];
 

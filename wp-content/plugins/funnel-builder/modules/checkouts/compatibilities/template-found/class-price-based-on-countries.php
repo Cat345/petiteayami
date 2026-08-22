@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Product_Price_Based_Country' ) ) {
 	/**
 	 * WooCommerce Price Based on Country (Basic)

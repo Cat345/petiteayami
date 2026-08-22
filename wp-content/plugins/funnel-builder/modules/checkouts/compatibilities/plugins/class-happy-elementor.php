@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_With_Happy_Elementor' ) ) {
 	/**
 	 * Happy Elementor Addons by weDevs (v.3.2.1)

@@ -29,30 +29,6 @@ class BWFAN_Notification_Email {
 	protected $executed_last = array();
 
 	/**
-	 * Constructor.
-	 */
-	public function __construct() {
-
-		$this->init();
-	}
-
-	/**
-	 * Initialize the class.
-	 */
-	public function init() {
-		/** Schedule Email Notification WP cron event */
-		add_action( 'bwfan_after_save_global_settings', array( $this, 'set_scheduler' ), 10, 2 );
-
-		/** Email notification callback */
-		add_action( 'bwfan_run_notifications', array( $this, 'run_notifications' ) );
-
-		/** Testing */
-		add_action( 'admin_init', array( $this, 'test_notification_admin' ) );
-
-		add_action( 'wp_ajax_bwfan_send_test_email_notification', array( $this, 'send_test_email_notification' ) );
-	}
-
-	/**
 	 * Get the instance of the class.
 	 *
 	 * @return BWFAN_Notification_Email
@@ -595,12 +571,8 @@ class BWFAN_Notification_Email {
 				'ampm'    => 'am',
 			),
 		);
-		self::$instance->set_scheduler( $old_settings, $new_settings );
+		self::get_instance()->set_scheduler( $old_settings, $new_settings );
 
 		update_option( 'bwfan_global_settings', $bwfan_settings );
 	}
-}
-
-if ( class_exists( 'BWFAN_Core' ) ) {
-	BWFAN_Core::register( 'notification_email', 'BWFAN_Notification_Email' );
 }

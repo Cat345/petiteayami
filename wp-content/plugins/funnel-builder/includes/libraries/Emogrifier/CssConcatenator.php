@@ -2,6 +2,8 @@
 
 namespace Pelago\Emogrifier;
 
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
+
 /**
  * Facilitates building a CSS string by appending rule blocks one at a time, checking whether the media query,
  * selectors, or declarations block are the same as those from the preceding block and combining blocks in such cases.

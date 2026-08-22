@@ -177,7 +177,7 @@ class Exclude_Coupons extends Base_Model implements Model_Interface, Initiable_I
         $cat_slugs = array_filter(
             $excluded_coupons,
             function ( $i ) {
-            return strpos( $i, 'cat_' ) !== false;
+            return str_contains( $i, 'cat_' );
             }
         );
 

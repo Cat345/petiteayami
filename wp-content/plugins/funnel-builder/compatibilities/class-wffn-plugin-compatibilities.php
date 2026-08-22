@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class WFFN_Plugin_Compatibilities
@@ -12,6 +13,7 @@ if ( ! class_exists( 'WFFN_Plugin_Compatibilities' ) ) {
 
 		public static function load_all_compatibilities() {
 			$compatibilities = array(
+				'class-wffn-aioseo-compatibility.php'      => function_exists( 'aioseo' ),
 				'class-wffn-beaver-builder-compatibility.php' => class_exists( 'FLBuilderLoader' ),
 				'class-wffn-cartflows-compatibility.php'   => class_exists( 'Cartflows_Checkout_Markup' ),
 				'class-wffn-nextmove-compatibility.php'    => class_exists( 'xlwcty' ),
@@ -25,6 +27,7 @@ if ( ! class_exists( 'WFFN_Plugin_Compatibilities' ) ) {
 				'class-wffn-breakdance-builder-compatibility.php' => defined( 'BREAKDANCE_WOO_DIR' ),
 				'class-wffn-pys-compatibility.php'         => class_exists( 'PixelYourSite\EventsManager' ),
 				'class-wffn-paghiper-compatibility.php'    => class_exists( 'WC_Paghiper' ),
+				'class-wffn-wompi-compatibility.php'       => class_exists( 'Wompi_Portal_Pagos_Gateway_Custom' ),
 				'rest/class-bwfan-compatibility-with-sg-cache.php' => function_exists( 'sg_cachepress_purge_cache' ),
 				'rest/class-wffn-clearfy-compatibility.php' => class_exists( 'Clearfy_Plugin' ),
 				'rest/class-wffn-force-login-compability.php' => function_exists( 'v_forcelogin_rest_access' ),
@@ -34,7 +37,10 @@ if ( ! class_exists( 'WFFN_Plugin_Compatibilities' ) ) {
 				'class-wffn-wpml-plugin-compatibility.php' => class_exists( 'SitePress' ) && defined( 'ICL_SITEPRESS_VERSION' ),
 				'class-wffn-polylang-plugin-compatibility.php' => function_exists( 'pll_default_language' ) && function_exists( 'pll_home_url' ),
 				'class-wffn-greenshift-compatibility.php'  => function_exists( 'gspb_get_final_css' ),
+				'class-wffn-litespeed-tracking-compatibility.php' => defined( 'LSCWP_V' ),
 				'class-wffn-complianz-compatibility.php'   => class_exists( 'COMPLIANZ' ),
+				'class-wffn-b2bking-compatibility.php'     => defined( 'B2BKING_DIR' ) || defined( 'B2BKINGCORE_DIR' ) || defined( 'b2bkingcredit_DIR' ) || class_exists( 'B2bking' ) || class_exists( 'B2bkingcore' ),
+				'class-wffn-simple-cloudflare-turnstile-compatibility.php' => function_exists( 'cfturnstile_field_show' ),
 			);
 
 			add_action( 'after_setup_theme', array( __CLASS__, 'themes' ) );

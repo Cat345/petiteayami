@@ -273,6 +273,7 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 								$offers_setting->variations = new stdClass();
 								$offers_setting->fields     = new stdClass();
 
+								$existing_offer_meta = get_post_meta( $offer_id, '_wfocu_setting', true );
 								foreach ( $options['products'] as $pro ) {
 									$hash_key = $pro['id'];
 
@@ -282,6 +283,22 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 									$offers_setting->fields->{$hash_key}->discount_type      = WFOCU_Common::get_discount_setting( $pro['discount_type'] );
 									$offers_setting->fields->{$hash_key}->quantity           = $pro['quantity'];
 									$offers_setting->fields->{$hash_key}->shipping_cost_flat = isset( $pro['shipping_cost_flat'] ) ? floatval( $pro['shipping_cost_flat'] ) : 0;
+
+									/**
+									 * The "Save" request only round-trips the 4 fields set above — it never
+									 * carries forward Pro add-on fields (e.g. Sublium's plan_id/force_one_time)
+									 * set when the product was originally added via wfocu_offer_add_product_fields,
+									 * because the React table's row state doesn't include them. Let Pro add-ons
+									 * re-derive/preserve their own fields here from the offer's existing saved
+									 * meta (from before this save request).
+									 *
+									 * @param stdClass $fields              Field object being built for this product.
+									 * @param string   $hash_key            Product key in the offer.
+									 * @param mixed    $existing_offer_meta The offer's _wfocu_setting meta before this save.
+									 *
+									 * @since 1.0.0
+									 */
+									$offers_setting->fields->{$hash_key} = apply_filters( 'wfocu_offer_save_product_fields', $offers_setting->fields->{$hash_key}, $hash_key, $existing_offer_meta );
 
 									if ( isset( $pro['variations'] ) && count( $pro['variations'] ) > 0 ) {
 										$offers_setting->variations->{$hash_key} = array();
@@ -294,7 +311,13 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 											}
 										}
 
-										$offers_setting->fields->{$hash_key}->default_variation = isset( $pro['radioVarient'] ) ? $pro['radioVarient'] : '';
+										if ( array_key_exists( 'radioVarient', $pro ) && is_null( $pro['radioVarient'] ) ) {
+											$offers_setting->fields->{$hash_key}->default_variation = WFOCU_Common::DEFAULT_VARIATION_NONE;
+										} elseif ( isset( $pro['radioVarient'] ) ) {
+											$offers_setting->fields->{$hash_key}->default_variation = $pro['radioVarient'];
+										} else {
+											$offers_setting->fields->{$hash_key}->default_variation = '';
+										}
 									}
 								}
 
@@ -492,6 +515,19 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 						$product_fields->discount_type      = 'percentage_on_reg';
 						$product_fields->quantity           = 1;
 						$product_fields->shipping_cost_flat = 0;
+
+						/**
+						 * Filter product fields when a product is added to an offer.
+						 * Allows Pro add-ons to enrich fields (e.g. plan_id) using the raw
+						 * products_meta_data sent alongside the product IDs in the request.
+						 *
+						 * @param stdClass $product_fields Product fields object
+						 * @param int      $pid            Product ID being added
+						 * @param array    $options         Full decoded request body
+						 *
+						 * @since 1.0.0
+						 */
+						$product_fields = apply_filters( 'wfocu_offer_add_product_fields', $product_fields, $pid, $options );
 
 						if ( $pro->is_type( 'variable' ) ) {
 							$first_variation = null;
@@ -1136,7 +1172,7 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 									'product_status'       => $product->get_status(),
 									'variations'           => $product_variations,
 									'checkVarient'         => $selected_variants,
-									'radioVarient'         => ! empty( $current_product['default_variation'] ) ? absint( $current_product['default_variation'] ) : '',
+									'radioVarient'         => ( WFOCU_Common::DEFAULT_VARIATION_NONE === ( $current_product['default_variation'] ?? '' ) ) ? null : ( ! empty( $current_product['default_variation'] ) ? absint( $current_product['default_variation'] ) : '' ),
 									'has_schemes'          => false,
 								);
 							}
@@ -1570,6 +1606,48 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 							$update_offer_post->post_content = $offer_post->post_content;
 							wp_update_post( $update_offer_post );
 						}
+					}
+
+					$existing_settings = get_post_meta( $new_offer_id, '_wfocu_setting', true );
+					if ( empty( $existing_settings ) || ! is_object( $existing_settings ) ) {
+						$offer_settings                 = new stdClass();
+						$offer_settings->products       = new stdClass();
+						$offer_settings->fields         = new stdClass();
+						$offer_settings->template       = 'custom-page';
+						$offer_settings->template_group = 'custom_page';
+						$offer_settings->settings       = new stdClass();
+						update_post_meta( $new_offer_id, '_wfocu_setting', $offer_settings );
+
+						// Self-reference, not $inherit_id — the cloned offer must render its own
+						// copied meta and stay independent if the source page is later edited or trashed.
+						update_post_meta( $new_offer_id, '_wfocu_custom_page', $new_offer_id );
+
+						// Drop post-id-scoped builder caches so each builder regenerates assets for the new post on first view.
+						$builder_cache_meta = apply_filters(
+							'wfocu_clone_offer_builder_cache_meta',
+							array(
+								'_elementor_css',
+								'_elementor_inline_svg',
+								'_elementor_page_assets',
+								'_et_pb_static_resources_cache',
+								'_et_dynamic_cached_shortcodes',
+								'_et_dynamic_cached_attributes',
+								'_bricks_page_css',
+								'_bricks_inline_css',
+								'_ct_other_template_id',
+								'_oxygen_cached_css',
+								'_fl_builder_data_cache',
+								'_fl_builder_draft_settings',
+							),
+							$new_offer_id,
+							$inherit_id
+						);
+						foreach ( $builder_cache_meta as $cache_key ) {
+							delete_post_meta( $new_offer_id, $cache_key );
+						}
+						clean_post_cache( $new_offer_id );
+
+						do_action( 'wfocu_after_clone_offer_from_page', $new_offer_id, $inherit_id );
 					}
 				} elseif ( $duplicate_id > 0 ) {
 					$new_offer_id = WFOCU_Core()->offers->duplicate_offer( $duplicate_id, '', $upsell_id );

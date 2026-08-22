@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * WooCommerce Smart Coupons By Store Apps
@@ -47,7 +48,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Smart_Coupons' ) ) {
 				'type'  => 'wfacp_html',
 				'class' => [ 'wfacp-col-full', 'wfacp-form-control-wrapper' ],
 				'id'    => 'smart_coupon_gift',
-				'label' => __( 'Smart Coupon Gift', 'woofunnels-aero-checkout' ),
+				'label' => __( 'Smart Coupon Gift', 'funnel-builder' ),
 
 			];
 

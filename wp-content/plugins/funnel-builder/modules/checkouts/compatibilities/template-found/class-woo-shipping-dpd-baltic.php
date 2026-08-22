@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_With_Woo_DPD_Baltic' ) ) {
 	/**
 	 * WooCommerce Shipping - DPD baltic

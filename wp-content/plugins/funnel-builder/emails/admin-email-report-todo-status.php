@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
                                 <a href="<?php echo esc_url( $upgrade_link ); ?>"
                                    target="_blank"
                                    style="color: #0073aa; text-decoration: underline; font-family: Arial, sans-serif; font-size: 14px;">
-                                    <b><?php echo esc_html( __( 'Upgrade to Pro', 'Funnelkit' ) ); ?></b>
+                                    <b><?php echo esc_html( __( 'Upgrade to Pro', 'funnel-builder' ) ); ?></b>
                                 </a>
                             </td>
 						<?php elseif ( $list['status'] === 'active' ): ?>
@@ -31,7 +31,7 @@ defined( 'ABSPATH' ) || exit;
                                 <a href="<?php echo esc_url( $list['link'] ); ?>"
                                    target="_blank"
                                    style="color: #0073aa; text-decoration: underline; font-family: Arial, sans-serif; font-size: 14px;">
-                                    <b><?php echo esc_html( __( 'Setup', 'Funnelkit' ) ); ?></b>
+                                    <b><?php echo esc_html( __( 'Setup', 'funnel-builder' ) ); ?></b>
                                 </a>
                             </td>
 						<?php endif; ?>

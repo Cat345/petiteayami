@@ -30,7 +30,7 @@ if (!\class_exists('FSVendor\WPDesk_Tracker_Sender_Logged')) {
             $this->logger = $logger;
         }
         /**
-         * Sends payload logging payload and the response.
+         * Sends payload logging only the send lifecycle, without payload contents.
          *
          * @param array $payload Payload to send.
          *
@@ -43,37 +43,18 @@ if (!\class_exists('FSVendor\WPDesk_Tracker_Sender_Logged')) {
             if ($this->logger instanceof LoggerInterface) {
                 return $this->do_send($payload);
             }
-            return $this->do_send_deprecated($payload);
+            return $this->sender->send_payload($payload);
         }
         private function do_send(array $payload): array
         {
-            $this->logger->debug('Sender payload', ['payload' => $payload]);
+            $this->logger->debug('Sender payload prepared');
             try {
                 $response = $this->sender->send_payload($payload);
-                $this->logger->debug('Sender response', ['response' => $response]);
+                $this->logger->debug('Sender payload sent');
                 return $response;
             } catch (WPDesk_Tracker_Sender_Exception_WpError $e) {
-                $this->logger->error('Sender error', ['error' => $e]);
+                $this->logger->error('Sender error');
                 throw $e;
-            }
-        }
-        /**
-         * For backward compatibility this function uses static access on `wp-logs` library.
-         */
-        private function do_send_deprecated(array $payload): array
-        {
-            if (\class_exists('FSVendor\WPDesk_Logger_Factory')) {
-                WPDesk_Logger_Factory::log_message('Sender payload: ' . \json_encode($payload), self::LOGGER_SOURCE, WPDesk_Logger::DEBUG);
-                try {
-                    $response = $this->sender->send_payload($payload);
-                    WPDesk_Logger_Factory::log_message('Sender response: ' . \json_encode($response), self::LOGGER_SOURCE, WPDesk_Logger::DEBUG);
-                    return $response;
-                } catch (WPDesk_Tracker_Sender_Exception_WpError $exception) {
-                    WPDesk_Logger_Factory::log_exception($exception);
-                    throw $exception;
-                }
-            } else {
-                return $this->sender->send_payload($payload);
             }
         }
     }

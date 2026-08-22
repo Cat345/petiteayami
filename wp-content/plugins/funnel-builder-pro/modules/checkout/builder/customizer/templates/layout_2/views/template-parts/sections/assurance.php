@@ -43,7 +43,7 @@ if ( isset( $enable_divider ) && $enable_divider != '' ) {
 					<?php
 					if ( $hide_title != 1 && isset( $val['mwidget_heading'] ) ) {
 						?>
-						<h2 class=" wfacp-list-title loop_head_sec wfacp_section_title  <?php echo $align_text . ' ' . $font_weight; ?>"><?php echo esc_html( $val['mwidget_heading'] ); ?></h2>
+						<h2 class=" wfacp-list-title loop_head_sec wfacp_section_title  <?php echo $align_text . ' ' . $font_weight; ?>"><?php echo wp_kses( $val['mwidget_heading'], array( 'br' => array(), 'span' => array( 'class' => array(), 'style' => array() ), 'b' => array(), 'strong' => array(), 'i' => array(), 'em' => array() ) ); ?></h2>
 
 						<?php
 					}

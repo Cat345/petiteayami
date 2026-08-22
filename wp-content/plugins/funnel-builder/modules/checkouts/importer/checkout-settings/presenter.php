@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 $product_field  = WFACP_Common::get_product_field();
 $advanced_field = WFACP_Common::get_advanced_fields();
 $settings       = [
@@ -18,21 +19,21 @@ $settings       = [
 
 $steps = [
 	'single_step' => [
-		'name'          => __( 'Step 1', 'woofunnels-aero-checkout' ),
+		'name'          => __( 'Step 1', 'funnel-builder' ),
 		'slug'          => 'single_step',
-		'friendly_name' => __( 'Single Step Checkout', 'woofunnels-aero-checkout' ),
+		'friendly_name' => __( 'Single Step Checkout', 'funnel-builder' ),
 		'active'        => 'yes',
 	],
 	'two_step'    => [
-		'name'          => __( 'Step 2', 'woofunnels-aero-checkout' ),
+		'name'          => __( 'Step 2', 'funnel-builder' ),
 		'slug'          => 'two_step',
-		'friendly_name' => __( 'Two Step Checkout', 'woofunnels-aero-checkout' ),
+		'friendly_name' => __( 'Two Step Checkout', 'funnel-builder' ),
 		'active'        => 'no',
 	],
 	'third_step'  => [
-		'name'          => __( 'Step 3', 'woofunnels-aero-checkout' ),
+		'name'          => __( 'Step 3', 'funnel-builder' ),
 		'slug'          => 'third_step',
-		'friendly_name' => __( 'Three Step Checkout', 'woofunnels-aero-checkout' ),
+		'friendly_name' => __( 'Three Step Checkout', 'funnel-builder' ),
 		'active'        => 'no',
 	],
 ];
@@ -109,7 +110,7 @@ $pageLayout = [
 				'fields'      => [ isset( $advanced_field['shipping_calculator'] ) ? $advanced_field['shipping_calculator'] : [] ],
 			],
 			[
-				'name'        => WFACP_Common::translation_string_to_check(__( 'Your Products', 'woofunnels-aero-checkout' )),
+				'name'        => WFACP_Common::translation_string_to_check(__( 'Your Products', 'funnel-builder' )),
 				'class'       => '',
 				'sub_heading' => '',
 				'html_fields' => [

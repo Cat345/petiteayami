@@ -262,6 +262,16 @@ class Module_Settings extends Base_Model implements Model_Interface, Initiable_I
             'default'  => 'no',
         );
 
+        // Store Credits General - Hide store credits when a coupon is applied.
+        $options[] = array(
+            'id'       => $this->_constants->HIDE_STORE_CREDITS_WHEN_COUPON_APPLIED,
+            'title'    => __( 'Hide store credits when a coupon is applied', 'advanced-coupons-for-woocommerce' ),
+            'type'     => 'checkbox',
+            'desc'     => __( 'Hide the store credit redemption field in the cart/checkout when an active coupon is applied to the cart.', 'advanced-coupons-for-woocommerce' ),
+            'desc_tip' => __( 'When enabled, the store credit redemption field is hidden and new store credit redemptions are blocked while a coupon is applied to the cart. Any store credit already applied to the order stays applied until the coupon is removed.', 'advanced-coupons-for-woocommerce' ),
+            'default'  => 'no',
+        );
+
         // Store Credit Reminder - Subtitle.
         $options[] = array(
             'title' => __( 'Reminder Emails', 'advanced-coupons-for-woocommerce' ),
@@ -494,7 +504,51 @@ class Module_Settings extends Base_Model implements Model_Interface, Initiable_I
             'default' => 'no',
         );
 
+        if ( \ACFWF()->Helper_Functions->is_module( Plugin_Constants::ADD_PRODUCTS_MODULE ) ) {
+            $option[] = array(
+                'title'    => __( 'Add Products discount application mode', 'advanced-coupons-for-woocommerce' ),
+                'type'     => 'radio',
+                'desc_tip' => __( 'Choose how Add Products discounts are applied on the cart. "Price modification" adjusts the price of the added products directly. "Coupon amount" keeps product prices unchanged and applies the discount to the coupon total instead, so it is visible on the coupon line and included in coupon reporting. In coupon amount mode, product tax is calculated on the unmodified product price (the discount is applied to the coupon total after tax).', 'advanced-coupons-for-woocommerce' ),
+                'id'       => $this->_constants->ADD_PRODUCTS_DISCOUNT_APPLICATION_MODE,
+                'default'  => 'price',
+                'options'  => array(
+                    'price'  => __( 'Price modification — adjust the added product prices directly (default).', 'advanced-coupons-for-woocommerce' ),
+                    'coupon' => __( 'Coupon amount — keep product prices unchanged and apply the discount to the coupon total.', 'advanced-coupons-for-woocommerce' ),
+                ),
+            );
+        }
+
+        if ( \ACFWF()->Helper_Functions->is_module( Plugin_Constants::SHIPPING_OVERRIDES_MODULE ) ) {
+            $option[] = array(
+                'title'    => __( 'Shipping Overrides discount application mode', 'advanced-coupons-for-woocommerce' ),
+                'type'     => 'radio',
+                'desc_tip' => __( 'Choose how Shipping Overrides discounts are applied on the cart. "Price modification" reduces the shipping cost directly. "Coupon amount" keeps the displayed shipping cost unchanged and applies the discount to the coupon total instead, so it is visible on the coupon line and included in coupon reporting. Shipping taxes are reduced by the discounted proportion in both modes.', 'advanced-coupons-for-woocommerce' ),
+                'id'       => $this->_constants->SHIPPING_OVERRIDES_DISCOUNT_APPLICATION_MODE,
+                'default'  => 'price',
+                'options'  => array(
+                    'price'  => __( 'Price modification — reduce the shipping cost directly (default).', 'advanced-coupons-for-woocommerce' ),
+                    'coupon' => __( 'Coupon amount — keep the shipping cost unchanged and apply the discount to the coupon total.', 'advanced-coupons-for-woocommerce' ),
+                ),
+            );
+        }
+
         return $option;
+    }
+
+    /**
+     * Register the premium features into the discount application mode options map.
+     *
+     * @since 4.1
+     * @access public
+     *
+     * @param array $options_map Feature slug keyed list of option IDs.
+     * @return array Filtered options map.
+     */
+    public function register_discount_application_mode_options( $options_map ) {
+        $options_map['add_products']       = $this->_constants->ADD_PRODUCTS_DISCOUNT_APPLICATION_MODE;
+        $options_map['shipping_overrides'] = $this->_constants->SHIPPING_OVERRIDES_DISCOUNT_APPLICATION_MODE;
+
+        return $options_map;
     }
 
     /*
@@ -546,6 +600,7 @@ class Module_Settings extends Base_Model implements Model_Interface, Initiable_I
         add_filter( 'acfw_settings_help_section_options', array( $this, 'filter_help_section_options' ), 10, 1 );
         add_filter( 'acfw_setting_scheduler_options', array( $this, 'register_day_time_scheduler_settings' ), 10, 1 );
         add_filter( 'acfw_setting_general_options', array( $this, 'setting_general_option' ), 10, 1 );
+        add_filter( 'acfw_discount_application_mode_options_map', array( $this, 'register_discount_application_mode_options' ), 10, 1 );
 
         // Store Credits.
         if ( \ACFWF()->Helper_Functions->is_module( Plugin_Constants::STORE_CREDITS_MODULE ) ) {

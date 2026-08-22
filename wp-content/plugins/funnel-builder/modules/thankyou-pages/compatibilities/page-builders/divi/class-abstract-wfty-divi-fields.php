@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFTY_Divi_Field extends ET_Builder_Module {

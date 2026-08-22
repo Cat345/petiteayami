@@ -63,6 +63,10 @@ if ( ! class_exists( 'FK_Checkout_Redirect_Admin' ) ) {
 				#woocommerce-product-data ul.wc-tabs li.fk_checkout_redirect_options.active a:before {
 					filter: brightness(0) saturate(100%) invert(32%) sepia(1%) saturate(0%) hue-rotate(135deg) brightness(96%) contrast(84%);
 				}
+				/* Keep the select2 "clear" (×) from overlapping the dropdown arrow on the checkout picker. */
+				#select2-fk_checkout_search-container .select2-selection__clear {
+					margin-right: 18px;
+				}
 			</style>
 			<?php
 		}
@@ -91,10 +95,11 @@ if ( ! class_exists( 'FK_Checkout_Redirect_Admin' ) ) {
 		public function render_product_data_panel() {
 			global $post;
 
-			$product_id = $post->ID;
-			$funnel_id  = absint( get_post_meta( $product_id, '_fk_checkout_funnel_id', true ) );
-			$step_id    = absint( get_post_meta( $product_id, '_fk_checkout_step_id', true ) );
-			$cart_text  = get_post_meta( $product_id, '_fk_add_to_cart_text', true );
+			$product_id       = $post->ID;
+			$funnel_id        = absint( get_post_meta( $product_id, '_fk_checkout_funnel_id', true ) );
+			$step_id          = absint( get_post_meta( $product_id, '_fk_checkout_step_id', true ) );
+			$cart_text        = get_post_meta( $product_id, '_fk_add_to_cart_text', true );
+			$redirect_enabled = get_post_meta( $product_id, '_fk_redirect_to_checkout', true );
 
 			// Get selected checkout name for display
 			$selected_label = '';
@@ -121,7 +126,7 @@ if ( ! class_exists( 'FK_Checkout_Redirect_Admin' ) ) {
 				</div>
 				<div class="options_group">
 					<p class="form-field">
-						<label for="fk_checkout_search"><?php esc_html_e( 'Funnel Checkout', 'funnel-builder' ); ?></label>
+						<label for="fk_checkout_search"><?php esc_html_e( 'Checkout Template', 'funnel-builder' ); ?></label>
 						<select id="fk_checkout_search" name="fk_checkout_search" class="wc-product-search" style="width: 50%;" data-placeholder="<?php esc_attr_e( 'Search for a checkout&hellip;', 'funnel-builder' ); ?>">
 							<?php if ( $step_id > 0 && ! empty( $selected_label ) ) : ?>
 								<option value="<?php echo esc_attr( $funnel_id . ':' . $step_id ); ?>" selected="selected"><?php echo esc_html( $selected_label ); ?></option>
@@ -133,6 +138,20 @@ if ( ! class_exists( 'FK_Checkout_Redirect_Admin' ) ) {
 					<p class="description" style="margin-left: 160px; margin-top: -10px;">
 						<?php esc_html_e( 'When this product is in the cart, shoppers will be redirected to the selected checkout.', 'funnel-builder' ); ?>
 					</p>
+				</div>
+
+				<div class="options_group fk-redirect-to-checkout-wrap" style="<?php echo $step_id > 0 ? '' : 'display:none;'; ?>">
+					<?php
+					woocommerce_wp_checkbox(
+						array(
+							'id'          => '_fk_redirect_to_checkout',
+							'label'       => __( 'Redirect to dedicated checkout page', 'funnel-builder' ),
+							'description' => __( 'Redirect shoppers directly to the checkout page when they click Add to Cart.', 'funnel-builder' ),
+							'value'       => $redirect_enabled,
+							'cbvalue'     => 'yes',
+						)
+					);
+					?>
 				</div>
 
 				<div class="options_group">
@@ -195,9 +214,12 @@ if ( ! class_exists( 'FK_Checkout_Redirect_Admin' ) ) {
 						var data = e.params.data;
 						$('#_fk_checkout_funnel_id').val(data.funnel_id || '');
 						$('#_fk_checkout_step_id').val(data.step_id || '');
+						$('.fk-redirect-to-checkout-wrap').show();
 					}).on('select2:unselect', function () {
 						$('#_fk_checkout_funnel_id').val('');
 						$('#_fk_checkout_step_id').val('');
+						$('.fk-redirect-to-checkout-wrap').hide();
+						$('#_fk_redirect_to_checkout').prop('checked', false);
 					});
 				});
 			</script>
@@ -219,9 +241,10 @@ if ( ! class_exists( 'FK_Checkout_Redirect_Admin' ) ) {
 				return;
 			}
 
-			$funnel_id = isset( $_POST['_fk_checkout_funnel_id'] ) ? absint( $_POST['_fk_checkout_funnel_id'] ) : 0;
-			$step_id   = isset( $_POST['_fk_checkout_step_id'] ) ? absint( $_POST['_fk_checkout_step_id'] ) : 0;
-			$cart_text = isset( $_POST['_fk_add_to_cart_text'] ) ? sanitize_text_field( wp_unslash( $_POST['_fk_add_to_cart_text'] ) ) : '';
+			$funnel_id        = isset( $_POST['_fk_checkout_funnel_id'] ) ? absint( $_POST['_fk_checkout_funnel_id'] ) : 0;
+			$step_id          = isset( $_POST['_fk_checkout_step_id'] ) ? absint( $_POST['_fk_checkout_step_id'] ) : 0;
+			$cart_text        = isset( $_POST['_fk_add_to_cart_text'] ) ? sanitize_text_field( wp_unslash( $_POST['_fk_add_to_cart_text'] ) ) : '';
+			$redirect_enabled = isset( $_POST['_fk_redirect_to_checkout'] ) ? 'yes' : '';
 
 			if ( $funnel_id > 0 ) {
 				update_post_meta( $post_id, '_fk_checkout_funnel_id', $funnel_id );
@@ -233,6 +256,12 @@ if ( ! class_exists( 'FK_Checkout_Redirect_Admin' ) ) {
 				update_post_meta( $post_id, '_fk_checkout_step_id', $step_id );
 			} else {
 				delete_post_meta( $post_id, '_fk_checkout_step_id' );
+			}
+
+			if ( 'yes' === $redirect_enabled ) {
+				update_post_meta( $post_id, '_fk_redirect_to_checkout', 'yes' );
+			} else {
+				delete_post_meta( $post_id, '_fk_redirect_to_checkout' );
 			}
 
 			if ( ! empty( $cart_text ) ) {
@@ -268,8 +297,14 @@ if ( ! class_exists( 'FK_Checkout_Redirect_Admin' ) ) {
 
 			wp_nonce_field( 'fk_checkout_redirect_cat_save', 'fk_checkout_redirect_cat_nonce' );
 			?>
+			<style>
+				/* Keep the select2 "clear" (×) from overlapping the dropdown arrow on the checkout picker. */
+				#select2-fk_cat_checkout_search-container .select2-selection__clear {
+					margin-right: 18px;
+				}
+			</style>
 			<tr class="form-field">
-				<th scope="row"><label for="fk_cat_checkout_search"><?php esc_html_e( 'Funnel Checkout', 'funnel-builder' ); ?></label></th>
+				<th scope="row"><label for="fk_cat_checkout_search"><?php esc_html_e( 'Checkout Template', 'funnel-builder' ); ?></label></th>
 				<td>
 					<select id="fk_cat_checkout_search" name="fk_cat_checkout_search" style="width: 50%;" data-placeholder="<?php esc_attr_e( 'Search for a checkout&hellip;', 'funnel-builder' ); ?>">
 						<?php if ( $step_id > 0 && ! empty( $selected_label ) ) : ?>

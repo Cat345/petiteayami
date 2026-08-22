@@ -10,20 +10,23 @@ if ( ! class_exists( 'WFACP_WooCommerce_Product_bundles' ) ) {
 		private $process = false;
 
 		public function __construct() {
-			add_filter( 'wfacp_show_item_quantity', array( $this, 'do_not_display' ), 10, 2 );
-			add_filter( 'wfacp_show_you_save_text', array( $this, 'do_not_display' ), 10, 2 );
-			add_filter( 'wfacp_enable_delete_item', array( $this, 'do_not_display' ), 10, 2 );
-			add_filter( 'wfacp_mini_cart_enable_delete_item', array( $this, 'do_not_display' ), 10, 2 );
-			add_filter( 'wfacp_display_quantity_increment', array( $this, 'do_not_display' ), 10, 2 );
-			add_filter( 'wfacp_show_item_price', array( $this, 'do_not_display_main_product_price' ), 10, 2 );
-			add_filter( 'wfacp_show_undo_message_for_item', array( $this, 'do_not_undo' ), 10, 2 );
-			add_filter( 'wfacp_exclude_product_cart_count', array( $this, 'do_not_undo' ), 10, 2 );
-			add_filter( 'wfacp_show_item_price_placeholder', array( $this, 'display_cart_item_price' ), 10, 3 );
-			add_filter( 'wfacp_show_item_quantity_placeholder', array( $this, 'display_item_quantity' ), 10, 3 );
+			add_filter( 'wfacp_show_item_quantity', [ $this, 'do_not_display' ], 10, 2 );
+			add_filter( 'wfacp_show_you_save_text', [ $this, 'do_not_display' ], 10, 2 );
+			add_filter( 'wfacp_enable_delete_item', [ $this, 'do_not_display' ], 10, 2 );
+			add_filter( 'wfacp_mini_cart_enable_delete_item', [ $this, 'do_not_display' ], 10, 2 );
+			add_filter( 'wfacp_display_quantity_increment', [ $this, 'do_not_display' ], 10, 2 );
+			add_filter( 'wfacp_show_item_price', [ $this, 'do_not_display_main_product_price' ], 10, 2 );
+			add_filter( 'wfacp_show_undo_message_for_item', [ $this, 'do_not_undo' ], 10, 2 );
+			add_filter( 'wfacp_exclude_product_cart_count', [ $this, 'do_not_undo' ], 10, 2 );
+			add_filter( 'wfacp_show_item_price_placeholder', [ $this, 'display_cart_item_price' ], 10, 3 );
+			add_filter( 'wfacp_show_item_quantity_placeholder', [ $this, 'display_item_quantity' ], 10, 3 );
+			add_filter( 'wfacp_saving_price_item_regular_price', [ $this, 'adjust_bundle_child_regular_price' ], 10, 2 );
 
-			add_action( 'wfacp_internal_css', array( $this, 'js' ) );
-			add_action( 'woocommerce_checkout_update_order_review', array( $this, 'get_data' ), 5 );
-			add_filter( 'woocommerce_update_order_review_fragments', array( $this, 'unset_fragments' ), 900 );
+			add_action( 'wfacp_internal_css', [ $this, 'js' ] );
+			add_action( 'woocommerce_checkout_update_order_review', [ $this, 'get_data' ], 5 );
+			add_filter( 'woocommerce_update_order_review_fragments', [ $this, 'unset_fragments' ], 900 );
+
+
 		}
 
 		public function do_not_display( $status, $cart_item ) {
@@ -33,6 +36,35 @@ if ( ! class_exists( 'WFACP_WooCommerce_Product_bundles' ) ) {
 			}
 
 			return $status;
+		}
+
+		/**
+		 * Bundle-aware regular price for the savings baseline.
+		 * - Non-priced-individually child: return '' to skip (value is in parent).
+		 * - Priced-individually child: keep the product's own regular price, so a
+		 *   bundle discount counts as savings — matching the struck-through regular
+		 *   price WooCommerce shows on the cart row.
+		 */
+		public function adjust_bundle_child_regular_price( $regular_price, $cart_item ) {
+			if ( ! isset( $cart_item['bundled_by'], $cart_item['bundled_item_id'] ) || ! function_exists( 'wc_pb_get_bundled_cart_item_container' ) ) {
+				return $regular_price;
+			}
+
+			$container = wc_pb_get_bundled_cart_item_container( $cart_item );
+			if ( empty( $container['data'] ) || ! is_a( $container['data'], 'WC_Product_Bundle' ) ) {
+				return $regular_price;
+			}
+
+			$bundled_item = $container['data']->get_bundled_item( $cart_item['bundled_item_id'] );
+			if ( ! $bundled_item ) {
+				return $regular_price;
+			}
+
+			if ( ! $bundled_item->is_priced_individually() ) {
+				return '';
+			}
+
+			return $regular_price;
 		}
 
 		public function do_not_undo( $status, $cart_item ) {
@@ -56,14 +88,15 @@ if ( ! class_exists( 'WFACP_WooCommerce_Product_bundles' ) ) {
 		}
 
 		public function display_cart_item_price( $_product, $cart_item, $cart_item_key ) {
-			echo apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] ), $cart_item, $cart_item_key ); // PHPCS: XSS ok.
+			echo apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] ), $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
 		}
 
 		public function display_item_quantity( $cart_item ) {
 
 			if ( isset( $cart_item['bundled_by'] ) ) {
 				?>
-				<span><?php echo $cart_item['quantity']; ?></span>
+                <span><?php echo esc_html( $cart_item['quantity'] ); ?></span>
 				<?php
 			}
 		}

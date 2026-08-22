@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'BWF_Compatibility_With_WPML_MultiCurrency' ) ) {
 	#[AllowDynamicProperties]
 	class BWF_Compatibility_With_WPML_MultiCurrency {

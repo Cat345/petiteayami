@@ -37,13 +37,10 @@ class Xoo_Wl_Admin_Settings{
 		add_action( 'woocommerce_product_options_inventory_product_data', array( $this, 'wc_edit_product_custom_fields' ) );
 		add_action( 'woocommerce_process_product_meta', array( $this, 'wc_edit_product_save_custom_fields' ) );
 
-		add_action( 'admin_init', array( $this, 'preview_email' ) );
+		
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
-		add_action( 'xoo_tab_page_end', array( $this, 'display_shortcodes_list' ), 10, 2 );
-
-		add_action( 'xoo_tab_page_start', array( $this, 'display_preview_template_form' ), 10, 2 );
-		add_action( 'xoo_tab_page_end', array( $this, 'display_preview_template_form' ), 10, 2 );
+	
 
 		add_filter( 'xoo_aff_add_fields', array( $this,'add_new_fields' ), 10, 2 );
 		add_action( 'xoo_aff_field_selector', array( $this, 'customFields_addon_notice' ) );
@@ -53,15 +50,63 @@ class Xoo_Wl_Admin_Settings{
 			remove_action( 'xoo_tab_page_start', array(  xoo_wl_helper()->admin, 'info_tab_data' ), 10, 2 );
 			add_action( 'xoo_tab_page_end', array(  $this, 'troubleshoot_info' ), 10, 2 );
 			add_action( 'xoo_tab_page_start', array(  $this, 'other_info' ), 35, 2 );
+
+			add_action( 'xoo_tab_page_end', array( $this, 'display_shortcodes_list' ), 10, 2 );
+
+			add_action( 'xoo_tab_page_start', array( $this, 'display_preview_template_form' ), 10, 2 );
+			add_action( 'xoo_tab_page_end', array( $this, 'display_preview_template_form' ), 10, 2 );
+
+			add_action('xoo_tab_page_start', array( $this, 'addon_html' ), 10, 2 );
+
+			add_action( 'xoo_as_setting_sidebar_waitlist-woocommerce', array( $this, 'sidebar_html' ) );
+
+			add_filter( 'xoo_wl_admin_settings', array( $this, 'filter_settings' ), 10, 2 );
+
+			add_action( 'admin_init', array( $this, 'preview_email' ) );
+
 		}
 
-		add_action( 'wp_loaded', array( $this, 'register_addons_tab' ), 20 );
-		add_action('xoo_tab_page_start', array( $this, 'addon_html' ), 10, 2 );
 
-		add_action( 'xoo_as_setting_sidebar_waitlist-woocommerce', array( $this, 'sidebar_html' ) );
-
+	
 		add_action( 'admin_enqueue_scripts', array( $this, 'old_version_import_export_addon_compatibility' ) );
 
+		
+
+	}
+
+
+	public function filter_settings( $settings, $type ) {
+
+		if ( in_array( $type, array( 'style', 'general' ), true ) && get_option( 'xoo-wl-old-btn-layout', true ) !== 'yes') {
+
+			$remove_ids = array();
+
+			if ( $type === 'style' ) {
+				$remove_ids = array(
+					'btn-bgcolor',
+					'btn-txtcolor',
+					'btn-open-width',
+					'btn-form-width',
+					'btn-padding',
+					'btn-newlayout'
+				);
+			}
+			elseif ( $type === 'general' ) {
+				$remove_ids = array(
+					'txt-head',
+					'txt-subhead',
+					'txt-new-form-desc'
+				);
+			}
+
+			foreach ( $settings as $index => $setting ) {
+				if ( in_array( $setting['id'], $remove_ids, true ) ) {
+					unset( $settings[ $index ] );
+				}
+			}
+		}
+
+		return $settings;
 	}
 
 
@@ -124,9 +169,6 @@ class Xoo_Wl_Admin_Settings{
 		<?php
 	}
 
-	public function register_addons_tab(){
-		xoo_wl_helper()->admin->register_tab( 'Add-ons', 'addon' );
-	}
 
 	public function addon_html( $tab_id, $tab_data ){
 
@@ -332,22 +374,26 @@ class Xoo_Wl_Admin_Settings{
 
 	public function enqueue_scripts($hook) {
 
-		wp_enqueue_style( 'xoo-wl-admin-style', XOO_WL_URL . '/admin/assets/css/xoo-wl-admin-style.css', array(), XOO_WL_VERSION, 'all' );
+		$isWaitlistPage = $hook === 'toplevel_page_xoo-wl-view-waitlist' || $hook === 'waitlist_page_xoo-wl-email-history';
+
+		//Enqueue Styles only on plugin settings page
+		if( xoo_wl_helper()->admin->is_settings_page() || $isWaitlistPage ){
+			wp_enqueue_style( 'xoo-wl-admin-style', XOO_WL_URL . '/admin/assets/css/xoo-wl-admin-style.css', array(), XOO_WL_VERSION, 'all' );
+		}
+
 
 		//Enqueue Styles only on plugin settings page
 		if( xoo_wl_helper()->admin->is_settings_page() ){
-		
+	
 			wp_enqueue_script( 'xoo-wl-admin-js', XOO_WL_URL . '/admin/assets/js/xoo-wl-admin-js.js', array( 'jquery' ), XOO_WL_VERSION, false );
 
 			wp_localize_script('xoo-wl-admin-js','xoo_wl_admin_localize',array(
 				'adminurl'  => admin_url().'admin-ajax.php',
 			));
 
-
 		}
 
-
-		if( $hook === 'toplevel_page_xoo-wl-view-waitlist' || $hook === 'waitlist_page_xoo-wl-email-history' ){
+		if( $isWaitlistPage ){
 
 			wp_enqueue_style( 'dataTables-css', XOO_WL_URL.'/admin/assets/css/datatables.css' );
 

@@ -23,7 +23,7 @@ $banner = $this->el('div', [
         'uk-position-{banner_position} uk-position-fixed uk-position-z-index-high uk-position-{banner_margin} {@banner_type: card|notification}',
 
         'uk-section uk-section-xsmall uk-section-{section_style} {@banner_type: section}',
-        'uk-position-bottom uk-position-fixed uk-position-z-index-high {banner_position: bottom} {@banner_type: section}',
+        'uk-position-bottom uk-position-fixed uk-position-z-index-high {@banner_position: bottom} {@banner_type: section}',
         'uk-position-relative uk-position-z-index {@banner_position: top} {@banner_type: section}',
     ],
 
@@ -132,13 +132,17 @@ foreach (['accept', 'reject', 'settings'] as $button) {
 $modal = $this->el('form', [
 
     'class' => [
-        'uk-modal-dialog  uk-margin-auto-vertical',
+        'uk-modal-dialog uk-margin-auto-vertical',
         'uk-modal-body {@!modal_sections}'
     ],
 
     'style' => [
         'width: {modal_width}px;',
         'width: 720px; {@!modal_width}',
+    ],
+
+    'aria-label' => [
+        __('Privacy Settings', 'yootheme')
     ],
 
 ]);

@@ -57,7 +57,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_YTH_WC_Points_Rewards' ) ) {
 				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'yith_wc_birthday' ),
 				'id'         => 'yith_wc_birthday',
 				'field_type' => 'yith_wc_birthday',
-				'label'      => __( 'Yth WC Birthday', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'Yth WC Birthday', 'funnel-builder' ),
 			);
 
 			return $fields;

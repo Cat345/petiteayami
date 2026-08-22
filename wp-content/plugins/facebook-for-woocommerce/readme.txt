@@ -3,7 +3,7 @@ Contributors: facebook
 Tags: meta, facebook, whatsapp, conversions api, catalog sync
 Requires at least: 5.6
 Tested up to: 7.0
-Stable tag: 3.7.3
+Stable tag: 3.7.5
 Requires PHP: 7.4
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -40,10 +40,19 @@ When reporting an issue on Meta Direct Support, please give us as many details a
 
 To suggest technical improvements, you can raise an issue on our [Github repository](https://github.com/facebook/facebook-for-woocommerce/issues).
 
+== Known limitations ==
+
+Crash recovery uses a shutdown handler to write a disable flag and queue a sanitized crash report.
+In rare PHP memory-exhaustion fatals, there may be too little memory left for the shutdown handler to run.
+When that happens, the site still recovers on the next request, but the disable flag and crash report may be skipped for that request.
+
 == Changelog ==
 
-= 3.7.4 - 2026-06-22 =
-* Add - Move WhatsApp to a standalone top-level admin menu with a scheme-aware icon by @ceciliazeng-wa in #3947
-* Fix - Prevent duplicate AddToCart Pixel fires from repeated AJAX fragment execution by @cshing-meta in #3939
+= 3.7.6 - 2026-07-23 =
+* Fix - Fix/prepare release changelog fix by @bojanaivovic in #3972
+* Fix - ci(e2e): run all shards on ubuntu-latest instead of custom runner pools by @vahidkay-meta in #3976
+* Fix - Improve escaping and WordPress Plugin Check compliance by @vahidkay-meta in #3980
+* Fix - Clear remaining WordPress Plugin Check errors by @vahidkay-meta in #3981
+* Dev - ci(release): fix readme Tested-up-to minor version + propagate Stable tag to git by @vahidkay-meta in #3983
 
 [See changelog for all versions](https://raw.githubusercontent.com/facebook/facebook-for-woocommerce/refs/heads/main/changelog.txt).

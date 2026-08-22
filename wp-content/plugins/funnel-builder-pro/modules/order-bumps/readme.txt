@@ -2,6 +2,7 @@
 = 1.27.0 (2025-06-23) =
 * Improved: Bump: views improved for broken WooCommerce sessions, ensuring smoother experiences. (#7402)
 * Fixed: Bumps: Fixed PHP Error with WPML compatibility. (#7588)
+* Fixed: Bump: Compatibility check no longer triggers deprecated WooCommerce Subscriptions autoloader classes (WCS_Autoloader/WCS_Core_Autoloader) on Subscriptions 8.8+. (#9116)
 
 = 1.26.0 (2025-03-05) =
 * Fixed: Order Bumps - Moved bumps placeholders to `template_redirect` to ensure they are printed correctly on the page. (#7155)

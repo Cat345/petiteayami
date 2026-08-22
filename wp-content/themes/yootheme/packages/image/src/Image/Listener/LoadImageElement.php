@@ -19,7 +19,8 @@ class LoadImageElement
     public static function handle($element, array $params, callable $next): HtmlElement
     {
         $element = $next($element, $params);
-        $element = $element->withAttr('src', Url::to($element->attr('src')));
+        $src = (string) $element->attr('src');
+        $element = $element->withAttr('src', $src !== '' ? Url::to($src) : '');
 
         $image = Html::img($element->attrs());
         $children = $element->children();

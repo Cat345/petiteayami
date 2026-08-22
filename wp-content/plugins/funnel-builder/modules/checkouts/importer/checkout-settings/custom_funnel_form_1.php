@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 $product_field  = WFACP_Common::get_product_field();
 $advanced_field = WFACP_Common::get_advanced_fields();
 $settings       = [
@@ -162,7 +163,7 @@ $customizer_data = [
 		'wfacp_form_form_fields_1_embed_forms_2_billing_first_name'                   => 'wfacp-col-left-half',
 		'wfacp_form_form_fields_1_embed_forms_2_billing_last_name'                    => 'wfacp-col-left-half',
 		'wfacp_form_section_embed_forms_2_sec_heading_color'                          => '#333',
-		'wfacp_form_section_text_below_placeorder_btn'                                => __( "* 100% Secure &amp; Safe Payments *", 'woofunnels-aero-checkout' ),
+		'wfacp_form_section_text_below_placeorder_btn'                                => __( "* 100% Secure &amp; Safe Payments *", 'funnel-builder' ),
 		'wfacp_form_product_switcher_section_embed_forms_2_product_switcher_bg_color' => '#f7f7f7',
 		'wfacp_form_section_embed_forms_2_heading_fs'                                 => 20,
 
@@ -176,8 +177,8 @@ $customizer_data = [
 		'wfacp_form_section_embed_forms_2_form_border_type'   => 'none',
 		'wfacp_form_section_embed_forms_2_form_border_color'  => '#bbbbbb',
 		'wfacp_form_section_embed_forms_2_form_inner_padding' => '16',
-		'wfacp_form_section_embed_forms_2_name_0'             => __( 'GET YOUR FREE COPY OF AMAZING BOOK', 'woofunnels-aero-checkout' ),
-		'wfacp_form_section_embed_forms_2_headline_0'         => __( 'Shipped in less than 3 days!', 'woofunnels-aero-checkout' ),
+		'wfacp_form_section_embed_forms_2_name_0'             => __( 'GET YOUR FREE COPY OF AMAZING BOOK', 'funnel-builder' ),
+		'wfacp_form_section_embed_forms_2_headline_0'         => __( 'Shipped in less than 3 days!', 'funnel-builder' ),
 
 		'wfacp_form_section_embed_forms_2_heading_talign'                               => 'wfacp-text-left',
 		'wfacp_form_section_embed_forms_2_sec_bg_color'                                 => 'transparent',

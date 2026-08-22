@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'facebookincubator/facebook-for-woocommerce',
-        'pretty_version' => '3.7.4',
-        'version' => '3.7.4.0',
+        'pretty_version' => '3.7.6',
+        'version' => '3.7.6.0',
         'reference' => null,
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
@@ -20,17 +20,17 @@
             'dev_requirement' => false,
         ),
         'facebook/capi-param-builder-php' => array(
-            'pretty_version' => '1.2.1',
-            'version' => '1.2.1.0',
-            'reference' => '0502e762127deca4fce9b3e2e1b6ff38b392f526',
+            'pretty_version' => '1.3.1',
+            'version' => '1.3.1.0',
+            'reference' => '66a7eb84e29a65aa999089366c1f7c3c0e49bdb7',
             'type' => 'library',
             'install_path' => __DIR__ . '/../facebook/capi-param-builder-php',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
         'facebookincubator/facebook-for-woocommerce' => array(
-            'pretty_version' => '3.7.4',
-            'version' => '3.7.4.0',
+            'pretty_version' => '3.7.6',
+            'version' => '3.7.6.0',
             'reference' => null,
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',

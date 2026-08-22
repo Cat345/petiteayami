@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFTY_Divi_Extension' ) ) {
 	#[AllowDynamicProperties]
 	class WFTY_Divi_Extension extends DiviExtension {

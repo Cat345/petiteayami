@@ -22,10 +22,6 @@ function fs_add_duplicate_field() {
 
 fs_add_duplicate_field();
 
-document.querySelector( '.wc-shipping-zone-method-rows' ).addEventListener( 'DOMNodeInserted', function ( event ) {
-	fs_add_duplicate_field();
-}, false );
-
 function fs_add_duplicate_field_on_react() {
 	setTimeout( function () {
 		jQuery( '.wc-shipping-zone-method-description' ).filter( function () {
@@ -50,6 +46,7 @@ function fs_add_duplicate_field_on_react() {
 
 fs_add_duplicate_field_on_react();
 
-document.querySelector( '.wc-shipping-zone-method-rows' ).addEventListener( 'DOMNodeInserted', function ( event ) {
+new MutationObserver( function () {
+	fs_add_duplicate_field();
 	fs_add_duplicate_field_on_react();
-}, false );
+} ).observe( document.querySelector( '.wc-shipping-zone-method-rows' ), { childList: true } );

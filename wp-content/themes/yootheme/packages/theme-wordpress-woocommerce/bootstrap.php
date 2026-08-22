@@ -38,7 +38,10 @@ return array_merge_recursive($config, [
     ],
 
     'actions' => [
-        'wp_enqueue_scripts' => [Listener\RemoveSelect::class => ['handle', 100]],
+        'wp_enqueue_scripts' => [
+            Listener\RemoveSelect::class => ['handle', 100],
+            Listener\ShowCartQuantity::class => 'loadCartFragmentsScript',
+        ],
 
         'woocommerce_before_add_to_cart_form' => [
             Listener\AddVariableProductScript::class => '@variableScript',

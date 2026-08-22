@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Analytics_TikTok' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Analytics_TikTok extends WFACP_Analytics {

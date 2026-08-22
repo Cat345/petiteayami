@@ -66,7 +66,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 			add_action( 'plugins_loaded', array( $this, 'add_licence_support_file' ) );
 			add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 			add_action( 'wfocu_loaded', array( $this, 'load_upstroke_powerpack' ), 999 );
-			add_action( 'plugins_loaded', array( $this, 'load_sublium' ), 100 );
+			add_action( 'wfocu_loaded', array( $this, 'load_sublium' ), 100 );
 			add_action( 'wfocu_load_rule_files', array( $this, 'load_rule_files' ) );
 			add_action( 'before_woocommerce_init', array( $this, 'declare_hpos_compatibility' ) );
 		}
@@ -121,8 +121,16 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 				return;
 			}
 
-			include_once plugin_dir_path( __FILE__ ) . 'addons/funnelkit/class-sublium-subscriptions.php';
-			include_once plugin_dir_path( __FILE__ ) . 'addons/funnelkit/class-wfocu-sublium-compatibility.php';
+			// Bail if the One Click Upsells base is not loaded (e.g. WooCommerce inactive). Its
+			// WFOCU_Plugin_Compatibilities class is required by the compat file's register() call at
+			// file scope; without it that include fatals. This runs on plugins_loaded@100, after the
+			// base registers on plugins_loaded@1, so the class is present whenever the base loaded.
+			if ( ! class_exists( 'WFOCU_Plugin_Compatibilities' ) ) {
+				return;
+			}
+
+			include_once plugin_dir_path( __FILE__ ) . 'addons/sublium/class-sublium-subscriptions.php';
+			include_once plugin_dir_path( __FILE__ ) . 'addons/sublium/class-wfocu-sublium-compatibility.php';
 
 			// Order bump rules — register types and load classes from powerpack.
 			add_filter( 'funnelkit_order_bump_rule_types', array( $this, 'register_sublium_order_bump_rule_types' ) );
@@ -151,7 +159,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 		 * Load Sublium order bump rule class files.
 		 */
 		public function load_sublium_order_bump_rule_classes() {
-			include_once plugin_dir_path( __FILE__ ) . 'addons/funnelkit/sublium-order-bump-rules.php';
+			include_once plugin_dir_path( __FILE__ ) . 'addons/sublium/sublium-order-bump-rules.php';
 		}
 
 		public function old_plugins_notices() {
@@ -218,7 +226,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 
 			// Sublium upsell rules — now shipped inside the powerpack.
 			// The file has its own class_exists guard for Sublium and will bail safely if Sublium is not active.
-			include_once plugin_dir_path( __FILE__ ) . 'addons/funnelkit/sublium-upsell-rules.php';
+			include_once plugin_dir_path( __FILE__ ) . 'addons/sublium/sublium-upsell-rules.php';
 		}
 
 		public static function is_hpos_enabled() {

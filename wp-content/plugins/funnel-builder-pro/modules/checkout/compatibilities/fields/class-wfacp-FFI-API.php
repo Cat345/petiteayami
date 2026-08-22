@@ -80,7 +80,7 @@ if ( ! class_exists( 'WFACP_Compatibility_FFI_API' ) ) {
   var aKey = ' . $aKey . '
     var gKey = ' . $gKey . '
     var wMes = ' . $wMes . '
-    var hok = ' . $hok . ''
+    var hok = ' . $hok . '
 
 </script>';
 

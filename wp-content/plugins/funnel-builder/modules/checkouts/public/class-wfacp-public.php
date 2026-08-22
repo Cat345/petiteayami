@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Frontend public class reads $_GET for checkout routing (template_redirect context, no nonce available).
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'WFACP_Public' ) ) {
 	#[AllowDynamicProperties]
@@ -67,7 +68,8 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 			add_action( 'wp_enqueue_scripts', array( $this, 'global_script' ) );
 			add_filter( 'wfacp_form_section', array( $this, 'remove_shipping_method' ), 10, 3 );
 			add_filter( 'wfacp_hide_section', array( $this, 'skip_empty_section' ), 10, 2 );
-
+			/* presist cart for global checkout */
+			$this->persistent_cart_merging();
 			/**
 			 * @since 1.6.0
 			 */
@@ -127,7 +129,13 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 
 			add_filter( 'wfacp_display_shipping_placeholder_message', array( $this, 'display_shipping_placeholder_message' ) );
 		}
+		public function persistent_cart_merging() {
+			$global_settings = get_option( '_wfacp_global_settings', array() );
 
+			if ( ( isset( $global_settings['override_checkout_page_id'] ) && 0 !== absint( $global_settings['override_checkout_page_id'] ) ) || class_exists( 'WFFN_Common' ) && WFFN_Common::get_store_checkout_id() > 0 ) {
+				add_filter( 'wfacp_remove_persistent_cart_after_merging', '__return_false' );
+			}
+		}
 		/**
 		 * Check valid header of the page (Text/Html)
 		 * We only process text/html header
@@ -296,7 +304,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 			} elseif ( ! wp_doing_ajax() ) {
 					WC()->session->set( 'wfacp_is_override_checkout', 0 );
 			}
-			if ( isset( $_REQUEST['wc-ajax'] ) ) {
+			if ( isset( $_REQUEST['wc-ajax'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Checking WC AJAX context, no data processing.
 				return;
 			}
 			if ( wp_doing_ajax() ) {
@@ -585,11 +593,11 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 				$this->is_checkout_override = true;
 			}
 
-			if ( isset( $_REQUEST['wfacp_is_checkout_override'] ) && 'yes' == $_REQUEST['wfacp_is_checkout_override'] ) {
+			if ( isset( $_REQUEST['wfacp_is_checkout_override'] ) && 'yes' == $_REQUEST['wfacp_is_checkout_override'] ) { // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Frontend checkout routing, no cap check needed.
 				$this->is_checkout_override = true;
 			}
 
-			if ( isset( $_REQUEST['wfacp_is_checkout_override'] ) && 'no' == $_REQUEST['wfacp_is_checkout_override'] ) {
+			if ( isset( $_REQUEST['wfacp_is_checkout_override'] ) && 'no' == $_REQUEST['wfacp_is_checkout_override'] ) { // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Frontend checkout routing, no cap check needed.
 				$this->is_checkout_override = false;
 			}
 
@@ -602,11 +610,11 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 					'wfacp_id'                   => WFACP_Common::get_id(),
 					'wfacp_is_checkout_override' => ( $this->is_checkout_override ) ? 'yes' : 'no',
 				);
-				if ( isset( $_REQUEST['currency'] ) ) {
+				if ( isset( $_REQUEST['currency'] ) ) { // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Passing currency param to AJAX endpoint.
 					$query['currency'] = filter_input( INPUT_GET, 'currency', FILTER_UNSAFE_RAW );
 
 				}
-				if ( isset( $_REQUEST['lang'] ) ) {
+				if ( isset( $_REQUEST['lang'] ) ) { // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Passing lang param to AJAX endpoint.
 					$query['lang'] = filter_input( INPUT_GET, 'lang', FILTER_UNSAFE_RAW );
 				}
 				$query            = apply_filters( 'wfacp_ajax_endpoint_parameters', $query, $this );
@@ -648,8 +656,6 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 		public function set_nocache_constants() {
 
 			$this->maybe_define_constant( 'DONOTCACHEPAGE', true );
-			$this->maybe_define_constant( 'DONOTCACHEOBJECT', true );
-			$this->maybe_define_constant( 'DONOTCACHEDB', true );
 
 			return null;
 		}
@@ -719,8 +725,9 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 
 		public function set_session_when_place_order_btn_pressed() {
 			WC()->session->set( 'wfacp_checkout_processed_' . WFACP_Common::get_Id(), true );
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Runs during woocommerce_checkout_process, nonce verified by WC.
 			if ( ! empty( $_POST ) && isset( $_POST['_wfacp_post_id'] ) ) {
-				WC()->session->set( 'wfacp_posted_data', $_POST );
+				WC()->session->set( 'wfacp_posted_data', $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 			}
 		}
 
@@ -743,6 +750,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 			WC()->session->__unset( 'wfacp_sustain_cart_content_' . $checkout_id );
 			WC()->session->__unset( 'removed_cart_contents' );
 			WC()->session->__unset( 'wfacp_woocommerce_applied_coupon_' . $checkout_id );
+			WC()->session->__unset( 'wfacp_posted_data' );
 			do_action( 'wfacp_reset_checkout_session_data', $checkout_id );
 
 			return $data;
@@ -751,7 +759,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 		public function set_session_when_coupon_applied() {
 
 			$c = WC()->session->get( 'wfacp_woocommerce_applied_coupon_' . WFACP_Common::get_Id(), array() );
-			if ( isset( $_REQUEST['wfacp_id'] ) ) {
+			if ( isset( $_REQUEST['wfacp_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Reading checkout ID for session context.
 				$id       = filter_input( INPUT_GET, 'wfacp_id', FILTER_UNSAFE_RAW );
 				$id       = absint( $id );
 				$c[ $id ] = true;
@@ -769,9 +777,11 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 		 */
 		public function woocommerce_checkout_process() {
 
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Runs inside woocommerce_checkout_process which is nonce-verified by WooCommerce.
 			if ( isset( $_POST['wfacp_has_active_multi_checkout'] ) && $_POST['wfacp_has_active_multi_checkout'] != 'no' ) {
 				return;
 			}
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Runs inside woocommerce_checkout_process which is nonce-verified by WooCommerce.
 			if ( isset( $_POST['wfacp_cart_hash'] ) && '' !== $_POST['wfacp_cart_hash'] ) {
 				$wfacp_cart_hash = filter_input( INPUT_POST, 'wfacp_cart_hash', FILTER_UNSAFE_RAW );
 				$form_cart_hash  = trim( $wfacp_cart_hash );
@@ -976,6 +986,11 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 
 			$run_status = apply_filters( 'wfacp_run_add_to_cart_at_load', true, $this );
 			if ( true == $run_status ) {
+
+				// Unhook WC's per-item calculate_totals to avoid N redundant calls during the loop.
+				// We run calculate_totals once after all products are added (form.php).
+				remove_action( 'woocommerce_add_to_cart', array( WC()->cart, 'calculate_totals' ), 20 );
+
 				foreach ( $this->added_products as $index => $product_obj ) {
 					$data = $product_obj->get_meta( 'wfacp_data' );
 
@@ -1048,6 +1063,11 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 					} catch ( Exception $e ) {
 
 					}
+				}
+
+				// Run calculate_totals once with the complete cart.
+				if ( $is_product_added_to_cart ) {
+					WC()->cart->calculate_totals();
 				}
 			}
 
@@ -1325,7 +1345,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 				$path = plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/img/spinner.gif';
 
 				echo '<style>';
-				echo 'body .wfacp_main_form #wfacp_checkout_form .blockUI.blockOverlay {  background: url(' . $path . ') no-repeat 50% rgb(255, 255, 255) !important;display:block !important;}';
+				echo 'body .wfacp_main_form #wfacp_checkout_form .blockUI.blockOverlay {  background: url(' . esc_url( $path ) . ') no-repeat 50% rgb(255, 255, 255) !important;display:block !important;}';
 				echo '</style>';
 			}
 		}

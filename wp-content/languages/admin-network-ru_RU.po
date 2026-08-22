@@ -1,15 +1,19 @@
-# Translation of WordPress - 7.0.x - Development - Administration - Network Admin in Russian
-# This file is distributed under the same license as the WordPress - 7.0.x - Development - Administration - Network Admin package.
+# Translation of WordPress - 7.1.x - Development - Administration - Network Admin in Russian
+# This file is distributed under the same license as the WordPress - 7.1.x - Development - Administration - Network Admin package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-11-15 16:39:17+0000\n"
+"PO-Revision-Date: 2026-08-13 21:45:32+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
-"X-Generator: GlotPress/4.0.3\n"
+"X-Generator: GlotPress/4.1.0\n"
 "Language: ru\n"
-"Project-Id-Version: WordPress - 7.0.x - Development - Administration - Network Admin\n"
+"Project-Id-Version: WordPress - 7.1.x - Development - Administration - Network Admin\n"
+
+#: wp-admin/network/users.php:343
+msgid "No users were deleted because no user was selected for content reassignment."
+msgstr "Ни один пользователь не был удален, поскольку ни один пользователь не был выбран для переназначения содержимого."
 
 #: wp-admin/network/sites.php:361
 msgid "Site flagged for deletion."
@@ -77,7 +81,7 @@ msgstr "<a href=\"https://developer.wordpress.org/advanced-administration/multis
 
 #: wp-admin/network/sites.php:125 wp-admin/network/sites.php:220
 msgid "Deleting a site is a permanent action that cannot be undone. This will delete the entire site and its uploads directory."
-msgstr "Удаление сайта - необратимое действие, которое нельзя отменить. Оно удалит весь сайт, включая его папку загрузок"
+msgstr "Удаление сайта - необратимое действие, которое нельзя отменить. Оно удалит весь сайт, включая его папку загрузок."
 
 #: wp-admin/network/sites.php:122
 msgid "Delete this site permanently"
@@ -689,7 +693,7 @@ msgstr "Путь"
 msgid "Domain"
 msgstr "домен"
 
-#: wp-admin/network/user-new.php:29 wp-admin/network/users.php:270
+#: wp-admin/network/user-new.php:29 wp-admin/network/users.php:297
 msgid "<a href=\"https://codex.wordpress.org/Network_Admin_Users_Screen\">Documentation on Network Users</a>"
 msgstr "<a href=\"https://codex.wordpress.org/Network_Admin_Users_Screen\">Документация по пользователям сети</a>"
 
@@ -760,7 +764,7 @@ msgstr "Добавьте следующие строки в файл %1$s в к�
 msgid "Confirm your action"
 msgstr "Подтвердите ваше действие"
 
-#: wp-admin/network/users.php:260
+#: wp-admin/network/users.php:287
 msgid "Hover over any user on the list to make the edit links appear. The Edit link on the left will take you to their Edit User profile page; the Edit link on the right by any site name goes to an Edit Site screen for that site."
 msgstr "При наведении курсора на пользователей появляются ссылки редактирования. Ссылка &laquo;Изменить&raquo; слева ведёт на страницу редактирования профиля пользователя; ссылка &laquo;Изменить&raquo; справа от имени сайта ведёт на экран &laquo;Редактировать сайт&raquo;."
 
@@ -1115,7 +1119,7 @@ msgid "The choice of subdirectory sites is disabled if this setup is more than a
 msgstr "Выбор режима подкаталогов недоступен, если сайт существует больше месяца, из-за проблем с постоянными ссылками &laquo;/blog/&raquo; на основном сайте. Это ограничение может быть снято в следующей версии."
 
 #: wp-admin/network.php:65
-msgid "Once you add this code and refresh your browser, multisite should be enabled. This screen, now in the Network Admin navigation menu, will keep an archive of the added code. You can toggle between Network Admin and Site Admin by clicking on the Network Admin or an individual site name under the My Sites dropdown in the Toolbar."
+msgid "Once you add this code and refresh your browser, multisite should be enabled. This screen, now in the Network Admin navigation menu, will keep an archive of the added code. You can switch between Network Admin and Site Admin by clicking on the Network Admin or an individual site name under the My Sites dropdown in the Toolbar."
 msgstr "Как только вы добавите этот код и обновите страницу браузера, сеть будет создана. На этом экране (теперь в разделе &laquo;Управление сетью&raquo;) останется памятка о добавленном коде. Можно переключаться между разделами &laquo;Управление сетью&raquo; и &laquo;Управление сайтом&raquo;, нажимая на ссылку &laquo;Управление сетью&raquo; или на название сайта в выпадающем меню &laquo;Мои сайты&raquo; в верхней панели."
 
 #: wp-admin/network.php:63
@@ -1139,7 +1143,7 @@ msgid "The Network creation panel is not for WordPress MU networks."
 msgstr "Панель создания сети не предназначена для сетей WordPress MU."
 
 #. translators: %s: User login.
-#: wp-admin/network/users.php:87 wp-admin/network/users.php:126
+#: wp-admin/network/users.php:88 wp-admin/network/users.php:127
 msgid "Warning! User cannot be modified. The user %s is a network administrator."
 msgstr "Внимание! Невозможно изменить пользователя. Пользователь %s &#8212; администратор сети."
 
@@ -1159,11 +1163,11 @@ msgstr "При наведении курсора на каждый сайт от
 msgid "Operational settings has fields for the network&#8217;s name and admin email."
 msgstr "К оперативным настройкам относятся название сети и e-mail администратора."
 
-#: wp-admin/network/users.php:263
+#: wp-admin/network/users.php:290
 msgid "The bulk action will permanently delete selected users, or mark/unmark those selected as spam. Spam users will have posts removed and will be unable to sign up again with the same email addresses."
 msgstr "Массовые действия позволяют навсегда удалить выделенных пользователей, либо пометить их как спамеров или не спамеров. У спамеров будут удалены все записи, а сами они не смогут авторизоваться снова с тем же адресом e-mail."
 
-#: wp-admin/network/users.php:261
+#: wp-admin/network/users.php:288
 msgid "You can also go to the user&#8217;s profile page by clicking on the individual username."
 msgstr "На страницу профиля также можно перейти, нажав на имя пользователя."
 
@@ -1171,7 +1175,7 @@ msgstr "На страницу профиля также можно перейт�
 msgid "Upload settings control the size of the uploaded files and the amount of available upload space for each site. You can change the default value for specific sites when you edit a particular site. Allowed file types are also listed (space separated only)."
 msgstr "Настройки загрузки определяют размер загружаемых файлов и количество доступного места на диске для каждого сайта. При редактировании отдельных сайтов можно изменить значение по умолчанию. Также перечислены допустимые типы файлов (разделяются пробелами)."
 
-#: wp-admin/network/users.php:264
+#: wp-admin/network/users.php:291
 msgid "You can make an existing user an additional super admin by going to the Edit User profile page and checking the box to grant that privilege."
 msgstr "Можно назначить существующего пользователя дополнительным суперадминистратором, если перейти на страницу редактирования его профиля и поставить соответствующую галочку."
 
@@ -1179,11 +1183,11 @@ msgstr "Можно назначить существующего пользов�
 msgid "Users who are signed up to the network without a site are added as subscribers to the main or primary dashboard site, giving them profile pages to manage their accounts. These users will only see Dashboard and My Sites in the main navigation until a site is created for them."
 msgstr "Посетители, регистрирующиеся в сети, но не имеющие своего сайта, добавляются в качестве подписчиков к основному или консольному сайту, что позволяет управлять их учётными записями. Эти пользователи увидят в меню только пункты &laquo;Консоль&raquo; и &laquo;Мои сайты&raquo;, пока для них не будет создан сайт."
 
-#: wp-admin/network/users.php:262
+#: wp-admin/network/users.php:289
 msgid "You can sort the table by clicking on any of the table headings and switch between list and excerpt views by using the icons above the users list."
 msgstr "Можно сортировать таблицу по определённому столбцу, нажав на заголовок столбца, и переключать режим просмотра между списком и развёрнутым видом с помощью иконок над списком пользователей."
 
-#: wp-admin/network/users.php:259
+#: wp-admin/network/users.php:286
 msgid "This table shows all users across the network and the sites to which they are assigned."
 msgstr "В этой таблице показаны все пользователи сети, а также закреплённые за ними сайты."
 
@@ -1240,7 +1244,7 @@ msgstr "Если вы хотите запретить регистрацию с 
 msgid "If you want to limit site registrations to certain domains. One domain per line."
 msgstr "Если вы хотите разрешить регистрацию только с адресами из определённых доменов. Один домен на строку."
 
-#: wp-admin/network/users.php:294
+#: wp-admin/network/users.php:321
 msgid "Users removed from spam."
 msgstr "Пользователи помечены как не спамеры."
 
@@ -1260,11 +1264,11 @@ msgstr "Сайты помечены как спам."
 msgid "Sites removed from spam."
 msgstr "Сайты восстановлены из спама."
 
-#: wp-admin/network/users.php:297
+#: wp-admin/network/users.php:324
 msgid "Users deleted."
 msgstr "Пользователи удалены."
 
-#: wp-admin/network/users.php:291
+#: wp-admin/network/users.php:318
 msgid "Users marked as spam."
 msgstr "Пользователи помечены как спамеры."
 

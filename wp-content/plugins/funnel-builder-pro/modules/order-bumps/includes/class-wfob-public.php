@@ -949,7 +949,11 @@ class WFOB_Public {
 	 */
 	public function handle_discount_product_price( $price, $product ) {
 		if ( $product instanceof \WC_Product && ! empty( $product->get_meta( '_wfob_price' ) ) ) {
-			return $product->get_meta( '_wfob_price' );
+			// The meta is a float for the rest of the request that computed it. Price
+			// getters are expected to yield a numeric string, and currency plugins key
+			// their per-product price caches on the incoming value, so a float leaks a
+			// float array offset and PHP 8.1+ reports the lost precision.
+			return wc_format_decimal( $product->get_meta( '_wfob_price' ) );
 		}
 
 		return $price;

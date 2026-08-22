@@ -2,6 +2,8 @@
 
 namespace Pelago\Emogrifier;
 
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
+
 use Pelago\Emogrifier\HtmlProcessor\AbstractHtmlProcessor;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 use Symfony\Component\CssSelector\Exception\SyntaxErrorException;

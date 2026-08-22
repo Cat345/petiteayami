@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /*
  * WooCommerce PDF Invoices & Packing Slips
  * http://www.wpovernight.com

@@ -264,7 +264,10 @@ class SeoRules
         if( isset( $attributes['id'] ) ){
 
             if( $attributes['id'] == $this->generateInputID('rule_post_type') ){
-                $settingsUrl = admin_url( 'edit.php?post_type=filter-set&page=filters-settings&tab=seorules#wpc_seo_rules_post' );
+                // The Indexed Filters section lives on the SEO (prefixes) tab now;
+                // its per-post-type anchor: products on WooCommerce shops, posts otherwise
+                $anchor      = flrt_is_woocommerce() ? 'wpc_seo_rules_product' : 'wpc_seo_rules_post';
+                $settingsUrl = admin_url( 'edit.php?post_type=filter-set&page=filters-settings&tab=prefixes#' . $anchor );
                 $seoRules = new SeoRulesTab();
 
                 $html = __( 'There are no Post Types with filters available for SEO rules yet.<br />', 'filter-everything'); // Escaped later

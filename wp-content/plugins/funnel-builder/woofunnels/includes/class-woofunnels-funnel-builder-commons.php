@@ -75,7 +75,7 @@ if ( ! class_exists( 'WooFunnels_Funnel_Builder_Commons' ) ) {
 
 				if ( ! empty( $total_woofunnels ) ) {
 					$html = '<br/>
-<p style="font-size: 12px;"><em> ' . sprintf( esc_html__( 'FunnelKit: %s', 'woofunnels' ), wc_price( $total_woofunnels, array( 'currency' => get_option( 'woocommerce_currency' ) ) ) ) . '</em></p>';  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
+<p style="font-size: 12px;"><em> ' . sprintf( esc_html__( 'FunnelKit: %s', 'funnel-builder' ), wc_price( $total_woofunnels, array( 'currency' => get_option( 'woocommerce_currency' ) ) ) ) . '</em></p>';  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
 
 				}
 			}

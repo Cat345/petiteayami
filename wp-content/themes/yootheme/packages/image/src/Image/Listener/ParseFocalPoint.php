@@ -22,7 +22,10 @@ class ParseFocalPoint
         $focalPoint = $element->attr('focal_point');
 
         if ($focalPoint) {
-            $params['focal_point'] = array_reverse(array_filter(explode('-', $focalPoint)));
+            $values = ['top', 'bottom', 'left', 'right', 'center'];
+            $params['focal_point'] = array_reverse(
+                array_filter(explode('-', $focalPoint), fn($value) => in_array($value, $values)),
+            );
         }
 
         return $next($element->withoutAttr('focal_point'), $params);

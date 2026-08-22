@@ -13,7 +13,7 @@ if ( ! class_exists( 'WFFN_RESET_API_EndPoint' ) ) {
 		 */
 		public function __construct() {
 
-			add_action( 'rest_api_init', [ $this, 'register_endpoint' ], 12 );
+			// Registered by WFFN_Pro_Public on rest_api_init; nothing to hook here.
 
 		}
 
@@ -129,5 +129,4 @@ if ( ! class_exists( 'WFFN_RESET_API_EndPoint' ) ) {
 
 	}
 
-	WFFN_RESET_API_EndPoint::get_instance();
 }

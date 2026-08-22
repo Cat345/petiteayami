@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
@@ -24,7 +25,7 @@ if ( $this->template_type == 'embed_form' ) {
 }
 
 $wfacp_default_coupon_text = apply_filters( 'wfacp_default_coupon_text', __( 'Coupon code', 'woocommerce' ) );
-$apply_coupon_button_text  = apply_filters( 'wfacp_apply_coupon_button_text', __( 'Apply', 'woofunnels-aero-checkout' ) )
+$apply_coupon_button_text  = apply_filters( 'wfacp_apply_coupon_button_text', __( 'Apply', 'funnel-builder' ) )
 
 ?>
 <div class="wfacp-coupon-section wfacp_custom_row_wrap clearfix">

@@ -935,7 +935,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper input[type="email"].wfacp-form-control',
 				'{{WRAPPER}} #wfacp-e-form .wfacp_allowed_countries strong',
 				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .select2-container .select2-selection--single .select2-selection__rendered',
-				'{{WRAPPER}} #wfacp-e-form .iti__selected-flag',
+				'{{WRAPPER}} #wfacp-e-form .iti__selected-country',
 			);
 
 			$Validation_options = array(
@@ -943,7 +943,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-error ul',
 				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-error li',
 				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-error li strong',
-				'{{WRAPPER}} #wfacp-e-form .iti__selected-flag',
+				'{{WRAPPER}} #wfacp-e-form .iti__selected-country',
 			);
 
 			$default = array(
@@ -1611,7 +1611,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 			);
 
 			// Global font family setting with lower priority (registered first, so local settings can override)
-			$this->add_font_family( 'wfacp_font_family', $globalSettingOptions, 'Family', 'Open Sans' );
+			$this->add_font_family( 'wfacp_font_family', $globalSettingOptions, 'Family', '' );
 
 			$primary_color = array(
 				'{{WRAPPER}} #wfacp-e-form  #payment li.wc_payment_method input.input-radio:checked::before',

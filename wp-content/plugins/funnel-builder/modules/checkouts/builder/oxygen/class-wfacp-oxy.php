@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_OXY' ) ) {
 	#[\AllowDynamicProperties]
 	class WFACP_OXY {
@@ -106,7 +107,7 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 		public function register_template_type( $loader ) {
 			$template = array(
 				'slug'    => 'oxy',
-				'title'   => __( 'Oxygen Classic', 'woofunnels-aero-checkout' ),
+				'title'   => __( 'Oxygen Classic', 'funnel-builder' ),
 				'filters' => WFACP_Common::get_template_filter(),
 			);
 
@@ -148,7 +149,7 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 			);
 			$links['oxy'] = array(
 				'url'         => $url,
-				'button_text' => __( 'Edit', 'woofunnles-aero-checkout' ),
+				'button_text' => __( 'Edit', 'funnel-builder' ),
 			);
 
 			return $links;
@@ -277,7 +278,7 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 		private function get_modules() {
 			$modules = array(
 				'checkout_form' => array(
-					'name' => __( 'Checkout Form', 'woofunnels-aero-checkout' ),
+					'name' => __( 'Checkout Form', 'funnel-builder' ),
 					'path' => __DIR__ . ( '/modules/class-oxy-form.php' ),
 				),
 			);

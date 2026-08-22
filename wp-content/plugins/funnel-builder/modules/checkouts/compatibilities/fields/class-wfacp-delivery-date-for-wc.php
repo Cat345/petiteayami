@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_Delivery_Date_For_WC' ) ) {
 	/**
 	 * WooCommerce - Delivery Date for WooCommerce by Pixlogix
@@ -35,7 +36,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Delivery_Date_For_WC' ) ) {
 					'class'      => [ 'wfacp_ddfw_enable_delivery' ],
 					'id'         => 'wfacp_ddfw_enable_delivery',
 					'field_type' => 'advanced',
-					'label'      => __( 'Delivery Date', 'woofunnels-aero-checkout' ),
+					'label'      => __( 'Delivery Date', 'funnel-builder' ),
 				];
 			}
 

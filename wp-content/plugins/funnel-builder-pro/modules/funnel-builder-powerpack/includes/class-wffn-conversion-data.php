@@ -29,7 +29,6 @@ if ( ! class_exists( 'WFFN_Conversion_Data' ) ) {
 			add_filter( 'wffn_filter_data_conversion_query', array( $this, 'filter_data_conversion_query' ), 10, 4 );
 			add_filter( 'wffn_dashboard_top_campaigns', array( $this, 'get_top_campaigns' ), 10, 2 );
 			add_filter( 'wffn_source_data_by_conversion_query', array( $this, 'get_source_data' ), 10, 2 );
-			add_filter( 'wffn_conversion_tracking_localize_data', array( $this, 'update_data_localize_data' ) );
 			add_filter( 'wffn_utm_campaign_campaigns', array( $this, 'get_global_utm_campaigns' ), 10, 2 );
 		}
 
@@ -160,15 +159,15 @@ if ( ! class_exists( 'WFFN_Conversion_Data' ) ) {
 			global $wpdb;
 			$conv_table = $wpdb->prefix . $this->table;
 
-			$sales_query = WFFN_Common::is_wc_hpos_enabled() ? "SELECT conv.utm_campaign AS campaign, conv.utm_source AS source, conv.utm_medium AS medium, conv.utm_content AS content, conv.utm_term AS term, 
-				   COUNT(DISTINCT conv.id) AS conversion, ROUND(SUM(order_t.total_amount), 2) AS revenue, conv.timestamp
-				   FROM {$conv_table} AS conv 
-				   LEFT JOIN {$wpdb->prefix}wc_orders AS order_t ON conv.source = order_t.id 
-				   WHERE conv.type = %d AND conv.utm_campaign != ''" : "SELECT conv.utm_campaign AS campaign, conv.utm_source AS source, conv.utm_medium AS medium, conv.utm_content AS content, conv.utm_term AS term, 
-				   COUNT(DISTINCT conv.id) AS conversion, ROUND(SUM(order_t.total_sales), 2) AS revenue, conv.timestamp
-				   FROM {$conv_table} AS conv 
-				   LEFT JOIN {$wpdb->prefix}wc_order_stats AS order_t ON conv.source = order_t.order_id 
-				   WHERE conv.type = %d AND conv.utm_campaign != ''";
+			$sales_query = WFFN_Common::is_wc_hpos_enabled() ? "SELECT conv.utm_campaign AS campaign, conv.utm_source AS source, conv.utm_medium AS medium, conv.utm_content AS content, conv.utm_term AS term,
+				   COUNT(DISTINCT conv.source) AS conversion, ROUND(SUM(order_t.total_amount), 2) AS revenue, conv.timestamp
+				   FROM {$conv_table} AS conv
+				   LEFT JOIN {$wpdb->prefix}wc_orders AS order_t ON conv.source = order_t.id
+				   WHERE conv.type = %d AND conv.utm_campaign != '' AND conv.funnel_id != 0" : "SELECT conv.utm_campaign AS campaign, conv.utm_source AS source, conv.utm_medium AS medium, conv.utm_content AS content, conv.utm_term AS term,
+				   COUNT(DISTINCT conv.source) AS conversion, ROUND(SUM(order_t.total_sales), 2) AS revenue, conv.timestamp
+				   FROM {$conv_table} AS conv
+				   LEFT JOIN {$wpdb->prefix}wc_order_stats AS order_t ON conv.source = order_t.order_id
+				   WHERE conv.type = %d AND conv.utm_campaign != '' AND conv.funnel_id != 0";
 
 			$sales_query = $wpdb->prepare( $sales_query, 2 );
 
@@ -200,10 +199,10 @@ if ( ! class_exists( 'WFFN_Conversion_Data' ) ) {
 			global $wpdb;
 			$conv_table = $wpdb->prefix . $this->table;
 
-			$lead_query = "SELECT conv.utm_campaign AS campaign, conv.utm_source AS source, conv.utm_medium AS medium, conv.utm_content AS content, conv.utm_term AS term, 
-						   COUNT(DISTINCT conv.id) AS conversion, conv.timestamp
-						   FROM {$conv_table} AS conv 
-						   WHERE conv.type = %d AND conv.utm_campaign != ''";
+			$lead_query = "SELECT conv.utm_campaign AS campaign, conv.utm_source AS source, conv.utm_medium AS medium, conv.utm_content AS content, conv.utm_term AS term,
+						   COUNT(DISTINCT conv.source) AS conversion, conv.timestamp
+						   FROM {$conv_table} AS conv
+						   WHERE conv.type = %d AND conv.utm_campaign != '' AND conv.funnel_id != 0";
 
 			$lead_query = $wpdb->prepare( $lead_query, 1 );
 
@@ -262,7 +261,7 @@ if ( ! class_exists( 'WFFN_Conversion_Data' ) ) {
 			$data = array();
 
 			foreach ( $sales_result as $sale ) {
-				$key          = $sale['campaign'] . '-' . $sale['source'] . '-' . $sale['medium'] . '-' . $sale['content'];
+				$key          = $sale['campaign'] . '-' . $sale['source'] . '-' . $sale['medium'] . '-' . $sale['content'] . '-' . $sale['term'];
 				$data[ $key ] = array(
 					'utm_campaign'   => $sale['campaign'],
 					'utm_source'     => $sale['source'],
@@ -277,7 +276,7 @@ if ( ! class_exists( 'WFFN_Conversion_Data' ) ) {
 			}
 
 			foreach ( $lead_result as $lead ) {
-				$key = $lead['campaign'] . '-' . $lead['source'] . '-' . $lead['medium'] . '-' . $lead['content'];
+				$key = $lead['campaign'] . '-' . $lead['source'] . '-' . $lead['medium'] . '-' . $lead['content'] . '-' . $lead['term'];
 				if ( isset( $data[ $key ] ) ) {
 					$data[ $key ]['optins'] = (int) $lead['conversion'];
 				} else {
@@ -619,12 +618,12 @@ if ( ! class_exists( 'WFFN_Conversion_Data' ) ) {
 			 */
 			$limit = absint( $limit );
 			if ( WFFN_Common::is_wc_hpos_enabled() ) {
-				$s_query = 'SELECT conv.utm_campaign AS campaign, COUNT(DISTINCT conv.id) as `conversion`, ROUND(SUM(order_t.total_amount), 2) as revenue FROM ' . $conv_table . ' AS conv 
-                LEFT JOIN ' . $wpdb->prefix . "wc_orders AS order_t ON conv.source = order_t.id WHERE conv.type = 2 AND conv.utm_campaign != '' " . $date_query . ' GROUP BY conv.utm_campaign ORDER BY revenue DESC LIMIT ' . $limit;
+				$s_query = 'SELECT conv.utm_campaign AS campaign, COUNT(DISTINCT conv.source) as `conversion`, ROUND(SUM(order_t.total_amount), 2) as revenue FROM ' . $conv_table . ' AS conv 
+                LEFT JOIN ' . $wpdb->prefix . "wc_orders AS order_t ON conv.source = order_t.id WHERE conv.type = 2 AND conv.utm_campaign != '' AND conv.funnel_id != 0 " . $date_query . ' GROUP BY conv.utm_campaign ORDER BY revenue DESC LIMIT ' . $limit;
 
 			} else {
-				$s_query = 'SELECT conv.utm_campaign AS campaign, COUNT(DISTINCT conv.id) as `conversion`, ROUND(SUM( order_t.total_sales ), 2) as revenue FROM ' . $conv_table . ' AS conv 
-                     LEFT JOIN ' . $wpdb->prefix . "wc_order_stats AS order_t ON conv.source = order_t.order_id WHERE conv.type = 2 AND conv.utm_campaign != '' " . $date_query . ' GROUP BY conv.utm_campaign ORDER BY revenue DESC LIMIT ' . $limit;
+				$s_query = 'SELECT conv.utm_campaign AS campaign, COUNT(DISTINCT conv.source) as `conversion`, ROUND(SUM( order_t.total_sales ), 2) as revenue FROM ' . $conv_table . ' AS conv 
+                     LEFT JOIN ' . $wpdb->prefix . "wc_order_stats AS order_t ON conv.source = order_t.order_id WHERE conv.type = 2 AND conv.utm_campaign != '' AND conv.funnel_id != 0 " . $date_query . ' GROUP BY conv.utm_campaign ORDER BY revenue DESC LIMIT ' . $limit;
 			}
 
 			$s_result = $wpdb->get_results( $s_query, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -636,13 +635,13 @@ if ( ! class_exists( 'WFFN_Conversion_Data' ) ) {
 					 * Get all source data based by campaign
 					 */
 					if ( WFFN_Common::is_wc_hpos_enabled() ) {
-						$source_query = 'SELECT DISTINCT conv.utm_source as u_source, COUNT(DISTINCT conv.id) as `conversion`, ROUND(SUM(order_t.total_amount), 2 ) as revenue FROM ' . $conv_table . ' AS conv 
+						$source_query = 'SELECT DISTINCT conv.utm_source as u_source, COUNT(DISTINCT conv.source) as `conversion`, ROUND(SUM(order_t.total_amount), 2 ) as revenue FROM ' . $conv_table . ' AS conv 
                               LEFT JOIN ' . $wpdb->prefix . "wc_orders AS order_t ON conv.source = order_t.id 
-                              WHERE conv.utm_campaign = '" . esc_sql( $s_item['campaign'] ) . "' AND conv.type = 2 AND conv.utm_source !='' " . $date_query . ' GROUP BY u_source ORDER BY revenue DESC';
+                              WHERE conv.utm_campaign = '" . esc_sql( $s_item['campaign'] ) . "' AND conv.type = 2 AND conv.funnel_id != 0 AND conv.utm_source !='' " . $date_query . ' GROUP BY u_source ORDER BY revenue DESC';
 					} else {
-						$source_query = 'SELECT DISTINCT conv.utm_source as u_source, COUNT(DISTINCT conv.id) as `conversion`, ROUND(SUM( order_t.total_sales ), 2 ) as revenue FROM ' . $conv_table . ' AS conv 
+						$source_query = 'SELECT DISTINCT conv.utm_source as u_source, COUNT(DISTINCT conv.source) as `conversion`, ROUND(SUM( order_t.total_sales ), 2 ) as revenue FROM ' . $conv_table . ' AS conv 
                               LEFT JOIN ' . $wpdb->prefix . "wc_order_stats AS order_t ON conv.source = order_t.order_id 
-                              WHERE conv.utm_campaign = '" . esc_sql( $s_item['campaign'] ) . "' AND conv.type = 2 AND conv.utm_source !='' " . $date_query . ' GROUP BY u_source ORDER BY revenue DESC';
+                              WHERE conv.utm_campaign = '" . esc_sql( $s_item['campaign'] ) . "' AND conv.type = 2 AND conv.funnel_id != 0 AND conv.utm_source !='' " . $date_query . ' GROUP BY u_source ORDER BY revenue DESC';
 					}
 
 					$source_result = $wpdb->get_results( $source_query, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -659,13 +658,13 @@ if ( ! class_exists( 'WFFN_Conversion_Data' ) ) {
 					 * Get all medium data based by campaign
 					 */
 					if ( WFFN_Common::is_wc_hpos_enabled() ) {
-						$medium_query = 'SELECT DISTINCT conv.utm_medium as u_medium, COUNT(DISTINCT conv.id) as `conversion`, ROUND(SUM(order_t.total_amount), 2 ) as revenue FROM ' . $conv_table . ' AS conv 
+						$medium_query = 'SELECT DISTINCT conv.utm_medium as u_medium, COUNT(DISTINCT conv.source) as `conversion`, ROUND(SUM(order_t.total_amount), 2 ) as revenue FROM ' . $conv_table . ' AS conv 
                               LEFT JOIN ' . $wpdb->prefix . "wc_orders AS order_t ON conv.source = order_t.id 
-                              WHERE conv.utm_campaign = '" . esc_sql( $s_item['campaign'] ) . "' AND conv.type = 2 AND conv.utm_medium !='' " . $date_query . ' GROUP BY u_medium ORDER BY revenue DESC';
+                              WHERE conv.utm_campaign = '" . esc_sql( $s_item['campaign'] ) . "' AND conv.type = 2 AND conv.funnel_id != 0 AND conv.utm_medium !='' " . $date_query . ' GROUP BY u_medium ORDER BY revenue DESC';
 					} else {
-						$medium_query = 'SELECT DISTINCT conv.utm_medium as u_medium, COUNT(DISTINCT conv.id) as `conversion`, ROUND(SUM( order_t.total_sales ), 2 ) as revenue FROM ' . $conv_table . ' AS conv 
+						$medium_query = 'SELECT DISTINCT conv.utm_medium as u_medium, COUNT(DISTINCT conv.source) as `conversion`, ROUND(SUM( order_t.total_sales ), 2 ) as revenue FROM ' . $conv_table . ' AS conv 
                               LEFT JOIN ' . $wpdb->prefix . "wc_order_stats AS order_t ON conv.source = order_t.order_id 
-                              WHERE conv.utm_campaign = '" . esc_sql( $s_item['campaign'] ) . "' AND conv.type = 2 AND conv.utm_medium !='' " . $date_query . ' GROUP BY u_medium ORDER BY revenue DESC';
+                              WHERE conv.utm_campaign = '" . esc_sql( $s_item['campaign'] ) . "' AND conv.type = 2 AND conv.funnel_id != 0 AND conv.utm_medium !='' " . $date_query . ' GROUP BY u_medium ORDER BY revenue DESC';
 					}
 
 					$medium_result = $wpdb->get_results( $medium_query, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -685,8 +684,8 @@ if ( ! class_exists( 'WFFN_Conversion_Data' ) ) {
 			/**
 			 * Get all top sales campaigns
 			 */
-			$op_query = 'SELECT conv.utm_campaign AS campaign, COUNT(DISTINCT conv.id) as `conversion`, 0 as revenue FROM ' . $conv_table . " AS conv 
-                     WHERE conv.type = 1 AND conv.utm_campaign != '' GROUP BY conv.utm_campaign ORDER BY `conversion` DESC LIMIT " . $limit;
+			$op_query = 'SELECT conv.utm_campaign AS campaign, COUNT(DISTINCT conv.source) as `conversion`, 0 as revenue FROM ' . $conv_table . " AS conv 
+                     WHERE conv.type = 1 AND conv.utm_campaign != '' AND conv.funnel_id != 0 GROUP BY conv.utm_campaign ORDER BY `conversion` DESC LIMIT " . $limit;
 
 			$op_result = $wpdb->get_results( $op_query, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
@@ -697,8 +696,8 @@ if ( ! class_exists( 'WFFN_Conversion_Data' ) ) {
 					/**
 					 * Get all source and medium data based by campaign
 					 */
-					$os_query  = 'SELECT DISTINCT conv.utm_source as u_source, COUNT(DISTINCT conv.id) as `conversion`, 0 as revenue FROM ' . $conv_table . " AS conv 
-                          WHERE conv.utm_campaign = '" . esc_sql( $o_item['campaign'] ) . "' AND conv.type = 1 GROUP BY u_source ORDER BY `conversion` DESC";
+					$os_query  = 'SELECT DISTINCT conv.utm_source as u_source, COUNT(DISTINCT conv.source) as `conversion`, 0 as revenue FROM ' . $conv_table . " AS conv 
+                          WHERE conv.utm_campaign = '" . esc_sql( $o_item['campaign'] ) . "' AND conv.type = 1 AND conv.funnel_id != 0 GROUP BY u_source ORDER BY `conversion` DESC";
 					$os_result = $wpdb->get_results( $os_query, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 					if ( is_array( $os_result ) && count( $os_result ) > 0 ) {
@@ -712,8 +711,8 @@ if ( ! class_exists( 'WFFN_Conversion_Data' ) ) {
 					/**
 					 * Get all medium data based by campaign
 					 */
-					$os_query  = 'SELECT DISTINCT conv.utm_medium as u_medium, COUNT(DISTINCT conv.id) as `conversion`, 0 as revenue FROM ' . $conv_table . " AS conv 
-                              WHERE conv.utm_campaign = '" . esc_sql( $o_item['campaign'] ) . "' AND conv.type = 1 GROUP BY u_medium ORDER BY `conversion` DESC";
+					$os_query  = 'SELECT DISTINCT conv.utm_medium as u_medium, COUNT(DISTINCT conv.source) as `conversion`, 0 as revenue FROM ' . $conv_table . " AS conv 
+                              WHERE conv.utm_campaign = '" . esc_sql( $o_item['campaign'] ) . "' AND conv.type = 1 AND conv.funnel_id != 0 GROUP BY u_medium ORDER BY `conversion` DESC";
 					$os_result = $wpdb->get_results( $os_query, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 					if ( is_array( $os_result ) && count( $os_result ) > 0 ) {
@@ -933,19 +932,6 @@ if ( ! class_exists( 'WFFN_Conversion_Data' ) ) {
 			return $query_array;
 		}
 
-		public function update_data_localize_data( $args ) {
-
-			if ( ! is_array( $args ) ) {
-				return $args;
-			}
-
-			if ( true === wffn_string_to_bool( BWF_Admin_General_Settings::get_instance()->get_option( 'track_utms' ) ) ) {
-				$args['cookieKeys'] = array_merge( $args['cookieKeys'], array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content' ) );
-			}
-
-			return $args;
-		}
-
 		public function get_conversion_cases_string( $is_other = false ) {
 			if ( ! method_exists( 'WFFN_Common', 'get_refs' ) ) {
 				return ' referrer as referrers ';
@@ -983,9 +969,13 @@ if ( ! class_exists( 'WFFN_Conversion_Data' ) ) {
 		}
 
 		public function add_string_quote( $string ) {
-			$string = explode( ',', $string );
+			// Escape each value individually before joining. Doing the join first
+			// would put literal single-quote delimiters into the string that
+			// esc_sql() then escapes, collapsing the IN list into one big string
+			$values  = explode( ',', $string );
+			$escaped = array_map( 'esc_sql', $values );
 
-			return "'" . esc_sql( implode( "', '", $string ) ) . "'";
+			return "'" . implode( "', '", $escaped ) . "'";
 		}
 
 		public function get_percentage( $total, $number ) {

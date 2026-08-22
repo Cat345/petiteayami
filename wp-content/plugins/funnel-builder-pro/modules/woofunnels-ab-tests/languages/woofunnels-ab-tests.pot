@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-01T12:37:44+00:00\n"
+"POT-Creation-Date: 2026-08-20T13:41:01+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woofunnels-ab-tests\n"
@@ -175,12 +175,12 @@ msgstr ""
 
 #: includes/class-bwfabt-admin.php:516
 #: test-modules/aero-checkout/class-bwfabt-controller-aero-checkout.php:462
-#: test-modules/landing/class-bwfabt-controller-landing.php:371
+#: test-modules/landing/class-bwfabt-controller-landing.php:370
 #: test-modules/offer/class-bwfabt-controller-offer.php:315
-#: test-modules/optin-ty/class-bwfabt-controller-optin-ty.php:366
-#: test-modules/optin/class-bwfabt-controller-optin.php:398
+#: test-modules/optin-ty/class-bwfabt-controller-optin-ty.php:365
+#: test-modules/optin/class-bwfabt-controller-optin.php:397
 #: test-modules/order-bumps/class-bwfabt-controller-order-bump.php:280
-#: test-modules/thankyou/class-bwfabt-controller-thankyou.php:368
+#: test-modules/thankyou/class-bwfabt-controller-thankyou.php:367
 #: test-modules/upstroke/class-bwfabt-controller-upstroke.php:466
 #: views/commons/section-breacrumb.php:6
 msgid "Edit"

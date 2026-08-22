@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! function_exists( 'wffn_handle_store_checkout_config' ) ) {
 	function wffn_handle_store_checkout_config() {
 		if ( ! class_exists( 'WFACP_Common' ) ) {

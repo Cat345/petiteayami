@@ -20,12 +20,18 @@
 		useServerMapForSections: false,
 		hiddenFields: {},
 		hiddenSections: {},
+		// True once init() has found fkcfData; guards handlers bound outside init().
+		initialized: false,
+		// Caches a field's value before it is cleared by hideField() so it can be
+		// restored if the field is re-shown within the same evaluation cycle.
+		cachedValues: {},
 
 		init: function() {
 			if (typeof fkcfData === 'undefined') {
 				return;
 			}
 
+			this.initialized = true;
 			this.rules = fkcfData.rules || {};
 			this.sectionRules = fkcfData.sectionRules || {};
 			this.visibilityMap = fkcfData.visibilityMap || {sections: {}, fields: {}};
@@ -110,6 +116,112 @@
 			// Update the anti-flicker CSS style tag so hidden fields stay hidden
 			// even when WooCommerce replaces fragment DOM.
 			this.updateHideCss();
+
+			// Keep WooCommerce's "ship to a different address" checkbox in sync with the
+			// shipping section's visibility.
+			this.syncShipToDifferent();
+		},
+
+		/**
+		 * What the conditional rules decided about the shipping address this cycle.
+		 *
+		 * Returns true (rules show it), false (rules hide it), or null when no rule touches
+		 * the shipping address at all.
+		 *
+		 * Reads ONLY the decisions this module recorded during applyVisibility(); it never
+		 * inspects the DOM. Rendered visibility cannot tell "a rule hid this" apart from
+		 * "this sits on an inactive multi-step step" (#9438) or "WFACP's own same-as-billing
+		 * toggle collapsed it" — which is how every previous version of this got it wrong.
+		 *
+		 * The presence of the entry IS the confirmation: the server emits a `shipping` section
+		 * entry only when a section rule exists for it (class-rule-engine.php:406-412), and a
+		 * `shipping_*` field entry only for fields a rule owns.
+		 */
+		shippingRuleState: function() {
+			// A section-level rule governs the whole address block, so it wins.
+			if (this.hiddenSections.hasOwnProperty('shipping')) {
+				return ! this.hiddenSections.shipping;
+			}
+
+			// Otherwise fall back to field-level rules. Shipping counts as shown while at
+			// least one field we hold a decision for is still shown.
+			var self     = this;
+			var owned    = false;
+			var anyShown = false;
+
+			Object.keys(this.hiddenFields).forEach(function(fieldId) {
+				if (fieldId.indexOf('shipping_') !== 0 || fieldId.indexOf('same_as') !== -1) {
+					return;
+				}
+				owned = true;
+				if (! self.hiddenFields[fieldId]) {
+					anyShown = true;
+				}
+			});
+
+			return owned ? anyShown : null;
+		},
+
+		/**
+		 * Drive WooCommerce's "Ship to a different address" checkbox from that decision.
+		 *
+		 * While the box is unticked `ship_to_different_address` does not post, so WooCommerce
+		 * skips the whole shipping fieldset — validating nothing and copying billing over
+		 * shipping (#9314) — and WFACP keeps the billing address required, because
+		 * handle_billing_field_required_settings() is gated on the same flag (#9413).
+		 *
+		 * The box is therefore only ever touched when a conditional rule actually owns the
+		 * shipping address. When none does, WFACP's server-rendered state (form.php:322) and
+		 * its own toggle handlers (checkout.js:2799/2838) are already correct and we stay out.
+		 */
+		syncShipToDifferent: function() {
+			if (! this.initialized) {
+				return;
+			}
+
+			var $cb = $('#ship-to-different-address-checkbox');
+			if ($cb.length === 0) {
+				return;
+			}
+
+			var ruleShowsShipping = this.shippingRuleState();
+			if (null === ruleShowsShipping) {
+				// No conditional rule owns the shipping address; not ours to touch.
+				return;
+			}
+
+			// #9413: when the cart needs no shipping address at all (all-virtual, local pickup,
+			// ship-to-billing-only) keep the box ticked even though the rules hid the section —
+			// unticking there leaves billing required while those fields are off screen and empty.
+			// When the cart DOES need shipping, a rule-hidden section must untick, or WooCommerce
+			// demands an address the customer cannot see. `is_virtual` is the fallback for
+			// cart_info cached before needs_shipping existed.
+			var cartInfo         = (typeof fkcfData !== 'undefined' && fkcfData.cartInfo) ? fkcfData.cartInfo : {};
+			var noShippingNeeded = (cartInfo.needs_shipping === false) ||
+				(typeof cartInfo.needs_shipping === 'undefined' && !! cartInfo.is_virtual);
+
+			// A rule making the shipping section available is not the same thing as the customer
+			// choosing to enter a separate shipping address. In layouts where billing is the primary
+			// address, WFACP renders its own "ship to a different address" toggle; while that toggle
+			// is off the shipping fields stay collapsed and empty, and ticking the box anyway makes
+			// WooCommerce validate an address that is not on screen.
+			//
+			// Reading the toggle's checked state is reading an explicit customer decision, not
+			// rendered visibility — so unlike the :visible test this stays correct on multi-step,
+			// where the toggle may sit on an inactive step. Only #shipping_same_as_billing counts;
+			// #billing_same_as_shipping governs whether BILLING is separate and says nothing about
+			// the shipping fieldset. Absent toggle = this layout always collects shipping.
+			var $sameAs          = $('#shipping_same_as_billing');
+			var separateShipping = $sameAs.length ? $sameAs.prop('checked') : true;
+
+			// The toggle gates the whole decision, including the virtual-cart case: a rule that
+			// reveals shipping on a no-shipping-needed cart must still not tick while the customer
+			// has the toggle off, or we are back to validating fields they cannot see.
+			var shouldCheck = separateShipping && (ruleShowsShipping || noShippingNeeded);
+
+			if ($cb.prop('checked') !== shouldCheck) {
+				$cb.prop('checked', shouldCheck);
+			}
 		},
 
 		/**
@@ -316,6 +428,15 @@
 			// Use cart data from page load (sent via wp_localize_script)
 			// For real-time cart changes, rely on update_order_review AJAX
 			var cartInfo = fkcfData.cartInfo || {};
+
+			// If cart info is absent/empty client-side (e.g. not yet hydrated from fragments on a
+			// change event), do not force the condition to false. Doing so would fail the AND-group
+			// and spuriously hide (and clear) fields whose other legs are satisfied — the radio-reset
+			// symptom. Assume satisfied until fresh cart data arrives via update_order_review.
+			if (!fkcfData.cartInfo || (typeof cartInfo === 'object' && Object.keys(cartInfo).length === 0)) {
+				this.debugLog('Cart info absent/stale client-side; assuming cart condition satisfied');
+				return true;
+			}
 			var operator = condition.operator || '';
 			var value = condition.value;
 			var operand = condition.operand || [];
@@ -530,43 +651,35 @@
 			var self = this;
 			var fields = this.visibilityMap.fields || {};
 			var rules = this.rules || {};
-			var processedFields = {};
+			// Compute the FINAL per-field visibility before touching the DOM. This guarantees
+			// a field that ends up "show" by the client rule is never left in the cleared state
+			// produced by an earlier server-map "hide" pass (the cause of radio/checkbox resets).
+			var decisions = {};
 
 			self.debugLog('applyFieldVisibility: Processing ' + Object.keys(fields).length + ' fields from map, ' + Object.keys(rules).length + ' field rules');
 
-			// First, apply server visibility map for fields that have it (cart/user rules evaluated server-side).
+			// First, record server visibility map decisions (cart/user rules evaluated server-side).
 			// Server has correct cart state; client cartInfo can be stale on initial load or before fragments.
 			Object.keys(fields).forEach(function(fieldId) {
-				var shouldShow = fields[fieldId];
-				processedFields[fieldId] = true;
-				self.debugLog('Field ' + fieldId + ' (from server map): ' + (shouldShow ? 'SHOW' : 'HIDE'));
-
-				if (shouldShow) {
-					self.showField(fieldId);
-				} else {
-					self.hideField(fieldId);
-				}
+				decisions[fieldId] = fields[fieldId];
 			});
 
-			// Then, evaluate field rules client-side for fields with rules that need real-time updates
-			// (field-based conditions) or that are not in the server map yet.
+			// Then, evaluate field rules client-side, overriding the server decision only when the
+			// rule has field-based conditions (real-time updates) or the field is not in the server map.
 			Object.keys(rules).forEach(function(fieldId) {
-				if (processedFields[fieldId]) {
-					// Already applied from server map. Only re-evaluate if rule has field conditions
-					// (user may have changed a field, needing immediate update).
-					if (!self.ruleHasFieldConditions(rules[fieldId])) {
-						return;
-					}
+				if (decisions.hasOwnProperty(fieldId) && !self.ruleHasFieldConditions(rules[fieldId])) {
+					// Already decided by server map and rule has no field conditions; keep server decision.
+					return;
 				}
 
-				var rule = rules[fieldId];
-				self.debugLog('Evaluating rule for field: ' + fieldId + ' (has field conditions)');
-				var shouldShow = self.evaluateFieldRule(rule);
-				processedFields[fieldId] = true;
+				self.debugLog('Evaluating rule for field: ' + fieldId);
+				decisions[fieldId] = self.evaluateFieldRule(rules[fieldId]);
+			});
 
-				self.debugLog('Field ' + fieldId + ' (evaluated): ' + (shouldShow ? 'SHOW' : 'HIDE'));
-
-				if (shouldShow) {
+			// Apply final decisions. Only fields whose FINAL outcome is "hide" are cleared.
+			Object.keys(decisions).forEach(function(fieldId) {
+				self.debugLog('Field ' + fieldId + ' (final): ' + (decisions[fieldId] ? 'SHOW' : 'HIDE'));
+				if (decisions[fieldId]) {
 					self.showField(fieldId);
 				} else {
 					self.hideField(fieldId);
@@ -906,12 +1019,142 @@
 			return $section;
 		},
 
+		/**
+		 * Resolve the input element(s) for a field id, falling back from id to name-based lookup.
+		 */
+		getFieldInputs: function(fieldId) {
+			var $scope = $('#wfacp_checkout_form').length ? $('#wfacp_checkout_form') : $(document);
+			var $input = $scope.find('#' + fieldId);
+			if ($input.length === 0) {
+				$input = $scope.find('select[name="' + fieldId + '"], input[name="' + fieldId + '"], textarea[name="' + fieldId + '"], select[name="' + fieldId + '[]"], input[name="' + fieldId + '[]"], textarea[name="' + fieldId + '[]"]');
+			}
+			return $input;
+		},
+
+		/**
+		 * Snapshot a field's current value before it is cleared, so a hidden-then-reshown
+		 * field within one evaluation cycle keeps the user's selection. Only stores a
+		 * meaningful (non-empty) value and never overwrites an existing snapshot.
+		 */
+		cacheFieldValue: function(fieldId, $input) {
+			if (this.cachedValues.hasOwnProperty(fieldId)) {
+				return;
+			}
+
+			var snapshot = null;
+
+			if ($input.is(':radio')) {
+				var $checkedRadio = $input.filter(':checked');
+				if ($checkedRadio.length > 0) {
+					snapshot = {kind: 'radio', value: $checkedRadio.val()};
+				}
+			} else if ($input.is(':checkbox')) {
+				var checkedVals = [];
+				$input.filter(':checked').each(function() {
+					checkedVals.push($(this).val());
+				});
+				if (checkedVals.length > 0) {
+					snapshot = {kind: 'checkbox', values: checkedVals};
+				}
+			} else {
+				var val = $input.val();
+				if (val !== undefined && val !== null && val !== '') {
+					snapshot = {kind: 'value', value: val};
+				}
+			}
+
+			if (snapshot !== null) {
+				this.cachedValues[fieldId] = snapshot;
+			}
+		},
+
+		/**
+		 * Restore a previously cached field value when the field is re-shown, then drop the cache.
+		 */
+		restoreFieldValue: function(fieldId) {
+			if (!this.cachedValues.hasOwnProperty(fieldId)) {
+				return;
+			}
+
+			var snapshot = this.cachedValues[fieldId];
+			var $input = this.getFieldInputs(fieldId);
+
+			if ($input.length) {
+				if (snapshot.kind === 'radio') {
+					$input.filter(function() {
+						return String($(this).val()) === String(snapshot.value);
+					}).prop('checked', true);
+				} else if (snapshot.kind === 'checkbox') {
+					$input.each(function() {
+						if (snapshot.values.indexOf($(this).val()) !== -1) {
+							$(this).prop('checked', true);
+						}
+					});
+				} else {
+					$input.val(snapshot.value);
+				}
+			}
+
+			delete this.cachedValues[fieldId];
+		},
+
 		showField: function(fieldId) {
 			this.hiddenFields[fieldId] = false;
 			this.debugLog('Showing field: ' + fieldId);
 
 			var selectors = this.getFieldCssSelectors(fieldId);
 			$(selectors.join(',')).removeClass('fkcf-hidden');
+
+			// Restore any value cleared by a prior hideField() in the same cycle (non-destructive).
+			if (this.cachedValues.hasOwnProperty(fieldId)) {
+				this.restoreFieldValue(fieldId);
+			} else {
+				// First-time show with no cached value: apply the PHP-defined default if present.
+				this.applyFieldDefault(fieldId);
+			}
+		},
+
+		applyFieldDefault: function(fieldId) {
+			// Prefer the data-fkcf-default attribute embedded in the wrapper element at render time
+			// (most reliable — comes directly from the PHP $value passed to wfacp_radio renderer).
+			var $wrapper   = $('#' + fieldId + '_field');
+			var defaultVal = $wrapper.length ? $wrapper.data('fkcf-default') : undefined;
+
+			// Fallback to fkcfData.fieldDefaults for non-radio fields or if attribute is absent.
+			if (defaultVal === undefined || defaultVal === '') {
+				var defaults = (typeof fkcfData !== 'undefined' && fkcfData.fieldDefaults) ? fkcfData.fieldDefaults : {};
+				defaultVal   = defaults[fieldId];
+			}
+
+			if (!defaultVal) {
+				return;
+			}
+
+			var $input = this.getFieldInputs(fieldId);
+			if (!$input.length) {
+				return;
+			}
+
+			if ($input.is(':radio')) {
+				if ($input.filter(':checked').length === 0) {
+					$input.filter(function() {
+						return String($(this).val()) === String(defaultVal);
+					}).prop('checked', true);
+				}
+			} else if ($input.is(':checkbox')) {
+				if ($input.filter(':checked').length === 0) {
+					var defaultVals = String(defaultVal).split(',');
+					$input.each(function() {
+						if (defaultVals.indexOf($(this).val()) !== -1) {
+							$(this).prop('checked', true);
+						}
+					});
+				}
+			} else {
+				if (!$input.val()) {
+					$input.val(defaultVal);
+				}
+			}
 		},
 
 		hideField: function(fieldId) {
@@ -921,14 +1164,12 @@
 			var selectors = this.getFieldCssSelectors(fieldId);
 			$(selectors.join(',')).addClass('fkcf-hidden');
 
-			// Clear field value when hiding
-			var $scope = $('#wfacp_checkout_form').length ? $('#wfacp_checkout_form') : $(document);
-			var $input = $scope.find('#' + fieldId);
-			if ($input.length === 0) {
-				$input = $scope.find('select[name="' + fieldId + '"], input[name="' + fieldId + '"], textarea[name="' + fieldId + '"], select[name="' + fieldId + '[]"], input[name="' + fieldId + '[]"], textarea[name="' + fieldId + '[]"]');
-			}
+			// Clear field value when hiding, but cache it first so it can be restored if the
+			// field is re-shown within the same evaluation cycle.
+			var $input = this.getFieldInputs(fieldId);
 
 			if ($input.length) {
+				this.cacheFieldValue(fieldId, $input);
 				if ($input.is(':checkbox') || $input.is(':radio')) {
 					$input.prop('checked', false);
 				} else {
@@ -988,8 +1229,14 @@
 		FKCF_Frontend.init();
 	});
 
-	// Re-initialize on WFACP events
+	// Re-initialize on WFACP events.
+	// Guarded by `initialized`: init() bails when fkcfData is absent (no conditional rules on
+	// this checkout), but this handler lives outside init(), so without the guard an inactive
+	// module still mutated the form on every step switch.
 	$(document.body).on('wfacp_step_switching', function() {
+		if (!FKCF_Frontend.initialized) {
+			return;
+		}
 		FKCF_Frontend.applyVisibility();
 	});
 

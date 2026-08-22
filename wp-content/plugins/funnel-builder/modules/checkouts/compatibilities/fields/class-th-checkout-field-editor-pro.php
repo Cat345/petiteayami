@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Checkout Field Editor for WooCommerce (Pro) by theme high Version 3.6.1

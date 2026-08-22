@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Creative Mail by Newfold Digital ( version 1.6.9)
@@ -37,7 +38,7 @@ if ( ! class_exists( 'WFACP_Creative_Mail_Constant_Contact' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'creative_mail' ],
 				'id'         => 'creative_mail',
 				'field_type' => 'creative_mail',
-				'label'      => __( 'Creative Mail', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'Creative Mail', 'funnel-builder' ),
 			];
 
 			return $fields;

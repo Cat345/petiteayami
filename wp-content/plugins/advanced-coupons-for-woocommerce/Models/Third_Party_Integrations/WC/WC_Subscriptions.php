@@ -209,11 +209,13 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
      */
     public function bypass_store_credit_coupon_removal( $bypass, $coupon ) {
 
-        // Allow store credit coupons for renewal.
-        if ( 'yes' === get_option( self::ALLOW_STORE_CREDITS_FOR_RENEWAL, 'no' ) &&
-            $coupon->get_code() === \ACFWF()->Store_Credits_Checkout->get_store_credit_coupon_code() ) {
-
-            return true;
+        // The store credit coupon is a fixed_cart coupon, so without this guard it would be kept on
+        // recurring carts by the regular-types bypass below. When renewals are enabled, keep it on
+        // recurring carts; when disabled, store credit must only apply to the initial purchase, so
+        // let WooCommerce Subscriptions remove it from recurring carts.
+        $is_store_credit_coupon = $coupon->get_code() === \ACFWF()->Store_Credits_Checkout->get_store_credit_coupon_code();
+        if ( $is_store_credit_coupon ) {
+            return 'yes' === get_option( self::ALLOW_STORE_CREDITS_FOR_RENEWAL, 'no' ) ? true : $bypass;
         }
 
         // Allow regular WooCommerce coupon types to remain applied when subscription products are in cart.
@@ -296,6 +298,7 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
      * session-based after-tax discount or by re-applying the store credit coupon.
      *
      * @since 4.6.7
+     * @since 4.0.9 Clear stale store credit session when renewals are disabled (#1513).
      * @access public
      *
      * @param array            $cart_item_data Data being added to the cart.
@@ -306,11 +309,15 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
      */
     public function maybe_apply_store_credit( $cart_item_data, $line_item, $subscription ) {
 
-        if ( 'yes' !== get_option( self::ALLOW_STORE_CREDITS_FOR_RENEWAL, 'no' ) ) {
+        // Only act on subscription early renewals, not regular "order again" re-orders.
+        if ( ! $subscription instanceof \WC_Subscription ) {
             return $cart_item_data;
         }
 
-        if ( ! $subscription instanceof \WC_Subscription ) {
+        if ( 'yes' !== get_option( self::ALLOW_STORE_CREDITS_FOR_RENEWAL, 'no' ) ) {
+            // Clear any stale store credit session from the original purchase so it can't
+            // bleed into the early renewal cart and get re-applied as a coupon (#1513).
+            \ACFWF()->Store_Credits_Checkout->clear_store_credit_session();
             return $cart_item_data;
         }
 
@@ -376,21 +383,29 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
      * Ensure store credit coupon is removed if session data is missing after early renewal setup.
      *
      * @since 4.6.7
+     * @since 4.0.9 Remove lingering coupon and clear session when renewals are disabled (#1513).
      * @access public
      *
      * @param \WC_Subscription $subscription The subscription object.
      */
     public function maybe_remove_missing_store_credit_coupon( $subscription ) {
 
-        if ( 'yes' !== get_option( self::ALLOW_STORE_CREDITS_FOR_RENEWAL, 'no' ) ) {
-            return;
-        }
-
         if ( ! $subscription instanceof \WC_Subscription ) {
             return;
         }
 
         $store_credit_coupon = \ACFWF()->Store_Credits_Checkout->get_store_credit_coupon_code();
+
+        if ( 'yes' !== get_option( self::ALLOW_STORE_CREDITS_FOR_RENEWAL, 'no' ) ) {
+            // Setting disabled: ensure no stale store credit coupon or session lingers on the
+            // early renewal cart (#1513).
+            if ( \WC()->cart && \WC()->cart->has_discount( $store_credit_coupon ) ) {
+                \WC()->cart->remove_coupon( $store_credit_coupon );
+            }
+
+            \ACFWF()->Store_Credits_Checkout->clear_store_credit_session();
+            return;
+        }
 
         if ( \WC()->cart && \WC()->cart->has_discount( $store_credit_coupon ) ) {
             $session_data = \WC()->session->get( ACFWF_Constants::STORE_CREDITS_COUPON_SESSION, null );
@@ -445,7 +460,7 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
             $products,
             function ( $c, $p ) {
 
-            if ( in_array( $p->get_type(), $this->_product_types, true ) ) {
+            if ( $p instanceof \WC_Product && in_array( $p->get_type(), $this->_product_types, true ) ) {
                 $c[] = $p->get_id();
             }
 
@@ -492,12 +507,14 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
      */
     public function populate_subscription_ids_panel_data_atts( $atts, $add_products ) {
 
-        $products = array_map(
-            function ( $a ) {
-            return wc_get_product( $a['product_id'] );
-            },
-            $add_products
-        );
+        $products = array_filter(
+            array_map(
+                function ( $a ) {
+                return wc_get_product( $a['product_id'] );
+                },
+                $add_products
+            )
+        ); // Remove false entries for products that have been deleted.
 
         $atts['subscription_ids']            = $this->filter_subscription_ids_from_products( $products );
         $atts['subscription_discount_error'] = __( 'Custom discounts for subscription products are not supported for this feature.', 'advanced-coupons-for-woocommerce' );
@@ -521,7 +538,7 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
 
             $product = wc_get_product( $a['product_id'] );
 
-            if ( in_array( $product->get_type(), $this->_product_types, true ) ) {
+            if ( $product instanceof \WC_Product && in_array( $product->get_type(), $this->_product_types, true ) ) {
                 $a['discount_type']  = 'nodiscount';
                 $a['discount_value'] = 0;
             }

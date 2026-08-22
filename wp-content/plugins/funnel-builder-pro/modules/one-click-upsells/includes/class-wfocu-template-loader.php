@@ -550,13 +550,21 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 				}
 				WFOCU_Core()->data->set( 'attribute_variation_stock_' . $hash, $all_common_attribute_slugs, 'variations' );
 				WFOCU_Core()->data->save( 'variations' );
+				$saved_default_variation = isset( $offer_data->fields->{$hash}->default_variation ) ? $offer_data->fields->{$hash}->default_variation : '';
+				if ( WFOCU_Common::DEFAULT_VARIATION_NONE === $saved_default_variation ) {
+					$default_variation = '';
+				} elseif ( ! empty( $saved_default_variation ) && array_key_exists( $saved_default_variation, $available_variations ) ) {
+					$default_variation = $saved_default_variation;
+				} else {
+					$default_variation = key( $available_variations );
+				}
 				$product->variations_data = array(
 					'available_variations'      => $available_variations,
 					'attributes'                => $attributes,
 					'attribute_keys'            => $attribute_keys,
 					'available_variation_stock' => $available_variation_stock,
 					'prices'                    => $prices,
-					'default'                   => ( isset( $offer_data->fields->{$hash}->default_variation ) && ! empty( $offer_data->fields->{$hash}->default_variation ) && true === array_key_exists( $offer_data->fields->{$hash}->default_variation, $available_variations ) ) ? $offer_data->fields->{$hash}->default_variation : key( $available_variations ),
+					'default'                   => $default_variation,
 					'shipping_hash'             => $prepare_dimension_hash,
 					'weight_htmls'              => $weight_html,
 					'dimension_htmls'           => $dimensions_html,
@@ -1016,6 +1024,7 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 
 				$id               = $this->get_offer_id();
 				$this->offer_data = WFOCU_Core()->offers->get_offer( $id );
+
 				WFOCU_Core()->funnels->maybe_set_funnel_from_offer( $id );
 				$this->product_data = WFOCU_Core()->offers->build_offer_product( $this->offer_data, $id, $is_front );
 
@@ -1030,6 +1039,28 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 				$this->set_data_object();
 				do_action( 'wfocu_offer_setup_completed' );
 			}
+		}
+
+		/**
+		 * True when at least one product configured on the offer still exists.
+		 * Guards downstream price/build code against deleted or trashed products.
+		 *
+		 * @param mixed $offer_data Offer data object as returned by WFOCU_Offers::get_offer().
+		 *
+		 * @return bool
+		 */
+		protected function offer_has_valid_products( $offer_data ) {
+			if ( ! is_object( $offer_data ) || empty( $offer_data->products ) || ! is_object( $offer_data->products ) ) {
+				return false;
+			}
+
+			foreach ( $offer_data->products as $product ) {
+				if ( isset( $product->id ) && wc_get_product( $product->id ) instanceof WC_Product ) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		/**
@@ -1072,7 +1103,7 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			if ( ! is_object( $offer_data ) ) {
 				return $this->get_default_single_template();
 			}
-			if ( count( get_object_vars( $offer_data->products ) ) > 1 && class_exists( 'WFOCU_MultiProductCore' ) ) {
+			if ( is_object( $offer_data->products ) && count( get_object_vars( $offer_data->products ) ) > 1 && class_exists( 'WFOCU_MultiProductCore' ) ) {
 				return $this->get_default_multiple_template();
 			} else {
 				return $this->get_default_single_template();

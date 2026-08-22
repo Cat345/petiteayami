@@ -34,7 +34,7 @@ class Xoo_Wl_Table_Core{
 		try {
 
 			if( !isset( $_POST['productID'] ) && !isset( $_POST['rowID'] ) ){
-				throw new Xoo_Exception( 'Product/Row ID not found' );
+				throw new XooWL\Framework\Xoo_Exception( 'Product/Row ID not found' );
 			}
 
 			$email_sent = false;
@@ -56,7 +56,7 @@ class Xoo_Wl_Table_Core{
 			}
 
 			if( is_wp_error( $email_sent ) ){
-				throw new Xoo_Exception( $email_sent );
+				throw new XooWL\Framework\Xoo_Exception( $email_sent );
 			}
 
 
@@ -69,10 +69,10 @@ class Xoo_Wl_Table_Core{
 				));
 			}
 			else{
-				throw new Xoo_Exception( 'Unable to send email. Please check troubleshoot section under info tab ( settings ).' );
+				throw new XooWL\Framework\Xoo_Exception( 'Unable to send email. Please check troubleshoot section under info tab ( settings ).' );
 			}
 			
-		} catch (Xoo_Exception $e) {
+		} catch (XooWL\Framework\Xoo_Exception $e) {
 			
 			wp_send_json(array(
 				'error' 	=> 1,
@@ -95,7 +95,7 @@ class Xoo_Wl_Table_Core{
 			$delete = xoo_wl_db()->delete_waitlist_row_by_id( (int) $_POST['rowID'] );
 
 			if( is_wp_error( $delete ) ){
-				throw new Xoo_Exception( $delete->get_error_message() );
+				throw new XooWL\Framework\Xoo_Exception( $delete->get_error_message() );
 			}
 
 			$return = array(
@@ -109,7 +109,7 @@ class Xoo_Wl_Table_Core{
 
 			wp_send_json($return);
 			
-		} catch (Xoo_Exception $e) {
+		} catch (XooWL\Framework\Xoo_Exception $e) {
 			wp_send_json(array(
 				'error' 	=> 1,
 				'notice' 	=> xoo_wl_add_notice( $e->getMessage(), 'error' )

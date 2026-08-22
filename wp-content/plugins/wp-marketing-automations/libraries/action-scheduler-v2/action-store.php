@@ -346,11 +346,24 @@ class BWFAN_AS_V2_Action_Store extends ActionScheduler_Store {
 			$limit
 		); //phpcs:ignore WordPress.DB.PreparedSQL
 
-		$rows_affected = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$this->log( $rows_affected . ' actions claimed' );
+		/** Use the shared deadlock/lock-wait retry helper so the hot-path claim UPDATE behaves like release_claim() and unset_orphaned_claims (which already retry). */
+		$rows_affected = BWFAN_AS_V2::query_with_deadlock_retry( $sql );
 		if ( false === $rows_affected ) {
-			throw new RuntimeException( esc_html__( 'Unable to claim actions. Database error.', 'action-scheduler' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			/**
+			 * Retries exhausted (deadlock/lock-wait) or a genuine DB error. Capture last_error BEFORE $this->log() —
+			 * that call runs get_option( 'bwfan_global_settings' ), which on hosts where the option is not cache-served
+			 * issues a successful SELECT that resets $wpdb->last_error to ''. Log the specifics for attribution
+			 * instead of the opaque "Database error."
+			 */
+			$last_error = $wpdb->last_error;
+			$this->log( $rows_affected . ' actions claimed' );
+			BWFAN_Common::log_test_data( 'BWFAN: Unable to claim actions. DB error: ' . $last_error, 'fka-db-deadlock', true );
+
+			/** Degrade gracefully rather than throwing a request-killing fatal on the worker endpoint. Unclaimed rows remain at claim_id = 0 and are retried on the next worker run. */
+			return 0;
 		}
+
+		$this->log( $rows_affected . ' actions claimed' );
 
 		return (int) $rows_affected;
 	}

@@ -285,7 +285,14 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                     'weekly'  => __( 'Every week (premium)', 'advanced-coupons-for-woocommerce-free' ),
                     'daily'   => __( 'Every day (premium)', 'advanced-coupons-for-woocommerce-free' ),
                 ),
-                'description' => __( 'Set the time period to reset the usage limit count. <strong>Yearly:</strong> resets at start of the year. <strong>Monthly:</strong> resets at start of the month. <strong>Weekly:</strong> resets at the start of every week (day depends on the <em>"Week Starts On"</em> setting). <strong>Daily:</strong> resets everyday. Time is always set at 12:00am of the local timezone settings.', 'advanced-coupons-for-woocommerce-free' ),
+                'description' => sprintf(
+                    /* Translators: %1$s: opening bold tag. %2$s: closing bold tag. %3$s: opening emphasis tag. %4$s: closing emphasis tag. */
+                    __( 'Set the time period to reset the usage limit count. %1$sYearly:%2$s resets at start of the year. %1$sMonthly:%2$s resets at start of the month. %1$sWeekly:%2$s resets at the start of every week (day depends on the %3$s"Week Starts On"%4$s setting). %1$sDaily:%2$s resets everyday. Time is always set at 12:00am of the local timezone settings.', 'advanced-coupons-for-woocommerce-free' ),
+                    '<strong>',
+                    '</strong>',
+                    '<em>',
+                    '</em>'
+                ),
                 'desc_tip'    => true,
                 'value'       => 'none',
             )
@@ -515,6 +522,11 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 'group' => 'cart-items',
                 'key'   => 'cart-total',
                 'title' => __( 'Cart Total (Premium)', 'advanced-coupons-for-woocommerce-free' ),
+            ),
+            'category_subtotal'                         => array(
+                'group' => 'cart-items',
+                'key'   => 'category-subtotal',
+                'title' => __( 'Category Subtotal (Premium)', 'advanced-coupons-for-woocommerce-free' ),
             ),
             'product_quantity'                          => array(
                 'group' => 'products',
@@ -1135,11 +1147,17 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 'licenseContent' => array(
                     __( "You're using Advanced Coupons for WooCommerce Free - no license needed. Enjoy! 🙂", 'advanced-coupons-for-woocommerce-free' ),
                     sprintf(
-                        /* Translators: %s: Link to upgrade to premium */
-                        __( 'To unlock more features consider <a href="%s" rel="noopener noreferer" target="blank">upgrading to Premium</a>', 'advanced-coupons-for-woocommerce-free' ),
-                        $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'generalsettingslicenselink' )
+                        /* Translators: %1$s: opening anchor tag linking to the premium upgrade page. %2$s: closing anchor tag. */
+                        __( 'To unlock more features consider %1$supgrading to Premium%2$s', 'advanced-coupons-for-woocommerce-free' ),
+                        '<a href="' . esc_url( $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'generalsettingslicenselink' ) ) . '" rel="noopener noreferrer" target="_blank">',
+                        '</a>'
                     ),
-                    __( 'As a valued Advanced Coupons for WooCommerce Free user you receive up to <em>50% off</em>, automatically applied at checkout!', 'advanced-coupons-for-woocommerce-free' ),
+                    sprintf(
+                        /* Translators: %1$s: opening emphasis tag. %2$s: closing emphasis tag. */
+                        __( 'As a valued Advanced Coupons for WooCommerce Free user you receive up to %1$s50%% off%2$s, automatically applied at checkout!', 'advanced-coupons-for-woocommerce-free' ),
+                        '<em>',
+                        '</em>'
+                    ),
                 ),
             )
         );
@@ -1254,7 +1272,12 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                     'sharedProps'         => array(
                         'upgradePremium' => __( 'Upgrade To Premium', 'advanced-coupons-for-woocommerce-free' ),
                         'premiumLink'    => admin_url( 'admin.php?page=acfw-premium' ),
-                        'bonusText'      => __( '<strong>Bonus:</strong> Advanced Coupons free version users get up to 50% off the regular price, automatically applied at checkout.', 'advanced-coupons-for-woocommerce-free' ),
+                        'bonusText'      => sprintf(
+                            /* Translators: %1$s: opening bold tag. %2$s: closing bold tag. */
+                            __( '%1$sBonus:%2$s Advanced Coupons free version users get up to 50%% off the regular price, automatically applied at checkout.', 'advanced-coupons-for-woocommerce-free' ),
+                            '<strong>',
+                            '</strong>'
+                        ),
                     ),
                     'analyticsUpsell'     => array(
                         'title'       => __( 'Unlock more coupon features with Advanced Coupons Premium', 'advanced-coupons-for-woocommerce-free' ),
@@ -1382,18 +1405,19 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 'contents' => array(
                     __( 'This premium cart condition and more are available in the Premium add-on for Advanced Coupons', 'advanced-coupons-for-woocommerce-free' ),
                     sprintf(
-                        /* Translators: %s: Advanced coupons pricing link. */
-                        __( '<a href="%s" target="_blank">See all features & pricing →</a>', 'advanced-coupons-for-woocommerce-free' ),
-                        apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'cartcondition' ) )
+                        '<a href="%s" target="_blank">%s</a>',
+                        esc_url( apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'cartcondition' ) ) ),
+                        __( 'See all features & pricing →', 'advanced-coupons-for-woocommerce-free' )
                     ),
                 ),
             ),
             array(
                 'key'      => 'bogo_deals_type',
                 'contents' => sprintf(
-                    /* Translators: %s: Advanced coupons pricing link. */
-                    __( 'You can do advanced BOGO deals in the <a href="%s" target="_blank">Premium add-on for Advanced Coupons</a>.', 'advanced-coupons-for-woocommerce-free' ),
-                    apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'bogo' ) )
+                    /* Translators: %1$s: opening anchor tag linking to the pricing page. %2$s: closing anchor tag. */
+                    __( 'You can do advanced BOGO deals in the %1$sPremium add-on for Advanced Coupons%2$s.', 'advanced-coupons-for-woocommerce-free' ),
+                    '<a href="' . esc_url( apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'bogo' ) ) ) . '" target="_blank">',
+                    '</a>'
                 ),
             ),
             array(
@@ -1402,9 +1426,9 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 'contents' => array(
                     __( 'In Advanced Coupons Premium you can reset the usage counts of a coupon on a timer. This is great for running recurring deals such as daily deals, giving coupons to influencers to redeem samples and more.', 'advanced-coupons-for-woocommerce-free' ),
                     sprintf(
-                        /* Translators: %s: Advanced coupons pricing link. */
-                        __( '<a href="%s" target="_blank">See all features & pricing →</a>', 'advanced-coupons-for-woocommerce-free' ),
-                        apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'usagelimits' ) )
+                        '<a href="%s" target="_blank">%s</a>',
+                        esc_url( apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'usagelimits' ) ) ),
+                        __( 'See all features & pricing →', 'advanced-coupons-for-woocommerce-free' )
                     ),
                 ),
             ),
@@ -1415,9 +1439,9 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                     __( 'In Advanced Coupons Premium you can restrict the usage of this coupon more granularly with other specific coupons and/or restrict it to a specifc list of customers.', 'advanced-coupons-for-woocommerce-free' ),
                     __( 'This is great if you have a coupon that is allowed to work with some coupons but not others and/or only allow it to be used by certain customers registered on your store.', 'advanced-coupons-for-woocommerce-free' ),
                     sprintf(
-                        /* Translators: %s: Advanced coupons pricing link. */
-                        __( '<a href="%s" target="_blank">See all features & pricing →</a>', 'advanced-coupons-for-woocommerce-free' ),
-                        apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'usagerestriction' ) )
+                        '<a href="%s" target="_blank">%s</a>',
+                        esc_url( apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'usagerestriction' ) ) ),
+                        __( 'See all features & pricing →', 'advanced-coupons-for-woocommerce-free' )
                     ),
                 ),
             ),
@@ -1427,9 +1451,9 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 'contents' => array(
                     __( 'In Advanced Coupons Premium you can have coupons automatically apply to a customer’s cart once the Cart Conditions match! Surprise and delight your customers with auto apply coupons.', 'advanced-coupons-for-woocommerce-free' ),
                     sprintf(
-                        /* Translators: %s: Advanced coupons pricing link. */
-                        __( '<a href="%s" target="_blank">See all features & pricing →</a>', 'advanced-coupons-for-woocommerce-free' ),
-                        apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'autoapply' ) )
+                        '<a href="%s" target="_blank">%s</a>',
+                        esc_url( apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'autoapply' ) ) ),
+                        __( 'See all features & pricing →', 'advanced-coupons-for-woocommerce-free' )
                     ),
                 ),
             ),
@@ -1439,9 +1463,9 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 'contents' => array(
                     __( 'In Advanced Coupons Premium you can have virtual coupons which are other codes that are also valid for this coupon. Bulk generate 100’s or 1000’s of unique alternative coupon codes for a coupon to use in welcome sequences, abandoned cart sequences, and other scenarios.', 'advanced-coupons-for-woocommerce-free' ),
                     sprintf(
-                        /* Translators: %s: Advanced coupons pricing link. */
-                        __( '<a href="%s" target="_blank">See all features & pricing →</a>', 'advanced-coupons-for-woocommerce-free' ),
-                        apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'virtualcoupons' ) )
+                        '<a href="%s" target="_blank">%s</a>',
+                        esc_url( apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'virtualcoupons' ) ) ),
+                        __( 'See all features & pricing →', 'advanced-coupons-for-woocommerce-free' )
                     ),
                 ),
             ),
@@ -1451,9 +1475,9 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 'contents' => array(
                     __( 'In Advanced Coupons Premium, BOGO coupons with the Specific Product "Get" type can automatically apply the product to a customer’s cart! This is only available for Specific Product type. It’s a great user experience upgrade for your customers to have it done for them.', 'advanced-coupons-for-woocommerce-free' ),
                     sprintf(
-                        /* Translators: %s: Advanced coupons pricing link. */
-                        __( '<a href="%s" target="_blank">See all features & pricing →</a>', 'advanced-coupons-for-woocommerce-free' ),
-                        apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'bogoautoadd' ) )
+                        '<a href="%s" target="_blank">%s</a>',
+                        esc_url( apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'bogoautoadd' ) ) ),
+                        __( 'See all features & pricing →', 'advanced-coupons-for-woocommerce-free' )
                     ),
                 ),
             ),
@@ -1463,9 +1487,9 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 'contents' => array(
                     __( 'In Advanced Coupons Premium, you can configure which product to be discounted in the additional settings option.', 'advanced-coupons-for-woocommerce-free' ),
                     sprintf(
-                        /* Translators: %s: Advanced coupons pricing link. */
-                        __( '<a href="%s" target="_blank">See all features & pricing →</a>', 'advanced-coupons-for-woocommerce-free' ),
-                        apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'bogodiscountorder' ) )
+                        '<a href="%s" target="_blank">%s</a>',
+                        esc_url( apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'bogodiscountorder' ) ) ),
+                        __( 'See all features & pricing →', 'advanced-coupons-for-woocommerce-free' )
                     ),
                 ),
             ),
@@ -1475,9 +1499,9 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 'contents' => array(
                     __( 'Set more advanced day and time schedules to control exactly when your coupon is valid using Advanced Coupons Premium.', 'advanced-coupons-for-woocommerce-free' ),
                     sprintf(
-                        /* Translators: %s: Advanced coupons pricing link. */
-                        __( '<a href="%s" target="_blank">See all features & pricing →</a>', 'advanced-coupons-for-woocommerce-free' ),
-                        apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'daytimeschedules' ) )
+                        '<a href="%s" target="_blank">%s</a>',
+                        esc_url( apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'daytimeschedules' ) ) ),
+                        __( 'See all features & pricing →', 'advanced-coupons-for-woocommerce-free' )
                     ),
                 ),
             ),
@@ -1487,9 +1511,9 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 'contents' => array(
                     __( 'In Advanced Coupons Premium you can create cashback coupons which give a customer a percentage of their order back as store credit. This is a great way to incentivize customers to come back and shop again.', 'advanced-coupons-for-woocommerce-free' ),
                     sprintf(
-                        /* Translators: %s: Advanced coupons pricing link. */
-                        __( '<a href="%s" target="_blank">See all features & pricing →</a>', 'advanced-coupons-for-woocommerce-free' ),
-                        apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'cashbackcoupon' ) )
+                        '<a href="%s" target="_blank">%s</a>',
+                        esc_url( apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'cashbackcoupon' ) ) ),
+                        __( 'See all features & pricing →', 'advanced-coupons-for-woocommerce-free' )
                     ),
                 ),
             ),
@@ -1499,9 +1523,9 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 'contents' => array(
                     __( 'In Advanced Coupons Premium you can defer the application of URL coupons until the customer visits the cart or checkout page. This gives you more control over when coupons are applied and can improve the customer experience.', 'advanced-coupons-for-woocommerce-free' ),
                     sprintf(
-                        /* Translators: %s: Advanced coupons pricing link. */
-                        __( '<a href="%s" target="_blank">See all features & pricing →</a>', 'advanced-coupons-for-woocommerce-free' ),
-                        apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'deferapplyurlcoupon' ) )
+                        '<a href="%s" target="_blank">%s</a>',
+                        esc_url( apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'deferapplyurlcoupon' ) ) ),
+                        __( 'See all features & pricing →', 'advanced-coupons-for-woocommerce-free' )
                     ),
                 ),
             ),
@@ -1621,9 +1645,9 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
     public function plugin_upgrade_action_link( $links ) {
         $upgrade_links = array(
             sprintf(
-                /* Translators: %s: Upgrade to premium link */
-                __( '<a href="%s" target="_blank"><b>Upgrade to Premium</b></a>', 'advanced-coupons-for-woocommerce-free' ),
-                apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'pluginpage' ) )
+                '<a href="%s" target="_blank"><b>%s</b></a>',
+                esc_url( apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'pluginpage' ) ) ),
+                __( 'Upgrade to Premium', 'advanced-coupons-for-woocommerce-free' )
             ),
         );
 
@@ -1879,7 +1903,12 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
 
         $data['premium_page'] = array(
             'image'   => $this->_constants->IMAGES_ROOT_URL . '/acfw-logo-alt.png',
-            'title'   => __( '<strong>Free</strong> vs <strong>Premium</strong>', 'advanced-coupons-for-woocommerce-free' ),
+            'title'   => sprintf(
+                /* Translators: %1$s: opening bold tag. %2$s: closing bold tag. */
+                __( '%1$sFree%2$s vs %1$sPremium%2$s', 'advanced-coupons-for-woocommerce-free' ),
+                '<strong>',
+                '</strong>'
+            ),
             'desc'    => __( 'If you are serious about growing your sales within your WooCommerce store then the Premium add-on to the free Advanced Coupons for WooCommerce plugin that you are currently using can help you.', 'advanced-coupons-for-woocommerce-free' ),
             'upgrade' => __( 'Upgrade', 'advanced-coupons-for-woocommerce-free' ),
             'header'  => array(

@@ -1772,11 +1772,11 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 				),
 				array(
 					'id'   => 'wfacp_before_product_switching_field',
-					'name' => __( 'Before product switcher', 'woofunnels-aero-checkout' ),
+					'name' => __( 'Before Product Field', 'woofunnels-aero-checkout' ),
 				),
 				array(
 					'id'   => 'wfacp_after_product_switching_field',
-					'name' => __( 'After product switcher', 'woofunnels-aero-checkout' ),
+					'name' => __( 'After Product Field', 'woofunnels-aero-checkout' ),
 				),
 				array(
 					'id'   => 'wfacp_before_order_summary_field',
@@ -3092,6 +3092,51 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 			return $price;
 		}
 
+		/**
+		 * Prepend the strike-through regular price to a subscription line item's price HTML.
+		 *
+		 * Only applied when the strike-through setting is enabled and the subscription is on sale
+		 * with NO free trial and NO sign-up fee — otherwise a regular/sale strike would misrepresent
+		 * what the customer is actually charged.
+		 *
+		 * @param string      $price_html    Already built subscription price HTML.
+		 * @param \WC_Product $product       Subscription product.
+		 * @param array       $cart_item     Cart item.
+		 * @param bool        $enable_strike Whether the cart-section strike-through setting is enabled.
+		 *
+		 * @return string
+		 */
+		public static function maybe_strike_subscription_price( $price_html, $product, $cart_item, $enable_strike = false ) {
+			if ( true !== wc_string_to_bool( $enable_strike ) || ! $product instanceof \WC_Product ) {
+				return $price_html;
+			}
+
+			if ( ! class_exists( 'WC_Subscriptions_Product' )
+				|| ! $product->is_on_sale()
+				|| WC_Subscriptions_Product::get_trial_length( $product ) > 0
+				|| floatval( WC_Subscriptions_Product::get_sign_up_fee( $product ) ) > 0 ) {
+				return $price_html;
+			}
+
+			$regular_price = (float) $product->get_regular_price();
+			if ( $regular_price <= 0 ) {
+				return $price_html;
+			}
+
+			// (int) turned a 0.5 cart quantity into 0, so the <del> regular total rendered
+			// as 0 next to a correct sale price.
+			$qty           = isset( $cart_item['quantity'] ) ? wc_stock_amount( $cart_item['quantity'] ) : 1;
+			$regular_total = wc_get_price_to_display(
+				$product,
+				array(
+					'price' => $regular_price,
+					'qty'   => $qty,
+				)
+			);
+
+			return '<del aria-hidden="true">' . wc_price( $regular_total ) . '</del> ' . $price_html;
+		}
+
 		static function get_price_sign_up_fee( $product, $type = '' ) {
 
 			if ( 'inc_tax' == $type ) {
@@ -3299,9 +3344,15 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 			return $output;
 		}
 
-		public static function maybe_insert_log( $content ) {
+		/**
+		 * Maybe insert logs for the conversion API
+		 *
+		 * @param string $content
+		 * @param string $event The CAPI event type this log belongs to (e.g. 'Purchase', 'AddToCart'), so the filter can allow logging per event.
+		 */
+		public static function maybe_insert_log( $content, $event = '' ) {
 
-			if ( true === apply_filters( 'bwf_conversion_api_checkout_event_logs', false ) && self::is_enabled_log() ) {
+			if ( true === apply_filters( 'bwf_conversion_api_checkout_event_logs', false, $event ) && self::is_enabled_log() ) {
 				wc_get_logger()->log( 'info', $content, array( 'source' => 'bwf_facebook_conversion_api' ) );
 			}
 		}

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * YITH WooCommerce Dynamic Pricing and Discounts Premium

@@ -113,7 +113,10 @@ class ImageController
 
             // write image to cache
             if ($cache && !is_file($cache) && rewind($temp) && File::makeDir(dirname($cache))) {
-                file_put_contents($cache, $temp, LOCK_EX);
+                if (file_put_contents($cache, $temp, LOCK_EX) === 0) {
+                    // Remove zero byte files
+                    unlink($cache);
+                }
             }
 
             fclose($temp);

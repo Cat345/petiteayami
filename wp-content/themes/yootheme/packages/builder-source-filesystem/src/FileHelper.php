@@ -43,7 +43,7 @@ class FileHelper
         // filter out any dir
         $files = array_filter(
             $files,
-            fn($file) => array_any($this->rootDirs, fn($dir) => str_starts_with($file, $dir)) &&
+            fn($file) => array_any($this->rootDirs, fn($dir) => Path::isBasePath($dir, $file)) &&
                 is_file($file),
         );
 

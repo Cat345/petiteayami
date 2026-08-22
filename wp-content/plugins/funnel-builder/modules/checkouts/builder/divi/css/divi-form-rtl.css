@@ -332,8 +332,8 @@ body #wfacp_mini_cart_items_wfacp_order_summary_widget .wfacp_cart_empty {
     margin-right: 0px;
 }
 
-.et-db #et-boc .et-l #wfacp-e-form .iti__selected-flag,
-.et-db #et-boc .et-l .wfacp_main_form .iti__selected-flag {
+.et-db #et-boc .et-l #wfacp-e-form .iti__selected-country,
+.et-db #et-boc .et-l .wfacp_main_form .iti__selected-country {
     border-right: none !important;
     border-left: 1px solid #bfbfbf;
     margin-left: 0px;

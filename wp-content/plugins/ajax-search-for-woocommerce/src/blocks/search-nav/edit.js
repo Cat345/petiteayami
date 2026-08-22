@@ -29,20 +29,14 @@ import './editor.scss';
  * @return {Element} Element to render.
  */
 export default function Edit( props ) {
-	const { deviceType } = useSelect( ( select ) => {
-		let deviceTypeTmp = '';
+	const deviceType = useSelect( ( select ) => {
 		const coreEditor = select( 'core/editor' );
 
 		if ( typeof coreEditor === 'object' && typeof coreEditor.getDeviceType === 'function' ) {
-			deviceTypeTmp = coreEditor.getDeviceType();
-			// eslint-disable-next-line no-undef
-		} else if ( typeof editPost === 'object' && editPost.__experimentalGetPreviewDeviceType === 'function' ) {
-			deviceTypeTmp = editPost.__experimentalGetPreviewDeviceType(); // eslint-disable-line no-undef
+			return coreEditor.getDeviceType();
 		}
 
-		return {
-			deviceTypeTmp,
-		};
+		return 'Desktop';
 	}, [] );
 	const blockProps = useBlockProps( {
 		className: `wp-block-fibosearch-search__device-preview-${ deviceType.toLowerCase() }`,

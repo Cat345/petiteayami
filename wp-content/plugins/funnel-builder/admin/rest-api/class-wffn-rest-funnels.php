@@ -1445,6 +1445,10 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 				\Elementor\Maintenance::activation( false );
 				delete_transient( 'elementor_activation_redirect' );
 			}
+
+			// Silent activation skips WooCommerce's own installer; run it explicitly so its
+			// tables/pages exist before any follow-up request queries them.
+			WFFN_Common::maybe_install_woocommerce( $plugin_init );
 			if ( is_wp_error( $activate ) ) {
 				$resp = array(
 					'success' => false,
@@ -1648,30 +1652,27 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 			/**
 			 *  get funnel unique views and conversion rate
 			 */
-			$report_data = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT object_id as fid , SUM(COALESCE(no_of_sessions, 0)) AS views
-					 FROM {$wpdb->prefix}wfco_report_views
-					 WHERE type = 7 AND object_id IN ( " . implode( ', ', array_fill( 0, count( $funnel_ids ), '%d' ) ) . ' )
-					 GROUP BY object_id',
-					...$funnel_ids
-				),
-				ARRAY_A
+			/**
+			 * Empty unless something records views; each funnel then keeps the
+			 * zero views and zero conversion rate it already carries.
+			 */
+			$report_data = apply_filters(
+				'wffn_report_views_rows',
+				array(),
+				array(
+					'context'    => 'funnel_totals',
+					'object_ids' => $funnel_ids,
+				)
 			);
-			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
-				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
-				if ( false === $db_error['db_error'] ) {
-					if ( is_array( $report_data ) && count( $report_data ) > 0 ) {
-						/**
-						 * prepare data for sales funnels and add views and conversion
-						 */
-						if ( is_array( $report_data ) && count( $report_data ) > 0 ) {
-							foreach ( $report_data as $r_data ) {
-								if ( isset( $all_funnels[ $r_data['fid'] ] ) ) {
-									$all_funnels[ $r_data['fid'] ]['views']           = is_null( $r_data['views'] ) ? 0 : absint( $r_data['views'] );
-									$all_funnels[ $r_data['fid'] ]['conversion_rate'] = $this->get_percentage( absint( $r_data['views'] ), $all_funnels[ $r_data['fid'] ]['conversion'] );
-								}
-							}
+			if ( is_array( $report_data ) && count( $report_data ) > 0 ) {
+				/**
+				 * prepare data for sales funnels and add views and conversion
+				 */
+				if ( is_array( $report_data ) && count( $report_data ) > 0 ) {
+					foreach ( $report_data as $r_data ) {
+						if ( isset( $all_funnels[ $r_data['fid'] ] ) ) {
+							$all_funnels[ $r_data['fid'] ]['views']           = is_null( $r_data['views'] ) ? 0 : absint( $r_data['views'] );
+							$all_funnels[ $r_data['fid'] ]['conversion_rate'] = $this->get_percentage( absint( $r_data['views'] ), $all_funnels[ $r_data['fid'] ]['conversion'] );
 						}
 					}
 				}

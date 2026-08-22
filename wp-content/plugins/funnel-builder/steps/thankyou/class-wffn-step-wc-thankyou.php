@@ -486,18 +486,8 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 			$current_page = WFFN_Core()->data->get_current_step();
 
 			$thankyou_id = isset( $current_page['id'] ) ? $current_page['id'] : 0;
-			if ( $thankyou_id > 0 ) {
-				$this->increase_thankyou_visit_wc_session_view( $thankyou_id );
-			}
 			do_action( 'wffn_event_step_viewed', $thankyou_id, $current_page );
 			do_action( 'wffn_event_step_viewed_' . $this->slug, $thankyou_id, $current_page );
-		}
-
-		public function increase_thankyou_visit_wc_session_view( $thankyou_id ) {
-			if ( $thankyou_id < 1 ) {
-				return;
-			}
-			WFCO_Model_Report_views::update_data( gmdate( 'Y-m-d', current_time( 'timestamp' ) ), $thankyou_id, 5 );
 		}
 
 		/**

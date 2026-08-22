@@ -7,13 +7,11 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Shoptimizer' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_Theme_Shoptimizer {
 		public function __construct() {
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'unhook_func' ] );
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'remove_product_thumbnail_in_checkout' ] );
-			add_action( 'wfacp_before_process_checkout_template_loader', [ $this, 'remove_product_thumbnail_in_checkout' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'unhook_func' ) );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'remove_product_thumbnail_in_checkout' ) );
+			add_action( 'wfacp_before_process_checkout_template_loader', array( $this, 'remove_product_thumbnail_in_checkout' ) );
 
-			add_action( 'init', [ $this, 'init_class' ] );
-
-
+			add_action( 'init', array( $this, 'init_class' ) );
 		}
 
 		public function init_class() {
@@ -27,8 +25,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Shoptimizer' ) ) {
 		public function unhook_func() {
 
 			$this->remove_actions();
-			add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
-
+			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
 		}
 
 		public function remove_actions() {
@@ -36,7 +33,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Shoptimizer' ) ) {
 			if ( ! function_exists( 'shoptimizer_get_option' ) || 'bottom' !== shoptimizer_get_option( 'shoptimizer_checkout_coupon_position' ) ) {
 				return;
 			}
-
 
 			WFACP_Common::remove_actions( 'woocommerce_after_checkout_form', 'woocommerce_checkout_coupon_form' );
 			WFACP_Common::remove_actions( 'woocommerce_after_checkout_form', 'shoptimizer_coupon_wrapper_start' );
@@ -50,10 +46,16 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Shoptimizer' ) ) {
 		}
 
 		public function internal_css() {
-			echo "<style>";
-			echo "body #ship-to-different-address {border: none;margin: 0;padding: 0;}";
-			echo "</style>";
-
+			echo '<style>';
+			echo 'body #ship-to-different-address {border: none;margin: 0;padding: 0;}';
+			// Shoptimizer's cart-checkout.css floats #order_review / #order_review_heading
+			// right at 41.17% width (min-width:993px). Inside the FunnelKit checkout the
+			// order review lives in its own Elementor column, so that theme float + fixed
+			// width breaks the layout (narrow, floated summary — also on the order-pay
+			// page). Let it fill its column instead. This <style> only prints on the
+			// FunnelKit checkout, so it can't affect the theme's own checkout.
+			echo '@media (min-width:993px){#customer_details + #wc_checkout_add_ons,#order_review,#order_review_heading{float:none !important;width:auto !important;margin-right:0 !important;}}';
+			echo '</style>';
 		}
 	}
 

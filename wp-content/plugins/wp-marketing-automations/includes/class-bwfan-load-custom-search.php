@@ -44,7 +44,7 @@ class BWFAN_Load_Custom_Search {
 
 	/**
 	 * Return all available action registered which register by their integration
-	 * @return array
+	 * @return object|null
 	 */
 	public function get_custom_search( $slug = '' ) {
 		return isset( self::$custom_search[ $slug ] ) ? self::$custom_search[ $slug ] : null;

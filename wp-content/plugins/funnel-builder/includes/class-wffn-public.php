@@ -40,7 +40,6 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 			add_action( 'wp_ajax_nopriv_wffn_tracking_events', array( $this, 'tracking_events' ) );
 
 			add_action( 'wp', array( $this, 'maybe_register_assets_on_load' ), 10 );
-			add_action( 'wffn_mark_pending_conversions', array( $this, 'wffn_record_unique_funnel_session' ), 5, 3 );
 			add_action( 'wffn_mark_pending_conversions', array( $this, 'mark_pending_conversions' ), 10, 2 );
 			add_action( 'wffn_mark_step_viewed', array( $this, 'mark_funnel_step_viewed' ), 10, 2 );
 			add_action( 'woocommerce_thankyou', array( $this, 'maybe_log_thankyou_visited' ), 999, 1 );
@@ -87,7 +86,12 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 		 */
 		public function maybe_initialize_setup() {
 			$is_preview_mode = WFFN_Common::is_page_builder_preview();
-			if ( $is_preview_mode ) {
+
+			// Also bail inside any builder-editor context (e.g. Oxygen's admin-bar entry uses
+			// ct_builder=true, which the value-compare is_oxy_builder_preview() misses). Without
+			// this, public.js loads in the editor and its wffn-next-link click handler hijacks
+			// button clicks -> force redirect -> spurious "changes may not be saved" popup.
+			if ( $is_preview_mode || ( class_exists( 'WFFN_Common' ) && WFFN_Common::is_oxy_editor_context() ) ) {
 				return;
 			}
 
@@ -241,35 +245,38 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 
 			wp_enqueue_script( $cookie_handle );
 			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script(
-				'wffn-public',
-				plugin_dir_url( WFFN_PLUGIN_FILE ) . 'assets/' . $live_or_dev . '/js/public' . $suffix . '.js',
-				array(
-					$cookie_handle,
-					'jquery',
-				),
-				WFFN_VERSION,
-				array(
-					'in_footer' => true,
-					'strategy'  => 'defer',
-				)
-			);
 
-			wp_localize_script( 'wffn-public', 'wffnfunnelData', $this->funnel_setup_result );
-			wp_localize_script( 'wffn-public', 'wffnfunnelEnvironment', $this->environment );
-
-			wp_localize_script(
-				'wffn-public',
-				'wffnfunnelVars',
-				apply_filters(
-					'wffn_localized_data',
+			if ( wp_script_is( $cookie_handle, 'registered' ) ) {
+				wp_enqueue_script(
+					'wffn-public',
+					plugin_dir_url( WFFN_PLUGIN_FILE ) . 'assets/' . $live_or_dev . '/js/public' . $suffix . '.js',
 					array(
-						'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
-						'restUrl'      => rest_url() . 'wffn/front',
-						'is_ajax_mode' => true,
+						$cookie_handle,
+						'jquery',
+					),
+					WFFN_VERSION,
+					array(
+						'in_footer' => true,
+						'strategy'  => 'defer',
 					)
-				)
-			);
+				);
+
+				wp_localize_script( 'wffn-public', 'wffnfunnelData', $this->funnel_setup_result );
+				wp_localize_script( 'wffn-public', 'wffnfunnelEnvironment', $this->environment );
+
+				wp_localize_script(
+					'wffn-public',
+					'wffnfunnelVars',
+					apply_filters(
+						'wffn_localized_data',
+						array(
+							'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
+							'restUrl'      => rest_url() . 'wffn/front',
+							'is_ajax_mode' => true,
+						)
+					)
+				);
+			}
 		}
 
 
@@ -556,24 +563,6 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 		}
 
 
-		public function wffn_record_unique_funnel_session( $current_step, $get_step_object, $funnel ) {
-
-			$funnel_id          = $funnel->get_id();
-			$recorded_funnel_id = WFFN_Core()->data->get( 'recorded_funnel_id_' . $funnel_id );
-
-			if ( ( absint( $funnel_id ) ) !== absint( $recorded_funnel_id ) ) {
-
-				$this->increase_funnel_visit_session_view( $funnel_id );
-				WFFN_Core()->data->set( 'recorded_funnel_id_' . $funnel_id, $funnel_id )->save();
-				WFFN_Core()->logger->log( __FUNCTION__ . ':: ' . $funnel_id );
-			}
-		}
-
-
-		public function increase_funnel_visit_session_view( $funnel_id ) {
-			WFCO_Model_Report_views::update_data( gmdate( 'Y-m-d', current_time( 'timestamp' ) ), $funnel_id, 7 );
-		}
-
 		/**
 		 * Mark Pending Conversions
 		 *
@@ -811,38 +800,6 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 				WFFN_Core()->logger->log( 'Order #' . $order_id . ': Thankyou page #' . $post->ID . ' viewed successfully', 'wffn', true );
 				if ( isset( $_GET['wfty_source'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					WFFN_Core()->logger->log( 'Order #' . $order_id . ': wfty thankyou page id #' . $_GET['wfty_source'], 'wffn', true ); // phpcs:ignore
-
-					if ( isset( $_COOKIE[ 'wfty_native_' . $order_id ] ) && 'yes' === $_COOKIE[ 'wfty_native_' . $order_id ] ) {
-						return;
-					}
-
-					/**
-					 * increase store checkout funnel thankyou page views when native checkout set
-					 */
-					if ( 0 === WFFN_Common::get_store_checkout_id() ) {
-						return;
-					}
-
-					$funnel = new WFFN_Funnel( WFFN_Common::get_store_checkout_id() );
-
-					/**
-					 * Check if this is a valid funnel and has native checkout
-					 */
-					if ( ! wffn_is_valid_funnel( $funnel ) || false === $funnel->is_funnel_has_native_checkout() ) {
-						return;
-					}
-					/**
-					 * Record thankyou page views for native store checkout
-					 */
-					$order = wc_get_order( $order_id );
-					if ( $order instanceof WC_Order ) {
-						if ( empty( $order->get_meta( '_wfacp_post_id' ) ) ) {
-							WFCO_Model_Report_views::update_data( gmdate( 'Y-m-d', current_time( 'timestamp' ) ), $post->ID, 5 );
-							WFFN_Core()->data->set_cookie( 'wfty_native_' . $order_id, 'yes', time() + ( DAY_IN_SECONDS * 1 ) );
-							WFFN_Core()->logger->log( 'Order #' . $order_id . ': record view thankyou page #' . $_GET['wfty_source'], 'wffn', true ); // phpcs:ignore
-
-						}
-					}
 				}
 			}
 		}
@@ -850,7 +807,9 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 
 		public function maybe_setup_tracking_script() {
 			$is_preview_mode = WFFN_Common::is_page_builder_preview();
-			if ( $is_preview_mode ) {
+
+			// Skip in any builder-editor context too (same ct_builder=true admin-bar gap as maybe_initialize_setup()).
+			if ( $is_preview_mode || ( class_exists( 'WFFN_Common' ) && WFFN_Common::is_oxy_editor_context() ) ) {
 				return;
 			}
 			WFFN_Tracking_SiteWide::get_instance()->tracking_script();

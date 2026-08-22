@@ -18,6 +18,10 @@ class bwfan_Input_Builder {
 		$field_value  = apply_filters( 'bwfan_rules_get_input_value', $value, $field_args );
 		$input_object = BWFAN_Rules::woocommerce_bwfan_rule_get_input_object( $field_args['input'] );
 
+		if ( ! is_object( $input_object ) ) {
+			return;
+		}
+
 		$input_object->render( $field_args, $field_value );
 	}
 

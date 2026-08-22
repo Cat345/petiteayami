@@ -18,9 +18,12 @@ class SimpleFreeStrategy implements InitializationStrategy
     private $plugin_info;
     /** @var SlimPlugin */
     private $plugin;
-    public function __construct(\FSVendor\WPDesk_Plugin_Info $plugin_info)
+    /** @var bool */
+    private $tracker_enabled;
+    public function __construct(\FSVendor\WPDesk_Plugin_Info $plugin_info, $tracker_enabled = \true)
     {
         $this->plugin_info = $plugin_info;
+        $this->tracker_enabled = $tracker_enabled;
     }
     /**
      * Run tasks that prepares plugin to work. Have to run before plugin loaded.
@@ -46,13 +49,11 @@ class SimpleFreeStrategy implements InitializationStrategy
         if (!$this->plugin) {
             $this->plugin = $this->build_plugin($plugin_info);
         }
-        $this->prepare_tracker_action();
+        if ($this->tracker_enabled) {
+            $this->prepare_tracker_action();
+        }
         $this->store_plugin($this->plugin);
         $this->init_plugin($this->plugin);
-        // Flush usage tracker late, to remain backward compatible with plugins which could instantiate
-        // the tracker on their own through `wpdesk_tracker_instance` filter.
-        $this->get_tracker_instance();
-        $this->register_tracker_ui_extensions();
         return $this->plugin;
     }
 }

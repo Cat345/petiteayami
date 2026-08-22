@@ -20,7 +20,7 @@ class OnboardingAjax implements Hookable
     /**
      * @var OnboardingOption
      */
-    protected $option;
+    protected OnboardingOption $option;
     /**
      * OptionAjaxUpdater constructor.
      *

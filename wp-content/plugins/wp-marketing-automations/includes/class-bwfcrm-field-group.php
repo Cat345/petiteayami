@@ -109,6 +109,4 @@ if ( ! class_exists( 'BWFCRM_Group' ) && BWFAN_Common::is_pro_3_0() ) {
 			return $group_slug;
 		}
 	}
-
-	BWFCRM_Group::get_instance();
 }

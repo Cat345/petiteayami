@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * This class will be extended by all all single optin form controller(like Contact form 7, Gravity etc. etc) to register different form builders
@@ -8,15 +8,13 @@ defined( 'ABSPATH' ) || exit; //Exit if accessed directly
 if ( ! class_exists( 'WFFN_Optin_Form_Controller' ) ) {
 	#[AllowDynamicProperties]
 
- abstract class WFFN_Optin_Form_Controller {
+	abstract class WFFN_Optin_Form_Controller {
 		public $slug = '';
 
 		/**
 		 * WFFN_Optin_Form_Controller constructor.
 		 */
 		public function __construct() {
-
-
 		}
 
 		/**
@@ -46,6 +44,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller' ) ) {
 		 * Group 2: page_builders: Forms created by page builder plugins (e.g. Elementor, Thrive etc.)
 		 * Group 3: auto-responders: created by Auto responders (e.g. Active Campaign, MailChimp, WP Fusion, drip etc.)
 		 * Group 4: custom_form : Created by our drag & drop fields
+		 *
 		 * @return string
 		 */
 		public function get_form_group() {
@@ -88,7 +87,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller' ) ) {
 		 * @return array|null
 		 */
 		public function get_parsed_posted_data( $posted_data, $output_data = null ) {
-			$output_data = ( null === $output_data ) ? [] : $output_data;
+			$output_data = ( null === $output_data ) ? array() : $output_data;
 
 			foreach ( $posted_data as $posted_key => $posted_datum ) {
 				if ( is_array( $posted_datum ) ) {
@@ -151,8 +150,6 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller' ) ) {
 			$db_options = WFOPP_Core()->optin_pages->get_option();
 			$result     = array( 'success' => true );
 
-
-
 			if ( $db_options['op_recaptcha'] !== 'true' ) {
 				return $result;
 			}
@@ -165,22 +162,37 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller' ) ) {
 
 			$secretKey = $db_options['op_recaptcha_secret'];
 
-			if ( isset( $data['wffn-captcha-response'] ) && ! empty( $data['wffn-captcha-response'] ) ) {
-				// Get verify response data
-				$verifyResponse = file_get_contents( 'https://www.google.com/recaptcha/api/siteverify?secret=' . $secretKey . '&response=' . wffn_clean( $data['wffn-captcha-response'] ) ); //phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData
-				$responseData   = json_decode( $verifyResponse );
+			// Fail closed: when reCAPTCHA is enabled and configured, a missing/empty token must be rejected.
+			if ( ! isset( $data['wffn-captcha-response'] ) || empty( $data['wffn-captcha-response'] ) ) {
+				WFFN_Core()->logger->log( 'Optin form Recaptcha missing token' );  //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				$result['success'] = false;
 
-				if ( $responseData->success ) {
-					WFFN_Core()->logger->log( "Optin form Recaptcha successfully applied" );  //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-				} else {
-					WFFN_Core()->logger->log( "Optin form Recaptcha failed" );  //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-					$result['success'] = false;
-				}
-				$result['message'] = $msg;
+				return $result;
 			}
+				// Get verify response data
+				$verifyResponse = wp_remote_post(
+					'https://www.google.com/recaptcha/api/siteverify',
+					array(
+						'timeout' => 15,
+						'body'    => array(
+							'secret'   => $secretKey,
+							'response' => wffn_clean( $data['wffn-captcha-response'] ),
+						),
+					)
+				);
+				$responseData   = is_wp_error( $verifyResponse ) ? null : json_decode( wp_remote_retrieve_body( $verifyResponse ) );
+
+			if ( is_object( $responseData ) && ! empty( $responseData->success ) ) {
+				WFFN_Core()->logger->log( 'Optin form Recaptcha successfully applied' );  //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+			} else {
+				WFFN_Core()->logger->log( 'Optin form Recaptcha failed' );  //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				$result['success'] = false;
+			}
+				$result['message'] = $msg;
+
+			WFFN_Core()->logger->log( 'Optin form Recaptcha successfully applied' );  //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 			return $result;
 		}
-
 	}
 }

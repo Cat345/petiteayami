@@ -1,7 +1,11 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
 //Include all files under templates folder
-$path  = XOO_AFF_DIR . '/admin/templates/scripts/';
+$path  = $aff->dir . '/admin/templates/scripts/';
 
 ?>
 

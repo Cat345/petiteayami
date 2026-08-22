@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /**
  * https://docs.woocommerce.com/document/chained-products/
  * #[AllowDynamicProperties]

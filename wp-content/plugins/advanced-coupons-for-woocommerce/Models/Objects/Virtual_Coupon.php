@@ -469,7 +469,7 @@ class Virtual_Coupon {
             'user_fullname' => $user_id ? \ACFWP()->Helper_Functions->get_customer_name( $this->get_customer() ) : '',
             'user_email'    => $user_id ? \ACFWP()->Helper_Functions->get_customer_email( $this->get_customer() ) : '',
             'date_created'  => is_object( $date_created ) ? $date_created->date_i18n( $date_format ) : '',
-            'date_expire'   => is_object( $date_expire ) ? $date_expire->date_i18n( $date_format ) : $this->get_main_coupon_expire( $date_format ),
+            'date_expire'   => is_object( $date_expire ) ? $date_expire->date_i18n( $date_format ) : $this->get_main_coupon_expire( \ACFWP()->Plugin_Constants->DISPLAY_DATE_FORMAT ),
             'url'           => $this->get_coupon_url(),
         );
     }
@@ -486,19 +486,21 @@ class Virtual_Coupon {
     public function get_main_coupon_expire( $date_format ) {
         $datetime     = null;
         $utc_zone     = new \DateTimeZone( 'UTC' );
+        $site_zone    = new \DateTimeZone( \ACFWP()->Helper_Functions->get_site_current_timezone() );
         $coupon       = new \WC_Coupon( $this->get_prop( 'coupon_id', 'edit' ) );
-        $schedule_end = $coupon->get_meta( \ACFWP()->Plugin_Constants->META_PREFIX . 'scheduled_end', true );
+        $schedule_end = $coupon->get_meta( \ACFWP()->Plugin_Constants->META_PREFIX . 'schedule_end', true );
         $date_expires = $coupon->get_date_expires();
 
         if ( $schedule_end ) {
-            $datetime = new \WC_DateTime( $schedule_end, $utc_zone );
+            // The schedule end date is stored in the site timezone, so read it as-is to avoid an offset shift.
+            $datetime = new \WC_DateTime( $schedule_end, $site_zone );
         } elseif ( $date_expires ) {
             $datetime = new \WC_DateTime( 'today', $utc_zone );
             $datetime->setTimestamp( strtotime( $date_expires ) );
         }
 
         if ( $datetime ) {
-            $datetime->setTimezone( new \DateTimeZone( \ACFWP()->Helper_Functions->get_site_current_timezone() ) );
+            $datetime->setTimezone( $site_zone );
             return $datetime->format( $date_format );
         }
 

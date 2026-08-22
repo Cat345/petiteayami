@@ -298,6 +298,9 @@ class BWFAN_Importer {
 	 */
 	public static function load_class_files( $dir ) {
 		foreach ( glob( $dir . '/class-*.php' ) as $filename ) {
+			if ( ! is_readable( $filename ) ) { // survive update file-swap / partial deploy
+				continue;
+			}
 			$file_data = pathinfo( $filename );
 
 			if ( isset( $file_data['basename'] ) && 'index.php' === $file_data['basename'] ) {

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_WC_SendinBlue' ) ) {
 	/**
 	 * Order WooCommerce Sendinblue Newsletter Subscription
@@ -26,8 +27,8 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_SendinBlue' ) ) {
 		public function add_field( $fields ) {
 
 			$fields['ws_opt_in'] = [
-				'label'       => __( 'Brevo', 'woofunnels-aero-checkout' ),
-				'data_label'  => __( 'Brevo', 'woofunnels-aero-checkout' ),
+				'label'       => __( 'Brevo', 'funnel-builder' ),
+				'data_label'  => __( 'Brevo', 'funnel-builder' ),
 				'type'        => 'checkbox',
 				'id'          => 'ws_opt_in',
 				'field_type'  => 'advanced',

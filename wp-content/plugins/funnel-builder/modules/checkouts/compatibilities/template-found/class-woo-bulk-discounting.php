@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Woo_Bulk_Discounting' ) ) {
 	/**
 	 * WooCommerce Bulk Discount

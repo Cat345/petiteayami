@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_ShipMondo_PakkeLabels_Compatibility' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_ShipMondo_PakkeLabels_Compatibility {

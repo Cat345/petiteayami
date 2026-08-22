@@ -24,6 +24,29 @@ if ( ! class_exists( 'WFACP_Woosb' ) ) {
 			add_filter( 'wfacp_display_quantity_increment', array( $this, 'allow_quantity_input' ), 9999, 5 );
 			add_filter( 'wfacp_mini_cart_enable_delete_item', array( $this, 'allow_delete_icon' ), 9999, 3 );
 			add_filter( 'wfacp_enable_delete_item', array( $this, 'allow_delete_icon' ), 9999, 3 );
+			add_filter( 'wfacp_saving_price_item_regular_price', array( $this, 'adjust_bundle_regular_price' ), 10, 2 );
+		}
+
+		/**
+		 * Bundle-aware regular price for the "You save" baseline.
+		 *
+		 * WPC zero-prices one side of the bundle in the cart
+		 * (see WPCleverWoosb::before_calculate_totals): fixed-price bundles zero the
+		 * children, dynamic-price bundles zero the parent. Drop whichever side is
+		 * zero-priced so its DB regular price doesn't inflate the baseline.
+		 */
+		public function adjust_bundle_regular_price( $regular_price, $cart_item ) {
+			// Fixed-price bundle child: priced 0 in cart, value is in the parent.
+			if ( ! empty( $cart_item['woosb_parent_key'] ) && ! empty( $cart_item['woosb_fixed_price'] ) ) {
+				return '';
+			}
+
+			// Dynamic-price bundle parent: priced 0, children carry the prices.
+			if ( ! empty( $cart_item['woosb_ids'] ) && empty( $cart_item['woosb_fixed_price'] ) ) {
+				return '';
+			}
+
+			return $regular_price;
 		}
 
 

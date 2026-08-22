@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 $product_field  = WFACP_Common::get_product_field();
 $advanced_field = WFACP_Common::get_advanced_fields();
 
@@ -16,7 +17,7 @@ $steps = [
 		'active'        => 'no',
 	],
 	'third_step'  => [
-		'name'          => __( 'Step 3', 'woofunnels-aero-checkout' ),
+		'name'          => __( 'Step 3', 'funnel-builder' ),
 		'slug'          => 'third_step',
 		'friendly_name' => __( 'Three Step Checkout', 'funnel-builder' ),
 		'active'        => 'no',

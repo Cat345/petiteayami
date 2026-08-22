@@ -13,6 +13,14 @@ use \FilterEverything\Filter\PostMetaNumEntity;
 class TaxonomyNumEntity extends PostMetaNumEntity
 {
     public $items           = [];
+    /**
+     * Declared explicitly: assigned from the outside in
+     * EntityManager::prepareEntitiesToDisplay(); dynamic properties are
+     * deprecated since PHP 8.2.
+     */
+    public $items_sort = [];
+
+    public $filter = [];
 
     public $entityName      = '';
 
@@ -28,7 +36,6 @@ class TaxonomyNumEntity extends PostMetaNumEntity
         $this->entityName = $taxNameLong;
         $this->setPostTypes( array( $postType ) );
         $this->getAllExistingTerms();
-
     }
 
     function getAllExistingTerms( $force = false )
@@ -51,6 +58,7 @@ class TaxonomyNumEntity extends PostMetaNumEntity
             'max' => 0
         ];
         $post_and_types      = [];
+        $post_and_meta_values = [];
         $is_tax_translatable = false;
 
         if( flrt_wpml_active() ){
@@ -179,7 +187,7 @@ class TaxonomyNumEntity extends PostMetaNumEntity
                  * Second to map post_types with post IDs
                  */
                 $new_result[] = (float) $single_term['name'];
-
+                $post_and_meta_values[ $single_term['ID'] ] = (float) $single_term['name'];
                 if ( $min !== false && $single_term['name'] < $min ){
                     continue;
                 }
@@ -202,7 +210,7 @@ class TaxonomyNumEntity extends PostMetaNumEntity
 
         $min_and_max = apply_filters( 'wpc_set_min_max', $min_and_max, $this->getName() );
 
-        $terms = $this->convertSelectResult( $min_and_max, $post_and_types );
+        $terms = $this->convertSelectResult( $min_and_max, $post_and_types, $post_and_meta_values );
 
         return $terms;
     }

@@ -16,7 +16,7 @@ class FinderController
         $root = $config('app.uploadDir');
         $path = Path::join($root, $request->getQueryParam('folder'));
 
-        if (!str_starts_with($path, $root)) {
+        if (!Path::isBasePath($root, $path)) {
             $path = $root;
         }
 

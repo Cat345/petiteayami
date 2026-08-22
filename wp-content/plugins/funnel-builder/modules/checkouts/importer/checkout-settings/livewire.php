@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 $advanced_field = WFACP_Common::get_advanced_fields();
 $settings       = [
 	'show_on_next_step'          => [

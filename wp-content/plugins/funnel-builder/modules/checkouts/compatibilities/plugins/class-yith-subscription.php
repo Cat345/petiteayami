@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_Yith_Subscription' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_Yith_Subscription {

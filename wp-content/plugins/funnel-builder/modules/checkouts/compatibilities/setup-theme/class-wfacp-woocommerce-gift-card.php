@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_WOOCOMMERCE_Gift_Card_Compatiblity' ) ) {
 	/**
 	 * Developed by SomewhereWarm

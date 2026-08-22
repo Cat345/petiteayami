@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Elementor template library local source.
@@ -72,7 +73,7 @@ if ( ! class_exists( 'WFACP_Elementor_Importer' ) ) {
 				return array( 'status' => $status );
 			}
 
-			return array( 'error' => __( 'Something Went wrong', 'woofunnels-aero-checkout' ) ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			return array( 'error' => __( 'Something Went wrong', 'funnel-builder' ) ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 		}
 
 

@@ -14,7 +14,8 @@ use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Framework\Logger;
 use WooCommerce\Facebook\Integrations\CostOfGoods\CostOfGoods;
-use WooCommerce\Facebook\RolloutSwitches;
+
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
@@ -64,6 +65,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 		/** @var array|null Pending pixel event data for Store API response */
 		private $pending_store_api_pixel_event = null;
+
+		/** @var Event|null Server-side CF7 Lead event, stored so its browser pixel code can be injected into the CF7 REST response */
+		private $cf7_lead_event = null;
 
 		/**
 		 * @var \FacebookAds\ParamBuilder|null shared ParamBuilder instance
@@ -296,11 +300,17 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			add_action( 'woocommerce_thankyou', array( $this, 'inject_purchase_event' ), 40 );
 
 			// Lead events through Contact Form 7 / WPForms.
-			add_action( 'wp_footer', array( $this, 'inject_lead_event' ), 11 );
+			add_action( 'wpcf7_mail_sent', array( $this, 'track_cf7_lead_event' ), 10, 1 );
+			add_filter( 'wpcf7_feedback_response', array( $this, 'inject_cf7_lead_event_pixel_code' ), 10, 2 );
+			add_action( 'wp_footer', array( $this, 'inject_cf7_lead_event_listener' ), 20 );
 			add_action( 'wpforms_process_complete', array( $this, 'track_wpforms_lead_event' ), 20, 3 );
 			add_filter( 'wpforms_ajax_submit_success_response', array( $this, 'inject_wpforms_lead_event_ajax' ), 20, 3 );
 			add_filter( 'wpforms_ajax_submit_redirect', array( $this, 'inject_wpforms_lead_event_ajax' ), 20, 3 );
 			add_action( 'wp_footer', array( $this, 'inject_wpforms_ajax_listener' ), 20 );
+
+			// Prevent stale Purchase tracking flags from being copied from subscriptions
+			// onto renewal orders (which would make inject_purchase_event() skip CAPI).
+			add_filter( 'wc_subscriptions_renewal_order_data', array( $this, 'exclude_purchase_tracking_meta_from_renewal_orders' ), 10, 3 );
 
 			// Flush pending events on shutdown
 			add_action( 'shutdown', array( $this, 'send_pending_events' ) );
@@ -1114,6 +1124,48 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
+		 * Excludes Meta Purchase tracking keys when Woo Subscriptions copies subscription meta
+		 * to renewal orders.
+		 *
+		 * Without this, renewal orders may inherit `_meta_purchase_tracked_server` and
+		 * `_meta_event_id`, causing inject_purchase_event() to treat them as already sent.
+		 *
+		 * @param array    $data copied data keyed by meta key.
+		 * @param WC_Order $to_object target order (renewal order).
+		 * @param WC_Order $from_object source object (subscription).
+		 * @return array
+		 */
+		public function exclude_purchase_tracking_meta_from_renewal_orders( $data, $to_object, $from_object ) {
+			// Guard to only affect subscription -> renewal order copies.
+			if ( ! is_a( $to_object, 'WC_Order' ) || 'shop_order' !== $to_object->get_type() ) {
+				return $data;
+			}
+
+			if ( ! is_a( $from_object, 'WC_Order' ) || 'shop_subscription' !== $from_object->get_type() ) {
+				return $data;
+			}
+
+			unset( $data[ self::META_PURCHASE_TRACKED_SERVER ] );
+			unset( $data[ self::META_PURCHASE_TRACKED_BROWSER ] );
+			unset( $data[ self::META_EVENT_ID ] );
+
+			return $data;
+		}
+
+		/**
+		 * Determines whether a given order object should be tracked as a Purchase.
+		 *
+		 * We only track Purchases for actual WooCommerce orders (`shop_order`).
+		 * Subscription objects (`shop_subscription`) are handled via Subscribe events.
+		 *
+		 * @param WC_Order $order order object.
+		 * @return bool
+		 */
+		private function is_purchase_trackable_order( $order ) {
+			return is_a( $order, 'WC_Order' ) && 'shop_order' === $order->get_type();
+		}
+
+		/**
 		 * Triggers a Purchase event when checkout is completed.
 		 *
 		 * This may happen either when:
@@ -1141,6 +1193,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$order = wc_get_order( $order_id );
 
 			if ( ! $order ) {
+				return;
+			}
+
+			// Track Purchase only for checkout/renewal orders, not subscription posts.
+			if ( ! $this->is_purchase_trackable_order( $order ) ) {
 				return;
 			}
 
@@ -1326,19 +1383,176 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/** Contact Form 7 Lead Support **/
-		public function inject_lead_event() {
-			if ( is_admin() ) {
+
+		/**
+		 * Tracks a CF7 Lead event server-side (CAPI) when a form mail is successfully sent.
+		 *
+		 * CF7 submits via REST API (/wp-json/contact-form-7/v1/contact-forms/{id}/feedback),
+		 * so wpcf7_mail_sent fires during a separate REST request — not during the page-load
+		 * where wp_footer runs. We store the event here so inject_cf7_lead_event_pixel_code()
+		 * can attach the matching browser pixel code (built via the existing pixel methods)
+		 * to the REST response, keeping browser and CAPI events on the same event_id.
+		 *
+		 * @param \WPCF7_ContactForm $contact_form The CF7 form instance.
+		 */
+		public function track_cf7_lead_event( $contact_form ) {
+			if ( ! $this->is_pixel_enabled() ) {
 				return;
 			}
 
-			if ( wp_script_is( 'contact-form-7', 'enqueued' ) ) {
-				echo $this->pixel->inject_conditional_event(
-					'Lead',
-					array(),
-					'wpcf7submit',
-					'{ em: event.detail.inputs.filter(ele => ele.name.includes("email"))[0].value }'
-				);
+			$event_data = array(
+				'event_name'  => 'Lead',
+				'user_data'   => $this->get_cf7_user_data(),
+				'custom_data' => array(
+					'fb_integration_tracking' => 'cf7',
+				),
+			);
+
+			$event = new Event( $event_data );
+			$this->send_api_event( $event );
+
+			// Store so inject_cf7_lead_event_pixel_code() can read it.
+			$this->cf7_lead_event = $event;
+		}
+
+		/**
+		 * Extracts Advanced Matching user_data for a CF7 submission.
+		 *
+		 * Mirrors the WPForms approach: PII (email) is resolved server-side from the
+		 * submitted form data and merged into the base user info, so it is included in
+		 * the CAPI payload without ever exposing it to client-side JavaScript.
+		 *
+		 * @return array
+		 */
+		private function get_cf7_user_data() {
+			$user_data = $this->pixel->get_user_info();
+			$email     = $this->get_cf7_email();
+			if ( ! empty( $email ) ) {
+				$user_data['em'] = $email;
 			}
+
+			return $user_data;
+		}
+
+		/**
+		 * Resolves the submitted email address from the current CF7 submission.
+		 *
+		 * @return string|null
+		 */
+		private function get_cf7_email() {
+			if ( ! class_exists( 'WPCF7_Submission' ) ) {
+				return null;
+			}
+
+			$submission = \WPCF7_Submission::get_instance();
+			if ( ! $submission ) {
+				return null;
+			}
+
+			$posted_data = $submission->get_posted_data();
+			if ( empty( $posted_data ) || ! is_array( $posted_data ) ) {
+				return null;
+			}
+
+			foreach ( $posted_data as $key => $value ) {
+				if ( false === strpos( (string) $key, 'email' ) ) {
+					continue;
+				}
+
+				$value = is_array( $value ) ? reset( $value ) : $value;
+				$email = sanitize_email( (string) $value );
+				if ( ! empty( $email ) && is_email( $email ) ) {
+					return $email;
+				}
+			}
+
+			// Fallback: scan values for the first valid email address.
+			foreach ( $posted_data as $value ) {
+				$value = is_array( $value ) ? reset( $value ) : $value;
+				$email = sanitize_email( (string) $value );
+				if ( ! empty( $email ) && is_email( $email ) ) {
+					return $email;
+				}
+			}
+
+			return null;
+		}
+
+		/**
+		 * Injects the browser Lead pixel code into the CF7 REST feedback response.
+		 *
+		 * Mirrors the WPForms AJAX approach ({@see inject_wpforms_lead_event_ajax()}):
+		 * CF7 submits over its REST API, so we generate the pixel code with the existing
+		 * {@see \WC_Facebookcommerce_Pixel::get_event_code()} method and attach it to the
+		 * response as fb_pxl_code. The footer listener executes it once CF7 dispatches the
+		 * wpcf7submit DOM event. The code carries the CAPI event_id so browser and server
+		 * events deduplicate on Meta's side.
+		 *
+		 * @param array $response The CF7 REST response array.
+		 * @param array $result   The CF7 submission result.
+		 * @return array
+		 */
+		public function inject_cf7_lead_event_pixel_code( $response, $result ) {
+			if ( $this->cf7_lead_event instanceof Event ) {
+				$response['fb_pxl_code'] = $this->pixel->get_event_code( 'Lead', $this->build_cf7_lead_pixel_params( $this->cf7_lead_event ) );
+			}
+			return $response;
+		}
+
+		/**
+		 * Adds a front-end listener that executes fb_pxl_code returned in the CF7 REST response.
+		 *
+		 * Mirrors {@see inject_wpforms_ajax_listener()}: a tiny bootstrap that runs the
+		 * server-generated pixel code (built via the existing pixel methods) when CF7
+		 * reports a successful submission, rather than re-implementing pixel logic in JS.
+		 */
+		public function inject_cf7_lead_event_listener() {
+			if ( is_admin() || ! wp_script_is( 'contact-form-7', 'enqueued' ) ) {
+				return;
+			}
+			?>
+			<script type='text/javascript'>
+			document.addEventListener( 'wpcf7submit', function ( event ) {
+				var detail = event.detail || {};
+				if ( 'mail_sent' !== detail.status ) {
+					return;
+				}
+				var apiResponse = detail.apiResponse || {};
+				if ( ! apiResponse.fb_pxl_code ) {
+					return;
+				}
+				try {
+					var s = document.createElement( 'script' );
+					s.textContent = apiResponse.fb_pxl_code;
+					document.head.appendChild( s );
+				} catch ( e ) {
+					// no-op
+				}
+			}, false );
+			</script>
+			<?php
+		}
+
+		/**
+		 * Builds browser pixel params for the CF7 Lead event.
+		 *
+		 * Mirrors {@see build_wpforms_lead_pixel_params()}: shares the CAPI event_id for
+		 * deduplication and forwards the server-resolved email for Advanced Matching.
+		 *
+		 * @param Event $event Lead event.
+		 * @return array
+		 */
+		private function build_cf7_lead_pixel_params( Event $event ) {
+			$params = array(
+				'event_id' => $event->get_id(),
+			);
+
+			$user_data = $event->get_user_data();
+			if ( is_array( $user_data ) && ! empty( $user_data['em'] ) ) {
+				$params['user_data'] = array( 'em' => $user_data['em'] );
+			}
+
+			return $params;
 		}
 
 		/**
@@ -1570,13 +1784,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			// Skip CAPI events when the connection is known-invalid (auth error detected),
-			// gated on the server-side rollout switch. Events resume after the merchant reconnects.
-			if ( get_transient( 'wc_facebook_connection_invalid' )
-				&& facebook_for_woocommerce()->get_rollout_switches()->is_switch_enabled(
-					RolloutSwitches::SWITCH_BLOCK_CAPI_ON_INVALID_TOKEN
-				)
-			) {
+			// Skip CAPI events when the connection is known-invalid (auth error detected).
+			// Sending events with an invalid token generates Graph API errors with no chance
+			// of success, so we suppress them until the merchant reconnects.
+			if ( get_transient( 'wc_facebook_connection_invalid' ) ) {
 				return;
 			}
 

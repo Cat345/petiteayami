@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_Facturare_WC' ) ) {
 	/**
 	 * Facturare - Persoana Fizica sau Juridica By Avian Studio
@@ -42,7 +43,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Facturare_WC' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'WooFacturare' ],
 				'id'         => 'wfacp_tip_facturare',
 				'field_type' => 'wfacp_tip_facturare',
-				'label'      => __( 'WooFacturare', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'WooFacturare', 'funnel-builder' ),
 
 			];
 			$fields['tip_facturare_fields'] = [
@@ -50,7 +51,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Facturare_WC' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'WooFacturare_fields' ],
 				'id'         => 'tip_facturare_fields',
 				'field_type' => 'tip_facturare_fields',
-				'label'      => __( 'WooFacturare Fields', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'WooFacturare Fields', 'funnel-builder' ),
 
 			];
 

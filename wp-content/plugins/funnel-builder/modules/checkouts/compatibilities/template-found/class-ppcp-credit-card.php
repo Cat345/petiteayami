@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_PPCP_WooCommerce' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_PPCP_WooCommerce {

@@ -87,11 +87,10 @@ class MethodDescription implements Hookable {
 			return;
 		}
 
-		$description = $this->get_method_description( $method );
+		$description      = $this->get_method_description( $method );
+		$method_logo_data = $this->get_method_logo_data( $method );
 
-		if ( '' !== $description ) {
-			$method_logo_data = $this->get_method_logo_data( $method );
-
+		if ( '' !== $description || '' !== $method_logo_data['url'] ) {
 			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $this->renderer->render(
 				'cart/flexible-shipping/after-shipping-rate',

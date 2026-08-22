@@ -566,6 +566,9 @@ final class BWFAN_WC_Product_Purchased extends BWFAN_Event {
 		$get_selected_product = isset( $automation_data['event_meta']['products'] ) ? $automation_data['event_meta']['products'] : [];
 		$product_selected     = empty( $get_selected_product ) ? [] : array_column( $get_selected_product, 'id' );
 
+		/** Serialize the per-product check-then-insert loop per (aid, cid) so concurrent workers cannot create duplicate rows (opt-in, see acquire_enroll_lock) */
+		$lock_name = $this->acquire_enroll_lock( $automation_id, intval( $global_data['global']['cid'] ) );
+
 		$insert_id = 0;
 		$enrolled  = false;
 		$items     = $order->get_items();
@@ -578,17 +581,23 @@ final class BWFAN_WC_Product_Purchased extends BWFAN_Event {
 			if ( false === $exclude_check && BWFAN_Model_Automation_Contact::maybe_contact_in_automation( $global_data['global']['cid'], $automation_id ) ) {
 				BWFAN_Common::log_test_data( 'Contact ' . $global_data['global']['cid'] . ' is active in the automation - ' . $automation_id . '. Event - ' . $this->get_slug(), 'contact-exist-automation', true );
 
+				$this->release_enroll_lock( $lock_name );
+
 				return false;
 			}
 
 			/** Validate automation if contact is already exists with same order */
 			if ( false === $this->validate_automation( $automation_data, $item_id ) ) {
+				$this->release_enroll_lock( $lock_name );
+
 				return false;
 			}
 
 			/** Validate automation common settings like run count */
 			if ( false === BWFAN_Model_Automations_V2::validation_automation_run_count( $automation_id, $global_data['global']['cid'], $automation_data, $exclude_check ) ) {
 				BWFAN_Common::log_test_data( 'Automation ID ' . $automation_id . ' already run on a contact ' . $global_data['global']['cid'] . '. Event - ' . $this->get_slug(), 'contact-exist-automation', true );
+
+				$this->release_enroll_lock( $lock_name );
 
 				return false;
 			}
@@ -633,6 +642,8 @@ final class BWFAN_WC_Product_Purchased extends BWFAN_Event {
 
 			$enrolled = true;
 		}
+
+		$this->release_enroll_lock( $lock_name );
 
 		/** Only touch contact fields / mark run if something actually enrolled (or was already enrolled). */
 		if ( false === $enrolled ) {

@@ -862,6 +862,20 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 				return;
 			}
 
+			/**
+			 * BWFCRM_Model_Contact::get_contact_id() is a get_row(), so it hands back null when the row is
+			 * gone, and the contact is looked up by uid below. Without a uid the lookup yields an empty
+			 * contact whose id is 0, which would go on to signal a transition for nobody.
+			 */
+			if ( ! is_object( $contact ) || empty( $contact->uid ) ) {
+				return;
+			}
+
+			/** BWFCRM_Contact is only defined when PRO 3.0+ is active */
+			if ( ! class_exists( 'BWFCRM_Contact' ) ) {
+				return;
+			}
+
 			$contact_obj = new WooFunnels_Contact( '', '', '', '', $contact->uid );
 			$get_contact = new BWFCRM_Contact( $contact_obj );
 
@@ -875,7 +889,6 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 
 			if ( $last_status === $get_contact::$DISPLAY_STATUS_UNSUBSCRIBED ) {
 				$get_contact->unsubscribe();
-				$contact_obj->delete_meta( 'soft_bounce_count' );
 				return;
 			}
 
@@ -905,9 +918,51 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 				? $get_contact::$STATUS_OPTED_IN
 				: $last_status;
 
+			/**
+			 * Kept as a raw single column write on purpose: this runs on every tracked open and click, and
+			 * WooFunnels_Contact::save() would rewrite every contact column plus its child actors. The
+			 * status condition also makes the heal atomic. Duplicate opens are routine (proxy prefetch,
+			 * multi device, a click and an open arriving together) and each one reads the same pre-heal row,
+			 * so an unconditional UPDATE would let every one of them think it made the transition. Here the
+			 * WHERE keeps matched rows equal to changed rows, so a non zero result means THIS request won.
+			 */
 			global $wpdb;
-			$wpdb->update( "{$wpdb->prefix}bwf_contact", [ 'status' => $status ], [ 'id' => $contact->id ] ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$contact_obj->delete_meta( 'soft_bounce_count' );
+			$updated = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}bwf_contact SET `status` = %d WHERE `id` = %d AND `status` != %d", $status, $contact->id, $status ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+			/** Keep the in-memory contact, the instance held in the request cache, in sync with the row. */
+			$get_contact->contact->set_status( $status );
+
+			if ( $status === $get_contact::$STATUS_OPTED_IN ) {
+				/**
+				 * set_status() above arms is_subscribed so the NEXT save() fires the subscribed action.
+				 * Nothing is saved here, so clear it and signal directly, otherwise the flag leaks into an
+				 * unrelated later save and completes the goal a second time.
+				 */
+				$get_contact->contact->is_subscribed = false;
+
+				/**
+				 * The UPDATE bypasses the contact status API, so signal the transition it just made.
+				 * Downstream goals (e.g. the "Contact Subscribes" automation goal) must fire once per heal.
+				 *
+				 * Open/click tracking requests exit at plugins_loaded (handle_track_open, priority 99),
+				 * before event listeners register on init 8 via BWFAN_Load_Connectors::load_native_integrations.
+				 * On those requests the action would fire with no listener and the event would be lost, so
+				 * queue the event row directly instead — the events queue cron replays it through the same
+				 * capture chain the listener's async call would have used.
+				 */
+				if ( $updated > 0 ) {
+					if ( has_action( 'bwfcrm_after_contact_subscribed' ) ) {
+						do_action( 'bwfcrm_after_contact_subscribed', $get_contact->contact );
+					} else {
+						BWFAN_Model_Automation_Events::insert_data( array(
+							'source'     => 'autonami',
+							'event'      => 'crm_contact_subscribed',
+							'contact_id' => $get_contact->contact->get_id(),
+							'email'      => $get_contact->contact->get_email(),
+						) );
+					}
+				}
+			}
 		}
 
 		/**

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
@@ -94,13 +95,13 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 			}
 			?>
 			<form name="checkout" method="post" class="checkout woocommerce-checkout" action="<?php echo esc_url( $permalink ); ?>" enctype="multipart/form-data" id="wfacp_checkout_form">
-				<input type="hidden" name="_wfacp_post_id" class="_wfacp_post_id" value="<?php esc_html_e( WFACP_Common::get_id() ); ?>">
-				<input type="hidden" name="wfacp_cart_hash" value="<?php esc_html_e( WC()->session->get( 'wfacp_cart_hash', '' ) ); ?>">
+				<input type="hidden" name="_wfacp_post_id" class="_wfacp_post_id" value="<?php echo esc_attr( WFACP_Common::get_id() ); ?>">
+				<input type="hidden" name="wfacp_cart_hash" value="<?php echo esc_attr( WC()->session->get( 'wfacp_cart_hash', '' ) ); ?>">
 				<input type="hidden" name="wfacp_has_active_multi_checkout" id="wfacp_has_active_multi_checkout" value="">
-				<input type="hidden" id="billing_shipping_index" value="<?php esc_html_e( $shipping_billing_index ); ?>">
+				<input type="hidden" id="billing_shipping_index" value="<?php echo esc_attr( $shipping_billing_index ); ?>">
 				<input type="hidden" id="wfacp_source" name="wfacp_source" value="<?php echo esc_url( $permalink ); ?>">
 				<input type="hidden" id="product_switcher_need_refresh" name="product_switcher_need_refresh" value="0">
-				<input type="hidden" id="wfacp_cart_contains_subscription" name="wfacp_cart_contains_subscription" value="<?php esc_html_e( $cart_contains_subscription ); ?>">
+				<input type="hidden" id="wfacp_cart_contains_subscription" name="wfacp_cart_contains_subscription" value="<?php echo esc_attr( $cart_contains_subscription ); ?>">
 
 				<input type="hidden" id="wfacp_exchange_keys" name="wfacp_exchange_keys" class="wfacp_exchange_keys" value="">
 				<input type="hidden" id="wfacp_input_hidden_data" name="wfacp_input_hidden_data" class="wfacp_input_hidden_data" value="{}">

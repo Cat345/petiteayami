@@ -11,6 +11,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Field_Phone' ) ) {
 		private static $ins = null;
 		public static $slug = WFFN_Optin_Pages::WFOP_PHONE_FIELD_SLUG;
 		public $index = 30;
+		private $utils_src_added = false;
 
 		/**
 		 * WFFN_Optin_Form_Field_Phone constructor.
@@ -46,8 +47,38 @@ if ( ! class_exists( 'WFFN_Optin_Form_Field_Phone' ) ) {
 			if ( false === $this->maybe_show_flag() ) {
 				return '';
 			}
-			wp_enqueue_script( 'phone_flag_intl', dirname( plugin_dir_url( __FILE__ ) ) . '/assets/phone/js/intltelinput.min.js', array(), WFFN_VERSION_DEV );
+			if ( ! defined( 'WFFN_INTL_V29' ) ) {
+				// Lite's optin JS predates the v29 API and drives the widget through the v17
+				// globals (window.intlTelInput / intlTelInputGlobals), so serve the legacy
+				// v17 bundle it expects instead of the v29 one. The v17 build MUST stay at
+				// this legacy filename: released Lite builds hard-code it from their
+				// Elementor/Gutenberg/Oxygen editor compatibilities.
+				wp_enqueue_script( 'phone_flag_intl', dirname( plugin_dir_url( __FILE__ ) ) . '/assets/phone/js/intltelinput.min.js', array(), WFFN_VERSION_DEV );
 
+				return;
+			}
+			wp_enqueue_script( 'phone_flag_intl', dirname( plugin_dir_url( __FILE__ ) ) . '/assets/phone/js/intltelinput-v29.min.js', array(), WFFN_VERSION_DEV );
+			wp_add_inline_script( 'phone_flag_intl', 'window.wfopIntlTelInput = window.intlTelInput;', 'after' );
+
+		}
+
+		/**
+		 * Utils only power number validation, so the lazy-load URL is emitted from
+		 * get_field_output() — the first place the per-field phone_validation setting
+		 * is known — and only when some phone field on the page validates.
+		 */
+		private function maybe_add_utils_src( $validation ) {
+			if ( ! $validation || $this->utils_src_added ) {
+				return;
+			}
+			$this->utils_src_added = true;
+			if ( ! defined( 'WFFN_INTL_V29' ) ) {
+				// the v17 core can only consume the classic-script utils build, not the v29 ES module
+				wp_enqueue_script( 'wfop_phone_utils', dirname( plugin_dir_url( __FILE__ ) ) . '/assets/phone/js/utils-v17.js', array(), WFFN_VERSION_DEV );
+
+				return;
+			}
+			wp_add_inline_script( 'phone_flag_intl', 'window.wfopIntlUtilsSrc = "' . esc_url( dirname( plugin_dir_url( __FILE__ ) ) . '/assets/phone/js/utils.js' ) . '";', 'after' );
 		}
 
 		/**
@@ -58,7 +89,13 @@ if ( ! class_exists( 'WFFN_Optin_Form_Field_Phone' ) ) {
 			if ( false === $this->maybe_show_flag() ) {
 				return '';
 			}
-			wp_enqueue_style( 'flag_style', dirname( plugin_dir_url( __FILE__ ) ) . '/assets/phone/css/phone-flag.css', array(), WFFN_VERSION_DEV );
+			if ( ! defined( 'WFFN_INTL_V29' ) ) {
+				// Legacy filename is a compat contract with released Lite builds — see load_scripts().
+				wp_enqueue_style( 'flag_style', dirname( plugin_dir_url( __FILE__ ) ) . '/assets/phone/css/phone-flag.css', array(), WFFN_VERSION_DEV );
+
+				return;
+			}
+			wp_enqueue_style( 'flag_style', dirname( plugin_dir_url( __FILE__ ) ) . '/assets/phone/css/phone-flag-v29.css', array(), WFFN_VERSION_DEV );
 		}
 
 		/**
@@ -86,13 +123,12 @@ if ( ! class_exists( 'WFFN_Optin_Form_Field_Phone' ) ) {
 			$value       = $this->get_default_value( $field_data );
 			$class       = $this->get_input_class( $field_data );
 
+			$this->maybe_add_utils_src( $validation );
+
 			if ( false === $this->maybe_show_flag() ) {
 				$class .= ' wfop_hide_flag';
 			}
 
-			if ( $validation ) {
-				wp_enqueue_script( 'wfop_phone_utils', dirname( plugin_dir_url( __FILE__ ) ) . '/assets/phone/js/utils.js', array(), WFFN_VERSION_DEV );
-			}
 
 			?>
 

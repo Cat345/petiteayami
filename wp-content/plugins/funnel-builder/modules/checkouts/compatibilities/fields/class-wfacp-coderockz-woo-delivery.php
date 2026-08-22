@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_WC_Coderockz_Delivery' ) ) {
 	/**
 	 * WooCommerce Delivery & Pickup Date Time Pro v.1.3.80 by CodeRockz
@@ -35,7 +36,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Coderockz_Delivery' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_anim_wrap', 'coderockz_woo_delivery' ],
 				'id'         => 'coderockz_woo_delivery',
 				'field_type' => 'coderockz_woo_delivery',
-				'label'      => __( 'Coderockz Woo Delivery', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'Coderockz Woo Delivery', 'funnel-builder' ),
 			];
 
 

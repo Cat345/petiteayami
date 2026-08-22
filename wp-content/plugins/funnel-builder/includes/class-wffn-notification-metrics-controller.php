@@ -72,8 +72,8 @@ if ( ! class_exists( 'WFFN_Notification_Metrics_Controller' ) ) {
 					$previous_value                   = $previous_overview_data['data'][ $metric ];
 					$percentage_change                = $previous_value > 0 ? ( ( $current_value - $previous_value ) / $previous_value ) * 100 : 0;
 					$this->data['metrics'][ $metric ] = array(
-						'text'                       => __( ucfirst( str_replace( '_', ' ', $metric ) ), 'Funnelkit' ),
-						'previous_text'              => sprintf( __( '- Previous %s', 'FunnelKit' ), $this->get_frequency_text() ),
+						'text'                       => ucfirst( str_replace( '_', ' ', $metric ) ),
+						'previous_text'              => sprintf( __( '- Previous %s', 'funnel-builder' ), $this->get_frequency_text() ),
 						'count'                      => round( $current_value, 2 ),
 						'count_suffix'               => in_array( $metric, [ 'revenue', 'upsell_revenue', 'bump_revenue', 'average_order_value' ] ) ? $this->get_currency() : '', // @codingStandardsIgnoreLine
 						'previous_count'             => $previous_value,
@@ -110,7 +110,7 @@ if ( ! class_exists( 'WFFN_Notification_Metrics_Controller' ) ) {
 				'monthly' => $capitalized ? 'Month' : 'month',
 			);
 
-			return isset( $frequencies[ $this->frequency ] ) ? __( $frequencies[ $this->frequency ], 'Funnelkit' ) : ( $capitalized ? '' : '' );
+			return isset( $frequencies[ $this->frequency ] ) ? $frequencies[ $this->frequency ] : '';
 		}
 
 		private function get_currency() {

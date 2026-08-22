@@ -37,7 +37,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Sumo_Payment_Plans' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_sumo_payment_plan' ],
 				'id'         => 'sumo_payment_plan',
 				'field_type' => 'sumo_payment_plan',
-				'label'      => __( 'Sumo Payment Plan', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'Sumo Payment Plan', 'funnel-builder' ),
 			];
 
 			return $fields;

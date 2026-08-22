@@ -14,6 +14,8 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 		private $conv_table = 'bwf_conversion_tracking';
 
+		private $journeyControl = 'enable';
+
 		public function __construct() {
 
 			if ( ! class_exists( 'WFFN_Core' ) ) {
@@ -45,6 +47,13 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			add_action( 'bwf_conversion_tracking_index_completed', array( $this, 'update_conversion_table' ), 10, 2 );
 
 			add_action( 'fk_fb_every_4_minute', array( $this, 'maybe_execute_thankyou_hook' ), 999 );
+
+			add_action( 'admin_init', array( $this, 'maybe_update_conversion_journey_column' ) );
+
+			/**
+			 * Append accepted one-click upsell offer views to the order journey.
+			 */
+			add_action( 'wc_ajax_wfocu_front_register_views', array( __CLASS__, 'update_upsell_journey' ) );
 		}
 
 		/**
@@ -78,13 +87,46 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 
+			/**
+			 * Disable client-side journey recording on one-click upsell offer pages.
+			 * The offer view is appended to the journey server-side in update_upsell_journey().
+			 *
+			 * WFOCU_Core() is defined at file level by the Upsells plugin, but its `public`
+			 * property is only populated once load_classes()/register_classes() run, which is
+			 * skipped when WooCommerce is inactive or below the minimum WP/WC version. Guard
+			 * the property before calling into it.
+			 */
+			if ( class_exists( 'WFFN_Common' ) && WFFN_Common::wffn_is_funnel_pro_active() && function_exists( 'WFOCU_Core' ) && isset( WFOCU_Core()->public ) && is_callable( array( WFOCU_Core()->public, 'if_is_offer' ) ) && true === WFOCU_Core()->public->if_is_offer() ) {
+				$this->journeyControl = 'disable';
+			}
+
+			/**
+			 * On the thank-you page the journey has already been persisted onto the order,
+			 * so the tracker drops the cookie to start the next journey clean.
+			 */
+			$is_thankyou_page = ( class_exists( 'WFFN_Core' ) && isset( WFFN_Core()->thank_you_pages ) && is_callable( array( WFFN_Core()->thank_you_pages, 'is_wfty_page' ) ) && true === WFFN_Core()->thank_you_pages->is_wfty_page() ) ? 1 : 0;
+
+			/**
+			 * Cookie domain for the tracking/journey cookies. Empty by default → the JS scopes
+			 * them to the current host. To share the journey across sub-sites (e.g. a front site
+			 * funnelkit.com and an account/checkout subdomain myaccount.funnelkit.com) set the
+			 * WordPress COOKIE_DOMAIN constant to the shared parent (".funnelkit.com") on both
+			 * sites, or hook the wffn_tracking_cookie_domain filter. A single shared cookie avoids
+			 * the duplicate per-subdomain cookie that otherwise fragments the journey.
+			 */
+			$cookie_domain = self::get_tracking_cookie_domain();
+
 			$data = apply_filters(
 				'wffn_conversion_tracking_localize_data',
 				array(
+					'journeyControl'     => $this->journeyControl,
+					'cookie_domain'      => $cookie_domain,
+					'is_thankyou_page'   => $is_thankyou_page,
+					'page_id'            => function_exists( 'get_queried_object_id' ) ? absint( get_queried_object_id() ) : 0,
 					'utc_offset'         => esc_attr( $this->get_timezone_offset() ),
 					'site_url'           => esc_url( site_url() ),
 					'genericParamEvents' => wp_json_encode( $this->get_generic_event_params() ),
-					'cookieKeys'         => array( 'flt', 'timezone', 'is_mobile', 'browser', 'fbclid', 'gclid', 'referrer', 'fl_url' ),
+					'cookieKeys'         => array( 'flt', 'timezone', 'is_mobile', 'browser', 'fbclid', 'gclid', 'referrer', 'referrer_last', 'fl_url', 'utm_source_last', 'utm_medium_last', 'utm_campaign_last', 'utm_term_last', 'utm_content_last' ),
 					'excludeDomain'      => array( 'paypal.com', 'klarna.com', 'quickpay.net' ),
 
 				)
@@ -198,6 +240,37 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			$url = rtrim( $url, '/' );
 
 			return $this->parse_url_query_param( $url );
+		}
+
+		/**
+		 * One-time conversion-table `journey` column migration.
+		 *
+		 * Hooked on admin_init and gated by the `wffn_conversion_tracking_db_updater`
+		 * option (default 1.0). While below 1.1 it adds the `journey` column when missing
+		 * (matching the conversion table schema — nullable longtext) and then bumps the
+		 * option, so the schema lookup/ALTER runs once; every later request is a single
+		 * autoloaded option read. The option is only advanced once the column is confirmed
+		 * present, so a failed ALTER is retried on the next request.
+		 *
+		 * @return void
+		 */
+		public function maybe_update_conversion_journey_column() {
+			if ( version_compare( get_option( 'wffn_conversion_tracking_db_updater', '1.0' ), '1.1', '>=' ) ) {
+				return;
+			}
+
+			global $wpdb;
+			$table_name = $wpdb->prefix . $this->conv_table;
+			$is_col     = $wpdb->get_col( $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND table_name = %s AND column_name = 'journey'", $wpdb->dbname, $table_name ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+			if ( empty( $is_col ) ) {
+				$wpdb->query( "ALTER TABLE `{$table_name}` ADD `journey` longtext AFTER `referrer`" ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				if ( ! empty( $wpdb->last_error ) ) {
+					return;
+				}
+			}
+
+			update_option( 'wffn_conversion_tracking_db_updater', '1.1', true );
 		}
 
 		public function conversion_table_schema() {
@@ -714,13 +787,222 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				return;
 			}
 
+			/**
+			 * Append the current (thank-you) page to the journey before persisting.
+			 * No-op when not rendered on a page (e.g. cron/IPN recovery).
+			 */
+			$tracking_data = $this->maybe_add_thankyou_data( $tracking_data );
+
 			/** Insert data */
 			$lastId = $this->insert_tracking_data( $tracking_data );
 
 			if ( intval( $lastId ) > 0 ) {
+				/** Carry the journey across to any sibling/upsell order rows. */
+				$this->update_upsell_order_journey_data( $order, $tracking_data );
 				$order->delete_meta_data( '_wffn_tracking_data' );
 				$order->save();
 			}
+		}
+
+		/**
+		 * Shared cookie/journey domain across sub-sites. Empty by default → cookies and
+		 * journey URLs are scoped to the current host (single-site). Non-empty (set via the
+		 * COOKIE_DOMAIN constant or the wffn_tracking_cookie_domain filter) means the journey
+		 * cookie is shared across sub-sites, so each journey entry must store an absolute URL
+		 * to keep its real host — see the journey writers below.
+		 *
+		 * @return string
+		 */
+		public static function get_tracking_cookie_domain() {
+			$cookie_domain = ( defined( 'COOKIE_DOMAIN' ) && COOKIE_DOMAIN ) ? COOKIE_DOMAIN : '';
+
+			return apply_filters( 'wffn_tracking_cookie_domain', $cookie_domain );
+		}
+
+		/**
+		 * Normalize any decoded journey value into the v2 { j, s } shape.
+		 * Legacy flat journeys ({ ts => { u,t,i } }) are wrapped as { j: <legacy>, s: [] }.
+		 *
+		 * @param mixed $data
+		 * @return array
+		 */
+		public static function journey_normalize( $data ) {
+			if ( is_array( $data ) && isset( $data['j'] ) && is_array( $data['j'] ) ) {
+				if ( ! isset( $data['s'] ) || ! is_array( $data['s'] ) ) {
+					$data['s'] = array();
+				}
+				return $data;
+			}
+			return array( 'j' => is_array( $data ) ? $data : array(), 's' => array() );
+		}
+
+		/**
+		 * Index of $origin in $store['s'], assigning the next integer (from 1) if absent.
+		 *
+		 * @param array  $store passed by reference; its 's' map may be extended.
+		 * @param string $origin scheme://host
+		 * @return int
+		 */
+		public static function journey_site_index( &$store, $origin ) {
+			foreach ( $store['s'] as $idx => $val ) {
+				if ( $val === $origin ) {
+					return (int) $idx;
+				}
+			}
+			$next = 1;
+			foreach ( array_keys( $store['s'] ) as $idx ) {
+				if ( (int) $idx >= $next ) {
+					$next = (int) $idx + 1;
+				}
+			}
+			$store['s'][ $next ] = $origin;
+			return $next;
+		}
+
+		/**
+		 * Origin (scheme://host[:port]) of the current site.
+		 *
+		 * @return string
+		 */
+		public static function site_origin() {
+			$parts  = wp_parse_url( home_url() );
+			$scheme = isset( $parts['scheme'] ) ? $parts['scheme'] : 'http';
+			$host   = isset( $parts['host'] ) ? $parts['host'] : '';
+			$port   = isset( $parts['port'] ) ? ':' . $parts['port'] : '';
+			return $scheme . '://' . $host . $port;
+		}
+
+		/**
+		 * Reconstruct a full URL for a journey entry across the three supported shapes.
+		 *
+		 * @param string $path     decoded relative-or-absolute path from entry['u']
+		 * @param mixed  $site_idx entry['s'] (v2) or null
+		 * @param array  $sites    the journey 's' map
+		 * @param string $home_url home_url('/') of the rendering site
+		 * @return string
+		 */
+		public static function journey_resolve_url( $path, $site_idx, $sites, $home_url ) {
+			if ( null !== $site_idx && isset( $sites[ $site_idx ] ) ) {
+				return rtrim( $sites[ $site_idx ], '/' ) . '/' . ltrim( $path, '/' );
+			}
+			if ( 0 === strpos( $path, 'http' ) ) {
+				return $path;
+			}
+			return rtrim( $home_url, '/' ) . '/' . ltrim( $path, '/' );
+		}
+
+		/**
+		 * Append the one-click upsell offer view to the parent order journey.
+		 *
+		 * Hooked on wc_ajax_wfocu_front_register_views; the offer page is recorded
+		 * server-side because client journey tracking is disabled on offer pages.
+		 *
+		 * @return void
+		 */
+		public static function update_upsell_journey() {
+			if ( ! isset( $_POST['data'] ) || ! function_exists( 'WFOCU_Core' ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				return;
+			}
+
+			$get_order = WFOCU_Core()->data->get_parent_order();
+			if ( ! $get_order instanceof WC_Order ) {
+				return;
+			}
+
+			$tracking_data = BWF_WC_Compatibility::get_order_meta( $get_order, '_wffn_tracking_data' );
+			if ( empty( $tracking_data ) || ! is_array( $tracking_data ) || empty( $tracking_data['journey'] ) ) {
+				return;
+			}
+
+			$get_current_offer = WFOCU_Core()->data->get_current_offer();
+			$link              = WFOCU_Core()->offers->get_the_link( $get_current_offer );
+			$parsed_url        = wp_parse_url( $link );
+			$relative_path     = ( is_array( $parsed_url ) && ! empty( $parsed_url['path'] ) ) ? ltrim( $parsed_url['path'], '/' ) : '';
+
+			$data     = wc_clean( wp_unslash( $_POST['data'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$products = ( isset( $data['products'] ) && is_array( $data['products'] ) ) ? array_values( $data['products'] ) : array();
+			$name     = ( ! empty( $products ) && isset( $products[0]['name'] ) ) ? $products[0]['name'] : '';
+
+			$store  = self::journey_normalize( json_decode( $tracking_data['journey'], true ) );
+			$origin = self::site_origin();
+			$idx    = self::journey_site_index( $store, $origin );
+
+			$store['j'][ (int) round( microtime( true ) * 1000 ) ] = array(
+				'u' => '/' . ltrim( $relative_path, '/' ),
+				't' => $name,
+				'i' => $get_current_offer,
+				's' => $idx,
+			);
+
+			$tracking_data['journey'] = wp_json_encode( $store, JSON_UNESCAPED_SLASHES );
+			$get_order->update_meta_data( '_wffn_tracking_data', $tracking_data );
+			$get_order->save_meta_data();
+		}
+
+		/**
+		 * Copy the journey onto the conversion rows of sibling/upsell orders so the
+		 * order metabox shows the full path on those orders too.
+		 *
+		 * @param WC_Order $order
+		 * @param array    $tracking_data
+		 * @param bool     $upsell_order whether $order itself is an upsell order
+		 *
+		 * @return void
+		 */
+		public function update_upsell_order_journey_data( $order, $tracking_data, $upsell_order = false ) {
+			if ( ! $order instanceof WC_Order || ! is_array( $tracking_data ) || ! isset( $tracking_data['journey'] ) ) {
+				return;
+			}
+
+			$orders   = ( true === $upsell_order ) ? array( $order->get_id() ) : array();
+			$get_meta = $order->get_meta( '_wfocu_sibling_order', false );
+			if ( is_array( $get_meta ) && ! empty( $get_meta ) ) {
+				foreach ( $get_meta as $meta ) {
+					$value = $meta->get_data()['value'];
+					$orders[] = ( $value instanceof WC_Order ) ? $value->get_id() : absint( $value );
+				}
+			}
+
+			if ( 0 === count( $orders ) ) {
+				return;
+			}
+
+			global $wpdb;
+			foreach ( $orders as $order_id ) {
+				$wpdb->update( $wpdb->prefix . $this->conv_table, array( 'journey' => $tracking_data['journey'] ), array( 'type' => 2, 'source' => $order_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			}
+		}
+
+		/**
+		 * Append the current page (thank-you page) to the journey.
+		 * Only runs while rendering a page; a no-op during cron/background recovery.
+		 *
+		 * @param array $tracking_data
+		 *
+		 * @return array
+		 */
+		public function maybe_add_thankyou_data( $tracking_data ) {
+			if ( ! is_array( $tracking_data ) || empty( $tracking_data['journey'] ) ) {
+				return $tracking_data;
+			}
+			if ( ! function_exists( 'get_the_ID' ) || empty( get_the_ID() ) ) {
+				return $tracking_data;
+			}
+
+			$store  = self::journey_normalize( json_decode( $tracking_data['journey'], true ) );
+			$origin = self::site_origin();
+			$idx    = self::journey_site_index( $store, $origin );
+
+			$store['j'][ (int) round( microtime( true ) * 1000 ) ] = array(
+				'u' => '/' . ltrim( substr( get_permalink(), strlen( home_url( '/' ) ) ), '/' ),
+				't' => get_the_title(),
+				'i' => get_the_ID(),
+				's' => $idx,
+			);
+
+			$tracking_data['journey'] = wp_json_encode( $store, JSON_UNESCAPED_SLASHES );
+
+			return $tracking_data;
 		}
 
 		public function get_common_tracking_data( $is_optin = false ) {
@@ -738,19 +1020,34 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			 */
 			$source_id = class_exists( 'WFFN_Core' ) ? WFFN_Core()->data->get( 'source_id', 0 ) : 0;
 
+			/**
+			 * The journey cookie holds the page-by-page path as JSON. The browser stores it
+			 * with addslashes() applied (see utm-tracker.js), so strip those before decoding.
+			 * Stored in the existing `journey` column — no schema change.
+			 */
+			$journey_data = isset( $get_data['wffn_journey'] ) ? json_decode( stripcslashes( $get_data['wffn_journey'] ), true ) : array();
+			$journey_data = is_array( $journey_data ) ? $journey_data : array();
+			$journey_data = self::journey_normalize( $journey_data );
+
 			$args = array(
 				'utm_source'        => isset( $get_data['wffn_utm_source'] ) ? $this->string_length( $this->strip_emojis( bwf_clean( $get_data['wffn_utm_source'] ) ) ) : '',
 				'utm_medium'        => isset( $get_data['wffn_utm_medium'] ) ? $this->string_length( $this->strip_emojis( bwf_clean( $get_data['wffn_utm_medium'] ) ) ) : '',
 				'utm_campaign'      => isset( $get_data['wffn_utm_campaign'] ) ? $this->string_length( $this->strip_emojis( bwf_clean( $get_data['wffn_utm_campaign'] ) ) ) : '',
 				'utm_term'          => isset( $get_data['wffn_utm_term'] ) ? $this->string_length( $this->strip_emojis( bwf_clean( $get_data['wffn_utm_term'] ) ) ) : '',
 				'utm_content'       => isset( $get_data['wffn_utm_content'] ) ? $this->string_length( $this->strip_emojis( bwf_clean( $get_data['wffn_utm_content'] ) ) ) : '',
+				'utm_source_last'   => isset( $get_data['wffn_utm_source_last'] ) ? $this->string_length( $this->strip_emojis( bwf_clean( $get_data['wffn_utm_source_last'] ) ) ) : '',
+				'utm_medium_last'   => isset( $get_data['wffn_utm_medium_last'] ) ? $this->string_length( $this->strip_emojis( bwf_clean( $get_data['wffn_utm_medium_last'] ) ) ) : '',
+				'utm_campaign_last' => isset( $get_data['wffn_utm_campaign_last'] ) ? $this->string_length( $this->strip_emojis( bwf_clean( $get_data['wffn_utm_campaign_last'] ) ) ) : '',
+				'utm_term_last'     => isset( $get_data['wffn_utm_term_last'] ) ? $this->string_length( $this->strip_emojis( bwf_clean( $get_data['wffn_utm_term_last'] ) ) ) : '',
+				'utm_content_last'  => isset( $get_data['wffn_utm_content_last'] ) ? $this->string_length( $this->strip_emojis( bwf_clean( $get_data['wffn_utm_content_last'] ) ) ) : '',
 				'first_landing_url' => isset( $get_data['wffn_fl_url'] ) ? bwf_clean( $get_data['wffn_fl_url'] ) : '',
 				'browser'           => isset( $get_data['wffn_browser'] ) ? bwf_clean( $get_data['wffn_browser'] ) : '',
 				'first_click'       => isset( $get_data['wffn_flt'] ) ? bwf_clean( $get_data['wffn_flt'] ) : '',
 				'device'            => isset( $get_data['wffn_is_mobile'] ) ? ( true === bwf_string_to_bool( $get_data['wffn_is_mobile'] ) ? 'mobile' : 'desktop' ) : '',
 				'click_id'          => $click_id,
 				'referrer'          => isset( $get_data['wffn_referrer'] ) ? $this->filter_referrer( $get_data['wffn_referrer'] ) : '',
-				'journey'           => '',
+				'referrer_last'     => isset( $get_data['wffn_referrer_last'] ) ? $this->filter_referrer( $get_data['wffn_referrer_last'] ) : '',
+				'journey'           => ( ! empty( $journey_data['j'] ) ) ? wp_json_encode( $journey_data, JSON_UNESCAPED_SLASHES ) : '',
 				'source_id'         => $source_id,
 			);
 
@@ -1223,6 +1520,73 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				);
 			}
 
+			/**
+			 * First-touch UTM / referrer — stored in the existing *_last columns.
+			 */
+			$first_touch_labels = array(
+				'utm_source_last'   => __( 'First UTM Source', 'woofunnels' ),   // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'utm_medium_last'   => __( 'First UTM Medium', 'woofunnels' ),   // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'utm_campaign_last' => __( 'First UTM Campaign', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'utm_term_last'     => __( 'First UTM Term', 'woofunnels' ),     // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'utm_content_last'  => __( 'First UTM Content', 'woofunnels' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'referrer_last'     => __( 'First Referrer', 'woofunnels' ),     // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			);
+			foreach ( $first_touch_labels as $first_key => $first_label ) {
+				if ( empty( $get_data[ $first_key ] ) ) {
+					continue;
+				}
+				if ( 'referrer_last' === $first_key ) {
+					$first_ref   = explode( '?', $get_data[ $first_key ] );
+					$first_value = isset( $first_ref[0] ) ? '<a href="' . esc_url( $first_ref[0] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $first_ref[0] ) . '</a>' : '';
+				} else {
+					$first_value = esc_html( $get_data[ $first_key ] );
+				}
+				$data[ $first_key ] = array(
+					'name'  => $first_label,
+					'value' => $first_value,
+				);
+			}
+
+			/**
+			 * Customer journey — the page-by-page path that led to the conversion.
+			 *
+			 * Hidden by default. Return true from the wffn_show_customer_journey_meta
+			 * filter to surface the Customer Journey row on the order UTM metabox.
+			 */
+			if ( ! empty( $get_data['journey'] ) && true === apply_filters( 'wffn_show_customer_journey_meta', false, $post, $meta_data ) ) {
+				$journey = json_decode( $get_data['journey'], true );
+				if ( is_array( $journey ) && ! empty( $journey ) ) {
+					$entries  = ( isset( $journey['j'] ) && is_array( $journey['j'] ) ) ? $journey['j'] : $journey;
+					$sites    = ( isset( $journey['s'] ) && is_array( $journey['s'] ) ) ? $journey['s'] : array();
+					$home_url = home_url( '/' );
+					ksort( $entries, SORT_NUMERIC );
+					$journey_count = 0;
+					$journey_html  = '<ol class="bwf-journey-list">';
+					foreach ( $entries as $entry ) {
+						if ( ! is_array( $entry ) || empty( $entry['u'] ) ) {
+							continue;
+						}
+						$path     = stripslashes( rawurldecode( $entry['u'] ) );
+						$title    = ! empty( $entry['t'] ) ? rawurldecode( $entry['t'] ) : $path;
+						$site_idx = isset( $entry['s'] ) ? $entry['s'] : null;
+						$url      = self::journey_resolve_url( $path, $site_idx, $sites, $home_url );
+
+						$journey_html .= '<li><a href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $title ) . '</a></li>';
+						++$journey_count;
+					}
+					$journey_html .= '</ol>';
+
+					// Only surface the Customer Journey row when at least one entry was rendered;
+					// a normalized-but-empty journey ({"j":[],"s":[]}) must not show an empty list.
+					if ( $journey_count > 0 ) {
+						$data['journey'] = array(
+							'name'  => __( 'Customer Journey', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+							'value' => $journey_html,
+						);
+					}
+				}
+			}
+
 			$data = apply_filters( 'bwf_utm_tracking_meta_box', $data, $meta_data, $post );
 			if ( empty( $data ) ) {
 				return;
@@ -1252,6 +1616,15 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 					height: 1px;
 					border-bottom: 1px solid #eee;
 					margin-bottom: 10px;
+				}
+
+				.bwf-utm-box-data .bwf-journey-list {
+					margin: 4px 0 0;
+					padding-left: 18px;
+				}
+
+				.bwf-utm-box-data .bwf-journey-list li {
+					margin-bottom: 4px;
 				}
 			</style>
 			<div class="bwf-utm-box-data">

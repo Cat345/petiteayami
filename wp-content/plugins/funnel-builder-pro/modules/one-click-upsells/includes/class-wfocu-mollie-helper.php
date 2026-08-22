@@ -81,6 +81,13 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 
 			/**
 			 * On API Mollie return try to setup the funnel so that we always know to only setup a funnel when order completed
+			 *
+			 * NOTE: priority is 5 (was 999). Mollie 8.1.9 handles the customer return on init@10
+			 * (PaymentModule::mollieReturnRedirect(), filter_flag=onMollieReturn) and fires
+			 * `{plugin_id}_customer_return_payment_success` from there. Discovering the container
+			 * and attaching maybe_setup_funnel must therefore happen before init@10, otherwise the
+			 * container is still null (compat then hits the removed Mollie_WC_Plugin class → fatal)
+			 * and the upsell is never set up.
 			 */
 			add_action(
 				'init',
@@ -106,7 +113,7 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 					add_action( WFOCU_Mollie_Helper_Compat::get_plugin_id( $this->container ) . '_customer_return_payment_success', array( $this, 'maybe_setup_funnel' ) );
 					add_filter( WFOCU_Mollie_Helper_Compat::get_plugin_id( $this->container ) . '_return_url', array( $this, 'maybe_append_si_to_return_url' ) );
 				},
-				999
+				9
 			);
 
 			/**

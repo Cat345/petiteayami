@@ -88,7 +88,7 @@ trait Coupon {
         }
 
         foreach ( $coupon_ids as $coupon_id ) {
-            if ( strpos( $coupon_id, 'cat_' ) !== false ) {
+            if ( str_contains( $coupon_id, 'cat_' ) ) {
                 $category = get_term_by( 'slug', substr( $coupon_id, 4 ), $this->_constants->COUPON_CAT_TAXONOMY );
                 /* Translators: %s: Category name. */
                 $options[ $coupon_id ] = sprintf( __( 'Category: %s', 'advanced-coupons-for-woocommerce' ), $category->name );
@@ -116,7 +116,7 @@ trait Coupon {
         $cat_slugs = array_filter(
             $field_value,
             function ( $i ) {
-            return strpos( $i, 'cat_' ) !== false;
+            return str_contains( $i, 'cat_' );
             }
         );
 

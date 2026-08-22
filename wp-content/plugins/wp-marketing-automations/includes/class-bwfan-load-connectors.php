@@ -76,6 +76,9 @@ class BWFAN_Load_Connectors {
 		do_action( 'bwfan_before_automations_loaded' );
 		$integration_dir = __DIR__ . '/native-connectors';
 		foreach ( glob( $integration_dir . '/*/class-*.php' ) as $_field_filename ) {
+			if ( ! is_readable( $_field_filename ) ) { // survive update file-swap / partial deploy
+				continue;
+			}
 			require_once( $_field_filename );
 		}
 	}

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 $bg_color       = '#EBF7FF';
 $text_color     = '#000000';
 $btn_bg_color   = '#09B29C';

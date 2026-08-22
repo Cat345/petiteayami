@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 $product_field  = WFACP_Common::get_product_field();
 $advanced_field = WFACP_Common::get_advanced_fields();
 
@@ -39,17 +40,17 @@ $customizer_data = [
 		'wfacp_form_section_embed_forms_2_btn_order-place_text_color'                 => '#ffffff',
 		'wfacp_form_section_embed_forms_2_color_type'                                 => 'hover',
 		'wfacp_form_section_embed_forms_2_btn_order-place_bg_hover_color'             => '#d46a06',
-		'wfacp_form_section_text_below_placeorder_btn'                                => __( '* 100% Secure & Safe Payments *', 'woofunnels-aero-checkout' ),
+		'wfacp_form_section_text_below_placeorder_btn'                                => __( '* 100% Secure & Safe Payments *', 'funnel-builder' ),
 		'wfacp_order_summary_section_embed_forms_2_order_summary_hide_img'            => true,
 		'wfacp_form_section_embed_forms_2_disable_steps_bar'                          => false,
 		'wfacp_form_section_embed_forms_2_step_sub_heading_font_size'                 => 15,
-		'wfacp_form_section_payment_methods_heading'                                  => __( 'Payment method', 'woofunnels-aero-checkout' ),
+		'wfacp_form_section_payment_methods_heading'                                  => __( 'Payment method', 'funnel-builder' ),
 		'wfacp_form_section_embed_forms_2_heading_fs'                                 => 18,
 		'wfacp_form_section_embed_forms_2_heading_font_weight'                        => 'wfacp-bold',
 		'wfacp_form_section_embed_forms_2_sub_heading_font_weight'                    => 'wfacp-normal',
 		'wfacp_form_section_embed_forms_2_sec_heading_color'                          => '#424141',
 		'wfacp_form_section_embed_forms_2_field_border_color'                         => '#c3c0c0',
-		'wfacp_form_section_embed_forms_2_btn_order-place_btn_text'                   => WFACP_Common::translation_string_to_check(__( 'PLACE ORDER NOW', 'woofunnels-aero-checkout' )),
+		'wfacp_form_section_embed_forms_2_btn_order-place_btn_text'                   => WFACP_Common::translation_string_to_check(__( 'PLACE ORDER NOW', 'funnel-builder' )),
 		'wfacp_form_section_embed_forms_2_btn_order-place_btn_font_weight'            => 'bold',
 		'wfacp_form_product_switcher_section_embed_forms_2_product_switcher_bg_color' => '#ffffff',
 		'wfacp_form_section_embed_forms_2_btn_order-place_border_radius'              => '10',
@@ -58,8 +59,8 @@ $customizer_data = [
 		'wfacp_form_section_embed_forms_2_form_border_type'   => 'solid',
 		'wfacp_form_section_embed_forms_2_form_border_color'  => '#bbbbbb',
 		'wfacp_form_section_embed_forms_2_form_inner_padding' => '15',
-		'wfacp_form_section_embed_forms_2_name_0'             => __( 'GET YOUR FREE COPY OF AMAZING BOOK', 'woofunnels-aero-checkout' ),
-		'wfacp_form_section_embed_forms_2_headline_0'         => __( 'Shipped in less than 3 days!', 'woofunnels-aero-checkout' ),
+		'wfacp_form_section_embed_forms_2_name_0'             => __( 'GET YOUR FREE COPY OF AMAZING BOOK', 'funnel-builder' ),
+		'wfacp_form_section_embed_forms_2_headline_0'         => __( 'Shipped in less than 3 days!', 'funnel-builder' ),
 
 		'wfacp_form_section_embed_forms_2_heading_talign'                               => 'wfacp-text-left',
 		'wfacp_form_section_embed_forms_2_sec_bg_color'                                 => 'transparent',
@@ -102,21 +103,21 @@ $customizer_data = [
 
 $steps = [
 	'single_step' => [
-		'name'          => __( 'Step 1', 'woofunnels-aero-checkout' ),
+		'name'          => __( 'Step 1', 'funnel-builder' ),
 		'slug'          => 'single_step',
-		'friendly_name' => __( 'Single Step Checkout', 'woofunnels-aero-checkout' ),
+		'friendly_name' => __( 'Single Step Checkout', 'funnel-builder' ),
 		'active'        => 'yes',
 	],
 	'two_step'    => [
-		'name'          => __( 'Step 2', 'woofunnels-aero-checkout' ),
+		'name'          => __( 'Step 2', 'funnel-builder' ),
 		'slug'          => 'two_step',
-		'friendly_name' => __( 'Two Step Checkout', 'woofunnels-aero-checkout' ),
+		'friendly_name' => __( 'Two Step Checkout', 'funnel-builder' ),
 		'active'        => 'no',
 	],
 	'third_step'  => [
-		'name'          => __( 'Step 3', 'woofunnels-aero-checkout' ),
+		'name'          => __( 'Step 3', 'funnel-builder' ),
 		'slug'          => 'third_step',
-		'friendly_name' => __( 'Three Step Checkout', 'woofunnels-aero-checkout' ),
+		'friendly_name' => __( 'Three Step Checkout', 'funnel-builder' ),
 		'active'        => 'no',
 	],
 ];
@@ -127,7 +128,7 @@ $pageLayout = [
 	'fieldsets'                   => [
 		'single_step' => [
 			[
-				'name'        => __( '', 'woofunnels-aero-checkout' ),
+				'name'        => __( '', 'funnel-builder' ),
 				'class'       => '',
 				'sub_heading' => '',
 				'fields'      => [

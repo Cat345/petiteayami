@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 $business_details = '<u style="text-decoration: underline;"><a rel="noreferrer noopener" style="text-decoration-line: none; background-color: rgba(0, 0, 0, 0); color: #236fa1;" href="' . esc_url( get_home_url() ) . '" target="_blank">' . esc_html( $business_name ) . '</a></u>';
-$settings_text    = '<u style="text-decoration: underline;"><a rel="noreferrer noopener" style="text-decoration-line: none; background-color: rgba(0, 0, 0, 0); color: #236fa1;" href="' . esc_url( admin_url( 'admin.php?page=bwf&path=/settings/funnelkit_notifications' ) ) . '"  target="_blank">' . esc_html( __( 'Click here', 'Funnelkit' ) ) . '</a></u>';
+$settings_text    = '<u style="text-decoration: underline;"><a rel="noreferrer noopener" style="text-decoration-line: none; background-color: rgba(0, 0, 0, 0); color: #236fa1;" href="' . esc_url( admin_url( 'admin.php?page=bwf&path=/settings/funnelkit_notifications' ) ) . '"  target="_blank">' . esc_html( __( 'Click here', 'funnel-builder' ) ) . '</a></u>';
 ?>
 <table cellpadding="0" cellspacing="0" border="0" bgcolor="" align="center" role="presentation"
        class="bwfbe-block-section-container bwfbe-block-section bwfbe-block-834352e"
@@ -69,7 +69,7 @@ $settings_text    = '<u style="text-decoration: underline;"><a rel="noreferrer n
 																							<span
                                                                                                 style="mso-line-height-alt: 130%; font-size: 12px;"
                                                                                                 class="has-font-size">
-                                                                                                <?php echo sprintf( esc_html__( 'This performance report email was sent from you site %s for period %s.', 'Funnelkit' ), wp_kses($business_details , 'funnelkit'), esc_html($date) ); ?>
+                                                                                                <?php echo sprintf( esc_html__( 'This performance report email was sent from you site %s for period %s.', 'funnel-builder' ), wp_kses($business_details , 'funnelkit'), esc_html($date) ); ?>
 																							</span>
 																						</span>
                                                     <br/>
@@ -78,7 +78,7 @@ $settings_text    = '<u style="text-decoration: underline;"><a rel="noreferrer n
                                                         class="has-inline-color">
 																							<span
                                                                                                 style="mso-line-height-alt: 130%; font-size: 12px;"
-                                                                                                class="has-font-size"><?php echo sprintf( esc_html__( '%s to manage the frequency and recipients.', 'Funnelkit' ), wp_kses($settings_text , 'funnelkit')); ?>
+                                                                                                class="has-font-size"><?php echo sprintf( esc_html__( '%s to manage the frequency and recipients.', 'funnel-builder' ), wp_kses($settings_text , 'funnelkit')); ?>
 																							</span>
 																						</span>
                                                 </p>

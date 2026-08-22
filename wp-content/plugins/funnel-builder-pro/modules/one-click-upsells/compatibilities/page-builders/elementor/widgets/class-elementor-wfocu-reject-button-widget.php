@@ -24,6 +24,23 @@ if ( ! class_exists( 'Elementor_WFOCU_Reject_Button_Widget' ) ) {
 		}
 
 		/**
+		 * Upsell widgets render against the live offer/session for the current request and must
+		 * never have their markup baked into Elementor's element cache.
+		 *
+		 * Returning true makes Elementor store a `[elementor-element k=... data=...]` placeholder
+		 * in `_elementor_element_cache` instead of the rendered HTML; the widget is then
+		 * re-rendered on every request via do_shortcode().
+		 *
+		 * Element_Base already defaults to true, but we declare it explicitly so the behaviour is
+		 * intentional and survives any change to that default.
+		 *
+		 * @return bool
+		 */
+		protected function is_dynamic_content(): bool {
+			return true;
+		}
+
+		/**
 		 * Get widget title.
 		 *
 		 * @return string Widget title.

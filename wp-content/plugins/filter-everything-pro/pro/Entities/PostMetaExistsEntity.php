@@ -11,6 +11,15 @@ use FilterEverything\Filter\PostMetaNumEntity;
 
 class PostMetaExistsEntity extends PostMetaNumEntity
 {
+    /**
+     * Declared explicitly: assigned from the outside in
+     * EntityManager::prepareEntitiesToDisplay(); dynamic properties are
+     * deprecated since PHP 8.2.
+     */
+    public $items_sort = [];
+
+    public $filter = [];
+
 
     public function selectTerms($alreadyFilteredPosts = [] ){
         $return = [];

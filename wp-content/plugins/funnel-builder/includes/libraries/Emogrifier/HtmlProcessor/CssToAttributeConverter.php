@@ -2,6 +2,8 @@
 
 namespace Pelago\Emogrifier\HtmlProcessor;
 
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
+
 /**
  * This HtmlProcessor can convert style HTML attributes to the corresponding other visual HTML attributes,
  * e.g. it converts style="width: 100px" to width="100".

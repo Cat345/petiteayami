@@ -362,19 +362,22 @@ class BWFAN_Abandoned_Cart {
 					BWFAN_Common::save_order_meta( $order_id, '_bwfan_recovered_ab_id', $ab_cart_id );
 
 					/**
-					 * Also persist an automation id meta so that this recovery
-					 * can be listed in the Recovered carts view, which queries
-					 * orders by the '_bwfan_ab_cart_recovered_a_id' meta key.
-					 * Try to use an automation id from the cart details if
-					 * available; otherwise fall back to 0 to indicate a
-					 * non-automation/direct-purchase recovery.
+					 * Persist an automation id meta so that this recovery can be
+					 * listed in the Recovered carts view, which queries orders by
+					 * the '_bwfan_ab_cart_recovered_a_id' meta key. Only write the
+					 * meta when a genuine automation id is known: writing 0 makes
+					 * the order count in the Recovered carts list (key-present)
+					 * while Cart Analytics rejects it (meta_value > 0), causing the
+					 * two views to diverge for non-attributed/imported orders.
 					 */
 					$automation_id = 0;
 					if ( is_array( $cart_details ) && isset( $cart_details['automation_id'] ) ) {
 						$automation_id = intval( $cart_details['automation_id'] );
 					}
 
-					BWFAN_Common::save_order_meta( $order_id, '_bwfan_ab_cart_recovered_a_id', $automation_id );
+					if ( $automation_id > 0 ) {
+						BWFAN_Common::save_order_meta( $order_id, '_bwfan_ab_cart_recovered_a_id', $automation_id );
+					}
 					do_action( 'abandoned_cart_recovered', $cart_details, $order_id, $order );
 				}
 			}
@@ -1344,6 +1347,73 @@ class BWFAN_Abandoned_Cart {
 	}
 
 	/**
+	 * Single source of truth for abandoned-cart capture exclusion.
+	 *
+	 * Returns true when the cart should NOT be tracked because either the email
+	 * matches an excluded pattern, or the owning user has an excluded role. The
+	 * target user is resolved from the logged-in session, the account owning the
+	 * given email, or the passed user id — so exclusion works for guest/incognito
+	 * checkouts and server-side capture paths, not just logged-in sessions.
+	 *
+	 * @param string $email   Email associated with the cart (may be empty).
+	 * @param int    $user_id WP user id associated with the cart (may be 0).
+	 *
+	 * @return bool
+	 */
+	public static function is_capture_excluded( $email = '', $user_id = 0 ) {
+		$global_settings = BWFAN_Common::get_global_settings();
+
+		/** Excluded email patterns */
+		if ( ! empty( $email ) && isset( $global_settings['bwfan_ab_exclude_emails'] ) && ! empty( $global_settings['bwfan_ab_exclude_emails'] ) ) {
+			/** Normalize line breaks to commas and explode */
+			$exclude_emails = preg_split( '/[\r\n,]+/', $global_settings['bwfan_ab_exclude_emails'], - 1, PREG_SPLIT_NO_EMPTY );
+			$exclude_emails = array_map( 'trim', $exclude_emails );
+			$exclude_emails = array_unique( $exclude_emails );
+
+			if ( self::get_instance()->email_exists_in_patterns( $email, $exclude_emails ) ) {
+				return true;
+			}
+		}
+
+		/** Excluded user roles */
+		if ( isset( $global_settings['bwfan_ab_exclude_users_cart_tracking'] ) && 0 !== absint( $global_settings['bwfan_ab_exclude_users_cart_tracking'] ) && ! empty( $global_settings['bwfan_ab_exclude_roles'] ) ) {
+			/** Resolve the target user from session, the email's owning account, or the passed user id */
+			$target_user = null;
+			if ( is_user_logged_in() ) {
+				$target_user = wp_get_current_user();
+			} elseif ( ! empty( $email ) ) {
+				/**
+				 * Resolve roles from the account owning the submitted email so guest/incognito
+				 * checkouts using an excluded-role account (e.g. staff) are still excluded.
+				 *
+				 * Known tradeoff: a visitor could suppress their own cart tracking by entering
+				 * an excluded-role user's email. Accepted — impact is limited to skipping a
+				 * marketing capture, and the excluded-roles feature is opt-in.
+				 */
+				$wp_user = get_user_by( 'email', $email );
+				if ( $wp_user instanceof WP_User ) {
+					$target_user = $wp_user;
+				}
+			}
+			if ( ! ( $target_user instanceof WP_User ) && ! empty( $user_id ) ) {
+				$wp_user = get_user_by( 'id', $user_id );
+				if ( $wp_user instanceof WP_User ) {
+					$target_user = $wp_user;
+				}
+			}
+
+			if ( $target_user instanceof WP_User ) {
+				$exclude_roles = array_intersect( (array) $target_user->roles, (array) $global_settings['bwfan_ab_exclude_roles'] );
+				if ( ! empty( $exclude_roles ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Insert Abandoned Cart
 	 *
 	 * @since 1.0.0
@@ -1374,32 +1444,10 @@ class BWFAN_Abandoned_Cart {
 		$this->set_session_cookies();
 
 		/** Check excluded emails or user roles */
-		$global_settings = BWFAN_Common::get_global_settings();
-
-		if ( isset( $global_settings['bwfan_ab_exclude_emails'] ) && ! empty( $global_settings['bwfan_ab_exclude_emails'] ) ) {
-			/** Normalize line breaks to commas and explode */
-			$exclude_emails = preg_split( '/[\r\n,]+/', $global_settings['bwfan_ab_exclude_emails'], - 1, PREG_SPLIT_NO_EMPTY );
-			$exclude_emails = array_map( 'trim', $exclude_emails );
-			$exclude_emails = array_unique( $exclude_emails );
-
-			if ( $this->email_exists_in_patterns( $email, $exclude_emails ) ) {
-				wp_send_json( array(
-					'success' => false,
-				) );
-			}
-		}
-
-		if ( 0 !== absint( $global_settings['bwfan_ab_exclude_users_cart_tracking'] ) ) {
-			if ( isset( $global_settings['bwfan_ab_exclude_roles'] ) && ! empty( $global_settings['bwfan_ab_exclude_roles'] ) && is_user_logged_in() ) {
-				$user          = wp_get_current_user();
-				$exclude_roles = array_intersect( (array) $user->roles, $global_settings['bwfan_ab_exclude_roles'] );
-
-				if ( ! empty( $exclude_roles ) ) {
-					wp_send_json( array(
-						'success' => false,
-					) );
-				}
-			}
+		if ( self::is_capture_excluded( $email ) ) {
+			wp_send_json( array(
+				'success' => false,
+			) );
 		}
 
 		/** Validate email structure and domain */
@@ -2118,6 +2166,12 @@ class BWFAN_Abandoned_Cart {
 				$email = $wp_user->user_email;
 			}
 		}
+
+		/** Respect excluded emails / user roles on this capture path as well */
+		if ( self::is_capture_excluded( $email, $user_id ) ) {
+			return;
+		}
+
 		$coupon_data  = $post_parameters['coupon_data'];
 		$items        = $post_parameters['items'];
 		$fees         = $post_parameters['fees'];

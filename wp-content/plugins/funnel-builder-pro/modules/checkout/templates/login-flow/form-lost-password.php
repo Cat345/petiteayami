@@ -44,8 +44,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</p>
 
 			<p class="wfacp-form-control-wrapper form-row funnelkit-LoginLink wfacp-ta-center wfacp-mb-0">
-				<a href="javascript:void(0)">
-					<?php _e( 'Back to Login', 'woofunnels-aero-checkout' ); ?>
+				
 				<a href="javascript:void(0)" role="button" tabindex="0" alt="<?php esc_attr_e( 'Back to Login', 'woofunnels-aero-checkout' ); ?>" id="funnelkit-back-to-login">
 					<?php _e( 'Back to Login', 'woofunnels-aero-checkout' ); ?>
 				</a>

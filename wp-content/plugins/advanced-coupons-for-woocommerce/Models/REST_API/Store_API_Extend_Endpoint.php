@@ -28,6 +28,14 @@ class Store_API_Extend_Endpoint {
     const IDENTIFIER = 'acfwp_block';
 
     /**
+     * Cached non-qualifying notices for the current request.
+     *
+     * @since 4.0.9
+     * @var array|null
+     */
+    private static $non_qualifying_notices = null;
+
+    /**
      * Bootstraps the class and hooks required data.
      *
      * @since 3.5.7
@@ -78,7 +86,75 @@ class Store_API_Extend_Endpoint {
                 /* Translators: %s: coupon code. */
                 'on_apply_success' => sprintf( __( 'Coupon code "%s" has been applied to your cart.', 'advanced-coupons-for-woocommerce' ), '{coupon_code}' ),
             ),
+            'non_qualifying'  => array(
+                'notices' => self::get_non_qualifying_notices(),
+            ),
         );
+    }
+
+    /**
+     * Get the non-qualifying cart condition notices for auto-applied coupons.
+     *
+     * WooCommerce's Store API only surfaces "error" notices on block pages
+     * (it converts them into exceptions). "info" and "success" notices added
+     * via wc_add_notice() are never surfaced and get discarded, so the cart
+     * condition non-qualifying notice silently fails for those types on the
+     * cart & checkout blocks. This method harvests those queued non-error cart
+     * condition notices (tagged with the "acfw-cart-conditions" data marker)
+     * so they can be rendered as block notices on the frontend, and removes
+     * them from the queue so they don't carry over to a later classic page.
+     *
+     * @since 4.0.9
+     * @access public
+     *
+     * @return array List of notices, each with "id", "message" and "type" keys.
+     */
+    public static function get_non_qualifying_notices() {
+        if ( ! is_null( self::$non_qualifying_notices ) ) {
+            return self::$non_qualifying_notices;
+        }
+
+        self::$non_qualifying_notices = array();
+
+        if ( ! function_exists( 'wc_get_notices' ) || is_null( \WC()->session ) ) {
+            return self::$non_qualifying_notices;
+        }
+
+        $all_notices = wc_get_notices();
+        $changed     = false;
+
+        // Only "info" and "success" notices need surfacing here. "error" notices
+        // are already surfaced by WooCommerce core as exceptions on block pages,
+        // and the "notice" type is mapped to "info" (core/notices has no "notice"
+        // status).
+        foreach ( array( 'info', 'success', 'notice' ) as $type ) {
+            if ( empty( $all_notices[ $type ] ) ) {
+                continue;
+            }
+
+            foreach ( $all_notices[ $type ] as $index => $notice ) {
+                if ( ! is_array( $notice ) || empty( $notice['data']['acfw-cart-conditions'] ) ) {
+                    continue;
+                }
+
+                self::$non_qualifying_notices[] = array(
+                    'id'      => $notice['data']['acfw-cart-conditions'],
+                    'message' => $notice['notice'],
+                    'type'    => 'notice' === $type ? 'info' : $type,
+                );
+
+                unset( $all_notices[ $type ][ $index ] );
+                $changed = true;
+            }
+
+            $all_notices[ $type ] = array_values( $all_notices[ $type ] );
+        }
+
+        if ( $changed ) {
+            wc_set_notices( $all_notices );
+        }
+
+        return self::$non_qualifying_notices;
     }
 
     /**

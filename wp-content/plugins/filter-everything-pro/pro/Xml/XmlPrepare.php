@@ -383,7 +383,7 @@ if (!class_exists('XmlPrepare')):
                     KEY idx_user (user_nicename),
                     KEY idx_tax (taxonomy),
                     KEY idx_slug (slug)
-                ) ENGINE=MEMORY
+                ) ENGINE=InnoDB
             ";
             $wpdb->query($createSql);
             if ($wpdb->last_error) {

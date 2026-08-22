@@ -13,6 +13,8 @@ use MailPoetVendor\Doctrine\DBAL\Result;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Bounces {
+  use StatsListingFilterTrait;
+
   const STATUS_BOUNCED = 'bounced';
 
   /** @var Listing\Handler */
@@ -112,6 +114,9 @@ class Bounces {
       }
     }
 
+    $dateRange = $this->sanitizeDateRange($definition->getFilters());
+    $dateConstraint = $this->buildDateRangeConstraint('bounces.created_at', $dateRange['from'], $dateRange['to']);
+
     $fields = [
       'bounces.id',
       'bounces.created_at',
@@ -126,7 +131,7 @@ class Bounces {
       . self::getColumnList($fields, $count) . ' '
       . 'FROM ' . $bouncesTable . ' bounces '
       . 'LEFT JOIN ' . $subscriberTable . ' subscribers ON subscribers.id = bounces.subscriber_id '
-      . "WHERE bounces.newsletter_id = '" . $newsletterId . "' " . $searchConstraint;
+      . "WHERE bounces.newsletter_id = '" . $newsletterId . "' " . $searchConstraint . $dateConstraint;
   }
 
   private function getSearchConstraint(string $searchString): ?string {

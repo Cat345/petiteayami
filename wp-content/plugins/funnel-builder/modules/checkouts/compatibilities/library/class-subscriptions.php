@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 #[AllowDynamicProperties]
 class WFACP_Compatibility_Subscription {

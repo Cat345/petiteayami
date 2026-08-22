@@ -162,115 +162,147 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
      * @since 2.0
      * @since 2.4.2 Add individual use condition.
      * @since 4.0.5 Enhanced individual use coupon validation with case-insensitive comparison.
+     * @since 4.0.9 Run on `woocommerce_before_calculate_totals` and suppress the re-entrant
+     *              `calculate_totals()` recalc to avoid zeroing dynamically priced products (#1450).
      * @access public
      */
     public function implement_auto_apply_coupons() {
         // Disable hide coupon field in cart filter so it won't prevent auto apply.
         remove_filter( 'woocommerce_coupons_enabled', array( \ACFWF()->URL_Coupons, 'hide_coupon_fields' ) );
 
-        $auto_coupons = apply_filters( 'acfwp_auto_apply_coupons', get_option( $this->_constants->AUTO_APPLY_COUPONS, array() ) );
-        $auto_coupons = $this->_filter_auto_apply_coupons_allowed_from_applied_individual_use_coupons( $auto_coupons );
+        /**
+         * Detach WC core's `calculate_totals()` from `woocommerce_applied_coupon` while we apply
+         * the auto-apply coupons. `add_coupon_to_cart()` still fires `woocommerce_applied_coupon`
+         * (so integrations such as BOGO Add-Products and Force Apply keep working), but it no
+         * longer triggers a re-entrant `calculate_totals()` run from inside
+         * `woocommerce_before_calculate_totals`. The in-progress calculation applies the discounts
+         * in a single pass, preserving prices set by other dynamic-pricing plugins (issue #1450).
+         *
+         * `$suppress_recalc` is only true when THIS invocation actually detached the hook, so a
+         * re-entrant call (e.g. a nested `calculate_totals()` fired by another
+         * `woocommerce_before_calculate_totals` listener) won't reattach the hook prematurely in
+         * its own `finally` while the outer loop is still running.
+         */
+        $suppress_recalc = ! is_null( \WC()->cart )
+            && remove_action( 'woocommerce_applied_coupon', array( \WC()->cart, 'calculate_totals' ), 20 );
+
+        $auto_coupons = array();
         $applied      = array();
 
-        $individual_use_coupon_applied  = false;
-        $individual_use_allowed_coupons = array();
+        // Wrap the application logic so the temporarily detached hook/filter are always
+        // restored, even if a third-party filter or coupon validation throws (issue #1450).
+        try {
+            $auto_coupons = apply_filters( 'acfwp_auto_apply_coupons', get_option( $this->_constants->AUTO_APPLY_COUPONS, array() ) );
+            $auto_coupons = $this->_filter_auto_apply_coupons_allowed_from_applied_individual_use_coupons( $auto_coupons );
 
-        /**
-         * Hook to run before auto apply coupons.
-         *
-         * @since 4.0.4
-         *
-         * @param array $auto_coupons List of auto apply coupon IDs.
-         */
-        do_action( 'acfwp_before_auto_apply_coupons', $auto_coupons );
+            $individual_use_coupon_applied  = false;
+            $individual_use_allowed_coupons = array();
 
-        // only run when there are coupons to be auto applied and when cart has no individual use coupons already applied.
-        if ( is_array( $auto_coupons ) && ! empty( $auto_coupons ) ) {
+            /**
+             * Hook to run before auto apply coupons.
+             *
+             * @since 4.0.4
+             *
+             * @param array $auto_coupons List of auto apply coupon IDs.
+             */
+            do_action( 'acfwp_before_auto_apply_coupons', $auto_coupons );
 
-            $discounts = new \WC_Discounts( \WC()->cart );
-            foreach ( $auto_coupons as $coupon_id ) {
+            // only run when there are coupons to be auto applied and when cart has no individual use coupons already applied.
+            if ( is_array( $auto_coupons ) && ! empty( $auto_coupons ) ) {
 
-                if ( get_post_type( $coupon_id ) !== 'shop_coupon' ) {
-                    continue;
-                }
+                $discounts = new \WC_Discounts( \WC()->cart );
 
-                $coupon      = new Advanced_Coupon( $coupon_id );
-                $coupon_code = $coupon->get_code();
+                // Seed the subtotal so "cart subtotal" conditions validate correctly here (#1450).
+                $this->_seed_cart_subtotal_for_validation( $discounts );
+                foreach ( $auto_coupons as $coupon_id ) {
 
-                // skip if coupon already applied.
-                if ( in_array( $coupon->get_code(), \WC()->cart->get_applied_coupons(), true ) ) {
-                    continue;
-                }
+                    if ( get_post_type( $coupon_id ) !== 'shop_coupon' ) {
+                        continue;
+                    }
 
-                // Validate coupon.
-                $checked = $discounts->is_coupon_valid( $coupon );
+                    $coupon      = new Advanced_Coupon( $coupon_id );
+                    $coupon_code = $coupon->get_code();
 
-                // Convert WP_Error to false for consistent boolean handling.
-                if ( is_wp_error( $checked ) ) {
+                    // skip if coupon already applied.
+                    if ( in_array( $coupon->get_code(), \WC()->cart->get_applied_coupons(), true ) ) {
+                        continue;
+                    }
+
+                    // Validate coupon.
+                    $checked = $discounts->is_coupon_valid( $coupon );
+
+                    // Convert WP_Error to false for consistent boolean handling.
+                    if ( is_wp_error( $checked ) ) {
+                        /**
+                         * Fires when an auto-apply coupon is invalid.
+                         *
+                         * @since 4.0.6.1
+                         * @param WC_Coupon $coupon The coupon object that failed validation.
+                         * @param WP_Error  $checked The WP_Error object containing validation error details.
+                         */
+                        do_action( 'acfw_auto_apply_coupon_invalid', $coupon, $checked );
+                        $checked = false;
+                    }
+
                     /**
-                     * Fires when an auto-apply coupon is invalid.
+                     * If an individual-use coupon was already applied,
+                     * only allow other coupons that are explicitly allowed alongside it.
                      *
-                     * @since 4.0.6.1
-                     * @param WC_Coupon $coupon The coupon object that failed validation.
-                     * @param WP_Error  $checked The WP_Error object containing validation error details.
+                     * NOTE:
+                     * - we need to place this condition after $checked because we need to do invalid coupon check.
+                     * - e.g (Cart Conditions: will not be checked if this condition is applied before $checked)
+                    */
+                    if ( $checked && $individual_use_coupon_applied ) {
+                        $allowed_norm = array_map( 'wc_format_coupon_code', (array) $individual_use_allowed_coupons );
+                        if ( ! in_array( wc_format_coupon_code( $coupon_code ), $allowed_norm, true ) ) {
+                            $checked = false;
+                        }
+                    }
+
+                    /**
+                     * Skip coupon if it's for individual use but there's already another coupon applied on cart.
+                     *
+                     * NOTE:
+                     * - we need to place this condition after $checked because we need to do invalid coupon check.
+                     * - e.g (Cart Conditions: will not be checked if this condition is applied before $checked)
                      */
-                    do_action( 'acfw_auto_apply_coupon_invalid', $coupon, $checked );
-                    $checked = false;
-                }
+                    if ( $checked && $coupon->get_individual_use() ) {
+                        // Check if there are already applied coupons that are not allowed by this individual-use coupon.
+                        $allowed_coupons = array_map(
+                            'wc_get_coupon_code_by_id',
+                            ACFWP()->Allowed_Coupons->get_individual_use_coupon_allowed_coupons( $coupon )
+                        );
+                        $allowed_norm    = array_map( 'wc_format_coupon_code', $allowed_coupons );
+                        $applied_norm    = array_map( 'wc_format_coupon_code', (array) \WC()->cart->get_applied_coupons() );
+                        $diff_norm       = array_diff( $applied_norm, $allowed_norm );
 
-                /**
-                 * If an individual-use coupon was already applied,
-                 * only allow other coupons that are explicitly allowed alongside it.
-                 *
-                 * NOTE:
-                 * - we need to place this condition after $checked because we need to do invalid coupon check.
-                 * - e.g (Cart Conditions: will not be checked if this condition is applied before $checked)
-                */
-                if ( $checked && $individual_use_coupon_applied ) {
-                    $allowed_norm = array_map( 'wc_format_coupon_code', (array) $individual_use_allowed_coupons );
-                    if ( ! in_array( wc_format_coupon_code( $coupon_code ), $allowed_norm, true ) ) {
-                        $checked = false;
-                    }
-                }
+                        if ( ! empty( $diff_norm ) ) {
+                            $checked = false;
+                        }
 
-                /**
-                 * Skip coupon if it's for individual use but there's already another coupon applied on cart.
-                 *
-                 * NOTE:
-                 * - we need to place this condition after $checked because we need to do invalid coupon check.
-                 * - e.g (Cart Conditions: will not be checked if this condition is applied before $checked)
-                 */
-                if ( $checked && $coupon->get_individual_use() ) {
-                    // Check if there are already applied coupons that are not allowed by this individual-use coupon.
-                    $allowed_coupons = array_map(
-                        'wc_get_coupon_code_by_id',
-                        ACFWP()->Allowed_Coupons->get_individual_use_coupon_allowed_coupons( $coupon )
-                    );
-                    $allowed_norm    = array_map( 'wc_format_coupon_code', $allowed_coupons );
-                    $applied_norm    = array_map( 'wc_format_coupon_code', (array) \WC()->cart->get_applied_coupons() );
-                    $diff_norm       = array_diff( $applied_norm, $allowed_norm );
-
-                    if ( ! empty( $diff_norm ) ) {
-                        $checked = false;
+                        // No conflict, mark this individual-use coupon as applied.
+                        $individual_use_coupon_applied  = true;
+                        $individual_use_allowed_coupons = $allowed_coupons;
                     }
 
-                    // No conflict, mark this individual-use coupon as applied.
-                    $individual_use_coupon_applied  = true;
-                    $individual_use_allowed_coupons = $allowed_coupons;
-                }
+                    if ( $checked ) {
+                        // Auto-apply the coupon.
+                        $this->_auto_apply_single_coupon( $coupon, $discounts );
 
-                if ( $checked ) {
-                    // Auto-apply the coupon.
-                    $this->_auto_apply_single_coupon( $coupon, $discounts );
-
-                    // Add coupon to applied coupons list if it's valid and auto applied.
-                    $applied[] = $coupon->get_code();
+                        // Add coupon to applied coupons list if it's valid and auto applied.
+                        $applied[] = $coupon->get_code();
+                    }
                 }
             }
-        }
+        } finally {
+            // Reattach WC core's `calculate_totals()` to `woocommerce_applied_coupon`.
+            if ( $suppress_recalc ) {
+                add_action( 'woocommerce_applied_coupon', array( \WC()->cart, 'calculate_totals' ), 20, 0 );
+            }
 
-        // Re-enable hide coupon field in cart filter so it won't prevent auto apply.
-        add_filter( 'woocommerce_coupons_enabled', array( \ACFWF()->URL_Coupons, 'hide_coupon_fields' ) );
+            // Re-enable hide coupon field in cart filter so it won't prevent auto apply.
+            add_filter( 'woocommerce_coupons_enabled', array( \ACFWF()->URL_Coupons, 'hide_coupon_fields' ) );
+        }
 
         /**
          * Hook to run after auto apply coupons.
@@ -280,6 +312,31 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
          * @param array $auto_coupons List of auto apply coupon IDs.
          */
         do_action( 'acfwp_after_auto_apply_coupons', $applied, $auto_coupons );
+    }
+
+    /**
+     * Seed the cart subtotal so auto-apply cart-condition validation reads a real value.
+     *
+     * Core resets the cart totals before `woocommerce_before_calculate_totals` (the hook auto-apply
+     * runs on), so `get_subtotal()` is 0 and "cart subtotal" conditions never match. Reuse the line
+     * prices WooCommerce already computed in `$discounts` instead of recalculating; the following
+     * `WC_Cart_Totals` pass overwrites the seeded value (issue #1450).
+     *
+     * @since 4.0.9
+     * @access private
+     *
+     * @param \WC_Discounts $discounts Discounts object already populated from the current cart.
+     */
+    private function _seed_cart_subtotal_for_validation( $discounts ) {
+        $cart = \WC()->cart;
+
+        // Skip when there is no cart, it's empty, or core already populated the totals.
+        if ( is_null( $cart ) || $cart->is_empty() || $cart->get_subtotal() > 0 ) {
+            return;
+        }
+
+        $subtotal_cents = array_sum( wp_list_pluck( $discounts->get_items(), 'price' ) );
+        $cart->set_subtotal( wc_remove_number_precision( $subtotal_cents ) );
     }
 
     /**
@@ -563,7 +620,24 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
         }
 
         add_action( 'wp', array( $this, 'force_create_cart_session' ) );
-        add_action( 'woocommerce_after_calculate_totals', array( $this, 'implement_auto_apply_coupons' ) );
+
+        /**
+         * Auto apply on `woocommerce_before_calculate_totals` (not `after`) so the auto-apply
+         * coupons are present in the applied list before the single `WC_Cart_Totals` pass that
+         * computes discounts. This avoids the re-entrant second `calculate_totals()` run that
+         * `add_coupon_to_cart()` used to trigger via `woocommerce_applied_coupon`, which fired
+         * `woocommerce_before_calculate_totals` a second time and zeroed out line prices set by
+         * other dynamic-pricing plugins guarded with `did_action( ... ) >= 2` (issue #1450).
+         *
+         * Runs early (default priority 9, before BOGO's `implement_bogo_deals` at
+         * `acfw_bogo_implementation_priority`, default 11) so an auto-applied Add-Products/BOGO
+         * coupon still adds and prices its products within the same pass.
+         *
+         * @since 4.0.9
+         *
+         * @param int $priority Hook priority for auto applying coupons.
+         */
+        add_action( 'woocommerce_before_calculate_totals', array( $this, 'implement_auto_apply_coupons' ), apply_filters( 'acfwp_auto_apply_coupons_priority', 9 ) );
         add_filter( 'woocommerce_cart_totals_coupon_html', array( $this, 'hide_remove_coupon_link_in_cart_totals' ), 10, 2 );
     }
 }

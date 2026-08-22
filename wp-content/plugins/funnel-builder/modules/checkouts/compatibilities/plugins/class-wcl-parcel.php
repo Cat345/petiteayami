@@ -98,7 +98,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 				$fields['wfacp_postcode_my_parcel'] = array(
 					'type'    => 'wfacp_html',
 					'default' => '',
-					'label'   => __( 'My Parcel', 'woocommerce-aero-checkout' ),
+					'label'   => __( 'My Parcel', 'funnel-builder' ),
 					'id'      => 'wfacp_postcode_my_parcel',
 				);
 			}

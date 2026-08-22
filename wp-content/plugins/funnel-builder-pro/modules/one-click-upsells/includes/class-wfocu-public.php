@@ -1049,7 +1049,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 								'offer_success_message_pop' => WFOCU_Core()->funnels->get_funnel_option( 'offer_success_message_pop' ),
 								'offer_msg_pop_failure' => WFOCU_Core()->funnels->get_funnel_option( 'offer_failure_message_pop' ),
 								'i18n_no_matching_variations_text' => esc_attr__( 'Sorry, no products matched your selection. Please choose a different combination.', 'woocommerce' ),
-								'maybe_no_product_selected' => esc_attr__( 'Sorry, it seems no product is mapped with this offer. Please check offer or button settings.', 'woofunnels-upstroke-one-click-upsell' ),
+								'maybe_no_product_selected' => esc_attr__( 'Please select a product option before continuing. If the problem persists, no product may be mapped with this offer — please check the offer or button settings.', 'woofunnels-upstroke-one-click-upsell' ),
 							),
 							'ajax_url'                 => admin_url( 'admin-ajax.php' ),
 							'wc_ajax_url'              => WC_AJAX::get_endpoint( '%%endpoint%%' ),
@@ -1174,6 +1174,13 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 					}
 
 				}
+
+				document.cookie.split(';').forEach(function(c) {
+					var name = c.split('=')[0].trim();
+					if (name.indexOf('sling_user_end_date') === 0) {
+						document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
+					}
+				});
 			</script>
 			<?php
 		}

@@ -109,7 +109,7 @@ body #wfacp-e-form .wfacp_row_wrap .product-name .wfacp_product_sec .wfacp_pro_a
     margin: 0;
 }
 
-body #wfacp-e-form .wfacp_main_form .wfacp-comm-title:not(.wfacp_internal_form_wrap).none {
+body #wfacp-e-form .wfacp_main_form .wfacp-comm-title:not(.wfacp_internal_form_wrap).wfacp_none {
     padding: 0;
 }
 
@@ -998,7 +998,7 @@ body #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-terms-and-condition
 }
 
 
-#wfacp-e-form * {
+#wfacp-e-form *:not(.wfacp_smart_buttons button):not(.wfacp_payment button) {
     text-rendering: optimizelegibility !important;
     -webkit-font-smoothing: subpixel-antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -1071,6 +1071,13 @@ body button.button.wfacp-coupon-btn:disabled[disabled] {
 #wfacp-e-form form.woocommerce-form.woocommerce-form-login.login {
     border: none;
     padding: 0;
+}
+
+body #wfacp-sec-wrapper .woocommerce-form-login .wfacp-remember-me input[type=checkbox] {
+    position: relative;
+    left: auto;
+    top: auto;
+    margin: 0 8px 0 0;
 }
 
 #wfacp-e-form form.checkout_coupon.woocommerce-form-coupon p.form-row.form-row-last {
@@ -5295,11 +5302,19 @@ body #wfacp-e-form .wfacp_collapsible_order_summary_wrap.wfacp .wfacp-top label.
 }
 
 /*-------------------------------------------Theme Elementor--------------------------------------------*/
-
 body button.button.wfacp-coupon-btn {
     border: none;
 }
 
+/*--------------------------------------------Theme Bricks--------------------------------------------*/
+/* Scoped to the Bricks checkout template body class so other builders keep the themed checkbox. */
+body.wfacp_bricks_template #wfacp-e-form input#rememberme{
+    display: inline-block !important;
+    appearance: checkbox !important;
+    -webkit-appearance: checkbox !important;
+    -moz-appearance: checkbox !important;
+    -ms-appearance: checkbox !important;
+}
 
 
 /* Desktop: If setting is ENABLED, element should be VISIBLE */
@@ -5560,7 +5575,7 @@ body button.button.wfacp-coupon-btn {
         padding: 0;
     }
 
-    #wfacp-e-form .none.div_wrap_sec {
+    #wfacp-e-form .wfacp_none.div_wrap_sec {
         padding: 0;
     }
 

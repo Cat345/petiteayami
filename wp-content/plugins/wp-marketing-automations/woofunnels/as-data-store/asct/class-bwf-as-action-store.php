@@ -625,7 +625,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 			$action = BWF_AS_Actions_Crud::get_single_action( $action_id, 'claim_id' );
 
 			/**
-			 * get_single_action() returns a stdClass, so the claim_id property must be
+			 * get_single_action() returns a stdClass (null when the row is gone), so the claim_id property must be
 			 * read explicitly. Casting the object directly (the previous behaviour)
 			 * always evaluated to 1. That was harmless until Action Scheduler 4.0,
 			 * whose QueueRunner::do_batch() re-verifies each action with

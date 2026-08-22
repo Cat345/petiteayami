@@ -273,5 +273,88 @@ if ( ! class_exists( 'FK_Checkout_Redirect' ) ) {
 
 			return $text;
 		}
+
+		/**
+		 * Output redirect JS on single product pages when "Redirect to dedicated checkout page" is enabled.
+		 *
+		 * Intercepts the add-to-cart form submit and redirects to the assigned checkout page
+		 * with aero-add-to-checkout and aero-qty URL parameters.
+		 */
+		public function maybe_redirect_add_to_cart() {
+			global $product;
+
+			if ( ! $product instanceof WC_Product ) {
+				return;
+			}
+
+			$product_id = $product->get_id();
+
+			$redirect_enabled = get_post_meta( $product_id, '_fk_redirect_to_checkout', true );
+			$step_id          = absint( get_post_meta( $product_id, '_fk_checkout_step_id', true ) );
+
+			if ( 'yes' !== $redirect_enabled || $step_id <= 0 ) {
+				return;
+			}
+
+			$checkout_url = get_permalink( $step_id );
+			if ( ! $checkout_url ) {
+				return;
+			}
+
+			$product_type = $product->get_type();
+			?>
+			<script type="text/javascript">
+				(function ($) {
+					if (typeof $ === 'undefined') {
+						return;
+					}
+					var fkRedirect = {
+						checkoutUrl: <?php echo wp_json_encode( $checkout_url ); ?>,
+						productId: <?php echo absint( $product_id ); ?>,
+						productType: <?php echo wp_json_encode( $product_type ); ?>
+					};
+
+					// Bind at body level so we fire before FK Cart's $(document)-level click handler.
+					// stopPropagation() prevents FK Cart AJAX.
+					$('body').on('click', 'form.cart .single_add_to_cart_button:not(.disabled)', function (e) {
+						var $form = $(this).closest('form.cart');
+						var qty = $form.find('input[name=quantity]').val() || 1;
+						var pid = fkRedirect.productId;
+						var attributes = '';
+
+						if (fkRedirect.productType === 'variable' || fkRedirect.productType === 'variable-subscription') {
+							var variationId = $form.find('input[name=variation_id]').val();
+							if (!variationId || variationId == 0) {
+								// No variation selected — let WC show its error normally.
+								return;
+							}
+							pid = variationId;
+
+							// Collect selected variation attributes.
+							$form.find('select[name^="attribute_"], input[name^="attribute_"]').each(function () {
+								var name = $(this).attr('name');
+								var val = $(this).val();
+								if (name && val) {
+									attributes += '&' + encodeURIComponent(name) + '=' + encodeURIComponent(val);
+								}
+							});
+						}
+
+						// Collect Sublium plan if selected.
+						var subliumPlan = $form.find('input[name="sublium-option-plan"], input.sublium-option-plan').val();
+						if (subliumPlan) {
+							attributes += '&sublium-option-plan-single-product-' + encodeURIComponent(fkRedirect.productId) + '=' + encodeURIComponent(subliumPlan);
+						}
+
+						e.stopPropagation();
+						e.preventDefault();
+
+						var sep = fkRedirect.checkoutUrl.indexOf('?') > -1 ? '&' : '?';
+						window.location.href = fkRedirect.checkoutUrl + sep + 'aero-add-to-checkout=' + pid + '&aero-qty=' + qty + attributes;
+					});
+				})(jQuery);
+			</script>
+			<?php
+		}
 	}
 }

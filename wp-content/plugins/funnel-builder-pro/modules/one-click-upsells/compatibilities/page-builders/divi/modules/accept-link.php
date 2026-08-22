@@ -20,7 +20,7 @@ if ( ! class_exists( 'WFOCU_Accept_Link' ) ) {
 			}
 			$tab_id = $this->add_tab( __( 'Accept Offer', 'woofunnels-upstroke-one-click-upsell' ), 5 );
 			foreach ( $products as $key => $product ) {
-				$product_options[ $key ] = $product->data->get_name();
+				$product_options[ $key ] = $product->name;
 			}
 			$this->add_select( $tab_id, 'selected_product', __( 'Product', 'woofunnels-upstroke-one-click-upsell' ), $product_options, key( $product_options ) );
 			do_action( 'wfocu_add_divi_controls', $this, $offer_id, $products );

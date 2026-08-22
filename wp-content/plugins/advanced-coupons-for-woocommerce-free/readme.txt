@@ -3,7 +3,7 @@ Contributors: jkohlbach, RymeraWebCo, Rymera01, smub
 Tags: woocommerce coupons, bogo coupons, store credit, bogo, smart coupons
 Requires at least: 5.9
 Tested up to: 7.0
-Stable tag: 4.7.3
+Stable tag: 4.7.5
 Requires PHP: 5.6
 License: GNU General Public License v2.0 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -393,6 +393,31 @@ Thanks,
 Josh Kohlbach (CEO of Rymera Web Co)
 
 == Changelog ==
+
+= 4.7.5 =
+* Bug Fix: Integration: WPML compatibility (URL coupon notice)
+* Bug Fix: Product added twice when using coupon URL with add-to-cart query
+* Bug Fix: Store credits refund not respecting currency conversion rates
+* Bug Fix: URL coupon redirect can enter an endless redirect loop due to unbounded query string accumulation
+* Feature: Set store credit expiry of less than a year e.g. 30 days, 60 days, etc.
+* Improvement: Add "Discount application mode" setting for BOGO deals (price modification vs coupon amount)
+* Improvement: Add a setting to extend valid product types returned in product search
+* Improvement: Move the HTML tags outside of the translatable strings
+
+= 4.7.4 =
+* Bug Fix: BOGO "eligible to redeem deals" notice persists on classic cart after cart condition is no longer met
+* Bug Fix: BOGO additional settings: help-tip (?) icon wraps below the radio instead of staying inline with the label
+* Bug Fix: Error notice disappears on cart block after product quantity is changed
+* Bug Fix: Subscription product added twice when using coupon URL with add-to-cart parameter
+* Bug Fix: Two simultaneous auto-apply BOGO coupons: second BOGO free product not added to cart
+* Bug Fix: Vite_App::register() leaks modulepreload hints globally via wp_head
+* Bug Fix: WP 7.0: Missing wc-blocks-checkout script dependency in checkout block integration
+* Bug Fix: WP 7.0: acfwf-wc-cart-block-integration-css stylesheet injected into block editor iframe incorrectly
+* Bug Fix: Cart condition notice renders raw HTML entities on WC 9.4+ with classic cart/checkout
+* Bug Fix: json_decode() TypeError in Elementor integration when _elementor_data returns array on PHP 8.2
+* Feature: Add WordPress Abilities API support (8 abilities) — Advanced Coupons (Free)
+* Feature: Recommended sister plugin notice
+* Improvement: Option to remove the BOGO free/deal item from the cart when the deal no longer qualifies (instead of reverting it to full price)
 
 = 4.7.3 =
 * Bug Fix: Bug: BOGO coupon discount not shown in Block Cart until page refresh when coupon auto-adds free item (Same Product & Specific Products with auto-add)

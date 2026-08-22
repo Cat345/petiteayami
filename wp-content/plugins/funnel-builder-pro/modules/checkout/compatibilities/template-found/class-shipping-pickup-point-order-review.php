@@ -41,34 +41,52 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Shipping_Pickup_Point_Order_Revie
 		}
 
 		/**
-		 * When plugins set input.value directly (without firing change), trigger change.
-		 * Fixes anim-wrap for woocommerce-ps and similar plugins.
+		 * After fragments refresh: floating labels only (no mass .trigger('change')).
+		 * Pošta SI fills shipping fields from the map popup via JS; that does not fire change.
+		 * We patch the value setter only for shipping_* .wfacp-form-control when the field is
+		 * not focused (popup fill), so Woo gets one change — not dozens after updated_checkout.
 		 */
 		public function add_anim_wrap_trigger_script() {
 			?>
 			<script>
 			(function($){
-				function patchProto(Proto) {
-					var d = Object.getOwnPropertyDescriptor(Proto, 'value');
-					if (!d || !d.set) return;
-					var set = d.set, get = d.get;
-					Object.defineProperty(Proto, 'value', {
-						set: function(v) {
-							set.call(this, v);
-							if (this.classList && this.classList.contains('wfacp-form-control') && v) {
+				function patchShippingValueNotify(ctor) {
+					try {
+						var proto = ctor.prototype;
+						var d = Object.getOwnPropertyDescriptor(proto, 'value');
+						if (!d || !d.set) {
+							return;
+						}
+						var nativeSet = d.set;
+						var nativeGet = d.get;
+						Object.defineProperty(proto, 'value', {
+							set: function(v) {
+								nativeSet.call(this, v);
+								if (!this.classList || !this.classList.contains('wfacp-form-control')) {
+									return;
+								}
+								var n = this.getAttribute('name') || '';
+								if (n.indexOf('shipping_') !== 0) {
+									return;
+								}
+								if (document.activeElement === this) {
+									return;
+								}
 								$(this).trigger('change');
-							}
-						},
-						get: get,
-						configurable: true,
-						enumerable: true
-					});
+							},
+							get: nativeGet,
+							configurable: true,
+							enumerable: true
+						});
+					} catch (e) {}
 				}
-				patchProto(HTMLInputElement.prototype);
-				patchProto(HTMLTextAreaElement.prototype);
+				patchShippingValueNotify(HTMLInputElement);
+				patchShippingValueNotify(HTMLTextAreaElement);
+				patchShippingValueNotify(HTMLSelectElement);
 				$(document.body).on('updated_checkout', function () {
-					if (typeof wfacp_add_anim_wrap === 'function') wfacp_add_anim_wrap();
-					$('.wfacp-form-control').filter(function () { return $(this).val(); }).trigger('change');
+					if (typeof wfacp_add_anim_wrap === 'function') {
+						wfacp_add_anim_wrap();
+					}
 				});
 			})(jQuery);
 			</script>

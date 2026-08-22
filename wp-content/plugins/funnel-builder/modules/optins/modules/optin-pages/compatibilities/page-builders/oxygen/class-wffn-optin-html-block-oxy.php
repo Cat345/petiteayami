@@ -66,7 +66,7 @@ if ( ! class_exists( 'WFFN_Optin_HTML_Block_Oxy' ) ) {
 			foreach ( is_array( $get_fields ) ? $get_fields : array() as $field ) {
 
 				$default = isset( $field['width'] ) ? $field['width'] : 'wffn-sm-100';
-				$this->add_select( $tab_id, $field['InputName'], esc_html__( $field['label'] ), $this->get_class_options(), $default );
+				$this->add_select( $tab_id, $field['InputName'], esc_html( $field['label'] ), $this->get_class_options(), $default );
 			}
 
 			do_action( 'wffn_additional_controls', $this );
@@ -151,7 +151,7 @@ if ( ! class_exists( 'WFFN_Optin_HTML_Block_Oxy' ) ) {
 				'.bwfac_form_sec .wffn-optin-input',
 			);
 
-			$this->add_typography( $tab_id, 'field_typography', implode( ',', $field_typography ), __( 'Field Typography' ) );
+			$this->add_typography( $tab_id, 'field_typography', implode( ',', $field_typography ), __( 'Field Typography' , 'funnel-builder') );
 			$this->add_border( $tab_id, 'field_border', '.bwfac_form_sec .wffn-optin-input' );
 		}
 

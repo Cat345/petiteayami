@@ -872,7 +872,7 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper input[type="emal"].wfacp-form-control,
 			{{WRAPPER}} #wfacp-e-form .wfacp_allowed_countries strong,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .select2-container .select2-selection--single .select2-selection__rendered,
-			{{WRAPPER}} #wfacp-e-form .iti__selected-flag',
+			{{WRAPPER}} #wfacp-e-form .iti__selected-country',
 						$unique_class
 					)
 				);

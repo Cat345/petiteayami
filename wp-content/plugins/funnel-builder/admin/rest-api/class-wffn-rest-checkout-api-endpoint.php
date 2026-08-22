@@ -436,7 +436,7 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 			$preview_section['preview_field_preview_text']              = ! empty( $value['preview_field_preview_text'] ) ? wffn_clean( $value['preview_field_preview_text'] ) : '';
 			$live_validation['enable_live_validation']                  = ! empty( $value['enable_live_validation'] ) ? bwf_clean( $value['enable_live_validation'] ) : 'false';
 			$optional_field_db_values['collapsible_optional_fields']    = ! empty( $value['collapsible_optional_fields'] ) ? wffn_clean( $value['collapsible_optional_fields'] ) : array();
-			$optional_field_db_values['collapsible_optional_link_text'] = ! empty( $value['collapsible_optional_link_text'] ) ? wffn_clean( $value['collapsible_optional_link_text'] ) : __( 'Add', 'funnel-builder' );
+			$optional_field_db_values['collapsible_optional_link_text'] = isset( $value['collapsible_optional_link_text'] ) ? wffn_clean( $value['collapsible_optional_link_text'] ) : __( 'Add', 'funnel-builder' );
 			$preview_fields = array();
 			if ( $multistep_form !== 'single_step' ) {
 				$fields         = array();
@@ -2241,6 +2241,8 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 							$_product['product_stock']        = $product_stock;
 							$_product['price_range']          = $price_range;
 							$_product['product_status']       = $chk_product->get_status();
+							$_product['product_meta_data']    = ! empty( $_product['plan_id'] ) ? array( 'sublium_plan' => absint( $_product['plan_id'] ) ) : array();
+							$_product                         = apply_filters( 'wffn_rest_api_checkout_get_product', $_product, $chk_product );
 							// Swap ID for Key for product Component
 							$_product['key'] = $_product['id'];
 							$_product['id']  = $_key;
@@ -2310,13 +2312,14 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 				$posted_data = $this->sanitize_custom( $options );
 
 				if ( isset( $posted_data['products'] ) && count( $posted_data['products'] ) > 0 ) {
-					$step_id  = absint( $step_id );
-					$products = wffn_clean( $posted_data['products'] );
+					$step_id            = absint( $step_id );
+					$products           = wffn_clean( $posted_data['products'] );
+					$products_meta_data = isset( $posted_data['products_meta_data'] ) ? $posted_data['products_meta_data'] : array();
 
 					$existing_product = WFACP_Common::get_page_product( $step_id );
 					wffn_rest_api_helpers()->remove_all_wc_price_action();
 
-					foreach ( $products as $pid ) {
+					foreach ( $products as $p_index => $pid ) {
 						$unique_id = uniqid( 'wfacp_' );
 						$product   = wc_get_product( $pid );
 						if ( $product instanceof WC_Product ) {
@@ -2329,6 +2332,7 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 							$default['title']                = $product->get_title();
 							$default['stock']                = $product->is_in_stock();
 							$default['is_sold_individually'] = $product->is_sold_individually();
+							$default['products_meta_data']   = isset( $products_meta_data[ $p_index ] ) && is_array( $products_meta_data[ $p_index ] ) ? $products_meta_data[ $p_index ] : array();
 
 							$product_image_url = '';
 							$images            = wp_get_attachment_image_src( $image_id );
@@ -2356,6 +2360,7 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 									$default['sale_price'] = wc_price( $sale_price );
 								}
 							}
+							$default = apply_filters( 'wffn_rest_api_checkout_add_product', $default, $product, $p_index );
 
 							$resp_products                  = $default;
 							$resp_products['key']           = $resp_products['id'];
@@ -2848,8 +2853,8 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 
 			$smart_button_positions = array(
 				'wfacp_form_single_step_start'         => __( 'At top of checkout Page', 'funnel-builder' ),
-				'wfacp_before_product_switching_field' => __( 'Before product switcher', 'funnel-builder' ),
-				'wfacp_after_product_switching_field'  => __( 'After product switcher', 'funnel-builder' ),
+				'wfacp_before_product_switching_field' => __( 'Before Product Field', 'funnel-builder' ),
+				'wfacp_after_product_switching_field'  => __( 'After Product Field', 'funnel-builder' ),
 				'wfacp_before_order_summary_field'     => __( 'Before order summary', 'funnel-builder' ),
 				'wfacp_after_order_summary_field'      => __( 'After order summary', 'funnel-builder' ),
 				'wfacp_before_payment_section'         => __( 'Above the payment gateways', 'funnel-builder' ),

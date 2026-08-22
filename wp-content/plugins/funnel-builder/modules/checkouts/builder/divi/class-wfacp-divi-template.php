@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFACP_Divi_Template extends WFACP_Template_Common {
@@ -152,7 +153,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 				}
 
 				echo "<div class='" . implode( ' ', array( 'wfacp-form', $label_position ) ) . "'>";//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo "<div class='" . implode( ' ', array( 'wfacp-form', $label_position ) ) . "'>";
 
 			}
 		}
@@ -173,11 +173,28 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 		}
 
 		public function get_ajax_exchange_keys() {
-			$keys = WFACP_Common::$exchange_keys;
-			if ( ! empty( is_array( $keys ) ) && isset( $keys['divi'] ) && isset( $keys['divi']['wfacp_form'] ) ) {
-				$form_id         = $keys['divi']['wfacp_form'];
-				$this->form_data = WFACP_Common::get_session( $form_id );
-				if ( isset( $keys['divi']['order_summary'] ) ) {
+			$keys    = WFACP_Common::$exchange_keys;
+			$form_id = null;
+
+			if ( is_array( $keys ) && ! empty( $keys ) && isset( $keys['divi']['wfacp_form'] ) ) {
+				$form_id = $keys['divi']['wfacp_form'];
+			} elseif ( function_exists( 'WC' ) && WC()->session ) {
+				// Fallback for Divi 5: exchange_keys is a static property that resets between
+				// AJAX requests, so during update_order_review it is empty. The Divi 5 render
+				// callback stores the widget_id in WC session — read it back here so that
+				// form_data is loaded and customizations (price/icon/button text) survive AJAX.
+				$stored_widget_id = WC()->session->get( 'wfacp_divi_widget_id' );
+				if ( ! empty( $stored_widget_id ) ) {
+					$form_id = $stored_widget_id;
+				}
+			}
+
+			if ( $form_id ) {
+				$session_data = WFACP_Common::get_session( $form_id );
+				if ( is_array( $session_data ) && ! empty( $session_data ) ) {
+					$this->form_data = $session_data;
+				}
+				if ( is_array( $keys ) && isset( $keys['divi']['order_summary'] ) ) {
 					$mini_cart_form_id    = $keys['divi']['order_summary'];
 					$this->mini_cart_data = WFACP_Common::get_session( $mini_cart_form_id );
 				}
@@ -269,7 +286,7 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 				$text = trim( $this->form_data['wfacp_payment_place_order_text'] ) . $order_total;
 			} elseif ( '' !== $order_total ) {
 				// No custom button text set (D5 default) — use WC default + price.
-				$text = __( 'Place order', 'woocommerce' ) . $order_total;
+				$text = __( 'Place order', 'woocommerce' ) . $order_total; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- intentional reuse of WooCommerce's "Place order" translation
 			}
 			$this->place_order_btn_text = $text;
 
@@ -742,8 +759,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 						?>
 						<a href='javascript:void(0)' class="<?php echo esc_attr( $text_class ); ?> wfacp_breadcrumb_link"
 							data-text="<?php echo esc_attr( sanitize_title( $value ) ); ?>"><?php echo esc_html( $value ); ?></a>
-						<a href='javascript:void(0)' class="<?php echo $text_class; ?> wfacp_breadcrumb_link"
-							data-text="<?php echo sanitize_title( $value ); ?>"><?php echo $value; ?></a>
 						<?php
 
 						echo '</li>';

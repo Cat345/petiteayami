@@ -206,6 +206,8 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 										<h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo esc_html( wp_strip_all_tags( $section['sub_heading'] ) ); ?></h4>
 										<?php
 									}
+									do_action('wfacp_form_section_inside_heading_' . $section_index . '_' . $step);
+
 									?>
 								</div>
 								<?php do_action( 'wfacp_template_after_' . $section_index . '_' . $step . '_section_heading', $step, $section_index, $section ); ?>

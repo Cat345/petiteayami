@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Plugin : MailerLite - WooCommerce integration by MailerLite (v.2.1.29)
@@ -54,7 +55,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 				'class'      => array( 'woo_ml_subscribe' ),
 				'id'         => 'woo_ml_subscribe_html',
 				'field_type' => 'advanced',
-				'label'      => __( 'Woo MailerLite', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'Woo MailerLite', 'funnel-builder' ),
 			);
 
 			return $fields;

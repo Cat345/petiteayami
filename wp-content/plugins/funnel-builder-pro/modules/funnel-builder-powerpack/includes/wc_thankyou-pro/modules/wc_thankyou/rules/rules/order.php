@@ -243,7 +243,7 @@ if ( ! class_exists( 'WFTY_Rule_Order_Item' ) ) {
 					$result = $quantity <= $found_quantity;
 					break;
 				case '==':
-					$result = absint( $quantity ) === absint( $found_quantity );
+					$result = (float) $quantity === (float) $found_quantity;
 					break;
 				case '!=':
 					$result = ! ( $quantity <= $found_quantity );

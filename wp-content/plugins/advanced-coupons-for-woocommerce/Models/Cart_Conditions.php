@@ -87,6 +87,7 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
             'total-customer-spend-on-product-category'  => __( 'Total Customer Spend on a certain product category', 'advanced-coupons-for-woocommerce' ),
             'shipping-zone-region'                      => __( 'Shipping Zone And Region', 'advanced-coupons-for-woocommerce' ),
             'cart-total'                                => __( 'Cart Total', 'advanced-coupons-for-woocommerce' ),
+            'category-subtotal'                         => __( 'Category Subtotal', 'advanced-coupons-for-woocommerce' ),
         );
     }
 
@@ -282,10 +283,21 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
                 );
                 break;
             case 'cart-total':
-                $default_include_tax = \wc_tax_enabled() && 'incl' === get_option( 'woocommerce_tax_display_cart' ) ? 'yes' : 'no';
+                $default_include_tax = $this->_get_default_include_tax();
                 $data                = array(
                     'condition'   => isset( $condition_field['data']['condition'] ) ? \ACFWF()->Helper_Functions->sanitize_condition_select_value( $condition_field['data']['condition'], '=' ) : '=',
                     'value'       => isset( $condition_field['data']['value'] ) ? wc_format_decimal( $condition_field['data']['value'] ) : '',
+                    'include_tax' => isset( $condition_field['data']['include_tax'] ) ? sanitize_text_field( $condition_field['data']['include_tax'] ) : $default_include_tax,
+                );
+                break;
+
+            case 'category-subtotal':
+                $default_include_tax = $this->_get_default_include_tax();
+                $data                = array(
+                    'condition'   => isset( $condition_field['data']['condition'] ) ? \ACFWF()->Helper_Functions->sanitize_condition_select_value( $condition_field['data']['condition'], '=' ) : '=',
+                    'value'       => isset( $condition_field['data']['value'] ) ? wc_format_decimal( $condition_field['data']['value'] ) : '',
+                    'categories'  => isset( $condition_field['data']['categories'] ) && is_array( $condition_field['data']['categories'] ) ? array_map( 'absint', $condition_field['data']['categories'] ) : array(),
+                    'mode'        => isset( $condition_field['data']['mode'] ) && 'exclude' === $condition_field['data']['mode'] ? 'exclude' : 'include',
                     'include_tax' => isset( $condition_field['data']['include_tax'] ) ? sanitize_text_field( $condition_field['data']['include_tax'] ) : $default_include_tax,
                 );
                 break;
@@ -360,6 +372,10 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
                 break;
 
             case 'cart-total':
+                $field['data']['value'] = wc_format_localized_price( $field['data']['value'] );
+                break;
+
+            case 'category-subtotal':
                 $field['data']['value'] = wc_format_localized_price( $field['data']['value'] );
                 break;
 
@@ -607,8 +623,27 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
                 'title'     => __( 'Cart Total', 'advanced-coupons-for-woocommerce' ),
                 'desc'      => __( 'After any price modifications', 'advanced-coupons-for-woocommerce' ),
                 /* Translators: %s: Currency symbol. */
-                'field'     => sprintf( __( 'Cart total (%s)', 'advanced-coupons-for-woocommerce' ), get_woocommerce_currency_symbol() ),
+                'field'     => sprintf( __( 'Cart total (%s)', 'advanced-coupons-for-woocommerce' ), html_entity_decode( get_woocommerce_currency_symbol() ) ),
                 'tax_label' => __( 'Include Tax?', 'advanced-coupons-for-woocommerce' ),
+            ),
+            'category_subtotal'                         => array(
+                'group'        => 'cart-items',
+                'key'          => 'category-subtotal',
+                'title'        => __( 'Category Subtotal', 'advanced-coupons-for-woocommerce' ),
+                'desc'         => __( 'Subtotal of cart items in the selected categories only (before discounts)', 'advanced-coupons-for-woocommerce' ),
+                /* Translators: %s: Currency symbol. */
+                'field'        => sprintf( __( 'Subtotal (%s)', 'advanced-coupons-for-woocommerce' ), html_entity_decode( get_woocommerce_currency_symbol() ) ),
+                'tax_label'    => __( 'Include Tax?', 'advanced-coupons-for-woocommerce' ),
+                'mode_label'   => __( 'Mode', 'advanced-coupons-for-woocommerce' ),
+                'mode_options' => array(
+                    'include' => __( 'Include', 'advanced-coupons-for-woocommerce' ),
+                    'exclude' => __( 'Exclude', 'advanced-coupons-for-woocommerce' ),
+                ),
+                'categories'   => array(
+                    'field'       => __( 'Categories', 'advanced-coupons-for-woocommerce' ),
+                    'placeholder' => __( 'Select product categories', 'advanced-coupons-for-woocommerce' ),
+                    'options'     => \ACFWF()->Cart_Conditions->get_product_category_options(),
+                ),
             ),
         );
 
@@ -861,6 +896,140 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
         }
 
         return \ACFWF()->Helper_Functions->compare_condition_values( $cart_quantity, $quantity_value, $quantity_cond );
+    }
+
+    /**
+     * Get the default "include tax" value based on the store's tax settings.
+     *
+     * Used as the fallback when a condition has no explicit `include_tax` value yet,
+     * mirroring WooCommerce's cart tax display preference.
+     *
+     * @since 4.0.9
+     * @access private
+     *
+     * @return string 'yes' when taxes are enabled and the cart displays tax-inclusive prices, otherwise 'no'.
+     */
+    private function _get_default_include_tax() {
+        return \wc_tax_enabled() && 'incl' === get_option( 'woocommerce_tax_display_cart' ) ? 'yes' : 'no';
+    }
+
+    /**
+     * Get category subtotal condition field value.
+     *
+     * Sums the line subtotals (price x qty, pre-coupon-discount) of cart items that
+     * belong to the selected product categories (Include mode) or that do NOT belong
+     * to them (Exclude mode), then compares the matched subtotal against the threshold.
+     *
+     * @since 4.0.9
+     * @access private
+     *
+     * @param array $data Condition data.
+     * @return bool Condition field value.
+     */
+    private function _get_category_subtotal_condition_field_value( $data ) {
+        $taxonomy     = 'product_cat';
+        $condition    = $data['condition'] ?? '=';
+        $mode         = isset( $data['mode'] ) && 'exclude' === $data['mode'] ? 'exclude' : 'include';
+        $include_tax  = $data['include_tax'] ?? $this->_get_default_include_tax();
+        $target_terms = array_map( 'absint', $data['categories'] ?? array() );
+
+        $condition_terms = apply_filters( 'acfw_filter_product_tax_terms', $target_terms, $taxonomy );
+
+        // expand selected categories to include all of their children categories.
+        $children_terms = array_reduce(
+            $condition_terms,
+            function ( $c, $cat ) use ( $taxonomy ) {
+
+                $term_children = get_term_children( $cat, $taxonomy );
+
+                if ( is_wp_error( $term_children ) || empty( $term_children ) ) {
+                    return $c;
+                }
+
+                return array_merge( $c, $term_children );
+            },
+            array()
+        );
+
+        if ( ! empty( $children_terms ) ) {
+            $condition_terms = array_merge( $condition_terms, array_map( 'absint', $children_terms ) );
+        }
+
+        $matched_subtotal = 0.0;
+
+        foreach ( \WC()->cart->get_cart_contents() as $cart_item ) {
+
+            // skips BOGO / auto-added items, consistent with other conditions.
+            if ( ! \ACFWF()->Cart_Conditions->is_cart_item_valid( $cart_item ) ) {
+                continue;
+            }
+
+            $product_terms = $this->_get_cart_item_terms( $cart_item, $taxonomy );
+            $in_selected   = ! empty( array_intersect( $product_terms, $condition_terms ) );
+
+            $counts = ( 'include' === $mode ) ? $in_selected : ! $in_selected;
+
+            if ( ! $counts ) {
+                continue;
+            }
+
+            $line = (float) $cart_item['line_subtotal'];
+
+            if ( 'yes' === $include_tax && \wc_tax_enabled() ) {
+                $line += (float) $cart_item['line_subtotal_tax'];
+            }
+
+            $matched_subtotal += $line;
+        }
+
+        $value = apply_filters( 'acfw_filter_amount', (float) ( $data['value'] ?? 0 ) );
+
+        return \ACFWF()->Helper_Functions->compare_condition_values( $matched_subtotal, $value, $condition );
+    }
+
+    /**
+     * Resolve the taxonomy terms for a cart item, falling back to the parent product
+     * for variations (mirrors the custom-taxonomy condition resolution).
+     *
+     * Written with the taxonomy parameterized so a future generic-taxonomy version
+     * (e.g. brand, tag) can reuse it.
+     *
+     * @since 4.0.9
+     * @access private
+     *
+     * @param array  $cart_item Cart item data.
+     * @param string $taxonomy  Taxonomy slug.
+     * @return array List of term ids for the cart item.
+     */
+    private function _get_cart_item_terms( $cart_item, $taxonomy ) {
+        if ( ! isset( $cart_item['data'] ) || ! is_a( $cart_item['data'], 'WC_Product' ) ) {
+            return array();
+        }
+
+        if ( is_a( $cart_item['data'], 'WC_Product_Variation' ) ) {
+
+            $parent_prod = wc_get_product( $cart_item['data']->get_parent_id() );
+
+            if ( ! $parent_prod ) {
+                return array();
+            }
+
+            $variable_atts = $parent_prod->get_variation_attributes();
+
+            // if taxonomy is part of variation attributes, then we only get the term used for the variation.
+            if ( in_array( $taxonomy, array_keys( $variable_atts ), true ) ) {
+
+                $variation_atts = $cart_item['data']->get_variation_attributes();
+                $term_slug      = isset( $variation_atts[ 'attribute_' . $taxonomy ] ) ? $variation_atts[ 'attribute_' . $taxonomy ] : '';
+                $term           = get_term_by( 'slug', $term_slug, $taxonomy );
+
+                return is_object( $term ) ? array( $term->term_id ) : array();
+            }
+
+            return $this->_get_terms_for_products( $parent_prod->get_id(), $taxonomy );
+        }
+
+        return $this->_get_terms_for_products( $cart_item['data']->get_id(), $taxonomy );
     }
 
     /**
@@ -1224,7 +1393,7 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
          * @since 4.0.4
          */
         if ( 'contains' === $data['condition'] && is_string( $meta_val ) && is_string( $value ) ) {
-            return strpos( $meta_val, $value ) !== false;
+            return str_contains( $meta_val, $value );
         }
 
         if ( 'number' === $data['type'] ) {

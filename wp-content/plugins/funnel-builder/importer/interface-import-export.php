@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 interface WFFN_Import_Export {
 	public function import( $module_id, $export_content = '' );

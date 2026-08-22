@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Oxygen_Elementor_conflict' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Oxygen_Elementor_conflict {

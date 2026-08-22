@@ -44,7 +44,7 @@ class Plugin_Constants {
     // Plugin configuration constants.
     const TOKEN               = 'acfwf';
     const INSTALLED_VERSION   = 'acfwf_installed_version';
-    const VERSION             = '4.7.3';
+    const VERSION             = '4.7.5';
     const TEXT_DOMAIN         = 'advanced-coupons-for-woocommerce-free';
     const THEME_TEMPLATE_PATH = 'advanced-coupons-for-woocommerce-free';
     const META_PREFIX         = '_acfw_';
@@ -71,6 +71,7 @@ class Plugin_Constants {
     const SHOW_ALLOW_USAGE_NOTICE     = 'acfwf_show_allow_usage_notice';
     const SAVETO_NOTICE_SHOW_AFTER    = 'acfwf_saveto_notice_show_after';
     const SAVETO_NOTICE_DISMISSED     = 'acfwf_saveto_notice_dismissed';
+    const STOREAGENT_NOTICE_DISMISSED = 'acfwf_storeagent_notice_dismissed';
 
     // WC Admin.
     const REGISTER_WC_ADMIN_NOTE = 'acfwf_register_wc_admin_note';
@@ -115,6 +116,7 @@ class Plugin_Constants {
     const STORE_CREDITS_HIDE_MY_ACCOUNT_ZERO_BALANCE = 'acfw_store_credits_hide_my_account_zero_balance';
     const STORE_CREDIT_APPLY_TYPE                    = 'acfw_store_credit_apply_type';
     const STORE_CREDIT_EXPIRY                        = 'acfw_store_credit_expiry';
+    const STORE_CREDIT_EXPIRY_UNIT                   = 'acfw_store_credit_expiry_unit';
     const STORE_CREDIT_MIN_ORDER_TOTAL_ALLOWED       = 'acfw_store_credit_minimal_order_total_allowed';
     const REFUND_ORDER_STORE_CREDIT_ENTRY            = 'acfw_refund_order_store_credit_entry_id';
     const REFUND_STORE_CREDIT_DISCOUNT_ENTRY         = 'acfw_refund_store_credit_discount_entry_id';
@@ -128,6 +130,25 @@ class Plugin_Constants {
     const ALWAYS_USE_REGULAR_PRICE         = 'acfw_always_use_regular_price';
     const REMOVE_COUPONS_FOR_FAILED_ORDERS = 'acfw_remove_coupons_for_failed_orders';
     const HIDE_COUPON_CREATION_POPUP       = 'acfw_hide_coupon_creation_popup';
+    const PRODUCT_SEARCH_ADDITIONAL_TYPES  = 'acfw_product_search_additional_types';
+
+    /**
+     * Base product types the coupon product search always supports.
+     *
+     * Single source of truth consumed by both the product search allowlist and
+     * the additional product type settings option. The gift-card types are added
+     * separately where applicable.
+     *
+     * @since 4.7.5
+     * @var array
+     */
+    const PRODUCT_SEARCH_ALWAYS_SUPPORTED_TYPES = array(
+        'simple',
+        'variable',
+        'variation',
+        'subscription',
+        'subscription_variation',
+    );
 
     // Modules section.
     const URL_COUPONS_MODULE        = 'acfw_url_coupons_module';
@@ -175,6 +196,9 @@ class Plugin_Constants {
     const BOGO_DEALS_NOTICE_TYPE     = 'acfw_bogo_deals_notice_type';
     const BOGO_DEALS_DEFAULT_VALUES  = 'acfw_bogo_deals_default_values_set';
     const BOGO_SELECT_DEALS_PAGE     = 'acfw_bogo_create_select_deals_page';
+
+    // Discount application mode (per feature: 'price' bakes the discount into item/rate prices, 'coupon' attributes it to the coupon amount).
+    const BOGO_DISCOUNT_APPLICATION_MODE = 'acfw_bogo_discount_application_mode';
 
     // Advance Usage Limits.
     const USAGE_LIMITS_CRON = 'acfw_advanced_usage_limits_cron';

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 	#[AllowDynamicProperties]
 	class WFFN_Email_Notification {
@@ -340,12 +341,12 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 			$date_string = self::get_date_string( $dates, $frequency );
 			switch ( strtolower( $frequency ) ) {
 				case 'weekly':
-					return sprintf( __( '%s - Weekly Report for %s', 'FunnelKit' ), get_bloginfo( 'name' ), $date_string );//phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText
+					return sprintf( __( '%s - Weekly Report for %s', 'funnel-builder' ), get_bloginfo( 'name' ), $date_string );//phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText
 				case 'monthly':
-					return sprintf( __( '%s - Monthly Report for %s', 'FunnelKit' ), get_bloginfo( 'name' ), $date_string );//phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText
+					return sprintf( __( '%s - Monthly Report for %s', 'funnel-builder' ), get_bloginfo( 'name' ), $date_string );//phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText
 
 				default:
-					return __( 'Report', 'FunnelKit' );//phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText
+					return __( 'Report', 'funnel-builder' );//phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText
 			}
 		}
 
@@ -358,11 +359,11 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 		 */
 		public static function get_date_string( $dates = array(), $frequency = 'weekly' ) {
 			if ( 'daily' === $frequency && isset( $dates['from_date'] ) ) {
-				return sprintf( __( '%1$s', 'Funnelkit' ), self::format_date( $dates['from_date'] ) );//phpcs:ignore WordPress.WP.I18n.NoEmptyStrings
+				return sprintf( __( '%1$s', 'funnel-builder' ), self::format_date( $dates['from_date'] ) );//phpcs:ignore WordPress.WP.I18n.NoEmptyStrings
 			}
 
 			if ( isset( $dates['from_date'] ) && isset( $dates['to_date'] ) ) {
-				return sprintf( __( '%1$s - %2$s', 'Funnelkit' ), self::format_date( $dates['from_date'] ), self::format_date( $dates['to_date'] ) );
+				return sprintf( __( '%1$s - %2$s', 'funnel-builder' ), self::format_date( $dates['from_date'] ), self::format_date( $dates['to_date'] ) );
 			}
 
 			return '';

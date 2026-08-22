@@ -78,10 +78,45 @@ if ( ! class_exists( 'WFOP_Gutenberg_PRO' ) ) {
 				$js_path    = "/$app_name.js";
 				$style_path = "/$app_name.css";
 
-				wp_enqueue_script( 'wfoptin-pro-script', $frontend_dir . $js_path, array( 'wfoptin-script' ), time(), true );
+				// FontAwesome runtime for the popup block's icon picker (IconControl/SvgIcon).
+				$this->enqueue_script_with_integrity(
+					'wfoptin-font-awesome-kit',
+					'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/js/all.min.js',
+					'6.7.2',
+					'sha384-DsXFqEUf3HnCU8om0zbXN58DxV7Bo8/z7AbHBGd2XxkeNpdLrygNiGFr/03W0Xmt'
+				);
+
+				wp_enqueue_script( 'wfoptin-pro-script', $frontend_dir . $js_path, array( 'wfoptin-script', 'wfoptin-font-awesome-kit' ), time(), true );
 				wp_enqueue_style( 'wfoptin-pro-default', $frontend_dir . $style_path, array(), time() );
 
 			}
+		}
+
+		/**
+		 * Register and enqueue a remote script locked with Subresource Integrity, so a tampered
+		 * CDN response cannot execute in the page.
+		 *
+		 * @param string $handle    Script handle.
+		 * @param string $src       Remote script URL.
+		 * @param string $version   Script version.
+		 * @param string $integrity Integrity hash (e.g. "sha384-...").
+		 */
+		private function enqueue_script_with_integrity( $handle, $src, $version, $integrity ) {
+			wp_register_script( $handle, $src, array(), $version, true );
+			wp_enqueue_script( $handle );
+
+			add_filter(
+				'script_loader_tag',
+				function ( $tag, $tag_handle ) use ( $handle, $integrity ) {
+					if ( $tag_handle === $handle && false === strpos( $tag, 'integrity=' ) ) {
+						$tag = str_replace( ' src=', ' integrity="' . esc_attr( $integrity ) . '" crossorigin="anonymous" src=', $tag );
+					}
+
+					return $tag;
+				},
+				10,
+				2
+			);
 		}
 
 

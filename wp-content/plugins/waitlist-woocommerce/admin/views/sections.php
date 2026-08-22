@@ -7,6 +7,7 @@ $sections = array(
 		'title' => 'Main',
 		'id' 	=> 'gl_main',
 		'tab' 	=> 'general',
+		'icon' 	=> 'xoo-icon-home'
 	),
 
 
@@ -14,35 +15,45 @@ $sections = array(
 		'title' => 'Texts',
 		'id' 	=> 'gl_texts',
 		'tab' 	=> 'general',
-		'desc' 	=> 'Leave text empty to remove element'
+		'desc' 	=> 'Leave text empty to remove element',
+		'icon' 	=> 'xoo-icon-page'
 	),
 
 
 	/* Email TAB Sections */
-	array(
-		'title' => 'Sender Options',
-		'id' 	=> 'em_sender',
-		'tab' 	=> 'email',
-	),
-
+	
 
 	array(
 		'title' => 'General',
 		'id' 	=> 'em_general',
 		'tab' 	=> 'email',
+		'icon' 	=> 'xoo-icon-home'
 	),
+
+	array(
+		'title' => 'Sender Options',
+		'id' 	=> 'em_sender',
+		'tab' 	=> 'email',
+		'icon' 	=> 'xoo-icon-sendmail',
+		'desc' 	=> 'Available when <b>Template Style</b> is set to <b>Custom</b>'
+	),
+
 
 
 	array(
 		'title' => 'Back In Stock Email',
 		'id' 	=> 'em_bis',
 		'tab' 	=> 'email',
+		'icon' 	=> 'xoo-icon-mail'
 	),
+
+
 
 	array(
 		'title' => 'Admin Notification Email',
 		'id' 	=> 'em_an',
 		'tab' 	=> 'email',
+		'icon' 	=> 'xoo-icon-mail',
 		'pro' 	=> 'yes',
 	),
 
@@ -51,6 +62,7 @@ $sections = array(
 		'title' => 'Confirmation Email to user',
 		'id' 	=> 'em_un',
 		'tab' 	=> 'email',
+		'icon' 	=> 'xoo-icon-mail',
 		'pro' 	=> 'yes',
 	),
 
@@ -60,6 +72,7 @@ $sections = array(
 		'title' => 'Container',
 		'id' 	=> 'emsy_container',
 		'tab' 	=> 'email-style',
+		'icon' 	=> 'xoo-icon-page',
 	),
 
 
@@ -67,6 +80,7 @@ $sections = array(
 		'title' => 'Button',
 		'id' 	=> 'emsy_button',
 		'tab' 	=> 'email-style',
+		'icon' 	=> 'xoo-icon-tune',
 	),
 
 
@@ -74,6 +88,7 @@ $sections = array(
 		'title' => 'Footer Container',
 		'id' 	=> 'emsy_footer',
 		'tab' 	=> 'email-style',
+		'icon' 	=> 'xoo-icon-footer',
 	),
 
 
@@ -81,35 +96,35 @@ $sections = array(
 		'title' => 'Back In Stock Email',
 		'id' 	=> 'emsy_bis',
 		'tab' 	=> 'email-style',
+		'icon' 	=> 'xoo-icon-mail',
 	),
 
 
 	/* Style Sections*/
 
 	array(
-		'title' => 'Main',
-		'id' 	=> 'sy_fields',
+		'title' => 'Button',
+		'id' 	=> 'sy_button',
 		'tab' 	=> 'style',
+		'icon' 	=> 'xoo-icon-tune',
+	),
+
+	array(
+		'title' => 'Button Themes',
+		'id' 	=> 'sy_button_theme_creator',
+		'tab' 	=> 'style',
+		'icon' 	=> 'xoo-icon-tune',
+		'desc' 	=> 'Create and manage reusable button styles for side cart.'
 	),
 
 	array(
 		'title' => 'Popup',
 		'id' 	=> 'sy_popup',
 		'tab' 	=> 'style',
+		'icon' 	=> 'xoo-icon-popup',
 	),
 
-	array(
-		'title' => 'Button',
-		'id' 	=> 'sy_button',
-		'tab' 	=> 'style',
-	),
 
-	/* Custom CSS TAB Sections */
-	array(
-		'title' => 'Main',
-		'id' 	=> 'av_main',
-		'tab' 	=> 'advanced',
-	),
 );
 
-return apply_filters( 'xoo_el_admin_settings_sections', $sections );
+return apply_filters( 'xoo_wl_admin_settings_sections', $sections );

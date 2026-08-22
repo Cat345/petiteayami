@@ -2,6 +2,8 @@
 
 namespace Pelago;
 
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
+
 /**
  * This class provides functions for converting CSS styles into inline style attributes in your HTML code.
  *

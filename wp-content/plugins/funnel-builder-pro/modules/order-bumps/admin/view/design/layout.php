@@ -31,7 +31,7 @@ if ( count( $product ) > 0 ) {
 
 			return;
 		}
-		$price_data = apply_filters( 'wfob_product_switcher_price_data', [], $wc_product,1 );
+		$price_data = apply_filters( 'wfob_product_switcher_price_data', [], $wc_product, 1, $data );
 		if ( empty( $price_data ) ) {
 			$price_data['regular_org'] = $wc_product->get_regular_price( 'edit' );
 			$price_data['price']       = $wc_product->get_price( 'edit' );

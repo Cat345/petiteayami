@@ -126,32 +126,29 @@ if ($link && !$props['image']) {
 
 // No white space for horizontal lists
 ?>
-
 <?php if ($el) : ?>
 <?= $el($element, $attrs) ?>
 <?php endif ?>
+<?php if ($props['image']) : ?>
 
-    <?php if ($props['image']) : ?>
+    <?php if ($props['link']) : ?>
+    <?= $link($props) ?>
+    <?php endif ?>
 
-        <?php if ($props['link']) : ?>
-        <?= $link($props) ?>
-        <?php endif ?>
+        <?= $grid($element) ?>
+            <?= $cell_image($element, $props['image']) ?>
+            <div>
+                <?= $content($element, $props['content'] ?: '') ?>
+            </div>
+        <?= $grid->end() ?>
 
-            <?= $grid($element) ?>
-                <?= $cell_image($element, $props['image']) ?>
-                <div>
-                    <?= $content($element, $props['content'] ?: '') ?>
-                </div>
-            <?= $grid->end() ?>
+    <?php if ($props['link']) : ?>
+    <?= $link->end() ?>
+    <?php endif ?>
 
-        <?php if ($props['link']) : ?>
-        <?= $link->end() ?>
-        <?php endif ?>
-
-    <?php else :
-        echo $content($element, $props['content'] ?: '');
-    endif;
-
+<?php else :
+    echo $content($element, $props['content'] ?: '');
+endif;
 if ($el) :
 echo $el->end();
 endif;

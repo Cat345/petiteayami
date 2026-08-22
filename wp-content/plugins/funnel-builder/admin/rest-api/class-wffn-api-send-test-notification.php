@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /**
  * Test Notification API file
  *
@@ -158,7 +159,7 @@ if ( ! class_exists( 'WFFN_API_Send_Test_Notification' ) ) {
 					$sent[ $frequency ] = true;
 					break;
 				} else {
-					$errors->add( $frequency, sprintf( __( 'Unable to send test notification for frequency: %s', 'Funnelkit' ), $frequency ) );
+					$errors->add( $frequency, sprintf( __( 'Unable to send test notification for frequency: %s', 'funnel-builder' ), $frequency ) );
 				}
 			}
 

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 function wfacp_is_elementor() {
 
 	if ( defined( 'ELEMENTOR_VERSION' ) ) {

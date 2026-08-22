@@ -2,6 +2,8 @@
 
 namespace Pelago\Emogrifier\HtmlProcessor;
 
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
+
 /**
  * Base class for HTML processor that e.g., can remove, add or modify nodes or attributes.
  *

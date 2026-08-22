@@ -1879,7 +1879,12 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 		function get_advanced_field() {
 			if ( isset( $_REQUEST['post'] ) && $_REQUEST['post'] > 0 ) {
-				$wfacp_id = wfacp_get_order_meta( wc_get_order( $_REQUEST['post'] ), '_wfacp_post_id' );
+				$post_id = absint( $_REQUEST['post'] );
+				$order   = wc_get_order( $post_id );
+				if ( ! $order instanceof WC_Order ) {
+					return;
+				}
+				$wfacp_id = wfacp_get_order_meta( $order, '_wfacp_post_id' );
 				if ( absint( $wfacp_id ) == 0 ) {
 					return;
 				}

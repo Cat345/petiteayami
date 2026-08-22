@@ -23,16 +23,27 @@ if ( empty( $data['product']->variations_data['available_variations'] ) ) {
 
 ?>
 	<div class="wfocu-product-attr-wrapper" <?php echo ( isset( $data['display'] ) && $data['display'] === 'no' ) ? "style='display:none;'" : ''; ?>>
-		<form class="wfocu_variation_selector_form" data-key="<?php echo $data['key']; ?>">
-			<div class="wfocu_variation_selector_wrap" data-key="<?php echo $data['key']; ?>" data-default="<?php echo $data['product']->variations_data['default']; ?>" data-variable="<?php echo $data['product']->data->get_id(); ?>" data-variations="<?php echo htmlspecialchars( wp_json_encode( $data['product']->variations_data['available_variations'] ) ); ?>" data-variations-stock="<?php echo htmlspecialchars( wp_json_encode( $data['product']->variations_data['available_variation_stock'] ) ); ?>" data-prices="<?php echo htmlspecialchars( wp_json_encode( $data['product']->variations_data['prices'] ) ); ?>" data-shipping-hash="<?php echo htmlspecialchars( wp_json_encode( $data['product']->variations_data['shipping_hash'] ) ); ?>" data-dimensions="<?php echo htmlspecialchars( wp_json_encode( $data['product']->variations_data['dimension_htmls'] ) ); ?>" data-weight-html="<?php echo htmlspecialchars( wp_json_encode( $data['product']->variations_data['weight_htmls'] ) ); ?>" data-images="<?php echo htmlspecialchars( wp_json_encode( $data['product']->variations_data['images'] ) ); ?>">
+		<form class="wfocu_variation_selector_form" data-key="<?php echo esc_attr( $data['key'] ); ?>">
+			<div class="wfocu_variation_selector_wrap"
+				data-key="<?php echo esc_attr( $data['key'] ); ?>"
+				data-default="<?php echo esc_attr( $data['product']->variations_data['default'] ); ?>"
+				data-variable="<?php echo esc_attr( $data['product']->data->get_id() ); ?>"
+				data-variations="<?php echo esc_attr( wp_json_encode( $data['product']->variations_data['available_variations'] ) ); ?>"
+				data-variations-stock="<?php echo esc_attr( wp_json_encode( $data['product']->variations_data['available_variation_stock'] ) ); ?>"
+				data-prices="<?php echo esc_attr( wp_json_encode( $data['product']->variations_data['prices'] ) ); ?>"
+				data-shipping-hash="<?php echo esc_attr( wp_json_encode( $data['product']->variations_data['shipping_hash'] ) ); ?>"
+				data-dimensions="<?php echo esc_attr( wp_json_encode( $data['product']->variations_data['dimension_htmls'] ) ); ?>"
+				data-weight-html="<?php echo esc_attr( wp_json_encode( $data['product']->variations_data['weight_htmls'] ) ); ?>"
+				data-images="<?php echo esc_attr( wp_json_encode( $data['product']->variations_data['images'] ) ); ?>">
 				<table class="variations" cellspacing="0">
 					<tbody>
 					<?php foreach ( $data['product']->variations_data['attributes'] as $attribute_name => $options ) : ?>
 						<tr>
-							<td class="label"><label for="<?php echo sanitize_title( $attribute_name ); ?>"><?php echo wc_attribute_label( $attribute_name ); ?></label></td>
-							<td class="value" data-attribute-title="<?php echo wc_attribute_label( $attribute_name ); ?>">
+							<td class="label"><label for="<?php echo esc_attr( sanitize_title( $attribute_name ) ); ?>"><?php echo esc_html( wc_attribute_label( $attribute_name ) ); ?></label></td>
+							<td class="value" data-attribute-title="<?php echo esc_attr( wc_attribute_label( $attribute_name ) ); ?>">
 								<?php
-								$selected = $data['product']->data->get_variation_default_attribute( $attribute_name );
+								$no_default = empty( $data['product']->variations_data['default'] );
+								$selected   = $no_default ? '' : $data['product']->data->get_variation_default_attribute( $attribute_name );
 
 								wc_wfocu_dropdown_variation_attribute_options(
 									array(
@@ -50,7 +61,7 @@ if ( empty( $data['product']->variations_data['available_variations'] ) ) {
 					?>
 					</tbody>
 				</table>
-				<input type="hidden" name="_wfocu_variation" value="<?php echo( ( apply_filters( 'wfocu_show_default_variation_on_load', true ) ) ? $data['product']->variations_data['default'] : '' ); ?>"/>
+				<input type="hidden" name="_wfocu_variation" value="<?php echo esc_attr( ( apply_filters( 'wfocu_show_default_variation_on_load', true ) ) ? $data['product']->variations_data['default'] : '' ); ?>"/>
 			</div>
 		</form>
 	</div>

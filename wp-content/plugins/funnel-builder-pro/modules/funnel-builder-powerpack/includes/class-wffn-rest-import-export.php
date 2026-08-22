@@ -27,8 +27,7 @@ if ( ! class_exists( 'WFFN_REST_Import_Export' ) ) {
 		protected $rest_base_id = 'funnels/(?P<funnel_id>[\d]+)';
 
 		public function __construct() {
-			add_action( 'rest_api_init', array( $this, 'register_routes' ) );
-			add_action( 'admin_post_bwf_contact_export_download', array( $this, 'download_export' ) );
+			// Registered by WFFN_Pro_Public; nothing to hook here.
 		}
 
 		public static function get_instance() {
@@ -967,5 +966,4 @@ if ( ! class_exists( 'WFFN_REST_Import_Export' ) ) {
 		}
 	}
 
-	WFFN_REST_Import_Export();
 }

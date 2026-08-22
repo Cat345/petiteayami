@@ -12,33 +12,46 @@ $placeholders = array();
 $settings = array(
 
 	array(
-		'callback' 		=> 'checkbox',
-		'section_id' 	=> 'em_bis',
-		'id' 			=> 'bis-send-once',
-		'title' 		=> 'Prevent duplicate emails',
-		'default' 		=> 'no',
-		'desc' 			=> "Ensures each user receives this email only once, even if the send action is triggered multiple times.",
-	),
-
-
-
-	array(
-		'callback' 		=> 'checkbox',
-		'section_id' 	=> 'em_bis',
-		'id' 			=> 'bis-check-stock',
-		'title' 		=> 'Check Stock status',
-		'default' 		=> 'no',
-		'desc' 			=> 'The email will be sent only when the product is confirmed to be in stock.'
+		'callback' 		=> 'upload',
+		'section_id' 	=> 'em_general',
+		'id'			=> 'gl-logo',
+		'title' 		=> 'Email Header Logo',
+		'default' 		=> XOO_WL_URL.'/assets/images/email-logo.png'
 	),
 
 
 	array(
-		'callback' 		=> 'checkbox',
-		'section_id' 	=> 'em_bis',
-		'id' 			=> 'bis-keep-wl',
-		'title' 		=> 'Keep users on waitlist after email',
-		'desc' 			=> 'Users will remain on the waitlist even after the email is sent, allowing future notifications.<br><b>Note: If disabled, users will be delted permanently from waitlist.</b>',
-		'default' 		=> 'yes',
+		'callback' 		=> 'wp_editor',
+		'section_id' 	=> 'em_general',
+		'id'			=> 'gl-ft-content',
+		'title' 		=> 'Email Footer Content',
+		'args' 			=> array(
+			'group' 	=> 'email_content',
+			'editor_settings' => array(
+				'editor_height' => 200,	
+			)
+		),
+		'default' 		=> $footer_content,
+		'desc' 			=> '<a href="#xoo-wl-placeholder-nfo">List of Placeholders</a>',
+	),
+
+	array(
+		'callback' 		=> 'text',
+		'section_id' 	=> 'em_sender',
+		'id'			=> 's-email',
+		'title' 		=> '"From" Email',
+		'default' 		=> esc_attr( get_option( 'admin_email' ) ),
+		'desc' 			=> 'How the sender email appears in outgoing emails.'
+	),
+
+
+	array(
+		'callback' 		=> 'text',
+		'section_id' 	=> 'em_sender',
+		'id'			=> 's-name',
+		'title' 		=> '"From" Name',
+		'default' 		=> esc_attr( get_option( 'blogname' ) ),
+		'desc' 			=> 'How the sender name appears in outgoing emails.'
 	),
 
 
@@ -87,11 +100,19 @@ $settings = array(
 	),
 
 	array(
-		'callback' 		=> 'checkbox',
+		'callback' 		=> 'select',
 		'section_id' 	=> 'em_bis',
 		'id' 			=> 'bis-show-pimg',
 		'title' 		=> 'Show Product Image',
-		'default' 		=> 'yes',
+		'default' 		=> 'top',
+		'args' 			=> array(
+			'options' => array(
+				'disable' 	=> 'Do not show',
+				'top'	 	=> 'Above content',
+				'side' 		=> 'Beside content',
+			)
+		),
+		'desc' 			=> 'You can also use the [product_image] placeholder to display the product image wherever you want in your email. Disable this option to prevent the image from being displayed twice.'
 	),
 
 
@@ -104,50 +125,40 @@ $settings = array(
 		'default' 		=> 'Buy Now',
 	),
 
+
+	
 	array(
-		'callback' 		=> 'wp_editor',
-		'section_id' 	=> 'em_general',
-		'id'			=> 'gl-ft-content',
-		'title' 		=> 'Footer Content',
-		'args' 			=> array(
-			'group' 	=> 'email_content',
-			'editor_settings' => array(
-				'editor_height' => 200,	
-			)
-		),
-		'default' 		=> $footer_content,
-		'desc' 			=> '<a href="#xoo-wl-placeholder-nfo">List of Placeholders</a>',
+		'callback' 		=> 'checkbox',
+		'section_id' 	=> 'em_bis',
+		'id' 			=> 'bis-send-once',
+		'title' 		=> 'Prevent duplicate emails',
+		'default' 		=> 'no',
+		'desc' 			=> "Ensures each user receives this email only once, even if the send action is triggered multiple times.",
+	),
+
+
+
+	array(
+		'callback' 		=> 'checkbox',
+		'section_id' 	=> 'em_bis',
+		'id' 			=> 'bis-check-stock',
+		'title' 		=> 'Check Stock status',
+		'default' 		=> 'no',
+		'desc' 			=> 'The email will be sent only when the product is confirmed to be in stock.'
 	),
 
 
 	array(
-		'callback' 		=> 'upload',
-		'section_id' 	=> 'em_general',
-		'id'			=> 'gl-logo',
-		'title' 		=> 'Header Logo',
-		'default' 		=> XOO_WL_URL.'/assets/images/email-logo.png'
+		'callback' 		=> 'checkbox',
+		'section_id' 	=> 'em_bis',
+		'id' 			=> 'bis-keep-wl',
+		'title' 		=> 'Keep users on waitlist after email',
+		'desc' 			=> 'Users will remain on the waitlist even after the email is sent, allowing future notifications.<br><b>Note: If disabled, users will be delted permanently from waitlist.</b>',
+		'default' 		=> 'yes',
 	),
 
 
-	array(
-		'callback' 		=> 'text',
-		'section_id' 	=> 'em_sender',
-		'id'			=> 's-email',
-		'title' 		=> '"From" Email',
-		'default' 		=> esc_attr( get_option( 'admin_email' ) ),
-		'desc' 			=> 'How the sender email appears in outgoing emails.'
-	),
-
-
-	array(
-		'callback' 		=> 'text',
-		'section_id' 	=> 'em_sender',
-		'id'			=> 's-name',
-		'title' 		=> '"From" Name',
-		'default' 		=> esc_attr( get_option( 'blogname' ) ),
-		'desc' 			=> 'How the sender name appears in outgoing emails.'
-	),
-
+	
 
 	
 

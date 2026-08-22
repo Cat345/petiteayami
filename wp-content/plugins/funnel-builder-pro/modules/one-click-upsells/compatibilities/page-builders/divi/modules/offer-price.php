@@ -20,7 +20,7 @@ if ( ! class_exists( 'WFOCU_Offer_Price' ) ) {
 			}
 
 			foreach ( $products as $key => $product ) {
-				$product_options[ $key ] = $product->data->get_name();
+				$product_options[ $key ] = $product->name;
 				if ( in_array( $product->type, array( 'subscription', 'variable-subscription', 'subscription_variation' ), true ) ) {
 					$subscriptions = 'on';
 				}

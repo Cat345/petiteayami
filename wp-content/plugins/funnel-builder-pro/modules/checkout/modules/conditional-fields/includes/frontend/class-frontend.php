@@ -178,6 +178,9 @@ class Frontend {
 			'roles'        => $user_roles,
 		);
 
+		// Collect default values for checkout fields so JS can restore them on first-show.
+		$field_defaults = $this->get_field_defaults();
+
 		// Localize script with rules and settings.
 		wp_localize_script(
 			'wfacp_checkout_js',
@@ -191,8 +194,59 @@ class Frontend {
 				'checkoutId'    => $this->checkout_id,
 				'ajaxUrl'       => admin_url( 'admin-ajax.php' ),
 				'nonce'         => wp_create_nonce( 'fkcf_frontend_nonce' ),
+				'fieldDefaults' => $field_defaults,
 			)
 		);
+	}
+
+	/**
+	 * Collect default values for all checkout fields so JS can apply them when a
+	 * conditionally-hidden field is shown for the first time and has no cached value.
+	 *
+	 * Reads from WFACP's own custom-field storage (most reliable for custom radio/checkbox
+	 * fields) and falls back to WooCommerce checkout fields for standard fields.
+	 *
+	 * @since 2.3.1
+	 * @return array Map of field_key => default_value for fields that have a non-empty default.
+	 */
+	private function get_field_defaults() {
+		$defaults = array();
+
+		// WFACP custom fields — stored in page meta and always available at this point.
+		if ( class_exists( '\WFACP_Common' ) && $this->checkout_id ) {
+			$custom_fields = \WFACP_Common::get_page_custom_fields( $this->checkout_id );
+			if ( is_array( $custom_fields ) ) {
+				foreach ( $custom_fields as $section_fields ) {
+					if ( ! is_array( $section_fields ) ) {
+						continue;
+					}
+					foreach ( $section_fields as $field_key => $field_data ) {
+						if ( is_array( $field_data ) && isset( $field_data['default'] ) && '' !== $field_data['default'] ) {
+							$defaults[ $field_key ] = sanitize_text_field( $field_data['default'] );
+						}
+					}
+				}
+			}
+		}
+
+		// Standard WooCommerce checkout fields (billing/shipping/order) as a supplement.
+		if ( function_exists( 'WC' ) && WC()->checkout() ) {
+			$checkout_fields = WC()->checkout()->get_checkout_fields();
+			if ( is_array( $checkout_fields ) ) {
+				foreach ( $checkout_fields as $group_fields ) {
+					if ( ! is_array( $group_fields ) ) {
+						continue;
+					}
+					foreach ( $group_fields as $field_key => $field_args ) {
+						if ( ! isset( $defaults[ $field_key ] ) && is_array( $field_args ) && isset( $field_args['default'] ) && '' !== $field_args['default'] ) {
+							$defaults[ $field_key ] = sanitize_text_field( $field_args['default'] );
+						}
+					}
+				}
+			}
+		}
+
+		return $defaults;
 	}
 
 	/**

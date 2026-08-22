@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 $product_field  = WFACP_Common::get_product_field();
 $advanced_field = WFACP_Common::get_advanced_fields();
 $settings       = [
@@ -47,7 +48,7 @@ $pageLayout = [
 	'fieldsets'                   => [
 		'single_step' => [
 			[
-				'name'        => WFACP_Common::translation_string_to_check( __( 'Shipping Information', 'woofunnels-aero-checkout' ) ),
+				'name'        => WFACP_Common::translation_string_to_check( __( 'Shipping Information', 'funnel-builder' ) ),
 				'class'       => '',
 				'sub_heading' => '',
 				'fields'      => [

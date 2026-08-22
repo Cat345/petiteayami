@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFACP_Common_Helper {
@@ -499,7 +500,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 		 * @return string
 		 */
 		public static function wc_cart_totals_shipping_method_cost( $method ) {
-			$output    = __( 'Free', 'funnel-builder' );
+			$output    = __( 'Free', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- intentionally using the WooCommerce translation of "Free" so it matches core cart/checkout wording in every language.
 			$has_cost  = 0 < $method->cost;
 			$hide_cost = ! $has_cost && in_array( $method->get_method_id(), array( 'free_shipping', 'local_pickup' ), true );
 
@@ -578,7 +579,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 						'show_shipping_calculator' => is_cart() && $first,
 						'package_details'          => implode( ', ', $product_names ),
 						/* translators: %d: Shipping package number */
-						'package_name'             => apply_filters( 'woocommerce_shipping_package_name', ( ( $i + 1 ) > 1 ) ? sprintf( __( 'Shipping %d', 'funnel-builder' ), ( $i + 1 ) ) : __( 'Shipping', 'funnel-builder' ), $i, $package ),
+						'package_name'             => apply_filters( 'woocommerce_shipping_package_name', ( ( $i + 1 ) > 1 ) ? sprintf( __( 'Shipping %d', 'woocommerce' ), ( $i + 1 ) ) : __( 'Shipping', 'woocommerce' ), $i, $package ),
 						'index'                    => $i,
 						'chosen_method'            => $chosen_method,
 						'formatted_destination'    => WC()->countries->get_formatted_address( $package['destination'], ', ' ),
@@ -1269,11 +1270,11 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 				),
 				array(
 					'id'   => 'wfacp_before_product_switching_field',
-					'name' => __( 'Before product switcher', 'funnel-builder' ),
+					'name' => __( 'Before Product Field', 'funnel-builder' ),
 				),
 				array(
 					'id'   => 'wfacp_after_product_switching_field',
-					'name' => __( 'After product switcher', 'funnel-builder' ),
+					'name' => __( 'After Product Field', 'funnel-builder' ),
 				),
 				array(
 					'id'   => 'wfacp_before_order_summary_field',

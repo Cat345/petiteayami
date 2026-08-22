@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Divi 5 Importer
@@ -17,13 +18,10 @@ if ( ! defined( 'ET_BUILDER_PLUGIN_DIR' ) ) {
 		// Divi 4 - ET_BUILDER_DIR points to the builder directory
 		$et_builder_dir = dirname( ET_BUILDER_DIR );
 	} else {
-		// Fallback: try to find Divi plugin directory
+		// Fallback: Divi theme location. This file only loads when Divi 5 is active,
+		// so plugin installs always define one of the ET_BUILDER_* constants above.
 		$et_builder_dir = '';
-		if ( file_exists( WP_PLUGIN_DIR . '/divi-builder/core/components/Portability.php' ) ) {
-			$et_builder_dir = WP_PLUGIN_DIR . '/divi-builder';
-		} elseif ( file_exists( WP_PLUGIN_DIR . '/Divi/core/components/Portability.php' ) ) {
-			$et_builder_dir = WP_PLUGIN_DIR . '/Divi';
-		} elseif ( file_exists( get_template_directory() . '/includes/builder/core/components/Portability.php' ) ) {
+		if ( file_exists( get_template_directory() . '/includes/builder/core/components/Portability.php' ) ) {
 			// Divi theme
 			$et_builder_dir = get_template_directory() . '/includes/builder';
 		}

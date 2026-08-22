@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Order_pay' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Order_pay {

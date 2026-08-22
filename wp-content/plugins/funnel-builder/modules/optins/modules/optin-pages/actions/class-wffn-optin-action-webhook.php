@@ -88,11 +88,8 @@ if ( ! class_exists( 'WFFN_Optin_Action_Webhook' ) ) {
 		 */
 		public function send_utm_tracking_data( $post_fields ) {
 			try {
-				if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
-					return $post_fields;
-				}
-
-				$utm_data = BWF_Ecomm_Tracking_Common::get_instance()->get_common_tracking_data();
+				/** Visitor-collected fields are supplied by the Pro plugin through this filter */
+				$utm_data = apply_filters( 'bwf_tracking_visitor_data', array(), 'webhook', $post_fields );
 
 				if ( empty( $utm_data ) || ! is_array( $utm_data ) ) {
 					return $post_fields;

@@ -20,7 +20,7 @@ if ( ! class_exists( 'WFOCU_Variation_Selector' ) ) {
 			}
 
 			foreach ( $products as $key => $product ) {
-				$product_options[ $key ] = $product->data->get_name();
+				$product_options[ $key ] = $product->name;
 
 				if ( in_array( $product->type, array( 'variable', 'variable-subscription' ), true ) ) {
 					array_push( $variables, $key );

@@ -3,14 +3,14 @@
  * Plugin Name: Advanced Coupons for WooCommerce Premium
  * Plugin URI: https://advancedcouponsplugin.com
  * Description: Advanced Coupons for WooCommerce (Premium Add-on) adds even more advanced features to WooCommerce coupons so store owners can market their stores better.
- * Version: 4.0.8
+ * Version: 4.0.9
  * Author: Rymera Web Co
  * Author URI: https://rymera.com.au/
  * Update URI: advancedcouponsplugin.com
- * Requires at least: 5.8
- * Tested up to: 7.0
+ * Requires at least: 5.9
+ * Tested up to: 7.0.2
  * WC requires at least: 4.0
- * WC tested up to: 10.7.0
+ * WC tested up to: 10.9.4
  *
  * Text Domain: advanced-coupons-for-woocommerce
  * Domain Path: /languages/
@@ -34,6 +34,7 @@ use ACFWP\Abstracts\Abstract_Main_Plugin_Class;
 use ACFWP\Helpers\Helper_Functions;
 use ACFWP\Helpers\Plugin_Constants;
 use ACFWP\Interfaces\Model_Interface;
+use ACFWP\Models\Abilities;
 use ACFWP\Models\ACFW_Reports;
 use ACFWP\Models\Add_Products;
 use ACFWP\Models\Allowed_Customers;
@@ -71,7 +72,7 @@ use ACFWP\Models\Virtual_Coupon\Queries as Virtual_Coupon_Queries;
  */
 spl_autoload_register(
     function ( $class_name ) {
-        if ( strpos( $class_name, 'ACFWP\\' ) === 0 ) { // Only do autoload for our plugin files.
+        if ( str_starts_with( $class_name, 'ACFWP\\' ) ) { // Only do autoload for our plugin files.
             $class_file = str_replace( array( '\\', 'ACFWP' . DIRECTORY_SEPARATOR ), array( DIRECTORY_SEPARATOR, '' ), $class_name ) . '.php';
             require_once plugin_dir_path( __FILE__ ) . $class_file;
         }
@@ -405,6 +406,7 @@ class ACFWP extends Abstract_Main_Plugin_Class { // phpcs:ignore
         \ACFWP\Models\Store_Credits\Bulk_Adjust::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         \ACFWP\Models\Store_Credits\CLI\Bulk_Adjust_Command::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         \ACFWP\Models\BOGO\Types\Same_Products::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        Abilities::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
 
         $bogo_admin              = BOGO_Admin::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $usage_limits            = Usage_Limits::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );

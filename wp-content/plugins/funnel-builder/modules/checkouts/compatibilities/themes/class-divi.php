@@ -93,7 +93,12 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Divi' ) ) {
 				);
 				$disable_for    = apply_filters( 'et_builder_compatibility_wfacp_checkout_templates_without_theme_builder', $template_array );
 				$template       = get_post_meta( get_the_ID(), '_wp_page_template', true );
-				if ( in_array( $template, $disable_for, true ) ) {
+
+				// Divi-built checkouts keep the "default" page template, so they never match
+				$design        = WFACP_Common::get_page_design( WFACP_Common::get_id() );
+				$is_divi_built = isset( $design['selected_type'] ) && in_array( $design['selected_type'], array( 'divi', 'divi5' ), true );
+
+				if ( $is_divi_built || in_array( $template, $disable_for, true ) ) {
 					add_filter( 'et_theme_builder_template_layouts', array( $this, 'disable_theme_builder' ) );
 				}
 			}

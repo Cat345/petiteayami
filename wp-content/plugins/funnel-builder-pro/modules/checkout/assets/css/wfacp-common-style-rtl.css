@@ -1229,7 +1229,7 @@ body .wfacp_main_form .woocommerce-account-fields p label.woocommerce-form__labe
 
 
 /* Checkout Modernization  */
-.iti--allow-dropdown .iti__flag-container, .iti--separate-dial-code .iti__flag-container {
+.iti--has-country-selector .iti__country-container, .iti--separate-dial-code .iti__country-container {
     right: auto;
     left: auto;
 }

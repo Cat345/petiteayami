@@ -273,18 +273,8 @@ class Admin{
 
     public function validateValues()
     {
-        $license_key  = flrt_get_license_key();
-        $parts        = false;
-        $hare         = true;
-
-        if ( $license_key ) {
-            $parts = explode( "|", base64_decode( $license_key ) );
-            if ( count( $parts ) === 3  ) {
-                $hare = false;
-            }
-        }
         // Every time in admin
-        if ( ! $license_key || $hare || count( $parts ) !== 3 ) {
+        if ( ! flrt_is_licensed() ) {
             $the_trident = get_option( 'wpc_trident' );
 
             if ( $the_trident ) {

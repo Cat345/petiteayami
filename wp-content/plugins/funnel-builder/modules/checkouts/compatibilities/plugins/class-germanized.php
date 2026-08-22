@@ -32,6 +32,10 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Germanized' ) ) {
 			add_action( 'wfacp_after_checkout_page_found', [ $this, 'fix_terms_filter' ], 12 );
 			add_action( 'woocommerce_checkout_update_order_review', array( $this, 'wfacp_germanized_terms_on_ajax' ), 0 );
 
+			
+			/* Dependency notice when Germanized Pro multistep checkout is enabled */
+			add_filter( 'wfacp_global_dependency_messages', array( $this, 'add_germanized_multistep_notice' ) );
+
 			/*--------------------------Add Internal Css----------------------------------------*/
 			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
 		}
@@ -50,7 +54,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Germanized' ) ) {
 				return $messages;
 			}
 			$messages[] = array(
-				'message'     => __( 'Germanized Pro Multistep Checkout is enabled. This may interrupt the checkout flow. We recommend disabling this feature.', 'woofunnels-aero-checkout' ),
+				'message'     => __( 'Germanized Pro Multistep Checkout is enabled. This may interrupt the checkout flow. We recommend disabling this feature.', 'funnel-builder' ),
 				'id'          => '',
 				'show'        => 'yes',
 				'dismissible' => true,

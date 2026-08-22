@@ -40,7 +40,6 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Coupon_Messages' ) ) {
 				$success_message = $options['_cmsg200'];
 			}
 
-			ob_start();
 			foreach ( WFACP_Common::get_coupons() as $code => $coupon ) {
 
 				$remove_link = sprintf( "<a href='javascript:void(0)' class='wfacp_remove_coupon' data-coupon='%s'>%s</a>", $code, __( 'Remove', 'woocommerce' ) );

@@ -11,37 +11,37 @@ use FSVendor\WPDesk\PluginBuilder\Plugin\Hookable;
  */
 class Onboarding implements Hookable
 {
-    const VERSION = 2;
+    const VERSION = 3;
     const OCTOLIZE_WP_ONBOARDING_RENDERED_FILTER = 'octolize/wp-onboarding/rendered';
     const OCTOLIZE_WP_ONBOARDING_ALLOWED = 'octolize/wp-onboarding/allowed';
     /**
      * @var OnboardingAjax
      */
-    private $tracker_ajax;
+    private OnboardingAjax $tracker_ajax;
     /**
      * @var bool
      */
-    private $autostart = \true;
+    private bool $autostart = \true;
     /**
-     * @var OnboardingShouldShowGetParametersStrategy
+     * @var OnboardingShouldShowStrategy
      */
-    private $onboarding_should_show_strategy;
+    private OnboardingShouldShowStrategy $onboarding_should_show_strategy;
     /**
      * @var OnboardingOption
      */
-    private $onboarding_option;
+    private OnboardingOption $onboarding_option;
     /**
      * @var OnboardingStep[]
      */
-    private $steps = [];
+    private array $steps = [];
     /**
      * @var bool
      */
-    private $already_rendered = \false;
+    private bool $already_rendered = \false;
     /**
      * @var string
      */
-    private $onboarding_id;
+    private string $onboarding_id;
     /**
      * @param string $onboarding_id
      * @param bool $autostart

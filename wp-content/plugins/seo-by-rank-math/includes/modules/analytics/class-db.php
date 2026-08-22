@@ -453,13 +453,15 @@ class DB {
 		$host = Helper::get_home_url();
 		$url  = str_replace( $host, '', $url );
 
-		// Remove ASCII domain.
-		$host_ascii = idn_to_ascii( $host );
+		// Remove ASCII domain. idn_to_ascii() needs ext-intl, which isn't
+		// guaranteed to be installed on every host — fall back to the
+		// unconverted host rather than fatal-erroring when it's missing.
+		$host_ascii = function_exists( 'idn_to_ascii' ) ? idn_to_ascii( $host ) : $host;
 		$url        = str_replace( $host_ascii, '', $url );
 
 		$url = preg_replace( '#^https?://(www\.)?#i', '', $url );
 
-		return $url;
+		return apply_filters( 'rank_math/analytics/get_page', $url );
 	}
 
 	/**

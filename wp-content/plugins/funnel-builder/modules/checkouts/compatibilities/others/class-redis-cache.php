@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Redis_cache' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Redis_cache {

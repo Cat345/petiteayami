@@ -10,7 +10,7 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 		public function __construct() {
 			add_action( 'wfocu_add_custom_html_above_accept_button', array( $this, 'schemes_template_html' ), 10, 2 );
 			add_filter( 'wfocu_rule_type_product_args', array( $this, 'register_rule_type' ), 10, 1 );
-			add_action( 'footer_after_print_scripts', array( $this, 'render_js' ) );
+			add_action( 'wfocu_footer_after_print_scripts', array( $this, 'render_js' ) );
 			add_filter( 'wfocu_force_subscription_product', array( $this, 'push_force_subscription_product' ), 10, 2 );
 			add_filter( 'wfocu_params_localize_script_data', array( $this, 'register_subs_product_search_nonce' ) );
 			add_action( 'wp_ajax_wfocu_subs_product_search', array( $this, 'subs_product_search' ) );

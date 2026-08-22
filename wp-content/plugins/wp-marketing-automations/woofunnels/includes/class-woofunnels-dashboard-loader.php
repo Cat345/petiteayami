@@ -12,8 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 
-define( 'BWF_VERSION', '1.10.12.81' );
-define( 'BWF_DB_VERSION', '1.0.6' );
+define( 'BWF_VERSION', '1.10.12.83' );
+define( 'BWF_DB_VERSION', '1.0.7' );
 if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 	#[AllowDynamicProperties]
 	class WooFunnels_Dashboard {

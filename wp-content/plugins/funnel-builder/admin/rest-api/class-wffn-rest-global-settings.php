@@ -118,7 +118,6 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 					),
 				)
 			);
-
 		}
 
 		public function get_read_api_permission_check() {
@@ -130,8 +129,6 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 		}
 
 		public function get_funnel_global_settings() {
-			$License = WooFunnels_licenses::get_instance();
-			$License->get_data();
 			$data = array();
 
 			if ( ! function_exists( 'get_current_screen' ) ) {
@@ -203,7 +200,6 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 			);
 
 			return rest_ensure_response( $resp );
-
 		}
 
 		public function woofunnels_global_settings( WP_REST_Request $request ) {
@@ -263,9 +259,7 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 			}
 
 			return $tabs;
-
 		}
-
 	}
 
 	if ( ! function_exists( 'wffn_rest_global_settings' ) ) {

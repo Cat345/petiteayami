@@ -8,6 +8,25 @@ $fonts = array_combine( array_values( $fonts ), array_values( $fonts ) );
 
 $settings = array(
 
+	array(
+		'callback' 		=> 'select',
+		'section_id' 	=> 'emsy_container',
+		'id'			=> 'email-template',
+		'title' 		=> 'Template Style',
+		'default' 		=> 'custom',
+		'args'			=> array(
+			'options' => array(
+				'woocommerce' 	=> 'Woocommerce',
+				'custom' 		=> 'Custom'
+			),
+			'toggleSettings' => array(
+				'xoo-wl-email-options[s-email]' 		=> array( 'woocommerce' ),
+				'xoo-wl-email-options[s-name]' 			=> array( 'woocommerce' ),
+				'xoo-wl-emStyle-options[c-outbgcolor]' 	=> array( 'woocommerce' ),
+			)
+		),
+		'desc' 			=> 'Choose email template'
+	),
 
 	array(
 		'callback' 		=> 'color',

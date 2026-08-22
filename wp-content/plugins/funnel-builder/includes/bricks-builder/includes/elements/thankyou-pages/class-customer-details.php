@@ -18,7 +18,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 		 * @return string The label for the "Customer Details" element.
 		 */
 		public function get_label() {
-			return esc_html__( 'Customer Details' );
+			return esc_html__( 'Customer Details' , 'funnel-builder');
 		}
 
 		/**
@@ -35,7 +35,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 			$this->control_groups = array();
 
 			$this->control_groups['contentCustomerDetails'] = array(
-				'title' => esc_html__( 'Customer Details' ),
+				'title' => esc_html__( 'Customer Details' , 'funnel-builder'),
 				'tab'   => 'content',
 			);
 
@@ -65,7 +65,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 				'group'   => 'contentCustomerDetails',
 				'label'   => esc_html__( 'Heading' ),
 				'type'    => 'text',
-				'default' => isset( $defaults['customer_details_heading'] ) ? $defaults['customer_details_heading'] : __( 'Customer Details' ),
+				'default' => isset( $defaults['customer_details_heading'] ) ? $defaults['customer_details_heading'] : __( 'Customer Details' , 'funnel-builder'),
 			);
 
 			// Control for the layoutLabel
@@ -78,11 +78,11 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 			// Control for the customerLayout
 			$this->controls['customerLayout'] = array(
 				'group'    => 'contentCustomerDetails',
-				'label'    => esc_html__( 'Structure' ),
+				'label'    => esc_html__( 'Structure' , 'funnel-builder'),
 				'type'     => 'select',
 				'options'  => array(
 					'50'  => esc_html__( 'Two Columns' ),
-					'100' => esc_html__( 'Full Width' ),
+					'100' => esc_html__( 'Full Width' , 'funnel-builder'),
 				),
 				'default'  => '50',
 				'inline'   => true,
@@ -93,8 +93,8 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 			// Control for enabling extra content
 			$this->controls['enableExtraContent'] = array(
 				'group'       => 'contentCustomerDetails',
-				'label'       => esc_html__( 'Show Extra Thankyou Content' ),
-				'description' => esc_html__( 'When enabled, this will display additional content/hooks from WooCommerce on the thank you page. Useful for compatibility with payment gateways and plugins.' ),
+				'label'       => esc_html__( 'Show Extra Thankyou Content' , 'funnel-builder'),
+				'description' => esc_html__( 'When enabled, this will display additional content/hooks from WooCommerce on the thank you page. Useful for compatibility with payment gateways and plugins.' , 'funnel-builder'),
 				'type'        => 'checkbox',
 				'default'     => false,
 				'rerender'    => true,

@@ -114,6 +114,7 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 				'fkwcs_stripe_p24',
 				'fkwcs_stripe_google_pay',
 				'fkwcs_stripe_apple_pay',
+				'fkwcs_stripe_amazon_pay',
 				'fkwcs_stripe_alipay',
 				'funnelkit_square',
 				'braintree',
@@ -128,6 +129,7 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 				'takbull',
 				'payfast',
 				'sagepaydirect',
+				'ag_opayo_direct',
 				'paylike',
 				'WC_Gateway_Worldpay',
 				'wc_gateway_bluesnap_cc',
@@ -173,6 +175,7 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 				'fkwcs_stripe_blik',
 				'fkwcs_stripe_mbway',
 				'airwallex_card',
+				'fkwcppcp_card',
 			);
 
 			$gateways = apply_filters(
@@ -425,6 +428,7 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 			if ( ! isset( $posted['custom'] ) ) {
 				WFOCU_Core()->log->log( 'IPN Doesn\'t have the correct data to proceed.' . print_r( $posted, true ) );   // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
+				return;
 			}
 			$custom   = json_decode( $posted['custom'] );
 			$order_id = 0;

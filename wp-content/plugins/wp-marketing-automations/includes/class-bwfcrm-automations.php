@@ -326,6 +326,8 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 			global $wpdb;
 			$where         = 'AND m1.meta_key = "_billing_email"';
 			$where         .= ' AND m1.meta_value = %s';
+			/** Only genuine automation-attributed recoveries (meta_value > 0), matching Cart Analytics and the Recovered Carts list */
+			$where         .= ' AND m2.meta_value > 0';
 			$post_statuses = apply_filters( 'bwfan_recovered_cart_excluded_statuses', array( 'wc-pending', 'wc-failed', 'wc-cancelled', 'wc-refunded', 'trash', 'draft' ) );
 			$post_status   = '(';
 			foreach ( $post_statuses as $status ) {
@@ -412,6 +414,8 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 				$post_status .= "'" . $status . "',";
 			}
 			$post_status     .= "'')";
+			/** Only count genuine automation-attributed recoveries (meta_value > 0), matching Cart Analytics and the Recovered Carts list */
+			$where           .= ' AND m.meta_value > 0 ';
 			$query           = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT %d,%d", 'shop_order', '_bwfan_ab_cart_recovered_a_id', absint( $offset ), absint( $limit ) );
 			$recovered_carts = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			if ( empty( $recovered_carts ) ) {

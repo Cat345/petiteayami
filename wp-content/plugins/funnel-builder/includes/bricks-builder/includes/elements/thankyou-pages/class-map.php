@@ -18,7 +18,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Map' ) ) {
 		 * @return string The label for the Map element.
 		 */
 		public function get_label() {
-			return esc_html__( 'Map' );
+			return esc_html__( 'Map' , 'funnel-builder');
 		}
 
 		/**
@@ -33,32 +33,32 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Map' ) ) {
 			$this->control_groups = array();
 
 			$this->control_groups['contentMap'] = array(
-				'title' => esc_html__( 'Map' ),
+				'title' => esc_html__( 'Map' , 'funnel-builder'),
 				'tab'   => 'content',
 			);
 
 			$this->control_groups['contentMessage'] = array(
-				'title' => esc_html__( 'Message' ),
+				'title' => esc_html__( 'Message' , 'funnel-builder'),
 				'tab'   => 'content',
 			);
 
 			$this->control_groups['contentTimeline'] = array(
-				'title' => esc_html__( 'Timeline' ),
+				'title' => esc_html__( 'Timeline' , 'funnel-builder'),
 				'tab'   => 'content',
 			);
 
 			$this->control_groups['styleMap'] = array(
-				'title' => esc_html__( 'Map' ),
+				'title' => esc_html__( 'Map' , 'funnel-builder'),
 				'tab'   => 'style',
 			);
 
 			$this->control_groups['styleMessage'] = array(
-				'title' => esc_html__( 'Message' ),
+				'title' => esc_html__( 'Message' , 'funnel-builder'),
 				'tab'   => 'style',
 			);
 
 			$this->control_groups['styleTimeline'] = array(
-				'title' => esc_html__( 'Timeline' ),
+				'title' => esc_html__( 'Timeline' , 'funnel-builder'),
 				'tab'   => 'style',
 			);
 
@@ -79,21 +79,21 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Map' ) ) {
 
 			$this->controls['enableMap'] = array(
 				'group'   => 'contentMap',
-				'label'   => esc_html__( 'Enable / Disable' ),
+				'label'   => esc_html__( 'Enable / Disable' , 'funnel-builder'),
 				'type'    => 'checkbox',
 				'default' => true,
 			);
 
 			$this->controls['enableMessage'] = array(
 				'group'   => 'contentMessage',
-				'label'   => esc_html__( 'Enable / Disable' ),
+				'label'   => esc_html__( 'Enable / Disable' , 'funnel-builder'),
 				'type'    => 'checkbox',
 				'default' => true,
 			);
 
 			$this->controls['enableTimeline'] = array(
 				'group'   => 'contentTimeline',
-				'label'   => esc_html__( 'Enable / Disable' ),
+				'label'   => esc_html__( 'Enable / Disable' , 'funnel-builder'),
 				'type'    => 'checkbox',
 				'default' => true,
 			);
@@ -148,7 +148,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Map' ) ) {
 
 			$this->controls['stateColor'] = array(
 				'group' => 'styleTimeline',
-				'label' => esc_html__( 'State Color' ),
+				'label' => esc_html__( 'State Color' , 'funnel-builder'),
 				'type'  => 'color',
 				'css'   => array(
 					array(

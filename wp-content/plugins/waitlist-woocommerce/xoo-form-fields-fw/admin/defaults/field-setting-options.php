@@ -1,6 +1,10 @@
 <?php
 
-$countries = (array) include XOO_AFF_DIR.'/countries/countries.php';
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
+$countries = (array) include $this->aff->dir.'/countries/countries.php';
 
 $field_settings = array(
 
@@ -23,28 +27,157 @@ $field_settings = array(
 	),
 
 
+	'label' => array(
+		'type' 		=> 'text',
+		'id'		=> 'label',
+		'section' 	=> 'display',
+		'title' 	=> 'Label',
+		'width'		=> 'half',
+		'value'		=> '',
+		'translate' => 'yes',
+		'priority' 	=> 10
+	),
+
+	'placeholder' => array(
+		'type' 			=> 'text',
+		'id'			=> 'placeholder',
+		'section' 		=> 'display',
+		'title' 		=> 'Placeholder',
+		'width'			=> 'half',
+		'value'			=> '',
+		'translate' 	=> 'yes',
+		'priority' 		=> 20
+	),
+
+
+	'icon' => array(
+		'type' 			=> 'iconpicker',
+		'id'			=> 'icon',
+		'section' 		=> 'display',
+		'title' 		=> 'Input Icon',
+		'width'			=> 'half',
+		'placeholder' 	=> 'Click here',
+		'info' 			=> 'Icons can be disabled/enabled from the settings page',
+		'priority' 		=> 30
+	),
+
+
+	'cols' => array(
+		'type' 		=> 'select',
+		'id'		=> 'cols',
+		'section' 	=> 'display',
+		'title' 	=> 'Field Width',
+		'options' 	=> array(
+			'one' 			=> '100%',
+			'onehalf' 		=> '50%',
+			'onethird'  	=> '33%',
+			'onefourth' 	=> '25%',
+			'twothird' 		=> '66%',
+			'threefourth'	=> '75%',
+		),
+		'width'		=> 'half',
+		'value'		=> 'one',
+		'priority' 	=> 40
+	),
+
+
 	'phone_code_display_type' => array(
 		'type' 		=> 'select',
 		'id'		=> 'phone_code_display_type',
-		'section' 	=> 'basic',
+		'section' 	=> 'display',
 		'title' 	=> 'Display Type',
 		'width'		=> 'half',
 		'value'		=> 'select',
 		'options' 	=> array(
 			'input' 	=> 'Input',
 			'select' 	=> 'Select' 
-		)
+		),
+		'priority' 		=> 50
 	),
 
-	'label' => array(
-		'type' 		=> 'text',
-		'id'		=> 'label',
-		'section' 	=> 'basic',
-		'title' 	=> 'Label',
+
+	'date_format' => array(
+		'type' 		=> 'select',
+		'id'		=> 'date_format',
+		'section' 	=> 'display',
+		'title' 	=> 'Date Format',
+		'options' 	=> array(
+			'dd/mm/yy' 	=> 'dd/mm/yy',
+			'mm/dd/yy' 		=> 'mm/dd/yy',
+			'yy-mm-dd' 		=> 'yy-mm-dd',
+			'd M, y'   		=> 'd M, y',
+			'd MM, y'  		=> 'd MM, y',
+			'DD, d MM, yy' 	=> 'DD, d MM, yy',
+			"'day' d 'of' MM 'in the year' yy" => "'day' d 'of' MM 'in the year' yy"
+		),
 		'width'		=> 'half',
-		'value'		=> '',
-		'translate' => 'yes'
+		'value'		=> 'dd/mm/yy',
+		'priority' 		=> 50
 	),
+
+
+	
+
+	'password_visibility' => array(
+		'type' 		=> 'checkbox',
+		'id'		=> 'password_visibility',
+		'section' 	=> 'display',	
+		'title' 	=> 'Password Visibility Toggle',
+		'width'		=> 'half',
+		'value'		=> 'yes',
+		'priority' 	=> 50
+	),
+
+
+	'use_select2' 	=> array(
+		'type' 		=> 'checkbox',
+		'id'		=> 'use_select2',
+		'section' 	=> 'display',	
+		'title' 	=> 'Select2 UI',
+		'width'		=> 'half',
+		'value'		=> 'no',
+		'info' 		=> 'UI for searching select options',
+		'priority' 	=> 50
+	),
+
+	'upload_layout' => array(
+		'type' 		=> 'select',
+		'id'		=> 'upload_layout',
+		'section' 	=> 'display',
+		'title' 	=> 'Layout',
+		'options' 	=> array(
+			'profile' 	=> 'Profile',
+			'file' 		=> 'Default File Upload',
+		),
+		'width'		=> 'half',
+		'value'		=> 'profile',
+		'priority' 	=> 50
+	),
+
+
+	'profile_icon_size' => array(
+		'type' 		=> 'number',
+		'id'		=> 'profile_icon_size',
+		'section' 	=> 'display',
+		'title' 	=> 'Profile Icon Size',
+		'width'		=> 'half',
+		'value'		=> 80,
+		'priority' 	=> 50
+	),
+
+
+	'one_line' 	=> array(
+		'type' 		=> 'checkbox',
+		'id'		=> 'one_line',
+		'section' 	=> 'display',	
+		'title' 	=> 'Show Items in One Line',
+		'width'		=> 'half',
+		'value'		=> 'no',
+		'priority' 	=> 50
+	),
+
+
+
 
 	'default'  => array(
 		'type' 		=> 'text',
@@ -55,31 +188,13 @@ $field_settings = array(
 		'value'		=> '',
 	),
 
-	'icon' => array(
-		'type' 			=> 'iconpicker',
-		'id'			=> 'icon',
-		'section' 		=> 'basic',
-		'title' 		=> 'Input Icon',
-		'width'			=> 'half',
-		'placeholder' 	=> 'Click here',
-		'info' 			=> 'Icons can be disabled/enabled from the settings page'
-	),
-
-	'placeholder' => array(
-		'type' 			=> 'text',
-		'id'			=> 'placeholder',
-		'section' 		=> 'basic',
-		'title' 		=> 'Placeholder',
-		'width'			=> 'half',
-		'value'			=> '',
-		'translate' 	=> 'yes'
-	),
+	
 
 
 	'minlength'	=> array(
 		'type' 		=> 'number',
 		'id'		=> 'minlength',
-		'section' 	=> 'basic',
+		'section' 	=> 'validation',
 		'title' 	=> 'Minimum Characters',
 		'width'		=> 'half',
 		'value'		=> '',
@@ -88,7 +203,7 @@ $field_settings = array(
 	'maxlength'	=> array(
 		'type' 		=> 'number',
 		'id'		=> 'maxlength',
-		'section' 	=> 'basic',
+		'section' 	=> 'validation',
 		'title' 	=> 'Maximum Characters',
 		'width'		=> 'half',
 		'value'		=> '',
@@ -98,7 +213,7 @@ $field_settings = array(
 	'min' => array(
 		'type' 		=> 'number',
 		'id'		=> 'min',
-		'section' 	=> 'basic',
+		'section' 	=> 'validation',
 		'title' 	=> 'Minimum Value',
 		'width'		=> 'half',
 		'value'		=> '1',
@@ -108,7 +223,7 @@ $field_settings = array(
 	'max' => array(
 		'type' 		=> 'number',
 		'id'		=> 'max',
-		'section' 	=> 'basic',
+		'section' 	=> 'validation',
 		'title' 	=> 'Maximum Value',
 		'width'		=> 'half',
 		'value'		=> '',
@@ -118,7 +233,7 @@ $field_settings = array(
 	'step' => array(
 		'type' 		=> 'text',
 		'id'		=> 'step',
-		'section' 	=> 'basic',
+		'section' 	=> 'validation',
 		'title' 	=> 'Step',
 		'width'		=> 'half',
 		'value'		=> 'any',
@@ -136,41 +251,6 @@ $field_settings = array(
 	),
 
 
-	'date_format' => array(
-		'type' 		=> 'select',
-		'id'		=> 'date_format',
-		'section' 	=> 'basic',
-		'title' 	=> 'Date Format',
-		'options' 	=> array(
-			'dd/mm/yy' 	=> 'dd/mm/yy',
-			'mm/dd/yy' 		=> 'mm/dd/yy',
-			'yy-mm-dd' 		=> 'yy-mm-dd',
-			'd M, y'   		=> 'd M, y',
-			'd MM, y'  		=> 'd MM, y',
-			'DD, d MM, yy' 	=> 'DD, d MM, yy',
-			"'day' d 'of' MM 'in the year' yy" => "'day' d 'of' MM 'in the year' yy"
-		),
-		'width'		=> 'half',
-		'value'		=> 'dd/mm/yy',
-	),
-
-
-	'cols' => array(
-		'type' 		=> 'select',
-		'id'		=> 'cols',
-		'section' 	=> 'basic',
-		'title' 	=> 'Use Column',
-		'options' 	=> array(
-			'one' 			=> '1',
-			'onehalf' 		=> '1/2',
-			'onethird'  	=> '1/3',
-			'onefourth' 	=> '1/4',
-			'twothird' 		=> '2/3',
-			'threefourth'	=> '3/4',
-		),
-		'width'		=> 'half',
-		'value'		=> 'one',
-	),
 
 
 	'checkbox_single' => array(
@@ -335,14 +415,7 @@ $field_settings = array(
 	),
 
 
-	'password_visibility' => array(
-		'type' 		=> 'checkbox',
-		'id'		=> 'password_visibility',
-		'section' 	=> 'basic',	
-		'title' 	=> 'Password Visibility Toggle',
-		'width'		=> 'half',
-		'value'		=> 'yes',
-	),
+	
 
 	'ta_rows'	=> array(
 		'type' 		=> 'number',
@@ -362,20 +435,12 @@ $field_settings = array(
 		'value'		=> '40',
 	),
 
-	'use_select2' 	=> array(
-		'type' 		=> 'checkbox',
-		'id'		=> 'use_select2',
-		'section' 	=> 'basic',	
-		'title' 	=> 'Select2 UI',
-		'width'		=> 'half',
-		'value'		=> 'no',
-		'info' 		=> 'UI for searching select options'
-	),
+	
 
 	'max_filesize'	=> array(
 		'type' 		=> 'number',
 		'id'		=> 'max_filesize',
-		'section' 	=> 'basic',
+		'section' 	=> 'validation',
 		'title' 	=> 'Maximum File Size',
 		'width'		=> 'half',
 		'value'		=> '2',
@@ -385,7 +450,7 @@ $field_settings = array(
 	'file_multiple' 	=> array(
 		'type' 		=> 'checkbox',
 		'id'		=> 'file_multiple',
-		'section' 	=> 'basic',	
+		'section' 	=> 'validation',	
 		'title' 	=> 'Multiple Files',
 		'width'		=> 'half',
 		'value'		=> 'yes',
@@ -394,7 +459,7 @@ $field_settings = array(
 	'file_multiple_max' 	=> array(
 		'type' 		=> 'number',
 		'id'		=> 'file_multiple_max',
-		'section' 	=> 'basic',	
+		'section' 	=> 'validation',	
 		'title' 	=> 'Maximum number of files',
 		'width'		=> 'half',
 		'value'		=> 3,
@@ -404,7 +469,7 @@ $field_settings = array(
 	'file_type'	=> array(
 		'type' 		=> 'text',
 		'id'		=> 'file_type',
-		'section' 	=> 'basic',
+		'section' 	=> 'validation',
 		'title' 	=> 'File Type',
 		'width'		=> 'half',
 		'value'		=> '.png, .jpg, .pdf',
@@ -412,27 +477,7 @@ $field_settings = array(
 	),
 
 
-	'upload_layout' => array(
-		'type' 		=> 'select',
-		'id'		=> 'upload_layout',
-		'section' 	=> 'basic',
-		'title' 	=> 'Layout',
-		'options' 	=> array(
-			'profile' 	=> 'Profile',
-			'file' 		=> 'Default File Upload',
-		),
-		'width'		=> 'half',
-		'value'		=> 'profile',
-	),
-
-	'profile_icon_size' => array(
-		'type' 		=> 'number',
-		'id'		=> 'profile_icon_size',
-		'section' 	=> 'basic',
-		'title' 	=> 'Profile Icon Size',
-		'width'		=> 'half',
-		'value'		=> 80,
-	),
+	
 
 
 	'autocomplete_auto_fetch' => array(
@@ -474,15 +519,7 @@ $field_settings = array(
 	),
 
 
-	'one_line' 	=> array(
-		'type' 		=> 'checkbox',
-		'id'		=> 'one_line',
-		'section' 	=> 'basic',	
-		'title' 	=> 'Show Items in One Line',
-		'width'		=> 'half',
-		'value'		=> 'no',
-	),
-
+	
 
 	/**
 	  * Advanced section

@@ -20,7 +20,7 @@ if ( ! class_exists( 'Oxygen_WFFN_Optin_Form_Widget' ) ) {
 		 * Oxygen_WFFN_Optin_Form_Widget constructor.
 		 */
 		public function __construct() {
-			$this->name = __( 'Optin Form', 'woofunnels-aero-checkout' );
+			$this->name = __( 'Optin Form', 'funnel-builder' );
 			add_filter( 'body_class', [ $this, 'add_body_class' ] );
 
 

@@ -292,6 +292,10 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 		}
 
 		final public function get_base_country() {
+			if ( empty( $this->base_country['store_country'] ) ) {
+				$this->base_country['store_country'] = wc_format_country_state_string( get_option( 'woocommerce_default_country', '' ) )['country'];
+			}
+
 			return $this->base_country;
 		}
 
@@ -418,6 +422,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 				wp_enqueue_style( 'wfacp-intl-css', plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/css/intlTelInput.css', false, WFACP_VERSION_DEV );
 				wp_enqueue_script( 'wfacp-intlTelInput-js', plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/js/intlTelInput.min.js', array(), WFACP_VERSION_DEV ); //phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
+				wp_add_inline_script( 'wfacp-intlTelInput-js', 'window.wfacpIntlTelInput = window.intlTelInput;', 'after' );
 
 			}
 		}
@@ -474,10 +479,14 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				'track_facebook'                  => $track_facebook,
 				'wfacp_is_checkout_override'      => ( WFACP_Core()->public->is_checkout_override() ) ? 'yes' : 'no',
 				'cancel_page_url'                 => $this->get_cancel_page_link(),
-				'base_country'                    => $this->base_country,
+				'base_country'                    => $this->get_base_country(),
+				'intl_i18n'                       => array(
+					'searchEmptyState' => __( 'No results found', 'funnel-builder' ),
+				),
 				'applied_coupons'                 => new stdClass(),
 				'enable_phone_flag'               => wc_string_to_bool( $page_settings['enable_phone_flag'] ) ? 'yes' : 'no',
 				'enable_phone_validation'         => wc_string_to_bool( $page_settings['enable_phone_validation'] ) ? 'yes' : 'no',
+				'enable_smart_buttons'            => $page_settings['enable_smart_buttons'],
 				'intl_util_scripts'               => plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/js/utils.js',
 				'process_order_loader_text'       => __( 'Processing order', 'woocommerce' ), //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				'is_rtl'                          => is_rtl(),
@@ -500,6 +509,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			$data['smart_button_hide_timeout_m']  = apply_filters( 'wfacp_smart_button_hide_timeout_m', 3000, $this );
 			$data['stripe_smart_show_on_desktop'] = 'yes';
 			$data['smart_button_wrappers']        = $this->smart_button_wrappers();
+			$data['fkwcs_legacy_express']         = $this->is_legacy_fkwcs_express() ? 'yes' : 'no';
 
 			if ( isset( $page_settings['enable_address_field_number_validation'] ) && wc_string_to_bool( $page_settings['enable_address_field_number_validation'] ) ) {
 
@@ -570,7 +580,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				$registered_script = $wp_scripts->registered;
 				if ( ! empty( $registered_script ) ) {
 					foreach ( $registered_script as $handle => $data ) {
-						if ( false !== strpos( $data->src, '/plugins/woocommerce/' ) ) {
+						// Guard against dependency-only handles registered with a false/null src (PHP 8.1+ strpos() deprecation).
+						if ( ! empty( $data->src ) && false !== strpos( $data->src, '/plugins/woocommerce/' ) ) {
 							if ( ! $is_vb ) {
 								unset( $wp_scripts->registered[ $handle ] );
 							}
@@ -683,8 +694,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 			if ( isset( $settings['header_script'] ) && '' != $settings['header_script'] ) {
 				$sanitized = WFFN_Common::sanitize_global_script( $settings['header_script'] );
-				if ( $sanitized === $settings['header_script'] ) {
-					printf( "\n \n %s \n \n", $settings['header_script'] ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				if ( trim( $sanitized ) === trim( $settings['header_script'] ) ) {
+					printf( "\n \n %s \n \n", $sanitized ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 			}
 		}
@@ -696,8 +707,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			if ( false == $this->footer_js_printed && isset( $settings['footer_script'] ) && '' != $settings['footer_script'] ) {
 				$this->footer_js_printed = true;
 				$sanitized_footer        = WFFN_Common::sanitize_global_script( $settings['footer_script'] );
-				if ( $sanitized_footer === $settings['footer_script'] ) {
-					printf( "\n \n %s \n\n", $settings['footer_script'] ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				if ( trim( $sanitized_footer ) === trim( $settings['footer_script'] ) ) {
+					printf( "\n \n %s \n\n", $sanitized_footer ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 			}
 
@@ -706,9 +717,9 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			if ( isset( $_wfacp_global_settings['wfacp_global_external_script'] ) && $_wfacp_global_settings['wfacp_global_external_script'] != '' ) {
 				$global_script    = $_wfacp_global_settings['wfacp_global_external_script'];
 				$sanitized_global = WFFN_Common::sanitize_global_script( $global_script );
-				if ( $sanitized_global === $global_script ) {
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- User-provided script content
-					echo $global_script;
+				if ( trim( $sanitized_global ) === trim( $global_script ) ) {
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sanitized user-provided script content
+					echo $sanitized_global;
 				}
 			}
 		}
@@ -1076,7 +1087,6 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			if ( isset( $this->checkout_fields['advanced']['order_coupon'] ) ) {
 				$messages        = '';
 				$success_message = $this->checkout_fields['advanced']['order_coupon']['coupon_success_message_heading'];
-				ob_start();
 				foreach ( WC()->cart->get_coupons() as $code => $coupon ) {
 					$parse_message = WFACP_Product_Switcher_Merge_Tags::parse_coupon_merge_tag( $success_message, $coupon );
 					$remove_link   = sprintf( "<a href='javascript:void(0)' class='wfacp_remove_coupon' data-coupon='%s'>%s</a>", $code, __( 'Remove', 'woocommerce' ) ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
@@ -1468,18 +1478,6 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			return $template_fields;
 		}
 
-		public function get_google_webfonts() {
-			$url    = 'https://www.googleapis.com/webfonts/v1/webfonts?key=key_here&&sort=alpha';
-			$raw    = file_get_contents( $url, 0, null, null );
-			$result = json_decode( $raw );
-
-			$font_list = array();
-			foreach ( $result->items as $font ) {
-				$font_list[] .= $font->family;
-			}
-		}
-
-
 		public function get_view( $template ) {
 			extract( array( 'data' => $this->get_data() ) );
 			do_action( 'wfacp_before_template_load' );
@@ -1685,6 +1683,18 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			}
 			if ( isset( $locale_fields['address_2'] ) ) {
 				unset( $locale_fields['address_2'] );
+			}
+
+			/**
+			 * WooCommerce sets the default locale's phone `required` from the Customizer
+			 * "Phone field" setting (WC_Countries::get_default_address_fields()), and its
+			 * address-i18n JS re-applies it to `#billing_phone_field, #shipping_phone_field`
+			 * on every country change — relabelling a required phone as "(optional)".
+			 * FunnelKit Checkout manages the phone's required state from its own field
+			 * editor, so remove the phone selector to stop that override.
+			 */
+			if ( isset( $locale_fields['phone'] ) ) {
+				unset( $locale_fields['phone'] );
 			}
 
 			return $locale_fields;
@@ -1973,8 +1983,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				$all_gateways = $payments->payment_gateways();
 				if ( isset( $all_gateways['cod'] ) ) {
 					$gateways['cod']              = $all_gateways['cod'];
-					$gateways['cod']->title       = __( 'Payment Gateway', 'woofunnels-aero-checkout' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-					$gateways['cod']->description = __( 'Enabled payment methods will display on the frontend.', 'woofunnels-aero-checkout' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					$gateways['cod']->title       = __( 'Payment Gateway', 'funnel-builder' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					$gateways['cod']->description = __( 'Enabled payment methods will display on the frontend.', 'funnel-builder' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 				}
 			}
@@ -2164,7 +2174,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 		public function payment_sub_heading() {
 
-			return WFACP_Common::translation_string_to_check( esc_attr__( 'All transactions are secure and encrypted. Credit card information is never stored on our servers.', 'woofunnels-aero-checkout' ) ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			return WFACP_Common::translation_string_to_check( esc_attr__( 'All transactions are secure and encrypted. Credit card information is never stored on our servers.', 'funnel-builder' ) ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 		}
 
 
@@ -2723,7 +2733,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 		}
 
 		public function get_order_pay_summary_heading() {
-			return apply_filters( 'wfacp_order_pay_summary_heading', __( 'Review Order Summary', 'woofunnels-aero-checkout' ) ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			return apply_filters( 'wfacp_order_pay_summary_heading', __( 'Review Order Summary', 'funnel-builder' ) ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 		}
 
 		public function add_body_class( $class ) {
@@ -2872,7 +2882,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 		}
 
 		public function smart_button_wrappers() {
-			return array(
+			$wrappers = array(
 				'dynamic_buttons'     => array(
 					'#wfacp_smart_button_stripe_gpay_apay' => '#wfacp_smart_button_stripe_gpay_apay',
 					'#wfacp_smart_button_wc_payment_gpay_apay #wcpay-payment-request-button' => '#wfacp_smart_button_wc_payment_gpay_apay',
@@ -2896,6 +2906,30 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 					'#wfacp_smart_button_wffn_fake_paypal',
 				),
 			);
+
+			if ( $this->is_legacy_fkwcs_express() ) {
+				// Legacy FunnelKit Stripe renders its express (payment request) button
+				// into this container before DOMContentLoaded; register it so the
+				// pre-rendered detection in smart-buttons.js can settle it.
+				$wrappers['dynamic_buttons']['#wfacp_smart_button_fkwcs_gpay_apay'] = '#wfacp_smart_button_fkwcs_gpay_apay';
+			}
+
+			return $wrappers;
+		}
+
+		/**
+		 * FunnelKit Stripe below 1.14.2 ships the legacy express checkout, whose
+		 * payment request button is rendered before DOMContentLoaded and needs
+		 * compatibility handling in smart-buttons.js. That covers the whole
+		 * 1.14.1.x line including stamped hotfix builds (e.g. 1.14.1.2-fix.1117).
+		 * 1.14.2 and above - including its dev/beta builds, hence the
+		 * `1.14.2-dev` comparison floor - ships the reworked integration that
+		 * needs none.
+		 *
+		 * @return bool
+		 */
+		public function is_legacy_fkwcs_express() {
+			return defined( 'FKWCS_VERSION' ) && version_compare( FKWCS_VERSION, '1.14.2-dev', '<' );
 		}
 
 		final public function order_attribution_inputs() {

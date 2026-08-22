@@ -45,7 +45,7 @@ if ( isset( $wfacp_form_cart['advance_setting']['rbox_border_type'] ) && $wfacp_
 $selected_template_type = $instance->get_template_type();
 
 if ( $selected_template_type != 'pre_built' ) {
-	$rbox_mobile = 'none';
+	$rbox_mobile = 'wfacp_none';
 }
 
 

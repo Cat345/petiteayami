@@ -103,6 +103,14 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 			$upload_folder_path = str_replace( ABSPATH, '', $this->get_content_dir() );
 			define( 'WFFN_PRO_VERSION', defined( 'WFFN_PRO_BUILD_VERSION' ) ? WFFN_PRO_BUILD_VERSION : '0.9.2' );
 			define( 'WFFN_MIN_VERSION', '0.9.beta' );
+			/**
+			 * Lowest Funnel Builder build that pairs with this release. Below
+			 * WFFN_MIN_VERSION Pro refuses to load at all; between the two it keeps
+			 * running, but features whose code lives in the free plugin may be
+			 * missing, so an admin notice asks for a Funnel Builder update.
+			 * Bump on every release that depends on newly moved or added free-plugin code.
+			 */
+			define( 'WFFN_PRO_MIN_LITE_VERSION', '3.15.0.8' );
 			define( 'WFFN_PRO_SLUG', 'wffn_pro' );
 			define( 'WFFN_PRO_FULL_NAME', 'FunnelKit Funnel Builder Pro' );
 			define( 'WFFN_PRO_PLUGIN_FILE', __FILE__ );
@@ -140,6 +148,12 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 		 * Load classes on plugins_loaded hook
 		 */
 		public function load_hooks() {
+			/**
+			 * License system (classes + legacy glue) — relocated from the free
+			 * plugin per WP.org review; PowerPack is its only load point.
+			 */
+			require_once __DIR__ . '/license/loader.php';
+
 			/**
 			 * Initialize Localization
 			 */
@@ -195,12 +209,15 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 			require __DIR__ . '/includes/class-wffn-pro-public.php';
 			require __DIR__ . '/includes/class-wffn-pro-woofunnels-support.php';
 			require __DIR__ . '/includes/class-wffn-conversion-data.php';
-			require __DIR__ . '/includes/class-wffn-rest-api-endpoint.php';
-			require __DIR__ . '/includes/class-wffn-reset-api-endpoint.php';
+			require __DIR__ . '/includes/class-wffn-visitor-tracking.php';
 			require __DIR__ . '/includes/optin-pro/woofunnels-optins-pro.php';
 			require __DIR__ . '/includes/wc_thankyou-pro/woofunnels-wc_thankyou-pro.php';
-			/**Load Import Export Class */
-			require __DIR__ . '/includes/class-wffn-rest-import-export.php';
+			/**
+			 * The three REST controllers -- analytics, reset and import/export --
+			 * are no longer required here. They are autoloadable by class name and
+			 * WFFN_Pro_Public registers their hooks, so they load only on the
+			 * requests that reach them. See register_rest_controllers().
+			 */
 			require __DIR__ . '/includes/exporter/class-wffn-abstract-exporter.php';
 			require __DIR__ . '/includes/exporter/class-wffn-exporter.php';
 
@@ -208,6 +225,13 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 			// They register themselves via filter hook when class file is loaded
 			// Only load scheduler if tracking is actually needed (lazy load)
 			// Scheduler will be instantiated on first tracking call if Pro is active
+
+			if ( class_exists( 'WFOB_Core' ) && wffn_is_wc_active() && ! class_exists( 'WFOB_Contacts_Analytics' ) ) {
+				require_once __DIR__ . '/contact-analytics/class-wfob-contacts-analytics.php';
+			}
+			if ( class_exists( 'WFOCU_Core' ) && wffn_is_wc_active() && ! class_exists( 'WFOCU_Contacts_Analytics' ) ) {
+				require_once __DIR__ . '/contact-analytics/class-wfocu-contacts-analytics.php';
+			}
 		}
 
 		/**

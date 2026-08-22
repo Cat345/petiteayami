@@ -64,7 +64,7 @@ class Helper_Functions {
      * @access public
      *
      * @param Abstract_Main_Plugin_Class|null $main_plugin Main plugin object.
-     * @param Plugin_Constants|null            $constants   Plugin constants object.
+     * @param Plugin_Constants|null           $constants   Plugin constants object.
      */
     public function __construct( ?Abstract_Main_Plugin_Class $main_plugin = null, ?Plugin_Constants $constants = null ) {
         $this->_constants = $constants;
@@ -541,7 +541,7 @@ class Helper_Functions {
      * @return bool True if store API request, false otherwise.
      */
     public function is_store_api_request() {
-        return strpos( $_SERVER['REQUEST_URI'], 'wc/store/v1' ) !== false; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+        return str_contains( $_SERVER['REQUEST_URI'], 'wc/store/v1' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
     }
 
     /**

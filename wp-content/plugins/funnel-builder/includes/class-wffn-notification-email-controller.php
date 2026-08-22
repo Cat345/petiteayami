@@ -86,15 +86,15 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 		public function get_email_sections() {
 			$date_range = $this->frequency === 'daily' ? WFFN_Email_Notification::format_date( $this->dates['from_date'] ) : sprintf( '%s - %s', WFFN_Email_Notification::format_date( $this->dates['from_date'] ), WFFN_Email_Notification::format_date( $this->dates['to_date'] ) );
 
-			$highlight_subtitle    = __( 'Gain insights into customer interactions with your store through these statistics', 'Funnelkit' );
-			$highlight_button_text = __( 'View Detail Report', 'Funnelkit' );
+			$highlight_subtitle    = __( 'Gain insights into customer interactions with your store through these statistics', 'funnel-builder' );
+			$highlight_button_text = __( 'View Detail Report', 'funnel-builder' );
 			$highlight_button_url  = admin_url( 'admin.php?page=bwf' );
 			$highlight_theme       = 'light';
 			$upgrade_link          = 'https://funnelkit.com/exclusive-offer/';
 
 			if ( ! WFFN_Common::wffn_is_funnel_pro_active() ) {
-				$highlight_subtitle    = __( 'Unlock more insights.', 'Funnelkit' );
-				$highlight_button_text = __( 'Upgrade To PRO', 'Funnelkit' );
+				$highlight_subtitle    = __( 'Unlock more insights.', 'funnel-builder' );
+				$highlight_button_text = __( 'Upgrade To PRO', 'funnel-builder' );
 				$highlight_button_url  = add_query_arg(
 					array(
 						'utm_source' => 'Wordpress',
@@ -128,7 +128,7 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 					'type' => 'highlight',
 					'data' => array(
 						'date'        => $date_range,
-						'title'       => __( 'Performance Report', 'Funnelkit' ),
+						'title'       => __( 'Performance Report', 'funnel-builder' ),
 						'subtitle'    => $highlight_subtitle,
 						'button_text' => $highlight_button_text,
 						'button_url'  => $highlight_button_url,
@@ -147,8 +147,8 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 				array(
 					'type' => 'section_header',
 					'data' => array(
-						'title'    => __( 'Key Performance Metrics', 'Funnelkit' ),
-						'subtitle' => sprintf( __( 'Change compared to previous %s', 'Funnelkit' ), $this->get_frequency_string( $this->frequency ) ),
+						'title'    => __( 'Key Performance Metrics', 'funnel-builder' ),
+						'subtitle' => sprintf( __( 'Change compared to previous %s', 'funnel-builder' ), $this->get_frequency_string( $this->frequency ) ),
 					),
 				),
 			);
@@ -170,10 +170,10 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 			}
 
 			if ( $total_revenue > 10 ) {
-				$cta_content = sprintf( __( 'Since installing %1$s you have captured additional revenue of %2$s.', 'Funnelkit' ), '<strong>' . __( 'FunnelKit', 'Funnelkit' ) . '</strong>', '<strong>' . wc_price( $total_revenue ) . '</strong>' );
+				$cta_content = sprintf( __( 'Since installing %1$s you have captured additional revenue of %2$s.', 'funnel-builder' ), '<strong>' . __( 'FunnelKit', 'funnel-builder' ) . '</strong>', '<strong>' . wc_price( $total_revenue ) . '</strong>' );
 
 				if ( ! WFFN_Common::wffn_is_funnel_pro_active() ) {
-					$cta_content = sprintf( __( 'Since installing %1$s you have captured additional revenue of %2$s. Upgrade to Pro for even more revenue.', 'Funnelkit' ), '<strong>' . __( 'FunnelKit', 'Funnelkit' ) . '</strong>', '<strong>' . wc_price( $total_revenue ) . '</strong>' );
+					$cta_content = sprintf( __( 'Since installing %1$s you have captured additional revenue of %2$s. Upgrade to Pro for even more revenue.', 'funnel-builder' ), '<strong>' . __( 'FunnelKit', 'funnel-builder' ) . '</strong>', '<strong>' . wc_price( $total_revenue ) . '</strong>' );
 
 					$cta_link = add_query_arg(
 						array(
@@ -188,7 +188,7 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 							'data' => array(
 								'content'           => $cta_content,
 								'link'              => $cta_link,
-								'link_text'         => __( 'Upgrade To PRO', 'Funnelkit' ),
+								'link_text'         => __( 'Upgrade To PRO', 'funnel-builder' ),
 								'background_color'  => '#FEF7E8',
 								'button_color'      => '#FFC65C',
 								'button_text_color' => '#000000',
@@ -213,8 +213,8 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 					$email_sections[] = array(
 						'type' => 'section_header',
 						'data' => array(
-							'title'    => __( 'Get More From FunnelKit', 'Funnelkit' ),
-							'subtitle' => __( 'Go through the checklist and watch your sales soar', 'Funnelkit' ),
+							'title'    => __( 'Get More From FunnelKit', 'funnel-builder' ),
+							'subtitle' => __( 'Go through the checklist and watch your sales soar', 'funnel-builder' ),
 						),
 					);
 
@@ -323,28 +323,28 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 		public function get_todo_lists() {
 			$to_dos = array(
 				'setup_wizard' => array(
-					'title' => __( 'Setup Wizard', 'Funnelkit' ),
+					'title' => __( 'Setup Wizard', 'funnel-builder' ),
 					'link'  => esc_url( admin_url( 'admin.php?page=bwf&path=/user-setup' ) ),
 				),
 				'is_checkout'  => array(
-					'title' => __( 'Create Store Checkout', 'Funnelkit' ),
+					'title' => __( 'Create Store Checkout', 'funnel-builder' ),
 					'link'  => esc_url( admin_url( 'admin.php?page=bwf&path=/store-checkout' ) ),
 				),
 				'is_orderbump' => array(
-					'title' => __( 'Create Order Bump', 'Funnelkit' ),
+					'title' => __( 'Create Order Bump', 'funnel-builder' ),
 					'link'  => esc_url( admin_url( 'admin.php?page=bwf&path=/store-checkout' ) ),
 				),
 				'is_upsells'   => array(
-					'title' => __( 'Create One Click Upsell Offer', 'Funnelkit' ),
+					'title' => __( 'Create One Click Upsell Offer', 'funnel-builder' ),
 					'link'  => esc_url( admin_url( 'admin.php?page=bwf&path=/store-checkout' ) ),
 				),
 				'tracking'     => array(
-					'title' => __( 'Enable Pixel Tracking', 'Funnelkit' ),
+					'title' => __( 'Enable Pixel Tracking', 'funnel-builder' ),
 					'link'  => esc_url( admin_url( 'admin.php?page=bwf&path=/settings/funnelkit_pixel_tracking' ) ),
 					'last'  => true,
 				),
 				'funnels'      => array(
-					'title' => __( 'Create Funnel', 'Funnelkit' ),
+					'title' => __( 'Create Funnel', 'funnel-builder' ),
 					'link'  => esc_url( admin_url( 'admin.php?page=bwf&path=/funnels' ) ),
 					'last'  => true,
 				),
@@ -480,8 +480,8 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 		 */
 		public function get_frequency_string( $frequency ) {
 			$frequencies = array(
-				'weekly'  => __( 'Week', 'Funnelkit' ),
-				'monthly' => __( 'Month', 'Funnelkit' ),
+				'weekly'  => __( 'Week', 'funnel-builder' ),
+				'monthly' => __( 'Month', 'funnel-builder' ),
 			);
 
 			return $frequencies[ $frequency ] ?? '';

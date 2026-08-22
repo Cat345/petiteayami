@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitc44c881a49042a2b69184cda4e913269
+class ComposerStaticInit75ff06f05db56ac58b24a1cc54019cda
 {
     public static $files = array (
         'da5f6548f070d3d306f90eee42dd5de6' => __DIR__ . '/..' . '/donatj/phpuseragentparser/src/UserAgentParser.php',
@@ -57,6 +57,13 @@ class ComposerStaticInitc44c881a49042a2b69184cda4e913269
         'RankMath\\Abilities\\AI_Visibility\\Subscriber' => __DIR__ . '/../..' . '/includes/abilities/ai-visibility/class-subscriber.php',
         'RankMath\\Abilities\\Abilities' => __DIR__ . '/../..' . '/includes/abilities/class-abilities.php',
         'RankMath\\Abilities\\Ability_Interface' => __DIR__ . '/../..' . '/includes/abilities/interface-ability.php',
+        'RankMath\\Abilities\\Analytics\\Get_Top_Keywords' => __DIR__ . '/../..' . '/includes/abilities/analytics/class-get-top-keywords.php',
+        'RankMath\\Abilities\\Analytics\\Subscriber' => __DIR__ . '/../..' . '/includes/abilities/analytics/class-subscriber.php',
+        'RankMath\\Abilities\\Analytics\\Top_Keywords_Runner' => __DIR__ . '/../..' . '/includes/abilities/analytics/class-top-keywords-runner.php',
+        'RankMath\\Abilities\\Content_Analysis\\Analyze_Post_Content' => __DIR__ . '/../..' . '/includes/abilities/content-analysis/class-analyze-post-content.php',
+        'RankMath\\Abilities\\Content_Analysis\\Content_Analysis_Data' => __DIR__ . '/../..' . '/includes/abilities/content-analysis/class-content-analysis-data.php',
+        'RankMath\\Abilities\\Content_Analysis\\Get_SEO_Scores' => __DIR__ . '/../..' . '/includes/abilities/content-analysis/class-get-seo-scores.php',
+        'RankMath\\Abilities\\Content_Analysis\\Subscriber' => __DIR__ . '/../..' . '/includes/abilities/content-analysis/class-subscriber.php',
         'RankMath\\Abilities\\Link_Genius\\Get_Link_Report' => __DIR__ . '/../..' . '/includes/abilities/link-genius/class-get-link-report.php',
         'RankMath\\Abilities\\Link_Genius\\Get_Post_Links' => __DIR__ . '/../..' . '/includes/abilities/link-genius/class-get-post-links.php',
         'RankMath\\Abilities\\Link_Genius\\Link_Report_Runner' => __DIR__ . '/../..' . '/includes/abilities/link-genius/class-link-report-runner.php',
@@ -364,6 +371,7 @@ class ComposerStaticInitc44c881a49042a2b69184cda4e913269
         'RankMath\\Status\\System_Status' => __DIR__ . '/../..' . '/includes/modules/status/class-system-status.php',
         'RankMath\\Term' => __DIR__ . '/../..' . '/includes/class-term.php',
         'RankMath\\ThirdParty\\Loco\\Loco_I18n_Inline' => __DIR__ . '/../..' . '/includes/3rdparty/loco/class-loco-i18n-inline.php',
+        'RankMath\\ThirdParty\\Polylang\\Polylang' => __DIR__ . '/../..' . '/includes/3rdparty/polylang/class-polylang.php',
         'RankMath\\ThirdParty\\WPML' => __DIR__ . '/../..' . '/includes/3rdparty/wpml/class-wpml.php',
         'RankMath\\Thumbnail_Overlay' => __DIR__ . '/../..' . '/includes/class-thumbnail-overlay.php',
         'RankMath\\Tools\\AIOSEO_Blocks' => __DIR__ . '/../..' . '/includes/modules/database-tools/class-aioseo-blocks.php',
@@ -486,9 +494,9 @@ class ComposerStaticInitc44c881a49042a2b69184cda4e913269
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitc44c881a49042a2b69184cda4e913269::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitc44c881a49042a2b69184cda4e913269::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitc44c881a49042a2b69184cda4e913269::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit75ff06f05db56ac58b24a1cc54019cda::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit75ff06f05db56ac58b24a1cc54019cda::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit75ff06f05db56ac58b24a1cc54019cda::$classMap;
 
         }, null, ClassLoader::class);
     }

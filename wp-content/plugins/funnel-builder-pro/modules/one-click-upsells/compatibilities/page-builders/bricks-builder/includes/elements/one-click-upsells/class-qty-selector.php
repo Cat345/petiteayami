@@ -76,7 +76,7 @@ if ( ! class_exists( '\WfocuFunnelKit\Qty_Selector' ) ) {
 			if ( ! empty( (array) $products ) ) {
 				$product_options = array();
 				foreach ( $products as $key => $product ) {
-					$product_options[ $key ] = $product->data->get_name();
+					$product_options[ $key ] = $product->name;
 				}
 			}
 

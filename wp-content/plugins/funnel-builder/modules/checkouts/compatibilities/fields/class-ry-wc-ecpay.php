@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_RY_WC_Ecpay' ) ) {
 	/**
 	 * RY WooCommerce ECPay Invoice by Yang
@@ -36,7 +37,7 @@ if ( ! class_exists( 'WFACP_RY_WC_Ecpay' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'rc_wc_ecpay' ],
 				'id'         => 'rc_wc_ecpay',
 				'field_type' => 'rc_wc_ecpay',
-				'label'      => __( 'RC WC Ecpay', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'RC WC Ecpay', 'funnel-builder' ),
 			];
 
 			return $fields;

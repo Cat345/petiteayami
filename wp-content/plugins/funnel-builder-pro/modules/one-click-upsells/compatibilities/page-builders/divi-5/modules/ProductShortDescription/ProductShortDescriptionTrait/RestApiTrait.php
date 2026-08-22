@@ -103,7 +103,7 @@ trait RestApiTrait {
 				}
 
 				$response[ (string) $key ] = array(
-					'label'            => $product_obj->get_name(),
+					'label'            => $product->name,
 					'shortDescription' => $short_description,
 				);
 			}

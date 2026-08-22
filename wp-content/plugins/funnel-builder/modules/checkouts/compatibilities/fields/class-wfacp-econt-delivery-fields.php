@@ -24,7 +24,7 @@ if ( ! class_exists( 'WFACP_Econt_Delivery_Fields' ) ) {
 			$field['econt_delivery_fields_1'] = array(
 				'type'          => 'wfacp_html',
 				'default'       => false,
-				'label'         => __( 'Econt Delivery Field', 'woofunnels-aero-checkout' ),
+				'label'         => __( 'Econt Delivery Field', 'funnel-builder' ),
 				'validate'      => array(),
 				'id'            => 'econt_delivery_fields_1',
 				'required'      => false,

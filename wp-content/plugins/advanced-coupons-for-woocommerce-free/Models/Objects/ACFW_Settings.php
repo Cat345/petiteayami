@@ -348,6 +348,18 @@ class ACFW_Settings extends \WC_Settings_Page {
             ),
 
             array(
+                'title'    => __( 'Discount application mode', 'advanced-coupons-for-woocommerce-free' ),
+                'type'     => 'radio',
+                'desc_tip' => __( 'Choose how BOGO deal discounts are applied on the cart. "Price modification" adjusts the price of the deal products directly. "Coupon amount" keeps product prices unchanged and applies the discount to the coupon total instead, so it is visible on the coupon line and included in coupon reporting.', 'advanced-coupons-for-woocommerce-free' ),
+                'id'       => Plugin_Constants::BOGO_DISCOUNT_APPLICATION_MODE,
+                'default'  => 'price',
+                'options'  => array(
+                    'price'  => __( 'Price modification — adjust the deal product prices directly (default).', 'advanced-coupons-for-woocommerce-free' ),
+                    'coupon' => __( 'Coupon amount — keep product prices unchanged and apply the discount to the coupon total.', 'advanced-coupons-for-woocommerce-free' ),
+                ),
+            ),
+
+            array(
                 'type' => 'acfw_bogo_deals_custom_js',
                 'id'   => 'acfw_Bogo_deals_custom_js',
             ),
@@ -358,6 +370,26 @@ class ACFW_Settings extends \WC_Settings_Page {
             ),
 
         );
+    }
+
+    /**
+     * Get the additional product type options for the product search setting.
+     *
+     * Lists all registered WooCommerce product types except the ones that are
+     * already always supported by the product search allowlist.
+     *
+     * @since 4.7.5
+     * @access private
+     *
+     * @return array Associative array of product type slug => label.
+     */
+    private function _get_additional_product_type_options() {
+        $always_supported = array_merge(
+            Plugin_Constants::PRODUCT_SEARCH_ALWAYS_SUPPORTED_TYPES,
+            array( 'advanced_gift_card', 'variable-advanced_gift_card' )
+        );
+
+        return array_diff_key( wc_get_product_types(), array_flip( $always_supported ) );
     }
 
     /**
@@ -387,6 +419,17 @@ class ACFW_Settings extends \WC_Settings_Page {
                 'placeholder' => __( 'Select a category', 'advanced-coupons-for-woocommerce-free' ),
                 'taxonomy'    => Plugin_Constants::COUPON_CAT_TAXONOMY,
                 'options'     => $this->_helper_functions->get_all_coupon_categories_as_options(),
+            ),
+
+            array(
+                'title'    => __( 'Additional product types in search', 'advanced-coupons-for-woocommerce-free' ),
+                'type'     => 'multiselect',
+                'desc_tip' => __( 'Include extra product types (e.g. registered by third-party plugins) in the product search used by Cart Conditions, BOGO Deals, and Add Products. The default product types are always searchable.', 'advanced-coupons-for-woocommerce-free' ),
+                'id'       => Plugin_Constants::PRODUCT_SEARCH_ADDITIONAL_TYPES,
+                'class'    => 'wc-enhanced-select',
+                'css'      => 'min-width: 350px;',
+                'default'  => array(),
+                'options'  => $this->_get_additional_product_type_options(),
             ),
 
             array(
@@ -659,14 +702,11 @@ class ACFW_Settings extends \WC_Settings_Page {
      */
     private function _get_store_credits_section_options() {
 
-        $expiry_options = array(
-            'noexpiry' => __( 'Never expire', 'advanced-coupons-for-woocommerce-free' ),
+        $expiry_unit_options = array(
+            'days'   => __( 'Day(s)', 'advanced-coupons-for-woocommerce-free' ),
+            'months' => __( 'Month(s)', 'advanced-coupons-for-woocommerce-free' ),
+            'years'  => __( 'Year(s)', 'advanced-coupons-for-woocommerce-free' ),
         );
-
-        for ( $n = 1; $n <= 5; $n++ ) {
-            /* Translators: %s: Number of years */
-            $expiry_options[ (string) $n ] = sprintf( _n( '%s year', '%s years', $n, 'advanced-coupons-for-woocommerce-free' ), $n );
-        }
 
         return array(
 
@@ -711,12 +751,25 @@ class ACFW_Settings extends \WC_Settings_Page {
             ),
 
             array(
-                'title'    => __( 'Store credits expiry', 'advanced-coupons-for-woocommerce-free' ),
+                'title'             => __( 'Store credits expiry', 'advanced-coupons-for-woocommerce-free' ),
+                'type'              => 'number',
+                'desc_tip'          => __( 'Number of days/months/years from a customer\'s last activity before their store credits expire. Set to 0 to never expire (default), which covers most countries. It is your responsibility to ensure you abide by your local store credit expiry laws.', 'advanced-coupons-for-woocommerce-free' ),
+                'id'                => Plugin_Constants::STORE_CREDIT_EXPIRY,
+                'default'           => 0,
+                'custom_attributes' => array(
+                    'min'  => '0',
+                    'step' => '1',
+                ),
+            ),
+
+            array(
+                'title'    => __( 'Store credits expiry unit', 'advanced-coupons-for-woocommerce-free' ),
                 'type'     => 'select',
-                'desc_tip' => __( 'Expiry is set to "never expire" by default, which covers most countries. It is your responsibility to ensure you abide by your local store credit expiry laws.', 'advanced-coupons-for-woocommerce-free' ),
-                'id'       => Plugin_Constants::STORE_CREDIT_EXPIRY,
-                'options'  => $expiry_options,
-                'default'  => 'noexpiry',
+                'desc_tip' => __( 'The unit of time used together with the store credits expiry value above.', 'advanced-coupons-for-woocommerce-free' ),
+                'id'       => Plugin_Constants::STORE_CREDIT_EXPIRY_UNIT,
+                'options'  => $expiry_unit_options,
+                'default'  => 'years',
+                'class'    => 'wc-enhanced-select',
             ),
 
             array(

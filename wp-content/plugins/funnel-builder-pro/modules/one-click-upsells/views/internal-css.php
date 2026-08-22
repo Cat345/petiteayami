@@ -5,7 +5,7 @@ global $wfocu_css_output, $wfocu_media_css_output, $output, $output_media;
 
 if ( is_array( $output ) ) {
 	if ( ! is_array( $wfocu_css_output ) ) {
-		$wfocu_css_output = [];
+		$wfocu_css_output = array();
 	}
 	$wfocu_css_output = array_merge( $wfocu_css_output, $output );
 }
@@ -13,7 +13,7 @@ if ( is_array( $output ) ) {
 
 if ( is_array( $output_media ) ) {
 	if ( ! is_array( $wfocu_media_css_output ) ) {
-		$wfocu_media_css_output = [];
+		$wfocu_media_css_output = array();
 	}
 	$wfocu_media_css_output = array_merge( $wfocu_media_css_output, $output_media );
 }
@@ -63,7 +63,7 @@ if ( isset( $css['site_content_fs'] ) && is_array( $css['site_content_fs'] ) ) {
 		$wfocu_media_css_output['mobile']['body ol li']['font-size'] = $val['mobile'] . ( ( isset( $val['mobile-unit'] ) ) ? $val['mobile-unit'] : 'px' );
 	}
 }
-if ( isset( $css['site_font_family_fs'] ) && ! empty( $css['site_font_family_fs'] )  && 'default' !== $css['site_font_family_fs']) {
+if ( isset( $css['site_font_family_fs'] ) && ! empty( $css['site_font_family_fs'] ) && 'default' !== $css['site_font_family_fs'] ) {
 	$this->selected_font_family = $css['site_font_family_fs'];
 }
 /** COLORS */
@@ -630,19 +630,19 @@ if ( isset( $css['offer_confirm_no_color'] ) && ! empty( $css['offer_confirm_no_
 }
 
 if ( isset( $css['cart_opener'] ) && ! empty( $css['cart_opener'] ) ) {
-	$wfocu_css_output['.wfocu-confirm-order-btn .wfocu-opener-btn-bg']['background-color'] = $css['cart_opener'];
+	$wfocu_css_output['.wfocu-confirm-order-btn .wfocu-opener-btn-bg']['background-color']                         = $css['cart_opener'];
 	$wfocu_css_output['body.single-wfocu_offer .wfocu-confirm-order-btn .wfocu-opener-btn-bg']['background-color'] = $css['cart_opener'];
 
-	$wfocu_css_output['.wfocu-confirm-order-btn .wfocu-left-arrow']['border-right-color']  = $css['cart_opener'];
-	$wfocu_css_output['body.single-wfocu_offer .wfocu-confirm-order-btn .wfocu-left-arrow']['border-right-color']  = $css['cart_opener'];
+	$wfocu_css_output['.wfocu-confirm-order-btn .wfocu-left-arrow']['border-right-color']                         = $css['cart_opener'];
+	$wfocu_css_output['body.single-wfocu_offer .wfocu-confirm-order-btn .wfocu-left-arrow']['border-right-color'] = $css['cart_opener'];
 
-	$wfocu_css_output['.wfocu-confirm-order-btn']['color']       = $css['cart_opener_text_color'] . '';
-	$wfocu_css_output['body.single-wfocu_offer .wfocu-confirm-order-btn']['color']       = $css['cart_opener_text_color'] . '';
+	$wfocu_css_output['.wfocu-confirm-order-btn']['color']                         = $css['cart_opener_text_color'] . '';
+	$wfocu_css_output['body.single-wfocu_offer .wfocu-confirm-order-btn']['color'] = $css['cart_opener_text_color'] . '';
 
-	$wfocu_css_output['.wfocu-confirm-order-btn:hover']['color'] = $css['cart_opener_text_color'] . '';
+	$wfocu_css_output['.wfocu-confirm-order-btn:hover']['color']                         = $css['cart_opener_text_color'] . '';
 	$wfocu_css_output['body.single-wfocu_offer .wfocu-confirm-order-btn:hover']['color'] = $css['cart_opener_text_color'] . '';
 
-	$wfocu_css_output['.wfocu-confirm-order-btn:focus']['color'] = $css['cart_opener_text_color'] . '';
+	$wfocu_css_output['.wfocu-confirm-order-btn:focus']['color']                         = $css['cart_opener_text_color'] . '';
 	$wfocu_css_output['body.single-wfocu_offer .wfocu-confirm-order-btn:focus']['color'] = $css['cart_opener_text_color'] . '';
 
 }
@@ -693,13 +693,13 @@ if ( ! empty( $wfocu_media_css_output ) ) {
 					echo $css_prop . ':' . $css_val . ';';
 				}
 			}
-			if ( 'desktop' === $type ) {
+			if ( 'desktop' === $media_type ) {
 				echo '}';
 			} else {
 				echo "}\n";
 			}
 		}
-		switch ( $type ) {
+		switch ( $media_type ) {
 			case 'tablet':
 			case 'mobile':
 				echo '}';
@@ -711,4 +711,3 @@ if ( ! empty( $wfocu_media_css_output ) ) {
 	}
 	echo '</style>';
 }
-

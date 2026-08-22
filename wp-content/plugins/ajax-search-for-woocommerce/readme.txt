@@ -1,10 +1,10 @@
 === FiboSearch - Ajax Search for WooCommerce  ===
 Contributors: damian-gora, matczar
 Tags: woocommerce search, ajax search, search by sku, product search, woocommerce
-Requires at least: 5.0
-Tested up to: 7.0
+Requires at least: 6.5
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.33.0
+Stable tag: 1.34.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -148,40 +148,56 @@ You can read more and compare Pro and Free features here: [Full comparison - Pro
 
 == Changelog ==
 
+= 1.34.1, August 18, 2026 =
+* SECURITY: A search request with an empty query could reveal password-protected products to unauthenticated users. Thanks to Duy Tran for the responsible disclosure.
+* UPDATED: The `.pot` file
+
+= 1.34.0, August 3, 2026 =
+* FIXED: Enabling search analytics triggered a PHP notice about WooCommerce translations loading too early (`_load_textdomain_just_in_time`)
+* FIXED: Focus trap in the search history when navigating with the Tab key
+* FIXED: **WoodMart theme**: search bar shrinking in the mobile header
+* FIXED: **Elementor**: typing in the popup search no longer requires clicking the search bar again
+* SECURITY: XSS vulnerability in search result thumbnails. Low risk: exploitation requires permissions to edit products or product categories (the Shop Manager role or higher).
+* SECURITY: Password-protected products and posts are no longer returned in search results. Thanks to Duy Tran for the responsible disclosure.
+* UPDATED: The minimum required WordPress version is now 6.5
+* UPDATED: Compatibility of the search blocks with the iframe block editor (block API v3)
+* UPDATED: The `.pot` file
+* UPDATED: Freemius SDK
+
 = 1.33.0, April 27, 2026 =
-* ADDED: JetSmartFilters — support for custom queries
+* ADDED: **JetSmartFilters plugin**: support for custom queries
 * ADDED: [FiboSearch 2.0 early access](https://fibosearch.com/fibosearch-2-0-is-on-the-way/) teaser in admin settings
-* ADDED: Added link on the settings page to our second plugin, [FiboFilters](https://fibofilters.com/).
+* ADDED: Link on the settings page to our second plugin, [FiboFilters](https://fibofilters.com/)
 * FIXED: Prevent unwanted redirection for single product variations
 * FIXED: Cached results were missing dynamic pricing
-* FIXED: Undefined "items" key warning in DetailsBox AJAX handler
-* FIXED: Header JS not loading in Mobex theme
-* FIXED: Hide Categories and Products plugin integration compatibility with excluded categories methods
-* UPDATED: Updating the `.pot` file
+* FIXED: Undefined “items” key warning in DetailsBox AJAX handler
+* FIXED: Header JS not loading in the **Mobex theme**
+* FIXED: **Hide Categories and Products plugin**: integration compatibility with excluded categories methods
+* UPDATED: The `.pot` file
 * UPDATED: Freemius SDK
 
 = 1.32.2, January 05, 2026 =
-* ADDED: Integration with the Themify Builder Pro plugin
-* ADDED: Integration with the FOX WooCommerce Currency Switcher plugin
+* ADDED: Integration with the **Themify Builder Pro** plugin
+* ADDED: Integration with the **FOX WooCommerce Currency Switcher** plugin
 * FIXED: Improved visibility checks for products
 * FIXED: Added nonce validation in an AJAX action
 * FIXED: Improved detection of visibility plugin integrations
 
 = 1.32.1, December 15, 2025 =
-* FIXED: The Details panel inside the results wrapper didn’t expand to match the width of the search bar
-* FIXED: Improved input handling in TheGem theme integration
-* FIXED: The search didn’t work when the "Load JavaScript deferred" feature in WP Rocket was enabled
+* FIXED: The Details Panel inside the results wrapper didn’t expand to match the width of the search bar
+* FIXED: Improved input handling in the **TheGem theme** integration
+* FIXED: The search didn’t work when the “Load JavaScript deferred” feature in **WP Rocket** was enabled
 * FIXED: No search results appeared when using a multilingual setup and the exact SKU match function was triggered
 * REFACTOR: Implemented a more consistent and unified PHP code style
 
 = 1.32.0, November 17, 2025 =
-* ADDED: Integration with the [Bacola theme](https://fibosearch.com/documentation/themes-integrations/bacola-theme/).
+* ADDED: Integration with the [Bacola theme](https://fibosearch.com/documentation/themes-integrations/bacola-theme/)
 * ADDED: Debugger view for active plugin integrations
 * ADDED: Helper function for retrieving plugin information
 * ADDED: Option to make the search endpoint return only product IDs
 * ADDED: Greek language files
 * FIXED: Mobile search bar display issue in the **WoodMart theme**
-* FIXED: Compatibility issue in the **Bricks theme**. The **“Enable AJAX add to cart”** option now works properly with the FiboSearch details panel
+* FIXED: Compatibility issue in the **Bricks theme**. The “Enable AJAX add to cart” option now works properly with the FiboSearch details panel.
 * FIXED: Search replacement issue on the **Flatsome theme** 404 page
 * FIXED: Support for diacritic and accent characters in search and scoring calculation
 * FIXED: Infinite loop on mobile devices caused by an **Impreza theme** event conflict
@@ -203,14 +219,14 @@ You can read more and compare Pro and Free features here: [Full comparison - Pro
 = 1.31.0, July 16, 2025 =
 * ADDED: Info about **Elementor widget**
 * ADDED: Documentation links to **Search in SKU** and **GUID**
-* ADDED: Add filter to conditionally disable analytics recording (e.g. by IP, phrase, lang)
-* ADDED: Add the ARIA label to the search icon for accessibility improvement
+* ADDED: Filter to conditionally disable analytics recording (e.g. by IP, phrase, lang)
+* ADDED: ARIA label on the search icon for accessibility improvement
 * ADDED: Option to skip plugin loading on search page by adding the `nofibosearch=1` parameter to the URL
-* ADDED: Troubleshooting — tests for the minimum required versions of themes and plugins with available integrations
-* ADDED: New filter to optionally show “**Products**” headline when only product suggestions are returned
-* ADDED: Filter to always show “**See all products**” button in autocomplete
+* ADDED: Troubleshooting: tests for the minimum required versions of themes and plugins with available integrations
+* ADDED: New filter to optionally show the “Products” headline when only product suggestions are returned
+* ADDED: Filter to always show the “See all products” button in autocomplete
 * ADDED: Filter to disable inline styles from the `Personalization` class
-* ADDED: CSS adjustments in **Uncode theme** — centered the search bar in the menu
+* ADDED: CSS adjustments in the **Uncode theme**: centered the search bar in the menu
 * FIXED: Managing initial search bar interactivity before the main script has loaded
 * FIXED: Incorrect language code in speech recognition
 * FIXED: Removed the `.woocommerce` class from the FiboSearch bar widget
@@ -219,126 +235,97 @@ You can read more and compare Pro and Free features here: [Full comparison - Pro
 * FIXED: Styling issues in the **Enfold theme**
 * FIXED: There was an error in the SQL syntax that occurred during the plugin uninstallation process
 * FIXED: Escape double quotes in `optionsRaw` to prevent `JSON.parse` errors
-* TWEAK: Moved the JS 'fibosearch/show-details-panel' event to just before the preloader is hidden
+* TWEAK: Moved the JS `fibosearch/show-details-panel` event to just before the preloader is hidden
 * TWEAK: Code styling adjustments
 * TWEAK: Hiding unwanted banner on settings page
 * TWEAK: Optimized database queries
-* REFACTOR: Removed **Listeo** theme integration
-* UPDATED: Updating the `.pot` file
+* REFACTOR: Removed the **Listeo theme** integration
+* UPDATED: The `.pot` file
 * UPDATED: Freemius SDK
 
 
 
 
 = 1.30.0, January 27, 2025 =
-* ADDED: “**Bricks theme**” integration – support for “Products” element on the search results page
-* ADDED: “**Bricks theme**” integration – incorrect order of results on the search results page
-* ADDED: Integration with the “**Discontinued Product Stock Status for WooCommerce**” plugin
+* ADDED: **Bricks theme** integration: support for the “Products” element on the search results page
+* ADDED: **Bricks theme** integration: incorrect order of results on the search results page
+* ADDED: Integration with the **Discontinued Product Stock Status for WooCommerce** plugin
 * ADDED: The link to edit the FiboSearch bar in Customizer
 * ADDED: The `x` button was added to the review request notice
-* FIXED: Missing data in the “**Details Panel**” for product variations
+* FIXED: Missing data in the **Details Panel** for product variations
 * FIXED: Resolved an error when attempting to insert FiboSearch blocks in the block editor
 * FIXED: Eliminated duplicate search results in autocomplete
-* FIXED: Enabled searching for products whose variations are all out of stock but have the “**allow backorders**” status 
-* FIXED: **WCAG** “Links do not have a discernible name”
-* FIXED: **WPML** integration – no results when option "use translation if available or fallback to default language" is used
-* FIXED: **Flatsome** theme integration – can't search in mobile overlay view when search is activated from the mobile menu
+* FIXED: Enabled searching for products whose variations are all out of stock but have the “allow backorders” status
+* FIXED: **WCAG**: “Links do not have a discernible name”
+* FIXED: **WPML** integration: no results when the “use translation if available or fallback to default language” option is used
+* FIXED: **Flatsome theme** integration: can’t search in the mobile overlay view when search is activated from the mobile menu
 * FIXED: Incorrect display of the FiboSearch form when it is embedded in the shop page description
-* FIXED: Mobile search in the menu does not work when the Divi Mobile plugin is active
+* FIXED: Mobile search in the menu does not work when the **Divi Mobile** plugin is active
 * FIXED: Unnecessary header “Search results for...” when there are no results for post types other than products
-* FIXED: Google PageSpeed Insights – avoid non-composited animations
+* FIXED: Google PageSpeed Insights: avoid non-composited animations
 * FIXED: Search icon padding when the search icon is a part of the main menu
 * TWEAK: Theme integration is not loaded when the minimal version condition is not met
 * TWEAK: Improved clearing of plugin data on uninstall
 * TWEAK: Hiding unwanted banner on the settings page
-* TWEAK: Remove the “**(beta)**” suffix from the “User search history” option
-* REFACTOR: Remove the “**Grouped results**” option
+* TWEAK: Remove the “(beta)” suffix from the “User search history” option
+* REFACTOR: Remove the “Grouped results” option
 * UPDATED: The `.pot` file
 * UPDATED: Freemius SDK
 
 = 1.29.0, October 29, 2024 =
 * ADDED: Integration with the **Listeo theme**
-* ADDED: New troubleshooting test – warning when “**Ajax Search Lite**” or “**Ajax Search Pro**” plugins are active
-* ADDED: **WCAG improvements** – possibility to select and open a search icon using the keyboard
-* ADDED: Search icon preloader. In some rare cases, a user can wait longer to display the search icon or search bar. Instead of an empty place, a placeholder is displayed
-* FIXED: **Generatepress theme** integration – incorrect mobile overlay on the checkout in the Generatepress theme
+* ADDED: New troubleshooting test: warning when the **Ajax Search Lite** or **Ajax Search Pro** plugins are active
+* ADDED: **WCAG** improvements: possibility to select and open a search icon using the keyboard
+* ADDED: Search icon preloader. In some rare cases, a user can wait longer to display the search icon or search bar. Instead of an empty place, a placeholder is displayed.
+* FIXED: **GeneratePress theme** integration: incorrect mobile overlay on the checkout
 * FIXED: A better way of calculating window width when the breakpoint is checked
-* TWEAK: Hiding the **XStore** theme documentation button on the settings page
-* UPDATED: The `.pot` file.
+* TWEAK: Hiding the **XStore theme** documentation button on the settings page
+* UPDATED: The `.pot` file
 * UPDATED: Freemius SDK
 
 = 1.28.1, June 28, 2024 =
-* FIXED: Removed the phrase “**polyfill.io**” from the JavaScript code comment. FiboSearch has never linked to this compromised library, but some security tools recognize this JavaScript comment as a potential link to malware. All reports are **false positive**.
+* FIXED: Removed the phrase `polyfill.io` from the JavaScript code comment. FiboSearch has never linked to this compromised library, but some security tools recognize this JavaScript comment as a potential link to malware. All reports are **false positive**.
 * FIXED: PHP deprecated notice in `\DgoraWcas\Helpers::keyIsValid`
-* FIXED: Unnecessary display of warning in **Troubleshooting** when products are displayed using a widget from “**JetSmartFilters**”
+* FIXED: Unnecessary display of warning in **Troubleshooting** when products are displayed using a widget from **JetSmartFilters**
 
 = 1.28.0, May 27, 2024 =
-* ADDED: New search bar style - a compact version of a “Pirx” style
-* ADDED: Integration with the “Cartzilla theme”
-* ADDED: Integration with the “Rey theme”
-* ADDED: Placeholders to display custom content for new suggestion types like taxonomy, posts, pages, and product variation
-* FIXED: “Woodmart theme” - unable to close the mobile menu after exiting the mobile search overlay
-* FIXED: “Flatsome theme” - disappearing search bar on mobile phones
-* FIXED: “Flatsome” - cannot change search bar style to Pirx
-* FIXED: “Divi theme” - shortcodes are not rendered in the description in the Details Panel for pages
-* FIXED: “XStore theme” - the integration doesn't replace all search forms
+* ADDED: New search bar style: a compact version of the “Pirx” style
+* ADDED: Integration with the **Cartzilla theme**
+* ADDED: Integration with the **Rey theme**
+* ADDED: Placeholders to display custom content for new suggestion types like `taxonomy`, `post`, `page`, and `product_variation`
+* FIXED: **WoodMart theme**: unable to close the mobile menu after exiting the mobile search overlay
+* FIXED: **Flatsome theme**: disappearing search bar on mobile phones
+* FIXED: **Flatsome theme**: cannot change the search bar style to Pirx
+* FIXED: **Divi theme**: shortcodes are not rendered in the description in the Details Panel for pages
+* FIXED: **XStore theme**: the integration doesn’t replace all search forms
 * FIXED: Force disabling transition effect on search input to avoid unexpected layout bouncing
 * FIXED: Allowing to calculate score including one and two-character words
 * FIXED: Better recognition of iOS
-* FIXED: Uncode theme - the search icon doesn't show on the header
+* FIXED: **Uncode theme**: the search icon doesn’t show in the header
 * TWEAK: Removed OPcache invalidation for the shortcode template file
-* UPDATED: The .pot file
-* UPDATED: Freemius SDK to v2.7.2
+* UPDATED: The `.pot` file
+* UPDATED: Freemius SDK
 
 
 = 1.27.0, January 31, 2024 =
-* ADDED: Integration with the “Betheme theme”
+* ADDED: Integration with the **Betheme theme**
 * ADDED: Highlight words in search results with Greek letters regardless of accent
-* ADDED: Support for “Full-width Search” in the “XStore theme”
-* FIXED: Multiple search containers on mobile in the “Astra theme” integration
-* FIXED: No focus on search input for mobile devices in the “Astra theme” integration
-* FIXED: Allow an HTML `&lt;i&gt;` tag in suggestion titles and headlines
+* ADDED: Support for “Full-width Search” in the **XStore theme**
+* FIXED: Multiple search containers on mobile in the **Astra theme** integration
+* FIXED: No focus on search input for mobile devices in the **Astra theme** integration
+* FIXED: Allow an HTML `<i>` tag in suggestion titles and headlines
 * FIXED: Multilingual support is active even for one language
-* FIXED: Overriding the search icon and form in the header was not working properly in the “WoodMart integration”
-* FIXED: Missing filters from “Advanced AJAX Product Filters” plugin in the “Divi theme”
+* FIXED: Overriding the search icon and form in the header was not working properly in the **WoodMart theme** integration
+* FIXED: Missing filters from the **Advanced AJAX Product Filters** plugin in the **Divi theme**
 * FIXED: Replace `&#37` for more stable format `%%` in a `sprintf` function
-* FIXED: An unwanted modal after closing the search overlay on mobile in the “Flatsome theme”
-* FIXED: Missing colors after updating the “Bloksy theme” to 2.x
-* FIXED: Incorrect calculation of a product's position in search results when it contains Greek letters
-* FIXED: Incorrect term language detection in the WPML plugin. Replacing `term_id` with `term_taxonomy_id`
+* FIXED: An unwanted modal after closing the search overlay on mobile in the **Flatsome theme**
+* FIXED: Missing colors after updating the **Blocksy theme** to 2.x
+* FIXED: Incorrect calculation of a product’s position in search results when it contains Greek letters
+* FIXED: Incorrect term language detection in the **WPML** plugin. Replacing `term_id` with `term_taxonomy_id`.
 * FIXED: Unwanted ampersand entity in the product description of search results
-* UPDATED: Requires PHP: 7.4
+* UPDATED: Requires PHP 7.4
 * UPDATED: The `.pot` file
 * UPDATED: Polish translation
-* UPDATED: Freemius SDK v2.6.2
-
-= 1.26.1, October 19, 2023 =
-* FIXED: Details panel - wrong HTML format of stock status element 
-
-= 1.26.0, October 17, 2023 =
-* ADDED: Integration with “Bricks builder”
-* ADDED: Integration with “Brizy builder”
-* FIXED: Calc score by comparing every word of the search phrase instead of all search phrase
-* FIXED: WooCommerce Wholesale Prices plugin - invalid search results e.g. not hidden products and categories in the search results
-* FIXED: Flatsome - when there are more search icons, only one is replaced
-* FIXED: WPRocket - in some cases search fields/icons are not replaced immediately after the page load
-* FIXED: Highlight matched words instead of the whole search phrase
-* TWEAK: Allowing access to the `Personalization` class via `DGWT_WCAS()` function
-* TWEAK: HUSKY - Products Filter Professional for WooCommerce plugin - disable the test in the Troubleshooting module for newer versions of this plugin
-* REFACTOR: Replace `.click()` with `trigger('click')`, `.focus()` with `trigger('focus')`, `.blur()` with `trigger('blur')`
-* REFACTOR: Replace `jQuery.fn.mouseup()` with `$(document).on('mouseup')`
-* REFACTOR: Replace `jQuery.isFunction()` with `typeof fn === 'function'`
-* UPDATED: Freemius SDK v2.5.12
-
-= 1.25.0, July 06, 2023 =
-* ADDED: Possibility to search for taxonomy terms regardless of accents in a phrase or term name
-* ADDED: Added some new filters to change URLs of results in autocomplete and details panel
-* FIXED: Warnings due to `open_basedir` restrictions
-* FIXED: Integration with the Impreza theme - broken AJAX pagination for Grid element
-* FIXED: Integration with the TheGem theme - missing search results when the “Layout Type” option is set to “Products Grid”
-* FIXED: Integration with the Divi theme - mobile overlay not showing up
-* FIXED: Stronger sanitization of the details panel output
-* UPDATED: Freemius SDK v2.5.10
-* UPDATED: Polish translation
+* UPDATED: Freemius SDK
 
 [See changelog for all versions](https://fibosearch.com/changelog/).

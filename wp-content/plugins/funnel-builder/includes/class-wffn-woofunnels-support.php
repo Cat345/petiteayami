@@ -27,7 +27,7 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 			// Load WooCommerce collector class if WooCommerce is active
 			// This ensures the filter hook at the bottom of the file is registered
 			if ( class_exists( 'WooCommerce' ) && ! class_exists( 'WFFN_WooCommerce_Usage_Collector' ) ) {
-				$wc_collector_file = defined( 'WFFN_PLUGIN_DIR' ) ? WFFN_PLUGIN_DIR . '/includes/usage/class-wffn-woocommerce-usage-collector.php' : WP_PLUGIN_DIR . '/funnel-builder/includes/usage/class-wffn-woocommerce-usage-collector.php';
+				$wc_collector_file = WFFN_PLUGIN_DIR . '/includes/usage/class-wffn-woocommerce-usage-collector.php';
 				if ( file_exists( $wc_collector_file ) ) {
 					require_once $wc_collector_file;
 				}
@@ -178,41 +178,6 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 					$title    = 'Green Monday 🔥';
 					$link     = $this->get_campaign_url( $campaign );
 					$this->add_admin_submenu( $title, $link );
-				}
-			} else {
-				$License = WooFunnels_licenses::get_instance();
-				$License->get_plugins_list();
-				$current = new DateTime( current_time( 'mysql', true ) );
-
-				$a = WFFn_Core()->admin->get_license_config( true );
-
-				if ( ! empty( $a['f']['ed'] ) ) {
-
-					$expiry = new DateTime( $a['f']['ed'] );
-
-					/**
-					 * the expiry should always be less than on current utc
-					 */
-					if ( $expiry->getTimestamp() < $current->getTimestamp() ) {
-						$link = add_query_arg(
-							array(
-								'utm_source'   => 'WordPress',
-								'utm_medium'   => 'Admin+Menu',
-								'utm_campaign' => 'FB+Lite+Plugin',
-							),
-							'https://funnelkit.com/exclusive-offer/'
-						);
-						add_submenu_page(
-							'woofunnels',
-							null,
-							'<a href="' . $link . '" style="background-color:#e15334; color:white;" target="_blank"><strong>' . __( 'License Expired', 'funnel-builder' ) . '</strong></a>',
-							'manage_options',
-							'upgrade_pro',
-							function () {
-							},
-							99
-						);
-					}
 				}
 			}
 		}

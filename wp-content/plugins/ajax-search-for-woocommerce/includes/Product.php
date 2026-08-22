@@ -172,7 +172,7 @@ class Product {
      * @return string
      */
     public function getThumbnail( $size = '' ) {
-        return '<img src="' . $this->getThumbnailSrc( $size ) . '" alt="' . wp_strip_all_tags( $this->getName(), true ) . '" />';
+        return sprintf( '<img src="%s" alt="%s" />', esc_url( $this->getThumbnailSrc( $size ) ), esc_attr( wp_strip_all_tags( $this->getName(), true ) ) );
     }
 
     /**
@@ -684,10 +684,11 @@ class Product {
      */
     public function canIndexParent() {
         $canIndex = true;
-        if ( $this->getWooObject()->get_type() === 'variable' && empty( $this->getAvailableVariations() ) ) {
-            $canIndex = false;
+        if ( $this->getWooObject()->get_type() === 'variable' ) {
+            $canIndex = !empty( $this->getAvailableVariations() );
+            $canIndex = apply_filters( 'dgwt/wcas/can_index_variable_parent', $canIndex, $this );
         }
-        return apply_filters( 'dgwt/wcas/can_index_variable_parent', $canIndex, $this );
+        return $canIndex;
     }
 
 }

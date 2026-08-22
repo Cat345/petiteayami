@@ -42,7 +42,7 @@ if ( ! class_exists( 'WFACP_AffiliateWP_Checkout_Referrals_WC' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'affiliate_checkout_referrals_wc' ],
 				'id'         => 'affiliate_checkout_referrals_wc',
 				'field_type' => 'affiliate_checkout_referrals_wc',
-				'label'      => __( 'AffiliateWC Referrals', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'AffiliateWC Referrals', 'funnel-builder' ),
 			];
 
 			return $fields;

@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Payoneer Checkout  by Inpsyde GmbH (v.0.2.1)

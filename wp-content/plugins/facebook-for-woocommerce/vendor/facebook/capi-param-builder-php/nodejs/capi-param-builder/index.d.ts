@@ -7,6 +7,25 @@
  */
 
 /**
+ * Supported PII data types for normalization and hashing
+ */
+export declare const PII_DATA_TYPE: {
+  readonly PHONE: 'phone';
+  readonly EMAIL: 'email';
+  readonly FIRST_NAME: 'first_name';
+  readonly LAST_NAME: 'last_name';
+  readonly DATE_OF_BIRTH: 'date_of_birth';
+  readonly GENDER: 'gender';
+  readonly CITY: 'city';
+  readonly STATE: 'state';
+  readonly ZIP_CODE: 'zip_code';
+  readonly COUNTRY: 'country';
+  readonly EXTERNAL_ID: 'external_id';
+};
+
+export type PiiDataType = typeof PII_DATA_TYPE[keyof typeof PII_DATA_TYPE];
+
+/**
  * Cookie settings for setting browser cookies
  */
 export declare class CookieSettings {
@@ -16,6 +35,31 @@ export declare class CookieSettings {
   domain: string;
 
   constructor(name: string, value: string, maxAge: number, domain: string);
+}
+
+/**
+ * A plain data object representing specific HTTP request details.
+ */
+export declare class PlainDataObject {
+  public host: string;
+  public query_params: QueryParams;
+  public cookies: Cookies;
+  public referer: string | null;
+  public x_forwarded_for: string | null;
+  public remote_address: string | null;
+  public scheme: string | null;
+  public request_uri: string | null;
+
+  constructor(
+    host: string,
+    query_params: QueryParams,
+    cookies: Cookies,
+    referer: string | null,
+    x_forwarded_for: string | null,
+    remote_address: string | null,
+    scheme?: string | null,
+    request_uri?: string | null
+  );
 }
 
 /**
@@ -96,12 +140,31 @@ export declare class ParamBuilder {
   getClientIpAddress(): string | null;
 
   /**
+   * Get the referrer URL from the last processed request
+   * @returns The referrer URL or null if not available
+   */
+  getReferrerUrl(): string | null;
+
+  /**
+   * Get the event source URL constructed from the last processed request context
+   * @returns The event source URL or null if host was not available
+   */
+  getEventSourceUrl(): string | null;
+
+  /**
+   * Process an incoming request using a context object or PlainDataObject
+   * @param context The request context or PlainDataObject
+   * @returns Array of CookieSettings to be set
+   */
+  processRequestFromContext(context?: PlainDataObject | object | null): CookieSettings[];
+
+  /**
    * Normalize and hash PII data
    * @param piiValue The PII value to normalize and hash
    * @param dataType The type of PII data (e.g., 'email', 'phone', 'first_name')
    * @returns The normalized and hashed PII value, or null if invalid
    */
-  getNormalizedAndHashedPII(piiValue: string, dataType: string): string | null;
+  getNormalizedAndHashedPII(piiValue: string, dataType: PiiDataType | string): string | null;
 
   // Internal used privat methods
   private _buildParamConfigs(existing_payload: string, query: string, prefix: string, value: string): string;
@@ -127,4 +190,5 @@ export declare class ParamBuilder {
   private _getLanguageToken(value: string): string | null;
   private _getClientIpLanguageTokenFromCookie(cookies: Cookies | null): string | null;
   private _getClientIp(cookies: Cookies | null, xForwardedFor?: string | null, remoteAddress?: string | null): string | null;
+  private _constructEventSourceUrl(data: PlainDataObject): string | null;
 }

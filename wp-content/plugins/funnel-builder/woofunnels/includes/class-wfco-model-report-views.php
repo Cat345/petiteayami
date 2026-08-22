@@ -2,113 +2,89 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-/*if ( ! class_exists( 'WFCO_Model' ) ) {
-	require_once __DIR__ . '/class-wfco-model.php';
-}*/
+
+/**
+ * Compatibility shim for the view-counter store.
+ *
+ * @deprecated Storage lives in the premium plugin as WFFN_Report_Views.
+ *
+ * The implementation moved out of this shared core: only the premium plugin
+ * writes these counters and only it reads them, so the free build has no reason
+ * to carry the storage code. This class stays behind purely so premium builds
+ * released before that move keep working -- several of their call sites invoke
+ * it without a class_exists guard, and two of those run on the storefront
+ * during checkout, so dropping the name outright would fatal a customer's
+ * checkout rather than merely degrade reporting.
+ *
+ * It holds no storage logic. Each method forwards to WFFN_Report_Views when the
+ * premium plugin provides it, and otherwise returns a correctly typed empty
+ * value so callers can keep going. Forwarding rather than no-oping means a call
+ * site we missed still records its data instead of silently dropping it.
+ *
+ * Keeping the name also keeps one released path alive: the checkout module's
+ * reporting guards on class_exists() and, when the class is missing, requires
+ * woofunnels/connector/db/class-wfco-model-report-views.php -- a path that no
+ * longer exists. Because this shim satisfies the guard, that require is never
+ * reached.
+ *
+ * Delete once the minimum supported premium release is the one that calls
+ * WFFN_Report_Views directly.
+ */
 if ( ! class_exists( 'WFCO_Model_Report_views' ) ) {
 	#[AllowDynamicProperties]
-	class WFCO_Model_Report_views extends WFCO_Model {
-		static $primary_key = 'ID';
+	class WFCO_Model_Report_views {
 
-		public static function count_rows( $dependency = null ) {
-			global $wpdb;
-			$table_name = self::_table();
-			$sql        = 'SELECT COUNT(*) FROM ' . $table_name;
-
-			if ( 'all' !== filter_input( INPUT_GET, 'status', FILTER_UNSAFE_RAW ) ) {
-				$status = filter_input( INPUT_GET, 'status', FILTER_UNSAFE_RAW );
-				$status = ( 'active' === $status ) ? 1 : 2;
-				$sql    = $wpdb->prepare( "SELECT COUNT(*) FROM $table_name WHERE status = %d", $status ); //phpcs:ignore WordPress.DB.PreparedSQL
-			}
-
-			return $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
-		}
-
-		private static function _table() {
-			global $wpdb;
-			$table_name = strtolower( get_called_class() );
-			$table_name = str_replace( 'wfco_model_', 'wfco_', $table_name );
-
-			return $wpdb->prefix . $table_name;
+		/**
+		 * Whether the premium plugin's store is loaded.
+		 *
+		 * @return bool
+		 */
+		private static function has_store() {
+			return class_exists( 'WFFN_Report_Views' );
 		}
 
 		/**
-		 * @param string $date Date(Y-m-d)
-		 * @param string $object_id post_id or unique_id
-		 * @param int $type 1=abandoned,2=upstroke,3=aero,4=bump
+		 * Records one view.
+		 *
+		 * @param string     $date      Date in Y-m-d.
+		 * @param string|int $object_id Post id, or empty.
+		 * @param int        $type      View type.
+		 *
+		 * @return void
 		 */
-
 		public static function update_data( $date = '', $object_id = '', $type = 1 ) {
-			global $wpdb;
-			$has_object_id = ( '' !== $object_id );
-			$object_id     = absint( $object_id );
-			$type          = absint( $type );
-			$insert        = [];
-
-			if ( $date !== '' ) {
-				$date = sanitize_text_field( $date );
-			} else {
-				$date = date( 'Y-m-d' ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
-			}
-			$insert['date'] = $date;
-
-			if ( $has_object_id ) {
-				$insert['object_id'] = $object_id;
-			}
-			$insert['type'] = $type;
-
-			$table = self::_table();
-
-			if ( $has_object_id ) {
-				$result = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `object_id` = %d AND `type` = %d", $date, $object_id, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- `$table` is a trusted internal identifier from self::_table(); date/object_id/type bound via prepare().
-			} else {
-				$result = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `type` = %d", $date, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- `$table` is a trusted internal identifier from self::_table(); date/type bound via prepare().
-			}
-
-			if ( ! empty( $result ) ) {
-				$primary_id = absint( $result[0]['id'] );
-				$wpdb->query( $wpdb->prepare( "UPDATE `$table` SET no_of_sessions = no_of_sessions + 1 WHERE id = %d", $primary_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
-			} else {
-				$wpdb->insert( $table, $insert ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- $wpdb->insert() parameterizes internally; safe.
+			if ( self::has_store() ) {
+				WFFN_Report_Views::update_data( $date, $object_id, $type );
 			}
 		}
 
-		public static function get_data( $date = '', $object_id = '', $type = 1, $interval = false ) {
-			global $wpdb;
-			$has_object_id = ( '' !== $object_id );
-			$object_id     = absint( $object_id );
-			$type          = absint( $type );
-			$table         = self::_table();
-
-			if ( $date !== '' ) {
-				if ( true === $interval ) {
-					// Validate $date is a safe date-range fragment before interpolation.
-					if ( ! preg_match( '/^`date`\s+BETWEEN\s+\'[\d\s:-]+\'\s+AND\s+\'[\d\s:-]+\'$/i', $date ) ) {
-						return [];
-					}
-					if ( $has_object_id ) {
-						return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE {$date} AND `object_id` = %d AND `type` = %d", $object_id, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- `$table` from self::_table() (trusted); $date regex-validated above; ids bound via %d.
-					}
-
-					return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE {$date} AND `type` = %d", $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- `$table` from self::_table() (trusted); $date regex-validated above; type bound via %d.
-				}
-
-				$date = sanitize_text_field( $date );
-				if ( $has_object_id ) {
-					return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `object_id` = %d AND `type` = %d", $date, $object_id, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- `$table` from self::_table() (trusted); values bound via prepare().
-				}
-
-				return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `type` = %d", $date, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- `$table` from self::_table() (trusted); values bound via prepare().
+		/**
+		 * Reads rows.
+		 *
+		 * @param string $query  Query containing {table_name}.
+		 * @param array  $params Values to bind.
+		 *
+		 * @return array Empty when nothing records views -- callers iterate this.
+		 */
+		public static function get_results( $query, $params = array() ) {
+			if ( self::has_store() ) {
+				return WFFN_Report_Views::get_results( $query, $params );
 			}
 
-			$date = date( 'Y-m-d' ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
-			if ( $has_object_id ) {
-				return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `object_id` = %d AND `type` = %d", $date, $object_id, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- `$table` from self::_table() (trusted); values bound via prepare().
-			}
-
-			return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `type` = %d", $date, $type ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- `$table` from self::_table() (trusted); values bound via prepare().
+			return array();
 		}
 
-
+		/**
+		 * Deletes rows.
+		 *
+		 * @param string $query Query containing {table_name}.
+		 *
+		 * @return void
+		 */
+		public static function delete_multiple( $query ) {
+			if ( self::has_store() ) {
+				WFFN_Report_Views::delete_multiple( $query );
+			}
+		}
 	}
 }

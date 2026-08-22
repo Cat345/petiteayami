@@ -230,6 +230,53 @@ class Helper_Functions {
     }
 
     /**
+     * Get the discount application mode for a given feature.
+     *
+     * Resolves the store-owner setting that controls how a feature's discount is applied:
+     * - 'price'  : bake the discount into the item/shipping rate price directly (default, legacy behavior).
+     * - 'coupon' : keep prices unchanged and attribute the discount to the coupon amount instead.
+     *
+     * Premium features register their feature => option ID mapping via the
+     * `acfw_discount_application_mode_options_map` filter.
+     *
+     * @since 4.8
+     * @access public
+     *
+     * @param string          $feature Feature slug (e.g. 'bogo_deals', 'add_products', 'shipping_overrides').
+     * @param \WC_Coupon|null $coupon  Coupon object context (reserved for future per-coupon overrides).
+     * @return string Discount application mode ('price' or 'coupon').
+     */
+    public function get_discount_application_mode( $feature, $coupon = null ) {
+        /**
+         * Filter the feature => option ID map used to resolve discount application modes.
+         *
+         * @since 4.8
+         *
+         * @param array $options_map Feature slug keyed list of option IDs.
+         */
+        $options_map = apply_filters(
+            'acfw_discount_application_mode_options_map',
+            array(
+                'bogo_deals' => Plugin_Constants::BOGO_DISCOUNT_APPLICATION_MODE,
+            )
+        );
+
+        $mode = isset( $options_map[ $feature ] ) ? get_option( $options_map[ $feature ], 'price' ) : 'price';
+        $mode = in_array( $mode, array( 'price', 'coupon' ), true ) ? $mode : 'price';
+
+        /**
+         * Filter the resolved discount application mode for a feature.
+         *
+         * @since 4.8
+         *
+         * @param string          $mode    Discount application mode ('price' or 'coupon').
+         * @param string          $feature Feature slug.
+         * @param \WC_Coupon|null $coupon  Coupon object context.
+         */
+        return apply_filters( 'acfw_discount_application_mode', $mode, $feature, $coupon );
+    }
+
+    /**
      * Get all currently active modules.
      *
      * @since 1.0
@@ -263,6 +310,40 @@ class Helper_Functions {
         $guest = array( 'guest' => __( 'Guest', 'advanced-coupons-for-woocommerce-free' ) );
 
         return apply_filters( 'acfw_default_allowed_user_roles', array_merge( $guest, $roles ) );
+    }
+
+    /**
+     * Get the active product brand taxonomy slug.
+     *
+     * Detects the registered brand taxonomy used by the store, checking the common
+     * brand plugin slugs in priority order. Returns an empty string when none is found.
+     *
+     * @since 4.7.4
+     * @access public
+     *
+     * @return string Registered brand taxonomy slug, or empty string if none is detected.
+     */
+    public function get_product_brand_taxonomy() {
+        $candidates = apply_filters(
+            'acfw_product_brand_taxonomy_candidates',
+            array(
+                'product_brand',        // WooCommerce core brands & WooCommerce Brands extension.
+                'pwb-brand',            // Perfect Brands for WooCommerce.
+                'yith_product_brand',   // YITH WooCommerce Brands Add-on.
+                'product_brands',       // Brands for WooCommerce.
+                'berocket_brand',       // BeRocket Brands.
+            )
+        );
+
+        $taxonomy = '';
+        foreach ( $candidates as $candidate ) {
+            if ( taxonomy_exists( $candidate ) ) {
+                $taxonomy = $candidate;
+                break;
+            }
+        }
+
+        return apply_filters( 'acfw_product_brand_taxonomy', $taxonomy );
     }
 
     /**

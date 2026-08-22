@@ -28,7 +28,27 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 			add_action( 'wfocu_front_pre_init_funnel_hooks', array( $this, 'maybe_force_save_token_for_3ds' ), 1 );
 			add_action( 'wfocu_footer_before_print_scripts', array( $this, 'maybe_render_in_offer_transaction_scripts' ), 999 );
 			add_filter( 'wfocu_allow_ajax_actions_for_charge_setup', array( $this, 'allow_check_action' ) );
-			add_action( 'wp_footer', array( $this, 'maybe_render_script_to_allow_tokenization' ) );
+
+			/**
+			 * Choose how the card is flagged for tokenization so One Click Upsells can charge the
+			 * post-purchase offer:
+			 *
+			 *  - false (default): the legacy JS approach — inject a hidden, checked
+			 *    `wc-woocommerce_payments-new-payment-method` checkbox into the checkout form.
+			 *  - true: flag it server-side via the request/posted data (covers order-pay and the
+			 *    Store API / express flows too).
+			 *
+			 * The server-side approach was reported to break payments for some WooPayments
+			 * merchants, so it is opt-in until stabilised. Return true to this filter to enable it.
+			 */
+			if ( true === apply_filters( 'wfocu_wcpay_force_save_payment_method_server_side', true ) ) {
+				add_filter( 'woocommerce_checkout_posted_data', array( $this, 'force_save_payment_method' ), 9 );
+				add_action( 'woocommerce_before_pay_action', array( $this, 'force_save_payment_method_for_order_pay' ), 11 );
+				add_action( 'woocommerce_rest_checkout_process_payment_with_context', array( $this, 'force_save_payment_method_for_store_api' ), 8, 2 );
+			} else {
+				add_action( 'wp_footer', array( $this, 'maybe_render_script_to_allow_tokenization' ) );
+			}
+
 			add_filter( 'woocommerce_checkout_posted_data', array( $this, 'prevent_new_method_param_for_other_gateways' ), 10 );
 		}
 
@@ -123,7 +143,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 			$get_current_offer      = WFOCU_Core()->data->get( 'current_offer' );
 			$get_current_offer_meta = WFOCU_Core()->offers->get_offer_meta( $get_current_offer );
 			WFOCU_Core()->data->set( '_offer_result', true );
-			$posted_data = WFOCU_Core()->process_offer->parse_posted_data( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$posted_data = WFOCU_Core()->process_offer->parse_posted_data( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 
 			/**
 			 * return if found error in the charge request
@@ -388,7 +408,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 		 * @throws WC_Stripe_Exception
 		 */
 		public function process_refund_offer( $order ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
-			$refund_data = $_POST;  // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$refund_data = $_POST;  // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 
 			$txn_id = isset( $refund_data['txn_id'] ) ? $refund_data['txn_id'] : '';
 			$amt    = isset( $refund_data['amt'] ) ? $refund_data['amt'] : '';
@@ -657,7 +677,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 			 */
 			if ( ( did_action( 'wp_ajax_nopriv_update_order_status' ) || did_action( 'wp_ajax_update_order_status' ) ) && $this->is_enabled( $order ) ) {
 				try {
-					$payment_method_id = isset( $_POST['payment_method_id'] ) ? wc_clean( wp_unslash( $_POST['payment_method_id'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
+					$payment_method_id = isset( $_POST['payment_method_id'] ) ? bwf_clean( wp_unslash( $_POST['payment_method_id'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 					$database_cache    = null;
 					if ( class_exists( 'WCPay\Database_Cache' ) ) {
 						$database_cache = new WCPay\Database_Cache();
@@ -720,8 +740,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 
 
 		/**
-		 * Render script to allow tokenization for the case where save card not enabled from settings
-		 * this technique works as a fallback for the above case
+		 * Legacy fallback: render a script that injects a hidden, checked
+		 * `wc-woocommerce_payments-new-payment-method` checkbox into the checkout form so the card is
+		 * tokenized even when "save card" is not enabled in the gateway settings.
+		 *
+		 * This is the default behaviour. The server-side alternative (force_save_payment_method* below)
+		 * is opt-in via the wfocu_wcpay_force_save_payment_method_server_side filter.
 		 */
 		public function maybe_render_script_to_allow_tokenization() {
 			if ( ! $this->is_enabled() || ! is_checkout() ) {
@@ -758,6 +782,113 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 
 			</script>
 			<?php
+		}
+
+
+		/**
+		 * Flag the card to be tokenized so One Click Upsells can charge the post-purchase offer.
+		 *
+		 * WooPayments decides whether to save the payment method server-side, in
+		 * WC_Payment_Gateway_WCPay::prepare_payment_information(), by looking for a non-empty
+		 * `wc-woocommerce_payments-new-payment-method` value in the request. Setting it here
+		 * gives the upsell the token it needs.
+		 *
+		 * This is deliberately done server-side rather than by injecting a checked checkbox
+		 * into the payment form. WooPayments derives the Stripe Payment Element's `terms`
+		 * (the "authorize future payments" mandate) from that checkbox in the DOM; with no
+		 * checkbox present the element resolves its terms to "never", so the mandate is not
+		 * rendered while the card is still tokenized. It also removes the DOM/event-timing
+		 * races the previous JS approach depended on, and covers express checkout, which
+		 * never submits the checkout form.
+		 *
+		 * @param array $posted_data Checkout posted data, returned unmodified.
+		 *
+		 * @return array
+		 */
+		public function force_save_payment_method( $posted_data ) {
+			if ( ! $this->is_enabled() ) {
+				return $posted_data;
+			}
+
+			$chosen_gateway = isset( $posted_data['payment_method'] ) ? $posted_data['payment_method'] : '';
+
+			/**
+			 * Only the card gateway is tokenized for upsells. The other WooPayments methods
+			 * (Klarna, Affirm, iDEAL, ...) must never be flagged for saving.
+			 */
+			if ( $this->get_key() !== $chosen_gateway ) {
+				return $posted_data;
+			}
+
+			$have_funnel = WFOCU_Core()->funnels->setup_funnels();
+			if ( ! is_array( $have_funnel ) || count( $have_funnel ) === 0 ) {
+				return $posted_data;
+			}
+			$_POST[ 'wc-' . $this->get_key() . '-new-payment-method' ] = 'true'; //phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Guest checkout has no capability to check; this only flags the card for tokenization and WooPayments validates it.
+
+			return $posted_data;
+		}
+
+		/**
+		 * Same as force_save_payment_method(), for the order-pay flow where the
+		 * `woocommerce_checkout_posted_data` filter never runs.
+		 *
+		 * @param WC_Order $order Order being paid.
+		 *
+		 * @return void
+		 */
+		public function force_save_payment_method_for_order_pay( $order ) {
+			if ( ! $this->is_enabled() || ! $order instanceof WC_Order ) {
+				return;
+			}
+
+			$have_funnel = WFOCU_Core()->funnels->setup_funnels();
+			if ( ! is_array( $have_funnel ) || count( $have_funnel ) === 0 ) {
+				return;
+			}
+
+			$chosen_gateway = isset( $_POST['payment_method'] ) ? bwf_clean( wp_unslash( $_POST['payment_method'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+
+			if ( $this->get_key() !== $chosen_gateway ) {
+				return;
+			}
+
+			$_POST[ 'wc-' . $this->get_key() . '-new-payment-method' ] = 'true'; //phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Guest checkout has no capability to check; this only flags the card for tokenization and WooPayments validates it.
+		}
+
+		/**
+		 * Same as force_save_payment_method(), for the Store API (the Checkout block and any
+		 * express flow routed through it).
+		 *
+		 * That flow never runs `woocommerce_checkout_posted_data`, and WooCommerce's Store API
+		 * legacy shim replaces $_POST wholesale with $context->payment_data before calling the
+		 * gateway (see Automattic\WooCommerce\StoreApi\Legacy::process_legacy_payment). The flag
+		 * therefore has to be added to the payment data itself; anything written to $_POST here
+		 * would be discarded.
+		 *
+		 * @param mixed $context Store API PaymentContext.
+		 * @param mixed $result  Store API PaymentResult, unused.
+		 *
+		 * @return void
+		 */
+		public function force_save_payment_method_for_store_api( $context, $result = null ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
+			if ( ! $this->is_enabled() || ! is_object( $context ) || ! method_exists( $context, 'set_payment_data' ) ) {
+				return;
+			}
+
+			$have_funnel = WFOCU_Core()->funnels->setup_funnels();
+			if ( ! is_array( $have_funnel ) || count( $have_funnel ) === 0 ) {
+				return;
+			}
+			if ( $this->get_key() !== $context->payment_method ) {
+				return;
+			}
+
+			$payment_data = (array) $context->payment_data;
+
+			$payment_data[ 'wc-' . $this->get_key() . '-new-payment-method' ] = 'true';
+
+			$context->set_payment_data( $payment_data );
 		}
 
 		public function get_nw_card_html() {
@@ -829,16 +960,16 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 				'klarna'            => 'woocommerce_payments_klarna',
 			);
 
-			if ( isset( $_POST['wc-woocommerce_payments-new-payment-method'] ) && in_array( $_POST['wc-woocommerce_payments-new-payment-method'], $payment_methods, true ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
-				unset( $_POST['wc-woocommerce_payments-new-payment-method'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+			if ( isset( $_POST['wc-woocommerce_payments-new-payment-method'] ) && in_array( $_POST['wc-woocommerce_payments-new-payment-method'], $payment_methods, true ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+				unset( $_POST['wc-woocommerce_payments-new-payment-method'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 			}
 
 			/**
 			 * Add the condition for affirm payment selection
 			 */
 
-			if ( isset( $_POST['wc-woocommerce_payments-new-payment-method'] ) && isset( $_POST['payment_method'] ) && in_array( $_POST['payment_method'], $payment_methods, true ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
-				unset( $_POST['wc-woocommerce_payments-new-payment-method'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+			if ( isset( $_POST['wc-woocommerce_payments-new-payment-method'] ) && isset( $_POST['payment_method'] ) && in_array( $_POST['payment_method'], $payment_methods, true ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+				unset( $_POST['wc-woocommerce_payments-new-payment-method'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 			}
 
 			return $posted_data;

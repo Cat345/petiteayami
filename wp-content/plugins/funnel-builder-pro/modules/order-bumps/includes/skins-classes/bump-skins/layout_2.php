@@ -85,7 +85,7 @@ if ( ! class_exists( 'WFOB_Layout_2' ) ) {
 
 				'social_proof_enable'                    => 'false',
 				'social_proof_heading'                   => __( '30% of Our Customers Choose this Upgrade', 'woofunnels-order-bump' ),
-				'social_proof_content'                   => __( 'This is by far the most popular option with over 30% of customers choosing this value offer. {{product_regular_price}} worth but today only {{price}} ({{saving_value}} / {{saving_percentage}} savings).', 'woofunnels-order-bump' ),
+				'social_proof_content'                   => __( 'This is by far the most popular option with over 30% of customers choosing this value offer. Add it to your order in one click, with no extra steps at checkout.', 'woofunnels-order-bump' ),
 
 				'social_proof_tooltip_bg_color'          => '#ffffff',
 				'social_proof_tooltip_font_size'         => '12',

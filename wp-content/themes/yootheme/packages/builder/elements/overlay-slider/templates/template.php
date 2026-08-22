@@ -46,7 +46,7 @@ $el = $this->el('div', [
     'class' => [
         'uk-slider-container {@!slidenav: outside}',
         // Expand to column height
-        'uk-flex-1 uk-flex uk-flex-column {@height_expand}]',
+        'uk-flex-1 uk-flex uk-flex-column {@height_expand}',
     ],
 
     'uk-slider' => $this->expr([

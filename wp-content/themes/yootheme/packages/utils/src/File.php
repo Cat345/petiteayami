@@ -45,7 +45,7 @@ abstract class File
      */
     public static function find(string $path): ?string
     {
-        return ($files = static::glob($path, GLOB_NOSORT)) ? $files[0] : null;
+        return array_first(static::glob($path, GLOB_NOSORT));
     }
 
     /**

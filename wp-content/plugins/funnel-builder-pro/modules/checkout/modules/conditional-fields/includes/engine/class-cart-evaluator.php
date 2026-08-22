@@ -254,6 +254,11 @@ class Cart_Evaluator {
 			'total'            => $total,
 			'shipping_weight'  => $cart->get_cart_contents_weight(),
 			'is_virtual'       => $cart_is_virtual,
+			// True when this cart actually requires a shipping address. False for all-virtual carts,
+			// local-pickup-only, and the "force shipping to billing" store setting. Consumed by the
+			// checkout JS to decide whether a hidden shipping section may keep ship_to_different_address
+			// ticked (so optional-billing validation is dropped) without triggering shipping validation.
+			'needs_shipping'   => ( method_exists( $cart, 'needs_shipping_address' ) ? (bool) $cart->needs_shipping_address() : ! $cart_is_virtual ),
 			'item_count'       => $cart->get_cart_contents_count(), // Total quantity of all items.
 			'line_count'       => count( $cart->get_cart() ),       // Number of unique line items.
 			'applied_coupons'  => $applied_coupons,

@@ -25,14 +25,18 @@ class Xoo_Wl_Frontend{
 		add_action( 'wp_enqueue_scripts' , array( $this,'enqueue_scripts' ), 5 );
 		add_action( 'wp_footer', array( $this, 'popup_markup' ) );
 
-		if( function_exists('wp_is_block_theme') && wp_is_block_theme() ){
-			add_action( 'init', array( $this, 'block_theme_add_hook_for_waitlist_on_product_page' ) );
-		}
-		else{
-			add_action( 'woocommerce_before_single_product', array( $this, 'add_hook_for_waitlist_on_product_page' ) );
+		if( in_array( 'product', (array) xoo_wl_helper()->get_general_option( 'm-show-waitlist' ) ) ){
+
+			if( function_exists('wp_is_block_theme') && wp_is_block_theme() ){
+				add_action( 'init', array( $this, 'block_theme_add_hook_for_waitlist_on_product_page' ) );
+			}
+			else{
+				add_action( 'woocommerce_before_single_product', array( $this, 'add_hook_for_waitlist_on_product_page' ) );
+			}
+
 		}
 		
-		if( xoo_wl_helper()->get_general_option( 'm-en-shop' ) === "yes" ){
+		if( in_array( 'shop', (array) xoo_wl_helper()->get_general_option( 'm-show-waitlist' ) ) ){
 			add_action( 'woocommerce_after_shop_loop_item', array( $this, 'show_waitlist_on_shop_page' ), 15 );
 		}
 		add_action( 'xoo_wl_form_end', array( $this, 'lang_field' ) );
@@ -56,95 +60,9 @@ class Xoo_Wl_Frontend{
 		wp_enqueue_style( 'xoo-wl-style', XOO_WL_URL.'/assets/css/xoo-wl-style.css', array(), XOO_WL_VERSION );
 		wp_enqueue_style('xoo-wl-fonts',XOO_WL_URL.'/assets/css/xoo-wl-fonts.css',array(),XOO_WL_VERSION);
 
-		$btn_bg_color 		= xoo_wl_helper()->get_style_option( 'btn-bgcolor' );
-		$btn_txt_color 		= xoo_wl_helper()->get_style_option( 'btn-txtcolor' );
-		$btn_form_width 	= xoo_wl_helper()->get_style_option( 'btn-form-width' );
-		$btn_open_width 	= xoo_wl_helper()->get_style_option( 'btn-open-width' );
-		$btn_padding 		= xoo_wl_helper()->get_style_option( 'btn-padding' );
-		$popup_width 		= xoo_wl_helper()->get_style_option( 'popup-width' );
-		$popup_height 		= xoo_wl_helper()->get_style_option( 'popup-height' );
-		$sidebar_img  		= xoo_wl_helper()->get_style_option( 'popup-sidebar-img') ;
-		$sidebar_width 		= xoo_wl_helper()->get_style_option( 'popup-sidebar-width' );
-		$sidebar_pos 		= xoo_wl_helper()->get_style_option( 'popup-sidebar-pos' );
-		$popup_pos 			= xoo_wl_helper()->get_style_option( 'popup-pos' );
-		$popup_heightType  	= xoo_wl_helper()->get_style_option( 'popup-height-type' );
-
-
-		$inline_style = "
-			button.xoo-wl-action-btn{
-				background-color: {$btn_bg_color};
-				color: {$btn_txt_color};
-				padding: {$btn_padding}px;
-			}
-			button.xoo-wl-submit-btn{
-				max-width: {$btn_form_width}px;
-			}
-			button.xoo-wl-open-form-btn{
-				max-width: {$btn_open_width}px;
-			}
-			.xoo-wl-inmodal{
-				max-width: {$popup_width}px;
-				max-height: {$popup_height}px;
-			}
-		";
-
-		if( $sidebar_img ){
-			$inline_style .= "
-			.xoo-wl-sidebar{
-				background-image: url({$sidebar_img});
-				min-width: {$sidebar_width}%;
-			}";
-		}
-
-		if($sidebar_pos == 'right'){
-			$inline_style .= "
-				.xoo-wl-wrap{
-					direction: rtl;
-				}
-				.xoo-wl-wrap > div{
-					direction: ltr;
-				}
-
-			";
-		}
-
-
-
-		if($popup_pos  === 'middle'){
-			$inline_style .= "
-				.xoo-wl-modal:before {
-				    content: '';
-				    display: inline-block;
-				    height: 100%;
-				    vertical-align: middle;
-				    margin-right: -0.25em;
-				}
-			";
-		}
-		else{
-			$inline_style .= "
-				.xoo-wl-inmodal{
-					margin-top: 40px;
-				}
-
-			";
-		}
-
-		if( $popup_heightType === 'auto' ){
-			$inline_style .= "
-				.xoo-wl-inmodal{
-					display: inline-flex;
-					max-height: 90%;
-					height: auto;
-				}
-
-				.xoo-wl-sidebar, .xoo-wl-wrap{
-					height: auto;
-				}
-			";
-		}
-
-		wp_add_inline_style('xoo-wl-style', $inline_style );
+		ob_start();
+		xoo_wl_helper()->get_template( '/inline-style.php' );
+		wp_add_inline_style('xoo-wl-style', ob_get_clean() );
 	}
 
 	//Enqueue javascript
@@ -181,7 +99,9 @@ class Xoo_Wl_Frontend{
 
 		global $product;
 
-		echo xoo_wl_form_markup( $product->get_id(), xoo_wl_helper()->get_general_option('m-form-type')  );
+		echo xoo_wl_form_markup( $product->get_id(), xoo_wl_helper()->get_general_option('m-form-type'), array(
+			'container_class' => array( 'xoo-wl-prod-btncont' )
+		)  );
 
 	}
 
@@ -189,7 +109,9 @@ class Xoo_Wl_Frontend{
 		
 		global $product;
 
-		echo xoo_wl_form_markup( $product->get_id(), 'popup' );
+		echo xoo_wl_form_markup( $product->get_id(), 'popup', array(
+			'container_class' => array( 'xoo-wl-shop-btncont' )
+		) );
 	}
 
 	public function lang_field(){

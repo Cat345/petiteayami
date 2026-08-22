@@ -19,7 +19,7 @@ class OnboardingShouldShowGetParametersStrategy implements OnboardingShouldShowS
      *
      * @var array
      */
-    private $conditions;
+    private array $conditions;
     public function __construct(array $conditions)
     {
         $this->conditions = $conditions;

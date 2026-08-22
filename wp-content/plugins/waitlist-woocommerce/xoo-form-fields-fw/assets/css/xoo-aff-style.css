@@ -27,12 +27,7 @@
     width: 100%;
     justify-content: center;
     border-style: solid;
-}
-
-body:not(.rtl) .xoo-aff-input-group .xoo-aff-input-icon{
-    border-right: 0;
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
+    transition: border-color ease-in-out .15s
 }
 
 .xoo-aff-group input[type="text"], .xoo-aff-group input[type="password"], .xoo-aff-group input[type="email"], .xoo-aff-group input[type="number"], .xoo-aff-group select, .xoo-aff-group select + .select2, .xoo-aff-group input[type="tel"], .xoo-aff-group input[type="file"]{
@@ -53,8 +48,6 @@ body:not(.rtl) .xoo-aff-input-group .xoo-aff-input-icon{
     border-radius: 4px;
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
     box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
-    -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
-    -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
     transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
     outline: 0;
 }
@@ -203,8 +196,9 @@ body .select2-dropdown {
     outline: none;
 }
 
-.xoo-aff-group select, .xoo-aff-group select + .select2 {
-    padding: 0 15px;
+div.xoo-aff-group select.xoo-aff-field, div.xoo-aff-group select.xoo-aff-field + .select2 {
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 
@@ -266,6 +260,7 @@ label.xoo-aff-file-profile .xoo-aff-input-icon {
     margin: 0 auto;
     padding: 0;
     background-color: transparent;
+    position: relative;
 }
 
 label.xoo-aff-file-profile {
@@ -288,6 +283,7 @@ label.xoo-aff-file-profile .xoo-aff-input-group {
     border-radius: 50%;
     bottom: 0px;
     right: 0;
+    z-index: 5;
 }
 
 .xoo-aff-file-profile .xoo-ff-file-plcheck {
@@ -310,6 +306,11 @@ label.xoo-aff-file-profile .xoo-aff-input-group {
 .xoo-aff-file-profile-cont .xoo-aff-label {
     margin-top: 5px;
     margin-bottom: 0;
+}
+
+.xoo-aff-isfocused.xoo-aff-group .xoo-aff-file-profile .xoo-aff-input-icon {
+    background-color: transparent;
+    border: 0;
 }
 
 
@@ -343,17 +344,14 @@ label.xoo-aff-file-profile .xoo-aff-input-group {
 }
 
 
+
+
 /* RTL */
-body.rtl .xoo-aff-auto-fetch-loc{
-    text-align: left;
+body.rtl .xoo-aff-pw-toggle {
+    left: 5px;
+    right: auto;
 }
 
-body.rtl .xoo-aff-input-group .xoo-aff-input-icon {
-    border-bottom-right-radius: 4px;
-    border-top-right-radius: 4px;
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
-}
 
 body.rtl .xoo-aff-flag-cont span:nth-child(1) {
     margin-left: 10px;
@@ -376,16 +374,6 @@ body.rtl .xoo-aff-group:not(.one){
 }
 
 
-body.rtl .xoo-aff-input-icon + input, body.rtl .xoo-aff-input-icon + select {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 4px!important;
-    border-top-left-radius: 4px!important;
-}
-
-body.rtl .xoo-aff-input-group .xoo-aff-input-icon {
-    border-left: 0;
-}
 
 @media only screen and (max-width: 450px) {
     .xoo-aff-group.onehalf , .xoo-aff-group.onefourth, .xoo-aff-group.onethird , .xoo-aff-group, .xoo-aff-group.twothird {

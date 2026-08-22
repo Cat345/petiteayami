@@ -327,9 +327,6 @@ if ( ! class_exists( 'WFFN_Step_Landing' ) ) {
 
 		public function mark_step_converted( $step_data ) {
 			$landing_id = isset( $step_data['id'] ) ? $step_data['id'] : 0;
-			if ( $landing_id > 0 ) {
-				WFCO_Model_Report_views::update_data( gmdate( 'Y-m-d', current_time( 'timestamp' ) ), $landing_id, 3 );
-			}
 			WFFN_Core()->data->set( 'source_id', $landing_id )->save();
 			do_action( 'wffn_event_step_converted', $landing_id, $step_data );
 			do_action( 'wffn_event_step_converted_' . $this->slug, $landing_id, $step_data );
@@ -340,7 +337,6 @@ if ( ! class_exists( 'WFFN_Step_Landing' ) ) {
 			$landing_id   = isset( $current_page['id'] ) ? $current_page['id'] : 0;
 			if ( $landing_id > 0 ) {
 				WFFN_Core()->logger->log( __FUNCTION__ . ':: ' . $landing_id );
-				WFCO_Model_Report_views::update_data( gmdate( 'Y-m-d', current_time( 'timestamp' ) ), $landing_id, 2 );
 			}
 			do_action( 'wffn_event_step_viewed', $landing_id, $current_page );
 			do_action( 'wffn_event_step_viewed_' . $this->slug, $landing_id, $current_page );

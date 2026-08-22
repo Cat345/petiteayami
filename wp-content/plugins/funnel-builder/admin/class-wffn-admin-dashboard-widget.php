@@ -44,16 +44,14 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 
 		public function widget_content() {
 
-			$license_config     = WFFN_Core()->admin->get_license_config();
-			$app_state          = $this->get_current_app_state( $license_config );
-			$all_texts_from_pro = apply_filters( 'wffn_localized_text_admin', array() );
+			$widget_state = $this->get_widget_state();
 
 			wp_enqueue_script( 'wp-api' );
 
 			wp_enqueue_script( 'wp-pointer' );
 			wp_enqueue_style( 'wp-pointer' );
 
-			if ( wffn_is_wc_active() ) {
+			if ( wffn_is_wc_active() && function_exists( 'wc_get_price_decimal_separator' ) ) {
 				if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '10.3.0', '>=' ) ) {
 					wp_enqueue_script( 'wc-accounting' );
 				} else {
@@ -96,7 +94,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 			?>
 			<script type="text/html" id="tmpl-wffn-container-template">
 				<div class="bwf-tiles">
-					<a href="<?php echo esc_url( site_url() ); ?>/wp-admin/admin.php?page=bwf<?php echo $app_state !== 'lite' ? '&path=/analytics' : ''; ?>" class="bwf-tiles-item">
+					<a href="<?php echo esc_url( site_url() ); ?>/wp-admin/admin.php?page=bwf<?php echo esc_attr( $widget_state['analytics_path'] ); ?>" class="bwf-tiles-item">
 						<div class="bwf-tiles-header">
 							<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<rect width="28" height="28" rx="14" fill="#F1F2F9"/>
@@ -106,7 +104,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 						</div>
 						<div class="bwf-tiles-value-wrap"><span class="bwf-tiles-value">{{data.overall.total_orders}}</span></div>
 					</a>
-					<a href="<?php echo esc_url( site_url() ); ?>/wp-admin/admin.php?page=bwf<?php echo $app_state !== 'lite' ? '&path=/analytics' : ''; ?>" class="bwf-tiles-item">
+					<a href="<?php echo esc_url( site_url() ); ?>/wp-admin/admin.php?page=bwf<?php echo esc_attr( $widget_state['analytics_path'] ); ?>" class="bwf-tiles-item">
 						<div class="bwf-tiles-header">
 							<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<rect width="28" height="28" rx="14" fill="#F1F2F9"/>
@@ -117,7 +115,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 
 						<div class="bwf-tiles-value-wrap"><span class="bwf-tiles-value">{{data.formatMoney(data.overall.revenue)}}</span></div>
 					</a>
-					<a href="<?php echo esc_url( site_url() ); ?>/wp-admin/admin.php?page=bwf<?php echo $app_state !== 'lite' ? '&path=/analytics' : ''; ?>" class="bwf-tiles-item">
+					<a href="<?php echo esc_url( site_url() ); ?>/wp-admin/admin.php?page=bwf<?php echo esc_attr( $widget_state['analytics_path'] ); ?>" class="bwf-tiles-item">
 						<div class="bwf-tiles-header">
 							<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<rect width="28" height="28" rx="14" fill="#F1F2F9"/>
@@ -131,7 +129,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 							</svg>
 
 							<?php echo esc_html__( 'Order Bump Revenue', 'funnel-builder' ); ?>
-							<?php if ( in_array( $app_state, array( 'lite', 'basic', 'pro_without_license', 'license_expired_on_grace_period', 'license_expired' ), true ) ) { ?>
+							<?php if ( $widget_state['metrics_locked'] ) { ?>
 								<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<circle cx="10" cy="10" r="10" fill="#FFC65C"/>
 									<path d="M9.46545 6.7153C8.92 8.24666 8.30909 8.99046 7.75273 9.04515C7.13091 9.12172 6.58546 8.84826 6.07273 8.17009C6.0413 8.12899 6.00463 8.09221 5.96364 8.06071C6.11109 7.86358 6.18784 7.62231 6.18145 7.37599C6.17507 7.12967 6.08592 6.89273 5.92846 6.70355C5.77099 6.51437 5.55444 6.38404 5.31388 6.33368C5.07332 6.28332 4.82284 6.31587 4.60304 6.42607C4.38324 6.53626 4.20698 6.71764 4.10282 6.94082C3.99867 7.164 3.97272 7.41591 4.02918 7.65572C4.08565 7.89553 4.22121 8.10921 4.41391 8.26212C4.60661 8.41504 4.84516 8.49824 5.09091 8.49824L5.10182 8.62949L5.99636 12.1735C6.08385 12.5283 6.28697 12.8437 6.57353 13.0696C6.86009 13.2954 7.21367 13.4189 7.57818 13.4204H12.4218C12.7863 13.4189 13.1399 13.2954 13.4265 13.0696C13.713 12.8437 13.9162 12.5283 14.0036 12.1735L14.8982 8.62949C14.9067 8.58629 14.9103 8.54226 14.9091 8.49824C15.1548 8.49824 15.3934 8.41504 15.5861 8.26212C15.7788 8.10921 15.9144 7.89553 15.9708 7.65572C16.0273 7.41591 16.0013 7.164 15.8972 6.94082C15.793 6.71764 15.6168 6.53626 15.397 6.42607C15.1772 6.31587 14.9267 6.28332 14.6861 6.33368C14.4456 6.38404 14.229 6.51437 14.0715 6.70355C13.9141 6.89273 13.8249 7.12967 13.8185 7.37599C13.8122 7.62231 13.8889 7.86358 14.0364 8.06071C13.996 8.08883 13.9594 8.1219 13.9273 8.15915C13.3927 8.83732 12.8364 9.11078 12.2473 9.04515C11.7018 8.99046 11.1127 8.23572 10.5345 6.7153C10.7448 6.59679 10.91 6.41174 11.0042 6.18909C11.0985 5.96644 11.1164 5.71876 11.0553 5.48477C10.9943 5.25079 10.8575 5.04371 10.6666 4.89592C10.4756 4.74813 10.2412 4.66797 10 4.66797C9.75878 4.66797 9.52436 4.74813 9.33341 4.89592C9.14246 5.04371 9.00575 5.25079 8.94466 5.48477C8.88356 5.71876 8.90154 5.96644 8.99577 6.18909C9.09 6.41174 9.25518 6.59679 9.46545 6.7153ZM13.2727 14.2408C13.4174 14.2408 13.5561 14.2984 13.6584 14.401C13.7607 14.5036 13.8182 14.6427 13.8182 14.7877C13.8182 14.9328 13.7607 15.0719 13.6584 15.1744C13.5561 15.277 13.4174 15.3346 13.2727 15.3346H6.72727C6.58261 15.3346 6.44387 15.277 6.34158 15.1744C6.23929 15.0719 6.18182 14.9328 6.18182 14.7877C6.18182 14.6427 6.23929 14.5036 6.34158 14.401C6.44387 14.2984 6.58261 14.2408 6.72727 14.2408H13.2727Z" fill="white"/>
@@ -141,7 +139,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 						</div>
 						<div class="bwf-tiles-value-wrap"><span class="bwf-tiles-value">{{data.formatMoney(data.overall.bump_revenue)}}</span></div>
 					</a>
-					<a href="<?php echo esc_url( site_url() ); ?>/wp-admin/admin.php?page=bwf<?php echo $app_state !== 'lite' ? '&path=/analytics' : ''; ?>" class="bwf-tiles-item">
+					<a href="<?php echo esc_url( site_url() ); ?>/wp-admin/admin.php?page=bwf<?php echo esc_attr( $widget_state['analytics_path'] ); ?>" class="bwf-tiles-item">
 						<div class="bwf-tiles-header">
 							<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<rect width="28" height="28" rx="14" fill="#F1F2F9"/>
@@ -157,7 +155,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 								</defs>
 							</svg>
 							<?php echo esc_html__( 'Upsell Revenue', 'funnel-builder' ); ?>
-							<?php if ( in_array( $app_state, array( 'lite', 'basic', 'pro_without_license', 'license_expired_on_grace_period', 'license_expired' ), true ) ) { ?>
+							<?php if ( $widget_state['metrics_locked'] ) { ?>
 								<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<circle cx="10" cy="10" r="10" fill="#FFC65C"/>
 									<path d="M9.46545 6.7153C8.92 8.24666 8.30909 8.99046 7.75273 9.04515C7.13091 9.12172 6.58546 8.84826 6.07273 8.17009C6.0413 8.12899 6.00463 8.09221 5.96364 8.06071C6.11109 7.86358 6.18784 7.62231 6.18145 7.37599C6.17507 7.12967 6.08592 6.89273 5.92846 6.70355C5.77099 6.51437 5.55444 6.38404 5.31388 6.33368C5.07332 6.28332 4.82284 6.31587 4.60304 6.42607C4.38324 6.53626 4.20698 6.71764 4.10282 6.94082C3.99867 7.164 3.97272 7.41591 4.02918 7.65572C4.08565 7.89553 4.22121 8.10921 4.41391 8.26212C4.60661 8.41504 4.84516 8.49824 5.09091 8.49824L5.10182 8.62949L5.99636 12.1735C6.08385 12.5283 6.28697 12.8437 6.57353 13.0696C6.86009 13.2954 7.21367 13.4189 7.57818 13.4204H12.4218C12.7863 13.4189 13.1399 13.2954 13.4265 13.0696C13.713 12.8437 13.9162 12.5283 14.0036 12.1735L14.8982 8.62949C14.9067 8.58629 14.9103 8.54226 14.9091 8.49824C15.1548 8.49824 15.3934 8.41504 15.5861 8.26212C15.7788 8.10921 15.9144 7.89553 15.9708 7.65572C16.0273 7.41591 16.0013 7.164 15.8972 6.94082C15.793 6.71764 15.6168 6.53626 15.397 6.42607C15.1772 6.31587 14.9267 6.28332 14.6861 6.33368C14.4456 6.38404 14.229 6.51437 14.0715 6.70355C13.9141 6.89273 13.8249 7.12967 13.8185 7.37599C13.8122 7.62231 13.8889 7.86358 14.0364 8.06071C13.996 8.08883 13.9594 8.1219 13.9273 8.15915C13.3927 8.83732 12.8364 9.11078 12.2473 9.04515C11.7018 8.99046 11.1127 8.23572 10.5345 6.7153C10.7448 6.59679 10.91 6.41174 11.0042 6.18909C11.0985 5.96644 11.1164 5.71876 11.0553 5.48477C10.9943 5.25079 10.8575 5.04371 10.6666 4.89592C10.4756 4.74813 10.2412 4.66797 10 4.66797C9.75878 4.66797 9.52436 4.74813 9.33341 4.89592C9.14246 5.04371 9.00575 5.25079 8.94466 5.48477C8.88356 5.71876 8.90154 5.96644 8.99577 6.18909C9.09 6.41174 9.25518 6.59679 9.46545 6.7153ZM13.2727 14.2408C13.4174 14.2408 13.5561 14.2984 13.6584 14.401C13.7607 14.5036 13.8182 14.6427 13.8182 14.7877C13.8182 14.9328 13.7607 15.0719 13.6584 15.1744C13.5561 15.277 13.4174 15.3346 13.2727 15.3346H6.72727C6.58261 15.3346 6.44387 15.277 6.34158 15.1744C6.23929 15.0719 6.18182 14.9328 6.18182 14.7877C6.18182 14.6427 6.23929 14.5036 6.34158 14.401C6.44387 14.2984 6.58261 14.2408 6.72727 14.2408H13.2727Z" fill="white"/>
@@ -172,66 +170,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 			<div class="bwf-widget-wrap">
 
 				<?php
-				switch ( $app_state ) {
-					case 'lite':
-						?>
-						<div class="bwf-widget-notice is-lite">
-							<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M9.33182 5.8912C8.65 7.80539 7.88636 8.73514 7.19091 8.80351C6.41364 8.89921 5.73182 8.55739 5.09091 7.70968C5.05163 7.65831 5.00578 7.61234 4.95455 7.57295C5.13886 7.32655 5.23479 7.02496 5.22681 6.71706C5.21883 6.40916 5.1074 6.11298 4.91057 5.8765C4.71374 5.64003 4.44305 5.47712 4.14235 5.41417C3.84165 5.35122 3.52856 5.39191 3.2538 5.52965C2.97905 5.6674 2.75872 5.89413 2.62853 6.1731C2.49834 6.45208 2.4659 6.76696 2.53648 7.06672C2.60706 7.36649 2.77651 7.63358 3.01739 7.82473C3.25826 8.01587 3.55645 8.11987 3.86364 8.11987L3.87727 8.28394L4.99546 12.7139C5.10481 13.1574 5.35872 13.5516 5.71692 13.834C6.07511 14.1164 6.51709 14.2707 6.97273 14.2726H13.0273C13.4829 14.2707 13.9249 14.1164 14.2831 13.834C14.6413 13.5516 14.8952 13.1574 15.0045 12.7139L16.1227 8.28394C16.1334 8.22993 16.1379 8.1749 16.1364 8.11987C16.4435 8.11987 16.7417 8.01587 16.9826 7.82473C17.2235 7.63358 17.3929 7.36649 17.4635 7.06672C17.5341 6.76696 17.5017 6.45208 17.3715 6.1731C17.2413 5.89413 17.021 5.6674 16.7462 5.52965C16.4714 5.39191 16.1584 5.35122 15.8577 5.41417C15.5569 5.47712 15.2863 5.64003 15.0894 5.8765C14.8926 6.11298 14.7812 6.40916 14.7732 6.71706C14.7652 7.02496 14.8611 7.32655 15.0455 7.57295C14.9951 7.60811 14.9493 7.64945 14.9091 7.69601C14.2409 8.54372 13.5455 8.88554 12.8091 8.80351C12.1273 8.73514 11.3909 7.79172 10.6682 5.8912C10.931 5.74306 11.1375 5.51174 11.2553 5.23343C11.3731 4.95512 11.3955 4.64551 11.3192 4.35304C11.2428 4.06056 11.0719 3.80171 10.8332 3.61697C10.5946 3.43224 10.3015 3.33203 10 3.33203C9.69847 3.33203 9.40545 3.43224 9.16676 3.61697C8.92807 3.80171 8.75718 4.06056 8.68082 4.35304C8.60446 4.64551 8.62693 4.95512 8.74472 5.23343C8.86251 5.51174 9.06897 5.74306 9.33182 5.8912ZM14.0909 15.2981C14.2717 15.2981 14.4452 15.3701 14.573 15.4983C14.7009 15.6265 14.7727 15.8004 14.7727 15.9817C14.7727 16.163 14.7009 16.3369 14.573 16.4651C14.4452 16.5933 14.2717 16.6654 14.0909 16.6654H5.90909C5.72826 16.6654 5.55484 16.5933 5.42697 16.4651C5.29911 16.3369 5.22727 16.163 5.22727 15.9817C5.22727 15.8004 5.29911 15.6265 5.42697 15.4983C5.55484 15.3701 5.72826 15.2981 5.90909 15.2981H14.0909Z" fill="#353030"/>
-							</svg>
-							<span> <?php echo wp_kses_post( __( 'Get more with FunnelKit PRO—upgrade from Lite for additional features <a href="https://funnelkit.com/exclusive-offer/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Dashboard+Widget+TopBar" target="_blank">Upgrade to PRO</a>', 'funnel-builder' ) ); ?></span>
-						</div>
-						<?php
-						break;
-					case 'pro_without_license_on_grace_period':
-					case 'pro_without_license':
-						?>
-						<div class="bwf-widget-notice is-warning">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M21.8012 18.6522L13.336 3.78261C13.0546 3.28702 12.5687 3 12.0061 3C11.4435 3 10.9575 3.28702 10.6763 3.78261L2.21104 18.6522C1.92965 19.1478 1.92965 19.7218 2.21104 20.2174C2.49242 20.713 2.97829 21 3.54089 21H20.4459C21.0085 21 21.4946 20.713 21.7758 20.2174C22.0572 19.7218 22.0827 19.1478 21.8013 18.6522H21.8012ZM20.9317 19.6956C20.8805 19.7739 20.7527 19.9564 20.4969 19.9564L3.56641 19.9566C3.31071 19.9566 3.15726 19.774 3.13157 19.6958C3.08036 19.6175 3.00363 19.4088 3.13157 19.174L11.5968 4.3044C11.7247 4.06962 11.9549 4.04359 12.0316 4.04359C12.1084 4.04359 12.3385 4.06962 12.4665 4.3044L20.9317 19.174C21.0596 19.4088 20.9829 19.6173 20.9317 19.6956V19.6956Z" fill="#353030" stroke="#353030" stroke-width="0.3"/>
-								<path d="M12.0316 10.5216C11.7502 10.5216 11.52 10.7564 11.52 11.0434V17.0435C11.52 17.3306 11.7502 17.5653 12.0316 17.5653C12.313 17.5653 12.5431 17.3306 12.5431 17.0435V11.0434C12.5431 10.7564 12.313 10.5216 12.0316 10.5216Z" fill="#353030" stroke="#353030" stroke-width="0.3"/>
-								<path d="M12.5433 8.95637C12.5433 9.24461 12.3141 9.47817 12.0317 9.47817C11.7493 9.47817 11.5201 9.24461 11.5201 8.95637C11.5201 8.66831 11.7493 8.43475 12.0317 8.43475C12.3141 8.43475 12.5433 8.66832 12.5433 8.95637Z" fill="#353030" stroke="#353030" stroke-width="0.5"/>
-							</svg>
-
-							<span>
-								<?php
-								$license_url = esc_url( admin_url( 'admin.php?page=bwf&path=/settings/woofunnels_general_settings' ) );
-								echo wp_kses_post( sprintf( /* translators: %s: URL to license settings page */ __( '<strong>FunnelKit Pro is Not Fully Activated!</strong>  Please activate your license to continue using premium features without interruption. <a href="%s" target="_blank">Activate License</a>', 'funnel-builder' ), $license_url ) );
-								?>
-							</span>
-						</div>
-						<?php
-						break;
-					case 'license_expired':
-						?>
-						<div class="bwf-widget-notice is-danger">
-							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-								<path d="M21.8012 18.6522L13.336 3.78261C13.0546 3.28702 12.5687 3 12.0061 3C11.4435 3 10.9575 3.28702 10.6763 3.78261L2.21104 18.6522C1.92965 19.1478 1.92965 19.7218 2.21104 20.2174C2.49242 20.713 2.97829 21 3.54089 21H20.4459C21.0085 21 21.4946 20.713 21.7758 20.2174C22.0572 19.7218 22.0827 19.1478 21.8013 18.6522H21.8012ZM20.9317 19.6956C20.8805 19.7739 20.7527 19.9564 20.4969 19.9564L3.56641 19.9566C3.31071 19.9566 3.15726 19.774 3.13157 19.6958C3.08036 19.6175 3.00363 19.4088 3.13157 19.174L11.5968 4.3044C11.7247 4.06962 11.9549 4.04359 12.0316 4.04359C12.1084 4.04359 12.3385 4.06962 12.4665 4.3044L20.9317 19.174C21.0596 19.4088 20.9829 19.6173 20.9317 19.6956V19.6956Z" fill="#ffffff" stroke="#ffffff" stroke-width="0.3"></path>
-								<path d="M12.0316 10.5216C11.7502 10.5216 11.52 10.7564 11.52 11.0434V17.0435C11.52 17.3306 11.7502 17.5653 12.0316 17.5653C12.313 17.5653 12.5431 17.3306 12.5431 17.0435V11.0434C12.5431 10.7564 12.313 10.5216 12.0316 10.5216Z" fill="#ffffff" stroke="#ffffff" stroke-width="0.3"></path>
-								<path d="M12.5433 8.95637C12.5433 9.24461 12.3141 9.47817 12.0317 9.47817C11.7493 9.47817 11.5201 9.24461 11.5201 8.95637C11.5201 8.66831 11.7493 8.43475 12.0317 8.43475C12.3141 8.43475 12.5433 8.66832 12.5433 8.95637Z" fill="#ffffff" stroke="#ffffff" stroke-width="0.5"></path>
-							</svg>
-
-							<span><?php echo wp_kses_post( $all_texts_from_pro['license']['states'][4]['notice']['text'] ); ?> <a href="https://funnelkit.com/exclusive-offer/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Dashboard+Widget+TopBar"><?php echo esc_html( $all_texts_from_pro['license']['states'][4]['notice']['primary_action'] ); ?></a></span>
-						</div>
-						<?php
-						break;
-					case 'license_expired_on_grace_period':
-						?>
-						<div class="bwf-widget-notice is-danger">
-							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-								<path d="M21.8012 18.6522L13.336 3.78261C13.0546 3.28702 12.5687 3 12.0061 3C11.4435 3 10.9575 3.28702 10.6763 3.78261L2.21104 18.6522C1.92965 19.1478 1.92965 19.7218 2.21104 20.2174C2.49242 20.713 2.97829 21 3.54089 21H20.4459C21.0085 21 21.4946 20.713 21.7758 20.2174C22.0572 19.7218 22.0827 19.1478 21.8013 18.6522H21.8012ZM20.9317 19.6956C20.8805 19.7739 20.7527 19.9564 20.4969 19.9564L3.56641 19.9566C3.31071 19.9566 3.15726 19.774 3.13157 19.6958C3.08036 19.6175 3.00363 19.4088 3.13157 19.174L11.5968 4.3044C11.7247 4.06962 11.9549 4.04359 12.0316 4.04359C12.1084 4.04359 12.3385 4.06962 12.4665 4.3044L20.9317 19.174C21.0596 19.4088 20.9829 19.6173 20.9317 19.6956V19.6956Z" fill="#ffffff" stroke="#ffffff" stroke-width="0.3"></path>
-								<path d="M12.0316 10.5216C11.7502 10.5216 11.52 10.7564 11.52 11.0434V17.0435C11.52 17.3306 11.7502 17.5653 12.0316 17.5653C12.313 17.5653 12.5431 17.3306 12.5431 17.0435V11.0434C12.5431 10.7564 12.313 10.5216 12.0316 10.5216Z" fill="#ffffff" stroke="#ffffff" stroke-width="0.3"></path>
-								<path d="M12.5433 8.95637C12.5433 9.24461 12.3141 9.47817 12.0317 9.47817C11.7493 9.47817 11.5201 9.24461 11.5201 8.95637C11.5201 8.66831 11.7493 8.43475 12.0317 8.43475C12.3141 8.43475 12.5433 8.66832 12.5433 8.95637Z" fill="#ffffff" stroke="#ffffff" stroke-width="0.5"></path>
-							</svg>
-
-							<span><?php echo wp_kses_post( str_replace( '{{TIME_GRACE_EXPIRED}}', ( new DateTime( $license_config['f']['ed'] ) )->modify( '+' . $license_config['gp'][0] . ' days' )->format( 'F j, Y' ), $all_texts_from_pro['license']['states'][3]['notice']['text'] ) ); ?> <a href="https://funnelkit.com/exclusive-offer/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Dashboard+Widget+TopBar"><?php echo esc_html( $all_texts_from_pro['license']['states'][3]['notice']['primary_action'] ); ?></a></span>
-						</div>
-						<?php
-						break;
-					default:
-						echo '';
-						break;
-				}
+				$this->render_notice( $widget_state['notice'] );
 				?>
 
 				<div class="bwf-widget-content-wrap">
@@ -284,7 +223,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 						<span><span class="bwf-widget-action-box-title"> <?php echo esc_html__( 'Get FunnelKit Stripe', 'funnel-builder' ); ?></span><br><span class="bwf-widget-action-box-subtitle"><?php echo esc_html__( 'Installs from WordPress.org', 'funnel-builder' ); ?></span></span>
 						<span class="bwf-widget-action-box-r"><button class="bwf-button is-stripe is-activate"><span><?php echo esc_html__( 'Install', 'funnel-builder' ); ?></span></button> <span data-type="1" class="bwf-widget-action-box-remove"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_676_13273)"><path d="M2.76782 2.87703L2.8178 2.81914C3.00103 2.6359 3.28777 2.61924 3.48983 2.76917L3.54771 2.81914L7.99996 7.27115L12.4522 2.81914C12.6538 2.61758 12.9806 2.61758 13.1821 2.81914C13.3837 3.0207 13.3837 3.3475 13.1821 3.54906L8.73011 8.0013L13.1821 12.4535C13.3654 12.6368 13.382 12.9235 13.2321 13.1256L13.1821 13.1835C12.9989 13.3667 12.7121 13.3834 12.5101 13.2334L12.4522 13.1835L7.99996 8.73145L3.54771 13.1835C3.34615 13.385 3.01936 13.385 2.8178 13.1835C2.61624 12.9819 2.61624 12.6551 2.8178 12.4535L7.26981 8.0013L2.8178 3.54906C2.63456 3.36582 2.6179 3.07908 2.76782 2.87703L2.8178 2.81914L2.76782 2.87703Z" fill="#82838E"/></g><defs><clipPath id="clip0_676_13273"><rect width="16" height="16" fill="white"/></clipPath></defs></svg></span></span>
 					</div>
-					<?php if ( 'lite' !== $app_state ) : ?>
+					<?php if ( $widget_state['square_supported'] ) : ?>
 					<div class="bwf-widget-action-box" id="bwf-d-square" data-index="5" style="display:none;">
 						<svg width="44" height="44" viewBox="0 0 502 502" fill="none" xmlns="http://www.w3.org/2000/svg" class="bwf-widget-action-box-icon">
 							<path d="M501.43 83.79V417.63C501.43 463.9 463.93 501.42 417.64 501.42H83.79C37.51 501.42 0 463.92 0 417.63V83.79C0 37.52 37.52 0 83.79 0H417.63C463.92 0 501.42 37.5 501.42 83.79H501.43ZM410.23 117.65C410.23 103.04 398.38 91.2 383.78 91.2H117.63C103.02 91.2 91.18 103.04 91.18 117.65V383.84C91.18 398.45 103.02 410.29 117.63 410.29H383.8C398.41 410.29 410.25 398.44 410.25 383.84V117.65H410.23ZM182.32 197.6C182.32 189.17 189.11 182.34 197.49 182.34H303.89C312.28 182.34 319.06 189.18 319.06 197.6V303.84C319.06 312.27 312.31 319.1 303.89 319.1H197.49C189.1 319.1 182.32 312.26 182.32 303.84V197.6Z" fill="#000000"/>
@@ -348,8 +287,8 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 				</div>
 				<div class="bwf-widget-footer">
 					<div class="bwf-widget-footer-l">
-						<?php if ( $app_state === 'lite' ) { ?>
-							<a class="is-success" href="https://funnelkit.com/exclusive-offers"><strong><?php echo esc_html__( 'Upgrade to PRO', 'funnel-builder' ); ?> </strong></a>
+						<?php if ( $widget_state['show_upgrade_cta'] ) { ?>
+							<a class="is-success" target="_blank" href="https://funnelkit.com/exclusive-offer/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Dashboard+Widget+Footer"><strong><?php echo esc_html__( 'Upgrade to PRO', 'funnel-builder' ); ?> </strong></a>
 						<?php } ?>
 						<a href="https://funnelkit.com/blog/" target="_blank"><?php echo esc_html__( 'Blog', 'funnel-builder' ); ?></a>
 						<a href="https://funnelkit.com/support/" target="_blank"><?php echo esc_html__( 'Get Help', 'funnel-builder' ); ?> </a>
@@ -370,7 +309,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 				fkwidget.basenames = ['funnelkit-stripe-woo-payment-gateway/funnelkit-stripe-woo-payment-gateway.php', 'wp-marketing-automations/wp-marketing-automations.php', 'wp-marketing-automations-pro/wp-marketing-automations-pro.php', 'cart-for-woocommerce/plugin.php', 'funnelkit-payment-gateway-square-for-woocommerce/funnelkit-square.php', 'sublium-subscriptions-for-woocommerce/sublium-subscriptions-for-woocommerce.php'];
 				fkwidget.slugs = ['funnelkit-stripe-woo-payment-gateway', 'wp-marketing-automations', 'wp-marketing-automations-pro', 'cart-for-woocommerce', 'funnelkit-payment-gateway-square-for-woocommerce', 'sublium-subscriptions-for-woocommerce'];
 				fkwidget.stripe = <?php echo wp_json_encode( WFFN_Common::stripe_state() ); ?>;
-				<?php if ( 'lite' !== $app_state ) : ?>
+				<?php if ( $widget_state['square_supported'] ) : ?>
 				fkwidget.square = <?php echo wp_json_encode( WFFN_Common::square_state() ); ?>;
 				<?php else : ?>
 				fkwidget.square = {status: 'connected', link: ''};
@@ -383,7 +322,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 				fkwidget.current_day_before_month = '<?php echo esc_attr( self::get_thirty_days_ago() ); ?>';
 				fkwidget.dismissed = <?php echo wp_json_encode( get_user_meta( get_current_user_id(), '_bwf_notifications_close', true ) ); ?>;
 				fkwidget.is_wc = '<?php echo esc_attr( wffn_bool_to_string( wffn_is_wc_active() ) ); ?>';
-				<?php if ( 'lite' !== $app_state ) : ?>
+				<?php if ( $widget_state['square_supported'] ) : ?>
 				fkwidget.is_wc_square = '<?php echo esc_attr( wffn_bool_to_string( WFFN_Common::is_wc_square_active() ) ); ?>';
 				<?php else : ?>
 				fkwidget.is_wc_square = 'no';
@@ -1200,31 +1139,76 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 			<?php
 		}
 
-		function get_current_app_state( $proData, $module = 'f' ) {
-			$e  = $proData[ $module ]['e'];
-			$la = $proData[ $module ]['la'];
-			$ed = $proData[ $module ]['ed'];
-			$ad = $proData[ $module ]['ad'];
-			$ib = $proData[ $module ]['ib'];
+		/**
+		 * What this widget is allowed to show.
+		 *
+		 * The free plugin renders the free experience and knows nothing about
+		 * premium state; the premium plugin answers this filter to unlock the
+		 * analytics links, the premium metrics and its own notice.
+		 *
+		 * @return array
+		 */
+		private function get_widget_state() {
+			$pro_outdated = WFFN_Pro_Update_Required::get_instance()->is_outdated();
 
-			if ( $ib && $module === 'f' ) {
-				return 'basic';
+			$defaults = array(
+				'analytics_path'   => '',
+				'metrics_locked'   => ! $pro_outdated,
+				'square_supported' => false,
+				'show_upgrade_cta' => ! $pro_outdated,
+				'notice'           => $pro_outdated ? array(
+					'severity' => 'none',
+					'text'     => '',
+				) : array(
+					'severity' => 'lite',
+					'text'     => __( 'Get more with FunnelKit PRO—upgrade from Lite for additional features <a href="https://funnelkit.com/exclusive-offer/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Dashboard+Widget+TopBar" target="_blank">Upgrade to PRO</a>', 'funnel-builder' ),
+				),
+			);
+
+			$state = apply_filters( 'wffn_dashboard_widget_state', $defaults );
+			if ( ! is_array( $state ) ) {
+				return $defaults;
 			}
-			if ( ! $e ) {
-				return 'lite';
-			} elseif ( $ed && strtotime( 'now' ) > strtotime( $ed ) ) {
-				if ( strtotime( 'now' ) - strtotime( $ed ) < $proData['gp'][0] * 24 * 3600 ) {
-					return 'license_expired_on_grace_period';
-				}
 
-				return 'license_expired';
-			} elseif ( $la === true ) {
-				return 'pro';
-			} elseif ( strtotime( 'now' ) - strtotime( $ad ) < $proData['gp'][1] * 24 * 3600 ) {
-				return 'pro_without_license_on_grace_period';
+			$state           = array_merge( $defaults, $state );
+			$state['notice'] = is_array( $state['notice'] ) ? array_merge( $defaults['notice'], $state['notice'] ) : array(
+				'severity' => 'none',
+				'text'     => '',
+			);
+
+			return $state;
+		}
+
+		/**
+		 * Renders the banner above the widget content.
+		 *
+		 * @param array $notice Severity and message supplied by get_widget_state().
+		 *
+		 * @return void
+		 */
+		private function render_notice( $notice ) {
+			$severity = isset( $notice['severity'] ) ? $notice['severity'] : 'none';
+			$text     = isset( $notice['text'] ) ? $notice['text'] : '';
+
+			if ( 'none' === $severity || '' === trim( $text ) ) {
+				return;
 			}
 
-			return 'pro_without_license';
+			$icons = array(
+				'lite'    => '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M9.33182 5.8912C8.65 7.80539 7.88636 8.73514 7.19091 8.80351C6.41364 8.89921 5.73182 8.55739 5.09091 7.70968C5.05163 7.65831 5.00578 7.61234 4.95455 7.57295C5.13886 7.32655 5.23479 7.02496 5.22681 6.71706C5.21883 6.40916 5.1074 6.11298 4.91057 5.8765C4.71374 5.64003 4.44305 5.47712 4.14235 5.41417C3.84165 5.35122 3.52856 5.39191 3.2538 5.52965C2.97905 5.6674 2.75872 5.89413 2.62853 6.1731C2.49834 6.45208 2.4659 6.76696 2.53648 7.06672C2.60706 7.36649 2.77651 7.63358 3.01739 7.82473C3.25826 8.01587 3.55645 8.11987 3.86364 8.11987L3.87727 8.28394L4.99546 12.7139C5.10481 13.1574 5.35872 13.5516 5.71692 13.834C6.07511 14.1164 6.51709 14.2707 6.97273 14.2726H13.0273C13.4829 14.2707 13.9249 14.1164 14.2831 13.834C14.6413 13.5516 14.8952 13.1574 15.0045 12.7139L16.1227 8.28394C16.1334 8.22993 16.1379 8.1749 16.1364 8.11987C16.4435 8.11987 16.7417 8.01587 16.9826 7.82473C17.2235 7.63358 17.3929 7.36649 17.4635 7.06672C17.5341 6.76696 17.5017 6.45208 17.3715 6.1731C17.2413 5.89413 17.021 5.6674 16.7462 5.52965C16.4714 5.39191 16.1584 5.35122 15.8577 5.41417C15.5569 5.47712 15.2863 5.64003 15.0894 5.8765C14.8926 6.11298 14.7812 6.40916 14.7732 6.71706C14.7652 7.02496 14.8611 7.32655 15.0455 7.57295C14.9951 7.60811 14.9493 7.64945 14.9091 7.69601C14.2409 8.54372 13.5455 8.88554 12.8091 8.80351C12.1273 8.73514 11.3909 7.79172 10.6682 5.8912C10.931 5.74306 11.1375 5.51174 11.2553 5.23343C11.3731 4.95512 11.3955 4.64551 11.3192 4.35304C11.2428 4.06056 11.0719 3.80171 10.8332 3.61697C10.5946 3.43224 10.3015 3.33203 10 3.33203C9.69847 3.33203 9.40545 3.43224 9.16676 3.61697C8.92807 3.80171 8.75718 4.06056 8.68082 4.35304C8.60446 4.64551 8.62693 4.95512 8.74472 5.23343C8.86251 5.51174 9.06897 5.74306 9.33182 5.8912ZM14.0909 15.2981C14.2717 15.2981 14.4452 15.3701 14.573 15.4983C14.7009 15.6265 14.7727 15.8004 14.7727 15.9817C14.7727 16.163 14.7009 16.3369 14.573 16.4651C14.4452 16.5933 14.2717 16.6654 14.0909 16.6654H5.90909C5.72826 16.6654 5.55484 16.5933 5.42697 16.4651C5.29911 16.3369 5.22727 16.163 5.22727 15.9817C5.22727 15.8004 5.29911 15.6265 5.42697 15.4983C5.55484 15.3701 5.72826 15.2981 5.90909 15.2981H14.0909Z" fill="#353030"/> </svg>',
+				'warning' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M21.8012 18.6522L13.336 3.78261C13.0546 3.28702 12.5687 3 12.0061 3C11.4435 3 10.9575 3.28702 10.6763 3.78261L2.21104 18.6522C1.92965 19.1478 1.92965 19.7218 2.21104 20.2174C2.49242 20.713 2.97829 21 3.54089 21H20.4459C21.0085 21 21.4946 20.713 21.7758 20.2174C22.0572 19.7218 22.0827 19.1478 21.8013 18.6522H21.8012ZM20.9317 19.6956C20.8805 19.7739 20.7527 19.9564 20.4969 19.9564L3.56641 19.9566C3.31071 19.9566 3.15726 19.774 3.13157 19.6958C3.08036 19.6175 3.00363 19.4088 3.13157 19.174L11.5968 4.3044C11.7247 4.06962 11.9549 4.04359 12.0316 4.04359C12.1084 4.04359 12.3385 4.06962 12.4665 4.3044L20.9317 19.174C21.0596 19.4088 20.9829 19.6173 20.9317 19.6956V19.6956Z" fill="#353030" stroke="#353030" stroke-width="0.3"/> <path d="M12.0316 10.5216C11.7502 10.5216 11.52 10.7564 11.52 11.0434V17.0435C11.52 17.3306 11.7502 17.5653 12.0316 17.5653C12.313 17.5653 12.5431 17.3306 12.5431 17.0435V11.0434C12.5431 10.7564 12.313 10.5216 12.0316 10.5216Z" fill="#353030" stroke="#353030" stroke-width="0.3"/> <path d="M12.5433 8.95637C12.5433 9.24461 12.3141 9.47817 12.0317 9.47817C11.7493 9.47817 11.5201 9.24461 11.5201 8.95637C11.5201 8.66831 11.7493 8.43475 12.0317 8.43475C12.3141 8.43475 12.5433 8.66832 12.5433 8.95637Z" fill="#353030" stroke="#353030" stroke-width="0.5"/> </svg>',
+				'danger'  => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"> <path d="M21.8012 18.6522L13.336 3.78261C13.0546 3.28702 12.5687 3 12.0061 3C11.4435 3 10.9575 3.28702 10.6763 3.78261L2.21104 18.6522C1.92965 19.1478 1.92965 19.7218 2.21104 20.2174C2.49242 20.713 2.97829 21 3.54089 21H20.4459C21.0085 21 21.4946 20.713 21.7758 20.2174C22.0572 19.7218 22.0827 19.1478 21.8013 18.6522H21.8012ZM20.9317 19.6956C20.8805 19.7739 20.7527 19.9564 20.4969 19.9564L3.56641 19.9566C3.31071 19.9566 3.15726 19.774 3.13157 19.6958C3.08036 19.6175 3.00363 19.4088 3.13157 19.174L11.5968 4.3044C11.7247 4.06962 11.9549 4.04359 12.0316 4.04359C12.1084 4.04359 12.3385 4.06962 12.4665 4.3044L20.9317 19.174C21.0596 19.4088 20.9829 19.6173 20.9317 19.6956V19.6956Z" fill="#ffffff" stroke="#ffffff" stroke-width="0.3"></path> <path d="M12.0316 10.5216C11.7502 10.5216 11.52 10.7564 11.52 11.0434V17.0435C11.52 17.3306 11.7502 17.5653 12.0316 17.5653C12.313 17.5653 12.5431 17.3306 12.5431 17.0435V11.0434C12.5431 10.7564 12.313 10.5216 12.0316 10.5216Z" fill="#ffffff" stroke="#ffffff" stroke-width="0.3"></path> <path d="M12.5433 8.95637C12.5433 9.24461 12.3141 9.47817 12.0317 9.47817C11.7493 9.47817 11.5201 9.24461 11.5201 8.95637C11.5201 8.66831 11.7493 8.43475 12.0317 8.43475C12.3141 8.43475 12.5433 8.66832 12.5433 8.95637Z" fill="#ffffff" stroke="#ffffff" stroke-width="0.5"></path> </svg>',
+			);
+
+			if ( ! isset( $icons[ $severity ] ) ) {
+				$severity = 'lite';
+			}
+			?>
+			<div class="bwf-widget-notice is-<?php echo esc_attr( $severity ); ?>">
+				<?php echo $icons[ $severity ]; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<span><?php echo wp_kses_post( $text ); ?></span>
+			</div>
+			<?php
 		}
 
 		public function is_update_available() {

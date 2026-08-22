@@ -88,10 +88,10 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 			if ( isset( $search ) && ! empty( $search ) && $only_count === false ) { //phpcs:ignore WordPress.Security.NonceVerification
 				$search_like = '%' . $wpdb->esc_like( $search ) . '%';
 				$left_join   = " LEFT JOIN {$wpdb->prefix}postmeta as m1 ON p.ID = m1.post_id ";
-				$where       = ' AND m1.meta_key = "_billing_email" AND m1.meta_value LIKE %s AND m.meta_value > 0 ';
+				$where       = ' AND m1.meta_key = "_billing_email" AND m1.meta_value LIKE %s ';
 
 				if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-					$hpos_where = ' AND p.billing_email LIKE %s AND m.meta_value > 0 ';
+					$hpos_where = ' AND p.billing_email LIKE %s ';
 				}
 			}
 
@@ -114,7 +114,7 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 					}
 					$args[] = absint( $offset );
 					$args[] = absint( $limit );
-					$query  = $wpdb->prepare( "SELECT p.id as id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s $hpos_where ORDER BY p.date_created_gmt DESC LIMIT %d,%d", $args );
+					$query  = $wpdb->prepare( "SELECT p.id as id FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s AND m.meta_value > 0 $hpos_where ORDER BY p.date_created_gmt DESC LIMIT %d,%d", $args );
 				} else {
 					$args = array( 'shop_order', '_bwfan_ab_cart_recovered_a_id' );
 					if ( '' !== $where ) {
@@ -122,7 +122,7 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 					}
 					$args[] = absint( $offset );
 					$args[] = absint( $limit );
-					$query  = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ORDER BY p.post_modified DESC LIMIT %d,%d", $args );
+					$query  = $wpdb->prepare( "SELECT p.ID as id FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s AND m.meta_value > 0 $where ORDER BY p.post_modified DESC LIMIT %d,%d", $args );
 				}
 				$recovered_carts = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
@@ -149,7 +149,7 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 				if ( '' !== $hpos_where ) {
 					$count_args[] = $search_like;
 				}
-				$count_query                = $wpdb->prepare( "SELECT DISTINCT COUNT(p.id) FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s $hpos_where ", $count_args );
+				$count_query                = $wpdb->prepare( "SELECT DISTINCT COUNT(p.id) FROM {$wpdb->prefix}wc_orders as p LEFT JOIN {$wpdb->prefix}wc_orders_meta as m ON p.id = m.order_id WHERE p.type = %s AND p.status NOT IN $post_status AND m.meta_key = %s AND m.meta_value > 0 $hpos_where ", $count_args );
 				$found_posts['total_count'] = $wpdb->get_var( $count_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
 				return $found_posts;
@@ -159,7 +159,7 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 			if ( '' !== $where ) {
 				$count_args[] = $search_like;
 			}
-			$count_query                = $wpdb->prepare( "SELECT COUNT(p.ID) FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s $where ", $count_args );
+			$count_query                = $wpdb->prepare( "SELECT COUNT(p.ID) FROM {$wpdb->prefix}posts as p LEFT JOIN {$wpdb->prefix}postmeta as m ON p.ID = m.post_id $left_join WHERE p.post_type = %s AND p.post_status NOT IN $post_status AND m.meta_key = %s AND m.meta_value > 0 $where ", $count_args );
 			$found_posts['total_count'] = $wpdb->get_var( $count_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
 			return $found_posts;

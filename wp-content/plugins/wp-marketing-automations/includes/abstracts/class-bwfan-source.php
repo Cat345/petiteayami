@@ -24,6 +24,9 @@ abstract class BWFAN_Source {
 		}
 
 		foreach ( glob( $resource_dir . '/class-*.php' ) as $_field_filename ) {
+			if ( ! is_readable( $_field_filename ) ) { // survive update file-swap / partial deploy
+				continue;
+			}
 			$file_data = pathinfo( $_field_filename );
 			if ( isset( $file_data['basename'] ) && 'index.php' === $file_data['basename'] ) {
 				continue;

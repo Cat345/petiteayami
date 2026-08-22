@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_WC_Braintree_Compatibility' ) ) {
 	/**
 	 * WooCommerce Braintree Gateway
@@ -46,7 +47,7 @@ if ( ! class_exists( 'WFACP_WC_Braintree_Compatibility' ) ) {
 			}
 			$buttons['wc_braintree'] = [
 				'iframe' => true,
-				'name'   => __( 'Braintree' ),
+				'name'   => __( 'Braintree' , 'funnel-builder'),
 			];
 
 			return $buttons;

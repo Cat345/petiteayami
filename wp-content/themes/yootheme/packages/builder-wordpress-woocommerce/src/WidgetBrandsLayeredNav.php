@@ -2,7 +2,6 @@
 
 namespace YOOtheme\Builder\Wordpress\Woocommerce;
 
-use WC_Query;
 use WC_Widget_Brand_Nav;
 
 /**

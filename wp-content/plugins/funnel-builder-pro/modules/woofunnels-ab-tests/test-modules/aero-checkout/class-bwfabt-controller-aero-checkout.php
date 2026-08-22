@@ -630,6 +630,12 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 				return;
 			}
 
+			if ( $this->is_ab_crawler_request() ) {
+				BWFABT_Core()->admin->log( "AB WFACP ID: $wfacp_id, Skipped view for crawler. " );
+
+				return;
+			}
+
 			$running_ab_test_id = $this->get_running_test_id_on_step( $wfacp_id );
 
 			if ( $running_ab_test_id < 1 ) {

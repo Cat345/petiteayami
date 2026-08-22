@@ -52,7 +52,7 @@ if ( ! class_exists( 'WFACP_WC_Ship_To_Multiple_Address' ) ) {
 
 			new WFACP_Add_Address_Field( 'wc_ship_multiple', array(
 				'type'     => 'wfacp_html',
-				'label'    => __( 'WC Ship Multiple Address', 'woofunnels-aero-checkout' ),
+				'label'    => __( 'WC Ship Multiple Address', 'funnel-builder' ),
 				'cssready' => [ 'wfacp-col-left-third' ],
 				'class'    => array( 'form-row-third first', 'wfacp-col-full' ),
 				'required' => false,

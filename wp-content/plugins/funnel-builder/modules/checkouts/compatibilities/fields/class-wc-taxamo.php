@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_WC_Taxamo' ) ) {
 	/**
 	 * WooCommerce Taxamo By WooCommerce
@@ -37,7 +38,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Taxamo' ) ) {
 				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_wc_taxamo_vat_number' ],
 				'id'         => 'wc_taxamo_vat_number',
 				'field_type' => 'wc_taxamo_vat_number',
-				'label'      => __( 'WC Taxamo Vat', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'WC Taxamo Vat', 'funnel-builder' ),
 
 			];
 

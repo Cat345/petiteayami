@@ -35,6 +35,23 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 		 */
 		protected $rest_base = '';
 
+		/**
+		 * Formatted product label with the ID shown exactly once.
+		 * WC core already appends "(#id)" for SKU-less products; we only add it when absent.
+		 *
+		 * @param WC_Product $product
+		 *
+		 * @return string
+		 */
+		protected function get_product_label_with_id( $product ) {
+			if ( ! $product instanceof WC_Product ) {
+				return '';
+			}
+			$tag  = '(#' . $product->get_id() . ')';
+			$name = wp_strip_all_tags( $product->get_formatted_name() );
+
+			return false === strpos( $name, $tag ) ? $name . ' ' . $tag : $name;
+		}
 
 		public function date_format( $interval ) {
 			switch ( $interval ) {
@@ -679,8 +696,8 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				array(
 					'type'        => 'chosen-select',
 					'key'         => $field['name'] . '[category_select]',
-					'placeholder' => __( 'Search ...', 'funnel-builder-powerpack' ),
-					'label'       => __( 'Categories', 'funnel-builder-powerpack' ),
+					'placeholder' => __( 'Search ...', 'funnel-builder' ),
+					'label'       => __( 'Categories', 'funnel-builder' ),
 					'options'     => $options,
 					'optionValue' => ! empty( $choices ) ? array_keys( $choices ) : array(),
 				),
@@ -725,14 +742,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 					if ( ! $product instanceof WC_Product ) {
 						continue;
 					}
-					$formatted_name = wp_strip_all_tags( BWF_WC_Compatibility::woocommerce_get_formatted_product_name( $product ) );
-					// Ensure product ID is always visible, even when SKU is present
-					if ( ! empty( $product->get_sku() ) && false === strpos( $formatted_name, '(#' . $product_id . ')' ) ) {
-						$product_name = $formatted_name . ' (#' . $product_id . ')';
-					} else {
-						$product_name = $formatted_name;
-					}
-					$products[ $product_id ] = $product_name;
+					$products[ $product_id ] = $this->get_product_label_with_id( $product );
 				}
 			}
 
@@ -740,7 +750,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				array(
 					'type'        => 'text',
 					'key'         => $field['name'] . '[qty]',
-					'label'       => __( 'Quantity', 'funnel-builder-powerpack' ),
+					'label'       => __( 'Quantity', 'funnel-builder' ),
 					'placeholder' => '',
 					'values'      => 1,
 				),
@@ -748,8 +758,8 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 					'type'        => 'multiSelect',
 					'key'         => $field['name'] . '[products]',
 					'apiEndPoint' => '/funnels/products/search',
-					'label'       => __( 'Products', 'funnel-builder-powerpack' ),
-					'placeholder' => __( 'Select Product', 'funnel-builder-powerpack' ),
+					'label'       => __( 'Products', 'funnel-builder' ),
+					'placeholder' => __( 'Select Product', 'funnel-builder' ),
 					'options'     => wffn_rest_api_helpers()->array_to_nvp( array_flip( $products ), 'name', 'id' ),
 				),
 			);
@@ -776,7 +786,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				array(
 					'type'        => 'chosen-select',
 					'key'         => $field['name'] . '[chosen_select]',
-					'placeholder' => __( 'Select Option', 'funnel-builder-powerpack' ),
+					'placeholder' => __( 'Select Option', 'funnel-builder' ),
 					'label'       => '',
 					'options'     => ! empty( $choices ) ? wffn_rest_api_helpers()->array_to_nvp( ( $choices ), 'id', 'name' ) : array(),
 					'optionValue' => ! empty( $choices ) ? array_values( ( $choices ) ) : array(),
@@ -828,8 +838,8 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				array(
 					'type'        => 'chosen-select',
 					'key'         => $field['name'] . '[coupon_select]',
-					'label'       => __( 'Coupons', 'funnel-builder-powerpack' ),
-					'placeholder' => __( 'Select Coupons..', 'funnel-builder-powerpack' ),
+					'label'       => __( 'Coupons', 'funnel-builder' ),
+					'placeholder' => __( 'Select Coupons..', 'funnel-builder' ),
 					'options'     => is_array( $choices ) ? wffn_rest_api_helpers()->array_to_nvp( ( $choices ), 'id', 'name' ) : $choices,
 					'optionValue' => ! empty( $choices ) ? array_keys( ( $choices ) ) : array(),
 				),
@@ -844,7 +854,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 			$defaults = array(
 				'multiple'      => 0,
 				'allow_null'    => 0,
-				'choices'       => array( 'parent_order' => __( 'In parent order', 'funnel-builder-powerpack' ) ),
+				'choices'       => array( 'parent_order' => __( 'In parent order', 'funnel-builder' ) ),
 				'default_value' => 'no',
 				'class'         => 'chosen_coupon_exist',
 			);
@@ -856,8 +866,8 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				array(
 					'type'        => 'select',
 					'key'         => $field['name'] . '[coupon_exist]',
-					'label'       => __( 'Coupon Exist', 'funnel-builder-powerpack' ),
-					'placeholder' => __( 'Select Option', 'funnel-builder-powerpack' ),
+					'label'       => __( 'Coupon Exist', 'funnel-builder' ),
+					'placeholder' => __( 'Select Option', 'funnel-builder' ),
 					'options'     => ! empty( $choices ) && is_array( $choices ) ? wffn_rest_api_helpers()->array_to_nvp( array_flip( $choices ), 'label', 'value', 'value', 'key' ) : array(),
 				),
 			);
@@ -874,7 +884,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				'allow_null'    => 0,
 				'default_value' => '',
 				'class'         => 'coupon_text_match',
-				'placeholder'   => __( 'Enter the search key...', 'funnel-builder-powerpack' ),
+				'placeholder'   => __( 'Enter the search key...', 'funnel-builder' ),
 			);
 
 			$field = array_merge( $defaults, $field );
@@ -884,8 +894,8 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 					'type'        => 'text',
 					'key'         => $field['name'] . '[coupon_text_match]',
 					'apiEndPoint' => '/funnels/products/search',
-					'placeholder' => __( 'Enter the search key..', 'funnel-builder-powerpack' ),
-					'label'       => __( 'Select Coupon', 'funnel-builder-powerpack' ),
+					'placeholder' => __( 'Enter the search key..', 'funnel-builder' ),
+					'label'       => __( 'Select Coupon', 'funnel-builder' ),
 				),
 			);
 
@@ -901,7 +911,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				'allow_null'    => 0,
 				'default_value' => '',
 				'class'         => 'item_text_match',
-				'placeholder'   => __( 'Enter the search key...', 'funnel-builder-powerpack' ),
+				'placeholder'   => __( 'Enter the search key...', 'funnel-builder' ),
 			);
 
 			$field = array_merge( $defaults, $field );
@@ -910,8 +920,8 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				array(
 					'type'        => 'text',
 					'key'         => $field['name'] . '[item_text_match]',
-					'placeholder' => __( 'Enter the search key..', 'funnel-builder-powerpack' ),
-					'label'       => __( 'Select Coupon', 'funnel-builder-powerpack' ),
+					'placeholder' => __( 'Enter the search key..', 'funnel-builder' ),
+					'label'       => __( 'Select Coupon', 'funnel-builder' ),
 				),
 			);
 
@@ -924,7 +934,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 			$defaults = array(
 				'multiple'      => 0,
 				'allow_null'    => 0,
-				'choices'       => array( 'parent_order' => __( 'In parent order', 'funnel-builder-powerpack' ) ),
+				'choices'       => array( 'parent_order' => __( 'In parent order', 'funnel-builder' ) ),
 				'default_value' => 'no',
 				'class'         => 'chosen_coupon_exist',
 			);
@@ -936,7 +946,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				array(
 					'type'        => 'select',
 					'key'         => $field['name'] . '[coupon_exist]',
-					'placeholder' => __( 'Select Option', 'funnel-builder-powerpack' ),
+					'placeholder' => __( 'Select Option', 'funnel-builder' ),
 					'label'       => '',
 					'options'     => ! empty( $choices ) && is_array( $choices ) ? wffn_rest_api_helpers()->array_to_nvp( array_flip( $choices ), 'label', 'value', 'value', 'key' ) : array(),
 				),
@@ -977,7 +987,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				array(
 					'type'        => 'chosen-select',
 					'key'         => $field['name'] . '[user_select]',
-					'placeholder' => __( 'Select Option', 'funnel-builder-powerpack' ),
+					'placeholder' => __( 'Select Option', 'funnel-builder' ),
 					'label'       => '',
 					'options'     => ! empty( $choices ) ? $choices : array(),
 					'optionValue' => ! empty( $choices ) ? array_values( $choices ) : array(),
@@ -1018,9 +1028,11 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 			}
 			if ( $product_ids ) {
 				foreach ( $product_ids as $product_id ) {
-					$product                 = wc_get_product( $product_id );
-					$product_name            = strip_tags( BWF_WC_Compatibility::woocommerce_get_formatted_product_name( $product ) );//phpcs:ignore
-					$products[ $product_id ] = $product_name;
+					$product = wc_get_product( $product_id );
+					if ( ! $product instanceof WC_Product ) {
+						continue;
+					}
+					$products[ $product_id ] = $this->get_product_label_with_id( $product );
 				}
 			}
 
@@ -1029,8 +1041,8 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 					'type'        => 'multiSelect',
 					'key'         => $field['name'] . '[products]',
 					'apiEndPoint' => '/funnels/products/search',
-					'placeholder' => __( 'Search for a product..', 'funnel-builder-powerpack' ),
-					'label'       => __( 'Select Product', 'funnel-builder-powerpack' ),
+					'placeholder' => __( 'Search for a product..', 'funnel-builder' ),
+					'label'       => __( 'Select Product', 'funnel-builder' ),
 					'options'     => wffn_rest_api_helpers()->array_to_nvp( $products, 'id', 'name' ),
 				),
 			);
@@ -1052,7 +1064,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				array(
 					'type'        => 'text',
 					'key'         => $field['name'] . '[date]',
-					'label'       => __( 'Date', 'funnel-builder-powerpack' ),
+					'label'       => __( 'Date', 'funnel-builder' ),
 					'placeholder' => '',
 					'class'       => $field['class'],
 					'values'      => array(),
@@ -1077,8 +1089,8 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				array(
 					'type'        => 'text',
 					'key'         => $field['name'] . '[time]',
-					'label'       => __( 'Time', 'funnel-builder-powerpack' ),
-					'placeholder' => __( 'For eg: 23:59', 'funnel-builder-powerpack' ),
+					'label'       => __( 'Time', 'funnel-builder' ),
+					'placeholder' => __( 'For eg: 23:59', 'funnel-builder' ),
 					'values'      => array(),
 				),
 			);
@@ -1210,9 +1222,9 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 		public function rule_unavailable() {
 			$state = absint( WooFunnels_Dashboard::$classes['WooFunnels_DB_Updater']->get_upgrade_state() );
 			if ( 3 === $state ) {
-				$text = __( 'Indexing of orders is underway. This setting will work once the process completes.', 'funnel-builder-powerpack' );
+				$text = __( 'Indexing of orders is underway. This setting will work once the process completes.', 'funnel-builder' );
 			} else {
-				$text = sprintf( __( 'This rule needs indexing of past orders. Go to <a target="_blank" href="%s">Tools > Index Orders</a> and click \'Start\' to index orders', 'funnel-builder-powerpack' ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings/tools' ) ) );
+				$text = sprintf( __( 'This rule needs indexing of past orders. Go to <a target="_blank" href="%s">Tools > Index Orders</a> and click \'Start\' to index orders', 'funnel-builder' ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings/tools' ) ) );
 			}
 
 			return $text;

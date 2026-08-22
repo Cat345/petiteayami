@@ -90,11 +90,12 @@ class Helper
      */
     public static function orderAlphanum(array $query): Closure
     {
-        return function ($orderby) use ($query) {
+        $direction = strtoupper($query['order'] ?? 'DESC') === 'ASC' ? 'ASC' : 'DESC';
+        return function ($orderby) use ($direction) {
             if (!str_contains((string) $orderby, ',')) {
                 $replace = str_replace(
                     ':ORDER',
-                    $query['order'],
+                    $direction,
                     "(SUBSTR($1, 1, 1) > '9') :ORDER, $1+0 :ORDER, $1 :ORDER",
                 );
                 $orderby = preg_replace('/([^\s]+).*/', $replace, $orderby, 1);

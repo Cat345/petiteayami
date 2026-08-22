@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /*
  * WooCommerce PostNL
  * Author Name: PostNL
@@ -35,7 +36,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wc_PostNL' ) ) {
 				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_wc_output_delivery_options' ),
 				'id'         => 'wc_output_delivery_options',
 				'field_type' => 'wc_output_delivery_options',
-				'label'      => __( 'PostNl Delivery Options', 'woofunnels-aero-checkout' ),
+				'label'      => __( 'PostNl Delivery Options', 'funnel-builder' ),
 			);
 
 			return $fields;

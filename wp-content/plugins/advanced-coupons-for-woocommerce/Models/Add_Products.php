@@ -376,6 +376,14 @@ class Add_Products extends Base_Model implements Model_Interface, Initiable_Inte
     public function update_add_products_cart_item_price() {
         do_action( 'acfwp_before_update_add_products_cart_item_price' );
 
+        // In "coupon" discount application mode the added product keeps its natural price —
+        // the discount is delivered through the coupon amount instead (see
+        // register_coupon_amount_contributions).
+        if ( $this->_is_coupon_amount_mode() ) {
+            do_action( 'acfwp_after_update_add_products_cart_item_price' );
+            return;
+        }
+
         foreach ( \WC()->cart->applied_coupons as $coupon_code ) {
 
             $coupon       = new Advanced_Coupon( $coupon_code );
@@ -433,6 +441,104 @@ class Add_Products extends Base_Model implements Model_Interface, Initiable_Inte
         $item_price = apply_filters( 'acfwp_set_add_product_cart_item_price', $item_price, $cart_item );
 
         $cart_item['data']->set_price( max( 0, $item_price ) );
+    }
+
+    /**
+     * Check if Add Products discounts should be applied to the coupon amount instead of
+     * modifying the added product prices.
+     *
+     * Guarded with method_exists so the premium plugin degrades gracefully to price
+     * modification mode when running alongside an older free plugin version without
+     * the discount application mode resolver.
+     *
+     * @since 4.1
+     * @access private
+     *
+     * @return bool True when the "coupon amount" discount application mode is selected.
+     */
+    private function _is_coupon_amount_mode() {
+        return method_exists( \ACFWF()->Helper_Functions, 'get_discount_application_mode' )
+            && 'coupon' === \ACFWF()->Helper_Functions->get_discount_application_mode( 'add_products' );
+    }
+
+    /**
+     * Calculate the per-unit Add Products discount for a cart item.
+     *
+     * Uses the same math as the cart summary display and the order meta persistence
+     * (discount calculated against the captured add product price), so every surface
+     * reports the same amount.
+     *
+     * @since 4.1
+     * @access private
+     *
+     * @param array $cart_item Cart item data.
+     * @return float Per-unit discount amount (never negative).
+     */
+    private function _calculate_add_product_discount( $cart_item ) {
+        $price_basis    = isset( $cart_item['acfw_add_product_price'] ) ? (float) $cart_item['acfw_add_product_price'] : (float) \ACFWF()->Helper_Functions->get_price( $cart_item['data'] );
+        $discount_type  = isset( $cart_item['acfw_add_product_discount_type'] ) ? $cart_item['acfw_add_product_discount_type'] : 'override';
+        $discount_value = isset( $cart_item['acfw_add_product_discount_value'] ) ? (float) $cart_item['acfw_add_product_discount_value'] : 0;
+
+        $deal_discount = (float) \ACFWF()->Helper_Functions->calculate_discount_by_type( $discount_type, $discount_value, $price_basis );
+
+        // Unit price that price modification mode would have charged for the added product.
+        $new_unit_price = max( 0.0, $price_basis - $deal_discount );
+
+        // In "coupon" mode the added product line keeps its natural price, which can differ
+        // from the captured price basis (e.g. regular basis vs. sale price). The coupon
+        // discount per unit is the difference between the natural unit price and the unit
+        // price that price modification mode would have charged, so the customer pays the
+        // same pre-tax amount in both modes. In "coupon" mode item tax is computed on the
+        // unmodified product price (the engine adjustment is tax-exclusive — a documented,
+        // accepted difference, same class of behavior as Store Credits' after-tax mode).
+        // Price-increasing overrides are clamped at zero.
+        $current_unit_price = (float) $cart_item['data']->get_price();
+
+        return max( 0.0, $current_unit_price - $new_unit_price );
+    }
+
+    /**
+     * Register Add Products discounts as coupon amount contributions.
+     *
+     * Runs on the `acfw_coupon_amount_total_contributions` filter (free plugin discount
+     * application engine) in "coupon" discount application mode. The added products keep
+     * their natural prices, and the discount is attributed to the coupon's discount total
+     * and subtracted from the cart grand total instead.
+     *
+     * The engine path is used (rather than `woocommerce_coupon_get_discount_amount`)
+     * because the owning coupon can be of any discount type, and WooCommerce's core
+     * percent/fixed handlers never consult that filter.
+     *
+     * @since 4.1
+     * @access public
+     *
+     * @param array    $contributions Coupon code keyed list of contribution amounts.
+     * @param \WC_Cart $cart          Cart object.
+     * @return array Filtered contributions.
+     */
+    public function register_coupon_amount_contributions( $contributions, $cart ) {
+        if ( ! $this->_is_coupon_amount_mode() ) {
+            return $contributions;
+        }
+
+        foreach ( $cart->get_cart() as $cart_item ) {
+
+            // skip if product item doesn't have add products discount data.
+            if ( ! isset( $cart_item['acfw_add_product'] ) ) {
+                continue;
+            }
+
+            $coupon_code = $cart_item['acfw_add_product'];
+            $total       = $this->_calculate_add_product_discount( $cart_item ) * (int) $cart_item['quantity'];
+
+            if ( 0.0 >= $total ) {
+                continue;
+            }
+
+            $contributions[ $coupon_code ] = isset( $contributions[ $coupon_code ] ) ? $contributions[ $coupon_code ] + $total : $total;
+        }
+
+        return $contributions;
     }
 
     /**
@@ -568,18 +674,27 @@ class Add_Products extends Base_Model implements Model_Interface, Initiable_Inte
      */
     public function get_add_products_discount_summary_for_coupon( $coupon ) {
 
-        $callback = function ( $c, $i ) use ( $coupon ) {
+        $is_coupon_amount_mode = $this->_is_coupon_amount_mode();
+
+        $callback = function ( $c, $i ) use ( $coupon, $is_coupon_amount_mode ) {
             // Skip if the cart item doesn't have add products discount data.
             if ( ! isset( $i['acfw_add_product'] ) || $coupon->get_code() !== $i['acfw_add_product'] ) {
                 return $c;
             }
 
             $template = '<li><span class="label">%s x %s:</span> <span class="discount">%s</span></li>';
-            $discount = ACFWF()->Helper_Functions->calculate_discount_by_type(
-                $i['acfw_add_product_discount_type'],
-                $i['acfw_add_product_discount_value'],
-                $i['acfw_add_product_price']
-            );
+
+            // In "coupon" discount application mode report the amount actually attributed to
+            // the coupon so the summary rows add up to the coupon line total.
+            if ( $is_coupon_amount_mode ) {
+                $discount = $this->_calculate_add_product_discount( $i );
+            } else {
+                $discount = ACFWF()->Helper_Functions->calculate_discount_by_type(
+                    $i['acfw_add_product_discount_type'],
+                    $i['acfw_add_product_discount_value'],
+                    $i['acfw_add_product_price']
+                );
+            }
 
             // if discount is zero or negative (will set price higher than normal), then skip item in summary.
             if ( 1 > $discount ) {
@@ -737,6 +852,13 @@ class Add_Products extends Base_Model implements Model_Interface, Initiable_Inte
      * @param WC_Order $order       Order object.
      */
     public function save_add_to_cart_discounts_to_coupon_order_meta( $order_id, $posted_data, $order ) {
+        // In "coupon" discount application mode the Add Products discount is already part of
+        // the native order coupon line discount. Skip the extra meta so downstream consumers
+        // (edit order coupon value display, extra discount totals) don't count it twice.
+        if ( $this->_is_coupon_amount_mode() ) {
+            return;
+        }
+
         $coupon_discounts = array();
 
         foreach ( \WC()->cart->get_cart() as $cart_item ) {
@@ -966,5 +1088,8 @@ class Add_Products extends Base_Model implements Model_Interface, Initiable_Inte
         add_filter( 'acfwf_cart_checkout_block_coupon_summary', array( $this, 'append_add_products_discount_summary_to_cart_checkout_block' ), 10, 2 );
         add_action( 'woocommerce_checkout_order_processed', array( $this, 'save_add_to_cart_discounts_to_coupon_order_meta' ), 10, 3 );
         add_filter( 'woocommerce_order_item_get_discount', array( $this, 'append_add_products_discount_to_edit_order_coupon_value' ), 10, 2 );
+        // "Coupon amount" discount application mode: deliver Add Products discounts through
+        // the coupon amount (free plugin discount application engine).
+        add_filter( 'acfw_coupon_amount_total_contributions', array( $this, 'register_coupon_amount_contributions' ), 10, 2 );
     }
 }

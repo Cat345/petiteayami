@@ -3,7 +3,7 @@
  * Plugin Name: FunnelKit One Click Upsells
  * Plugin URI: https://funnelkit.com
  * Description: FunnelKit One Click Upsells is a complete system to run post purchase one click upsells in WooCommerce.
- * Version: 3.15.0.14
+ * Version: 3.16.0.5
  * Author: Funnelkit
  * Author URI: https://funnelkit.com
  * License: GPLv3 or later
@@ -197,7 +197,7 @@ if ( ! class_exists( 'WFOCU_Core' ) ) {
 		 * Defining constants
 		 */
 		public function define_plugin_properties() {
-			define( 'WFOCU_VERSION', '3.15.0.14' );
+			define( 'WFOCU_VERSION', '3.16.0.5' );
 			define( 'WFOCU_BWF_VERSION', '1.10.12.69' );
 			define( 'WFOCU_MIN_WC_VERSION', '3.0.0' );
 			define( 'WFOCU_MIN_WP_VERSION', '4.9' );

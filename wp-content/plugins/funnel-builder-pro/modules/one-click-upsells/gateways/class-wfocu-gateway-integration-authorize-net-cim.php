@@ -21,7 +21,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		protected $transaction_description = '';
 		protected $key                     = 'authorize_net_cim_credit_card';
 		const MB_ENCODING                  = 'UTF-8';
-		public $is_error_token             = false;
 		protected $current_refund          = null;
 
 		/**
@@ -36,16 +35,21 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			add_filter( 'wc_payment_gateway_' . $this->get_key() . '_tokenization_forced', array( $this, 'maybe_force_tokenization' ) );
 
 			/**
+			 * Reinforce forced tokenization at the checkout-form level (final override the framework applies
+			 * after seeding the value from the filter above). Mirrors Sublium's approach so the card is always
+			 * tokenized when an upsell funnel is active, even on the classic payment form.
+			 */
+			add_filter( 'wc_' . $this->get_key() . '_payment_form_tokenization_forced', array( $this, 'maybe_force_tokenization' ) );
+
+			/**
 			 * For a non logged in mode when accept js is turned off, we just need to tokenize the card after the main charge gets completed
 			 * This cb is just placed here to make sure that older version where we have processing without js
 			 */
 			add_action( 'woocommerce_pre_payment_complete', array( $this, 'maybe_create_token' ), 10, 1 );
 
-			/**
-			 * For the case when User is not logged in and accept js is on.
-			 * We have to get the full control of the main checkout payment.
-			 */
-			add_filter( 'wc_payment_gateway_' . $this->get_key() . '_process_payment', array( $this, 'process_payment' ), 10, 2 );
+			// NOTE: we deliberately do NOT hook '..._process_payment'. Like Sublium, the core gateway owns the
+			// charge; the reusable profile is attached AFTER the charge on '..._add_transaction_data' below.
+			// (The old takeover that intercepted the charge here caused the E00114 failures on #8975/#8979.)
 
 			add_action(
 				'wfocu_front_create_new_order_on_success',
@@ -55,6 +59,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 				- 1
 			);
 
+			// After the charge: capture the token (logged-in) or mint the profile from the transaction (guest).
+			// Arg 2 is the API response, needed for the transaction id.
+			add_action( 'wc_payment_gateway_' . $this->get_key() . '_add_transaction_data', array( $this, 'capture_cim_token' ), 9, 2 );
 			add_action( 'wc_payment_gateway_' . $this->get_key() . '_add_transaction_data', array( $this, 'maybe_add_shipping_address_id_order_for_guests' ) );
 
 			$this->refund_supported = true;
@@ -291,143 +298,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			return '';
 		}
 
-		public function process_payment( $result, $order_id ) {
-
-			$order = $this->get_wc_gateway()->get_order( $order_id );
-
-			if ( $this->should_tokenize() && $this->is_accept_js_on() && empty( $order->get_user_id() ) && $this->is_enabled( $order ) && true === $this->get_wc_gateway()->is_cim_feature_enabled() ) {
-
-				$result = true;
-				try {
-
-					// using an existing tokenized payment method
-					$payment = $this->get_payment_object( $order );
-					if ( isset( $payment->token ) && $payment->token ) {
-
-						$this->get_wc_gateway()->add_transaction_data( $order );
-
-					} else {
-						$customer_id_from_session           = WFOCU_Core()->data->get( 'authorize_net_cim_customer_id', '', 'gateway' );
-						$get_orders_by_meta_for_customer_id = null;
-						if ( ! empty( $customer_id_from_session ) ) {
-							WFOCU_Core()->log->log( 'valid process customer ID on session' . $customer_id_from_session );
-							$order = $this->validate_and_process_customer_id( $customer_id_from_session, $order, true );
-						} else {
-							$get_billing_email                  = $order->get_billing_email();
-							$get_orders_by_meta_for_customer_id = new WP_Query(
-								array(
-									'post_type'    => 'shop_order',
-									'post_status'  => 'any',
-									'meta_query'   => array( //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-									'relation' => 'AND',
-									array(
-										'key'     => '_wc_authorize_net_cim_credit_card_customer_id',
-										'compare' => '!=',
-										'value'   => '',
-									),
-									array(
-										'key'     => '_billing_email',
-										'compare' => '=',
-										'value'   => $get_billing_email,
-									),
-									),
-									'fields'       => 'ids',
-									'order'        => 'DESC',
-									'post__not_in' => array( $order->get_id() ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn
-								)
-							);
-							WFOCU_Core()->log->log( ' Orders found for previous customer IDs ' . print_r( $get_orders_by_meta_for_customer_id->posts, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
-							/**
-							 * If we have saved customer ID for the given Email
-							 */
-							if ( is_array( $get_orders_by_meta_for_customer_id->posts ) && count( $get_orders_by_meta_for_customer_id->posts ) > 0 ) {
-
-								/**
-								 * Try to get the customer ID
-								 */
-								$customer_id = WFOCU_Common::get_order_meta( wc_get_order( $get_orders_by_meta_for_customer_id->posts[0] ), '_wc_authorize_net_cim_credit_card_customer_id' );
-								WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' Customer ID found from order is ' . $customer_id ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
-								$get_customer_profile = $customer_id;
-
-								$order = $this->validate_and_process_customer_id( $get_customer_profile, $order, true );
-							} else {
-								WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . 'attempt to create token for fresh customer' );
-
-								$order = $this->_create_token( $order );
-
-								if ( ! empty( $this->get_customer_id_from_order( $order ) ) && true === $this->is_error_token ) {
-
-									WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' We have found the customer ID from the exception' );
-
-									$get_customer_profile = $this->get_customer_id_from_order( $order );
-
-									$order = $this->validate_and_process_customer_id( $get_customer_profile, $order );
-								}
-							}
-						}
-
-						/**
-						 * We need to create shipping ID for the current user on Authorize.Net CIM API
-						 * As ShippingAddressID is important for the cases when business owner has shipping-filters enabled in their merchant account.
-						 */
-						try {
-
-							/**
-							 * When we are in a case when there is a returning user & not logged in then in this case there are chances that shipping API request might fail.
-							 * In this case we need to try and get shipping ID from the order meta and set this up for further.
-							 */
-							$response = $this->get_wc_gateway()->get_api()->create_shipping_address( $order );
-
-						} catch ( Exception $e ) {
-							if ( $get_orders_by_meta_for_customer_id instanceof WP_Query && is_array( $get_orders_by_meta_for_customer_id->posts ) && count( $get_orders_by_meta_for_customer_id->posts ) > 0 ) {
-
-								$response = intval( WFOCU_Common::get_order_meta( wc_get_order( $get_orders_by_meta_for_customer_id->posts[0] ), '_authorize_cim_shipping_address_id' ) );
-							}
-						}
-						if ( ! isset( $response ) ) {
-							$response = 0;
-						}
-						if ( is_numeric( $response ) ) {
-							$shipping_address_id = (int) $response;
-						} elseif ( is_callable( array( $response, 'get_shipping_address_id' ) ) ) {
-							$shipping_address_id = $response->get_shipping_address_id();
-						} else {
-							$shipping_address_id = 0;
-						}
-						$payment                      = $this->get_payment_object( $order );
-						$payment->shipping_address_id = $shipping_address_id;
-						$this->set_payment_object( $order, $payment );
-						WFOCU_Core()->data->set( 'authorize_net_cim_shipping_id', $payment->shipping_address_id, 'gateway' );
-						WFOCU_Core()->data->save( 'gateway' );
-
-						$this->get_wc_gateway()->add_transaction_data( $order );
-						$response = $this->do_main_transaction( $order );
-						if ( true !== $response ) {
-							return array(
-								'result'  => 'failure',
-								'message' => ( $response instanceof Exception ) ? $response->getMessage() : '',
-							);
-						}
-					}
-
-					$result = array(
-						'result'   => 'success',
-						'redirect' => $this->get_wc_gateway()->get_return_url( $order ),
-					);
-				} catch ( Exception $e ) {
-					$result = array(
-						'result'  => 'failure',
-						'message' => $e->getMessage(),
-					);
-
-				}
-			}
-
-			return $result;
-		}
-
 		public function get_order( $order ) {
 
 			if ( $order instanceof WC_Order && $this->key === $order->get_payment_method() ) {
@@ -573,111 +443,51 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			 */
 			$get_secondary_order = WFOCU_Core()->data->get( 'authorize_net_cim_order_id', '', 'gateway' );
 
-			if ( empty( $get_secondary_order ) ) {
-				return '';
+			if ( ! empty( $get_secondary_order ) ) {
+				$this->token = WFOCU_Common::get_order_meta( wc_get_order( $get_secondary_order ), '_wc_' . $this->get_key() . '_payment_token' );
+
+				if ( ! empty( $this->token ) ) {
+					return $this->token;
+				}
 			}
 
-			$this->token = WFOCU_Common::get_order_meta( wc_get_order( $get_secondary_order ), '_wc_' . $this->get_key() . '_payment_token' );
+			/**
+			 * Final fallback: resolve the CIM payment profile id from the customer's saved WC payment
+			 * token. get_token() is read directly for customerPaymentProfileId, so without this a
+			 * logged-in customer whose token isn't on the order meta would send an empty payment profile
+			 * id and Authorize.Net would reject the upsell — the same failure class as the missing
+			 * customerProfileId (E00003). Mirrors get_customer_id()'s user-level fallback. The token's
+			 * get_id() is the payment profile id (same value used in create_profile_from_transaction()).
+			 */
+			$parent_order = ! empty( $get_secondary_order ) ? wc_get_order( $get_secondary_order ) : wc_get_order( $get_id );
+			$gateway      = $this->get_wc_gateway();
+			if ( $parent_order instanceof WC_Order && is_object( $gateway ) && method_exists( $gateway, 'get_payment_tokens_handler' ) ) {
+				$user_id = (int) $parent_order->get_user_id();
+				$handler = $gateway->get_payment_tokens_handler();
+				if ( $user_id && is_object( $handler ) && method_exists( $handler, 'get_tokens' ) ) {
+					$tokens = $handler->get_tokens( $user_id );
+					if ( is_array( $tokens ) && ! empty( $tokens ) ) {
+						$chosen = null;
+						foreach ( $tokens as $token_obj ) {
+							if ( is_object( $token_obj ) && method_exists( $token_obj, 'is_default' ) && $token_obj->is_default() ) {
+								$chosen = $token_obj;
+								break;
+							}
+						}
+						if ( null === $chosen ) {
+							$chosen = reset( $tokens );
+						}
+						if ( is_object( $chosen ) && method_exists( $chosen, 'get_id' ) && ! empty( $chosen->get_id() ) ) {
+							$this->token = (string) $chosen->get_id();
 
-			if ( ! empty( $this->token ) ) {
-				return $this->token;
+							return $this->token;
+						}
+					}
+				}
 			}
 
 			return '';
 		}
-
-		/**
-		 * We cloned the function that we need to fire main transaction in the case when accept.js in is action and user is not logged in.
-		 *
-		 * @param WC_Order $order
-		 */
-		private function do_main_transaction( $order ) {
-			try {
-
-				$payment = $this->get_payment_object( $order );
-
-				// order description — use class property to avoid dynamic property on WC_Order (PHP 8.2+ deprecation)
-				$this->transaction_description = sprintf( __( '%1$s - Release Payment for Order %2$s', 'woocommerce-plugin-framework' ), esc_html( $this->get_site_name() ), $order->get_order_number() );
-
-				// token is required
-				if ( ! isset( $payment->token ) || ! $payment->token ) {
-					throw new Exception( __( 'Payment token missing/invalid.', 'woocommerce-plugin-framework' ) );
-				}
-
-				if ( isset( $payment->csc ) ) {
-					unset( $payment->csc );
-					$this->set_payment_object( $order, $payment );
-				}
-				// perform the transaction
-				if ( $this->get_wc_gateway()->is_credit_card_gateway() ) {
-
-					if ( $this->get_wc_gateway()->perform_credit_card_charge( $order ) ) {
-						$response = $this->get_wc_gateway()->get_api()->credit_card_charge( $order );
-					} else {
-						$response = $this->get_wc_gateway()->get_api()->credit_card_authorization( $order );
-					}
-				} elseif ( $this->get_wc_gateway()->is_echeck_gateway() ) {
-					$response = $this->get_wc_gateway()->get_api()->check_debit( $order );
-				}
-
-				// success! update order record
-				if ( $response->transaction_approved() ) {
-
-					$last_four = substr( $payment->account_number, - 4 );
-
-					// order note based on gateway type
-					if ( $this->get_wc_gateway()->is_credit_card_gateway() ) {
-
-						$message = sprintf( __( '%1$s %2$s Release Payment Approved: %3$s ending in %4$s (expires %5$s)', 'woocommerce-plugin-framework' ), $this->get_wc_gateway()->get_method_title(), $this->get_wc_gateway()->perform_credit_card_authorization( $order ) ? 'Authorization' : 'Charge', isset( $payment->card_type ) ? $payment->card_type : 'card', $last_four, ( isset( $payment->exp_month ) && isset( $payment->exp_year ) ? $payment->exp_month . '/' . substr( $payment->exp_year, - 2 ) : 'n/a' ) );
-
-					}
-
-					// adds the transaction id (if any) to the order note
-					if ( $response->get_transaction_id() ) {
-						$message .= ' ' . sprintf( __( '(Transaction ID %s)', 'woocommerce-plugin-framework' ), $response->get_transaction_id() );
-					}
-
-					$order->add_order_note( $message );
-				}
-
-				if ( $response->transaction_approved() || $response->transaction_held() ) {
-
-					// add the standard transaction data
-					$this->get_wc_gateway()->add_transaction_data( $order, $response );
-
-					// allow the concrete class to add any gateway-specific transaction data to the order
-					$this->get_wc_gateway()->add_payment_gateway_transaction_data( $order, $response );
-
-					// if the transaction was held (ie fraud validation failure) mark it as such
-					if ( $response->transaction_held() || ( $this->get_wc_gateway()->supports( 'authorization' ) && $this->get_wc_gateway()->perform_credit_card_authorization( $order ) ) ) {
-
-						$this->get_wc_gateway()->mark_order_as_held( $order, $this->get_wc_gateway()->supports( 'authorization' ) && $this->get_wc_gateway()->perform_credit_card_authorization( $order ) ? __( 'Authorization only transaction', 'woocommerce-plugin-framework' ) : $response->get_status_message(), $response );
-
-						wc_reduce_stock_levels( $order->get_id() );
-					} else {
-						// otherwise complete the order
-						$order->payment_complete();
-					}
-
-					return true;
-				} else {
-
-					// failure
-					throw new Exception( sprintf( '%s: %s', $response->get_status_code(), $response->get_status_message() ) );
-
-				}
-			} catch ( Exception $e ) {
-				if ( isset( $response ) ) {
-					$this->get_wc_gateway()->mark_order_as_failed( $order, sprintf( __( 'Release Payment Failed: %s', 'woocommerce-plugin-framework' ), $e->getMessage() ), $response );
-				} else {
-					$this->get_wc_gateway()->mark_order_as_failed( $order, sprintf( __( 'Release Payment Failed: %s', 'woocommerce-plugin-framework' ), $e->getMessage() ) );
-
-				}
-
-				return $e;
-			}
-		}
-
 
 		public function maybe_create_token( $order ) {
 
@@ -815,7 +625,11 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 					$order->add_order_note( $order_note );
 					$is_successful = false;
 				}
-			} catch ( Exception $e ) {
+			} catch ( \Throwable $e ) {
+				// Catch \Throwable (not just Exception): the charge path runs through SkyVerge's dynamic
+				// framework (WeakMap/Dynamic_Props, method_exists bridging) where a fatal \Error (TypeError,
+				// method-on-null, etc.) is possible. Without this such a fatal would 500 the upsell request
+				// instead of failing cleanly with an order note.
 				WFOCU_Core()->log->log( 'AUTHORIZE CIM ERROR :' . print_r( $e, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 				$order_note = sprintf( __( 'Authorize.net CIM Transaction Failed (%s)', 'woofunnels-upstroke-one-click-upsell' ), $e->getMessage() );
@@ -832,6 +646,18 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			$payment          = $this->get_payment_object( $order );
 
 			/**
+			 * Resolve the CIM customer profile ID up front. Both the upsell charge (customerProfileId
+			 * below) and create_shipping_address() require it. If none can be resolved (the original
+			 * payment never created/stored a CIM profile), abort with a clear message instead of letting
+			 * SkyVerge emit the cryptic E00003 "expected customerProfileId" error. This Exception is
+			 * caught by process_charge() and recorded as a clean failed-upsell note.
+			 */
+			$customer_profile_id = $this->get_customer_id( $order );
+			if ( empty( $customer_profile_id ) ) {
+				throw new Exception( esc_html__( 'No saved Authorize.Net (CIM) customer profile was found for this customer, so the upsell could not be charged.', 'woofunnels-upstroke-one-click-upsell' ) );
+			}
+
+			/**
 			 * We need to create shipping ID for the current user on Authorize.Net CIM API
 			 * As ShippingAddressID is important for the cases when business owner has shipping-filters enabled in their merchant account.
 			 */
@@ -842,12 +668,35 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			} elseif ( ! empty( $maybe_get_shipping_id_from_session ) ) {
 				$shipping_address_id = $maybe_get_shipping_id_from_session;
 			} else {
-				$response = $this->get_wc_gateway()->get_api()->create_shipping_address( $order );
+				/**
+				 * Regression fix (commit 90a89200 deferred shipping-address creation to here): SkyVerge's
+				 * create_shipping_address() reads the customerProfileId off the order via
+				 * OrderHelper::get_customer_id(). The old process_payment override seeded that while the
+				 * profile was live on the order; the new "don't override payment" flow does not guarantee
+				 * it, so the request goes out without customerProfileId and Authorize.Net returns E00003.
+				 * Seed the resolved profile ID onto the order right before the call.
+				 */
+				$this->set_customer_id_on_order( $order, $customer_profile_id );
 
-				WFOCU_Core()->log->log( 'Log for shipping address-' . print_r( $response, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				try {
+					$response = $this->get_wc_gateway()->get_api()->create_shipping_address( $order );
 
-				$shipping_address_id = is_numeric( $response ) ? $response : $response->get_shipping_address_id();
+					WFOCU_Core()->log->log( 'Log for shipping address-' . print_r( $response, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
+					if ( is_numeric( $response ) ) {
+						$shipping_address_id = $response;
+					} elseif ( is_object( $response ) && method_exists( $response, 'get_shipping_address_id' ) ) {
+						$shipping_address_id = $response->get_shipping_address_id();
+					} else {
+						$shipping_address_id = (int) WFOCU_Common::get_order_meta( $order, '_authorize_cim_shipping_address_id' );
+					}
+				} catch ( \Throwable $e ) {
+					// A shipping-address failure must not abort the whole upsell. Fall back to the id
+					// stored on the order (when present); the charge can still proceed without it unless
+					// the merchant has shipping filters enabled. Mirrors the old maybe_create_token() path.
+					WFOCU_Core()->log->log( 'CIM create_shipping_address failed, falling back to stored id: ' . $e->getMessage() );
+					$shipping_address_id = (int) WFOCU_Common::get_order_meta( $order, '_authorize_cim_shipping_address_id' );
+				}
 			}
 
 			return apply_filters(
@@ -999,6 +848,23 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 				return $this->customer_id;
 			}
 
+			/**
+			 * Guest-checkout fallback: the Customer Profile ID lives in WP user meta when it never made
+			 * it onto the order (the user is created mid-checkout). By the time an upsell charge runs the
+			 * user-meta entry is populated, so resolve it from there. Mirrors Sublium's resolve flow.
+			 */
+			$parent_order = wc_get_order( $get_secondary_order );
+			$gateway      = $this->get_wc_gateway();
+			if ( $parent_order instanceof WC_Order && is_object( $gateway ) && method_exists( $gateway, 'get_customer_id_user_meta_name' ) ) {
+				$user_id = (int) $parent_order->get_user_id();
+				if ( $user_id ) {
+					$this->customer_id = get_user_meta( $user_id, $gateway->get_customer_id_user_meta_name(), true );
+					if ( ! empty( $this->customer_id ) ) {
+						return $this->customer_id;
+					}
+				}
+			}
+
 			return '';
 		}
 
@@ -1099,47 +965,201 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			return isset( $new_direct_response['transaction_id'] ) && '' !== $new_direct_response['transaction_id'] ? $new_direct_response['transaction_id'] : '';
 		}
 
-		public function get_shipping_addr( $order ) {
-			// address fields
+		/**
+		 * Capture the Authorize.net CIM token after the core gateway has charged + tokenized the
+		 * primary order. This is the same integration point WooCommerce Subscriptions and Sublium use
+		 * ( '..._add_transaction_data' ) instead of taking over process_payment: the core gateway owns
+		 * the primary charge, and we simply persist the Customer Profile ID + Payment Profile ID so
+		 * one-click upsells can charge the same card later.
+		 *
+		 * Both IDs are normally written to the order meta by the gateway. For guest checkouts the
+		 * Customer Profile ID can be missing from the order (the WP user is created mid-checkout and the
+		 * gateway writes the profile id to WP user meta), so we backfill it from the user-meta key the
+		 * gateway actually populates — mirroring Sublium's guest-checkout handling.
+		 *
+		 * @param WC_Order|int $order
+		 * @param object|null  $response Core gateway API response (carries the transaction id).
+		 */
+		public function capture_cim_token( $order, $response = null ) {
+			if ( ! $order instanceof WC_Order ) {
+				$order = wc_get_order( $order );
+			}
+			if ( ! $order instanceof WC_Order || $this->key !== $order->get_payment_method() ) {
+				return;
+			}
 
-			$shipping_address = trim( WFOCU_WC_Compatibility::get_order_data( $order, 'shipping_address_1' ) . ' ' . WFOCU_WC_Compatibility::get_order_data( $order, 'shipping_address_2' ) );
+			$customer_meta_key = '_wc_' . $this->get_key() . '_customer_id';
+			$token_meta_key    = '_wc_' . $this->get_key() . '_payment_token';
 
-			$fields = array(
-				'firstName' => array(
-					'value' => WFOCU_WC_Compatibility::get_order_data( $order, 'shipping_first_name' ),
-					'limit' => 50,
-				),
-				'lastName'  => array(
-					'value' => WFOCU_WC_Compatibility::get_order_data( $order, 'shipping_last_name' ),
-					'limit' => 50,
-				),
-				'company'   => array(
-					'value' => WFOCU_WC_Compatibility::get_order_data( $order, 'shipping_company' ),
-					'limit' => 50,
-				),
-				'address'   => array(
-					'value' => $shipping_address,
-					'limit' => 60,
-				),
-				'city'      => array(
-					'value' => WFOCU_WC_Compatibility::get_order_data( $order, 'shipping_city' ),
-					'limit' => 40,
-				),
-				'state'     => array(
-					'value' => WFOCU_WC_Compatibility::get_order_data( $order, 'shipping_state' ),
-					'limit' => 40,
-				),
-				'zip'       => array(
-					'value' => WFOCU_WC_Compatibility::get_order_data( $order, 'shipping_postcode' ),
-					'limit' => 20,
-				),
-				'country'   => array(
-					'value' => WFOCU_WC_Compatibility::get_order_data( $order, 'shipping_country' ),
-					'limit' => 60,
-				),
-			);
+			$customer_id   = $order->get_meta( $customer_meta_key );
+			$payment_token = $order->get_meta( $token_meta_key );
 
-			return $fields;
+			// Guest-checkout fallback: read the Customer Profile ID from the user-meta key SkyVerge
+			// writes during tokenization, and mirror it onto the order so the upsell charge can find it.
+			if ( empty( $customer_id ) ) {
+				$user_id = (int) $order->get_user_id();
+				$gateway = $this->get_wc_gateway();
+				if ( $user_id && is_object( $gateway ) && method_exists( $gateway, 'get_customer_id_user_meta_name' ) ) {
+					$customer_id = get_user_meta( $user_id, $gateway->get_customer_id_user_meta_name(), true );
+					if ( ! empty( $customer_id ) ) {
+						$order->update_meta_data( $customer_meta_key, $customer_id );
+						$order->save_meta_data();
+					}
+				}
+			}
+
+			// No native token? (guest, or logged-in with tokenization off). This hook only fires on a
+			// successful charge, so mint the profile from that transaction — independent of the gateway's
+			// tokenization setting, so upsells work either way.
+			if ( empty( $payment_token ) ) {
+				$this->create_profile_from_transaction( $order, $response );
+				$customer_id   = $order->get_meta( $customer_meta_key );
+				$payment_token = $order->get_meta( $token_meta_key );
+			}
+
+			if ( empty( $payment_token ) ) {
+				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' CIM add_transaction_data fired but no payment token on order yet; upsells may be unavailable for this order.' );
+
+				return;
+			}
+
+			// Make the parent order + profile discoverable to the upsell charge flow (has_token/get_token/get_customer_id).
+			WFOCU_Core()->data->set( 'authorize_net_cim_order_id', $order->get_id(), 'gateway' );
+			if ( ! empty( $customer_id ) ) {
+				WFOCU_Core()->data->set( 'authorize_net_cim_customer_id', $customer_id, 'gateway' );
+			}
+			WFOCU_Core()->data->save( 'gateway' );
+
+			WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' CIM token captured for upsells (customer profile: ' . $customer_id . ', payment profile: ' . $payment_token . ').' );
+		}
+
+		/**
+		 * Mint a reusable CIM Customer Profile from a guest's just-completed transaction, so one-click upsells
+		 * can charge the same card. Writes the profile/payment/shipping ids to the meta keys the upsell flow
+		 * reads (get_token/get_customer_id/get_order). Best-effort: on any failure the order is already
+		 * complete, we just skip upsells.
+		 *
+		 * @param WC_Order    $order
+		 * @param object|null $response Core gateway API response (preferred source of the transaction id).
+		 *
+		 * @return bool
+		 */
+		private function create_profile_from_transaction( $order, $response = null ) {
+
+			$gateway = $this->get_wc_gateway();
+			if ( ! is_object( $gateway ) ) {
+				return false;
+			}
+
+			$customer_meta_key = '_wc_' . $this->get_key() . '_customer_id';
+			$token_meta_key    = '_wc_' . $this->get_key() . '_payment_token';
+
+			if ( ! empty( $order->get_meta( $customer_meta_key ) ) && ! empty( $order->get_meta( $token_meta_key ) ) ) {
+				return false;
+			}
+
+			$trans_id = '';
+			if ( is_object( $response ) && method_exists( $response, 'get_transaction_id' ) && $response->get_transaction_id() ) {
+				$trans_id = $response->get_transaction_id();
+			}
+			if ( empty( $trans_id ) ) {
+				$trans_id = $order->get_transaction_id();
+			}
+			if ( empty( $trans_id ) ) {
+				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' CIM profile-from-transaction skipped: no transaction id available.' );
+
+				return false;
+			}
+
+			try {
+				$api = $gateway->get_api();
+				$url = ( 'production' === $gateway->get_environment() ) ? $api::PRODUCTION_ENDPOINT : $api::TEST_ENDPOINT;
+
+				$request = array(
+					'createCustomerProfileFromTransactionRequest' => array(
+						'merchantAuthentication' => array(
+							'name'           => bwf_clean( $gateway->get_api_login_id() ),
+							'transactionKey' => bwf_clean( $gateway->get_api_transaction_key() ),
+						),
+						'transId'                => (string) $trans_id,
+						'customer'               => array(
+							'merchantCustomerId' => (string) $order->get_id(),
+							'email'              => $order->get_billing_email(),
+						),
+					),
+				);
+
+				$http_response = wp_safe_remote_request( $url, $this->get_request_attributes( $request ) );
+				if ( is_wp_error( $http_response ) ) {
+					WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' CIM profile-from-transaction HTTP error: ' . $http_response->get_error_message() );
+
+					return false;
+				}
+
+				$body   = preg_replace( '/\xEF\xBB\xBF/', '', wp_remote_retrieve_body( $http_response ) );
+				$result = json_decode( $body, true );
+
+				// Only the customerProfileId is read from the raw response (a top-level scalar — low risk).
+				$customer_profile_id = '';
+				$result_code         = isset( $result['messages']['resultCode'] ) ? $result['messages']['resultCode'] : '';
+				$message_text        = '';
+				if ( isset( $result['messages']['message'][0]['text'] ) ) {
+					$message_text = $result['messages']['message'][0]['text'];
+				} elseif ( isset( $result['messages']['message']['text'] ) ) {
+					$message_text = $result['messages']['message']['text'];
+				}
+
+				if ( 'Ok' === $result_code && isset( $result['customerProfileId'] ) ) {
+					$customer_profile_id = (string) $result['customerProfileId'];
+				} elseif ( preg_match( '/ID (\d+) already exists/i', (string) $message_text, $m ) ) {
+					// E00039: a profile already exists for this customer/card — reuse the existing id.
+					$customer_profile_id = $m[1];
+				}
+
+				if ( empty( $customer_profile_id ) ) {
+					WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' CIM profile-from-transaction failed (' . $result_code . '): ' . $message_text . '. Upsells unavailable for this order.' );
+
+					return false;
+				}
+
+				// Resolve the payment profile via the core gateway's TYPED client instead of hand-parsing the
+				// response id-list — this is the value the upsell charge actually needs. get_payment_tokens()
+				// returns token objects keyed however the framework likes; the id is $method->get_id().
+				$payment_profile_id = '';
+				try {
+					$methods = $api->get_tokenized_payment_methods( $customer_profile_id )->get_payment_tokens();
+					if ( is_array( $methods ) ) {
+						foreach ( $methods as $method ) {
+							if ( is_object( $method ) && method_exists( $method, 'get_id' ) && ! empty( $method->get_id() ) ) {
+								$payment_profile_id = (string) $method->get_id();
+							}
+						}
+					}
+				} catch ( Exception $e ) {
+					WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' CIM: could not resolve payment profile for ' . $customer_profile_id . ': ' . $e->getMessage() );
+				}
+
+				if ( empty( $payment_profile_id ) ) {
+					WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' CIM profile ' . $customer_profile_id . ' created but no payment profile resolved; upsells unavailable.' );
+
+					return false;
+				}
+
+				$order->update_meta_data( $customer_meta_key, $customer_profile_id );
+				$order->update_meta_data( $token_meta_key, $payment_profile_id );
+				$order->save_meta_data();
+
+				// Shipping address id is intentionally not fetched here — the upsell charge (create_transaction_request)
+				// creates one on demand when missing, so we avoid an extra API call and another parse.
+
+				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' CIM profile created from transaction ' . $trans_id . ' (profile: ' . $customer_profile_id . ', payment: ' . $payment_profile_id . ').' );
+
+				return true;
+			} catch ( \Throwable $e ) {
+				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' CIM profile-from-transaction exception: ' . $e->getMessage() );
+
+				return false;
+			}
 		}
 
 		/**
@@ -1427,98 +1447,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			return $order_number;
 		}
 
-		public function check_if_we_have_tokenized( $current_last_four, $get_saved_payment_methods ) {
-
-			if ( empty( $get_saved_payment_methods ) ) {
-				return false;
-			}
-
-			foreach ( $get_saved_payment_methods as $method ) {
-				if ( true === $this->if_expired_card( $method->get_exp_year(), $method->get_exp_month() ) ) {
-					continue;
-				}
-				if ( $current_last_four === $method->get_last_four() ) {
-					return $method->get_id();
-				}
-			}
-
-			return false;
-		}
-
-		/**
-		 * Check if card validity is still there or not
-		 *
-		 * @param $year
-		 * @param $month
-		 */
-		public function if_expired_card( $year, $month ) {
-			$expires = DateTime::createFromFormat( 'mY', $month . $year );
-			$now     = new DateTime();
-
-			if ( $expires < $now ) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		public function _create_token( $order ) {
-			try {
-				$order = $this->get_wc_gateway()->get_payment_tokens_handler()->create_token( $order );
-
-			} catch ( Exception $e ) {
-				$this->is_error_token = true;
-				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' Unable to create a token during primary order ' . $e->getCode() . '::' . $e->getMessage() );
-
-			}
-
-			return $order;
-		}
-
-		public function validate_and_process_customer_id( $customer_profile_id, $order, $create_token = false ) {
-			/**
-			 * Check if we have token against the extered card, if not the try creating one
-			 */
-			$maybe_get_token = false;
-			try {
-				$payment                  = $this->get_payment_object( $order );
-				$existing_payment_methods = $this->get_wc_gateway()->get_api()->get_tokenized_payment_methods( $customer_profile_id )->get_payment_tokens();
-				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' existing tokens found are  ' . print_r( $existing_payment_methods, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-				$maybe_get_token = $this->check_if_we_have_tokenized( $payment->last_four, $existing_payment_methods );
-
-				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' last 4 is ' . print_r( $payment->last_four, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' get the token after matching last 4  ' . print_r( $maybe_get_token, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
-				WFOCU_Core()->data->set( 'authorize_net_cim_customer_id', $customer_profile_id, 'gateway' );
-				WFOCU_Core()->data->save( 'gateway' );
-			} catch ( Exception $e ) {
-				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . 'Error showed up while getting exiting tokens' . print_r( $e->getMessage(), true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			}
-
-			if ( ! empty( $maybe_get_token ) ) {
-				/**
-				 * save this token in the meta so that later it could be used for the payment
-				 */
-				$order->update_meta_data( '_wc_authorize_net_cim_credit_card_payment_token', $maybe_get_token );
-				$order->save_meta_data();
-			} else {
-				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . 'attempt to create token for returning customer' );
-
-				$order = $this->get_order( $order );
-				if ( $create_token ) {
-					$this->_create_token( $order );
-				}
-			}
-
-			$order = $this->get_order( $order );
-
-			$this->get_wc_gateway()->add_transaction_data( $order );
-			WFOCU_Core()->data->save( 'gateway' );
-
-			return $order;
-		}
-
-
 		/**
 		 * Modify the upsell skip reason and order note for Stripe gateway.
 		 *
@@ -1534,7 +1462,8 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		public function filter_upsell_skip_reason( $order, $skip_key, $reason_messages, $edit_link, $contact_support, $upsell_s_link ) {
 			$custom_note = '';
 
-			// Check if the skip reason corresponds to Stripe UPE mode being incompatible
+			// Skip reason 6 = no reusable payment token/profile was created for this order, so the
+			// one-click upsell can't be charged. (The primary order itself was charged normally.)
 			if ( $skip_key === 6 ) {
 
 				$custom_note = sprintf(
@@ -1545,11 +1474,11 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
                 <div style="margin:8px 0px;">%s <a href="%s" target="_blank">%s</a></div>',
 					esc_url( WFOCU_PLUGIN_URL . '/admin/assets/img/icon_error.svg' ),
 					__( 'Upsell Skipped', 'woofunnels-upstroke-one-click-upsell' ),
-					__( 'Authorize.CIM gateway ', 'woofunnels-upstroke-one-click-upsell' ),
-					__( 'The current Stripe UPE payment mode does not support one-click upsells.', 'woofunnels-upstroke-one-click-upsell' ),
-					__( 'Recommendation: For best compatibility, switch to', 'woofunnels-upstroke-one-click-upsell' ),
-					esc_url( $upsell_s_link ),
-					__( 'FunnelKit Stripe Gateway', 'woofunnels-upstroke-one-click-upsell' )
+					__( 'Authorize.Net CIM gateway', 'woofunnels-upstroke-one-click-upsell' ),
+					__( 'No reusable payment token was created for this order, so the one-click upsell could not be charged. The original order was charged normally.', 'woofunnels-upstroke-one-click-upsell' ),
+					__( 'Ensure tokenization is enabled for Authorize.Net CIM. If the problem persists,', 'woofunnels-upstroke-one-click-upsell' ),
+					esc_url( $contact_support ),
+					__( 'contact support', 'woofunnels-upstroke-one-click-upsell' )
 				);
 			}
 

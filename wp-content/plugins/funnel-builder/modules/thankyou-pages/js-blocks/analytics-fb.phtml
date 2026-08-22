@@ -51,6 +51,9 @@ if ( $this->do_track_fb_synced_purchase() && is_array( $data ) && isset( $data['
 	<?php if ( isset( $data['fb']['additional']['coupon_used'] ) && ! empty( $data['fb']['additional']['coupon_used'] ) ) { ?>
         wffnfbDataPurchaseTrackSynced.coupon_used = '<?php echo esc_js( $data['fb']['additional']['coupon_used'] ); ?>';
 	<?php } ?>
+	<?php if ( isset( $data['fb']['is_customer_new'] ) ) { ?>
+        wffnfbDataPurchaseTrackSynced.is_customer_new = <?php echo absint( $data['fb']['is_customer_new'] ); ?>;
+	<?php } ?>
 
     wffnfbDataPurchaseTrackSynced = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(wffnfbDataPurchaseTrackSynced ) :wffnfbDataPurchaseTrackSynced;
     fbq('track', 'Purchase', wffnfbDataPurchaseTrackSynced,{'eventID': '<?php echo esc_attr( $event_id ); ?>'});
@@ -72,7 +75,10 @@ if ( false === $this->do_track_fb_synced_purchase() && $this->do_track_fb_purcha
     'category_name': <?php echo wp_json_encode( implode( ',', $data['fb']['category_name'] ) ); ?>,
     'num_items': <?php echo esc_js( $data['fb']['num_qty'] ); ?>,
     'transaction_id': '<?php echo esc_js( $data['fb']['transaction_id'] ); ?>',
-    order_id: '<?php echo esc_js( $data['fb']['order_id'] ); ?>'
+    order_id: '<?php echo esc_js( $data['fb']['order_id'] ); ?>',
+    contents: <?php echo wp_json_encode( array_values( $data['fb']['products'] ) ); ?>,
+    content_type: 'product',
+    content_ids: <?php echo wp_json_encode( $data['fb']['content_ids'] ); ?>
     };
 
     wffnfbDataPurchaseTrack = (typeof wffnAddTrafficParamsToEvent !== "undefined")?wffnAddTrafficParamsToEvent(wffnfbDataPurchaseTrack ):wffnfbDataPurchaseTrack;
@@ -96,6 +102,9 @@ if ( false === $this->do_track_fb_synced_purchase() && $this->do_track_fb_purcha
 	<?php } ?>
 	<?php if ( isset( $data['fb']['additional']['coupon_used'] ) && ! empty( $data['fb']['additional']['coupon_used'] ) ) { ?>
         wffnfbDataPurchaseTrack.coupon_used = '<?php echo esc_js( $data['fb']['additional']['coupon_used'] ); ?>';
+	<?php } ?>
+	<?php if ( isset( $data['fb']['is_customer_new'] ) ) { ?>
+        wffnfbDataPurchaseTrack.is_customer_new = <?php echo absint( $data['fb']['is_customer_new'] ); ?>;
 	<?php } ?>
 
     fbq('track', 'Purchase', wffnfbDataPurchaseTrack,{'eventID': '<?php echo esc_attr( $event_id ); ?>'});

@@ -75,7 +75,7 @@ $totals = $order->get_order_item_totals();
 						}
 						$_product = WFACP_Common::wc_get_product( $object_id, $cart_item_key );
 						?>
-						<tr class="<?php echo esc_attr( apply_filters( 'woocommerce_order_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>">
+						<tr class="<?php echo esc_attr( apply_filters( 'woocommerce_order_item_class', 'cart_item', $cart_item, $order ) ); ?>">
 
 							<td class="product-name-area">
 								<?php

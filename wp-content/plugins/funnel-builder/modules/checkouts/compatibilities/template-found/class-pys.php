@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_PYS_Compatibility' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_PYS_Compatibility {

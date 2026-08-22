@@ -27,6 +27,16 @@ class ShowCartQuantity
     }
 
     /**
+     * Load the cart fragments script to update the cart item count in the menu.
+     *
+     * @return void
+     */
+    public static function loadCartFragmentsScript(): void
+    {
+        wp_enqueue_script('wc-cart-fragments');
+    }
+
+    /**
      * Filters the navigation menu items being returned.
      *
      * @param list<object> $items

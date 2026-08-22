@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit11ca85ea0e870d096a6e757d9e6583a6
+class ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628
 {
     public static $prefixLengthsPsr4 = array (
         'W' =>
@@ -217,6 +217,7 @@ class ComposerStaticInit11ca85ea0e870d096a6e757d9e6583a6
         'WooCommerce\\Facebook\\API\\Plugin\\Settings\\Update\\Request' => __DIR__ . '/../..' . '/includes/API/Plugin/Settings/Update/Request.php',
         'WooCommerce\\Facebook\\API\\Plugin\\Traits\\JS_Exposable' => __DIR__ . '/../..' . '/includes/API/Plugin/Traits/JS_Exposable.php',
         'WooCommerce\\Facebook\\API\\Plugin\\WhatsAppSettings\\Handler' => __DIR__ . '/../..' . '/includes/API/Plugin/WhatsAppSettings/Handler.php',
+        'WooCommerce\\Facebook\\API\\Plugin\\WhatsAppSettings\\OnboardingComplete\\Request' => __DIR__ . '/../..' . '/includes/API/Plugin/WhatsAppSettings/OnboardingComplete/Request.php',
         'WooCommerce\\Facebook\\API\\Plugin\\WhatsAppSettings\\Uninstall\\Request' => __DIR__ . '/../..' . '/includes/API/Plugin/WhatsAppSettings/Uninstall/Request.php',
         'WooCommerce\\Facebook\\API\\Plugin\\WhatsAppSettings\\UpdateIntegrationConfig\\Request' => __DIR__ . '/../..' . '/includes/API/Plugin/WhatsAppSettings/UpdateIntegrationConfig/Request.php',
         'WooCommerce\\Facebook\\API\\Plugin\\WhatsAppSettings\\Update\\Request' => __DIR__ . '/../..' . '/includes/API/Plugin/WhatsAppSettings/Update/Request.php',
@@ -338,6 +339,7 @@ class ComposerStaticInit11ca85ea0e870d096a6e757d9e6583a6
         'WooCommerce\\Facebook\\Framework\\Lifecycle' => __DIR__ . '/../..' . '/includes/Framework/Lifecycle.php',
         'WooCommerce\\Facebook\\Framework\\LogHandlerBase' => __DIR__ . '/../..' . '/includes/Framework/LogHandlerBase.php',
         'WooCommerce\\Facebook\\Framework\\Plugin' => __DIR__ . '/../..' . '/includes/Framework/Plugin.php',
+        'WooCommerce\\Facebook\\Framework\\PluginCrashHandler' => __DIR__ . '/../..' . '/includes/Framework/PluginCrashHandler.php',
         'WooCommerce\\Facebook\\Framework\\Plugin\\Compatibility' => __DIR__ . '/../..' . '/includes/Framework/Plugin/Compatibility.php',
         'WooCommerce\\Facebook\\Framework\\Plugin\\Dependencies' => __DIR__ . '/../..' . '/includes/Framework/Plugin/Dependencies.php',
         'WooCommerce\\Facebook\\Framework\\Plugin\\Exception' => __DIR__ . '/../..' . '/includes/Framework/Plugin/Exception.php',
@@ -401,9 +403,9 @@ class ComposerStaticInit11ca85ea0e870d096a6e757d9e6583a6
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit11ca85ea0e870d096a6e757d9e6583a6::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit11ca85ea0e870d096a6e757d9e6583a6::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit11ca85ea0e870d096a6e757d9e6583a6::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628::$classMap;
 
         }, null, ClassLoader::class);
     }

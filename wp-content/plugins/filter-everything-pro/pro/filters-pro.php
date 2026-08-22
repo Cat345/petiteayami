@@ -19,10 +19,11 @@ class FiltersPro{
         $wpcFilter->define( 'FLRT_ENVATO_APP_CLIENT_ID', 'filter-everything-py1gbdtg' );
         $wpcFilter->define( 'FLRT_VERSION_TRANSIENT', 'wpc_plugin_version' );
         $wpcFilter->define( 'FLRT_PRO_BUILDER_KEY', '_kl-jlk_45(dp*)sd' );
-        $wpcFilter->define( 'FLRT_LICENSE_SOURCE', 'https://codecanyon.net/item/filter-everything-wordpress-woocommerce-filter/31634508' );
+        $wpcFilter->define( 'FLRT_LICENSE_SOURCE', 'https://filtereverything.pro/pricing/' );
 
         flrt_include('pro/Entities/PostMetaExistsEntity.php');
         flrt_include('pro/Entities/TaxonomyNumEntity.php');
+        flrt_include('pro/wpc-license-token.php');
         flrt_include('pro/wpc-default-hooks-pro.php');
         flrt_include('pro/wpc-utility-functions.php');
         flrt_include('pro/PluginPro.php');

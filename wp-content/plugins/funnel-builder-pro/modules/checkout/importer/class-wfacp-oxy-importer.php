@@ -92,7 +92,23 @@ if ( ! class_exists( 'WFACP_Oxy_Importer' ) ) {
 
 				/* End */
 
-				update_post_meta( $aero_id, WFACP_Common::oxy_get_meta_prefix( 'ct_builder_shortcodes' ), $content );
+				/**
+				 * Re-sign shortcodes with this site's oxygen_private_key (mirrors Oxygen's save flow).
+				 *
+				 * The helper keeps every element in the template intact; on a Lite version
+				 * that predates it the import stays a plain passthrough, which is the
+				 * behaviour Oxygen templates had before re-signing was introduced.
+				 */
+				if ( method_exists( 'WFFN_Common', 'oxy_resign_shortcodes' ) ) {
+					$content = WFFN_Common::oxy_resign_shortcodes( $content );
+				}
+
+				// Write both prefixed and bare meta keys (oxy_get_meta_prefix may add an underscore).
+				$meta_key = WFACP_Common::oxy_get_meta_prefix( 'ct_builder_shortcodes' );
+				update_post_meta( $aero_id, $meta_key, $content );
+				if ( 'ct_builder_shortcodes' !== $meta_key ) {
+					update_post_meta( $aero_id, 'ct_builder_shortcodes', $content );
+				}
 				WFACP_Common::update_label_meta( $aero_id, $content );
 				$this->clear_oxy_page_cache_css( $aero_id );
 				$this->save_data( $this->post_id );

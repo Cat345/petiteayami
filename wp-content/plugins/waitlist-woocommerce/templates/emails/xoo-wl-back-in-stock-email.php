@@ -8,36 +8,57 @@
  * maintain compatibility. We try to do this as little as possible, but it does
  * happen.
  * @see     https://docs.xootix.com/waitlist-for-woocommerce/
- * @version 2.8.7
+ * @version 2.9.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) { 
 	exit; // Exit if accessed directly
 }
 
-
 ?>
+
+<?php if( $show_pimage ): ?>
+	<?php ob_start(); ?>
+		
+		<td width="<?php echo esc_attr( $pimgWidth ); ?>" align="center" valign="middle" style="padding: 0">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+				<tr>
+					<td align="center" style="<?php echo $img_location === 'top' ? 'padding-bottom: 20px;' : 'padding-left: 20px;' ?>">
+						<?php echo $product_image_html; ?>
+					</td>
+				</tr>
+			</table>
+		</td>
+
+	<?php $img_html = ob_get_clean(); ?>
+<?php endif; ?>
 
 <?php do_action( 'xoo_wl_email_header', $emailObj ); ?>
 
 <table cellpadding="0" border="0" cellspacing="0" width="100%">
+
 	<?php if( $heading ): ?>
 		<tr>
-			<td style="color: <?php echo $headingColor ?>; font-weight: bold; font-size: <?php echo $headingFsize.'px' ?>;" align="center"><?php echo $heading; ?></td>
+			<td style="padding: 0; color: <?php echo $headingColor ?>; font-weight: bold; font-size: <?php echo $headingFsize.'px' ?>;" align="center"><?php echo $heading; ?></td>
 		</tr>
 	<?php endif; ?>
 
 	<tr>
-		<td>
+		<td style="padding: 0;">
 			<table cellpadding="0" cellspacing="0" width="100%" align="center">
 				<tr>
-					<td width="100%" align="center">
+					<td width="100%" align="center" style="padding: 0;">
 						<table width="100%" cellpadding="0" cellspacing="0" border="0">
 							<tr>
-								<td width="<?php echo 525 - $pimgWidth; ?>" align="<?php echo $show_pimage ? 'left' : 'center'; ?>" valign="middle" style="<?php echo $show_pimage ? 'padding-right: 20px;' : ''; ?>">
+								<td width="<?php echo 525 - $pimgWidth; ?>" align="<?php echo $show_pimage && $show_pimage === 'side' ? 'left' : 'center'; ?>" valign="middle">
 									<table width="100%" cellpadding="0" cellspacing="0" border="0">
 										<tr>
-											<td>
+
+											<tr>
+												<?php if( $show_pimage && $img_location === 'top' ) echo $img_html ?>
+											</tr>
+
+											<td style="padding: 0;">
 												<?php echo $body_text; ?>
 											</td>
 										</tr>
@@ -52,17 +73,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 									</table>
 								</td>
 
-								<?php if( $show_pimage ): ?>
-									<td width="<?php echo $pimgWidth; ?>" align="center" valign="middle">
-										<table width="100%" cellpadding="0" cellspacing="0" border="0">
-											<tr>
-												<td align="center">
-													<img src="<?php echo $product_image; ?>" alt="<?php echo $product_name; ?>" width="100%" height="<?php echo $pimgHeight == 0 ? 'auto' : $pimgHeight; ?>" style="display:block;" />
-												</td>
-											</tr>
-										</table>
-									</td>
-								<?php endif; ?>
+								<?php if( $show_pimage && $img_location === 'side' ) echo $img_html ?>
 
 							</tr>
 						</table>

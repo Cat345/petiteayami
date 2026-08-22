@@ -19,7 +19,7 @@ if ( ! class_exists( 'Oxygen_WFTY_Order_Details_Widget' ) ) {
 		 * Oxygen_WFTY_Order_Details_Widget constructor.
 		 */
 		public function __construct() {
-			$this->name = __( 'Order Details', 'woofunnels-aero-checkout' );
+			$this->name = __( 'Order Details', 'funnel-builder' );
 			parent::__construct();
 		}
 
@@ -132,7 +132,7 @@ if ( ! class_exists( 'Oxygen_WFTY_Order_Details_Widget' ) ) {
 			$default_heading = isset( $defaults['order_subscription_heading'] ) ? $defaults['order_subscription_heading'] : __( 'Subscription', 'funnel-builder' );
 			$this->add_sub_heading( $tab_id, __( 'This section will only show up in case of order will have downloads.', 'funnel-builder' ) );
 			$this->add_text( $tab_id, 'order_subscription_heading', __( 'Heading' ), $default_heading );
-			$this->add_switcher( $tab_id, 'order_subscription_preview', __( 'Show Subscription Preview' ), 'off' );
+			$this->add_switcher( $tab_id, 'order_subscription_preview', __( 'Show Subscription Preview' , 'funnel-builder'), 'off' );
 			$this->add_typography( $tab_id, 'subscription_typography_heading', '.wffn_order_details_table .wfty_wrap .wfty_subscription table *, .wffn_order_details_table .wfty_wrap .wfty_subscription table tr th, .wffn_order_details_table .wfty_wrap .wfty_subscription table tr td, .wffn_order_details_table .wfty_wrap .wfty_subscription table tr td:before' );
 
 			$this->add_heading( $tab_id, __( 'Button', 'funnel-builder' ) );
@@ -164,10 +164,10 @@ if ( ! class_exists( 'Oxygen_WFTY_Order_Details_Widget' ) ) {
 			);
 
 			$this->add_text( $tab_id, 'order_download_heading', __( 'Heading' ), $default_heading );
-			$this->add_text( $tab_id, 'order_downloads_btn_text', __( 'Download Button Text' ), $defaults['order_downloads_btn_text'] );
-			$this->add_switcher( $tab_id, 'order_download_preview', __( 'Show Download Preview' ), 'off' );
-			$this->add_switcher( $tab_id, 'order_downloads_show_file_downloads', __( 'Show File Downloads Column' ), 'off' );
-			$this->add_switcher( $tab_id, 'order_downloads_show_file_expiry', __( 'Show File Expiry Column' ), 'off' );
+			$this->add_text( $tab_id, 'order_downloads_btn_text', __( 'Download Button Text' , 'funnel-builder'), $defaults['order_downloads_btn_text'] );
+			$this->add_switcher( $tab_id, 'order_download_preview', __( 'Show Download Preview' , 'funnel-builder'), 'off' );
+			$this->add_switcher( $tab_id, 'order_downloads_show_file_downloads', __( 'Show File Downloads Column' , 'funnel-builder'), 'off' );
+			$this->add_switcher( $tab_id, 'order_downloads_show_file_expiry', __( 'Show File Expiry Column' , 'funnel-builder'), 'off' );
 
 			$this->add_typography( $tab_id, 'subscription_typography_heading', implode( ',', $selector ) );
 

@@ -21,6 +21,8 @@ abstract class Xoo_Wl_Email{
 
 	public $product;
 
+	public $WCTitle;
+
 	public $recipient_emails = array();
 
 	public function __construct() {
@@ -43,6 +45,8 @@ abstract class Xoo_Wl_Email{
 
 		if( $product = wc_get_product( $product_id ) ){
 
+			
+
 			$this->product = $product;
 
 			$this->placeholders = array_merge(
@@ -51,7 +55,9 @@ abstract class Xoo_Wl_Email{
 					'[product_name]' 		=> $product->get_name(),
 					'[product_link]' 		=> '<a href="'.$product->get_permalink().'">'.$product->get_name().'</a>',
 					'[product_link_raw]' 	=> $product->get_permalink(),
-					'[product_price]' 		=> $product->get_price()
+					'[product_price]' 		=> $product->get_price(),
+					'[product_image]' 		=> $this->get_product_image_html(),
+					'[product_image_link]' 	=> $this->row->get_product_image_src()
 				),
 				$this->placeholders
 			);
@@ -137,9 +143,6 @@ abstract class Xoo_Wl_Email{
 
 		$this->recipient_emails = array();
 
-		add_filter( 'wp_mail_from', array( $this, 'get_sender_email' ) );
-		add_filter( 'wp_mail_from_name', array( $this, 'get_sender_name' ) );
-		add_filter( 'wp_mail_content_type', array( $this, 'get_content_type' ) );
 
 		if( class_exists( 'SitePress' ) ){
 			add_filter( 'wpml_user_language', array( $this, 'wpml_set_user_lang' ), 10, 2 );
@@ -180,13 +183,35 @@ abstract class Xoo_Wl_Email{
 
 				}
 
-				wp_mail( $email, $mail_callback_params[1], $mail_callback_params[2], $mail_callback_params[3], $mail_callback_params[4] );
+				if( xoo_wl_helper()->get_email_style_option('email-template') === 'woocommerce' ){ //Use woocommerce to send email
+					remove_all_actions( 'xoo_wl_email_header' );
+					remove_all_actions( 'xoo_wl_email_footer' );
+					WC_Emails::instance()->emails[ 'xoo_wl_'.$this->id ]->trigger( $email, array(
+						'email_text' 	=> $message,
+						'email_subject' => $mail_callback_params[1]
+					) );
+				}
+				else{
+
+					add_filter( 'wp_mail_from', array( $this, 'get_sender_email' ) );
+					add_filter( 'wp_mail_from_name', array( $this, 'get_sender_name' ) );
+					add_filter( 'wp_mail_content_type', array( $this, 'get_content_type' ) );
+
+					wp_mail( $email, $mail_callback_params[1], $mail_callback_params[2], $mail_callback_params[3], $mail_callback_params[4] );
+
+					remove_filter( 'wp_mail_from', array( $this, 'get_sender_email' ) );
+					remove_filter( 'wp_mail_from_name', array( $this, 'get_sender_name' ) );
+					remove_filter( 'wp_mail_content_type', array( $this, 'get_content_type' ) );
+
+				}
 
 				if( class_exists( 'SitePress' ) ){
 
 					do_action( 'wpml_restore_language_from_email' );
 				}
 			}
+
+			
 				
 			$return = true;
 
@@ -199,9 +224,7 @@ abstract class Xoo_Wl_Email{
 
 		do_action( 'xoo_wl_email_'.$this->id.'_sent', $return, $this );
 
-		remove_filter( 'wp_mail_from', array( $this, 'get_sender_email' ) );
-		remove_filter( 'wp_mail_from_name', array( $this, 'get_sender_name' ) );
-		remove_filter( 'wp_mail_content_type', array( $this, 'get_content_type' ) );
+		
 
 		return $return;
 	}
@@ -281,12 +304,30 @@ abstract class Xoo_Wl_Email{
 		return xoo_wl_helper()->get_email_option( 'gl-logo' );
 	}
 
-	public function preview_email_template( $row_id ){
+	public function preview_email_template( $row_id ) {
+
 		$set_row = $this->set_row_data( $row_id );
-		if( is_wp_error( $set_row ) ){
+
+		if ( is_wp_error( $set_row ) ) {
 			return $set_row;
 		}
-		return $this->parse_placeholders( $this->get_template() );
+
+		if ( xoo_wl_helper()->get_email_style_option( 'email-template' ) === 'custom' ) {
+			return $this->parse_placeholders( $this->get_template() );
+		}
+
+		$WCEmailObj = WC_Emails::instance()->emails[ 'xoo_wl_' . $this->id ];
+
+		remove_all_actions( 'xoo_wl_email_header' );
+		remove_all_actions( 'xoo_wl_email_footer' );
+
+		$WCEmailObj->content_html_args['email_text'] = $this->parse_placeholders(
+			$this->get_template()
+		);
+
+		$content = $WCEmailObj->get_content_html();
+
+		return $WCEmailObj->style_inline( $content );
 	}
 
 
@@ -331,6 +372,32 @@ abstract class Xoo_Wl_Email{
 		<?php
 		echo ob_get_clean();
 	}
+
+	public function get_product_image_html() {
+
+		if( !$this->product ) return;
+
+		$settings    = xoo_wl_helper()->get_email_style_option();
+		$pimgHeight  = $settings['bis-pimg-height'];
+		$pimgWidth   = $settings['bis-pimg-width'];
+		$productImage = $this->row->get_product_image_src();
+		$productName  = $this->product->get_name();
+
+		ob_start();
+		?>
+
+		<img
+			src="<?php echo esc_url( $productImage ); ?>"
+			alt="<?php echo esc_attr( $productName ); ?>"
+			width="<?php echo esc_attr( $pimgWidth ); ?>"
+			<?php echo $pimgHeight > 0 ? 'height="' . esc_attr( $pimgHeight ) . '"' : ''; ?>
+			style="display:inline-block;height:auto;border:0;max-width: 100%;"
+		/>
+				
+		<?php
+		return ob_get_clean();
+	}
+
 
 }
 

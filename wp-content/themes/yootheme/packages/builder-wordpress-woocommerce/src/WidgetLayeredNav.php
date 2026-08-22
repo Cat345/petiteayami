@@ -100,6 +100,12 @@ class WidgetLayeredNav extends WC_Widget_Layered_Nav
             esc_attr(implode(',', $current_values)) .
             '">';
 
+        if ('or' === $query_type) {
+            echo '<input type="hidden" name="query_type_' .
+                esc_attr($taxonomy_filter_name) .
+                '" value="or">';
+        }
+
         echo wc_query_string_form_fields(
             null,
             ['filter_' . $taxonomy_filter_name, "query_type_{$taxonomy_filter_name}"],

@@ -15,19 +15,21 @@ class OnboardingTrackerData implements Hookable
     /**
      * @var string
      */
-    private $append_data_to;
+    private string $append_data_to;
     /**
      * @var OnboardingOption
      */
-    private $onboarding_option;
+    private OnboardingOption $onboarding_option;
     /**
      * @var string
      */
-    private $append_as;
+    private string $append_as;
     /**
      * @param string $append_data_to
+     * @param OnboardingOption $onboarding_option
+     * @param string $append_as
      */
-    public function __construct(string $append_data_to, OnboardingOption $onboarding_option, $append_as = 'octolize_onboarding')
+    public function __construct(string $append_data_to, OnboardingOption $onboarding_option, string $append_as = 'octolize_onboarding')
     {
         $this->append_data_to = $append_data_to;
         $this->onboarding_option = $onboarding_option;

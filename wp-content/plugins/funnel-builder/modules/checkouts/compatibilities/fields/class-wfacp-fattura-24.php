@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Compatibility_Fattura_24' ) ) {
 	/**
 	 * WooCommerce Fattura24 by Fattura24.com (Version 7.1.0)
@@ -49,8 +50,8 @@ if ( ! class_exists( 'WFACP_Compatibility_Fattura_24' ) ) {
 		public function setup_fields_billing() {
 			new WFACP_Add_Address_Field( 'fattura_24', [
 				'type'        => 'wfacp_html',
-				'label'       => __( 'Fattura 24', 'woofunnels-aero-checkout' ),
-				'placeholder' => __( 'Fattura 24', 'woofunnels-aero-checkout' ),
+				'label'       => __( 'Fattura 24', 'funnel-builder' ),
+				'placeholder' => __( 'Fattura 24', 'funnel-builder' ),
 				'cssready'    => [ 'wfacp-col-left-third' ],
 				'class'       => array( 'form-row-third first', 'wfacp-col-full' ),
 				'required'    => false,

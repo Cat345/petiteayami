@@ -698,6 +698,17 @@ class BWFAN_Automation_V2 {
 				$set_restore_point = true;
 			}
 			$restore_data['steps'] = $steps_data;
+
+			/**
+			 * Soft-delete step rows the user removed in THIS save. Deleting a
+			 * split-path branch (or a split/conditional subtree) drops the child
+			 * nodes from the graph but historically left their step rows active,
+			 * so a contact parked on such a step was orphaned and looped forever
+			 * (traversal can't map the step to a node and re-runs it). Diffing the
+			 * previously-saved graph against the new one means this is a no-op
+			 * unless a node actually disappeared - add/move/config saves skip it.
+			 */
+			$this->soft_delete_removed_steps( isset( $meta_data['steps'] ) ? $meta_data['steps'] : [], $steps );
 		}
 
 		/** Set link data */
@@ -766,6 +777,66 @@ class BWFAN_Automation_V2 {
 		}
 
 		return BWFAN_Model_Automationmeta::update_automation_meta_values( $this->automation_id, $meta_data_arr );
+	}
+
+	/**
+	 * Soft-delete step rows that were dropped from the graph in this save.
+	 *
+	 * Compares the previously-saved node list against the new one and marks any
+	 * real step that disappeared as deleted (status = 3). This is what a
+	 * split-path branch delete was missing: it rewrote the graph meta but never
+	 * deactivated the removed branch's child rows, so a contact parked on one
+	 * looped forever. Purely a diff of two in-memory node lists - no DB read and
+	 * no writes unless a node was actually removed, so normal add/move/config
+	 * saves are unaffected.
+	 *
+	 * @param array $old_steps previously saved graph nodes
+	 * @param array $new_steps graph nodes being saved now
+	 *
+	 * @return void
+	 */
+	public function soft_delete_removed_steps( $old_steps, $new_steps ) {
+		$old = $this->collect_graph_step_ids( $old_steps );
+		if ( empty( $old ) ) {
+			return;
+		}
+
+		$new = $this->collect_graph_step_ids( $new_steps );
+
+		/** Step ids present before this save but gone now = removed by the user. */
+		$removed = array_diff_key( $old, $new );
+		foreach ( array_keys( $removed ) as $sid ) {
+			$this->delete_automation_step( $sid );
+		}
+	}
+
+	/**
+	 * Collect real step ids from a graph node list.
+	 *
+	 * Skips start/end and split-path pseudo-nodes ({sid}-path-{n}), which are
+	 * not backed by step table rows.
+	 *
+	 * @param array $steps graph nodes
+	 *
+	 * @return array map of step id => true
+	 */
+	public function collect_graph_step_ids( $steps ) {
+		$ids = [];
+		if ( empty( $steps ) || ! is_array( $steps ) ) {
+			return $ids;
+		}
+
+		foreach ( $steps as $node ) {
+			if ( empty( $node['stepId'] ) || false !== strpos( (string) $node['stepId'], '-path-' ) ) {
+				continue;
+			}
+			$sid = absint( $node['stepId'] );
+			if ( $sid > 0 ) {
+				$ids[ $sid ] = true;
+			}
+		}
+
+		return $ids;
 	}
 
 	/**

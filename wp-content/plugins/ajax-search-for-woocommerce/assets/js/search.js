@@ -50,6 +50,12 @@
                         .replace(/&lt;(\/?(strong|b|br|span|i))&gt;/g, '<$1>')
                         .replace(/&lt;(strong|span|i)\s+class\s*=\s*&quot;([^&]+)&quot;&gt;/g, '<$1 class="$2">');
                 },
+                escHtml: function (string) {
+                    return String(string)
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;');
+                },
                 createNode: function (containerClass) {
                     var div = document.createElement('div');
                     div.className = containerClass;
@@ -1449,7 +1455,11 @@
                     }
                     return;
                 case keys.TAB:
-                    break;
+                    if (that.isMountedOverlayDarkened()) {
+                        that.disableOverlayDarkened();
+                    }
+                    that.hide();
+                    return;
                 case keys.RETURN:
 
                     if (that.selectedIndex === -1) {
@@ -2343,8 +2353,8 @@
                             prepend += '<span class="dgwt-wcas-st--direct-headline">' + dgwt_wcas.labels['tax_' + suggestion.taxonomy] + '</span>';
                         }
                         if (typeof suggestion.breadcrumbs != 'undefined' && suggestion.breadcrumbs) {
-                            title = suggestion.breadcrumbs + ' &gt; ' + suggestion.value;
-                            append += '<span class="dgwt-wcas-st-breadcrumbs"><span class="dgwt-wcas-st-label-in">' + dgwt_wcas.labels.in + ' </span>' + suggestion.breadcrumbs + '</span>';
+                            title = suggestion.breadcrumbs + ' > ' + suggestion.value;
+                            append += '<span class="dgwt-wcas-st-breadcrumbs"><span class="dgwt-wcas-st-label-in">' + dgwt_wcas.labels.in + ' </span>' + utils.escHtml(suggestion.breadcrumbs) + '</span>';
                             //@TODO RTL support
                         }
 
@@ -2412,7 +2422,7 @@
                         prepend += that.apply3rdPartyPlaceholder('title_before', suggestion);
                         append += that.apply3rdPartyPlaceholder('title_after', suggestion);
 
-                        title = title.length > 0 ? ' title="' + title.replace(/>/g, '&gt;') + '"' : '';
+                        title = title.length > 0 ? ' title="' + utils.escHtml(title) + '"' : '';
 
                         html += '<a href="' + url + '" class="' + classes + '" data-index="' + i + '">';
 

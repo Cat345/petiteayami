@@ -137,7 +137,7 @@ if ( ! class_exists( 'BWFABT_Controller_Offer' ) ) {
 					/** update post meta for gutenburg */
 					if ( $new_post_id > 0 && get_post( $new_post_id ) instanceof WP_Post ) {
 						$post               = get_post( $new_post_id );
-						$post->post_content = get_post_field( 'post_content', $control_id );
+						$post->post_content = get_post_field( 'post_content', $variant_id );
 						wp_update_post( $post );
 					}
 					$upsell_id = get_post_meta( $variant_data['control_id'], '_funnel_id', true );

@@ -72,14 +72,42 @@ if ( ! class_exists( 'WFACP_Divi_Extension' ) ) {
 		private function enqueue_module_js() {
 			$frontend_url = "{$this->plugin_dir_url}js/frontend.js";
 
-			wp_enqueue_script( "{$this->name}-frontend-bundle", $frontend_url, $this->_bundle_dependencies['frontend'], $this->version, true );
+			wp_enqueue_script( "{$this->name}-frontend-bundle", $frontend_url, $this->filter_registered_deps( $this->_bundle_dependencies['frontend'] ), $this->version, true );
 
 			if ( et_core_is_fb_enabled() ) {
 
 				// Builder Bundle
 				$bundle_url = "{$this->plugin_dir_url}js/loader.min.js";
-				wp_enqueue_script( "{$this->name}-builder-bundle", $bundle_url, $this->_bundle_dependencies['builder'], $this->version, true );
+				wp_enqueue_script( "{$this->name}-builder-bundle", $bundle_url, $this->filter_registered_deps( isset( $this->_bundle_dependencies['builder'] ) ? $this->_bundle_dependencies['builder'] : array() ), $this->version, true );
 			}
+		}
+
+		/**
+		 * Keep only dependency handles that WordPress has actually registered.
+		 *
+		 * Divi core's DiviExtension base class seeds `divi-custom-script` (the theme's
+		 * front-end custom.js) into the inherited `$this->_bundle_dependencies['frontend']`
+		 * array. That handle is only registered on real front-end views — in the checkout
+		 * editor context (theme builder / visual builder) Divi never registers it, so
+		 * WP 6.9.1+'s `WP_Scripts::add` validation raises an "enqueued with dependencies
+		 * that are not registered" notice. Filtering the deps at the enqueue point drops
+		 * the unregistered handle without mutating the inherited property, so the real
+		 * front-end path (parent::_enqueue_bundles) keeps `divi-custom-script` intact.
+		 *
+		 * @since 3.22.2
+		 *
+		 * @param array $deps Dependency handles to filter (non-array coerced to empty).
+		 *
+		 * @return array Re-indexed list of handles that are currently registered.
+		 */
+		private function filter_registered_deps( $deps ) {
+			if ( ! is_array( $deps ) ) {
+				return array();
+			}
+
+			return array_values( array_filter( $deps, static function ( $handle ) {
+				return wp_script_is( $handle, 'registered' );
+			} ) );
 		}
 
 

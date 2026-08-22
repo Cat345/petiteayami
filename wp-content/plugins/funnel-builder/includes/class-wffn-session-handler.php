@@ -55,6 +55,17 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 				return;
 			}
 
+			/**
+			 * Mirror the resolved transient key into the WooCommerce session so the funnel
+			 * session survives loss of the JS-only `wffn_si` cookie (dropped by ITP, in-app
+			 * browsers, consent tools or ad-blockers). The read path in
+			 * load_transient_from_cookie() already prefers WC()->session->get( '_wffn_session_id' ),
+			 * so this single server-side write keeps has_valid_session() true at checkout submit.
+			 */
+			if ( function_exists( 'WC' ) && ! is_null( WC()->session ) && method_exists( WC()->session, 'has_session' ) && WC()->session->has_session() && WC()->session->get( '_wffn_session_id' ) !== $get_key ) {
+				WC()->session->set( '_wffn_session_id', $get_key );
+			}
+
 			foreach ( $this->groups as $group ) {
 				$cookie_value = isset( $data[ $group ] ) ? wp_unslash( $data[ $group ] ) : false;
 
@@ -281,7 +292,14 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 			 */
 			if ( function_exists( 'WC' ) && ! is_null( WC()->session ) && method_exists( WC()->session, 'has_session' ) && WC()->session->has_session() ) {
 
-				$cookie_value = WC()->session->get( '_wffn_session_id', '' );
+				$wc_session_key = WC()->session->get( '_wffn_session_id', '' );
+				/**
+				 * Only adopt the WC-session value when it is non-empty so a blank server value
+				 * can't clobber an already-resolved GET/POST `wffn-si` param.
+				 */
+				if ( ! empty( $wc_session_key ) ) {
+					$cookie_value = $wc_session_key;
+				}
 			}
 
 			if ( empty( $cookie_value ) ) {

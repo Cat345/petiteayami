@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /*
  * Plugin: Brazilian Market on WooCommerce by Claudio Sanches v.4.0.2
  */
@@ -12,20 +13,22 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 			'billing_cpf',
 			'billing_rg',
 			'billing_cnpj',
+			'billing_document',
 			'billing_ie',
 			'billing_birthdate',
 			'billing_gender',
 			'billing_number',
 			'billing_neighborhood',
-			'billing_number',
 			'billing_cellphone',
+			'billing_phone_country',
 
 		);
 
 
 		private $shipping_new_fields = array(
 			'shipping_number',
-			'shipping_house_number_suffix',
+			'shipping_neighborhood',
+			'shipping_phone_country',
 		);
 
 		private $merge_default_classess = array(
@@ -78,16 +81,39 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 
 
 		private function is_enabled() {
-			return class_exists( 'Extra_Checkout_Fields_For_Brazil_Front_End' );
+			return class_exists( 'Extra_Checkout_Fields_For_Brazil_Front_End' ) || $this->is_new_plugin();
+		}
+
+		/**
+		 * The actively-maintained "Woo Better Shipping Calculator for Brazil" plugin uses a
+		 * different, unified field schema (single billing_document + hidden persontype/cpf/cnpj,
+		 * Portuguese labels, no RG/cellphone). Detect it via a symbol that exists at plugin-file
+		 * load time — its stub Extra_Checkout_Fields_For_Brazil_Front_End class is registered too
+		 * late (wp_loaded/PHP_INT_MAX) to rely on.
+		 */
+		private function is_new_plugin() {
+			return defined( 'WC_BETTER_SHIPPING_CALCULATOR_FOR_BRAZIL_VERSION' );
 		}
 
 		public function setup_fields_billing() {
-			if ( false == $this->is_enabled() ) {
+			if ( false === $this->is_enabled() ) {
 				return;
 			}
 
-			$person_type = intval( $this->settings['person_type'] );
-			$settings    = $this->settings;
+			/*
+			 * Woo Better Shipping Calculator for Brazil ships a single, unified visible
+			 * "billing_document" field (with hidden persontype/cpf/cnpj) and Portuguese labels,
+			 * and has no RG / standalone cellphone field. Render a matching unified document field
+			 * instead of the legacy plugin's separate CPF/RG/CNPJ + persontype select.
+			 */
+			if ( $this->is_new_plugin() ) {
+				$this->setup_new_plugin_billing_fields();
+
+				return;
+			}
+
+			$settings    = is_array( $this->settings ) ? $this->settings : array();
+			$person_type = isset( $settings['person_type'] ) ? intval( $settings['person_type'] ) : 0;
 			if ( 0 !== $person_type ) {
 				if ( 1 === $person_type ) {
 
@@ -303,15 +329,71 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 			}
 		}
 
-		public function setup_fields_shipping() {
-			if ( false == $this->is_enabled() ) {
-				return;
-			}
+		/**
+		 * Field set for the "Woo Better Shipping Calculator for Brazil" plugin: a single unified
+		 * CPF/CNPJ document field plus number/neighborhood, using the plugin's Portuguese labels.
+		 */
+		private function setup_new_plugin_billing_fields() {
+			$domain = 'woo-better-shipping-calculator-for-brazil';
+
+			new WFACP_Add_Address_Field(
+				'document',
+				array(
+					'label'       => __( 'CPF/CNPJ', $domain ),
+					'placeholder' => '',
+					'class'       => array( 'form-row-wide', 'person-type-field' ),
+					'cssready'    => array( 'wfacp-col-full' ),
+					'required'    => false,
+					'type'        => 'text',
+					'priority'    => 23,
+				),
+				'billing',
+				false
+			);
+
 			new WFACP_Add_Address_Field(
 				'number',
 				array(
-					'label'       => __( 'Number', 'woocommerce-extra-checkout-fields-for-brazil' ),
-					'placeholder' => __( '', 'woocommerce-extra-checkout-fields-for-brazil' ),
+					'label'       => __( 'Número', $domain ),
+					'placeholder' => '',
+					'class'       => array( 'form-row-first', 'address-field' ),
+					'cssready'    => array( 'wfacp-col-left-half' ),
+					'clear'       => true,
+					'required'    => true,
+					'priority'    => 55,
+				),
+				'billing',
+				false
+			);
+
+			new WFACP_Add_Address_Field(
+				'neighborhood',
+				array(
+					'label'       => __( 'Bairro', $domain ),
+					'placeholder' => '',
+					'class'       => array( 'form-row-first', 'address-field' ),
+					'cssready'    => array( 'wfacp-col-left-half' ),
+					'clear'       => true,
+					'priority'    => 65,
+				),
+				'billing',
+				false
+			);
+		}
+
+		public function setup_fields_shipping() {
+			if ( false === $this->is_enabled() ) {
+				return;
+			}
+
+			$is_new     = $this->is_new_plugin();
+			$number_lbl = $is_new ? __( 'Número', 'woo-better-shipping-calculator-for-brazil' ) : __( 'Number', 'woocommerce-extra-checkout-fields-for-brazil' );
+			$hood_lbl   = $is_new ? __( 'Bairro', 'woo-better-shipping-calculator-for-brazil' ) : __( 'Neighborhood', 'woocommerce-extra-checkout-fields-for-brazil' );
+			new WFACP_Add_Address_Field(
+				'number',
+				array(
+					'label'       => $number_lbl,
+					'placeholder' => '',
 					'class'       => array( 'form-row-first', 'address-field' ),
 					'cssready'    => array( 'wfacp-col-left-half' ),
 					'clear'       => true,
@@ -325,8 +407,8 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 			new WFACP_Add_Address_Field(
 				'neighborhood',
 				array(
-					'label'       => __( 'Neighborhood', 'woocommerce-extra-checkout-fields-for-brazil' ),
-					'placeholder' => __( '', 'woocommerce-extra-checkout-fields-for-brazil' ),
+					'label'       => $hood_lbl,
+					'placeholder' => '',
 					'class'       => array( 'form-row-first', 'address-field' ),
 					'cssready'    => array( 'wfacp-col-left-half' ),
 					'clear'       => true,
@@ -359,7 +441,7 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 		public function add_dependency_messages( $messages ) {
 
 			$messages[] = array(
-				'message'     => __( '"WooCommerce Extra Checkout Fields for Brazil" is activated. Learn about the right away to configure it with ' . 'Funnelkit' . ' Checkout.<a target="_blank" href="//funnelkit.com/docs/aerocheckout/compatibility/woocommerce-extra-checkout-fields-for-Brazil"> Know more</a>', 'woofunnels-aero-checkout' ),
+				'message'     => __( '"WooCommerce Extra Checkout Fields for Brazil" is activated. Learn about the right away to configure it with ' . 'Funnelkit' . ' Checkout.<a target="_blank" href="//funnelkit.com/docs/aerocheckout/compatibility/woocommerce-extra-checkout-fields-for-Brazil"> Know more</a>', 'funnel-builder' ),
 				'id'          => '',
 				'show'        => 'yes',
 				'dismissible' => true,
@@ -534,6 +616,13 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 		public function exclude_bzazil_fields( $fields ) {
 			$fields[] = 'shipping_number';
 			$fields[] = 'shipping_neighborhood';
+
+			if ( $this->is_new_plugin() ) {
+				$fields[] = 'billing_document';
+				$fields[] = 'billing_phone_country';
+				$fields[] = 'shipping_phone_country';
+			}
+
 			return $fields;
 		}
 	}

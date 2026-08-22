@@ -1,1581 +1,1319 @@
-.iti {
-    position: relative;
-    display: inline-block;
+/* packages/core/src/css/flag-offsets.css */
+:root {
+  --iti-flag-width: 20px;
+  --iti-flag-count: 244;
+}
+.iti__ac {
+  --iti-flag-offset: 0;
+}
+.iti__ad {
+  --iti-flag-offset: -1;
+}
+.iti__ae {
+  --iti-flag-offset: -2;
+}
+.iti__af {
+  --iti-flag-offset: -3;
+}
+.iti__ag {
+  --iti-flag-offset: -4;
+}
+.iti__ai {
+  --iti-flag-offset: -5;
+}
+.iti__al {
+  --iti-flag-offset: -6;
+}
+.iti__am {
+  --iti-flag-offset: -7;
+}
+.iti__ao {
+  --iti-flag-offset: -8;
+}
+.iti__ar {
+  --iti-flag-offset: -9;
+}
+.iti__as {
+  --iti-flag-offset: -10;
+}
+.iti__at {
+  --iti-flag-offset: -11;
+}
+.iti__au {
+  --iti-flag-offset: -12;
+}
+.iti__aw {
+  --iti-flag-offset: -13;
+}
+.iti__ax {
+  --iti-flag-offset: -14;
+}
+.iti__az {
+  --iti-flag-offset: -15;
+}
+.iti__ba {
+  --iti-flag-offset: -16;
+}
+.iti__bb {
+  --iti-flag-offset: -17;
+}
+.iti__bd {
+  --iti-flag-offset: -18;
+}
+.iti__be {
+  --iti-flag-offset: -19;
+}
+.iti__bf {
+  --iti-flag-offset: -20;
+}
+.iti__bg {
+  --iti-flag-offset: -21;
+}
+.iti__bh {
+  --iti-flag-offset: -22;
+}
+.iti__bi {
+  --iti-flag-offset: -23;
+}
+.iti__bj {
+  --iti-flag-offset: -24;
+}
+.iti__bl {
+  --iti-flag-offset: -25;
+}
+.iti__bm {
+  --iti-flag-offset: -26;
+}
+.iti__bn {
+  --iti-flag-offset: -27;
+}
+.iti__bo {
+  --iti-flag-offset: -28;
+}
+.iti__bq {
+  --iti-flag-offset: -29;
+}
+.iti__br {
+  --iti-flag-offset: -30;
+}
+.iti__bs {
+  --iti-flag-offset: -31;
+}
+.iti__bt {
+  --iti-flag-offset: -32;
+}
+.iti__bw {
+  --iti-flag-offset: -33;
+}
+.iti__by {
+  --iti-flag-offset: -34;
+}
+.iti__bz {
+  --iti-flag-offset: -35;
+}
+.iti__ca {
+  --iti-flag-offset: -36;
+}
+.iti__cc {
+  --iti-flag-offset: -37;
+}
+.iti__cd {
+  --iti-flag-offset: -38;
+}
+.iti__cf {
+  --iti-flag-offset: -39;
+}
+.iti__cg {
+  --iti-flag-offset: -40;
+}
+.iti__ch {
+  --iti-flag-offset: -41;
+}
+.iti__ci {
+  --iti-flag-offset: -42;
+}
+.iti__ck {
+  --iti-flag-offset: -43;
+}
+.iti__cl {
+  --iti-flag-offset: -44;
+}
+.iti__cm {
+  --iti-flag-offset: -45;
+}
+.iti__cn {
+  --iti-flag-offset: -46;
+}
+.iti__co {
+  --iti-flag-offset: -47;
+}
+.iti__cr {
+  --iti-flag-offset: -48;
+}
+.iti__cu {
+  --iti-flag-offset: -49;
+}
+.iti__cv {
+  --iti-flag-offset: -50;
+}
+.iti__cw {
+  --iti-flag-offset: -51;
+}
+.iti__cx {
+  --iti-flag-offset: -52;
+}
+.iti__cy {
+  --iti-flag-offset: -53;
+}
+.iti__cz {
+  --iti-flag-offset: -54;
+}
+.iti__de {
+  --iti-flag-offset: -55;
+}
+.iti__dj {
+  --iti-flag-offset: -56;
+}
+.iti__dk {
+  --iti-flag-offset: -57;
+}
+.iti__dm {
+  --iti-flag-offset: -58;
+}
+.iti__do {
+  --iti-flag-offset: -59;
+}
+.iti__dz {
+  --iti-flag-offset: -60;
+}
+.iti__ec {
+  --iti-flag-offset: -61;
+}
+.iti__ee {
+  --iti-flag-offset: -62;
+}
+.iti__eg {
+  --iti-flag-offset: -63;
+}
+.iti__eh {
+  --iti-flag-offset: -64;
+}
+.iti__er {
+  --iti-flag-offset: -65;
+}
+.iti__es {
+  --iti-flag-offset: -66;
+}
+.iti__et {
+  --iti-flag-offset: -67;
+}
+.iti__fi {
+  --iti-flag-offset: -68;
+}
+.iti__fj {
+  --iti-flag-offset: -69;
+}
+.iti__fk {
+  --iti-flag-offset: -70;
+}
+.iti__fm {
+  --iti-flag-offset: -71;
+}
+.iti__fo {
+  --iti-flag-offset: -72;
+}
+.iti__fr {
+  --iti-flag-offset: -73;
+}
+.iti__ga {
+  --iti-flag-offset: -74;
+}
+.iti__gb {
+  --iti-flag-offset: -75;
+}
+.iti__gd {
+  --iti-flag-offset: -76;
+}
+.iti__ge {
+  --iti-flag-offset: -77;
+}
+.iti__gf {
+  --iti-flag-offset: -78;
+}
+.iti__gg {
+  --iti-flag-offset: -79;
+}
+.iti__gh {
+  --iti-flag-offset: -80;
+}
+.iti__gi {
+  --iti-flag-offset: -81;
+}
+.iti__gl {
+  --iti-flag-offset: -82;
+}
+.iti__gm {
+  --iti-flag-offset: -83;
+}
+.iti__gn {
+  --iti-flag-offset: -84;
+}
+.iti__gp {
+  --iti-flag-offset: -85;
+}
+.iti__gq {
+  --iti-flag-offset: -86;
+}
+.iti__gr {
+  --iti-flag-offset: -87;
+}
+.iti__gt {
+  --iti-flag-offset: -88;
+}
+.iti__gu {
+  --iti-flag-offset: -89;
+}
+.iti__gw {
+  --iti-flag-offset: -90;
+}
+.iti__gy {
+  --iti-flag-offset: -91;
+}
+.iti__hk {
+  --iti-flag-offset: -92;
+}
+.iti__hn {
+  --iti-flag-offset: -93;
+}
+.iti__hr {
+  --iti-flag-offset: -94;
+}
+.iti__ht {
+  --iti-flag-offset: -95;
+}
+.iti__hu {
+  --iti-flag-offset: -96;
+}
+.iti__id {
+  --iti-flag-offset: -97;
+}
+.iti__ie {
+  --iti-flag-offset: -98;
+}
+.iti__il {
+  --iti-flag-offset: -99;
+}
+.iti__im {
+  --iti-flag-offset: -100;
+}
+.iti__in {
+  --iti-flag-offset: -101;
+}
+.iti__io {
+  --iti-flag-offset: -102;
+}
+.iti__iq {
+  --iti-flag-offset: -103;
+}
+.iti__ir {
+  --iti-flag-offset: -104;
+}
+.iti__is {
+  --iti-flag-offset: -105;
+}
+.iti__it {
+  --iti-flag-offset: -106;
+}
+.iti__je {
+  --iti-flag-offset: -107;
+}
+.iti__jm {
+  --iti-flag-offset: -108;
+}
+.iti__jo {
+  --iti-flag-offset: -109;
+}
+.iti__jp {
+  --iti-flag-offset: -110;
+}
+.iti__ke {
+  --iti-flag-offset: -111;
+}
+.iti__kg {
+  --iti-flag-offset: -112;
+}
+.iti__kh {
+  --iti-flag-offset: -113;
+}
+.iti__ki {
+  --iti-flag-offset: -114;
+}
+.iti__km {
+  --iti-flag-offset: -115;
+}
+.iti__kn {
+  --iti-flag-offset: -116;
+}
+.iti__kp {
+  --iti-flag-offset: -117;
+}
+.iti__kr {
+  --iti-flag-offset: -118;
+}
+.iti__kw {
+  --iti-flag-offset: -119;
+}
+.iti__ky {
+  --iti-flag-offset: -120;
+}
+.iti__kz {
+  --iti-flag-offset: -121;
+}
+.iti__la {
+  --iti-flag-offset: -122;
+}
+.iti__lb {
+  --iti-flag-offset: -123;
+}
+.iti__lc {
+  --iti-flag-offset: -124;
+}
+.iti__li {
+  --iti-flag-offset: -125;
+}
+.iti__lk {
+  --iti-flag-offset: -126;
+}
+.iti__lr {
+  --iti-flag-offset: -127;
+}
+.iti__ls {
+  --iti-flag-offset: -128;
+}
+.iti__lt {
+  --iti-flag-offset: -129;
+}
+.iti__lu {
+  --iti-flag-offset: -130;
+}
+.iti__lv {
+  --iti-flag-offset: -131;
+}
+.iti__ly {
+  --iti-flag-offset: -132;
+}
+.iti__ma {
+  --iti-flag-offset: -133;
+}
+.iti__mc {
+  --iti-flag-offset: -134;
+}
+.iti__md {
+  --iti-flag-offset: -135;
+}
+.iti__me {
+  --iti-flag-offset: -136;
+}
+.iti__mf {
+  --iti-flag-offset: -137;
+}
+.iti__mg {
+  --iti-flag-offset: -138;
+}
+.iti__mh {
+  --iti-flag-offset: -139;
+}
+.iti__mk {
+  --iti-flag-offset: -140;
+}
+.iti__ml {
+  --iti-flag-offset: -141;
+}
+.iti__mm {
+  --iti-flag-offset: -142;
+}
+.iti__mn {
+  --iti-flag-offset: -143;
+}
+.iti__mo {
+  --iti-flag-offset: -144;
+}
+.iti__mp {
+  --iti-flag-offset: -145;
+}
+.iti__mq {
+  --iti-flag-offset: -146;
+}
+.iti__mr {
+  --iti-flag-offset: -147;
+}
+.iti__ms {
+  --iti-flag-offset: -148;
+}
+.iti__mt {
+  --iti-flag-offset: -149;
+}
+.iti__mu {
+  --iti-flag-offset: -150;
+}
+.iti__mv {
+  --iti-flag-offset: -151;
+}
+.iti__mw {
+  --iti-flag-offset: -152;
+}
+.iti__mx {
+  --iti-flag-offset: -153;
+}
+.iti__my {
+  --iti-flag-offset: -154;
+}
+.iti__mz {
+  --iti-flag-offset: -155;
+}
+.iti__na {
+  --iti-flag-offset: -156;
+}
+.iti__nc {
+  --iti-flag-offset: -157;
+}
+.iti__ne {
+  --iti-flag-offset: -158;
+}
+.iti__nf {
+  --iti-flag-offset: -159;
+}
+.iti__ng {
+  --iti-flag-offset: -160;
+}
+.iti__ni {
+  --iti-flag-offset: -161;
+}
+.iti__nl {
+  --iti-flag-offset: -162;
+}
+.iti__no {
+  --iti-flag-offset: -163;
+}
+.iti__np {
+  --iti-flag-offset: -164;
+}
+.iti__nr {
+  --iti-flag-offset: -165;
+}
+.iti__nu {
+  --iti-flag-offset: -166;
+}
+.iti__nz {
+  --iti-flag-offset: -167;
+}
+.iti__om {
+  --iti-flag-offset: -168;
+}
+.iti__pa {
+  --iti-flag-offset: -169;
+}
+.iti__pe {
+  --iti-flag-offset: -170;
+}
+.iti__pf {
+  --iti-flag-offset: -171;
+}
+.iti__pg {
+  --iti-flag-offset: -172;
+}
+.iti__ph {
+  --iti-flag-offset: -173;
+}
+.iti__pk {
+  --iti-flag-offset: -174;
+}
+.iti__pl {
+  --iti-flag-offset: -175;
+}
+.iti__pm {
+  --iti-flag-offset: -176;
+}
+.iti__pr {
+  --iti-flag-offset: -177;
+}
+.iti__ps {
+  --iti-flag-offset: -178;
+}
+.iti__pt {
+  --iti-flag-offset: -179;
+}
+.iti__pw {
+  --iti-flag-offset: -180;
+}
+.iti__py {
+  --iti-flag-offset: -181;
+}
+.iti__qa {
+  --iti-flag-offset: -182;
+}
+.iti__re {
+  --iti-flag-offset: -183;
+}
+.iti__ro {
+  --iti-flag-offset: -184;
+}
+.iti__rs {
+  --iti-flag-offset: -185;
+}
+.iti__ru {
+  --iti-flag-offset: -186;
+}
+.iti__rw {
+  --iti-flag-offset: -187;
+}
+.iti__sa {
+  --iti-flag-offset: -188;
+}
+.iti__sb {
+  --iti-flag-offset: -189;
+}
+.iti__sc {
+  --iti-flag-offset: -190;
+}
+.iti__sd {
+  --iti-flag-offset: -191;
+}
+.iti__se {
+  --iti-flag-offset: -192;
+}
+.iti__sg {
+  --iti-flag-offset: -193;
+}
+.iti__sh {
+  --iti-flag-offset: -194;
+}
+.iti__si {
+  --iti-flag-offset: -195;
+}
+.iti__sj {
+  --iti-flag-offset: -196;
+}
+.iti__sk {
+  --iti-flag-offset: -197;
+}
+.iti__sl {
+  --iti-flag-offset: -198;
+}
+.iti__sm {
+  --iti-flag-offset: -199;
+}
+.iti__sn {
+  --iti-flag-offset: -200;
+}
+.iti__so {
+  --iti-flag-offset: -201;
+}
+.iti__sr {
+  --iti-flag-offset: -202;
+}
+.iti__ss {
+  --iti-flag-offset: -203;
+}
+.iti__st {
+  --iti-flag-offset: -204;
+}
+.iti__sv {
+  --iti-flag-offset: -205;
+}
+.iti__sx {
+  --iti-flag-offset: -206;
+}
+.iti__sy {
+  --iti-flag-offset: -207;
+}
+.iti__sz {
+  --iti-flag-offset: -208;
+}
+.iti__tc {
+  --iti-flag-offset: -209;
+}
+.iti__td {
+  --iti-flag-offset: -210;
+}
+.iti__tg {
+  --iti-flag-offset: -211;
+}
+.iti__th {
+  --iti-flag-offset: -212;
+}
+.iti__tj {
+  --iti-flag-offset: -213;
+}
+.iti__tk {
+  --iti-flag-offset: -214;
+}
+.iti__tl {
+  --iti-flag-offset: -215;
+}
+.iti__tm {
+  --iti-flag-offset: -216;
+}
+.iti__tn {
+  --iti-flag-offset: -217;
+}
+.iti__to {
+  --iti-flag-offset: -218;
+}
+.iti__tr {
+  --iti-flag-offset: -219;
+}
+.iti__tt {
+  --iti-flag-offset: -220;
+}
+.iti__tv {
+  --iti-flag-offset: -221;
+}
+.iti__tw {
+  --iti-flag-offset: -222;
+}
+.iti__tz {
+  --iti-flag-offset: -223;
+}
+.iti__ua {
+  --iti-flag-offset: -224;
+}
+.iti__ug {
+  --iti-flag-offset: -225;
+}
+.iti__us {
+  --iti-flag-offset: -226;
+}
+.iti__uy {
+  --iti-flag-offset: -227;
+}
+.iti__uz {
+  --iti-flag-offset: -228;
+}
+.iti__va {
+  --iti-flag-offset: -229;
+}
+.iti__vc {
+  --iti-flag-offset: -230;
+}
+.iti__ve {
+  --iti-flag-offset: -231;
+}
+.iti__vg {
+  --iti-flag-offset: -232;
+}
+.iti__vi {
+  --iti-flag-offset: -233;
+}
+.iti__vn {
+  --iti-flag-offset: -234;
+}
+.iti__vu {
+  --iti-flag-offset: -235;
+}
+.iti__wf {
+  --iti-flag-offset: -236;
+}
+.iti__ws {
+  --iti-flag-offset: -237;
+}
+.iti__xk {
+  --iti-flag-offset: -238;
+}
+.iti__ye {
+  --iti-flag-offset: -239;
+}
+.iti__yt {
+  --iti-flag-offset: -240;
+}
+.iti__za {
+  --iti-flag-offset: -241;
+}
+.iti__zm {
+  --iti-flag-offset: -242;
+}
+.iti__zw {
+  --iti-flag-offset: -243;
 }
 
+/* packages/core/src/css/intlTelInput.css */
+:root {
+  --iti-hover-color: rgba(0, 0, 0, 0.05);
+  --iti-border-color: #ccc;
+  --iti-country-selector-bg: white;
+  --iti-icon-color: #555;
+  --iti-spacer-horizontal: 10px;
+  --iti-flag-height: calc(var(--iti-flag-width) * 3 / 4);
+  --iti-globe-icon-size: 17px;
+  --iti-clear-icon-size: 15px;
+  --iti-border-width: 1px;
+  --iti-arrow-size: 5px;
+  --iti-arrow-width: 1.5px;
+  --iti-arrow-padding: 7px;
+  --iti-mobile-popup-margin: 30px;
+  --iti-strict-reject-flash-color: rgba(255, 0, 0, 0.12);
+}
+.iti {
+  position: relative;
+  display: inline-block;
+}
 .iti * {
     box-sizing: border-box;
-    -moz-box-sizing: border-box;
-}
-
-.iti__hide {
-    display: none;
-}
-
-.iti__v-hide {
-    visibility: hidden;
-}
-
-.iti input, .iti input[type=text], .iti input[type=tel] {
+  }
+.iti input.iti__tel-input,.iti input.iti__tel-input[type=text],.iti input.iti__tel-input[type=tel] {
     position: relative;
     z-index: 0;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    padding-right: 36px;
-    margin-right: 0;
+    display: block;
+    min-width: 100%;
+    margin: 0 !important;
+  }
+.iti__a11y-text {
+  width: 1px;
+  height: 1px;
+  clip: rect(1px, 1px, 1px, 1px);
+  overflow: hidden;
+  position: absolute;
 }
-
-.iti__flag-container {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    padding: 1px;
+.iti__country-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  padding: var(--iti-border-width);
 }
-
-.iti__selected-flag {
-    z-index: 1;
-    position: relative;
-    display: flex;
-    align-items: center;
-    height: 100%;
-    padding: 0 6px 0 8px;
+.iti__selected-country {
+  z-index: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  border-radius: 0;
+  font-weight: inherit;
+  line-height: inherit;
+  text-decoration: none;
 }
-
+.iti__selected-country-primary {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 var(--iti-arrow-padding) 0 var(--iti-spacer-horizontal);
+}
+.iti__selected-dial-code {
+  margin-left: 4px;
+}
 .iti__arrow {
-    margin-left: 6px;
-    width: 0;
-    height: 0;
-    border-left: 3px solid transparent;
-    border-right: 3px solid transparent;
-    border-top: 4px solid #555;
+  margin-left: var(--iti-arrow-padding);
+  margin-top: -2px;
+  width: var(--iti-arrow-size);
+  height: var(--iti-arrow-size);
+  box-sizing: border-box;
+  border-right: var(--iti-arrow-width) solid var(--iti-icon-color);
+  border-bottom: var(--iti-arrow-width) solid var(--iti-icon-color);
+  transform: rotate(45deg);
 }
-
 .iti__arrow--up {
-    border-top: none;
-    border-bottom: 4px solid #555;
+  margin-top: 4px;
+  transform: rotate(-135deg);
 }
-
-.iti__country-list {
+.iti__country-selector {
+  border-radius: 3px;
+  background-color: var(--iti-country-selector-bg);
+}
+.iti--inline-country-selector .iti__country-selector {
+    border: var(--iti-border-width) solid var(--iti-border-color);
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+  }
+.iti--inline-country-selector:not(.iti--detached-country-selector) .iti__country-selector {
     position: absolute;
     z-index: 2;
-    list-style: none;
-    text-align: left;
-    padding: 0;
-    margin: 0 0 0 -1px;
-    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
-    background-color: white;
-    border: 1px solid #CCC;
-    white-space: nowrap;
-    max-height: 200px;
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
-}
-
-.iti__country-list--dropup {
-    bottom: 100%;
-    margin-bottom: -1px;
-}
-
-@media (max-width: 500px) {
-    .iti__country-list {
-        white-space: normal;
-    }
-}
-
-.iti__flag-box {
-    display: inline-block;
-    width: 20px;
-}
-
-.iti__divider {
-    padding-bottom: 5px;
-    margin-bottom: 5px;
-    border-bottom: 1px solid #CCC;
-}
-
-.iti__country {
-    padding: 5px 10px;
-    outline: none;
-}
-
-.iti__dial-code {
-    color: #999;
-}
-
-.iti__country.iti__highlight {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-.iti__flag-box, .iti__country-name, .iti__dial-code {
-    vertical-align: middle;
-}
-
-.iti__flag-box, .iti__country-name {
-    margin-right: 6px;
-}
-
-.iti--allow-dropdown input, .iti--allow-dropdown input[type=text], .iti--allow-dropdown input[type=tel], .iti--separate-dial-code input, .iti--separate-dial-code input[type=text], .iti--separate-dial-code input[type=tel] {
-    padding-right: 6px;
-    padding-left: 52px;
-    margin-left: 0;
-}
-
-.iti--allow-dropdown .iti__flag-container, .iti--separate-dial-code .iti__flag-container {
-    right: auto;
     left: 0;
-}
-
-.iti--allow-dropdown .iti__flag-container:hover {
-    cursor: pointer;
-}
-
-.iti--allow-dropdown .iti__flag-container:hover .iti__selected-flag {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-.iti--allow-dropdown input[disabled] + .iti__flag-container:hover,
-.iti--allow-dropdown input[readonly] + .iti__flag-container:hover {
-    cursor: default;
-}
-
-.iti--allow-dropdown input[disabled] + .iti__flag-container:hover .iti__selected-flag,
-.iti--allow-dropdown input[readonly] + .iti__flag-container:hover .iti__selected-flag {
-    background-color: transparent;
-}
-
-.iti--separate-dial-code .iti__selected-flag {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-.iti--separate-dial-code .iti__selected-dial-code {
-    margin-left: 6px;
-}
-
-.iti--container {
-    position: absolute;
-    top: -1000px;
-    left: -1000px;
-    z-index: 1060;
-    padding: 1px;
-}
-
-.iti--container:hover {
-    cursor: pointer;
-}
-
-.iti-mobile .iti--container {
-    top: 30px;
-    bottom: 30px;
-    left: 30px;
-    right: 30px;
-    position: fixed;
-}
-
-.iti-mobile .iti__country-list {
-    max-height: 100%;
-    width: 100%;
-}
-
-.iti-mobile .iti__country {
-    padding: 10px 10px;
-    line-height: 1.5em;
-}
-
-.iti__flag {
-    width: 20px;
-}
-
-.iti__flag.iti__be {
-    width: 18px;
-}
-
-.iti__flag.iti__ch {
-    width: 15px;
-}
-
-.iti__flag.iti__mc {
-    width: 19px;
-}
-
-.iti__flag.iti__ne {
-    width: 18px;
-}
-
-.iti__flag.iti__np {
-    width: 13px;
-}
-
-.iti__flag.iti__va {
-    width: 15px;
-}
-
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .iti__flag {
-        background-size: 5652px 15px;
-    }
-}
-
-.iti__flag.iti__ac {
-    height: 10px;
-    background-position: 0px 0px;
-}
-
-.iti__flag.iti__ad {
-    height: 14px;
-    background-position: -22px 0px;
-}
-
-.iti__flag.iti__ae {
-    height: 10px;
-    background-position: -44px 0px;
-}
-
-.iti__flag.iti__af {
-    height: 14px;
-    background-position: -66px 0px;
-}
-
-.iti__flag.iti__ag {
-    height: 14px;
-    background-position: -88px 0px;
-}
-
-.iti__flag.iti__ai {
-    height: 10px;
-    background-position: -110px 0px;
-}
-
-.iti__flag.iti__al {
-    height: 15px;
-    background-position: -132px 0px;
-}
-
-.iti__flag.iti__am {
-    height: 10px;
-    background-position: -154px 0px;
-}
-
-.iti__flag.iti__ao {
-    height: 14px;
-    background-position: -176px 0px;
-}
-
-.iti__flag.iti__aq {
-    height: 14px;
-    background-position: -198px 0px;
-}
-
-.iti__flag.iti__ar {
-    height: 13px;
-    background-position: -220px 0px;
-}
-
-.iti__flag.iti__as {
-    height: 10px;
-    background-position: -242px 0px;
-}
-
-.iti__flag.iti__at {
-    height: 14px;
-    background-position: -264px 0px;
-}
-
-.iti__flag.iti__au {
-    height: 10px;
-    background-position: -286px 0px;
-}
-
-.iti__flag.iti__aw {
-    height: 14px;
-    background-position: -308px 0px;
-}
-
-.iti__flag.iti__ax {
-    height: 13px;
-    background-position: -330px 0px;
-}
-
-.iti__flag.iti__az {
-    height: 10px;
-    background-position: -352px 0px;
-}
-
-.iti__flag.iti__ba {
-    height: 10px;
-    background-position: -374px 0px;
-}
-
-.iti__flag.iti__bb {
-    height: 14px;
-    background-position: -396px 0px;
-}
-
-.iti__flag.iti__bd {
-    height: 12px;
-    background-position: -418px 0px;
-}
-
-.iti__flag.iti__be {
-    height: 15px;
-    background-position: -440px 0px;
-}
-
-.iti__flag.iti__bf {
-    height: 14px;
-    background-position: -460px 0px;
-}
-
-.iti__flag.iti__bg {
-    height: 12px;
-    background-position: -482px 0px;
-}
-
-.iti__flag.iti__bh {
-    height: 12px;
-    background-position: -504px 0px;
-}
-
-.iti__flag.iti__bi {
-    height: 12px;
-    background-position: -526px 0px;
-}
-
-.iti__flag.iti__bj {
-    height: 14px;
-    background-position: -548px 0px;
-}
-
-.iti__flag.iti__bl {
-    height: 14px;
-    background-position: -570px 0px;
-}
-
-.iti__flag.iti__bm {
-    height: 10px;
-    background-position: -592px 0px;
-}
-
-.iti__flag.iti__bn {
-    height: 10px;
-    background-position: -614px 0px;
-}
-
-.iti__flag.iti__bo {
-    height: 14px;
-    background-position: -636px 0px;
-}
-
-.iti__flag.iti__bq {
-    height: 14px;
-    background-position: -658px 0px;
-}
-
-.iti__flag.iti__br {
-    height: 14px;
-    background-position: -680px 0px;
-}
-
-.iti__flag.iti__bs {
-    height: 10px;
-    background-position: -702px 0px;
-}
-
-.iti__flag.iti__bt {
-    height: 14px;
-    background-position: -724px 0px;
-}
-
-.iti__flag.iti__bv {
-    height: 15px;
-    background-position: -746px 0px;
-}
-
-.iti__flag.iti__bw {
-    height: 14px;
-    background-position: -768px 0px;
-}
-
-.iti__flag.iti__by {
-    height: 10px;
-    background-position: -790px 0px;
-}
-
-.iti__flag.iti__bz {
-    height: 14px;
-    background-position: -812px 0px;
-}
-
-.iti__flag.iti__ca {
-    height: 10px;
-    background-position: -834px 0px;
-}
-
-.iti__flag.iti__cc {
-    height: 10px;
-    background-position: -856px 0px;
-}
-
-.iti__flag.iti__cd {
-    height: 15px;
-    background-position: -878px 0px;
-}
-
-.iti__flag.iti__cf {
-    height: 14px;
-    background-position: -900px 0px;
-}
-
-.iti__flag.iti__cg {
-    height: 14px;
-    background-position: -922px 0px;
-}
-
-.iti__flag.iti__ch {
-    height: 15px;
-    background-position: -944px 0px;
-}
-
-.iti__flag.iti__ci {
-    height: 14px;
-    background-position: -961px 0px;
-}
-
-.iti__flag.iti__ck {
-    height: 10px;
-    background-position: -983px 0px;
-}
-
-.iti__flag.iti__cl {
-    height: 14px;
-    background-position: -1005px 0px;
-}
-
-.iti__flag.iti__cm {
-    height: 14px;
-    background-position: -1027px 0px;
-}
-
-.iti__flag.iti__cn {
-    height: 14px;
-    background-position: -1049px 0px;
-}
-
-.iti__flag.iti__co {
-    height: 14px;
-    background-position: -1071px 0px;
-}
-
-.iti__flag.iti__cp {
-    height: 14px;
-    background-position: -1093px 0px;
-}
-
-.iti__flag.iti__cr {
-    height: 12px;
-    background-position: -1115px 0px;
-}
-
-.iti__flag.iti__cu {
-    height: 10px;
-    background-position: -1137px 0px;
-}
-
-.iti__flag.iti__cv {
-    height: 12px;
-    background-position: -1159px 0px;
-}
-
-.iti__flag.iti__cw {
-    height: 14px;
-    background-position: -1181px 0px;
-}
-
-.iti__flag.iti__cx {
-    height: 10px;
-    background-position: -1203px 0px;
-}
-
-.iti__flag.iti__cy {
-    height: 14px;
-    background-position: -1225px 0px;
-}
-
-.iti__flag.iti__cz {
-    height: 14px;
-    background-position: -1247px 0px;
-}
-
-.iti__flag.iti__de {
-    height: 12px;
-    background-position: -1269px 0px;
-}
-
-.iti__flag.iti__dg {
-    height: 10px;
-    background-position: -1291px 0px;
-}
-
-.iti__flag.iti__dj {
-    height: 14px;
-    background-position: -1313px 0px;
-}
-
-.iti__flag.iti__dk {
-    height: 15px;
-    background-position: -1335px 0px;
-}
-
-.iti__flag.iti__dm {
-    height: 10px;
-    background-position: -1357px 0px;
-}
-
-.iti__flag.iti__do {
-    height: 14px;
-    background-position: -1379px 0px;
-}
-
-.iti__flag.iti__dz {
-    height: 14px;
-    background-position: -1401px 0px;
-}
-
-.iti__flag.iti__ea {
-    height: 14px;
-    background-position: -1423px 0px;
-}
-
-.iti__flag.iti__ec {
-    height: 14px;
-    background-position: -1445px 0px;
-}
-
-.iti__flag.iti__ee {
-    height: 13px;
-    background-position: -1467px 0px;
-}
-
-.iti__flag.iti__eg {
-    height: 14px;
-    background-position: -1489px 0px;
-}
-
-.iti__flag.iti__eh {
-    height: 10px;
-    background-position: -1511px 0px;
-}
-
-.iti__flag.iti__er {
-    height: 10px;
-    background-position: -1533px 0px;
-}
-
-.iti__flag.iti__es {
-    height: 14px;
-    background-position: -1555px 0px;
-}
-
-.iti__flag.iti__et {
-    height: 10px;
-    background-position: -1577px 0px;
-}
-
-.iti__flag.iti__eu {
-    height: 14px;
-    background-position: -1599px 0px;
-}
-
-.iti__flag.iti__fi {
-    height: 12px;
-    background-position: -1621px 0px;
-}
-
-.iti__flag.iti__fj {
-    height: 10px;
-    background-position: -1643px 0px;
-}
-
-.iti__flag.iti__fk {
-    height: 10px;
-    background-position: -1665px 0px;
-}
-
-.iti__flag.iti__fm {
-    height: 11px;
-    background-position: -1687px 0px;
-}
-
-.iti__flag.iti__fo {
-    height: 15px;
-    background-position: -1709px 0px;
-}
-
-.iti__flag.iti__fr {
-    height: 14px;
-    background-position: -1731px 0px;
-}
-
-.iti__flag.iti__ga {
-    height: 15px;
-    background-position: -1753px 0px;
-}
-
-.iti__flag.iti__gb {
-    height: 10px;
-    background-position: -1775px 0px;
-}
-
-.iti__flag.iti__gd {
-    height: 12px;
-    background-position: -1797px 0px;
-}
-
-.iti__flag.iti__ge {
-    height: 14px;
-    background-position: -1819px 0px;
-}
-
-.iti__flag.iti__gf {
-    height: 14px;
-    background-position: -1841px 0px;
-}
-
-.iti__flag.iti__gg {
-    height: 14px;
-    background-position: -1863px 0px;
-}
-
-.iti__flag.iti__gh {
-    height: 14px;
-    background-position: -1885px 0px;
-}
-
-.iti__flag.iti__gi {
-    height: 10px;
-    background-position: -1907px 0px;
-}
-
-.iti__flag.iti__gl {
-    height: 14px;
-    background-position: -1929px 0px;
-}
-
-.iti__flag.iti__gm {
-    height: 14px;
-    background-position: -1951px 0px;
-}
-
-.iti__flag.iti__gn {
-    height: 14px;
-    background-position: -1973px 0px;
-}
-
-.iti__flag.iti__gp {
-    height: 14px;
-    background-position: -1995px 0px;
-}
-
-.iti__flag.iti__gq {
-    height: 14px;
-    background-position: -2017px 0px;
-}
-
-.iti__flag.iti__gr {
-    height: 14px;
-    background-position: -2039px 0px;
-}
-
-.iti__flag.iti__gs {
-    height: 10px;
-    background-position: -2061px 0px;
-}
-
-.iti__flag.iti__gt {
-    height: 13px;
-    background-position: -2083px 0px;
-}
-
-.iti__flag.iti__gu {
-    height: 11px;
-    background-position: -2105px 0px;
-}
-
-.iti__flag.iti__gw {
-    height: 10px;
-    background-position: -2127px 0px;
-}
-
-.iti__flag.iti__gy {
-    height: 12px;
-    background-position: -2149px 0px;
-}
-
-.iti__flag.iti__hk {
-    height: 14px;
-    background-position: -2171px 0px;
-}
-
-.iti__flag.iti__hm {
-    height: 10px;
-    background-position: -2193px 0px;
-}
-
-.iti__flag.iti__hn {
-    height: 10px;
-    background-position: -2215px 0px;
-}
-
-.iti__flag.iti__hr {
-    height: 10px;
-    background-position: -2237px 0px;
-}
-
-.iti__flag.iti__ht {
-    height: 12px;
-    background-position: -2259px 0px;
-}
-
-.iti__flag.iti__hu {
-    height: 10px;
-    background-position: -2281px 0px;
-}
-
-.iti__flag.iti__ic {
-    height: 14px;
-    background-position: -2303px 0px;
-}
-
-.iti__flag.iti__id {
-    height: 14px;
-    background-position: -2325px 0px;
-}
-
-.iti__flag.iti__ie {
-    height: 10px;
-    background-position: -2347px 0px;
-}
-
-.iti__flag.iti__il {
-    height: 15px;
-    background-position: -2369px 0px;
-}
-
-.iti__flag.iti__im {
-    height: 10px;
-    background-position: -2391px 0px;
-}
-
-.iti__flag.iti__in {
-    height: 14px;
-    background-position: -2413px 0px;
-}
-
-.iti__flag.iti__io {
-    height: 10px;
-    background-position: -2435px 0px;
-}
-
-.iti__flag.iti__iq {
-    height: 14px;
-    background-position: -2457px 0px;
-}
-
-.iti__flag.iti__ir {
-    height: 12px;
-    background-position: -2479px 0px;
-}
-
-.iti__flag.iti__is {
-    height: 15px;
-    background-position: -2501px 0px;
-}
-
-.iti__flag.iti__it {
-    height: 14px;
-    background-position: -2523px 0px;
-}
-
-.iti__flag.iti__je {
-    height: 12px;
-    background-position: -2545px 0px;
-}
-
-.iti__flag.iti__jm {
-    height: 10px;
-    background-position: -2567px 0px;
-}
-
-.iti__flag.iti__jo {
-    height: 10px;
-    background-position: -2589px 0px;
-}
-
-.iti__flag.iti__jp {
-    height: 14px;
-    background-position: -2611px 0px;
-}
-
-.iti__flag.iti__ke {
-    height: 14px;
-    background-position: -2633px 0px;
-}
-
-.iti__flag.iti__kg {
-    height: 12px;
-    background-position: -2655px 0px;
-}
-
-.iti__flag.iti__kh {
-    height: 13px;
-    background-position: -2677px 0px;
-}
-
-.iti__flag.iti__ki {
-    height: 10px;
-    background-position: -2699px 0px;
-}
-
-.iti__flag.iti__km {
-    height: 12px;
-    background-position: -2721px 0px;
-}
-
-.iti__flag.iti__kn {
-    height: 14px;
-    background-position: -2743px 0px;
-}
-
-.iti__flag.iti__kp {
-    height: 10px;
-    background-position: -2765px 0px;
-}
-
-.iti__flag.iti__kr {
-    height: 14px;
-    background-position: -2787px 0px;
-}
-
-.iti__flag.iti__kw {
-    height: 10px;
-    background-position: -2809px 0px;
-}
-
-.iti__flag.iti__ky {
-    height: 10px;
-    background-position: -2831px 0px;
-}
-
-.iti__flag.iti__kz {
-    height: 10px;
-    background-position: -2853px 0px;
-}
-
-.iti__flag.iti__la {
-    height: 14px;
-    background-position: -2875px 0px;
-}
-
-.iti__flag.iti__lb {
-    height: 14px;
-    background-position: -2897px 0px;
-}
-
-.iti__flag.iti__lc {
-    height: 10px;
-    background-position: -2919px 0px;
-}
-
-.iti__flag.iti__li {
-    height: 12px;
-    background-position: -2941px 0px;
-}
-
-.iti__flag.iti__lk {
-    height: 10px;
-    background-position: -2963px 0px;
-}
-
-.iti__flag.iti__lr {
-    height: 11px;
-    background-position: -2985px 0px;
-}
-
-.iti__flag.iti__ls {
-    height: 14px;
-    background-position: -3007px 0px;
-}
-
-.iti__flag.iti__lt {
-    height: 12px;
-    background-position: -3029px 0px;
-}
-
-.iti__flag.iti__lu {
-    height: 12px;
-    background-position: -3051px 0px;
-}
-
-.iti__flag.iti__lv {
-    height: 10px;
-    background-position: -3073px 0px;
-}
-
-.iti__flag.iti__ly {
-    height: 10px;
-    background-position: -3095px 0px;
-}
-
-.iti__flag.iti__ma {
-    height: 14px;
-    background-position: -3117px 0px;
-}
-
-.iti__flag.iti__mc {
-    height: 15px;
-    background-position: -3139px 0px;
-}
-
-.iti__flag.iti__md {
-    height: 10px;
-    background-position: -3160px 0px;
-}
-
-.iti__flag.iti__me {
-    height: 10px;
-    background-position: -3182px 0px;
-}
-
-.iti__flag.iti__mf {
-    height: 14px;
-    background-position: -3204px 0px;
-}
-
-.iti__flag.iti__mg {
-    height: 14px;
-    background-position: -3226px 0px;
-}
-
-.iti__flag.iti__mh {
-    height: 11px;
-    background-position: -3248px 0px;
-}
-
-.iti__flag.iti__mk {
-    height: 10px;
-    background-position: -3270px 0px;
-}
-
-.iti__flag.iti__ml {
-    height: 14px;
-    background-position: -3292px 0px;
-}
-
-.iti__flag.iti__mm {
-    height: 14px;
-    background-position: -3314px 0px;
-}
-
-.iti__flag.iti__mn {
-    height: 10px;
-    background-position: -3336px 0px;
-}
-
-.iti__flag.iti__mo {
-    height: 14px;
-    background-position: -3358px 0px;
-}
-
-.iti__flag.iti__mp {
-    height: 10px;
-    background-position: -3380px 0px;
-}
-
-.iti__flag.iti__mq {
-    height: 14px;
-    background-position: -3402px 0px;
-}
-
-.iti__flag.iti__mr {
-    height: 14px;
-    background-position: -3424px 0px;
-}
-
-.iti__flag.iti__ms {
-    height: 10px;
-    background-position: -3446px 0px;
-}
-
-.iti__flag.iti__mt {
-    height: 14px;
-    background-position: -3468px 0px;
-}
-
-.iti__flag.iti__mu {
-    height: 14px;
-    background-position: -3490px 0px;
-}
-
-.iti__flag.iti__mv {
-    height: 14px;
-    background-position: -3512px 0px;
-}
-
-.iti__flag.iti__mw {
-    height: 14px;
-    background-position: -3534px 0px;
-}
-
-.iti__flag.iti__mx {
-    height: 12px;
-    background-position: -3556px 0px;
-}
-
-.iti__flag.iti__my {
-    height: 10px;
-    background-position: -3578px 0px;
-}
-
-.iti__flag.iti__mz {
-    height: 14px;
-    background-position: -3600px 0px;
-}
-
-.iti__flag.iti__na {
-    height: 14px;
-    background-position: -3622px 0px;
-}
-
-.iti__flag.iti__nc {
-    height: 10px;
-    background-position: -3644px 0px;
-}
-
-.iti__flag.iti__ne {
-    height: 15px;
-    background-position: -3666px 0px;
-}
-
-.iti__flag.iti__nf {
-    height: 10px;
-    background-position: -3686px 0px;
-}
-
-.iti__flag.iti__ng {
-    height: 10px;
-    background-position: -3708px 0px;
-}
-
-.iti__flag.iti__ni {
-    height: 12px;
-    background-position: -3730px 0px;
-}
-
-.iti__flag.iti__nl {
-    height: 14px;
-    background-position: -3752px 0px;
-}
-
-.iti__flag.iti__no {
-    height: 15px;
-    background-position: -3774px 0px;
-}
-
-.iti__flag.iti__np {
-    height: 15px;
-    background-position: -3796px 0px;
-}
-
-.iti__flag.iti__nr {
-    height: 10px;
-    background-position: -3811px 0px;
-}
-
-.iti__flag.iti__nu {
-    height: 10px;
-    background-position: -3833px 0px;
-}
-
-.iti__flag.iti__nz {
-    height: 10px;
-    background-position: -3855px 0px;
-}
-
-.iti__flag.iti__om {
-    height: 10px;
-    background-position: -3877px 0px;
-}
-
-.iti__flag.iti__pa {
-    height: 14px;
-    background-position: -3899px 0px;
-}
-
-.iti__flag.iti__pe {
-    height: 14px;
-    background-position: -3921px 0px;
-}
-
-.iti__flag.iti__pf {
-    height: 14px;
-    background-position: -3943px 0px;
-}
-
-.iti__flag.iti__pg {
-    height: 15px;
-    background-position: -3965px 0px;
-}
-
-.iti__flag.iti__ph {
-    height: 10px;
-    background-position: -3987px 0px;
-}
-
-.iti__flag.iti__pk {
-    height: 14px;
-    background-position: -4009px 0px;
-}
-
-.iti__flag.iti__pl {
-    height: 13px;
-    background-position: -4031px 0px;
-}
-
-.iti__flag.iti__pm {
-    height: 14px;
-    background-position: -4053px 0px;
-}
-
-.iti__flag.iti__pn {
-    height: 10px;
-    background-position: -4075px 0px;
-}
-
-.iti__flag.iti__pr {
-    height: 14px;
-    background-position: -4097px 0px;
-}
-
-.iti__flag.iti__ps {
-    height: 10px;
-    background-position: -4119px 0px;
-}
-
-.iti__flag.iti__pt {
-    height: 14px;
-    background-position: -4141px 0px;
-}
-
-.iti__flag.iti__pw {
-    height: 13px;
-    background-position: -4163px 0px;
-}
-
-.iti__flag.iti__py {
-    height: 11px;
-    background-position: -4185px 0px;
-}
-
-.iti__flag.iti__qa {
-    height: 8px;
-    background-position: -4207px 0px;
-}
-
-.iti__flag.iti__re {
-    height: 14px;
-    background-position: -4229px 0px;
-}
-
-.iti__flag.iti__ro {
-    height: 14px;
-    background-position: -4251px 0px;
-}
-
-.iti__flag.iti__rs {
-    height: 14px;
-    background-position: -4273px 0px;
-}
-
-.iti__flag.iti__ru {
-    height: 14px;
-    background-position: -4295px 0px;
-}
-
-.iti__flag.iti__rw {
-    height: 14px;
-    background-position: -4317px 0px;
-}
-
-.iti__flag.iti__sa {
-    height: 14px;
-    background-position: -4339px 0px;
-}
-
-.iti__flag.iti__sb {
-    height: 10px;
-    background-position: -4361px 0px;
-}
-
-.iti__flag.iti__sc {
-    height: 10px;
-    background-position: -4383px 0px;
-}
-
-.iti__flag.iti__sd {
-    height: 10px;
-    background-position: -4405px 0px;
-}
-
-.iti__flag.iti__se {
-    height: 13px;
-    background-position: -4427px 0px;
-}
-
-.iti__flag.iti__sg {
-    height: 14px;
-    background-position: -4449px 0px;
-}
-
-.iti__flag.iti__sh {
-    height: 10px;
-    background-position: -4471px 0px;
-}
-
-.iti__flag.iti__si {
-    height: 10px;
-    background-position: -4493px 0px;
-}
-
-.iti__flag.iti__sj {
-    height: 15px;
-    background-position: -4515px 0px;
-}
-
-.iti__flag.iti__sk {
-    height: 14px;
-    background-position: -4537px 0px;
-}
-
-.iti__flag.iti__sl {
-    height: 14px;
-    background-position: -4559px 0px;
-}
-
-.iti__flag.iti__sm {
-    height: 15px;
-    background-position: -4581px 0px;
-}
-
-.iti__flag.iti__sn {
-    height: 14px;
-    background-position: -4603px 0px;
-}
-
-.iti__flag.iti__so {
-    height: 14px;
-    background-position: -4625px 0px;
-}
-
-.iti__flag.iti__sr {
-    height: 14px;
-    background-position: -4647px 0px;
-}
-
-.iti__flag.iti__ss {
-    height: 10px;
-    background-position: -4669px 0px;
-}
-
-.iti__flag.iti__st {
-    height: 10px;
-    background-position: -4691px 0px;
-}
-
-.iti__flag.iti__sv {
-    height: 12px;
-    background-position: -4713px 0px;
-}
-
-.iti__flag.iti__sx {
-    height: 14px;
-    background-position: -4735px 0px;
-}
-
-.iti__flag.iti__sy {
-    height: 14px;
-    background-position: -4757px 0px;
-}
-
-.iti__flag.iti__sz {
-    height: 14px;
-    background-position: -4779px 0px;
-}
-
-.iti__flag.iti__ta {
-    height: 10px;
-    background-position: -4801px 0px;
-}
-
-.iti__flag.iti__tc {
-    height: 10px;
-    background-position: -4823px 0px;
-}
-
-.iti__flag.iti__td {
-    height: 14px;
-    background-position: -4845px 0px;
-}
-
-.iti__flag.iti__tf {
-    height: 14px;
-    background-position: -4867px 0px;
-}
-
-.iti__flag.iti__tg {
-    height: 13px;
-    background-position: -4889px 0px;
-}
-
-.iti__flag.iti__th {
-    height: 14px;
-    background-position: -4911px 0px;
-}
-
-.iti__flag.iti__tj {
-    height: 10px;
-    background-position: -4933px 0px;
-}
-
-.iti__flag.iti__tk {
-    height: 10px;
-    background-position: -4955px 0px;
-}
-
-.iti__flag.iti__tl {
-    height: 10px;
-    background-position: -4977px 0px;
-}
-
-.iti__flag.iti__tm {
-    height: 14px;
-    background-position: -4999px 0px;
-}
-
-.iti__flag.iti__tn {
-    height: 14px;
-    background-position: -5021px 0px;
-}
-
-.iti__flag.iti__to {
-    height: 10px;
-    background-position: -5043px 0px;
-}
-
-.iti__flag.iti__tr {
-    height: 14px;
-    background-position: -5065px 0px;
-}
-
-.iti__flag.iti__tt {
-    height: 12px;
-    background-position: -5087px 0px;
-}
-
-.iti__flag.iti__tv {
-    height: 10px;
-    background-position: -5109px 0px;
-}
-
-.iti__flag.iti__tw {
-    height: 14px;
-    background-position: -5131px 0px;
-}
-
-.iti__flag.iti__tz {
-    height: 14px;
-    background-position: -5153px 0px;
-}
-
-.iti__flag.iti__ua {
-    height: 14px;
-    background-position: -5175px 0px;
-}
-
-.iti__flag.iti__ug {
-    height: 14px;
-    background-position: -5197px 0px;
-}
-
-.iti__flag.iti__um {
-    height: 11px;
-    background-position: -5219px 0px;
-}
-
-.iti__flag.iti__un {
-    height: 14px;
-    background-position: -5241px 0px;
-}
-
-.iti__flag.iti__us {
-    height: 11px;
-    background-position: -5263px 0px;
-}
-
-.iti__flag.iti__uy {
-    height: 14px;
-    background-position: -5285px 0px;
-}
-
-.iti__flag.iti__uz {
-    height: 10px;
-    background-position: -5307px 0px;
-}
-
-.iti__flag.iti__va {
-    height: 15px;
-    background-position: -5329px 0px;
-}
-
-.iti__flag.iti__vc {
-    height: 14px;
-    background-position: -5346px 0px;
-}
-
-.iti__flag.iti__ve {
-    height: 14px;
-    background-position: -5368px 0px;
-}
-
-.iti__flag.iti__vg {
-    height: 10px;
-    background-position: -5390px 0px;
-}
-
-.iti__flag.iti__vi {
-    height: 14px;
-    background-position: -5412px 0px;
-}
-
-.iti__flag.iti__vn {
-    height: 14px;
-    background-position: -5434px 0px;
-}
-
-.iti__flag.iti__vu {
-    height: 12px;
-    background-position: -5456px 0px;
-}
-
-.iti__flag.iti__wf {
-    height: 14px;
-    background-position: -5478px 0px;
-}
-
-.iti__flag.iti__ws {
-    height: 10px;
-    background-position: -5500px 0px;
-}
-
-.iti__flag.iti__xk {
-    height: 15px;
-    background-position: -5522px 0px;
-}
-
-.iti__flag.iti__ye {
-    height: 14px;
-    background-position: -5544px 0px;
-}
-
-.iti__flag.iti__yt {
-    height: 14px;
-    background-position: -5566px 0px;
-}
-
-.iti__flag.iti__za {
-    height: 14px;
-    background-position: -5588px 0px;
-}
-
-.iti__flag.iti__zm {
-    height: 14px;
-    background-position: -5610px 0px;
-}
-
-.iti__flag.iti__zw {
-    height: 10px;
-    background-position: -5632px 0px;
-}
-
-
-body .iti__flag {
-    height: 15px;
-    box-shadow: 0px 0px 1px 0px #888;
-    background-image: url("../img/flags.png");
-    background-repeat: no-repeat;
-    background-color: #DBDBDB;
-    background-position: 20px 0;
-    background-size: auto;
-}
-/* RTL FIELD */
-body:not(.wfacp-top) #wfacp-e-form #wfacp_checkout_form .wfacp-intl-phone-flag-field label.wfacp-form-control-label,
-body:not(.wfacp-top) .wfacp_main_form #wfacp_checkout_form .wfacp-intl-phone-flag-field label.wfacp-form-control-label,
-body:not(.wfacp-top) .wfacp_main_form #wfacp-intl-phone-flag-field .wfacp-intl-phone-flag-field.wfacp-anim-wrap label.wfacp-form-control-label {
-    left: 90px;
-}
-
-body:not(.wfacp-top) #wfacp-e-form #wfacp_checkout_form #shipping_phone_field label.wfacp-form-control-label,
-body:not(.wfacp-top) .wfacp_main_form #wfacp_checkout_form #shipping_phone_field label.wfacp-form-control-label,
-body:not(.wfacp-top) .wfacp_main_form #wfacp-intl-phone-flag-field #shipping_phone_field.wfacp-anim-wrap label.wfacp-form-control-label {
-    left: 90px;
-}
-
-#wfacp-e-form .wfacp-top #wfacp_checkout_form .wfacp-intl-phone-flag-field label.wfacp-form-control-label,
-.wfacp-top #wfacp_checkout_form .wfacp-intl-phone-flag-field label.wfacp-form-control-label,
-.wfacp-top #wfacp_checkout_form .wfacp-intl-phone-flag-field.wfacp-anim-wrap label.wfacp-form-control-label {
-    left: 0px !important;
-}
-
-
-/* RTL */
-
-body.rtl:not(.wfacp-top) #wfacp-e-form #wfacp_checkout_form .wfacp-intl-phone-flag-field label.wfacp-form-control-label,
-body.rtl:not(.wfacp-top) .wfacp_main_form #wfacp_checkout_form .wfacp-intl-phone-flag-field label.wfacp-form-control-label,
-body.rtl:not(.wfacp-top) .wfacp_main_form #wfacp-intl-phone-flag-field .wfacp-intl-phone-flag-field.wfacp-anim-wrap label.wfacp-form-control-label {
+  }
+.iti__search-input {
+  width: 100%;
+  border-width: 0;
+  border-radius: 3px;
+  padding-left: calc(var(--iti-spacer-horizontal) + var(--iti-globe-icon-size) + var(--iti-spacer-horizontal));
+  padding-right: calc(var(--iti-spacer-horizontal) + var(--iti-clear-icon-size) + var(--iti-spacer-horizontal));
+}
+[dir=rtl] .iti__search-input {
+    padding-left: inherit;
+    padding-right: 30px;
+    background-position: right 8px center;
+  }
+.iti__search-input::-webkit-search-cancel-button {
+    appearance: none;
+  }
+.iti__search-input,
+.iti__country {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.iti__search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--iti-border-color);
+}
+.iti__search-icon {
+  position: absolute;
+  left: var(--iti-spacer-horizontal);
+  display: flex;
+  pointer-events: none;
+}
+[dir=rtl] .iti__search-icon {
     left: auto;
-    right: 90px;
+    right: var(--iti-spacer-horizontal);
+  }
+.iti__search-icon-svg {
+  width: var(--iti-globe-icon-size);
+  height: var(--iti-globe-icon-size);
+  display: block;
+  stroke: var(--iti-icon-color);
+  fill: none;
+  stroke-width: 3;
 }
-
-body.rtl:not(.wfacp-top) #wfacp-e-form #wfacp_checkout_form #shipping_phone_field label.wfacp-form-control-label,
-body.rtl:not(.wfacp-top) .wfacp_main_form #wfacp_checkout_form #shipping_phone_field label.wfacp-form-control-label,
-body.rtl:not(.wfacp-top) .wfacp_main_form #wfacp-intl-phone-flag-field #shipping_phone_field.wfacp-anim-wrap label.wfacp-form-control-label {
-    left: auto;
-    right: 90px;
+.iti__search-clear {
+  position: absolute;
+  right: calc(var(--iti-spacer-horizontal) / 2);
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: calc(var(--iti-spacer-horizontal) / 2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease;
 }
-
-.rtl #wfacp-e-form .wfacp-top #wfacp_checkout_form .wfacp-intl-phone-flag-field label.wfacp-form-control-label,
-.rtl .wfacp-top #wfacp_checkout_form .wfacp-intl-phone-flag-field label.wfacp-form-control-label,
-.rtl .wfacp-top #wfacp_checkout_form .wfacp-intl-phone-flag-field.wfacp-anim-wrap label.wfacp-form-control-label {
-    right: 0px !important;
-    left: auto !important;
-}
-.iti-mobile.wfacp_intl_country_less .iti--container {
-    top: auto;
-    bottom: auto;
-    left: auto;
+.iti__search-clear .iti__search-clear-x {
+    stroke-width: 2;
+  }
+.iti__search-clear .iti__search-clear-bg {
+    fill: var(--iti-icon-color);
+  }
+[dir=rtl] .iti__search-clear {
     right: auto;
-    position: absolute;
-    width:100%;
-    height:100%;
-    min-height:100px;
+    left: var(--iti-spacer-horizontal);
+  }
+.iti__search-clear:hover,.iti__search-clear:focus-visible {
+    background: var(--iti-hover-color);
+    outline: none;
+  }
+.iti__search-clear-svg {
+  width: var(--iti-clear-icon-size);
+  height: var(--iti-clear-icon-size);
+  display: block;
 }
-
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    body .iti__flag {
-        background-image: url("../img/flags@2x.png");
-        background-size: auto 15px;
+.iti__no-results {
+  text-align: center;
+  padding: 30px 0;
+}
+.iti__country-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+.iti--inline-country-selector .iti__country-list {
+    max-height: 185px;
+  }
+.iti--flexible-dropdown-width .iti__country-list {
+  white-space: nowrap;
+}
+@media (max-width: 500px) {
+.iti--flexible-dropdown-width .iti__country-list {
+    white-space: normal;
+}
+  }
+.iti__country {
+  display: flex;
+  align-items: center;
+  padding-left: var(--iti-spacer-horizontal);
+  padding-right: var(--iti-spacer-horizontal);
+  outline: none;
+}
+.iti__country.iti__highlight {
+    background-color: var(--iti-hover-color);
+  }
+.iti__country-name {
+  flex-grow: 1;
+}
+.iti__country-check {
+  margin-left: var(--iti-spacer-horizontal);
+  display: flex;
+  align-items: center;
+  color: var(--iti-icon-color);
+}
+.iti__country-check-svg {
+  width: var(--iti-clear-icon-size);
+  height: var(--iti-clear-icon-size);
+  display: block;
+}
+.iti__country-list .iti__flag {
+  margin-right: var(--iti-spacer-horizontal);
+  flex-shrink: 0;
+}
+[dir=rtl] :is(.iti__country-list .iti__flag) {
+    margin-right: 0;
+    margin-left: var(--iti-spacer-horizontal);
+  }
+:is(.iti--has-country-selector .iti__country-container:has( + input[disabled]),.iti--has-country-selector .iti__country-container:has( + input[readonly])) button.iti__selected-country {
+      cursor: not-allowed;
     }
+:is(:is(.iti--has-country-selector .iti__country-container:has( + input[disabled]),.iti--has-country-selector .iti__country-container:has( + input[readonly])) button.iti__selected-country) .iti__arrow {
+        visibility: hidden;
+      }
+:is(.iti--has-country-selector .iti__country-container:not(:has( + input[disabled])):not(:has( + input[readonly]))) .iti__selected-country-primary:hover,:is(.iti--has-country-selector .iti__country-container:not(:has( + input[disabled])):not(:has( + input[readonly]))) .iti__selected-country:has( + .iti__country-selector:hover) .iti__selected-country-primary {
+      background-color: var(--iti-hover-color);
+    }
+.iti--detached-country-selector {
+  position: fixed;
+  top: -1000px;
+  left: -1000px;
+  z-index: 1060;
+}
+.iti--detached-country-selector:hover {
+    cursor: pointer;
+  }
+.iti--detached-country-selector {
+  top: calc(anchor(bottom) + 3px);
+  left: anchor(left);
+  position-try-fallbacks: --iti-flip-above;
+}
+@position-try --iti-flip-above {
+  top: auto;
+  bottom: calc(anchor(top) + 3px);
+}
+.iti__hide {
+  display: none;
+}
+.iti__v-hide {
+  visibility: hidden;
+}
+.iti--fullscreen-popup.iti--detached-country-selector {
+    background-color: rgba(0, 0, 0, 0.5);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: fixed;
+    padding: var(--iti-mobile-popup-margin);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+.iti--fullscreen-popup .iti__country-selector {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    position: relative;
+  }
+.iti--fullscreen-popup .iti__country,.iti--fullscreen-popup .iti__search-input {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+.iti--fullscreen-popup .iti__country {
+    padding-left: 10px;
+    padding-right: 10px;
+    line-height: 1.5em;
+  }
+.iti__flag {
+  height: var(--iti-flag-height);
+  width: var(--iti-flag-width);
+  border-radius: 1px;
+  box-shadow: 0px 0px 1px 0px #888;
+  background-image: image-set(var(--iti-path-flags-1x) 1x, var(--iti-path-flags-2x) 2x);
+  background-repeat: no-repeat;
+  background-position: calc(var(--iti-flag-offset, 100) * var(--iti-flag-width)) 0;
+  background-size: calc(var(--iti-flag-count) * var(--iti-flag-width)) var(--iti-flag-height);
+}
+.iti__loading {
+  position: relative;
+  background: none;
+  box-shadow: none;
+}
+.iti__loading::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: var(--iti-flag-height);
+    height: var(--iti-flag-height);
+    box-sizing: border-box;
+    border: 2px solid var(--iti-icon-color);
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: iti-spinner 1s linear infinite;
+  }
+@keyframes iti-spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.iti__strict-reject-animation .iti__tel-input,.iti__strict-reject-animation .iti__selected-country {
+    animation: iti-strict-reject-shake 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+@media (prefers-reduced-motion: reduce) {
+    .iti__strict-reject-animation .iti__tel-input {
+      animation: iti-strict-reject-flash 0.3s ease-out both;
+    }
+    .iti__strict-reject-animation .iti__selected-country {
+      animation: none;
+    }
+  }
+@keyframes iti-strict-reject-shake {
+  10%, 90% {
+    transform: translateX(-1px);
+  }
+  20%, 80% {
+    transform: translateX(2px);
+  }
+  30%, 50%, 70% {
+    transform: translateX(-3px);
+  }
+  40%, 60% {
+    transform: translateX(3px);
+  }
+}
+@keyframes iti-strict-reject-flash {
+  40% {
+    background-color: var(--iti-strict-reject-flash-color);
+  }
+}
+.iti__globe {
+  background: none;
+  box-shadow: none;
+  height: var(--iti-globe-icon-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.iti__globe .iti__globe-svg {
+    width: 100%;
+    height: 100%;
+    fill: var(--iti-icon-color);
+  }
+@supports (-webkit-appearance: none) and (not (background: -webkit-canvas(foo))) {
+  .iti__tel-input:focus {
+    outline-offset: 1px;
+  }
 }
 
-.iti__flag.iti__np {
-    background-color: transparent;
+/* packages/core/src/css/intlTelInputWithAssets.css */
+:root {
+  --iti-path-flags-1x: url(../img/flags.webp);
+  --iti-path-flags-2x: url(../img/flags@2x.webp);
+}
+
+/* ---------------------------------------------------------------------------
+ * WFACP v17 visual-parity overrides (on top of stock v29 styles)
+ * ------------------------------------------------------------------------- */
+/* stock v29 references only the webp sprites via image-set(); serve the bundled PNGs
+ * as a fallback for browsers without webp/image-set support. :not(.iti__globe)
+ * keeps the sprite from painting under the globe icon in the
+ * no-country-selected state (.iti__globe resets background, but this rule
+ * comes later at equal specificity) */
+.iti__flag:not(.iti__globe) {
+  background-image: url(../img/flags.png);
+  background-image: image-set(var(--iti-path-flags-1x) 1x, var(--iti-path-flags-2x) 2x);
+}
+/* v17 had no search box; hide the whole wrapper (input + magnifier icon) but keep the
+ * input focusable so keyboard type-to-filter and screen readers still work */
+.iti .iti__search-input-wrapper {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  border: 0;
+}
+/* the trigger became a real <button> in v21 — neutralise theme/template button styling */
+.iti .iti__selected-country {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  line-height: inherit !important;
+  font-size: inherit !important;
+}
+/* v17 trigger was not focusable, so no resting focus state; keep an outline for keyboard users only */
+.iti .iti__selected-country:focus {
+  outline: none;
+}
+.iti .iti__selected-country:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.35);
+  outline-offset: -2px;
+}
+/* borderless card dropdown, v17 shadow/radius, above theme payment sections */
+.iti .iti__country-selector {
+  border: 0;
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  /* !important: v29's nested modifier rules (.iti--inline-country-selector …) are more
+   * specific and pin z-index: 2, which lets outside-labels (z-index 9) paint over the
+   * card when it opens upward */
+  z-index: 99999 !important;
+  /* the library pins an inline height measured at open; with the search box hidden and the
+   * list filterable by typing, that leaves dead space — let the content size the card */
+  height: auto !important;
+}
+.iti .iti__no-results {
+  padding: 8px 16px;
+}
+/* the library measures the flexible-width card while detached under document.body, where it
+ * inherits the THEME's body font instead of the form's (e.g. TT5's 21px Manrope vs a 14px
+ * template font) — the inline width it pins is then far too wide. Let the in-context content
+ * size the card; !important beats that inline width. Scoped to inline mode: the fullscreen
+ * popup also carries iti--flexible-dropdown-width but must keep stretching edge to edge */
+.iti--inline-country-selector .iti__country-selector.iti--flexible-dropdown-width {
+  width: max-content !important;
+  max-width: calc(100vw - 20px);
+}
+.iti .iti__country-list {
+  max-height: 200px;
+}
+/* the 200px clamp above is inline-dropdown parity with v17; the mobile
+ * fullscreen popup must keep v29's full-height sheet (panel already caps at
+ * 100% of the padded overlay) */
+.iti--fullscreen-popup .iti__country-list {
+  max-height: 100%;
+}
+/* themes with aggressive li/ul resets (e.g. Oxygen's universal.css) override the
+ * library's flex rows, stacking the flag above the country name */
+.iti .iti__country-list .iti__country {
+  display: flex;
+  align-items: center;
+}
+/* v17 rows had no selected-checkmark */
+.iti__country .iti__country-check {
+  display: none;
+}
+/* v17 rendered "Country +91", v29 renders "Country (+91)" */
+.iti__country .iti__dial-code {
+  display: none;
+}
+.iti__country::after {
+  content: "+" attr(data-dial-code);
+  color: #737373;
+  font-size: 14px;
+}
+/* v17 order in the trigger: flag, dial code, arrow (v29 puts the arrow before the dial code) */
+.iti__selected-country {
+  display: flex;
+  align-items: center;
+}
+.iti__selected-country-primary {
+  display: contents;
+}
+.iti__selected-country .iti__selected-dial-code {
+  order: 2;
+  margin-left: 8px;
+}
+.iti__selected-country .iti__arrow {
+  order: 3;
+}
+/* v17 kept the dial code inline right after the country name (v29 pushes it to the far right) */
+.iti__country .iti__country-name {
+  flex: 0 0 auto;
+  margin-right: 0;
+}
+.iti__country::after {
+  margin-left: 6px;
+  margin-right: auto;
+}
+/* while the selector is OPEN, lift the whole FIELD WRAPPER above later page sections
+ * (payment radios etc.). Lifting .iti itself would stack the input's background above the
+ * sibling floating label (z-index 9), hiding it whenever the popover is open with a value —
+ * the wrapper contains the label, so inside the lifted context label(9) > input(0) and the
+ * dropdown card (z 99999) still paints on top of everything */
+.wfacp-intl-phone-flag-field:has(.iti__selected-country[aria-expanded="true"]) {
+  position: relative;
+  z-index: 100000;
+}
+/* the mobile fullscreen sheet is detached to <body> with no z-index of its own, so the
+ * lifted wrapper above (100000) paints the input straight through it */
+.iti--fullscreen-popup.iti--detached-country-selector {
+  z-index: 100001;
+}
+/* the checkout module themes the arrow with its own icon; v29 rotates the element via
+ * transform, which flips that icon — pin base state upright, rotate only when open.
+ * Scoped to the checkout field wrapper: optin uses v29's stock border-built chevron,
+ * which NEEDS its rotation to render */
+.wfacp-intl-phone-flag-field .iti .iti__arrow {
+  transform: none !important;
+  transition: transform 0.2s ease;
+}
+.wfacp-intl-phone-flag-field .iti .iti__arrow--up {
+  transform: rotate(180deg) !important;
+}
+/* pre-JS fallback: v29 sets input padding + label offset from JS only, so before scripts run
+ * the value/label paint under the flag. Approximate offsets until field_position() refines them. */
+/* templates carry ID-level !important paddings (e.g. #wfacp-e-form … .wfacp-modern-label rule
+ * in wfacp-form.css); the :is() stack lends this rule two ID scores so it outranks them */
+:is(body, #wfacp-e-form):is(body, #wfacp-e-form) .wfacp-intl-phone-flag-field .iti input[type="tel"] {
+  padding-left: var(--wfacp-intl-pad, 100px) !important;
+}
+.wfacp-intl-phone-flag-field .wfacp-form-control-label {
+  left: 108px;
+}
+html[dir="rtl"] :is(body, #wfacp-e-form):is(body, #wfacp-e-form) .wfacp-intl-phone-flag-field .iti input[type="tel"],
+body.rtl:is(body, #wfacp-e-form):is(body, #wfacp-e-form) .wfacp-intl-phone-flag-field .iti input[type="tel"] {
+  padding-left: 12px !important;
+  padding-right: var(--wfacp-intl-pad, 100px) !important;
+}
+[dir="rtl"] .wfacp-intl-phone-flag-field .wfacp-form-control-label,
+body.rtl .wfacp-intl-phone-flag-field .wfacp-form-control-label {
+  left: auto;
+  right: 108px;
+}
+
+/* RTL: anchor the country picker to the field's right edge. v29 pins the
+ * absolutely-positioned container left and sets direction:ltr on .iti, so its
+ * static position never flips; wfacp-form-style-rtl.css additionally resets
+ * left/right to auto at ID specificity, hence the !important. The inline
+ * dropdown opens from the same edge. */
+html[dir="rtl"] .wfacp-intl-phone-flag-field .iti__country-container,
+body.rtl .wfacp-intl-phone-flag-field .iti__country-container {
+  left: auto !important;
+  right: 0 !important;
+}
+html[dir="rtl"] .wfacp-intl-phone-flag-field .iti--inline-country-selector:not(.iti--detached-country-selector) .iti__country-selector,
+body.rtl .wfacp-intl-phone-flag-field .iti--inline-country-selector:not(.iti--detached-country-selector) .iti__country-selector {
+  left: auto !important;
+  right: 0 !important;
+}
+
+/* RTL: mirror the picker internals — chevron at the inline-end (left), flag at
+ * the inline-start (right). .iti is direction:ltr so the flex row and the
+ * left-margins never flip on their own. */
+html[dir="rtl"] .wfacp-intl-phone-flag-field .iti__selected-country,
+body.rtl .wfacp-intl-phone-flag-field .iti__selected-country {
+  flex-direction: row-reverse;
+}
+html[dir="rtl"] body .wfacp_main_form.woocommerce #wfacp_checkout_form .iti__arrow,
+body.rtl .wfacp_main_form.woocommerce #wfacp_checkout_form .iti__arrow {
+  margin-left: 0;
+  margin-right: 12px;
+}
+html[dir="rtl"] .wfacp-intl-phone-flag-field .iti__selected-country .iti__selected-dial-code,
+body.rtl .wfacp-intl-phone-flag-field .iti__selected-country .iti__selected-dial-code {
+  margin-left: 0;
+  margin-right: 8px;
 }

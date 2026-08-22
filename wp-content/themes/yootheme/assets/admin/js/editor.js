@@ -1,3 +1,3 @@
-/*! YOOtheme Pro v5.0.36 | https://yootheme.com */
+/*! YOOtheme Pro v5.0.41 | https://yootheme.com */
 
 (function(){"use strict";window.tinyMCE?.on("AddEditor",({editor:t})=>{t?.on("preinit",()=>{for(const e of Object.values(t.schema.elements||{}))e.attributePatterns=[...e.attributePatterns||[],{pattern:/^uk-.*$/}]})})})();

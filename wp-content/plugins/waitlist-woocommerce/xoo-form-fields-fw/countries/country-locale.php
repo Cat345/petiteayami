@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
 $locale = array(
 	'AE' => array(
 		'postcode' => array(
@@ -801,5 +805,3 @@ $locale = array(
 );
 
 return apply_filters( 'xoo_aff_fields_country_locale', $locale );
-
-?>

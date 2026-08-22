@@ -80,17 +80,6 @@ class TrackerInitializer implements HookableCollection
         $this->hooks_on_hookable_objects();
         // By returning empty array, we opt out from notice provided by wp-wpdesk-tracker.
         add_filter('wpdesk_tracker_notice_screens', fn() => []);
-        add_action('plugins_loaded', [$this, 'init_tracker']);
-    }
-    /**
-     * Creates Tracker.
-     * All data will be sent to https://data.octolize.org
-     *
-     * @return void
-     */
-    public function init_tracker()
-    {
-        $tracker = apply_filters('wpdesk_tracker_instance', null);
     }
     /**
      * Creates tracker initializer from plugin info.

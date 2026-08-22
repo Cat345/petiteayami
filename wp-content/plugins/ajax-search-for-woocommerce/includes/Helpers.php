@@ -1408,6 +1408,28 @@ class Helpers {
     }
 
     /**
+     * Exclude password-protected products from a query.
+     *
+     * Meant to be hooked tightly around a single get_posts()/WP_Query call and
+     * unhooked immediately after, so it never leaks into unrelated queries. The
+     * post_type === 'product' guard is defense-in-depth in case the caller's
+     * remove_filter() somehow doesn't run.
+     *
+     * @param string    $where SQL WHERE clause.
+     * @param \WP_Query $query The WP_Query instance (passed by reference).
+     *
+     * @return string
+     */
+    public static function excludePasswordProtectedProducts( $where, $query ) {
+        global $wpdb;
+        if ( empty( $query->query_vars['post_type'] ) || $query->query_vars['post_type'] !== 'product' ) {
+            return $where;
+        }
+        $where .= " AND ({$wpdb->posts}.post_password = '') ";
+        return $where;
+    }
+
+    /**
      * Get formatted search layout settings
      *
      * @return object

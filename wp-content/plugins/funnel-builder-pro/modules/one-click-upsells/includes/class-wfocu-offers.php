@@ -414,6 +414,12 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 
 			// if single offer page
 			if ( WFOCU_Common::get_offer_post_type_slug() === $post->post_type ) {
+				// Offers cloned from a regular WP page now self-reference via _wfocu_custom_page. Without flagging is_custom_page here, the custom-page asset hooks never fire
+				$setting = get_post_meta( $post->ID, '_wfocu_setting', true );
+				if ( is_object( $setting ) && isset( $setting->template ) && 'custom-page' === $setting->template ) {
+					$this->is_custom_page = true;
+				}
+
 				return $post->ID;
 			}
 
@@ -816,6 +822,26 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 					$product_details       = new stdClass();
 					$product_details->id   = $pid;
 					$product_details->name = ( false === $is_front ) ? WFOCU_Common::get_formatted_product_name( $pro ) : $pro->get_title();
+
+					/**
+					 * Filter the display name used for this product everywhere it's picked from a
+					 * per-product dropdown in page-builder widgets/tags (Accept Button, Variation
+					 * Selector, Offer Price, Product Title/Images/Short Description, Qty Selector,
+					 * etc.) — including in $is_front contexts (e.g. the Elementor editor's live
+					 * preview), where $product_details->name above is otherwise just the bare
+					 * WooCommerce title. Without this, two entries for the same underlying product
+					 * (e.g. one plain, one on a Sublium "Every Month" plan) are indistinguishable in
+					 * those dropdowns, even though the admin Products table tells them apart.
+					 *
+					 * @param string     $name    Product display name for this offer field.
+					 * @param WC_Product $pro     The underlying product.
+					 * @param int        $offer_id
+					 * @param string     $hash_key Product key in the offer.
+					 * @param bool       $is_front
+					 *
+					 * @since 1.0.0
+					 */
+					$product_details->name = apply_filters( 'wfocu_offer_product_display_name', $product_details->name, $pro, $offer_id, $hash_key, $is_front );
 
 					$product_details->image  = $image_url;
 					$product_options         = $product_details;

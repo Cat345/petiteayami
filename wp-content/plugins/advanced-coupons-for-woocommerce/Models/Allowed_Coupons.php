@@ -88,13 +88,21 @@ class Allowed_Coupons extends Base_Model implements Model_Interface {
      */
     public function save_allowed_coupons_field_data( $coupon_id, $coupon ) {
 
+        // Verify ACFW's dedicated nonce to ensure the request is a genuine coupon edit submission before touching saved data.
+        // Uses _acfw_nonce (not _wpnonce) to avoid conflicts with plugins like WooPayments that may modify the shared
+        // _wpnonce field. Without this guard, stray saves (e.g. triggered while WooPayments is active) would fire this
+        // callback without the field data and wipe the saved allowed coupons. See issue #1427.
+        if ( ! isset( $_POST['_acfw_nonce'] ) || false === wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_acfw_nonce'] ) ), 'acfw_save_coupon_data_' . $coupon_id ) ) {
+            return;
+        }
+
         // skip if the field data is not set.
-        if ( ! isset( $_POST['_acfw_allowed_coupon_ids'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+        if ( ! isset( $_POST['_acfw_allowed_coupon_ids'] ) ) {
             $coupon->set_advanced_prop( 'allowed_coupons', array() );
             return;
         }
 
-        $allowed_coupon_ids = array_map( 'sanitize_text_field', wp_unslash( $_POST['_acfw_allowed_coupon_ids'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
+        $allowed_coupon_ids = array_map( 'sanitize_text_field', wp_unslash( $_POST['_acfw_allowed_coupon_ids'] ) );
         $coupon->set_advanced_prop( 'allowed_coupons', $allowed_coupon_ids );
     }
 

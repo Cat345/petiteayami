@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFFN_OXY_Field extends OxyEl {
@@ -78,7 +79,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 
 		public function add_heading( $control, $heading, $separator = '', $conditions = [] ) {
 			$key            = $this->get_unique_id();
-			$custom_control = $control->addCustomControl( __( '<div class="oxygen-option-default"  style="color: #fff; line-height: 1.3; font-size: 15px;font-weight: 900;    text-transform: uppercase;    text-decoration: underline;">' . $heading . '</div>' ), 'description' );
+			$custom_control = $control->addCustomControl( __( '<div class="oxygen-option-default"  style="color: #fff; line-height: 1.3; font-size: 15px;font-weight: 900;    text-transform: uppercase;    text-decoration: underline;">' . $heading . '</div>' , 'funnel-builder'), 'description' );
 			$custom_control->setParam( $key, '' );
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$condition_string = $this->get_condition_string( $key, $conditions );
@@ -117,7 +118,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 
 		public function add_sub_heading( $control, $heading, $separator = '', $conditions = [] ) {
 			$key            = $this->get_unique_id();
-			$custom_control = $control->addCustomControl( __( '<div class="oxygen-option-default"  style="color: #fff; line-height: 1.3; font-size: 13px;font-weight: 600;    text-transform: uppercase;    text-decoration: underline;">' . $heading . '</div>' ), 'description' );
+			$custom_control = $control->addCustomControl( __( '<div class="oxygen-option-default"  style="color: #fff; line-height: 1.3; font-size: 13px;font-weight: 600;    text-transform: uppercase;    text-decoration: underline;">' . $heading . '</div>' , 'funnel-builder'), 'description' );
 			$custom_control->setParam( $key, '' );
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$condition_string = $this->get_condition_string( $key, $conditions );
@@ -186,7 +187,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 		protected function add_font_family( $tab_id, $key, $selectors = '', $label = 'Font Family', $default = 'Inherit', $conditions = [] ) {
 
 			if ( empty( $label ) ) {
-				$label = __( 'Font Family', 'woofunnels-upstroke-one-click-upsell' );
+				$label = __( 'Font Family', 'funnel-builder' );
 			}
 
 			if ( empty( $default ) ) {
@@ -218,7 +219,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 
 		protected function add_font_size( $tab_id, $key, $selectors = '', $label = 'Color', $default = '', $conditions = [] ) {
 			if ( empty( $label ) ) {
-				$label = __( 'Font Size', 'woofunnels-upstroke-one-click-upsell' );
+				$label = __( 'Font Size', 'funnel-builder' );
 			}
 
 			if ( empty( $default ) ) {
@@ -247,7 +248,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 		protected function add_font_weight( $tab_id, $key, $selectors = '', $label = 'Font Weight', $default = 'noormal', $conditions = [] ) {
 
 			if ( empty( $label ) ) {
-				$label = __( 'Font Weight', 'woofunnels-upstroke-one-click-upsell' );
+				$label = __( 'Font Weight', 'funnel-builder' );
 			}
 			if ( empty( $default ) ) {
 				$default = '400';
@@ -275,7 +276,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 		protected function add_line_height( $tab_id, $key, $selectors = '', $label = 'Line Height', $default = '1.5', $conditions = [] ) {
 
 			if ( empty( $label ) ) {
-				$label = __( 'Line Height', 'woofunnels-upstroke-one-click-upsell' );
+				$label = __( 'Line Height', 'funnel-builder' );
 			}
 			if ( empty( $default ) ) {
 				$default = '1.5';
@@ -303,7 +304,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 		protected function add_letter_spacing( $tab_id, $key, $selectors = '', $label = 'Letter Spacing', $default = '1', $conditions = [] ) {
 
 			if ( empty( $label ) ) {
-				$label = __( 'Letter Spacing', 'woofunnels-upstroke-one-click-upsell' );
+				$label = __( 'Letter Spacing', 'funnel-builder' );
 			}
 
 			if ( empty( $default ) ) {
@@ -333,7 +334,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 		protected function add_text_transform( $tab_id, $key, $selectors = '', $label = 'Text Transform', $default = 'none', $conditions = [] ) {
 
 			if ( empty( $label ) ) {
-				$label = __( 'Text Transform', 'woofunnels-upstroke-one-click-upsell' );
+				$label = __( 'Text Transform', 'funnel-builder' );
 			}
 			if ( empty( $default ) ) {
 				$default = 'none';
@@ -361,7 +362,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 		protected function add_text_decoration( $tab_id, $key, $selectors = '', $label = 'Text Decoration', $default = 'none', $conditions = [] ) {
 
 			if ( empty( $label ) ) {
-				$label = __( 'Text Decoration', 'woofunnels-upstroke-one-click-upsell' );
+				$label = __( 'Text Decoration', 'funnel-builder' );
 			}
 			if ( empty( $default ) ) {
 				$default = 'none';
@@ -391,7 +392,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 
 		protected function add_switcher( $control, $key, $label = '', $default = 'off', $conditions = [] ) {
 			if ( empty( $label ) ) {
-				$label = __( 'Enable', 'woofunnels-aero-checkout' );
+				$label = __( 'Enable', 'funnel-builder' );
 			}
 			$input = [
 				"type"    => "radio",
@@ -514,7 +515,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 		protected function add_typography( $control, $key, $selectors = '', $label = '' ) {
 
 			if ( empty( $label ) ) {
-				$label = __( 'Typography', 'woofunnels-aero-checkout' );
+				$label = __( 'Typography', 'funnel-builder' );
 			}
 			$typo = $control->typographySection( $label, $selectors, $this );
 
@@ -662,7 +663,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 
 		protected function add_padding( $tab_id, $key, $selector, $label = '' ) {
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Padding', 'woofunnels-aero-checkout' );
+				$label = esc_html__( 'Padding', 'funnel-builder' );
 			}
 			$tab_id->addPreset( "padding", $key, $label, $selector )->whiteList();
 
@@ -671,7 +672,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 
 		protected function add_margin( $tab_id, $key, $selector, $label = '' ) {
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Margin', 'woofunnels-aero-checkout' );
+				$label = esc_html__( 'Margin', 'funnel-builder' );
 			}
 			$tab_id->addPreset( "margin", $key, $label, $selector )->whiteList();
 
