@@ -4,6 +4,16 @@
 
 For the latest changes, see the Changelog section in the [readme.txt file](https://plugins.svn.wordpress.org/flexible-shipping/trunk/readme.txt).
 
+= 6.12.3 - 2026-09-04 =
+* Added support for WooCommerce 11.2
+
+= 6.12.2 - 2026-09-03 =
+* Added support for WooCommerce 11.1
+
+= 6.12.1 - 2026-08-19 =
+
+* Updated Composer dependencies.
+
 = 6.12.0 - 2026-08-17 =
 
 * Changed the Flexible Shipping Info tab to Flexible Shipping.

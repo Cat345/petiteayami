@@ -1260,7 +1260,6 @@ class Helpers {
             'vendor_plu'         => __( 'Vendors', 'ajax-search-for-woocommerce' ),
             'sku_label'          => __( 'SKU', 'woocommerce' ) . ':',
             'sale_badge'         => __( 'Sale', 'woocommerce' ),
-            'vendor_sold_by'     => __( 'Sold by:', 'ajax-search-for-woocommerce' ),
             'featured_badge'     => __( 'Featured', 'woocommerce' ),
             'in'                 => _x( 'in', 'in categories fe. in Books > Crime stories', 'ajax-search-for-woocommerce' ),
             'read_more'          => __( 'continue reading', 'ajax-search-for-woocommerce' ),
@@ -1507,7 +1506,6 @@ class Helpers {
             'custom_params'                   => (object) apply_filters( 'dgwt/wcas/scripts/custom_params', [] ),
             'convert_html'                    => true,
             'suggestions_wrapper'             => apply_filters( 'dgwt/wcas/scripts/suggestions_wrapper', 'body' ),
-            'show_product_vendor'             => dgoraAsfwFs()->is_premium() && class_exists( 'DgoraWcas\\Integrations\\Marketplace\\Marketplace' ) && DGWT_WCAS()->marketplace->showProductVendor(),
             'disable_hits'                    => apply_filters( 'dgwt/wcas/scripts/disable_hits', false ),
             'disable_submit'                  => apply_filters( 'dgwt/wcas/scripts/disable_submit', false ),
             'fixer'                           => apply_filters( 'dgwt/wcas/scripts/fixer', [

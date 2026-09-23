@@ -1,14 +1,14 @@
 === Filter Everything PRO ===
 Contributors: stepasyuk
-Tags: woocommerce product filter, woocommerce filter, product filter, post filter, ajax filter
-Stable tag: 1.9.5
-Requires at least: 4.6
-Tested up to: 7.0.2
+Tags: woocommerce product filter, woocommerce filter, product filter, post filter, faceted search
+Stable tag: 1.9.7
+Requires at least: 6.0
+Tested up to: 7.1
 Requires PHP: 7.4
 License: Envato split license
 License URI: https://codecanyon.net/licenses
 
-Instantly filter any WordPress content & WooCommerce products by attributes, taxonomies, custom fields + AJAX, Elementor, automatic filter creation.
+The most flexible filters for WooCommerce products & WordPress content. Includes everything needed, supports Elementor & builders, AJAX, quick setup.
 
 == Description ==
 _**Improve your site's navigation and drive more conversions with Filter Everything.**_
@@ -87,6 +87,10 @@ This improves navigation, reduces bounce rates, saves visitors’ time, and crea
 
 You can try to find a solution to your problem in the plugin [documentation](https://filtereverything.pro/resources/&utm_source=repository) or ask your question on the support [forum](https://wordpress.org/support/plugin/filter-everything/). PRO version users can get more info about support [here](https://filtereverything.pro/support/).
 
+= Bots and AI crawlers are hammering my filter URLs — what should I do? =
+
+Filter combinations produce a practically unlimited number of URLs, and once crawlers discover them they can keep requesting them for months. Since version 1.9.6 the plugin ships two protections in Settings → General → «Crawlers and bots»: «Disable filter links for crawlers» renders filter links as &lt;span&gt; instead of &lt;a&gt;, so bots stop discovering new filter URLs, and «Block filter URLs in robots.txt» adds Disallow rules for the filter URLs to your robots.txt, which is the only signal that also stops well-behaved crawlers (Google, Bing, most AI bots) from requesting URLs they already know. Both are enabled by default on new installations; on existing sites switch them on. Filtering result pages are noindex in the free version anyway, so neither option costs search visibility. Bots that ignore robots.txt can only be stopped at the server or CDN level — a firewall or rate-limiting rule (e.g. in Cloudflare) matching your filter URL parameters.
+
 == Installation ==
 
 Uploading via WordPress dashboard
@@ -111,7 +115,56 @@ Uploading via FTP
 4. All the necessary filter options
 5. Individual filters for any post type
 
+== External services ==
+
+**Plugin notifications (optional, off by default in the free version).** If you allow it — by answering «Yes, I agree» to the one-off question on the plugin's Settings or What's new screen (asked only once you have published a Filter Set), or by ticking Filters → Settings → Other → «Plugin notifications» — the plugin downloads one small public file once a day:
+
+`https://filtereverything.pro/plugin-feed/messages.json`
+
+The file lists our current notifications: security alerts, update warnings, usage tips and occasional offers, plus the current PRO price for the «Upgrade to PRO» popup. The plugin decides on your site which of them, if any, applies to you, and shows at most one message at a time on its own admin screens. A new message also puts the usual red «1» on the Filters menu until you have seen it. Only an urgent security alert may appear on other admin screens, and every message can be dismissed.
+
+* A release may also carry a message inside the plugin itself (for example a time-limited offer); that one involves no request at all and follows the same rules on where it appears and how it is dismissed.
+* The request runs in WP-Cron, never while a visitor or an administrator is loading a page.
+* **Nothing about your site is sent**: no parameters, no cookies, no site address, and the User-Agent header is a fixed string (`FilterEverything`) instead of the WordPress default that contains your site URL. As with any web request, the server sees the IP address the request comes from.
+* The file is data, not code. Texts are sanitised with a short list of allowed tags, links are limited to filtereverything.pro and wordpress.org, and no images, scripts or styles are loaded from it.
+* Untick «Plugin notifications» to stop the requests at once; the scheduled task and the cached file are removed. Developers can also set `define( 'FLRT_DISABLE_MESSAGES', true );`.
+
+The service is provided by Filter Everything (Andrii Stepasiuk): [Terms](https://filtereverything.pro/terms-and-conditions/), [Privacy Policy](https://filtereverything.pro/privacy-policy/).
+
 == Changelog ==
+
+= 1.9.7 =
+*Release Date - 22 September 2026*
+* Security - A security fix related to the Elementor Pro «Load More» / infinite scroll pagination on filtered pages
+* Dev   - NEW: optional «Plugin notifications» (off unless you allow them) — see «External services» for details
+* Dev   - NEW: The «Block filter URLs in robots.txt» option now also works on sites with a physical robots.txt file — the plugin keeps its rules in a marked block inside that file and updates it automatically; nothing else in the file is touched
+* Tweak - Reworked the License tab: it now asks where you bought the plugin and shows the three steps for that case (CodeCanyon → «Get your License Key» with the Envato account that made the purchase; filtereverything.pro → «My licenses» with the exact site address this site reports), so customers no longer paste the Envato purchase code into the key field
+* Tweak - Activation errors now explain what actually happened instead of a generic «Invalid license key»: a pasted Envato purchase code, a key generated for another address, a key already active on two sites, a filtereverything.pro key for a site that is not registered yet, or a license server that could not be reached
+* Fix   - Fixed the Apply button building a broken GET link (e.g. ?yes=on) instead of the pretty filter URL when two filters share the same custom field with different filter types — such as a numeric «Sale Price» filter and an «On Sale» checkbox both based on _sale_price
+* Fix   - Fixed a fatal error «Call to undefined function is_plugin_active()» when the plugin was loaded outside wp-admin (WP-CLI, cron) — the Breakdance compatibility check now falls back to the active-plugins option
+* Fix   - Fixed a PHP warning «Undefined array key "post_type"» shown to administrators when a Filters widget or block with no Filter Set selected was displayed on a page that has no relevant Filter Set
+* Fix   - Fixed a label or swatch term in Apply-button mode with instant counts getting unselected again right after the click when the instant recount of a large Filter Set took longer than half a second (many terms, slower phones) — the click was processed twice
+* Fix   - Fixed the rating stars filter keeping the count of a rating next to the stars after that rating was clicked again to deselect it, when «Disable filter links for crawlers» is on
+* Fix   - Fixed SEO Rules with a specific category (e.g. «Women's Perfumes + Hugo Boss») generating no URLs for the XML sitemap — only «Any»-category rules made it into the sitemap, although the specific pages were correctly indexable on the frontend
+* Fix   - Fixed the XML sitemap including filtered URLs whose pages are empty and noindex on the frontend: products hidden from the catalog (out of stock with «Hide out of stock items from the catalog» enabled, or excluded from the catalog) no longer count when the sitemap decides whether a filtered page has products
+* Fix   - Fixed the XML sitemap listing filtered URLs without the trailing slash on sites whose permalink structure ends with one, so every entry went through a 301 redirect before reaching the canonical page; the sitemap now follows the site's permalink settings exactly
+* Fix   - Fixed filtering doing nothing on sites with the WP User Manager plugin (and other plugins built on the Brain Cortex router): the router re-ran the main query after Filter Everything had filtered it, so shop and category pages always showed all products
+* Fix   - Fixed the Filters and Chips blocks showing «This content is available to members only» instead of the filters when WP User Manager is active — the blocks passed its content-restriction attributes on to the widget as if they were widget settings
+
+= 1.9.6 =
+*Release Date - 24 August 2026*
+* Dev   - NEW: The «Disable filter links for crawlers» option is now available in the free version too: filter links are rendered as `<span>` instead of `<a>`, so search engine bots and AI crawlers no longer discover and hammer endless filter combinations. It is enabled by default on new installations; existing sites can switch it on in Settings → General → Crawlers and bots
+* Dev   - NEW: Added the «Block filter URLs in robots.txt» option: the plugin generates Disallow rules for its filter URLs and adds them to the site's robots.txt automatically, so well-behaved crawlers stop requesting filtering result pages they already know. In the free version the rules cover every filter parameter; in the PRO version with pretty permalinks they name only the URLs that are never indexable — several values of one filter, more filters than the Indexing Depth allows, numeric and date ranges — so the pages your SEO Rules index stay crawlable. The generated rules are also shown on the settings page for sites with a physical robots.txt file
+* Tweak - Added the «Crawlers and bots» section to Settings → General and a one-time admin notice after the update pointing to the new protections
+* Tweak - Added the «What's new» page under the Filters menu: release notes of the installed version with a badge on the menu item after an update, so you can see what changed whenever it suits you
+* Tweak - The Import/Export link was removed from the Filters menu and the top toolbar to keep them short; the Import/Export tab in Settings stays where it was
+* Tweak - The installed plugin version is now shown next to the plugin name in the top toolbar on every plugin page, in both the free and the PRO version (previously PRO printed it next to the license status and the free version only in the Help tab)
+* Fix   - Fixed filter counters on shops that list product variations as separate catalog items next to their still-visible parent products (e.g. YITH Color Label Variations with parents not hidden): the counters could be lower than the number of products actually shown on the filtered page
+* Fix   - Fixed filters not working for logged-out visitors on shops that use WooCommerce B2B (the plugin hides restricted products from guests and changed the identity of the page query the Filter Set was saved with)
+* Fix   - Fixed the PHP 8.2 «Creation of dynamic property» deprecation notice triggered by the Filters, Chips and Sorting modules for Divi
+* Fix   - Fixed «Create Filters Automatically» writing a broken entry into the list of global URL prefixes and overwriting the prefixes that had just been registered for the new filters
+* Tweak - License activation on sites whose address carries a path (WPML/Polylang language directories, multisite sub-sites): the License tab now shows the exact address the plugin reports to the license server, and when a key was generated for a different address the error explains it instead of the generic «Invalid license key»
+* Fix   - Fixed the error log filling up with PHP warnings «strpos(): Empty needle» from the page-builder detector on PHP 7 sites (reported after the WordPress 7.1 update); markup-based builder detection now also reports the builder name correctly
 
 = 1.9.5 =
 *Release Date - 5 August 2026*
@@ -142,7 +195,7 @@ Uploading via FTP
 * Dev   - NEW: Added native Filters, Chips and Sorting widgets for Beaver Builder, Bricks, Breakdance, Divi and the block editor (Gutenberg)
 * Dev   - NEW: Added the new Range List filter type: numeric values (price, weight, etc.) can now be shown as a list of predefined ranges instead of a slider
 * Dev   - NEW: Added the Results container option with a visual picker: choose exactly which part of the page AJAX refreshes — enter a CSS selector manually or click «Select visually» and simply click the posts area right on your site
-* Dev   - NEW: Added the «Disable filter links for crawlers» option: filter links are rendered as <span> instead of <a>, so search engine bots no longer waste your crawl budget on endless filter combinations. Links to combinations that your SEO Rules make indexable keep the real <a> tag and stay discoverable
+* Dev   - NEW: Added the «Disable filter links for crawlers» option: filter links are rendered as `<span>` instead of `<a>`, so search engine bots no longer waste your crawl budget on endless filter combinations. Links to combinations that your SEO Rules make indexable keep the real `<a>` tag and stay discoverable
 * Dev   - The minimum required PHP version is now 7.4
 * Tweak - Filter Sets with a very large number of filters (100+) can now be saved reliably: the editing form submits only the fields that were actually changed, so the request no longer hits the server's post_max_size limit
 * Tweak - Major performance boost on large catalogs: filter data is now delivered as a small static cacheable file instead of inline page markup, dramatically reducing HTML size
@@ -313,38 +366,24 @@ Uploading via FTP
 * Fix   - Fixed warning message on the login screen
 * Fix   - Fixed issue with resetting filters cache
 
-= 1.8.0 =
-*Release Date - 08 January 2024*
-* Dev   - Added new filter type by Post Date
-* Tweak - Made Numeric Range filters collapsible
-* Fix   - Renamed 'wpc_clean' function to 'flrt_clean' to avoid conflicts
-
-= 1.7.16 =
-*Release Date - 14 December 2023*
-* Dev   - Added support for Dokan store pages
-* Dev   - Added Experimental option that hides variable products with out of stock variations
-* Tweak - Improved search field and added variations to search by SKU
-* Tweak - Added global variable $flrt_plugin to access the class
-* Tweak - Added ability to create translations for "Any %entity%" Filter Set type
-* Fix   - Fixed the issue with double SEO titles and SEO Rules entities on block themes
-* Fix   - Fixed issue with term_taxonomy_id and taxonomy filter counters
-* Fix   - Fixed Select2 CSS conflict in Woocommerce admin forms
-
 [See changelog for all versions](https://demo.filtereverything.pro/changelog.txt).
 
 == Upgrade Notice ==
 
-= 1.9.5 =
-*Release Date - 5 August 2026*
-* Fix   - Fixed the search box inside a filter returning no results when the filter's terms are shown as color swatches or when filter links are hidden from search engine crawlers
-* Fix   - Fixed numeric range filters (e.g. price) keeping outdated minimum and maximum values for several hours after a product was edited: the cached filter data is now reset correctly on every product save
-* Fix   - Fixed the range slider and its number inputs not appearing in the «Apply button» mode with instant recount when the Filter Set contains only one filter (on PHP 8 such a filter could be mistakenly treated as waiting for a parent filter selection and stayed hidden)
-* Fix   - Fixed filter terms requiring a double tap in Safari on iPhone when filter links are hidden from search engine crawlers or shown as color swatches and brand logos: a single tap now both selects the term and instantly recalculates the counters
-* Fix   - Fixed the mobile «Show» button occasionally displaying the found posts number with doubled parentheses, like ((60))
-* Fix   - Fixed the «Apply button» with a redirect to another page repeating the already applied URL segments when the button was pressed again on a filtered page: the new address is now always built from the clean location URL
-* Tweak - Child filters are now reset when their parent filter selection changes in the «Apply button» mode with instant recount: switching the Brand no longer keeps a Model that belongs to the previous Brand selected
-* Fix   - Fixed filters with the «See more» option hiding all of their terms after a selection in another filter in the «Apply button» mode with instant recount, when another Filter Set on the same page configures the same attribute without «See more» (e.g. a dropdown in a search form and a checkbox list in the sidebar): the «See more» state is now read from the rendered filter itself, and the static filter-data file name now includes a fingerprint of the filter configuration so configuration changes always refresh it
-* Fix   - Fixed hierarchical filters with the «See more» option rendering with all terms hidden until the plugin's JavaScript runs: on sites where scripts are delayed or minified by page-speed plugins (e.g. WP Rocket) such filters could stay empty for logged-out visitors, while logged-in users saw them correctly
-* Fix   - Fixed the «Load More» button of the Elementor Loop Grid widget appending unfiltered products on a filtered page: the widget's next-page address (?e-page-…) now keeps the applied filters, and the second and further pages no longer get a malformed address with two «?» characters
-* Fix   - Fixed the «Empty terms → Always hide» option not being applied to filters displayed as color swatches or brand logos when the page loads in the «Apply button» mode with instant recount: empty terms were visible until the first click on any filter and only then disappeared
-* Fix   - Fixed all filters disappearing from the Shop page and other product archive pages after updating to WooCommerce 11.0: WooCommerce now reports the shop page itself instead of the products archive there, and the plugin no longer recognized the page as a filterable products list
+= 1.9.7 =
+*Release Date - 22 September 2026*
+* Security - A security fix related to the Elementor Pro «Load More» / infinite scroll pagination on filtered pages
+* Dev   - NEW: optional «Plugin notifications» (off unless you allow them) — see «External services» for details
+* Dev   - NEW: The «Block filter URLs in robots.txt» option now also works on sites with a physical robots.txt file — the plugin keeps its rules in a marked block inside that file and updates it automatically; nothing else in the file is touched
+* Tweak - Reworked the License tab: it now asks where you bought the plugin and shows the three steps for that case (CodeCanyon → «Get your License Key» with the Envato account that made the purchase; filtereverything.pro → «My licenses» with the exact site address this site reports), so customers no longer paste the Envato purchase code into the key field
+* Tweak - Activation errors now explain what actually happened instead of a generic «Invalid license key»: a pasted Envato purchase code, a key generated for another address, a key already active on two sites, a filtereverything.pro key for a site that is not registered yet, or a license server that could not be reached
+* Fix   - Fixed the Apply button building a broken GET link (e.g. ?yes=on) instead of the pretty filter URL when two filters share the same custom field with different filter types — such as a numeric «Sale Price» filter and an «On Sale» checkbox both based on _sale_price
+* Fix   - Fixed a fatal error «Call to undefined function is_plugin_active()» when the plugin was loaded outside wp-admin (WP-CLI, cron) — the Breakdance compatibility check now falls back to the active-plugins option
+* Fix   - Fixed a PHP warning «Undefined array key "post_type"» shown to administrators when a Filters widget or block with no Filter Set selected was displayed on a page that has no relevant Filter Set
+* Fix   - Fixed a label or swatch term in Apply-button mode with instant counts getting unselected again right after the click when the instant recount of a large Filter Set took longer than half a second (many terms, slower phones) — the click was processed twice
+* Fix   - Fixed the rating stars filter keeping the count of a rating next to the stars after that rating was clicked again to deselect it, when «Disable filter links for crawlers» is on
+* Fix   - Fixed SEO Rules with a specific category (e.g. «Women's Perfumes + Hugo Boss») generating no URLs for the XML sitemap — only «Any»-category rules made it into the sitemap, although the specific pages were correctly indexable on the frontend
+* Fix   - Fixed the XML sitemap including filtered URLs whose pages are empty and noindex on the frontend: products hidden from the catalog (out of stock with «Hide out of stock items from the catalog» enabled, or excluded from the catalog) no longer count when the sitemap decides whether a filtered page has products
+* Fix   - Fixed the XML sitemap listing filtered URLs without the trailing slash on sites whose permalink structure ends with one, so every entry went through a 301 redirect before reaching the canonical page; the sitemap now follows the site's permalink settings exactly
+* Fix   - Fixed filtering doing nothing on sites with the WP User Manager plugin (and other plugins built on the Brain Cortex router): the router re-ran the main query after Filter Everything had filtered it, so shop and category pages always showed all products
+* Fix   - Fixed the Filters and Chips blocks showing «This content is available to members only» instead of the filters when WP User Manager is active — the blocks passed its content-restriction attributes on to the widget as if they were widget settings

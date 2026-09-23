@@ -420,11 +420,10 @@ function flrt_license_status()
     ?>
     <div class="wpc-tab">
         <div class="wpc-license-status">
-    <span class="wpc-plugin-version"><?php
-        echo sprintf( esc_html__('v%s', 'filter-everything' ), FLRT_PLUGIN_VER );
-        ?>
-    </span>
             <?php
+            // The version itself lives next to the plugin name in the toolbar
+            // (views/admin/header-navigation.php, both builds) — only the licence
+            // status is printed here
             $to_show_status = false;
 
             if ( is_multisite() ) {
@@ -459,7 +458,7 @@ function flrt_license_status()
                         $class   = 'wpc-unregistered';
                     }
 
-                    echo '| <a href="'.admin_url( 'edit.php?post_type=filter-set&page=filters-settings&tab=license' ).'" class="wpc-plugin-status ' . $class . '">'.$status.'</a>';
+                    echo '<a href="'.admin_url( 'edit.php?post_type=filter-set&page=filters-settings&tab=license' ).'" class="wpc-plugin-status ' . $class . '">'.$status.'</a>';
                 }
             }
             ?>

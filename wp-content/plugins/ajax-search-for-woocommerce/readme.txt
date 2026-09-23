@@ -4,7 +4,7 @@ Tags: woocommerce search, ajax search, search by sku, product search, woocommerc
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.34.1
+Stable tag: 1.34.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -147,6 +147,10 @@ You can read more and compare Pro and Free features here: [Full comparison - Pro
 9. Sample settings page (Search Analytics tab)
 
 == Changelog ==
+
+= 1.34.2, September 7, 2026 =
+* SECURITY: Stored XSS in search suggestions via product, category, tag, post and vendor names, and via suggestion image URLs. Exploitation requires permissions to edit those items (the Author or Shop Manager role, or a vendor account in marketplace plugins).
+* UPDATED: The `.pot` file
 
 = 1.34.1, August 18, 2026 =
 * SECURITY: A search request with an empty query could reveal password-protected products to unauthenticated users. Thanks to Duy Tran for the responsible disclosure.
@@ -306,26 +310,5 @@ You can read more and compare Pro and Free features here: [Full comparison - Pro
 * UPDATED: The `.pot` file
 * UPDATED: Freemius SDK
 
-
-= 1.27.0, January 31, 2024 =
-* ADDED: Integration with the **Betheme theme**
-* ADDED: Highlight words in search results with Greek letters regardless of accent
-* ADDED: Support for “Full-width Search” in the **XStore theme**
-* FIXED: Multiple search containers on mobile in the **Astra theme** integration
-* FIXED: No focus on search input for mobile devices in the **Astra theme** integration
-* FIXED: Allow an HTML `<i>` tag in suggestion titles and headlines
-* FIXED: Multilingual support is active even for one language
-* FIXED: Overriding the search icon and form in the header was not working properly in the **WoodMart theme** integration
-* FIXED: Missing filters from the **Advanced AJAX Product Filters** plugin in the **Divi theme**
-* FIXED: Replace `&#37` for more stable format `%%` in a `sprintf` function
-* FIXED: An unwanted modal after closing the search overlay on mobile in the **Flatsome theme**
-* FIXED: Missing colors after updating the **Blocksy theme** to 2.x
-* FIXED: Incorrect calculation of a product’s position in search results when it contains Greek letters
-* FIXED: Incorrect term language detection in the **WPML** plugin. Replacing `term_id` with `term_taxonomy_id`.
-* FIXED: Unwanted ampersand entity in the product description of search results
-* UPDATED: Requires PHP 7.4
-* UPDATED: The `.pot` file
-* UPDATED: Polish translation
-* UPDATED: Freemius SDK
 
 [See changelog for all versions](https://fibosearch.com/changelog/).

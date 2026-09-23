@@ -390,6 +390,26 @@ if (!class_exists('XmlPrepare')):
                 $this->error->add('tmp_terms_create_failed', $this->errorNoticeTemplate(esc_html__('Failed to generate the XML sitemap. Please try again or contact support if the issue persists.', 'filter-everything') . ' ' . $wpdb->last_error));
             }
 
+            // Posts hidden from the catalog must not count for sitemap links:
+            // the frontend does not show them, so a term combination that consists
+            // of such posts only is an empty (noindex) page. WooCommerce marks them
+            // with the 'product_visibility' taxonomy.
+            $hidden_slugs = array( 'exclude-from-catalog' );
+            if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) ) {
+                $hidden_slugs[] = 'outofstock';
+            }
+            $hidden_in = "'" . implode( "','", array_map( 'esc_sql', $hidden_slugs ) ) . "'";
+
+            $visibilityWhere = "
+                AND p.ID NOT IN (
+                    SELECT tr_v.object_id
+                    FROM {$wpdb->term_relationships} tr_v
+                    JOIN {$wpdb->term_taxonomy} tt_v ON tt_v.term_taxonomy_id = tr_v.term_taxonomy_id
+                    JOIN {$wpdb->terms} t_v ON t_v.term_id = tt_v.term_id
+                    WHERE tt_v.taxonomy = 'product_visibility'
+                    AND t_v.slug IN ($hidden_in)
+                )";
+
             $insertSql = "
                 INSERT INTO wpc_tmp_terms (ID, user_nicename, taxonomy, slug)
                 SELECT DISTINCT p.ID, u.user_nicename, tt.taxonomy, t.slug
@@ -399,9 +419,10 @@ if (!class_exists('XmlPrepare')):
                 JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
                 JOIN {$wpdb->terms} t ON t.term_id = tt.term_id
                 WHERE p.post_status = 'publish'
-                
+                {$visibilityWhere}
+
                 UNION
-                
+
                 SELECT DISTINCT p.ID, u.user_nicename, tt_parent.taxonomy, t_parent.slug
                 FROM {$wpdb->posts} p
                 JOIN {$wpdb->users} u ON p.post_author = u.ID
@@ -410,6 +431,7 @@ if (!class_exists('XmlPrepare')):
                 JOIN {$wpdb->term_taxonomy} tt_parent ON tt.parent = tt_parent.term_id
                 JOIN {$wpdb->terms} t_parent ON t_parent.term_id = tt_parent.term_id
                 WHERE p.post_status = 'publish'
+                {$visibilityWhere}
             ";
             $wpdb->query($insertSql);
             if ($wpdb->last_error) {
@@ -457,7 +479,7 @@ if (!class_exists('XmlPrepare')):
                     $filter_fields = $this->getFilterFields($set['ID']);
                     if (!empty($filter_fields)) {
                         foreach ($filter_fields as $field) {
-                            $field['post_content'] = unserialize($field['post_content']);
+                            $field['post_content'] = maybe_unserialize($field['post_content']);
                             $this->filter_sets[$set['ID']]['filter_fields'][$field['ID']] = $field;
                         }
                     }
@@ -1192,7 +1214,9 @@ if (!class_exists('XmlPrepare')):
                 ];
 
                 if(!empty($term_id) && $term_id !== '-1'){
-                    $args['object_ids'] = [$term_id];
+                    // 'include' limits the result to this very term. 'object_ids' would
+                    // treat the value as a POST id and return that post's terms instead.
+                    $args['include'] = [$term_id];
                 }
 
                 $terms = get_terms($args);

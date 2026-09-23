@@ -4,7 +4,7 @@ Donate link: https://octol.io/fs-repo-up
 Tags: WooCommerce shipping, weight based shipping, Table Rate Shipping, conditional shipping, advanced shipping
 Requires at least: 5.8
 Tested up to: 7.1
-Stable tag: 6.12.1
+Stable tag: 6.12.4
 Requires PHP: 7.4
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -311,8 +311,11 @@ If you are upgrading from the old Flexible Shipping version (1.3.2, woo-flexible
 
 == Changelog ==
 
-= 6.12.1 - 2026-08-19 =
-
-* Updated Composer dependencies.
+= 6.12.4 - 2026-09-15 =
+* Fixed the redirect to the Flexible Shipping Info page after the first plugin activation.
+* Fixed a PHP 8.4 deprecation warning in logger settings.
+* Improved the rating popup with a non-blocking layout, larger stars, clearer feedback questions, and reminder postponement options.
+* Fixed shipping method logo metadata appearing in the admin order view.
+* Fixed WordPress Playground startup by using the latest stable WordPress version.
 
 For older changelog entries, see the [changelog.txt file](https://plugins.svn.wordpress.org/flexible-shipping/trunk/changelog.txt).

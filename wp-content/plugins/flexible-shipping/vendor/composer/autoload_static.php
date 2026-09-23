@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit51c49302269db08d7d83c503cab02417
+class ComposerStaticInitdb28a81eef2d96e08c86a829a8961d74
 {
     public static $prefixLengthsPsr4 = array (
         'W' =>
@@ -556,6 +556,11 @@ class ComposerStaticInit51c49302269db08d7d83c503cab02417
         'WPDesk\\FS\\Rate\\RateNoticeImplementation' => __DIR__ . '/../..' . '/classes/notices/rate-notice-implementation.php',
         'WPDesk\\FS\\Rate\\RateNoticeInterface' => __DIR__ . '/../..' . '/classes/notices/interface-rate.php',
         'WPDesk\\FS\\Rate\\WPDesk_Flexible_Shipping_Rate_Notice' => __DIR__ . '/../..' . '/classes/notices/rate-notice.php',
+        'WPDesk\\FS\\RatingPetition\\Ajax' => __DIR__ . '/../..' . '/src/WPDesk/FS/RatingPetition/Ajax.php',
+        'WPDesk\\FS\\RatingPetition\\PetitionState' => __DIR__ . '/../..' . '/src/WPDesk/FS/RatingPetition/PetitionState.php',
+        'WPDesk\\FS\\RatingPetition\\Popup' => __DIR__ . '/../..' . '/src/WPDesk/FS/RatingPetition/Popup.php',
+        'WPDesk\\FS\\RatingPetition\\SaveCounter' => __DIR__ . '/../..' . '/src/WPDesk/FS/RatingPetition/SaveCounter.php',
+        'WPDesk\\FS\\RatingPetition\\Tracker' => __DIR__ . '/../..' . '/src/WPDesk/FS/RatingPetition/Tracker.php',
         'WPDesk\\FS\\Shipment\\AdminNotices' => __DIR__ . '/../..' . '/src/WPDesk/FS/Shipment/AdminNotices.php',
         'WPDesk\\FS\\Shipment\\BulkAction' => __DIR__ . '/../..' . '/src/WPDesk/FS/Shipment/BulkAction.php',
         'WPDesk\\FS\\Shipment\\BulkAction\\HandleAction' => __DIR__ . '/../..' . '/src/WPDesk/FS/Shipment/BulkAction/HandleAction.php',
@@ -726,9 +731,9 @@ class ComposerStaticInit51c49302269db08d7d83c503cab02417
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit51c49302269db08d7d83c503cab02417::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit51c49302269db08d7d83c503cab02417::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit51c49302269db08d7d83c503cab02417::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitdb28a81eef2d96e08c86a829a8961d74::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitdb28a81eef2d96e08c86a829a8961d74::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitdb28a81eef2d96e08c86a829a8961d74::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -23,16 +23,16 @@ class WPDesk_Flexible_Shipping_Logger_Settings {
 	/**
 	 * SaaS settings.
 	 *
-	 * @var WPDesk_Flexible_Shipping_Settings
+	 * @var WPDesk_Flexible_Shipping_Settings|null
 	 */
 	private $saas_settings;
 
 	/**
 	 * WPDesk_Flexible_Shipping_SaaS_Logger_Settings constructor.
 	 *
-	 * @param WPDesk_Flexible_Shipping_Settings $saas_settings SaaS settings.
+	 * @param WPDesk_Flexible_Shipping_Settings|null $saas_settings SaaS settings.
 	 */
-	public function __construct( WPDesk_Flexible_Shipping_Settings $saas_settings = null ) {
+	public function __construct( ?WPDesk_Flexible_Shipping_Settings $saas_settings = null ) {
 		$option_value  = get_option( self::OPTION_NAME, self::OPTION_VALUE_DISABLED );
 		$this->enabled = self::OPTION_VALUE_ENABLED === $option_value;
 

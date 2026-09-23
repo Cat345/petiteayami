@@ -34,7 +34,8 @@ use FSVendor\WPDesk\PluginBuilder\Plugin\HookableCollection;
 use FSVendor\WPDesk\PluginBuilder\Plugin\HookableParent;
 use FSVendor\WPDesk\PluginBuilder\Plugin\TemplateLoad;
 use FSVendor\WPDesk\RepositoryRating\DisplayStrategy\ShippingMethodDisplayDecision;
-use FSVendor\WPDesk\RepositoryRating\PopupPetition\PopupPetition;
+use WPDesk\FS\RatingPetition\Ajax as RatingPetitionAjax;
+use WPDesk\FS\RatingPetition\Popup as RatingPetitionPopup;
 use FSVendor\WPDesk\RepositoryRating\RepositoryRatingPetitionText;
 use FSVendor\WPDesk\RepositoryRating\TextPetitionDisplayer;
 use FSVendor\WPDesk\Session\SessionFactory;
@@ -365,6 +366,9 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 
 		$this->initialize_docs_chat();
 
+		$this->add_hookable( new \WPDesk\FS\RatingPetition\Tracker() );
+		$this->add_hookable( new \WPDesk\FS\RatingPetition\SaveCounter() );
+
 		// Rating petition
 		add_action( 'admin_init', [ $this, 'init_rating_petition' ] );
 	}
@@ -383,32 +387,12 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 				)
 			) )->hooks();
 
-			$option_name      = 'flexible-shipping-method-update-count';
-			$max_update_count = 5;
-			$option_value     = (int) get_option( $option_name, 0 );
-			if ( $option_value >= $max_update_count ) {
-				$current_user = wp_get_current_user();
-				( new PopupPetition(
-					'flexible-shipping',
-					__( 'Flexible Shipping', 'flexible-shipping' ),
-					'help@octolize.com',
-					$current_user ? $current_user->user_email : '',
-					'admin_footer',
-					$shipping_method_display_decision
-				) )->init()->hooks();
-			}
-
-			add_action( 'flexible_shipping_method_updated', function ( $instance_id ) use ( $option_name, $max_update_count, $option_value ) {
-				if ( $option_value < $max_update_count ) {
-					update_option( $option_name, (int) get_option( $option_name, 0 ) + 1 );
-				}
-			} );
-
-			add_action( 'wpdesk_rating_petition_postpone', function ( $plugin_slug ) use ( $option_name, $max_update_count ) {
-				if ( $plugin_slug === 'flexible-shipping' ) {
-					update_option( $option_name, (int) floor( $max_update_count / 2 ) );
-				}
-			} );
+			( new RatingPetitionPopup(
+				$shipping_method_display_decision,
+				$this->plugin_info->get_plugin_url(),
+				$this->plugin_info->get_version()
+			) )->hooks();
+			( new RatingPetitionAjax() )->hooks();
 		}
 	}
 

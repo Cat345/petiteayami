@@ -159,6 +159,17 @@ class PluginPro
 
     public function replaceProdIdsVarIds( $allPostsIds )
     {
+        // On shops that list variations as standalone catalog items the universe
+        // is ALREADY in the visible-unit space and may legitimately contain
+        // still-visible parents next to their variations (e.g. YITH Color Label
+        // with parents not hidden). Expanding parents into variations here drops
+        // those parents from every subsequent intersection and desyncs counters
+        // from the grid. On XStore-style setups (parents excluded from the
+        // universe) this expansion was a no-op anyway — gating it off is safe.
+        if ( function_exists( 'flrt_variations_listed_as_products' ) && flrt_variations_listed_as_products() ) {
+            return $allPostsIds;
+        }
+
         if( ! empty( $allPostsIds ) ){
             $variations_reverse_map = $this->getVariationsReverseMap();
             if( empty( $variations_reverse_map ) ){
@@ -217,6 +228,23 @@ class PluginPro
             $new_entity_items = [];
 
             foreach ( $entity_items as $in => $term_object ){
+
+                // Some setups (e.g. YITH Color Label Variations) assign attribute
+                // terms to the VARIATIONS themselves and can list variations
+                // alongside their still-visible parents. When a term's posts
+                // already contain variation ids, the list is already in the
+                // visible catalog-unit space: expanding parents into variations
+                // (and dropping the parents) would desync the counter from the
+                // grid — a parent and its variations are separate items there.
+                // The later calcTermCount() intersection against the universe
+                // keeps the numbers exact without any replacement.
+                foreach ( $term_object->posts as $existing_post_id ){
+                    if ( isset( $variations_map[ $existing_post_id ] ) ){
+                        $new_entity_items[$in] = $term_object;
+                        continue 2;
+                    }
+                }
+
                 $new_posts = [];
                 foreach ( $term_object->posts as $inn => $post_id ){
                     // Variable product
@@ -415,7 +443,8 @@ class PluginPro
 
     public function setVariationsMap( $sets )
     {
-        global $wpdb, $flrt_json_data;
+        global $wpdb;
+        $flrt_json_data = &Container::instance()->getFilterContext()->jsonData();
         $is_products = false;
         $variations_map = [];
         $container = Container::instance();

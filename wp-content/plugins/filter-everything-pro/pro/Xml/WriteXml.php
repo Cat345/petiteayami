@@ -52,7 +52,7 @@ if (!class_exists('WriteXml')):
                 if ($limit == $this->limit) {
                     $xml .= $this->sitemapTemplateOpenTag();
                 }
-                $xml .= sprintf($this->sitemapTemplateUrl(), $site_url . htmlspecialchars($link, ENT_QUOTES | ENT_XML1, 'UTF-8'));
+                $xml .= sprintf($this->sitemapTemplateUrl(), htmlspecialchars($this->absoluteUrl($site_url, $link), ENT_QUOTES | ENT_XML1, 'UTF-8'));
                 unset($links[$link]);
                 $limit--;
                 if ($limit == 0 || empty($links)) {
@@ -74,6 +74,28 @@ if (!class_exists('WriteXml')):
                 }
             }
             $this->xmlUpdateDate();
+        }
+
+        /**
+         * Sitemap URLs must be the canonical ones, not something that 301s to
+         * them: the path gets the trailing slash exactly when the site's
+         * permalink structure ends with one (user_trailingslashit() also
+         * strips it when the structure does not). Query-string links stay as
+         * they are.
+         */
+        private function absoluteUrl($site_url, $link)
+        {
+            $query = '';
+            $pos   = strpos($link, '?');
+            if ($pos !== false) {
+                $query = substr($link, $pos);
+                $link  = substr($link, 0, $pos);
+            }
+            if ($link !== '' && $link !== '/') {
+                $link = user_trailingslashit($link);
+            }
+
+            return $site_url . $link . $query;
         }
 
         private function xmlUpdateDate()

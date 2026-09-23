@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 7.0
 Tested up to: 7.1
-Stable tag: 5.36.0
+Stable tag: 5.38.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,13 +227,20 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.36.0 - 2026-08-18 =
-* Added: Subscribers can now be asked for tracking consent when they sign up, with a separate checkbox on subscription forms, WooCommerce checkout, and the WordPress registration and comment forms;
-* Added: New segment filter for tracking consent, so you can find subscribers who allowed tracking, opted out, or were never asked;
-* Updated: Email editor packages to their latest versions;
-* Updated: Bump the minimum required WordPress version to 7.0 and tested up to version to 7.1;
-* Fixed: Open and click rates above 100% on automation and welcome email statistics;
-* Fixed: Footer links in the block editor now follow the underline setting from the email styles;
-* Fixed: Campaign stats no longer drop link filter deep links when switching tabs.
+= 5.38.1 - 2026-09-14 =
+* Added: Turning off open and click tracking in MailPoet now also turns it off in AutomateWoo, so a subscriber only has to say it once. Turning it back on clears it in both places too;
+* Improved: Input validation and block sanitization for the newsletter browser preview request;
+* Improved: Sanitization of nested content blocks in emails;
+* Improved: WP-CLI subscriber import now supports CSVs exported from the plugin;
+* Changed: Shorten customer email addresses in WooCommerce automatic email logs;
+* Fixed: Emails page failing to load on sites with a large log table;
+* Fixed: Subscriber and statistics exports of values a spreadsheet reads as a formula, such as a phone number starting with a plus;
+* Fixed: Keep the original tracking consent record when a list is imported again;
+* Fixed: Stop a subscriber's tracking choice being changed by someone else;
+* Fixed: Email template selector layout with Gutenberg 23.9 or newer;
+* Fixed: Pop-up, fixed bar, and slide-in forms not appearing on single posts and pages when the theme or page builder renders the content outside the main loop;
+* Fixed: Stop block checkout recording a tracking decline for customers who were never asked;
+* Fixed: Use the first row for an email listed twice within one batch of a WP-CLI subscriber import, as the import screen does;
+* Fixed: Bulk unsubscribe of large subscriber selections timing out instead of completing.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

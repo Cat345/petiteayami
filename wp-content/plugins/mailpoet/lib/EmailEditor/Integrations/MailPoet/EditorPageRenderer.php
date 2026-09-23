@@ -10,6 +10,7 @@ use Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller;
 use Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller;
 use Automattic\WooCommerce\EmailEditor\Engine\User_Theme;
 use MailPoet\Analytics\Analytics;
+use MailPoet\Config\AccessControl;
 use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
@@ -22,6 +23,7 @@ use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController as MailPoetSettings;
 use MailPoet\Settings\UserFlagsController;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\Util\FreeDomains;
 use MailPoet\Util\License\Features\CapabilitiesManager;
@@ -63,6 +65,8 @@ class EditorPageRenderer {
 
   private CapabilitiesManager $capabilitiesManager;
 
+  private TrackingConsentController $trackingConsentController;
+
   public function __construct(
     WPFunctions $wp,
     CdnAssetUrl $cdnAssetUrl,
@@ -77,7 +81,8 @@ class EditorPageRenderer {
     AuthorizedEmailsController $authorizedEmailsController,
     AuthorizedSenderDomainController $senderDomainController,
     FeaturesController $featuresController,
-    CapabilitiesManager $capabilitiesManager
+    CapabilitiesManager $capabilitiesManager,
+    TrackingConsentController $trackingConsentController
   ) {
     $this->wp = $wp;
     $this->settingsController = Email_Editor_Container::container()->get(Settings_Controller::class);
@@ -96,6 +101,7 @@ class EditorPageRenderer {
     $this->senderDomainController = $senderDomainController;
     $this->featuresController = $featuresController;
     $this->capabilitiesManager = $capabilitiesManager;
+    $this->trackingConsentController = $trackingConsentController;
   }
 
   public function render() {
@@ -131,7 +137,7 @@ class EditorPageRenderer {
     $this->wp->wpEnqueueStyle(
       'email_editor_integration',
       Env::$assetsUrl . '/dist/js/email_editor_integration/email_editor_integration.css',
-      [],
+      ['wp-components'],
       $editorIntegrationAssetsParams['version']
     );
 
@@ -237,10 +243,14 @@ class EditorPageRenderer {
         'nonce' => $this->wp->wpCreateNonce('wp_rest'),
       ],
       'mailpoet_is_automation_newsletter' => $isAutomationNewsletter,
+      // Only a site that asks EVERY subscriber for consent needs an opt-out
+      // link in its emails, so only then does content validation ask for one.
+      'mailpoet_tracking_consent_ask_all' => $this->trackingConsentController->getSubscriberChoice() === TrackingConsentController::CHOICE_ASK_ALL,
       'mailpoet_automation_id' => $automationId,
       'mailpoet_feature_flags' => $this->featuresController->getAllFlags(),
       'mailpoet_capabilities' => $this->capabilitiesManager->getCapabilities(),
-      'mailpoet_ai_text_generation_available' => function_exists('wp_ai_client_prompt')
+      'mailpoet_ai_text_generation_available' => $this->wp->currentUserCan(AccessControl::PERMISSION_MANAGE_EMAILS)
+        && function_exists('wp_ai_client_prompt')
         && wp_ai_client_prompt('test')->is_supported_for_text_generation(),
     ];
     if ($this->bridge->isMailpoetSendingServiceEnabled()) {
@@ -302,7 +312,10 @@ JS;
     if (is_string($templateSlug) && $templateSlug !== '') {
       $routes[] = '/wp/v2/templates/lookup?slug=' . $templateSlug;
     } else {
-      $routes[] = '/wp/v2/mailpoet_email?context=edit&per_page=30&status=publish,sent';
+      // Keep the query in sync with the woocommerce_email_editor_recent_emails_query filter
+      // in assets/js/src/mailpoet-email-editor-integration/index.ts. If the two differ,
+      // the editor asks for a different path and the preloaded data is not used.
+      $routes[] = '/wp/v2/mailpoet_email?context=edit&per_page=30&status=publish,sent,draft';
     }
 
     // Preload personalization tags for automation emails

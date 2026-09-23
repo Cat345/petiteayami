@@ -21,6 +21,7 @@ class Admin{
         $allow_validate = false;
 
         add_action( 'wpc_add_submenu_pages', [$this, 'adminMenu'] );
+        add_action( 'admin_head', [$this, 'menuHighlight'] );
 
         $this->tabRenderer = Container::instance()->getTabRenderer();
         add_action( 'wpc_setttings_tabs_register', [$this, 'initTabs'] );
@@ -70,7 +71,25 @@ class Admin{
         $seo = 'edit.php?post_type=' . FLRT_SEO_RULES_POST_TYPE;
 
         add_submenu_page($page, esc_html__('SEO Rules', 'filter-everything'), esc_html__('SEO Rules', 'filter-everything'), 'manage_options', $seo);
+        // Back since 1.9.7 (dropped in 1.9.6): a deep link to the Settings tab, so the
+        // PRO menu mirrors the free one entry for entry.
         add_submenu_page( $page, esc_html__('Import/Export', 'filter-everything'), esc_html__('Import/Export', 'filter-everything'), 'manage_options', $page . '&page=filters-settings&tab=import_export');
+    }
+
+    /**
+     * The Import/Export entry is a deep link (…&page=filters-settings&tab=…),
+     * which WordPress does not recognise as the current page: point the sidebar
+     * highlight at it while that tab is open (and keep «Settings» for the rest).
+     */
+    public function menuHighlight()
+    {
+        if ( ! isset( $_GET['page'], $_GET['tab'] ) || 'filters-settings' !== $_GET['page'] || 'import_export' !== $_GET['tab'] ) {
+            return;
+        }
+        global $parent_file, $submenu_file;
+
+        $parent_file  = 'edit.php?post_type=' . FLRT_FILTERS_SET_POST_TYPE;
+        $submenu_file = $parent_file . '&page=filters-settings&tab=import_export';
     }
 
     public function seoRulesPostTypeCol( $columns )

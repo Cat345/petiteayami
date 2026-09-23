@@ -23,9 +23,26 @@ class ItemMeta implements Hookable {
 	 * Hooks.
 	 */
 	public function hooks() {
+		add_action( 'woocommerce_checkout_create_order_shipping_item', [ $this, 'remove_logo_meta_from_shipping_item' ] );
 		add_action( 'woocommerce_checkout_order_created', [ $this, 'update_order_shipping_meta' ] );
 		add_action( 'woocommerce_before_order_itemmeta', [ $this, 'filter_meta_if_flexible_shipping_method' ], 10, 2 );
 		add_action( 'woocommerce_after_order_itemmeta', [ $this, 'remove_filter_meta_if_flexible_shipping_method' ] );
+	}
+
+	/**
+	 * Removes checkout logo metadata before the shipping item is saved.
+	 *
+	 * @param WC_Order_Item_Shipping $item Shipping order item.
+	 *
+	 * @internal
+	 */
+	public function remove_logo_meta_from_shipping_item( WC_Order_Item_Shipping $item ): void {
+		if ( ! in_array( $item->get_method_id(), [ WPDesk_Flexible_Shipping::METHOD_ID, ShippingMethodSingle::SHIPPING_METHOD_ID ], true ) ) {
+			return;
+		}
+
+		$item->delete_meta_data( RateCalculator::METHOD_LOGO_URL );
+		$item->delete_meta_data( RateCalculator::METHOD_LOGO_ALT );
 	}
 
 	/**
@@ -70,6 +87,8 @@ class ItemMeta implements Hookable {
 	public function hide_flexible_shipping_item_meta( $hidden_order_item_meta ) {
 		$hidden_order_item_meta[] = RateCalculator::FS_INTEGRATION;
 		$hidden_order_item_meta[] = RateCalculator::DESCRIPTION_BASE64ENCODED;
+		$hidden_order_item_meta[] = RateCalculator::METHOD_LOGO_URL;
+		$hidden_order_item_meta[] = RateCalculator::METHOD_LOGO_ALT;
 
 		return $hidden_order_item_meta;
 	}
@@ -81,5 +100,4 @@ class ItemMeta implements Hookable {
 		remove_filter( 'woocommerce_hidden_order_itemmeta', [ $this, 'hide_flexible_shipping_item_meta' ] );
 		remove_filter( 'woocommerce_order_item_display_meta_key', [ $this, 'format_display_key' ] );
 	}
-
 }

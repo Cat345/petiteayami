@@ -4,11 +4,11 @@
     "authors": [
         {
             "name": "WP Desk",
-            "role": "Owner"
+            "homepage": "https:\/\/wpdesk.net"
         },
         {
-            "name": "Krzysiek",
-            "email": "krzysiek@wpdesk.pl"
+            "name": "Octolize",
+            "homepage": "https:\/\/octolize.com"
         }
     ],
     "require": {

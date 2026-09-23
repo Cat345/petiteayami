@@ -56,6 +56,7 @@
         "phpunit/phpunit": "^7||^8||^9",
         "psr/log": "^1||^2||^3",
         "wp-phpunit/wp-phpunit": "^6",
+        "wp-cli/wp-cli-bundle": "~2.11.0",
         "wpdesk/wc-currency-switchers-integrations": "^1.1.2",
         "wpdesk/wp-abtesting": "^2.0",
         "wpdesk/wp-codeception": "^2.13.1",
@@ -127,6 +128,6 @@
             "url": "https://gitlab.octolize.dev/api/v4/group/wpdesk/-/packages/composer/"
         }
     },
-    "version": "6.12.1",
+    "version": "6.12.4",
     "type": "wordpress-plugin"
 }

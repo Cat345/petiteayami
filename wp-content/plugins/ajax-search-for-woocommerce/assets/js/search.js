@@ -40,14 +40,8 @@
                         .replace(/>/g, '&gt;')
                         .replace(/"/g, '&quot;')
                         .replace(/'/g, '&apos;')
-                        .replace(/&lt;sup/g, '<sup')
-                        .replace(/&lt;\/sup/g, '</sup')
-                        .replace(/sup&gt;/g, 'sup>')
-                        .replace(/&lt;sub/g, '<sub')
-                        .replace(/&lt;\/sub/g, '</sub')
-                        .replace(/sub&gt;/g, 'sub>')
                         .replace(/&lt;br\s?\/?&gt;/g, '<br/>')
-                        .replace(/&lt;(\/?(strong|b|br|span|i))&gt;/g, '<$1>')
+                        .replace(/&lt;(\/?(strong|b|br|span|i|sup|sub))&gt;/g, '<$1>')
                         .replace(/&lt;(strong|span|i)\s+class\s*=\s*&quot;([^&]+)&quot;&gt;/g, '<$1 class="$2">');
                 },
                 escHtml: function (string) {
@@ -398,7 +392,6 @@
         debounceWaitMs: 400,
         sendGAEvents: true,
         enableGASiteSearchModule: false,
-        showProductVendor: false,
         disableHits: false,
         disableSubmit: false,
         voiceSearchEnabled: false,
@@ -2424,11 +2417,11 @@
 
                         title = title.length > 0 ? ' title="' + utils.escHtml(title) + '"' : '';
 
-                        html += '<a href="' + url + '" class="' + classes + '" data-index="' + i + '">';
+                        html += '<a href="' + utils.escHtml(url) + '" class="' + classes + '" data-index="' + i + '">';
 
                         if (isImg) {
                             const imgSrc = suggestion.image_src ? suggestion.image_src : suggestion.image;
-                            html += '<span class="dgwt-wcas-si"><img src="' + imgSrc + '" /></span>';
+                            html += '<span class="dgwt-wcas-si"><img src="' + utils.escHtml(imgSrc) + '" /></span>';
                             html += '<div class="dgwt-wcas-content-wrapp">';
                         }
 
@@ -2552,7 +2545,7 @@
             dataAttrs += typeof suggestion.post_id != 'undefined' ? 'data-post-id="' + suggestion.post_id + '" ' : '';
             dataAttrs += typeof suggestion.taxonomy != 'undefined' ? 'data-taxonomy="' + suggestion.taxonomy + '" ' : '';
             dataAttrs += typeof suggestion.term_id != 'undefined' ? 'data-term-id="' + suggestion.term_id + '" ' : '';
-            html += '<a href="' + url + '" class="' + className + ' dgwt-wcas-suggestion-product' + sugVarClass + '" data-index="' + index + '" ' + dataAttrs + '>';
+            html += '<a href="' + utils.escHtml(url) + '" class="' + className + ' dgwt-wcas-suggestion-product' + sugVarClass + '" data-index="' + index + '" ' + dataAttrs + '>';
 
             // Image
             if (isImg) {
@@ -2585,19 +2578,6 @@
             // Description
             if (options.showDescription === true && typeof suggestion.desc != 'undefined' && suggestion.desc) {
                 html += '<span class="dgwt-wcas-sd">' + formatResult(suggestion.desc, value, true, options) + '</span>';
-            }
-
-            // Vendor
-            if (options.showProductVendor === true && typeof suggestion.vendor != 'undefined' && suggestion.vendor) {
-                var vendorBody = '<span class="dgwt-wcas-product-vendor"><span class="dgwt-wcas-product-vendor-label">' + dgwt_wcas.labels.vendor_sold_by + ' </span>' + suggestion.vendor + '</span>'
-
-                if (typeof suggestion.vendor_url != 'undefined' && suggestion.vendor_url) {
-                    // Since version v1.12.0 suggestions tag was changed from <div> to <a> and vendor links are no longer supported.
-                    html += '<span class="dgwt-wcas-product-vendor-link" data-url="' + suggestion.vendor_url + '">' + vendorBody + '</span>';
-                } else {
-                    html += vendorBody;
-                }
-
             }
 
             // Custom content after description (3rd party)
@@ -3872,7 +3852,6 @@
                 sendGAEvents: dgwt_wcas.send_ga_events,
                 enableGASiteSearchModule: dgwt_wcas.enable_ga_site_search_module,
                 appendTo: typeof dgwt_wcas.suggestions_wrapper != 'undefined' ? dgwt_wcas.suggestions_wrapper : 'body',
-                showProductVendor: typeof dgwt_wcas.show_product_vendor != 'undefined' && dgwt_wcas.show_product_vendor ? true : false,
                 disableHits: typeof dgwt_wcas.disable_hits != 'undefined' && dgwt_wcas.disable_hits ? true : false,
                 disableSubmit: typeof dgwt_wcas.disable_submit != 'undefined' && dgwt_wcas.disable_submit ? true : false,
                 voiceSearchEnabled: typeof dgwt_wcas.voice_search_enabled != 'undefined' && dgwt_wcas.voice_search_enabled ? true : false,

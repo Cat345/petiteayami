@@ -10,7 +10,6 @@ if ( ! defined('ABSPATH') ) {
 class Admin
 {
     public $tabRenderer;
-    public $parentSlug;
 
     public function __construct()
     {
@@ -27,7 +26,6 @@ class Admin
 
         add_filter( 'wpc_general_filters_settings', [$this, 'generalFilterSettings'] );
 
-        add_action( 'admin_head', array( $this, 'menuHighlight' ) );
         add_action('admin_head', array($this, 'addAdminStyles'));
 
     }
@@ -57,6 +55,11 @@ class Admin
         if (!defined('FLRT_FILTERS_PRO')) {
             $settings = flrt_vailable_in_pro_attr_link();
 
+            // Two PRO-only destinations in the menu, each with the PRO badge. They
+            // were dropped in 1.9.6 to keep the menu short and are back since 1.9.7:
+            // the owner saw fewer free → PRO visits without them — two PRO-badged
+            // entries in the menu and the toolbar are a visible reminder of what
+            // PRO adds.
             add_submenu_page($page, esc_html__('SEO Rules', 'filter-everything'), esc_html__('SEO Rules', 'filter-everything'), 'manage_options', $settings);
             add_submenu_page($page, esc_html__('Import/Export', 'filter-everything'), esc_html__('Import/Export', 'filter-everything'), 'manage_options', $settings);
 
@@ -73,6 +76,7 @@ class Admin
 
         add_submenu_page( $page, esc_html__('Settings', 'filter-everything'), esc_html__('Settings', 'filter-everything'), 'manage_options', 'filters-settings', array($this, 'filterSettingsPage'));
 
+        // «What's new» is a Settings tab since 1.9.7 (WhatsNew), not a menu entry
         do_action('wpc_after_add_submenu_pages');
         
     }
@@ -92,6 +96,9 @@ class Admin
         $this->tabRenderer->register(new ExperimentalTab());
 
         if( ! defined('FLRT_FILTERS_PRO') ) {
+            // Free: What's new goes BEFORE «PRO benefits», so the tab that sells
+            // stays last and most visible (owner, 2026-09-22)
+            do_action( 'wpc_settings_tabs_registered', $this->tabRenderer );
             $this->tabRenderer->register( new AboutProTab() );
 
         }else{
@@ -110,24 +117,12 @@ class Admin
             }
         }
 
+        // PRO: What's new is the last tab, after License
+        if ( defined('FLRT_FILTERS_PRO') ) {
+            do_action( 'wpc_settings_tabs_registered', $this->tabRenderer );
+        }
+
         $this->tabRenderer->init();
-    }
-
-    public function menuHighlight()
-    {
-        if ( ! is_admin() ) {
-            return;
-        }
-
-        $is_filters_settings = isset($_GET['page']) && $_GET['page'] === 'filters-settings';
-        $is_import_export_tab = isset($_GET['tab']) && $_GET['tab'] === 'import_export';
-
-        if ( $is_filters_settings && $is_import_export_tab ) {
-            global $parent_file, $submenu_file;
-
-            $parent_file = $this->parentSlug ? $this->parentSlug : ('edit.php?post_type=' . FLRT_FILTERS_SET_POST_TYPE);
-            $submenu_file = $parent_file . '&page=filters-settings&tab=import_export';
-        }
     }
 
     public function addAdminStyles()
