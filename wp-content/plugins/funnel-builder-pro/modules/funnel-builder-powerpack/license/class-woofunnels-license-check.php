@@ -587,6 +587,71 @@ if ( ! class_exists( 'WooFunnels_License_check' ) ) {
 			return [];
 		}
 
+		/**
+		 * Synchronous, cache-bypassing update check used by the "Check for update"
+		 * action link. Unlike check_update_info() -- which collapses "no response",
+		 * "no error but no newer version" and "up to date" into the same empty
+		 * array -- this reports a status the caller can show to the user and act
+		 * on immediately (no waiting on the pre_set_site_transient_update_plugins
+		 * cron path or the 3-hour option cache).
+		 *
+		 * @return array{status: string, version_info: object|null} status is one
+		 *         of 'no_response', 'up_to_date', 'update_available'.
+		 */
+		public function force_check_update() {
+			$output = WooFunnels_License_Controller::get_plugin_update_check( $this->get_hash() );
+
+			if ( false === $output || ! is_array( $output ) || empty( $output['new_version'] ) || isset( $output['errors'] ) ) {
+				return array(
+					'status'       => 'no_response',
+					'version_info' => null,
+				);
+			}
+
+			if ( version_compare( $this->version, $output['new_version'], '>=' ) ) {
+				return array(
+					'status'       => 'up_to_date',
+					'version_info' => null,
+				);
+			}
+
+			$parse_data = $this->get_data();
+			if ( ! empty( $parse_data['domain'] ) ) {
+				global $wpdb;
+				$db_domain = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s", 'siteurl' ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+				if ( ! empty( $db_domain ) && $db_domain !== $parse_data['domain'] ) {
+					$parse_data['db_domain'] = rtrim( $db_domain, '/' );
+				}
+			}
+			$parse_data['request'] = 'plugininformation';
+			$end_point_url         = add_query_arg( $parse_data, $this->update_end_point );
+
+			$this->request_body = $this->http()->get( $end_point_url, $this->request_args );
+			$version_info        = $this->build_output( true );
+
+			if ( false === $version_info ) {
+				return array(
+					'status'       => 'no_response',
+					'version_info' => null,
+				);
+			}
+
+			$version_info->new_version    = $output['new_version'];
+			$version_info->package        = $output['package'];
+			$version_info->download_link  = $output['package'];
+			$version_info->access_expires = isset( $output['access_expires'] ) ? $output['access_expires'] : '';
+			$version_info->slug           = str_replace( '.php', '', basename( $this->slug ) );
+			$version_info->plugin         = $this->name;
+
+			$this->set_version_info_cache( $version_info );
+
+			return array(
+				'status'       => 'update_available',
+				'version_info' => $version_info,
+			);
+		}
+
 		public function set_version_info_cache( $value = '', $cache_key = '' ) {
 			if ( empty( $cache_key ) ) {
 				$cache_key = "_bwf_version_cache_" . $this->cache_key;

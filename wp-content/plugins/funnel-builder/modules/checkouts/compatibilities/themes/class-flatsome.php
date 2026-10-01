@@ -56,18 +56,18 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Flatsome' ) ) {
 			}
 
 			echo '<style>';
-			echo $bodyClass . '.wfacp_form #payment select {-webkit-appearance: menulist;-moz-appearance: menulist;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $bodyClass . ' ul.woocommerce-error li .container {padding: 0;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $bodyClass . ' #payment div.payment_box p {position: relative;font-weight: normal;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $bodyClass . ' .woocommerce-error .medium-text-center {text-align: left !important;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $bodyClass . ' .wfacp-coupon-page .message-container.container.medium-text-center { text-align: left !important;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $bodyClass . ' .wfacp_notice_dismise_link.demo_store a:before {display: none;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $bodyClass . ' .wfacp_main_form .woocommerce-error {color: #ff0000 !important;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $bodyClass . ' .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li input[type=radio] {  margin: 0 10px 0 0 !important;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $bodyClass . ' .wfacp-row.wfacp_coupon_field_box.wfacp_coupon_collapsed{ margin-top: 10px;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $bodyClass . ' .wfacp_main_form .wfacp-coupon-section .wfacp-coupon-page .wfacp_coupon_field_box { margin-top: 10px;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $bodyClass . ' button.button.button-primary:after{   display: none;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $bodyClass . ' button.button.button-primary:before{   display: none;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo esc_attr( $bodyClass ) . '.wfacp_form #payment select {-webkit-appearance: menulist;-moz-appearance: menulist;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo esc_attr( $bodyClass ) . ' ul.woocommerce-error li .container {padding: 0;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo esc_attr( $bodyClass ) . ' #payment div.payment_box p {position: relative;font-weight: normal;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo esc_attr( $bodyClass ) . ' .woocommerce-error .medium-text-center {text-align: left !important;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo esc_attr( $bodyClass ) . ' .wfacp-coupon-page .message-container.container.medium-text-center { text-align: left !important;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo esc_attr( $bodyClass ) . ' .wfacp_notice_dismise_link.demo_store a:before {display: none;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo esc_attr( $bodyClass ) . ' .wfacp_main_form .woocommerce-error {color: #ff0000 !important;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo esc_attr( $bodyClass ) . ' .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li input[type=radio] {  margin: 0 10px 0 0 !important;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo esc_attr( $bodyClass ) . ' .wfacp-row.wfacp_coupon_field_box.wfacp_coupon_collapsed{ margin-top: 10px;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo esc_attr( $bodyClass ) . ' .wfacp_main_form .wfacp-coupon-section .wfacp-coupon-page .wfacp_coupon_field_box { margin-top: 10px;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo esc_attr( $bodyClass ) . ' button.button.button-primary:after{   display: none;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo esc_attr( $bodyClass ) . ' button.button.button-primary:before{   display: none;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '</style>';
 
 			if ( ! function_exists( 'flatsome_scripts' ) ) {

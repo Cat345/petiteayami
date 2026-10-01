@@ -92,8 +92,8 @@ if ( ! class_exists( 'WFACP_WOOCOMMERCE_Gift_Card_Compatiblity' ) ) {
 
 
 			echo "<style>";
-			echo $bodyClass . " .wfacp_order_summary_container label[for='use_gift_card_balance'] {text-align: right;display:block;}";
-			echo $bodyClass . " .wfacp_order_summary_container label[for='use_gift_card_balance'] input[type='checkbox']{position: relative;left: auto;right: auto;top: auto;bottom: auto;margin: 0 5px 0 0;}";
+			echo esc_attr( $bodyClass ) . " .wfacp_order_summary_container label[for='use_gift_card_balance'] {text-align: right;display:block;}";
+			echo esc_attr( $bodyClass ) . " .wfacp_order_summary_container label[for='use_gift_card_balance'] input[type='checkbox']{position: relative;left: auto;right: auto;top: auto;bottom: auto;margin: 0 5px 0 0;}";
 			echo "</style>";
 			?>
             <script>

@@ -564,10 +564,33 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
     }
 
     /**
+     * Check if the coupon is outside its scheduled window.
+     *
+     * The auto apply routine fires "acfw_auto_apply_coupon_invalid" for every failed coupon validation,
+     * without the reason of the failure. Check the schedule here so the notice stays hidden
+     * while the coupon is not active yet, or after it expired.
+     *
+     * @since 4.7.6
+     * @access private
+     *
+     * @param Advanced_Coupon $coupon Coupon object.
+     * @return bool True if the coupon is outside its scheduled window, false otherwise.
+     */
+    private function _is_coupon_outside_schedule( $coupon ) {
+        // the schedule is only enforced when the scheduler module is active.
+        if ( ! $coupon instanceof \WC_Coupon || ! $this->_helper_functions->is_module( Plugin_Constants::SCHEDULER_MODULE ) ) {
+            return false;
+        }
+
+        return ! empty( \ACFWF()->Scheduler->check_coupon_schedule_error( $coupon ) );
+    }
+
+    /**
      * Display cart condition notice.
      *
      * @since 1.0
      * @since 4.3.4 Display notice via wc_add_notice. Don't run when loading checkout page (non-ajax). Display notice on checkout via fragments ajax. Make notice type value filterable.
+     * @since 4.7.6 Skip the notice when the coupon is outside its scheduled window.
      * @access public
      *
      * @param Advanced_Coupon $coupon Coupon object.
@@ -580,6 +603,8 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
             || ( ! is_cart() && ! is_checkout() && ! $this->_helper_functions->is_current_page_using_cart_checkout_block() )
             // only display notice on checkout when it's loaded via AJAX.
             || ( ( is_checkout() && ! isset( $_GET['wc-ajax'] ) ) && ! $this->_helper_functions->is_current_page_using_cart_checkout_block() ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            // don't display notice when the coupon is outside its scheduled window. Checked last because it re-reads the coupon.
+            || $this->_is_coupon_outside_schedule( $coupon )
         ) {
             return;
         }

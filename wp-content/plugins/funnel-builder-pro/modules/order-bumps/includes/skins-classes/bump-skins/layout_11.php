@@ -29,6 +29,14 @@ if ( ! class_exists( 'WFOB_Layout_11' ) ) {
 			return WFOB_PLUGIN_URL . '/assets/img/skin-11.jpg';
 		}
 
+		public static function get_skin_label() {
+			return __( 'Call to Action Badge', 'woofunnels-order-bump' );
+		}
+
+		public static function get_skin_description() {
+			return __( 'Card with a badge pill on its corner: tinted checkbox-and-price panel, description, "Add to My Order" button.', 'woofunnels-order-bump' );
+		}
+
 		protected function get_product_content_schema( $product, $product_key ) {
 
 			$schema = array();
@@ -181,6 +189,7 @@ if ( ! class_exists( 'WFOB_Layout_11' ) ) {
 				'add_button_hover_color'                 => '',
 				'add_button_bg_color'                    => '#09B29C',
 				'add_button_hover_bg_color'              => '',
+				'icon_on_button'                         => 'none',
 
 				'added_button_color'                     => '#ffffff',
 				'added_button_bg_color'                  => '#353030',

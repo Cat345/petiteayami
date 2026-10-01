@@ -106,7 +106,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['button_text'] = array(
 				'group'       => 'contentForm',
-				'label'       => esc_html__( 'Title' ),
+				'label'       => esc_html__( 'Title', 'funnel-builder' ),
 				'type'        => 'text',
 				'default'     => esc_html__( 'Send Me My Free Guide' , 'funnel-builder'),
 				'placeholder' => esc_html__( 'Enter the Button Text' , 'funnel-builder'),
@@ -128,13 +128,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['separatorSpacing'] = array(
 				'group' => 'styleForm',
-				'label' => esc_html__( 'Spacing' ),
+				'label' => esc_html__( 'Spacing', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
 			$this->controls['column_gap'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Columns' ),
+				'label'   => esc_html__( 'Columns', 'funnel-builder' ),
 				'type'    => 'slider',
 				'css'     => array(
 					array(
@@ -170,7 +170,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['row_gap'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Rows' ),
+				'label'   => esc_html__( 'Rows', 'funnel-builder' ),
 				'type'    => 'slider',
 				'css'     => array(
 					array(
@@ -190,7 +190,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['label_spacing'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Label' ),
+				'label'   => esc_html__( 'Label', 'funnel-builder' ),
 				'type'    => 'slider',
 				'css'     => array(
 					array(
@@ -210,13 +210,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['separatorLabel'] = array(
 				'group' => 'styleForm',
-				'label' => esc_html__( 'Label' ),
+				'label' => esc_html__( 'Label', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
 			$this->controls['label_color'] = array(
 				'group'  => 'styleForm',
-				'label'  => esc_html__( 'Text' ),
+				'label'  => esc_html__( 'Text', 'funnel-builder' ),
 				'type'   => 'color',
 				'inline' => true,
 				'css'    => array(
@@ -241,7 +241,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['label_typography'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Typography' ),
+				'label'   => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'exclude' => array( 'color' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'css'     => array(
@@ -261,7 +261,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['field_text_color'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Text' ),
+				'label'   => esc_html__( 'Text', 'funnel-builder' ),
 				'type'    => 'color',
 				'inline'  => true,
 				'css'     => array(
@@ -277,7 +277,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['field_typography'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Typography' ),
+				'label'   => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'exclude' => array( 'color' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'default' => array(
@@ -295,7 +295,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['field_background_color'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Background' ),
+				'label'   => esc_html__( 'Background', 'funnel-builder' ),
 				'type'    => 'color',
 				'default' => array(
 					'hex' => '#ffffff',
@@ -334,7 +334,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['field_border'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Border' ),
+				'label'   => esc_html__( 'Border', 'funnel-builder' ),
 				'type'    => 'border',
 				'css'     => array(
 					array(
@@ -366,7 +366,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['button_text_typo'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Heading' ),
+				'label'   => esc_html__( 'Heading', 'funnel-builder' ),
 				'type'    => 'typography',
 				'css'     => array(
 					array(
@@ -402,7 +402,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['button_bg_color'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Background' ),
+				'label'   => esc_html__( 'Background', 'funnel-builder' ),
 				'type'    => 'color',
 				'default' => array(
 					'hex' => '#FBA506',
@@ -417,7 +417,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['bwf_button_border'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Border' ),
+				'label'   => esc_html__( 'Border', 'funnel-builder' ),
 				'type'    => 'border',
 				'css'     => array(
 					array(
@@ -476,7 +476,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['button_alignment'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Alignment' ),
+				'label'   => esc_html__( 'Alignment', 'funnel-builder' ),
 				'type'    => 'text-align',
 				'exclude' => array( 'justify' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'css'     => array(
@@ -502,7 +502,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['button_text_padding'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Padding' ),
+				'label'   => esc_html__( 'Padding', 'funnel-builder' ),
 				'type'    => 'spacing',
 				'default' => array(
 					'top'    => 15,
@@ -520,7 +520,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 
 			$this->controls['button_text_margin'] = array(
 				'group'   => 'styleForm',
-				'label'   => esc_html__( 'Margin' ),
+				'label'   => esc_html__( 'Margin', 'funnel-builder' ),
 				'type'    => 'spacing',
 				'default' => array(
 					'top'    => 15,
@@ -546,10 +546,10 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Form' ) ) {
 		 */
 		public static function get_input_fields_sizes() {
 			return array(
-				'6px'  => __( 'Small' ),
-				'9px'  => __( 'Medium' ),
-				'12px' => __( 'Large' ),
-				'15px' => __( 'Extra Large' ),
+				'6px'  => __( 'Small', 'funnel-builder' ),
+				'9px'  => __( 'Medium', 'funnel-builder' ),
+				'12px' => __( 'Large', 'funnel-builder' ),
+				'15px' => __( 'Extra Large', 'funnel-builder' ),
 			);
 		}
 

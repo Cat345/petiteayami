@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit0a5accc3a1824ef9938d59b6f22070fb
+class ComposerStaticInit4d2563b3dd01b9aff39ff814a2dbaae0
 {
     public static $files = array (
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
@@ -314,6 +314,7 @@ class ComposerStaticInit0a5accc3a1824ef9938d59b6f22070fb
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\CampaignType' => __DIR__ . '/../..' . '/src/API/Google/CampaignType.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\Connection' => __DIR__ . '/../..' . '/src/API/Google/Connection.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\ExceptionTrait' => __DIR__ . '/../..' . '/src/API/Google/ExceptionTrait.php',
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\JetpackAuthCircuitBreaker' => __DIR__ . '/../..' . '/src/API/Google/JetpackAuthCircuitBreaker.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\LocationIDTrait' => __DIR__ . '/../..' . '/src/API/Google/LocationIDTrait.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\Mapi\\MapiPaths' => __DIR__ . '/../..' . '/src/API/Google/Mapi/MapiPaths.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\Mapi\\MerchantApiClient' => __DIR__ . '/../..' . '/src/API/Google/Mapi/MerchantApiClient.php',
@@ -431,6 +432,7 @@ class ComposerStaticInit0a5accc3a1824ef9938d59b6f22070fb
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Site\\Controllers\\MerchantCenter\\TargetAudienceController' => __DIR__ . '/../..' . '/src/API/Site/Controllers/MerchantCenter/TargetAudienceController.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Site\\Controllers\\NotificationController' => __DIR__ . '/../..' . '/src/API/Site/Controllers/NotificationController.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Site\\Controllers\\OnboardingController' => __DIR__ . '/../..' . '/src/API/Site/Controllers/OnboardingController.php',
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Site\\Controllers\\ReferrerParamsTrait' => __DIR__ . '/../..' . '/src/API/Site/Controllers/ReferrerParamsTrait.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Site\\Controllers\\ResponseFromExceptionTrait' => __DIR__ . '/../..' . '/src/API/Site/Controllers/ResponseFromExceptionTrait.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Site\\Controllers\\RestAPI\\AuthController' => __DIR__ . '/../..' . '/src/API/Site/Controllers/RestAPI/AuthController.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Site\\Controllers\\ShippingRateSchemaTrait' => __DIR__ . '/../..' . '/src/API/Site/Controllers/ShippingRateSchemaTrait.php',
@@ -529,6 +531,7 @@ class ComposerStaticInit0a5accc3a1824ef9938d59b6f22070fb
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Migration\\Migration20231109T1653383133' => __DIR__ . '/../..' . '/src/DB/Migration/Migration20231109T1653383133.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Migration\\Migration20240813T1653383133' => __DIR__ . '/../..' . '/src/DB/Migration/Migration20240813T1653383133.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Migration\\Migration20250910T1653383133' => __DIR__ . '/../..' . '/src/DB/Migration/Migration20250910T1653383133.php',
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Migration\\Migration20260813T1653383133' => __DIR__ . '/../..' . '/src/DB/Migration/Migration20260813T1653383133.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Migration\\MigrationInterface' => __DIR__ . '/../..' . '/src/DB/Migration/MigrationInterface.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Migration\\MigrationVersion141' => __DIR__ . '/../..' . '/src/DB/Migration/MigrationVersion141.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Migration\\Migrator' => __DIR__ . '/../..' . '/src/DB/Migration/Migrator.php',
@@ -1501,6 +1504,7 @@ class ComposerStaticInit0a5accc3a1824ef9938d59b6f22070fb
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\Handler\\CurlVersion' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Handler/CurlVersion.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\Handler\\EasyHandle' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Handler/EasyHandle.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\Handler\\HeaderProcessor' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Handler/HeaderProcessor.php',
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\Handler\\HostValidator' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Handler/HostValidator.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\Handler\\MockHandler' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Handler/MockHandler.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\Handler\\Proxy' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Handler/Proxy.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\Handler\\ProxyEnvironment' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Handler/ProxyEnvironment.php',
@@ -4716,9 +4720,9 @@ class ComposerStaticInit0a5accc3a1824ef9938d59b6f22070fb
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit0a5accc3a1824ef9938d59b6f22070fb::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit0a5accc3a1824ef9938d59b6f22070fb::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit0a5accc3a1824ef9938d59b6f22070fb::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit4d2563b3dd01b9aff39ff814a2dbaae0::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit4d2563b3dd01b9aff39ff814a2dbaae0::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit4d2563b3dd01b9aff39ff814a2dbaae0::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -25,13 +25,13 @@ if ( 'yes' == $settings['enable_quantity_box'] ) {
 $show_subscription_string_old_version = apply_filters( 'wfacp_show_subscription_string_old_version', false );
 ?>
 
-<div class="wfacp_elementor_mini_cart_widget" id="wfacp_mini_cart_items_<?php echo $widget_id;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
+<div class="wfacp_elementor_mini_cart_widget" id="wfacp_mini_cart_items_<?php echo esc_attr( $widget_id ); ?>">
 	<?php
 	do_action( 'wfacp_before_mini_cart_html' );
 	do_action( 'woocommerce_review_order_before_cart_contents' );
 	do_action( 'wfacp_after_mini_cart_html' );
 	?>
-	<table class="shop_table  wfacp_order_sum  <?php echo $instance->get_template_slug();  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> wfacp_mini_cart_items">
+	<table class="shop_table  wfacp_order_sum  <?php echo esc_attr( $instance->get_template_slug() ); ?> wfacp_mini_cart_items">
 		<tbody>
 		<?php
 		$wfacp_cart = WC()->cart->get_cart();
@@ -76,7 +76,7 @@ $show_subscription_string_old_version = apply_filters( 'wfacp_show_subscription_
 						$enabled_delete_class = 'wfacp_delete_active';
 					}
 					?>
-					<tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ) . ' ' . $enabled_delete_class; ?>" cart_key="<?php echo $cart_item_key;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
+					<tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ) . ' ' . esc_attr( $enabled_delete_class ); ?>" cart_key="<?php echo esc_attr( $cart_item_key ); ?>">
 						<td class="product-name-area">
 							<?php
 							$hideImageCls = '';
@@ -93,7 +93,7 @@ $show_subscription_string_old_version = apply_filters( 'wfacp_show_subscription_
 									</div>
 								</div>
 							<?php } ?>
-							<div class="product-name  <?php echo $hideImageCls;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> ">
+							<div class="product-name  <?php echo esc_attr( $hideImageCls ); ?> ">
 								<?php
 
 								$html = '';
@@ -109,7 +109,7 @@ $show_subscription_string_old_version = apply_filters( 'wfacp_show_subscription_
 
 								echo "<div class='wfacp_cart_title_sec'>";
 								echo "<span class='wfacp_mini_cart_item_title'>";
-								echo apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								echo wp_kses_post( apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key ) );
 
 								echo apply_filters( 'woocommerce_checkout_cart_item_quantity', '<strong class="product-quantity">' . sprintf( '&times; %s', $cart_item['quantity'] ) . '</strong>', $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
@@ -128,7 +128,7 @@ $show_subscription_string_old_version = apply_filters( 'wfacp_show_subscription_
 								echo '</div> ';
 
 								if ( false == $show_subscription_string_old_version && in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() ) && ( class_exists( 'WC_Subscriptions' ) || class_exists( 'WC_Subscriptions_Core_Plugin' ) ) && version_compare( WFACP_Common_Helper::get_subscription_version(), '9.0.0', '<' ) ) {
-									printf( "<div class='wfacp_product_subs_details'>%s</div>", WFACP_Common::subscription_product_string( $_product, $product_data, $cart_item, $cart_item_key ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+									printf( "<div class='wfacp_product_subs_details'>%s</div>", wp_kses_post( WFACP_Common::subscription_product_string( $_product, $product_data, $cart_item, $cart_item_key ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								}
 								if ( $show_quantity_image ) {
 									$is_sold_individually = false;
@@ -169,9 +169,9 @@ $show_subscription_string_old_version = apply_filters( 'wfacp_show_subscription_
 											?>
 											<div class="product-quantity">
 												<div class="wfacp_quantity_selector" style="<?php echo ( true == $hide_quantity_switcher ) ? 'display:none;pointer-events:none;' : ''; ?>">
-													<div class="value-button wfacp_decrease_item" onclick="decreaseItmQty(this,'<?php echo $aero_item_key;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>')" value="Decrease Value">-</div>
-													<input type="number" step="<?php echo esc_attr( $minMax['step'] ); ?>" min="<?php echo esc_attr( $minMax['min'] ); ?>" max="<?php echo esc_attr( $minMax['max'] ); ?>" value="<?php echo $item_quantity; ?>" data-value="<?php echo $item_quantity; ?>" class="wfacp_mini_cart_update_qty wfacp_product_quantity_number_field" aria-label="<?php esc_attr_e( 'Quantity', 'funnel-builder' ); ?>" cart_key="<?php echo $cart_item_key;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
-													<div class="value-button wfacp_increase_item" onclick="increaseItmQty(this,'<?php echo $aero_item_key;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>')" value="Increase Value">+</div>
+													<div class="value-button wfacp_decrease_item" onclick="decreaseItmQty(this,'<?php echo esc_attr( $aero_item_key ); ?>')" value="Decrease Value">-</div>
+													<input type="number" step="<?php echo esc_attr( $minMax['step'] ); ?>" min="<?php echo esc_attr( $minMax['min'] ); ?>" max="<?php echo esc_attr( $minMax['max'] ); ?>" value="<?php echo $item_quantity; ?>" data-value="<?php echo esc_attr( $item_quantity ); ?>" class="wfacp_mini_cart_update_qty wfacp_product_quantity_number_field" aria-label="<?php esc_attr_e( 'Quantity', 'funnel-builder' ); ?>" cart_key="<?php echo esc_attr( $cart_item_key ); ?>">
+													<div class="value-button wfacp_increase_item" onclick="increaseItmQty(this,'<?php echo esc_attr( $aero_item_key ); ?>')" value="Increase Value">+</div>
 												</div>
 											</div>
 											<?php
@@ -212,7 +212,7 @@ $show_subscription_string_old_version = apply_filters( 'wfacp_show_subscription_
 										echo $price_show; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 									}
 								} else {
-									echo WFACP_Common::display_subscription_price( $_product, $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+									echo wp_kses_post( WFACP_Common::display_subscription_price( $_product, $cart_item, $cart_item_key ) );
 								}
 							} elseif ( apply_filters( 'wfacp_woocommerce_cart_item_subtotal_except_subscription', true, $_product, $cart_item, $cart_item_key ) ) {
 

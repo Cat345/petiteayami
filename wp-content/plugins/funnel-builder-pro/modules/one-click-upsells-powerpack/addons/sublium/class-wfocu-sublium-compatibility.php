@@ -265,13 +265,13 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 				return $price_data;
 			}
 			$plan_id = ! empty( $product_data['plan_id'] ) ? absint( $product_data['plan_id'] ) : 0;
-			if ( $plan_id > 0 ) {
-				$plan = \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_id, $pro );
-			} else {
-				// No pre-selected plan: show first plan price (Sublium auto-assigns the first plan at checkout).
-				$plans = \Sublium_WCS\Includes\Main\Product::get_instance()->get_cached_plans_for_product( $pro );
-				$plan  = ! empty( $plans ) ? reset( $plans ) : null;
+			if ( $plan_id <= 0 ) {
+				// No plan selected — Sublium's switcher plan selector defaults to "One Time
+				// payment" (no plan), not to a default paid plan. Showing a discounted price
+				// here would disagree with what's actually selected/charged.
+				return $price_data;
 			}
+			$plan = \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_id, $pro );
 			if ( is_null( $plan ) ) {
 				return $price_data;
 			}
@@ -394,13 +394,31 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 				return $price_data;
 			}
 			$plan_id = ! empty( $product_data['plan_id'] ) ? absint( $product_data['plan_id'] ) : 0;
-			if ( $plan_id > 0 ) {
-				$plan = \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_id, $pro );
-			} else {
-				// No pre-selected plan: show first plan price (Sublium auto-assigns the first plan at checkout).
-				$plans = \Sublium_WCS\Includes\Main\Product::get_instance()->get_cached_plans_for_product( $pro );
-				$plan  = ! empty( $plans ) ? reset( $plans ) : null;
+			if ( $plan_id <= 0 ) {
+				// No plan selected — Sublium's bump plan selector defaults to "One Time payment"
+				// (no plan), not to a default paid plan, so no Sublium price adjustment applies.
+				// Still apply the bump's OWN discount (independent of any plan) against the true
+				// regular price, since callers (e.g. get_bump_product_price_data()) treat an
+				// empty return here as "no price data at all" and fall back to the fully
+				// undiscounted $pro->get_price(), losing the bump's own discount entirely.
+				$true_regular_price = $this->get_true_regular_price( $pro );
+				$price              = $true_regular_price;
+				if ( ! empty( $product_data['discount_type'] ) && ! empty( $product_data['discount_amount'] ) ) {
+					$discounted = WFOB_Common::calculate_discount(
+						array(
+							'wfob_product_rp'      => $true_regular_price,
+							'wfob_product_p'       => $true_regular_price,
+							'wfob_discount_amount' => floatval( $product_data['discount_amount'] ),
+							'wfob_discount_type'   => $product_data['discount_type'],
+						)
+					);
+					$price = is_null( $discounted ) ? $true_regular_price : $discounted;
+				}
+				$price_data['regular_org'] = $price;
+				$price_data['price']       = $price;
+				return $price_data;
 			}
+			$plan = \Sublium_WCS\Includes\Main\Plans::get_plan_by_id( $plan_id, $pro );
 			if ( is_null( $plan ) ) {
 				return $price_data;
 			}
@@ -434,7 +452,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 					// woocommerce_product_get_price to return the plan price, so $pro->get_price() already
 					// reflects the plan discount. Passing that into get_recurring_cart_price() would apply
 					// the plan discount a second time.
-					$base_price = \Sublium_WCS\Includes\Abstracts\Plan::get_base_price( $pro );
+					$base_price = $this->get_base_price( $pro );
 					$plan_price = $plan->get_recurring_cart_price( $base_price, $pro );
 				}
 
@@ -614,7 +632,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 			// "on Sale Price" discounts the plan's own recurring price, unlike "on Regular Price" above —
 			// this legitimately applies to every billing cycle, so just correct the amount inside
 			// Sublium's own native wording rather than replacing the whole string.
-			$base_price    = \Sublium_WCS\Includes\Abstracts\Plan::get_base_price( $product );
+			$base_price    = $this->get_base_price( $product );
 			$unit_price    = $plan->get_recurring_cart_price( $base_price, $product );
 			$final_price   = $unit_price;
 			$needs_replace = ( $qty > 1 );
@@ -1151,7 +1169,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 					$plan_id_for_item = absint( $cart_item['sublium_wcs_plan'] );
 					if ( $plan_id_for_item === absint( $plan->get_id() ) ) {
 						$product           = $cart_item['data'];
-						$base_price        = \Sublium_WCS\Includes\Abstracts\Plan::get_base_price( $product );
+						$base_price        = $this->get_base_price( $product );
 						$native_unit_price = $plan->get_recurring_cart_price( $base_price, $product );
 						if ( $native_unit_price > 0 ) {
 							// get_price() is per-unit and already correctly discounted — this filter
@@ -1332,6 +1350,13 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 
 		public function modify_variations_attributes( $attributes, $variation, $product, $discount_data ) {
 
+			// This method deals purely with Sublium plan data. Gate it like the sibling methods so it
+			// no-ops (instead of fataling on the direct Main\Product call below) when Sublium's classes
+			// are not loadable, e.g. during the Bricks "?bricks=run" builder render.
+			if ( ! $this->is_enable() ) {
+				return $attributes;
+			}
+
 			if ( isset( $variation['sublium_plans'] ) ) {
 
 				$sublium_plans     = array();
@@ -1495,7 +1520,17 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 		 * @return bool
 		 */
 		public function is_enable() {
-			return class_exists( '\Sublium_WCS\Plugin', false );
+			/*
+			 * class_exists( ..., false ) only confirms the Plugin class file is loaded; it does NOT
+			 * guarantee Sublium's autoloader is registered for its other classes. In some early render
+			 * contexts - notably the Bricks builder "?bricks=run" request - Plugin is loaded but the
+			 * autoloader is not, so the first reference to a Sublium class such as Main\Product fatals
+			 * with "class not found" and aborts the whole offer render (e.g. the Accept Button element
+			 * never outputs in the builder while it renders fine on the frontend). Additionally require
+			 * the class actually used across this compatibility layer to be loadable (with autoload) so
+			 * every is_enable()-gated method degrades gracefully instead of crashing the render.
+			 */
+			return class_exists( '\Sublium_WCS\Plugin', false ) && class_exists( '\Sublium_WCS\Includes\Main\Product' );
 		}
 
 		/**
@@ -1529,8 +1564,38 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 		 * @return array Array of plan objects
 		 */
 		private function get_cached_plans( $product_id ) {
+			// Guard against contexts where Sublium's autoloader is not registered (e.g. the Bricks
+			// "?bricks=run" builder render) and Main\Product cannot be loaded. Not every caller passes
+			// through is_enable(), so without this guard the unguarded static call below fatals and
+			// aborts the whole offer render. Returning no plans is already a handled case for all callers.
+			if ( ! class_exists( '\Sublium_WCS\Includes\Main\Product' ) ) {
+				return array();
+			}
 
 			return Product::get_instance()->get_cached_plans_for_product( wc_get_product( $product_id ) );
+		}
+
+		/**
+		 * Get the raw, unfiltered product price to feed into a plan's recurring price calculation,
+		 * avoiding double-discounting caused by Sublium's own woocommerce_product_get_price hook.
+		 *
+		 * Delegates to Sublium's own Plan::get_base_price() (sale-price/date aware) when the
+		 * installed Sublium Subscriptions version provides it (added in Sublium v1.0.2.fix.335);
+		 * older Sublium versions don't have this method, so fall back to reading the price with
+		 * WC's 'edit' context, which bypasses view-context filters (including Sublium's).
+		 *
+		 * @param \WC_Product $product Product to read the raw price from.
+		 *
+		 * @return float
+		 */
+		private function get_base_price( $product ) {
+			if ( ! $product instanceof \WC_Product ) {
+				return 0.0;
+			}
+			if ( method_exists( '\Sublium_WCS\Includes\Abstracts\Plan', 'get_base_price' ) ) {
+				return (float) \Sublium_WCS\Includes\Abstracts\Plan::get_base_price( $product );
+			}
+			return (float) $product->get_price( 'edit' );
 		}
 
 
@@ -1549,7 +1614,7 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 		 */
 		private function get_sublium_billing_summary_html( $plan, $product, $product_key, $qty = 1, $discount_type = '', $discount_amount = 0 ) {
 			$html            = '';
-			$base_price      = \Sublium_WCS\Includes\Abstracts\Plan::get_base_price( $product );
+			$base_price      = $this->get_base_price( $product );
 			$signup_fee      = $plan->get_signup_fee( $product );
 			$is_regular_type = in_array( $discount_type, array( 'percentage_on_reg', 'fixed_on_reg' ), true );
 			$basis           = $is_regular_type ? $this->get_true_regular_price( $product ) : $plan->get_recurring_cart_price( $base_price, $product );
@@ -1825,11 +1890,14 @@ $subscrition_label=__( 'Recurring Total: ', 'woocommerce-subscription' );
 /* Hide Sublium\'s separate price div — price is shown in the WFOCU widget directly. */
 jQuery("<style>.sublium-plan-price-wrapper{display:none!important}</style>").appendTo("head");
 
-/* When "One Time Purchase" is selected, hide the subscription plan group rows (each has
-   data-type and no template-sublium-one-time class) so only the one-time option remains visible.
-   Toggled via a class on the stable .wfocu-subscription-options wrapper (not re-rendered by
-   Sublium\'s own JS), so it survives Sublium\'s render() re-creating everything inside it. */
-jQuery("<style>.wfocu-subscription-options.wfocu-one-time-active .sublium-front-purchase-group:not(.template-sublium-one-time){display:none!important}</style>").appendTo("head");
+/* NOTE: A CSS rule was previously injected here that hid every subscription
+   .sublium-front-purchase-group whenever the wrapper carried .wfocu-one-time-active. Because
+   Sublium default-selects the one-time option on page load, that class was applied immediately,
+   so ALL subscription plans were hidden on a "normal product" upsell offer and only the one-time
+   option stayed visible — the customer could never reach the plans. Removed so every option
+   (one-time + all subscription plans) stays visible and selectable, matching the single-product
+   page. A product added to the offer as an explicit "One Time Purchase" is handled separately via
+   force_one_time in schemes_template_html(), which renders no plan widget at all. */
 
 /* Clone signup_details_wrap and recurring_details_wrap into every .wfocu_price_wrapper (WCS structure).
    One set is rendered by PHP; we clone into each wrapper then hide the originals. */
@@ -1951,17 +2019,30 @@ jQuery(document).on("wfocu_variation_selected",function(e,key,variationID,variat
 	var instance=window.subliumGetInstance();
 	if(!instance)return;
 	setTimeout(function(){
-		if(variationData.sublium_plans){
-			instance.setVariationData(variationData);
+		/* The defiant XPath-style query engine (wfocu-public.js WFOCU_Variation_Select.query)
+		   only preserves scalar attribute-like values on the node it returns as variationData
+		   -- complex fields like sublium_plans (an array of plan objects) are silently dropped.
+		   Read the untouched variation data straight from the data-variations JSON instead,
+		   which still has the full payload PHP rendered (see modify_variations_attributes()). */
+		var effectiveData=variationData;
+		try{
+			var rawJson=jQuery(".wfocu_variation_selector_wrap[data-key=\""+key+"\"]").attr("data-variations");
+			var rawVariations=rawJson?JSON.parse(rawJson):null;
+			if(rawVariations&&variationID&&rawVariations[variationID]){
+				effectiveData=rawVariations[variationID];
+			}
+		}catch(err){}
+		if(effectiveData.sublium_plans){
+			instance.setVariationData(effectiveData);
 			var currentPlan=parseInt(jQuery(".sublium-front-widget-container").data("sublium-plan-id"))||0;
-			var oneTimePriceHtml=variationData.one_time_purchase_price_html||"";
+			var oneTimePriceHtml=effectiveData.one_time_purchase_price_html||"";
 			if(key&&variationID){
 				var WFOCUVariationSelect=typeof window.WFOCU_Variation_Select!=="undefined"?window.WFOCU_Variation_Select:typeof WFOCU_Variation_Select!=="undefined"?WFOCU_Variation_Select:null;
 				if(WFOCUVariationSelect&&typeof WFOCUVariationSelect.getOneTimePriceHtml==="function"){
 					oneTimePriceHtml=WFOCUVariationSelect.getOneTimePriceHtml(key,variationID);
 				}
 			}
-			instance.updatePlans(variationData.sublium_plans,variationData.one_time_purchase_available,oneTimePriceHtml,variationData.one_time_purchase_label,currentPlan);
+			instance.updatePlans(effectiveData.sublium_plans,effectiveData.one_time_purchase_available,oneTimePriceHtml,effectiveData.one_time_purchase_label,currentPlan);
 		}else{
 			instance.updatePlans([],"","");
 		}
@@ -1970,11 +2051,23 @@ jQuery(document).on("wfocu_variation_selected",function(e,key,variationID,variat
 	},600);
 });';
 
+				// Sublium's own includes/main/product.php also assigns window.sublium_onetime_price_html
+				// on the SAME script handle, from $product->get_price_html(). For a product that has a
+				// default Sublium plan (postmeta sublium_wcs_plan), get_price_html() resolves to that
+				// plan's price (e.g. a "$10/day" plan) rather than the product's true one-time price, so
+				// the one-time option would show the plan price. Our $inline_script sets the correct offer
+				// one-time price 'before', but Sublium's assignment runs 'after' and overrides it. Re-assert
+				// the correct value with an additional 'after' inline: Sublium's is enqueued during body
+				// render while this runs later on wp_footer, so on the same handle our 'after' prints last
+				// and wins.
+				$onetime_price_override = 'window.sublium_onetime_price_html = ' . wp_json_encode( wp_kses_post( $one_time_price_html ) ) . ';';
+
 				add_action(
 					'wp_footer',
-					function () use ( $inline_script, $listener_script, $script_handle ) {
+					function () use ( $inline_script, $listener_script, $onetime_price_override, $script_handle ) {
 						wp_add_inline_script( $script_handle, $inline_script, 'before' );
 						wp_add_inline_script( $script_handle, $listener_script, 'after' );
+						wp_add_inline_script( $script_handle, $onetime_price_override, 'after' );
 					},
 					1
 				);
@@ -1982,7 +2075,24 @@ jQuery(document).on("wfocu_variation_selected",function(e,key,variationID,variat
 				$one_time_price_html_static = $one_time_price_html;
 			}
 			echo '<div class="wfocu-subscription-options" data-key="' . esc_attr( $product_key ) . '">';
+			// Sublium's own product/skin-default-template.php already outputs its own
+			// .sublium-front-widget-container for context==='upsell' (and SubliumTemplates JS
+			// replaces that container's contents wholesale on variation change) — do NOT wrap
+			// render_plans_group()'s output in a second one here; nesting two matching containers
+			// made $('.sublium-front-widget-container') resolve to both, and broke rendering.
 			\Sublium_WCS\Includes\Main\Plans::render_plans_group( $plans, $product, 'upsell', $default_plan, $this->one_time_supported );
+
+			// render_plans_group() returns early with NO output at all when $plans is empty
+			// (e.g. the initially-selected variation has no Sublium plans) — including skipping
+			// its own .sublium-front-widget-container + hidden .sublium-option-plan input. For a
+			// variable-product upsell, a later variation change can still bring in plans (see
+			// wfocu_variation_selected below), so both must always exist up front for that
+			// re-render — and for the accepted plan id to actually reach the submitted offer data —
+			// to have somewhere to go. Emit them ourselves whenever render_plans_group() didn't.
+			if ( empty( $plans ) ) {
+				echo '<div class="sublium-front-widget-container"></div>';
+				echo '<input type="hidden" name="sublium-option-plan" class="sublium-option-plan" value="0" />';
+			}
 
 			// When only one plan exists, render_plans_group outputs the plan-single template
 			// (hidden inputs only) and sublium_plan_selected never fires — so wfocu_convert_sub_hidden
@@ -2801,7 +2911,14 @@ jQuery(document).on("wfocu_variation_selected",function(e,key,variationID,variat
 					continue;
 				}
 
-				$product_name    = rawurldecode( $product->get_title() );
+				// Reuse the title + variation attribute summary (e.g. "Blue, Small") already computed
+				// for this row by product_search_variant() instead of re-deriving from
+				// $product->get_title(), so plan-variant rows stay distinguishable for variable
+				// products instead of all collapsing to the bare parent title.
+				$product_name = isset( $product_data['product'] ) ? rawurldecode( $product_data['product'] ) : rawurldecode( $product->get_title() );
+				if ( ! empty( $product_data['product_attribute'] ) && '-' !== $product_data['product_attribute'] ) {
+					$product_name .= ' - ' . $product_data['product_attribute'];
+				}
 				$currency_symbol = html_entity_decode( get_woocommerce_currency_symbol(), ENT_QUOTES, 'UTF-8' );
 
 				// One-time purchase isn't a Sublium plan entity — it's a per-product toggle — so it

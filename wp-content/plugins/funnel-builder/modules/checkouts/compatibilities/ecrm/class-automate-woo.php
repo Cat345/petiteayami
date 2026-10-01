@@ -192,7 +192,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_AutoMateWoo' ) ) {
 
                 <?php
 				if ( isset( $px ) ) {
-					printf( 'body .wfacp_main_form .wfacp-row .automatewoo-birthday-section{ padding: 0 %spx;}', $px );
+					printf( 'body .wfacp_main_form .wfacp-row .automatewoo-birthday-section{ padding: 0 %spx;}', esc_attr( $px ) );
 				}
 				?>
 

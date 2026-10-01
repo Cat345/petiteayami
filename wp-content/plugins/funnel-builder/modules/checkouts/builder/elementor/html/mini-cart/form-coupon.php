@@ -37,14 +37,14 @@ $enable_coupon_collapsible = wc_string_to_bool( $enable_coupon_collapsible );
 
 
 			?>
-            <form class="wfacp_layout_shopcheckout checkout_coupon woocommerce-form-coupon <?php echo $classBlock; ?>" method="post" style="<?php echo true == $enable_coupon_collapsible ? 'display:none' : '' ?>">
+            <form class="wfacp_layout_shopcheckout checkout_coupon woocommerce-form-coupon <?php echo esc_attr( $classBlock ); ?>" method="post" style="<?php echo true == $enable_coupon_collapsible ? 'display:none' : '' ?>">
                 <div class="wfacp-row wfacp_coupon_row">
                     <p class="form-row form-row-first wfacp-form-control-wrapper wfacp-col-left-half wfacp-input-form">
 
                         <label for="coupon_code" class="wfacp-form-control-label"><?php echo $wfacp_sidebar_coupon_text; ?></label>
                         <input type="text" name="coupon_code" class="input-text wfacp-form-control" placeholder="" id="coupon_code" value=""/>
                     </p>
-                    <p class="form-row form-row-last <?php echo $coupon_cls; ?>">
+                    <p class="form-row form-row-last <?php echo esc_attr( $coupon_cls ); ?>">
                         <button type="submit" class="button wfacp-coupon-btn" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_html_e( 'Apply coupon', 'woocommerce' ); ?></button>
                     </p>
                     <div class="clear"></div>

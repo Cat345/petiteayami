@@ -1,5 +1,21 @@
 *** FunnelKit Funnel Builder Pro ***
 
+= 3.16.0.7 (Sept 03, 2026) =
+* Improved: Upsells: Compatibility updated with Sublium Subscriptions (#9383)
+* Improved: Bump: Multi product Carousel skin CSS enhancements. (#9386)
+* Fixed: Upsells: Bricks compatibility showing error for offers when no product is added. (#9501)
+
+
+= 3.16.0.6 (Sept 01, 2026) =
+* Improved: Upsells: Compatibility with Sublium improved. (#9466)
+* Improved: Upsells: Compatibility with Authorize.net CIM improved for upsell refunds. (#9462)
+* Improved: Upsells: Compatibility updated with Woo Payments express checkout methods. (#9477)
+* Improved: Checkout: Compatibility updated with WooCommerce Smart Coupons By Store Apps. (#9467)
+* Improved: Checkout: Compatibility updated with Postcode.eu Address Validation plugin. (#9475)
+* Fixed: Funnel: Store checkout Step analytics showing zero after back navigation from single step. (#9452)
+* Fixed: Upsells: Failed order email getting sent twice when batching is enabled for upsells. (#9435)
+
+
 = 3.16.0.5 (Aug 20, 2026) =
 * Improved: Funnel: Compatibility with Elementor improved related to widget cache. (#9446)
 

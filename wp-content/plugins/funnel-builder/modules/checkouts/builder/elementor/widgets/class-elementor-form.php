@@ -1759,7 +1759,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 
 		public function migrate_label( $el, $data ) {
 
-			$json_data = json_encode( $data );
+			$json_data = wp_json_encode( $data );
 			// Do not run migration if label matched with top ,inside class
 
 			if ( false !== strpos( $json_data, 'wfacp-modern-label' ) ) {

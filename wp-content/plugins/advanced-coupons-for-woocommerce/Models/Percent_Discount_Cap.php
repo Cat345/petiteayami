@@ -95,9 +95,10 @@ class Percent_Discount_Cap extends Base_Model implements Model_Interface, Initia
      * @param Advanced_Coupon $coupon    Advanced coupon object.
      */
     public function save_percentage_discount_cap_value( $coupon_id, $coupon ) {
-        // Verify WP's nonce to make sure the request is valid before we save ACFW related data.
-        $nonce = sanitize_key( $_POST['_wpnonce'] ?? '' );
-        if ( ! $nonce || false === wp_verify_nonce( $nonce, 'update-post_' . $coupon_id ) ) {
+        // Verify ACFW's dedicated nonce to ensure the request is valid before saving ACFW data.
+        // Uses _acfw_nonce (not _wpnonce) to avoid conflicts with plugins like WooPayments that
+        // may modify the shared _wpnonce field before form submission.
+        if ( ! isset( $_POST['_acfw_nonce'] ) || false === wp_verify_nonce( sanitize_key( $_POST['_acfw_nonce'] ), 'acfw_save_coupon_data_' . $coupon_id ) ) {
             return;
         }
 
@@ -129,7 +130,7 @@ class Percent_Discount_Cap extends Base_Model implements Model_Interface, Initia
     public function register_applied_coupons_discount_caps( $cart ) {
         foreach ( $cart->get_coupons() as $coupon ) {
 
-            if ( 'percent' !== $coupon->get_discount_type() ) {
+            if ( ! in_array( $coupon->get_discount_type(), array( 'percent', Product_Discount_Rules::DISCOUNT_TYPE ), true ) ) {
                 continue;
             }
 
@@ -150,6 +151,8 @@ class Percent_Discount_Cap extends Base_Model implements Model_Interface, Initia
      * @since 3.3
      * @access public
      *
+     * @since 4.1 Scale a per unit discount to the line before comparing it against the remaining cap budget.
+     *
      * @param float     $discount           Coupon discount amount for cart item.
      * @param float     $discounting_amount Amount that needs to be discounted.
      * @param array     $cart_item          Cart item data.
@@ -157,12 +160,21 @@ class Percent_Discount_Cap extends Base_Model implements Model_Interface, Initia
      * @param WC_Coupon $coupon             Coupon object.
      */
     public function apply_percentage_coupon_discount_cap( $discount, $discounting_amount, $cart_item, $single, $coupon ) {
-        // skip if coupon is not of 'percent' type, or when a discount cap value is not available for the coupon.
-        if ( 'percent' !== $coupon->get_discount_type() || ! isset( $this->_coupon_discount_caps[ $coupon->get_code() ] ) ) {
+        // skip if coupon is not of a capped type, or when a discount cap value is not available for the coupon.
+        if ( ! in_array( $coupon->get_discount_type(), array( 'percent', Product_Discount_Rules::DISCOUNT_TYPE ), true ) || ! isset( $this->_coupon_discount_caps[ $coupon->get_code() ] ) ) {
             return $discount;
         }
 
-        $precise_discount = \wc_add_number_precision( $discount );
+        /**
+         * The cap is a running budget of the coupon's total discount, so it has to be compared against the
+         * amount WooCommerce will actually apply to the line. WC_Discounts::apply_coupon_percent() asks for
+         * the whole line ($single is false), but apply_coupon_custom() asks for a single unit and multiplies
+         * the returned value by the item quantity itself, so that value has to be scaled up here and back
+         * down on the way out.
+         */
+        $quantity = $single && is_array( $cart_item ) && isset( $cart_item['quantity'] ) ? max( 1, (int) $cart_item['quantity'] ) : 1;
+
+        $precise_discount = \wc_add_number_precision( $discount ) * $quantity;
         $discount_cap     = $this->_coupon_discount_caps[ $coupon->get_code() ];
 
         // use the discount cap value as the discount amount for the item when it's lesser or equal to the calculated discount amount.
@@ -175,7 +187,7 @@ class Percent_Discount_Cap extends Base_Model implements Model_Interface, Initia
             $this->_coupon_discount_caps[ $coupon->get_code() ] -= $precise_discount;
         }
 
-        return \wc_remove_number_precision( $precise_discount );
+        return \wc_remove_number_precision( $precise_discount ) / $quantity;
     }
 
     /**
@@ -205,7 +217,7 @@ class Percent_Discount_Cap extends Base_Model implements Model_Interface, Initia
      * @return bool True if valid, false otherwise.
      */
     private function _is_valid_discount_type( $coupon ) {
-        return in_array( $coupon->get_discount_type( 'edit' ), array( 'percent', 'acfw_percentage_cashback' ), true );
+        return in_array( $coupon->get_discount_type( 'edit' ), array( 'percent', 'acfw_percentage_cashback', Product_Discount_Rules::DISCOUNT_TYPE ), true );
     }
 
 
@@ -239,5 +251,4 @@ class Percent_Discount_Cap extends Base_Model implements Model_Interface, Initia
         add_filter( 'woocommerce_coupon_get_discount_amount', array( $this, 'apply_percentage_coupon_discount_cap' ), 90, 5 );
         add_filter( 'acfwp_calculated_percent_cashback_amount', array( $this, 'apply_percentage_coupon_discount_cap_cashback_coupon' ), 10, 2 );
     }
-
 }

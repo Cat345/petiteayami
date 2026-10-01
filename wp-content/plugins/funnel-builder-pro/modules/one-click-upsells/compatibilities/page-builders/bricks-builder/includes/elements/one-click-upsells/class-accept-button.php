@@ -330,7 +330,9 @@ if ( ! class_exists( '\WfocuFunnelKit\Accept_Button' ) ) {
 
 			}
 			$product = \WFOCU_Common::default_selected_product( $product_key );
-			do_action( 'wfocu_add_custom_html_above_accept_button', $product->get_id(), $product_key );
+			// default_selected_product() returns WC_Product|false; guard before get_id() so a product-less/invalid offer doesn't fatal in the Bricks editor (mirrors Elementor/Divi/Gutenberg/Oxygen).
+			$product_id = ( $product instanceof \WC_Product ) ? $product->get_id() : '';
+			do_action( 'wfocu_add_custom_html_above_accept_button', $product_id, $product_key );
 			?>
 			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 				<div style="display:flex;flex-direction:column;" <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>

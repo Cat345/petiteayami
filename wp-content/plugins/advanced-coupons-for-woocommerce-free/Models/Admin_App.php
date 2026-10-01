@@ -286,6 +286,7 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                     'premium_upsell'          => false,
                     'dashboard_page'          => array(
                         'title'                => __( 'Dashboard', 'advanced-coupons-for-woocommerce-free' ),
+                        'report_error'         => __( 'The report data could not be loaded. Please reload the page to try again.', 'advanced-coupons-for-woocommerce-free' ),
                         'create_coupon'        => array(
                             'label'      => __( 'Quick Create', 'advanced-coupons-for-woocommerce-free' ),
                             'percentage' => __( 'New % Coupon', 'advanced-coupons-for-woocommerce-free' ),
@@ -979,6 +980,7 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
      * Register the delete license status cache hooks.
      *
      * @since 4.3
+     * @since 4.7.6 Also listen to the site option hooks, as the license forms write the flags via update_site_option().
      * @access private
      */
     private function _register_delete_license_status_cache_hooks() {
@@ -986,9 +988,24 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
             delete_site_transient( Plugin_Constants::PREMIUM_LICENSE_STATUS_CACHE );
         };
 
-        add_action( 'update_option_acfw_license_activated', $delete_cache );
-        add_action( 'update_option_lpfw_license_activated', $delete_cache );
-        add_action( 'update_option_agcfw_license_activated', $delete_cache );
+        $license_activated_options = array(
+            'acfw_license_activated',
+            'lpfw_license_activated',
+            'agcfw_license_activated',
+        );
+
+        /**
+         * The license forms save these flags with update_site_option(). On a single site that also fires
+         * update_option_*, but on multisite it doesn't, so the plain hook alone misses the write and the cached status
+         * stays stale for up to a day. A first-ever write is delegated internally to add_network_option(), which fires
+         * add_site_option_* instead. All three are registered so no write path is missed; delete_site_transient() is
+         * idempotent, so the single site's double fire is harmless.
+         */
+        foreach ( $license_activated_options as $option ) {
+            add_action( "update_option_{$option}", $delete_cache );
+            add_action( "update_site_option_{$option}", $delete_cache );
+            add_action( "add_site_option_{$option}", $delete_cache );
+        }
     }
 
     /**

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-20T13:40:26+00:00\n"
+"POT-Creation-Date: 2026-09-04T10:38:42+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woofunnels-order-bump\n"
@@ -286,7 +286,7 @@ msgid " Regular Price"
 msgstr ""
 
 #: admin/view/products/table.php:42
-#: includes/skins-classes/bump.php:2684
+#: includes/skins-classes/bump.php:2795
 msgid "Sale Price"
 msgstr ""
 
@@ -638,11 +638,11 @@ msgstr ""
 #: includes/class-wfob-common.php:883
 #: includes/reports/class-wfob-bumps.php:242
 #: includes/skins-classes/bump-skins/layout_3.php:35
-#: includes/skins-classes/bump-skins/layout_7.php:40
-#: includes/skins-classes/bump-skins/layout_9.php:36
-#: includes/skins-classes/bump-skins/layout_10.php:36
-#: includes/skins-classes/bump-skins/layout_11.php:41
-#: includes/skins-classes/bump-skins/layout_12.php:40
+#: includes/skins-classes/bump-skins/layout_7.php:48
+#: includes/skins-classes/bump-skins/layout_9.php:44
+#: includes/skins-classes/bump-skins/layout_10.php:44
+#: includes/skins-classes/bump-skins/layout_11.php:49
+#: includes/skins-classes/bump-skins/layout_12.php:51
 msgid "Title"
 msgstr ""
 
@@ -659,11 +659,11 @@ msgstr ""
 #: includes/class-wfob-common.php:847
 #: includes/class-wfob-common.php:887
 #: includes/skins-classes/bump-skins/layout_3.php:59
-#: includes/skins-classes/bump-skins/layout_7.php:48
-#: includes/skins-classes/bump-skins/layout_9.php:44
-#: includes/skins-classes/bump-skins/layout_10.php:44
-#: includes/skins-classes/bump-skins/layout_11.php:49
-#: includes/skins-classes/bump-skins/layout_12.php:48
+#: includes/skins-classes/bump-skins/layout_7.php:56
+#: includes/skins-classes/bump-skins/layout_9.php:52
+#: includes/skins-classes/bump-skins/layout_10.php:52
+#: includes/skins-classes/bump-skins/layout_11.php:57
+#: includes/skins-classes/bump-skins/layout_12.php:58
 #: includes/skins-classes/bump.php:264
 msgid "Description"
 msgstr ""
@@ -687,7 +687,7 @@ msgid "Regular Price Color"
 msgstr ""
 
 #: includes/class-wfob-common.php:853
-#: includes/skins-classes/bump.php:2610
+#: includes/skins-classes/bump.php:2744
 msgid "Enable Price"
 msgstr ""
 
@@ -705,7 +705,7 @@ msgid "Font Size (px)"
 msgstr ""
 
 #: includes/class-wfob-common.php:857
-#: includes/skins-classes/bump.php:2554
+#: includes/skins-classes/bump.php:2643
 msgid "Text Color"
 msgstr ""
 
@@ -733,25 +733,25 @@ msgid "Padding (px)"
 msgstr ""
 
 #: includes/class-wfob-common.php:863
-#: includes/skins-classes/bump.php:2247
-#: includes/skins-classes/bump.php:2913
-#: includes/skins-classes/bump.php:2985
-#: includes/skins-classes/bump.php:3033
+#: includes/skins-classes/bump.php:2336
+#: includes/skins-classes/bump.php:3012
+#: includes/skins-classes/bump.php:3084
+#: includes/skins-classes/bump.php:3132
 msgid "Background"
 msgstr ""
 
 #: includes/class-wfob-common.php:864
-#: includes/skins-classes/bump.php:2258
+#: includes/skins-classes/bump.php:2347
 msgid "Background Hover"
 msgstr ""
 
 #: includes/class-wfob-common.php:865
 #: includes/class-wfob-common.php:866
-#: includes/skins-classes/bump.php:2270
-#: includes/skins-classes/bump.php:2659
-#: includes/skins-classes/bump.php:2717
-#: includes/skins-classes/bump.php:2941
-#: includes/skins-classes/bump.php:3184
+#: includes/skins-classes/bump.php:2359
+#: includes/skins-classes/bump.php:2782
+#: includes/skins-classes/bump.php:2822
+#: includes/skins-classes/bump.php:3040
+#: includes/skins-classes/bump.php:3331
 msgid "Text"
 msgstr ""
 
@@ -770,12 +770,12 @@ msgid "Width (px)"
 msgstr ""
 
 #: includes/class-wfob-common.php:872
-#: includes/skins-classes/bump.php:3012
-#: includes/skins-classes/bump.php:3060
-#: includes/skins-classes/bump.php:3095
-#: includes/skins-classes/bump.php:3109
-#: includes/skins-classes/bump.php:3139
-#: includes/skins-classes/bump.php:3366
+#: includes/skins-classes/bump.php:3111
+#: includes/skins-classes/bump.php:3159
+#: includes/skins-classes/bump.php:3237
+#: includes/skins-classes/bump.php:3251
+#: includes/skins-classes/bump.php:3281
+#: includes/skins-classes/bump.php:3513
 msgid "Color"
 msgstr ""
 
@@ -792,7 +792,7 @@ msgid "Leave blank for full width"
 msgstr ""
 
 #: includes/class-wfob-common.php:876
-#: includes/skins-classes/bump.php:2408
+#: includes/skins-classes/bump.php:2497
 msgid "Arrow Animation"
 msgstr ""
 
@@ -806,7 +806,7 @@ msgid "Add To Cart Button"
 msgstr ""
 
 #: includes/class-wfob-common.php:879
-#: includes/skins-classes/bump.php:3323
+#: includes/skins-classes/bump.php:3470
 msgid "Added To Cart Button"
 msgstr ""
 
@@ -820,21 +820,21 @@ msgstr ""
 
 #: includes/class-wfob-common.php:885
 #: includes/skins-classes/bump-skins/layout_3.php:37
-#: includes/skins-classes/bump-skins/layout_7.php:42
-#: includes/skins-classes/bump-skins/layout_9.php:38
-#: includes/skins-classes/bump-skins/layout_10.php:38
-#: includes/skins-classes/bump-skins/layout_11.php:43
-#: includes/skins-classes/bump-skins/layout_12.php:42
+#: includes/skins-classes/bump-skins/layout_7.php:50
+#: includes/skins-classes/bump-skins/layout_9.php:46
+#: includes/skins-classes/bump-skins/layout_10.php:46
+#: includes/skins-classes/bump-skins/layout_11.php:51
+#: includes/skins-classes/bump-skins/layout_12.php:53
 msgid "Use merge tag {{product_name}} to show product name dynamically."
 msgstr ""
 
 #: includes/class-wfob-common.php:888
 #: includes/skins-classes/bump-skins/layout_3.php:62
-#: includes/skins-classes/bump-skins/layout_7.php:35
-#: includes/skins-classes/bump-skins/layout_9.php:47
-#: includes/skins-classes/bump-skins/layout_10.php:47
-#: includes/skins-classes/bump-skins/layout_11.php:36
-#: includes/skins-classes/bump-skins/layout_12.php:35
+#: includes/skins-classes/bump-skins/layout_7.php:43
+#: includes/skins-classes/bump-skins/layout_9.php:55
+#: includes/skins-classes/bump-skins/layout_10.php:55
+#: includes/skins-classes/bump-skins/layout_11.php:44
+#: includes/skins-classes/bump-skins/layout_12.php:61
 msgid "Use merge tag {{quantity_incrementer}} to show the quantity changer."
 msgstr ""
 
@@ -849,21 +849,21 @@ msgstr ""
 
 #: includes/class-wfob-common.php:892
 #: includes/skins-classes/bump-skins/layout_3.php:99
-#: includes/skins-classes/bump-skins/layout_7.php:76
-#: includes/skins-classes/bump-skins/layout_9.php:103
-#: includes/skins-classes/bump-skins/layout_10.php:102
-#: includes/skins-classes/bump-skins/layout_11.php:108
-#: includes/skins-classes/bump-skins/layout_12.php:108
+#: includes/skins-classes/bump-skins/layout_7.php:84
+#: includes/skins-classes/bump-skins/layout_9.php:111
+#: includes/skins-classes/bump-skins/layout_10.php:110
+#: includes/skins-classes/bump-skins/layout_11.php:116
+#: includes/skins-classes/bump-skins/layout_12.php:111
 msgid "Add Button"
 msgstr ""
 
 #: includes/class-wfob-common.php:893
 #: includes/skins-classes/bump-skins/layout_3.php:108
-#: includes/skins-classes/bump-skins/layout_7.php:85
-#: includes/skins-classes/bump-skins/layout_9.php:112
-#: includes/skins-classes/bump-skins/layout_10.php:111
-#: includes/skins-classes/bump-skins/layout_11.php:117
-#: includes/skins-classes/bump-skins/layout_12.php:117
+#: includes/skins-classes/bump-skins/layout_7.php:93
+#: includes/skins-classes/bump-skins/layout_9.php:120
+#: includes/skins-classes/bump-skins/layout_10.php:119
+#: includes/skins-classes/bump-skins/layout_11.php:125
+#: includes/skins-classes/bump-skins/layout_12.php:120
 msgid "Added Button"
 msgstr ""
 
@@ -1231,104 +1231,112 @@ msgstr ""
 msgid "Bumps Triggered"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_1.php:82
-#: includes/skins-classes/bump-skins/layout_11.php:201
+#: includes/skins-classes/bump-skins/layout_1.php:32
+msgid "Classic"
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_1.php:36
+msgid "Bold highlight box with a dashed border: arrow-and-checkbox offer line with the price on top, product image and description below."
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_1.php:90
+#: includes/skins-classes/bump-skins/layout_11.php:210
 msgid "Special Offer"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_1.php:86
-#: includes/skins-classes/bump-skins/layout_2.php:87
-#: includes/skins-classes/bump-skins/layout_3.php:210
-#: includes/skins-classes/bump-skins/layout_5.php:91
-#: includes/skins-classes/bump-skins/layout_6.php:89
-#: includes/skins-classes/bump-skins/layout_7.php:204
-#: includes/skins-classes/bump-skins/layout_8.php:89
-#: includes/skins-classes/bump-skins/layout_9.php:189
-#: includes/skins-classes/bump-skins/layout_10.php:188
-#: includes/skins-classes/bump-skins/layout_11.php:205
-#: includes/skins-classes/bump-skins/layout_12.php:246
+#: includes/skins-classes/bump-skins/layout_1.php:94
+#: includes/skins-classes/bump-skins/layout_2.php:98
+#: includes/skins-classes/bump-skins/layout_3.php:211
+#: includes/skins-classes/bump-skins/layout_5.php:99
+#: includes/skins-classes/bump-skins/layout_6.php:97
+#: includes/skins-classes/bump-skins/layout_7.php:213
+#: includes/skins-classes/bump-skins/layout_8.php:97
+#: includes/skins-classes/bump-skins/layout_9.php:198
+#: includes/skins-classes/bump-skins/layout_10.php:197
+#: includes/skins-classes/bump-skins/layout_11.php:214
+#: includes/skins-classes/bump-skins/layout_12.php:252
 msgid "30% of Our Customers Choose this Upgrade"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_1.php:87
-#: includes/skins-classes/bump-skins/layout_2.php:88
-#: includes/skins-classes/bump-skins/layout_3.php:211
-#: includes/skins-classes/bump-skins/layout_5.php:92
-#: includes/skins-classes/bump-skins/layout_6.php:90
-#: includes/skins-classes/bump-skins/layout_7.php:205
-#: includes/skins-classes/bump-skins/layout_8.php:90
-#: includes/skins-classes/bump-skins/layout_9.php:190
-#: includes/skins-classes/bump-skins/layout_10.php:189
-#: includes/skins-classes/bump-skins/layout_11.php:206
-#: includes/skins-classes/bump-skins/layout_12.php:247
+#: includes/skins-classes/bump-skins/layout_1.php:95
+#: includes/skins-classes/bump-skins/layout_2.php:99
+#: includes/skins-classes/bump-skins/layout_3.php:212
+#: includes/skins-classes/bump-skins/layout_5.php:100
+#: includes/skins-classes/bump-skins/layout_6.php:98
+#: includes/skins-classes/bump-skins/layout_7.php:214
+#: includes/skins-classes/bump-skins/layout_8.php:98
+#: includes/skins-classes/bump-skins/layout_9.php:199
+#: includes/skins-classes/bump-skins/layout_10.php:198
+#: includes/skins-classes/bump-skins/layout_11.php:215
+#: includes/skins-classes/bump-skins/layout_12.php:253
 msgid "This is by far the most popular option with over 30% of customers choosing this value offer. Add it to your order in one click, with no extra steps at checkout."
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_1.php:97
-#: includes/skins-classes/bump-skins/layout_8.php:100
+#: includes/skins-classes/bump-skins/layout_1.php:105
+#: includes/skins-classes/bump-skins/layout_8.php:108
 msgid "Skin 1"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_1.php:100
-#: includes/skins-classes/bump-skins/layout_2.php:101
-#: includes/skins-classes/bump-skins/layout_4.php:102
-#: includes/skins-classes/bump-skins/layout_5.php:104
-#: includes/skins-classes/bump-skins/layout_6.php:103
-#: includes/skins-classes/bump-skins/layout_7.php:219
-#: includes/skins-classes/bump-skins/layout_8.php:103
-#: includes/skins-classes/bump-skins/layout_11.php:220
+#: includes/skins-classes/bump-skins/layout_1.php:108
+#: includes/skins-classes/bump-skins/layout_2.php:112
+#: includes/skins-classes/bump-skins/layout_4.php:103
+#: includes/skins-classes/bump-skins/layout_5.php:112
+#: includes/skins-classes/bump-skins/layout_6.php:111
+#: includes/skins-classes/bump-skins/layout_7.php:228
+#: includes/skins-classes/bump-skins/layout_8.php:111
+#: includes/skins-classes/bump-skins/layout_11.php:229
 msgid "<span style='color:#E15334'>Yes!</span> Add "
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_1.php:100
-#: includes/skins-classes/bump-skins/layout_2.php:101
-#: includes/skins-classes/bump-skins/layout_4.php:102
-#: includes/skins-classes/bump-skins/layout_5.php:104
-#: includes/skins-classes/bump-skins/layout_6.php:103
-#: includes/skins-classes/bump-skins/layout_7.php:219
-#: includes/skins-classes/bump-skins/layout_8.php:103
-#: includes/skins-classes/bump-skins/layout_11.php:220
+#: includes/skins-classes/bump-skins/layout_1.php:108
+#: includes/skins-classes/bump-skins/layout_2.php:112
+#: includes/skins-classes/bump-skins/layout_4.php:103
+#: includes/skins-classes/bump-skins/layout_5.php:112
+#: includes/skins-classes/bump-skins/layout_6.php:111
+#: includes/skins-classes/bump-skins/layout_7.php:228
+#: includes/skins-classes/bump-skins/layout_8.php:111
+#: includes/skins-classes/bump-skins/layout_11.php:229
 #: skins/layout-1.php:61
 #: skins/layout_3.php:59
 msgid " to my order"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_1.php:101
-#: includes/skins-classes/bump-skins/layout_2.php:102
-#: includes/skins-classes/bump-skins/layout_4.php:103
-#: includes/skins-classes/bump-skins/layout_5.php:105
-#: includes/skins-classes/bump-skins/layout_6.php:104
-#: includes/skins-classes/bump-skins/layout_7.php:220
-#: includes/skins-classes/bump-skins/layout_8.php:104
-#: includes/skins-classes/bump-skins/layout_11.php:221
+#: includes/skins-classes/bump-skins/layout_1.php:109
+#: includes/skins-classes/bump-skins/layout_2.php:113
+#: includes/skins-classes/bump-skins/layout_4.php:104
+#: includes/skins-classes/bump-skins/layout_5.php:113
+#: includes/skins-classes/bump-skins/layout_6.php:112
+#: includes/skins-classes/bump-skins/layout_7.php:229
+#: includes/skins-classes/bump-skins/layout_8.php:112
+#: includes/skins-classes/bump-skins/layout_11.php:230
 msgid "<span style='color:#E15334'>Yes!</span> Add Complete Skin Care Pack to my order"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_1.php:107
-#: includes/skins-classes/bump-skins/layout_2.php:108
-#: includes/skins-classes/bump-skins/layout_5.php:107
-#: includes/skins-classes/bump-skins/layout_6.php:106
-#: includes/skins-classes/bump-skins/layout_7.php:223
-#: includes/skins-classes/bump-skins/layout_10.php:207
-#: includes/skins-classes/bump-skins/layout_11.php:224
+#: includes/skins-classes/bump-skins/layout_1.php:115
+#: includes/skins-classes/bump-skins/layout_2.php:119
+#: includes/skins-classes/bump-skins/layout_5.php:115
+#: includes/skins-classes/bump-skins/layout_6.php:114
+#: includes/skins-classes/bump-skins/layout_7.php:232
+#: includes/skins-classes/bump-skins/layout_10.php:216
+#: includes/skins-classes/bump-skins/layout_11.php:233
 msgid "Aperiam consecttur quisquam Aperiam consectetur. Lorem Ipsum is simply dummy text of the printing and typesetting industry."
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_2.php:83
-#: includes/skins-classes/bump-skins/layout_3.php:206
-#: includes/skins-classes/bump-skins/layout_3.php:224
+#: includes/skins-classes/bump-skins/layout_2.php:94
+#: includes/skins-classes/bump-skins/layout_3.php:207
 #: includes/skins-classes/bump-skins/layout_3.php:225
-#: includes/skins-classes/bump-skins/layout_4.php:94
-#: includes/skins-classes/bump-skins/layout_5.php:86
-#: includes/skins-classes/bump-skins/layout_6.php:84
-#: includes/skins-classes/bump-skins/layout_7.php:200
-#: includes/skins-classes/bump-skins/layout_8.php:84
-#: includes/skins-classes/bump-skins/layout_9.php:184
-#: includes/skins-classes/bump-skins/layout_10.php:183
+#: includes/skins-classes/bump-skins/layout_3.php:226
+#: includes/skins-classes/bump-skins/layout_4.php:95
+#: includes/skins-classes/bump-skins/layout_5.php:94
+#: includes/skins-classes/bump-skins/layout_6.php:92
+#: includes/skins-classes/bump-skins/layout_7.php:209
+#: includes/skins-classes/bump-skins/layout_8.php:92
+#: includes/skins-classes/bump-skins/layout_9.php:193
+#: includes/skins-classes/bump-skins/layout_10.php:192
 msgid "Exclusive Offer"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_2.php:98
+#: includes/skins-classes/bump-skins/layout_2.php:109
 msgid "Skin 2"
 msgstr ""
 
@@ -1337,183 +1345,247 @@ msgid "Use merge tag {{more}} to make Description collapsible."
 msgstr ""
 
 #: includes/skins-classes/bump-skins/layout_3.php:68
-#: includes/skins-classes/bump-skins/layout_7.php:95
-#: includes/skins-classes/bump-skins/layout_9.php:72
-#: includes/skins-classes/bump-skins/layout_10.php:72
-#: includes/skins-classes/bump-skins/layout_11.php:77
-#: includes/skins-classes/bump-skins/layout_12.php:77
+#: includes/skins-classes/bump-skins/layout_7.php:103
+#: includes/skins-classes/bump-skins/layout_9.php:80
+#: includes/skins-classes/bump-skins/layout_10.php:80
+#: includes/skins-classes/bump-skins/layout_11.php:85
+#: includes/skins-classes/bump-skins/layout_12.php:84
 #: includes/skins-classes/bump.php:292
 msgid "Enable Social Proof Tool Tip"
 msgstr ""
 
 #: includes/skins-classes/bump-skins/layout_3.php:101
-#: includes/skins-classes/bump-skins/layout_3.php:231
-#: includes/skins-classes/bump-skins/layout_4.php:109
-#: includes/skins-classes/bump-skins/layout_7.php:78
-#: includes/skins-classes/bump-skins/layout_9.php:105
-#: includes/skins-classes/bump-skins/layout_9.php:211
-#: includes/skins-classes/bump-skins/layout_10.php:104
-#: includes/skins-classes/bump-skins/layout_10.php:208
-#: includes/skins-classes/bump-skins/layout_11.php:110
-#: includes/skins-classes/bump-skins/layout_12.php:110
-#: includes/skins-classes/bump-skins/layout_12.php:266
-#: includes/skins-classes/bump-skins/layout_12.php:269
-#: includes/skins-classes/bump-skins/layout_12.php:270
+#: includes/skins-classes/bump-skins/layout_3.php:232
+#: includes/skins-classes/bump-skins/layout_4.php:110
+#: includes/skins-classes/bump-skins/layout_7.php:86
+#: includes/skins-classes/bump-skins/layout_9.php:113
+#: includes/skins-classes/bump-skins/layout_9.php:220
+#: includes/skins-classes/bump-skins/layout_10.php:112
+#: includes/skins-classes/bump-skins/layout_10.php:217
+#: includes/skins-classes/bump-skins/layout_11.php:118
+#: includes/skins-classes/bump-skins/layout_12.php:113
+#: includes/skins-classes/bump-skins/layout_12.php:279
+#: includes/skins-classes/bump-skins/layout_12.php:282
+#: includes/skins-classes/bump-skins/layout_12.php:283
 msgid "ADD"
 msgstr ""
 
 #: includes/skins-classes/bump-skins/layout_3.php:110
-#: includes/skins-classes/bump-skins/layout_3.php:232
-#: includes/skins-classes/bump-skins/layout_4.php:110
-#: includes/skins-classes/bump-skins/layout_7.php:87
-#: includes/skins-classes/bump-skins/layout_9.php:114
-#: includes/skins-classes/bump-skins/layout_9.php:212
-#: includes/skins-classes/bump-skins/layout_10.php:113
-#: includes/skins-classes/bump-skins/layout_10.php:209
-#: includes/skins-classes/bump-skins/layout_11.php:119
-#: includes/skins-classes/bump-skins/layout_12.php:119
-#: includes/skins-classes/bump-skins/layout_12.php:267
-#: includes/skins-classes/bump-skins/layout_12.php:271
+#: includes/skins-classes/bump-skins/layout_3.php:233
+#: includes/skins-classes/bump-skins/layout_4.php:111
+#: includes/skins-classes/bump-skins/layout_7.php:95
+#: includes/skins-classes/bump-skins/layout_9.php:122
+#: includes/skins-classes/bump-skins/layout_9.php:221
+#: includes/skins-classes/bump-skins/layout_10.php:121
+#: includes/skins-classes/bump-skins/layout_10.php:218
+#: includes/skins-classes/bump-skins/layout_11.php:127
+#: includes/skins-classes/bump-skins/layout_12.php:122
+#: includes/skins-classes/bump-skins/layout_12.php:280
+#: includes/skins-classes/bump-skins/layout_12.php:284
 msgid "ADDED"
 msgstr ""
 
 #: includes/skins-classes/bump-skins/layout_3.php:119
-#: includes/skins-classes/bump-skins/layout_3.php:233
-#: includes/skins-classes/bump-skins/layout_4.php:111
-#: includes/skins-classes/bump-skins/layout_7.php:226
-#: includes/skins-classes/bump-skins/layout_7.php:230
-#: includes/skins-classes/bump-skins/layout_9.php:213
-#: includes/skins-classes/bump-skins/layout_10.php:210
-#: includes/skins-classes/bump-skins/layout_11.php:227
-#: includes/skins-classes/bump-skins/layout_11.php:231
-#: includes/skins-classes/bump-skins/layout_12.php:268
-#: includes/skins-classes/bump-skins/layout_12.php:272
+#: includes/skins-classes/bump-skins/layout_3.php:234
+#: includes/skins-classes/bump-skins/layout_4.php:112
+#: includes/skins-classes/bump-skins/layout_7.php:235
+#: includes/skins-classes/bump-skins/layout_7.php:239
+#: includes/skins-classes/bump-skins/layout_9.php:222
+#: includes/skins-classes/bump-skins/layout_10.php:219
+#: includes/skins-classes/bump-skins/layout_11.php:236
+#: includes/skins-classes/bump-skins/layout_11.php:240
+#: includes/skins-classes/bump-skins/layout_12.php:281
+#: includes/skins-classes/bump-skins/layout_12.php:285
 msgid "REMOVE"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_3.php:220
+#: includes/skins-classes/bump-skins/layout_3.php:221
 msgid "Skin 3"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_3.php:226
+#: includes/skins-classes/bump-skins/layout_3.php:227
 msgid "Add {{product_name}} for just {{price}}"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_3.php:228
-#: includes/skins-classes/bump-skins/layout_4.php:118
+#: includes/skins-classes/bump-skins/layout_3.php:229
+#: includes/skins-classes/bump-skins/layout_4.php:119
 msgid "The long description can come here"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_3.php:229
+#: includes/skins-classes/bump-skins/layout_3.php:230
 msgid "Aperiam consecttur quisquam Aperiam consectetur. Lorem Ipsum is simply dummy text  <br>{{more}}"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_3.php:234
-#: includes/skins-classes/bump-skins/layout_4.php:112
-#: includes/skins-classes/bump-skins/layout_7.php:231
-#: includes/skins-classes/bump-skins/layout_9.php:214
-#: includes/skins-classes/bump-skins/layout_10.php:211
-#: includes/skins-classes/bump-skins/layout_11.php:232
-#: includes/skins-classes/bump-skins/layout_12.php:273
+#: includes/skins-classes/bump-skins/layout_3.php:235
+#: includes/skins-classes/bump-skins/layout_4.php:113
+#: includes/skins-classes/bump-skins/layout_7.php:240
+#: includes/skins-classes/bump-skins/layout_9.php:223
+#: includes/skins-classes/bump-skins/layout_10.php:220
+#: includes/skins-classes/bump-skins/layout_11.php:241
+#: includes/skins-classes/bump-skins/layout_12.php:286
 msgid " more..."
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_4.php:99
+#: includes/skins-classes/bump-skins/layout_4.php:100
 msgid "Skin 4"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_4.php:108
+#: includes/skins-classes/bump-skins/layout_4.php:109
 msgid "<span><strong style='color: #008000;'>Exclusive Offer:</strong></span> Aperiam consecttur quisquam Aperiam consectetur. Lorem Ipsum is simply dummy text of the printing and typesetting industry. {{more}} "
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_5.php:101
+#: includes/skins-classes/bump-skins/layout_5.php:30
+msgid "Compact Card"
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_5.php:34
+msgid "Compact tinted card: description and price first, a small boxed checkbox line underneath. No button."
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_5.php:109
 msgid "Skin 5"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_6.php:100
+#: includes/skins-classes/bump-skins/layout_6.php:30
+msgid "Smart Toggle"
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_6.php:34
+msgid "Warm rounded card with an on/off toggle switch in place of a checkbox: title line with the switch on the right, badge, description and price below. Flipping the switch adds the product."
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_6.php:108
 msgid "Skin 6"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_7.php:57
-#: includes/skins-classes/bump-skins/layout_9.php:53
-#: includes/skins-classes/bump-skins/layout_10.php:53
-#: includes/skins-classes/bump-skins/layout_11.php:58
+#: includes/skins-classes/bump-skins/layout_7.php:32
+msgid "Call to Action Button"
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_7.php:36
+msgid "The fullest presentation: checkbox offer line with the price on top, image and description in the middle, a centred call-to-action button straddling the card's bottom edge. Adds by checkbox or button."
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_7.php:65
+#: includes/skins-classes/bump-skins/layout_9.php:61
+#: includes/skins-classes/bump-skins/layout_10.php:61
+#: includes/skins-classes/bump-skins/layout_11.php:66
 #: includes/skins-classes/bump.php:271
 msgid "Add Exclusive Offer Text"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_7.php:216
+#: includes/skins-classes/bump-skins/layout_7.php:225
 msgid "Skin 7"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_7.php:224
-#: includes/skins-classes/bump-skins/layout_7.php:227
-#: includes/skins-classes/bump-skins/layout_7.php:228
-#: includes/skins-classes/bump-skins/layout_11.php:225
-#: includes/skins-classes/bump-skins/layout_11.php:228
-#: includes/skins-classes/bump-skins/layout_11.php:229
+#: includes/skins-classes/bump-skins/layout_7.php:233
+#: includes/skins-classes/bump-skins/layout_7.php:236
+#: includes/skins-classes/bump-skins/layout_7.php:237
+#: includes/skins-classes/bump-skins/layout_11.php:234
+#: includes/skins-classes/bump-skins/layout_11.php:237
+#: includes/skins-classes/bump-skins/layout_11.php:238
 msgid "Yes! Add to My Order"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_7.php:225
-#: includes/skins-classes/bump-skins/layout_11.php:226
+#: includes/skins-classes/bump-skins/layout_7.php:234
+#: includes/skins-classes/bump-skins/layout_11.php:235
 msgid "Added to Order"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_7.php:229
-#: includes/skins-classes/bump-skins/layout_11.php:230
+#: includes/skins-classes/bump-skins/layout_7.php:238
+#: includes/skins-classes/bump-skins/layout_11.php:239
 msgid "Added To Order"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_8.php:111
+#: includes/skins-classes/bump-skins/layout_8.php:32
+msgid "Product Showcase"
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_8.php:36
+msgid "Tinted dashed-border box in two stacks: product image, badge and description on top, the arrow-and-checkbox offer line with the price below."
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_8.php:119
 msgid "<p>Aperiam consecttur quisquam Aperiam consectetur. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_9.php:200
+#: includes/skins-classes/bump-skins/layout_9.php:30
+msgid "Slim Banner"
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_9.php:34
+msgid "Slim tinted banner: title, price line and a dark ADD button. Button only, no image or description emphasis."
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_9.php:209
 msgid "Skin 9"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_9.php:204
-#: includes/skins-classes/bump-skins/layout_9.php:205
-#: includes/skins-classes/bump-skins/layout_9.php:207
-#: includes/skins-classes/bump-skins/layout_10.php:203
+#: includes/skins-classes/bump-skins/layout_9.php:213
+#: includes/skins-classes/bump-skins/layout_9.php:214
+#: includes/skins-classes/bump-skins/layout_9.php:216
+#: includes/skins-classes/bump-skins/layout_10.php:212
 msgid "Add {{product_name}} to my order"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_10.php:199
+#: includes/skins-classes/bump-skins/layout_10.php:30
+msgid "Minimal Row"
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_10.php:34
+msgid "Minimal white row: title and description on the left, price and a dark ADD button on the right. Button only, no checkbox."
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_10.php:208
 msgid "Skin 10"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_10.php:204
+#: includes/skins-classes/bump-skins/layout_10.php:213
 msgid " Add Complete Skin Care Pack to my order"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_11.php:217
+#: includes/skins-classes/bump-skins/layout_11.php:33
+msgid "Call to Action Badge"
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_11.php:37
+msgid "Card with a badge pill on its corner: tinted checkbox-and-price panel, description, \"Add to My Order\" button."
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_11.php:226
 msgid "Skin 11"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_12.php:50
-#: includes/skins-classes/bump-skins/layout_12.php:265
-msgid "Natural botanicals to help boost hair growth."
+#: includes/skins-classes/bump-skins/layout_12.php:32
+msgid "Multi Product Carousel"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_12.php:57
+#: includes/skins-classes/bump-skins/layout_12.php:36
+msgid "Centred product card - eyebrow label such as MOST POPULAR, name, description, price, pill ADD button. With multiple products the cards become a horizontal slider with prev/next arrows; the only skin that does."
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_12.php:60
+#: includes/skins-classes/bump-skins/layout_12.php:278
+msgid "Lorem Ipsum dolor siet consectur"
+msgstr ""
+
+#: includes/skins-classes/bump-skins/layout_12.php:66
 msgid "Add Product Tag"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_12.php:71
+#: includes/skins-classes/bump-skins/layout_12.php:79
 msgid "Shown as a small badge above the title, e.g. MOST POPULAR."
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_12.php:242
+#: includes/skins-classes/bump-skins/layout_12.php:248
 msgid "MOST POPULAR"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_12.php:258
+#: includes/skins-classes/bump-skins/layout_12.php:271
 msgid "Skin 12"
 msgstr ""
 
-#: includes/skins-classes/bump-skins/layout_12.php:262
+#: includes/skins-classes/bump-skins/layout_12.php:275
 msgid "Hair Serum"
 msgstr ""
 
@@ -1562,172 +1634,192 @@ msgstr ""
 msgid "Toggle"
 msgstr ""
 
-#: includes/skins-classes/bump.php:1401
+#: includes/skins-classes/bump.php:784
+msgid "Slider"
+msgstr ""
+
+#: includes/skins-classes/bump.php:1487
 msgid "Previous products"
 msgstr ""
 
-#: includes/skins-classes/bump.php:1416
+#: includes/skins-classes/bump.php:1502
 msgid "Next products"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2282
+#: includes/skins-classes/bump.php:2371
 msgid "Text Hover Color"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2293
-#: includes/skins-classes/bump.php:2529
-#: includes/skins-classes/bump.php:2633
-#: includes/skins-classes/bump.php:2696
-#: includes/skins-classes/bump.php:2925
-#: includes/skins-classes/bump.php:2997
-#: includes/skins-classes/bump.php:3045
-#: includes/skins-classes/bump.php:3080
-#: includes/skins-classes/bump.php:3125
-#: includes/skins-classes/bump.php:3211
+#: includes/skins-classes/bump.php:2382
+#: includes/skins-classes/bump.php:2618
+#: includes/skins-classes/bump.php:2767
+#: includes/skins-classes/bump.php:2807
+#: includes/skins-classes/bump.php:3024
+#: includes/skins-classes/bump.php:3096
+#: includes/skins-classes/bump.php:3144
+#: includes/skins-classes/bump.php:3222
+#: includes/skins-classes/bump.php:3267
+#: includes/skins-classes/bump.php:3358
 msgid "Font Size"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2310
-#: includes/skins-classes/bump.php:2597
-#: includes/skins-classes/bump.php:2758
-#: includes/skins-classes/bump.php:3225
+#: includes/skins-classes/bump.php:2399
+#: includes/skins-classes/bump.php:2686
+#: includes/skins-classes/bump.php:2857
+#: includes/skins-classes/bump.php:3372
 msgid "Padding"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2323
-#: includes/skins-classes/bump.php:2453
-#: includes/skins-classes/bump.php:2784
-#: includes/skins-classes/bump.php:3250
+#: includes/skins-classes/bump.php:2412
+#: includes/skins-classes/bump.php:2542
+#: includes/skins-classes/bump.php:2883
+#: includes/skins-classes/bump.php:3397
 msgid "Border Style"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2358
-#: includes/skins-classes/bump.php:2489
-#: includes/skins-classes/bump.php:2820
-#: includes/skins-classes/bump.php:3285
+#: includes/skins-classes/bump.php:2447
+#: includes/skins-classes/bump.php:2578
+#: includes/skins-classes/bump.php:2919
+#: includes/skins-classes/bump.php:3432
 msgid "Border Color"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2371
-#: includes/skins-classes/bump.php:2501
-#: includes/skins-classes/bump.php:2833
-#: includes/skins-classes/bump.php:3297
+#: includes/skins-classes/bump.php:2460
+#: includes/skins-classes/bump.php:2590
+#: includes/skins-classes/bump.php:2932
+#: includes/skins-classes/bump.php:3444
 msgid "Border Width"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2383
-#: includes/skins-classes/bump.php:2514
-#: includes/skins-classes/bump.php:2847
-#: includes/skins-classes/bump.php:3238
+#: includes/skins-classes/bump.php:2472
+#: includes/skins-classes/bump.php:2603
+#: includes/skins-classes/bump.php:2946
+#: includes/skins-classes/bump.php:3385
 msgid "Corner Radius"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2396
+#: includes/skins-classes/bump.php:2485
 msgid "Enable Arrow"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2424
+#: includes/skins-classes/bump.php:2513
 msgid "Pointer Animation color"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2441
+#: includes/skins-classes/bump.php:2530
 msgid "Enable Image Border"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2577
+#: includes/skins-classes/bump.php:2666
 msgid "Variant Link"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2587
+#: includes/skins-classes/bump.php:2676
 msgid "Link Hover Color"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2621
+#: includes/skins-classes/bump.php:2755
 msgid "Regular Price"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2738
-#: includes/skins-classes/bump.php:3159
-#: includes/skins-classes/bump.php:3344
-#: includes/skins-classes/bump.php:3379
+#: includes/skins-classes/bump.php:2837
+#: includes/skins-classes/bump.php:3301
+#: includes/skins-classes/bump.php:3491
+#: includes/skins-classes/bump.php:3526
 msgid "Background Color"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2748
-#: includes/skins-classes/bump.php:3172
+#: includes/skins-classes/bump.php:2847
+#: includes/skins-classes/bump.php:3314
 msgid "Background Hover Color"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2769
+#: includes/skins-classes/bump.php:2868
 msgid "Enable Box Border"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2859
-#: includes/skins-classes/bump.php:3310
+#: includes/skins-classes/bump.php:2958
+#: includes/skins-classes/bump.php:3457
 msgid "Width"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2876
+#: includes/skins-classes/bump.php:2975
 msgid "Outside - Top Left"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2881
+#: includes/skins-classes/bump.php:2980
 msgid "Outside - Top Right"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2886
+#: includes/skins-classes/bump.php:2985
 msgid "Inside - Above Description"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2891
+#: includes/skins-classes/bump.php:2990
 msgid "Inside - Below Description"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2955
+#: includes/skins-classes/bump.php:3054
 msgid "Exclusive Content Position"
 msgstr ""
 
-#: includes/skins-classes/bump.php:2977
+#: includes/skins-classes/bump.php:3076
 msgid "Layout"
 msgstr ""
 
-#: includes/skins-classes/bump.php:3025
+#: includes/skins-classes/bump.php:3124
 msgid "Heading"
 msgstr ""
 
-#: includes/skins-classes/bump.php:3197
+#: includes/skins-classes/bump.php:3190
+msgid "Show Arrows on Desktop"
+msgstr ""
+
+#: includes/skins-classes/bump.php:3199
+msgid "Arrows only show when the products overflow the slider. Dragging and swiping keep working either way."
+msgstr ""
+
+#: includes/skins-classes/bump.php:3202
+msgid "Show Arrows on Mobile"
+msgstr ""
+
+#: includes/skins-classes/bump.php:3211
+msgid "Applies below 768px."
+msgstr ""
+
+#: includes/skins-classes/bump.php:3344
 msgid "Hover Color"
 msgstr ""
 
-#: includes/skins-classes/bump.php:3331
+#: includes/skins-classes/bump.php:3478
 msgid "Added Button Color"
 msgstr ""
 
-#: includes/skins-classes/bump.php:3358
+#: includes/skins-classes/bump.php:3505
 msgid "Removed from Cart Button"
 msgstr ""
 
-#: includes/skins-classes/bump.php:3392
+#: includes/skins-classes/bump.php:3539
 msgid "Show Icon"
 msgstr ""
 
-#: includes/skins-classes/bump.php:3436
+#: includes/skins-classes/bump.php:3583
 msgid "Line Color (Inactive)"
 msgstr ""
 
-#: includes/skins-classes/bump.php:3448
+#: includes/skins-classes/bump.php:3595
 msgid "Line Color (Active)"
 msgstr ""
 
-#: includes/skins-classes/bump.php:3459
+#: includes/skins-classes/bump.php:3606
 msgid "Switch Color"
 msgstr ""
 
-#: includes/skins-classes/bump.php:3467
+#: includes/skins-classes/bump.php:3614
 msgid "Circle Color (Inactive)"
 msgstr ""
 
-#: includes/skins-classes/bump.php:3479
+#: includes/skins-classes/bump.php:3626
 msgid "Circle Color (Active)"
 msgstr ""
 

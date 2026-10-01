@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-20T13:41:27+00:00\n"
+"POT-Creation-Date: 2026-09-04T10:39:31+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woofunnels-aero-checkout\n"
@@ -34,7 +34,7 @@ msgstr ""
 #. Author of the plugin
 #: woofunnels-aero-checkout.php
 #: builder/elementor/class-wfacp-elementor.php:272
-#: builder/gutenberg/class-wfacp-gutenberg.php:308
+#: builder/gutenberg/class-wfacp-gutenberg.php:320
 #: builder/oxygen/class-wfacp-oxy.php:123
 msgid "FunnelKit"
 msgstr ""
@@ -71,7 +71,7 @@ msgstr ""
 
 #: admin/class-wfacp-admin.php:400
 #: admin/rest-api/class-wfacp-rest-funnels.php:500
-#: builder/gutenberg/class-wfacp-gutenberg.php:234
+#: builder/gutenberg/class-wfacp-gutenberg.php:246
 msgid "Edit"
 msgstr ""
 
@@ -823,7 +823,7 @@ msgstr ""
 #: builder/divi/modules/class-divi-mini-cart.php:28
 #: builder/elementor/widgets/class-elementor-form.php:508
 #: builder/elementor/widgets/class-elementor-summary.php:44
-#: builder/gutenberg/class-wfacp-gutenberg.php:528
+#: builder/gutenberg/class-wfacp-gutenberg.php:540
 #: builder/oxygen/modules/class-oxy-form.php:186
 #: builder/oxygen/modules/class-oxy-mini-cart.php:39
 #: includes/class-wfacp-common.php:552
@@ -1476,9 +1476,9 @@ msgstr ""
 #: builder/customizer/templates/embed_forms_1/template.php:2096
 #: builder/divi/class-abstract-wfacp-fields.php:1215
 #: builder/elementor/class-abstract-wfacp-fields.php:951
-#: builder/gutenberg/class-wfacp-gutenberg.php:500
-#: builder/gutenberg/class-wfacp-gutenberg.php:605
-#: builder/gutenberg/class-wfacp-gutenberg.php:610
+#: builder/gutenberg/class-wfacp-gutenberg.php:512
+#: builder/gutenberg/class-wfacp-gutenberg.php:617
+#: builder/gutenberg/class-wfacp-gutenberg.php:622
 #: builder/oxygen/class-abstract-wfacp-fields.php:989
 msgid "You saved {{saving_amount}} ({{saving_percentage}}) on this order"
 msgstr ""
@@ -1874,9 +1874,9 @@ msgstr ""
 
 #: builder/customizer/customizer-options/class-section-form.php:1172
 #: builder/elementor/widgets/class-elementor-form.php:1027
-#: builder/gutenberg/class-wfacp-gutenberg.php:583
+#: builder/gutenberg/class-wfacp-gutenberg.php:595
 #: includes/class-wfacp-common.php:4129
-#: includes/class-wfacp-template.php:2557
+#: includes/class-wfacp-template.php:2597
 msgid "All transactions are secure and encrypted."
 msgstr ""
 
@@ -1946,7 +1946,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:1590
 #: builder/divi/modules/class-divi-form.php:1422
 #: builder/elementor/widgets/class-elementor-form.php:285
-#: builder/gutenberg/class-wfacp-gutenberg.php:506
+#: builder/gutenberg/class-wfacp-gutenberg.php:518
 #: builder/oxygen/modules/class-oxy-form.php:1303
 msgid "Arrow 1"
 msgstr ""
@@ -1954,7 +1954,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:1591
 #: builder/divi/modules/class-divi-form.php:1423
 #: builder/elementor/widgets/class-elementor-form.php:286
-#: builder/gutenberg/class-wfacp-gutenberg.php:507
+#: builder/gutenberg/class-wfacp-gutenberg.php:519
 #: builder/oxygen/modules/class-oxy-form.php:1304
 msgid "Arrow 2"
 msgstr ""
@@ -1962,7 +1962,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:1592
 #: builder/divi/modules/class-divi-form.php:1424
 #: builder/elementor/widgets/class-elementor-form.php:287
-#: builder/gutenberg/class-wfacp-gutenberg.php:508
+#: builder/gutenberg/class-wfacp-gutenberg.php:520
 #: builder/oxygen/modules/class-oxy-form.php:1305
 msgid "Arrow 3"
 msgstr ""
@@ -1970,7 +1970,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:1593
 #: builder/divi/modules/class-divi-form.php:1425
 #: builder/elementor/widgets/class-elementor-form.php:288
-#: builder/gutenberg/class-wfacp-gutenberg.php:509
+#: builder/gutenberg/class-wfacp-gutenberg.php:521
 #: builder/oxygen/modules/class-oxy-form.php:1306
 msgid "Checkmark"
 msgstr ""
@@ -1978,7 +1978,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:1594
 #: builder/divi/modules/class-divi-form.php:1426
 #: builder/elementor/widgets/class-elementor-form.php:289
-#: builder/gutenberg/class-wfacp-gutenberg.php:510
+#: builder/gutenberg/class-wfacp-gutenberg.php:522
 #: builder/oxygen/modules/class-oxy-form.php:1307
 msgid "Cart 1"
 msgstr ""
@@ -1986,7 +1986,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:1595
 #: builder/divi/modules/class-divi-form.php:1427
 #: builder/elementor/widgets/class-elementor-form.php:290
-#: builder/gutenberg/class-wfacp-gutenberg.php:511
+#: builder/gutenberg/class-wfacp-gutenberg.php:523
 #: builder/oxygen/modules/class-oxy-form.php:1308
 msgid "Lock 1"
 msgstr ""
@@ -1994,7 +1994,7 @@ msgstr ""
 #: builder/customizer/customizer-options/class-section-form.php:1596
 #: builder/divi/modules/class-divi-form.php:1428
 #: builder/elementor/widgets/class-elementor-form.php:291
-#: builder/gutenberg/class-wfacp-gutenberg.php:512
+#: builder/gutenberg/class-wfacp-gutenberg.php:524
 #: builder/oxygen/modules/class-oxy-form.php:1309
 msgid "Lock 2"
 msgstr ""
@@ -2829,7 +2829,7 @@ msgstr ""
 
 #: builder/customizer/templates/embed_forms_1/template.php:1491
 #: builder/elementor/widgets/class-elementor-form.php:505
-#: builder/gutenberg/class-wfacp-gutenberg.php:525
+#: builder/gutenberg/class-wfacp-gutenberg.php:537
 #: builder/oxygen/modules/class-oxy-form.php:183
 #: includes/class-wfacp-common.php:4185
 msgid "Where to ship it?"
@@ -2837,7 +2837,7 @@ msgstr ""
 
 #: builder/customizer/templates/embed_forms_1/template.php:1499
 #: builder/elementor/widgets/class-elementor-form.php:513
-#: builder/gutenberg/class-wfacp-gutenberg.php:533
+#: builder/gutenberg/class-wfacp-gutenberg.php:545
 #: builder/oxygen/modules/class-oxy-form.php:191
 #: importer/checkout-settings/embed_forms_2.php:85
 #: includes/class-wfacp-common.php:4180
@@ -2921,7 +2921,7 @@ msgstr ""
 #: builder/customizer/templates/layout_9/template.php:1013
 #: builder/divi/modules/class-divi-form.php:306
 #: builder/elementor/widgets/class-elementor-form.php:335
-#: builder/gutenberg/class-wfacp-gutenberg.php:592
+#: builder/gutenberg/class-wfacp-gutenberg.php:604
 #: builder/oxygen/modules/class-oxy-form.php:603
 #: includes/class-wfacp-common.php:4177
 msgid "Show Order Summary"
@@ -2941,7 +2941,7 @@ msgstr ""
 #: builder/customizer/templates/layout_9/template.php:1036
 #: builder/divi/modules/class-divi-form.php:307
 #: builder/elementor/widgets/class-elementor-form.php:336
-#: builder/gutenberg/class-wfacp-gutenberg.php:593
+#: builder/gutenberg/class-wfacp-gutenberg.php:605
 #: builder/oxygen/modules/class-oxy-form.php:617
 #: includes/class-wfacp-common.php:4178
 msgid "Hide Order Summary"
@@ -3152,7 +3152,7 @@ msgid "Low Stock Trigger"
 msgstr ""
 
 #: builder/divi/class-abstract-wfacp-fields.php:1213
-#: builder/gutenberg/class-wfacp-gutenberg.php:498
+#: builder/gutenberg/class-wfacp-gutenberg.php:510
 msgid "{{quantity}} left in stock"
 msgstr ""
 
@@ -3299,7 +3299,7 @@ msgstr ""
 
 #: builder/divi/modules/class-divi-form.php:260
 #: builder/elementor/widgets/class-elementor-form.php:231
-#: builder/gutenberg/class-wfacp-gutenberg.php:550
+#: builder/gutenberg/class-wfacp-gutenberg.php:562
 #: builder/oxygen/modules/class-oxy-form.php:552
 #: includes/class-wfacp-common.php:4198
 msgid "NEXT STEP →"
@@ -3313,7 +3313,7 @@ msgstr ""
 
 #: builder/divi/modules/class-divi-form.php:286
 #: builder/elementor/widgets/class-elementor-form.php:267
-#: builder/gutenberg/class-wfacp-gutenberg.php:567
+#: builder/gutenberg/class-wfacp-gutenberg.php:579
 #: builder/oxygen/modules/class-oxy-form.php:578
 #: includes/class-wfacp-common.php:4162
 #: public/template-common/next-button.php:57
@@ -3519,8 +3519,8 @@ msgid "The message will show when stock quantity of item is less than or equal t
 msgstr ""
 
 #: builder/elementor/class-abstract-wfacp-fields.php:948
-#: builder/gutenberg/class-wfacp-gutenberg.php:603
-#: builder/gutenberg/class-wfacp-gutenberg.php:608
+#: builder/gutenberg/class-wfacp-gutenberg.php:615
+#: builder/gutenberg/class-wfacp-gutenberg.php:620
 #: builder/oxygen/class-abstract-wfacp-fields.php:987
 msgid "{{quantity}} LEFT IN STOCK"
 msgstr ""
@@ -3580,7 +3580,7 @@ msgid "Form Header"
 msgstr ""
 
 #: builder/elementor/widgets/class-elementor-form.php:509
-#: builder/gutenberg/class-wfacp-gutenberg.php:529
+#: builder/gutenberg/class-wfacp-gutenberg.php:541
 #: builder/oxygen/modules/class-oxy-form.php:187
 #: includes/class-wfacp-common.php:4183
 msgid "Select your product"
@@ -3609,7 +3609,7 @@ msgstr ""
 msgid "Terms & Conditions"
 msgstr ""
 
-#: builder/gutenberg/class-wfacp-gutenberg.php:182
+#: builder/gutenberg/class-wfacp-gutenberg.php:194
 msgid "Block Editor"
 msgstr ""
 
@@ -5731,7 +5731,7 @@ msgid "Select Shipping Method"
 msgstr ""
 
 #: includes/class-wfacp-common.php:4145
-#: includes/class-wfacp-template.php:2851
+#: includes/class-wfacp-template.php:2891
 msgid "Review Order Summary"
 msgstr ""
 
@@ -6005,15 +6005,15 @@ msgstr ""
 msgid "Install Oxygen Builder"
 msgstr ""
 
-#: includes/class-wfacp-template.php:742
+#: includes/class-wfacp-template.php:782
 msgid "No results found"
 msgstr ""
 
-#: includes/class-wfacp-template.php:2279
+#: includes/class-wfacp-template.php:2319
 msgid "Payment Gateway"
 msgstr ""
 
-#: includes/class-wfacp-template.php:2280
+#: includes/class-wfacp-template.php:2320
 msgid "Enabled payment methods will display on the frontend."
 msgstr ""
 

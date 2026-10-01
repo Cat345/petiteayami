@@ -21,7 +21,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_SiteOrigin' ) ) {
 				if ( empty( $panels_data ) ) {
 					return;
 				}
-				$shortcodes     = json_encode( $panels_data );
+				$shortcodes     = wp_json_encode( $panels_data );
 				$start_position = strpos( $shortcodes, '[wfacp_forms' );
 				if ( false !== $start_position ) {
 					$shortcode_string = substr( $shortcodes, $start_position );

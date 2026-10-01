@@ -53,6 +53,7 @@ if ( ! class_exists( 'WFOB_Layout_4' ) ) {
 				'add_button_hover_color'             => '',
 				'add_button_bg_color'                => '#353030',
 				'add_button_hover_bg_color'          => '',
+				'icon_on_button'                     => 'none',
 
 				'added_button_color'                 => '#dcdcdc',
 				'added_button_bg_color'              => '#f7f7f7',

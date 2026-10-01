@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 7.0
 Tested up to: 7.1
-Stable tag: 5.38.1
+Stable tag: 5.40.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,20 +227,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.38.1 - 2026-09-14 =
-* Added: Turning off open and click tracking in MailPoet now also turns it off in AutomateWoo, so a subscriber only has to say it once. Turning it back on clears it in both places too;
-* Improved: Input validation and block sanitization for the newsletter browser preview request;
-* Improved: Sanitization of nested content blocks in emails;
-* Improved: WP-CLI subscriber import now supports CSVs exported from the plugin;
-* Changed: Shorten customer email addresses in WooCommerce automatic email logs;
-* Fixed: Emails page failing to load on sites with a large log table;
-* Fixed: Subscriber and statistics exports of values a spreadsheet reads as a formula, such as a phone number starting with a plus;
-* Fixed: Keep the original tracking consent record when a list is imported again;
-* Fixed: Stop a subscriber's tracking choice being changed by someone else;
-* Fixed: Email template selector layout with Gutenberg 23.9 or newer;
-* Fixed: Pop-up, fixed bar, and slide-in forms not appearing on single posts and pages when the theme or page builder renders the content outside the main loop;
-* Fixed: Stop block checkout recording a tracking decline for customers who were never asked;
-* Fixed: Use the first row for an email listed twice within one batch of a WP-CLI subscriber import, as the import screen does;
-* Fixed: Bulk unsubscribe of large subscriber selections timing out instead of completing.
+= 5.40.0 - 2026-09-29 =
+* Added: "Only subscribers we can track" option on engagement segment filters, so segments like "did not open" leave out subscribers whose opens are not recorded;
+* Improved: PHP upgrade notice, which now tells sites on PHP 8.0 and older that MailPoet will require PHP 8.1 from February 2027;
+* Fixed: Engagement score shows as unknown for subscribers who cannot be tracked, instead of dropping toward 0%;
+* Fixed: Automated Latest Content, Posts, and Products blocks now hide the content of password-protected posts;
+* Fixed: Post titles and site names render as plain text in emails, and the Latest Posts block previews posts as read-only text.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

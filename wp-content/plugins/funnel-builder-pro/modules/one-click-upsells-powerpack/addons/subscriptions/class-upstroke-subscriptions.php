@@ -288,7 +288,20 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 					$trial_end_date    = $this->get_trial_expiration_date( $product->get_id(), $start_date, $offer_data );
 					$next_payment_date = $this->get_first_renewal_payment_date( $product->get_id(), $offer_data, $start_date );
-					$end_date          = WC_Subscriptions_Product::get_expiration_date( $product->get_id(), $start_date );
+
+					// Scheme-aware end date: scheme-based simple products carry no static _subscription_length meta,
+					// so WC_Subscriptions_Product::get_expiration_date() returns 0 and leaves the End Date blank.
+					// When the accepted scheme provides a finite length, derive the end date from it (mirroring
+					// WC Subscriptions' native math: length is in whole billing periods, counted from the trial end
+					// date when a trial is present); otherwise fall back to the native call for genuine sub products.
+					$scheme_length = (int) $this->get_length( $product, $offer_data );
+					if ( $scheme_length > 0 ) {
+						$scheme_period = $this->get_period( $product, $offer_data );
+						$end_from      = ( $trial_end_date > 0 ) ? $trial_end_date : $start_date;
+						$end_date      = gmdate( 'Y-m-d H:i:s', wcs_add_time( $scheme_length, $scheme_period, wcs_date_to_time( $end_from ) ) );
+					} else {
+						$end_date = WC_Subscriptions_Product::get_expiration_date( $product->get_id(), $start_date );
+					}
 
 					if ( $trial_end_date > 0 ) {
 

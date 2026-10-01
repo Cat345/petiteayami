@@ -110,7 +110,7 @@ class Checkout_Integration extends Base_Model implements IntegrationInterface {
                 'labels'                                 => \ACFWF()->Checkout->get_store_credits_redeem_form_labels(),
                 'button_text'                            => __( 'Apply', 'advanced-coupons-for-woocommerce-free' ),
                 'pay_with_store_credits_text'            => __( 'Pay with Store Credits', 'advanced-coupons-for-woocommerce-free' ),
-                'notice_store_credits_text'              => __( 'The total of your order changed, please click here to <a class="acfw-reapply-sc-discount" href="#">reapply the store credit discount</a>.', 'advanced-coupons-for-woocommerce-free' ),
+                'notice_store_credits_text'              => \ACFWF()->Store_Credits_Checkout->get_reapply_discount_notice_text(),
                 'redeem_nonce'                           => wp_create_nonce( 'acfwf_redeem_store_credits_checkout' ),
                 'hide_store_credits_on_zero_balance'     => get_option( Plugin_Constants::STORE_CREDITS_HIDE_CHECKOUT_ZERO_BALANCE, 'no' ),
                 'display_store_credits_redeem_form'      => get_option( Plugin_Constants::DISPLAY_STORE_CREDITS_REDEEM_FORM, 'yes' ), // Display store credits redeem form.

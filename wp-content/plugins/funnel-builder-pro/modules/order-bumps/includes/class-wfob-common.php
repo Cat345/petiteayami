@@ -3167,6 +3167,12 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 				// Required field keys to check
 				$required_field_keys = array(
+					/*
+					The Show Icon control is rendered from the layout's field list but its value only
+						reaches the editor (and the saved design) if the key exists in the design data —
+						without it the select has no value to bind to and the choice is silently dropped.
+						Layouts that do not declare a default for it are left untouched. */
+					'icon_on_button',
 					'exclusive_content_enable',
 					'exclusive_content',
 					'social_proof_enable',
@@ -3178,6 +3184,13 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 					'social_proof_tooltip_heading_bg_color',
 					'social_proof_tooltip_heading_font_size',
 					'social_proof_tooltip_heading_color',
+					/*
+					Slider arrow switches (Skin 12). Without the key the editor has nothing to bind
+						the checkbox to, so it would render unticked on a bump saved before they existed
+						and the merchant's first save would write that back as "off". Layouts that do not
+						declare a default for them are left untouched. */
+					'slider_arrow_desktop',
+					'slider_arrow_mobile',
 				);
 
 				// Add missing keys from default design
@@ -3224,6 +3237,100 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 						'step'  => true,
 						'name'  => true,
 						'id'    => true,
+					),
+				)
+			);
+
+			return wp_kses( $content, $allowed );
+		}
+
+		/**
+		 * Sanitise bump markup that carries an inline icon.
+		 *
+		 * WordPress core's allowed post tags contain no <svg>/<path>, so wp_kses_post() drops the
+		 * whole icon and every inline-SVG setting (the "Show Icon" choice on the add-to-cart button,
+		 * for instance) looks broken on the live checkout as well as in the admin preview. Extend
+		 * the post allow-list with the presentational SVG tags and attributes our icons use — no
+		 * event handlers, no <script>, no <foreignObject>, so nothing script-bearing survives.
+		 *
+		 * @param string $content Raw HTML content to sanitise.
+		 *
+		 * @return string Sanitised HTML.
+		 */
+		public static function kses_bump_svg_content( $content ) {
+			$svg_attributes = array(
+				'class'             => true,
+				'style'             => true,
+				'fill'              => true,
+				'fill-rule'         => true,
+				'fill-opacity'      => true,
+				'clip-rule'         => true,
+				'stroke'            => true,
+				'stroke-width'      => true,
+				'stroke-linecap'    => true,
+				'stroke-linejoin'   => true,
+				'stroke-dasharray'  => true,
+				'stroke-dashoffset' => true,
+				'opacity'           => true,
+				'transform'         => true,
+			);
+
+			$allowed = array_merge(
+				wp_kses_allowed_html( 'post' ),
+				array(
+					'svg'      => array_merge(
+						$svg_attributes,
+						array(
+							'width'               => true,
+							'height'              => true,
+							'viewbox'             => true,
+							'xmlns'               => true,
+							'preserveaspectratio' => true,
+							'aria-hidden'         => true,
+							'focusable'           => true,
+							'role'                => true,
+						)
+					),
+					'g'        => $svg_attributes,
+					'path'     => array_merge( $svg_attributes, array( 'd' => true ) ),
+					'circle'   => array_merge(
+						$svg_attributes,
+						array(
+							'cx' => true,
+							'cy' => true,
+							'r'  => true,
+						)
+					),
+					'ellipse'  => array_merge(
+						$svg_attributes,
+						array(
+							'cx' => true,
+							'cy' => true,
+							'rx' => true,
+							'ry' => true,
+						)
+					),
+					'line'     => array_merge(
+						$svg_attributes,
+						array(
+							'x1' => true,
+							'y1' => true,
+							'x2' => true,
+							'y2' => true,
+						)
+					),
+					'polygon'  => array_merge( $svg_attributes, array( 'points' => true ) ),
+					'polyline' => array_merge( $svg_attributes, array( 'points' => true ) ),
+					'rect'     => array_merge(
+						$svg_attributes,
+						array(
+							'x'      => true,
+							'y'      => true,
+							'width'  => true,
+							'height' => true,
+							'rx'     => true,
+							'ry'     => true,
+						)
 					),
 				)
 			);

@@ -32,7 +32,7 @@ if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
                             <div class="wfacp_shipping_radio">
 								<?php
 								wcs_cart_print_shipping_input( $index, $method, $chosen_method, 'radio' );
-								echo sprintf( '<label for="shipping_method_%s_%s">%s</label>', $index, esc_attr( sanitize_title( $method->id ) ), WFACP_Common::shipping_method_label($method ) );
+								echo sprintf( '<label for="shipping_method_%s_%s">%s</label>', $index, esc_attr( sanitize_title( $method->id ) ), wp_kses_post( WFACP_Common::shipping_method_label($method ) ) );
 								?>
                             </div>
                             <div class="wfacp_shipping_price">

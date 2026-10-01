@@ -155,11 +155,23 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 		public function load_front_template( $template_file ) {
 			add_filter( 'wfacp_block_editor_compatibility', '__return_true' );
 			$template = WFACP_Common::get_page_design( WFACP_Common::get_id() );
-			if ( $template['selected_type'] === 'gutenberg' ) {
+			if ( $template['selected_type'] === 'gutenberg' || $this->is_gutenberg_preview_request() ) {
 				$template_file = __DIR__ . '/template/template.php';
 			}
 
 			return $template_file;
+		}
+
+		/**
+		 * Our block preview ajax must always render with the Gutenberg template class,
+		 * regardless of which builder the page design is saved with.
+		 */
+		private function is_gutenberg_preview_request() {
+			if ( ! wp_doing_ajax() || ! isset( $_REQUEST['action'] ) ) {
+				return false;
+			}
+
+			return in_array( $_REQUEST['action'], array( 'get_gutenberg_checkout_from_data', 'get_gutenberg_mini_cart_data' ), true ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in the ajax callbacks
 		}
 
 
@@ -216,7 +228,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			if ( empty( $template ) ) {
 				return;
 			}
-			if ( 'gutenberg' === $template['selected_type'] ) {
+			if ( 'gutenberg' === $template['selected_type'] || $this->is_gutenberg_preview_request() ) {
 				include_once __DIR__ . ( '/class-wfacp-gutenberg-template.php' );
 			}
 		}

@@ -172,12 +172,38 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Smart_Coupons' ) ) {
                     (function ($) {
                         wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_apply_coupon_field', set_custom_data);
                         wfacp_frontend.hooks.addFilter('wfacp_before_ajax_data_apply_coupon_main', set_custom_data);
+                        wfacp_frontend.hooks.addAction('wfacp_ajax_apply_coupon_field', sync_coupon_field, 9);
+                        wfacp_frontend.hooks.addAction('wfacp_ajax_apply_coupon_main', sync_coupon_field, 9);
                         wfacp_frontend.hooks.addAction('wfacp_ajax_apply_coupon_field', trigger_checkout);
                         wfacp_frontend.hooks.addAction('wfacp_ajax_apply_coupon_main', trigger_checkout);
 
                         function set_custom_data(data) {
                             data['unset_fragments'] = 'yes';
                             return data;
+                        }
+
+                        /* unset_fragments strips our fragments from this response, so the coupon
+                           field is not re-rendered until the follow-up update_checkout returns.
+                           During that window the input's value and its floating-label wrapper must
+                           move together: an applied coupon empties the field and drops the label,
+                           a rejected one keeps the typed code with the label raised.
+                           Selectors cover both coupon UIs across template versions: the layout_9 /
+                           shopcheckout main form's input carries no wfacp_coupon_field_input class,
+                           so it must be matched through its form. */
+                        function sync_coupon_field(rsp) {
+                            var has_error = rsp.hasOwnProperty('message') && rsp.message.hasOwnProperty('error');
+                            $('form.checkout_coupon input[name="coupon_code"], input.wfacp_coupon_field_input, #wfacp_coupon_code_field').each(function () {
+                                var input = $(this);
+                                var wrap = input.closest('.wfacp-input-form, .form-row, .wfacp-form-control-wrapper');
+                                if (has_error) {
+                                    if ('' !== input.val()) {
+                                        wrap.addClass('wfacp-anim-wrap');
+                                    }
+                                    return;
+                                }
+                                input.val('');
+                                wrap.removeClass('wfacp-anim-wrap');
+                            });
                         }
 
                         function trigger_checkout(rsp) {

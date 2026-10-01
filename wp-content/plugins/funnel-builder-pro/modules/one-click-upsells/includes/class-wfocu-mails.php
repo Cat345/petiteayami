@@ -33,6 +33,11 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 			 */
 			add_action( 'wfocu_before_normalize_order_status_to_successful', array( $this, 'maybe_hold_mails_after_processing' ), 10, 2 );
 
+			/**
+			 * Maybe stopping woocommerce to fire the failed order mail on the midway status
+			 */
+			add_action( 'wfocu_before_normalize_order_status', array( $this, 'maybe_hold_failed_mail_on_midway_status' ), 10 );
+
 			/**************** CRON SCHEDULE HANDLING */
 
 			/**
@@ -184,6 +189,24 @@ if ( ! class_exists( 'WFOCU_Mails' ) ) {
 			if ( isset( $wc_mails->emails['WC_Email_Customer_Processing_Order'] ) && is_a( $wc_mails->emails['WC_Email_Customer_Processing_Order'], 'WC_Email' ) && 'start' === WFOCU_Core()->data->get_option( 'send_processing_mail_on' ) ) {
 				remove_all_actions( 'woocommerce_order_status_' . $from . '_to_' . $to . '_notification' );
 				remove_all_actions( 'woocommerce_order_status_completed_notification' );
+			}
+		}
+
+		/**
+		 * @hooked `wfocu_before_normalize_order_status`
+		 * Removing the woocommerce failed order mail before the order moves to the midway status.
+		 *
+		 * The order passes through the status it held before the funnel, which is intentional. When the
+		 * customer's first payment attempt declined that status is `failed`, so the mail would tell the
+		 * customer their order could not be processed even though the retry had already succeeded.
+		 * WC_Email_Customer_Failed_Order listens on the generic failed notification, so it fires for any
+		 * transition into failed, including ours from the primary order status.
+		 */
+		public function maybe_hold_failed_mail_on_midway_status() {
+			$wc_mails = WC()->mailer();
+
+			if ( isset( $wc_mails->emails['WC_Email_Customer_Failed_Order'] ) && is_a( $wc_mails->emails['WC_Email_Customer_Failed_Order'], 'WC_Email' ) ) {
+				remove_action( 'woocommerce_order_status_failed_notification', array( $wc_mails->emails['WC_Email_Customer_Failed_Order'], 'trigger' ), 10 );
 			}
 		}
 

@@ -1989,6 +1989,23 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			echo apply_filters( 'woocommerce_wfacp_dropdown_variation_attribute_options_html', $html, $args );
 		}
 
+		/**
+		 * Whether the current request is entitled to read the given order.
+		 *
+		 * Mirrors the order-key test WFFN_Thank_You_WC_Pages already applies for the same
+		 * reason (see class-wffn-thank-you-wc-pages.php): the order key is the secret that
+		 * WooCommerce embeds in the order-received URL, and FunnelKit's own thank-you links
+		 * carry it too -- WFTY_Common adds both 'key' and 'order_id' -- so the legitimate
+		 * flow is unaffected while id enumeration is not.
+		 *
+		 * @param int $order_id Order id taken from the request.
+		 *
+		 * @return bool
+		 */
+		public static function current_request_can_view_order( $order_id ) {
+			return WFFN_Common::current_request_can_view_order( $order_id );
+		}
+
 		public static function wfacp_order_custom_field( $atts ) {
 
 			$atts = shortcode_atts(
@@ -2006,8 +2023,19 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			$order_id = absint( $atts['order_id'] );
-			if ( 0 === $order_id && isset( $_REQUEST['order_id'] ) && absint( $_REQUEST['order_id'] ) > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Order ID parameter detection for shortcode display
-				$order_id = absint( $_REQUEST['order_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Order ID parameter detection for shortcode display
+
+			/**
+			 * An order id supplied in the shortcode attribute comes from page content, so it is
+			 * as trusted as the author who wrote it. One arriving in the URL is not: this
+			 * shortcode prints billing and shipping details -- name, email, phone, full address
+			 * -- so without an entitlement check any visitor could walk order ids and read
+			 * other customers' data. Verify before accepting it.
+			 */
+			if ( 0 === $order_id ) {
+				$requested_order_id = isset( $_REQUEST['order_id'] ) ? absint( wp_unslash( $_REQUEST['order_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a nonce cannot apply to a shortcode rendered for logged-out customers; entitlement is verified on the next line instead.
+				if ( $requested_order_id > 0 && self::current_request_can_view_order( $requested_order_id ) ) {
+					$order_id = $requested_order_id;
+				}
 			}
 
 			$order_id = apply_filters( 'wfacp_custom_field_order_id', $order_id );
@@ -2540,6 +2568,20 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 		public static function get_fragments_attr() {
 			return 'data-time="' . time() . '"';
+		}
+
+		/**
+		 * The value behind get_fragments_attr(), so templates can write the
+		 * attribute themselves and escape it at the point of output.
+		 *
+		 * get_fragments_attr() returns a whole attribute, which no escaper can
+		 * wrap -- esc_attr() would escape its quotes and break the markup. It is
+		 * kept for outside callers.
+		 *
+		 * @return int Current timestamp.
+		 */
+		public static function get_fragments_time() {
+			return time();
 		}
 
 		public static function initiate_track_and_analytics() {
@@ -3390,7 +3432,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				if ( ! is_string( $content ) ) {
 					// Convert to string if possible
 					if ( is_array( $content ) || is_object( $content ) ) {
-						$content = json_encode( $content );
+						$content = wp_json_encode( $content );
 					} else {
 						$content = (string) $content;
 					}

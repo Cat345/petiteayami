@@ -807,7 +807,7 @@ if ( ! class_exists( 'WFACP_Oxy_Template' ) ) {
 
 			<div class="btm_btn_sec wfacp_back_cart_link">
 				<div class="wfacp-back-btn-wrap">
-					<a href="<?php echo esc_attr( $cartURL ); ?>"><?php echo wp_kses_post( $this->form_data['return_to_cart_text'] );//phpcs:ignore WordPressVIPMinimum.Security.ProperEscapingFunction.hrefSrcEscUrl ?></a>
+					<a href="<?php echo esc_url( $cartURL ); ?>"><?php echo wp_kses_post( $this->form_data['return_to_cart_text'] );//phpcs:ignore WordPressVIPMinimum.Security.ProperEscapingFunction.hrefSrcEscUrl ?></a>
 				</div>
 			</div>
 			<?php
@@ -991,11 +991,13 @@ if ( ! class_exists( 'WFACP_Oxy_Template' ) ) {
 
 				if ( $form_step == 'place_order' ) {
 					echo '<style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo 'body #wfacp-e-form .' . $safe_current . ' #place_order:' . $safe_content . "{content:'$icon';font-family: 'bwf-icons' !important; display: inline-block !important;margin-$margin:10px;position: relative;text-transform: none;}"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
+					echo 'body #wfacp-e-form .' . sanitize_html_class( $current ) . ' #place_order:' . sanitize_key( $content ) . "{content:'" . wp_kses( str_replace( array( "'", '"' ), '', $icon ), array() ) . "';font-family: 'bwf-icons' !important; display: inline-block !important;margin-" . sanitize_key( $margin ) . ":10px;position: relative;text-transform: none;}";
 					echo '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				} else {
 					echo '<style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo 'body #wfacp-e-form .' . $safe_current . ' .wfacp-next-btn-wrap button:' . $safe_content . "{content:'$icon'; font-family: 'bwf-icons' !important; display: inline-block !important;margin-$margin:10px;position: relative;text-transform: none;}"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
+					echo 'body #wfacp-e-form .' . sanitize_html_class( $current ) . ' .wfacp-next-btn-wrap button:' . sanitize_key( $content ) . "{content:'" . wp_kses( str_replace( array( "'", '"' ), '', $icon ), array() ) . "'; font-family: 'bwf-icons' !important; display: inline-block !important;margin-" . sanitize_key( $margin ) . ":10px;position: relative;text-transform: none;}";
 					echo '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 			}
@@ -1011,29 +1013,33 @@ if ( ! class_exists( 'WFACP_Oxy_Template' ) ) {
 
 				if ( $form_step == 'place_order' ) {
 					echo '<style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '#wfacp-e-form .' . $safe_current . ' #place_order:' . $content1 . '{top:3px;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '#wfacp-e-form .' . $safe_current . ' #place_order:' . $safe_content . "{content:'$button_subheading'; display: inline-block !important;position: relative;}"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '#wfacp-e-form .' . $safe_current . ' button#place_order{display:inline-block;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '#wfacp-e-form .' . $safe_current . ' #place_order:' . $safe_content . '{display: block !important;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
+					echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' #place_order:' . sanitize_key( $content1 ) . '{top:3px;}';
+					echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' #place_order:' . sanitize_key( $content ) . "{content:\"" . str_replace( array( '"', '\\', '<', '>' ), '', $button_subheading ) . "\"; display: inline-block !important;position: relative;}"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- breakout characters are removed inline; no core escaper can be used here because they all encode & to &amp;, and <style> is raw text so the entity would be printed to the customer.
+					echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' button#place_order{display:inline-block;}';
+					echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' #place_order:' . sanitize_key( $content ) . '{display: block !important;}';
 					echo '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 				} else {
 					echo '<style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '#wfacp-e-form .' . $safe_current . ' .wfacp-next-btn-wrap button:' . $content1 . '{top:3px;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '#wfacp-e-form .' . $safe_current . ' .wfacp-next-btn-wrap button:' . $safe_content . "{content:'$button_subheading';  display: inline-block !important;position: relative;}"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '#wfacp-e-form .' . $safe_current . ' .wfacp-next-btn-wrap button{display:inline-block;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '#wfacp-e-form .' . $safe_current . ' .wfacp-next-btn-wrap button:' . $safe_content . '{display: block !important;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
+					echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' .wfacp-next-btn-wrap button:' . sanitize_key( $content1 ) . '{top:3px;}';
+					echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' .wfacp-next-btn-wrap button:' . sanitize_key( $content ) . "{content:\"" . str_replace( array( '"', '\\', '<', '>' ), '', $button_subheading ) . "\";  display: inline-block !important;position: relative;}"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- breakout characters are removed inline; no core escaper can be used here because they all encode & to &amp;, and <style> is raw text so the entity would be printed to the customer.
+					echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' .wfacp-next-btn-wrap button{display:inline-block;}';
+					echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' .wfacp-next-btn-wrap button:' . sanitize_key( $content ) . '{display: block !important;}';
 					echo '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 			} elseif ( $form_step == 'place_order' ) {
 				$safe_current = sanitize_html_class( $current );
 				echo '<style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo '#wfacp-e-form .' . $safe_current . ' #place_order{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
+				echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' #place_order{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}';
 				echo '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			} else {
 				$safe_current = sanitize_html_class( $current );
 				echo '<style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo '#wfacp-e-form .' . $safe_current . ' .wfacp-next-btn-wrap button{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
+				echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' .wfacp-next-btn-wrap button{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}';
 				echo '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		}

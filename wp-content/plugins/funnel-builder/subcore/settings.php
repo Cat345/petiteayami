@@ -78,7 +78,7 @@ return apply_filters(
 					'label'            => __( 'Pixel ID & Access Token', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'type'             => 'tracking_id',
 					'placeholder'      => __( '294123501257422', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-					'input_hint'       => __( 'Log into your Facebook ads account to find your Pixel ID.', 'funnel-builder' ) . ' <a target="_blank" href="https://funnelkit.com/docs/funnel-builder/how-to/set-up-facebook-pixel/">' . __( 'Learn More', 'funnel-builder' ) . '</a>', // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'input_hint'       => __( 'Log into your Facebook ads account to find your Pixel ID.', 'funnel-builder' ) . ' <a target="_blank" href="https://funnelkit.com/woocommerce-facebook-pixel/">' . __( 'Learn More', 'funnel-builder' ) . '</a>', // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'secondary_fields' => array(
 						array(
 							'key'         => 'conversion_api_access_token',
@@ -113,7 +113,12 @@ return apply_filters(
 					'key'         => 'conversion_api_test_event_code',
 					'type'        => 'input',
 					'label'       => '',
-					'hint'        => __( '<a target="_blank" href="https://funnelkit.com/docs/funnel-builder/global-settings/facebook-conversion-api/#step-1-select-your-pixel-id-and-go-to-%E2%80%9Ctest-events%E2%80%9D">Learn how to get test_event_code</a>', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment, WordPress.WP.I18n.UnorderedPlaceholdersText
+					'hint'        => sprintf(
+						/* translators: 1: opening anchor tag to the Facebook Conversion API doc, 2: closing anchor tag. */
+						__( '%1$sLearn how to get test_event_code%2$s', 'funnel-builder' ),
+						'<a target="_blank" rel="noopener noreferrer" href="' . esc_url( 'https://funnelkit.com/docs/funnel-builder/global-settings/facebook-conversion-api/#step-1-select-your-pixel-id-and-go-to-%E2%80%9Ctest-events%E2%80%9D' ) . '">',
+						'</a>'
+					),
 					'placeholder' => __( 'Paste your test_event_code here', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'toggler'     => array(
 						'key'   => 'is_fb_conv_enable_test',
@@ -124,7 +129,12 @@ return apply_filters(
 					'key'    => 'is_fb_conversion_api_log',
 					'type'   => 'checklist',
 					'label'  => '',
-					'hint'   => __( 'Use this option to log API request & response. <strong>Uncheck this option after testing</strong>.  <a target="_blank" href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs' ) ) . '">Click here to access logs.</a>', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment, WordPress.WP.I18n.NonSingularStringLiteralText
+					'hint'   => sprintf(
+						/* translators: 1: opening anchor tag to the WooCommerce logs screen, 2: closing anchor tag. */
+						__( 'Use this option to log API request & response. <strong>Uncheck this option after testing</strong>.  %1$sClick here to access logs.%2$s', 'funnel-builder' ),
+						'<a target="_blank" rel="noopener noreferrer" href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs' ) ) . '">',
+						'</a>'
+					),
 					'values' => array(
 						array(
 							'name'  => __( 'Enable Purchase Event Logs', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch

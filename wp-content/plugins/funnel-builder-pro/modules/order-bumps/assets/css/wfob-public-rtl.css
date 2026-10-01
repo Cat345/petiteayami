@@ -446,6 +446,16 @@ body #wfob_wrap .wfob_wrapper .wfob_bump.wfob_layout_12 .wfob_l12_price .wfob_pr
     padding-left: 0;
 }
 
+/* Same trap one element up. The shared skin-type-1/4 rule above pads the title 8px clear of the
+   price, mirroring the LTR sheet for the horizontal skins where the two share a table row. Skin 12
+   is a centered column and its LTR counterpart already cancels that padding — but only on the
+   physical side LTR uses (`padding-right:0`, wfob-public.css), so the RTL `padding-left:8px`
+   survives and shoves the whole centered stack 8px off-center: the title, and the variation link
+   sitting under it. Cancel it on this side too. */
+body #wfob_wrap .wfob_wrapper .wfob_bump.wfob_layout_12.bump_skin_type_4.wfob_enable_price .wfob_bump_title_start {
+    padding-left: 0;
+}
+
 /*-------------------------------------------- Skin 12 — multi-product slider RTL --------------------------------------------*/
 /* The drag-to-scroll track flips automatically with the page direction. The prev/next arrows are
    positioned with physical left/right, so swap sides and flip the chevrons: under RTL "prev"
@@ -462,5 +472,44 @@ body #wfob_wrap .wfob_l12_slider .wfob_l12_nav_next {
 
 body #wfob_wrap .wfob_l12_slider .wfob_l12_nav svg {
     transform: scaleX(-1);
+}
+
+/* The edge-fade scrims sit under the chevrons and fade out with them (.wfob_l12_at_start hides
+   ::before, .wfob_l12_at_end hides ::after), so they have to swap sides with the arrows above or
+   the wrong edge goes dim: ::before marks the START of the track, which under RTL is the right
+   edge. The gradients are directional too, so flip those with the sides — each one must still
+   fade away FROM its own edge, not toward it. */
+body #wfob_wrap .wfob_l12_slider::before {
+    left: auto;
+    right: 0;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.6) 16%, rgba(255, 255, 255, 0));
+}
+
+body #wfob_wrap .wfob_l12_slider::after {
+    right: auto;
+    left: 0;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.6) 16%, rgba(255, 255, 255, 0));
+}
+
+/* The two "Outside - Top" product-tag positions are placed with text-align plus a PHYSICAL margin
+   (LTR sheet L1537-1556), neither of which mirrors, so under RTL both tags pile up on the right:
+   "Top Left" inherits the global text-align:right and lands flush against the edge because its
+   margin-left:16px is now on the far side, and "Top Right" never crosses over to the left at all.
+   Swap the side each one hangs from and move the 16px inset with it, so the pair mirrors the same
+   way the rest of the card already does (image tile, price/ADD row).
+   The `:not()` chain is copied from the LTR rules on purpose: it is what gives those rules their
+   specificity, so the override has to carry it (plus .wfob_layout_12) to win on merit instead of
+   leaning on !important. Scoped to Skin 12 — the other skins share this LTR quirk and want the
+   same treatment, but each needs its own visual check first. */
+body #wfob_wrap .wfob_bump.wfob_layout_12.wfob_bump_section.wfob_exclusive_outside_top_left:not(.wfob_layout_7):not(.wfob_layout_11):not(.wfob_layout_5):not(.wfob_layout_10):not(.wfob_layout_9):not(.wfob_layout_6) .wfob_exclusive_outside_top_left {
+    text-align: right;
+    margin-left: 0;
+    margin-right: 16px;
+}
+
+body #wfob_wrap .wfob_bump.wfob_layout_12.wfob_bump_section.wfob_exclusive_outside_top_right:not(.wfob_layout_7):not(.wfob_layout_11):not(.wfob_layout_5):not(.wfob_layout_10):not(.wfob_layout_9):not(.wfob_layout_6) .wfob_exclusive_outside_top_right {
+    text-align: left;
+    margin-right: 0;
+    margin-left: 16px;
 }
 

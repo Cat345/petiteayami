@@ -4,7 +4,7 @@ Tags: Funnel Builder, WooCommerce Checkout, Sales Funnels, One Click Upsells
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.16.0.4
+Stable tag: 3.16.0.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -398,6 +398,12 @@ If you face any difficulties with FunnelKit, feel free to contact our [Support T
 4. Start creating Funnels.
 
 == Change log ==
+
+
+= 3.16.0.5 =
+* Improved: Funnel: Admin App styling improved with WordPress version 7.1. (#9442)
+* Improved: Checkout: Better handling for the phone field styling conflict with 3rd party plugins printing intl-tel-input CSS. (#9465)
+* Fixed: Checkout: PageView and Custom events for Facebook conversion API fixed. (#9493)
 
 = 3.16.0.4 =
 * Improved: Funnel: Compatibility with Elementor improved related to widget cache. (#9446)

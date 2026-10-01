@@ -36,7 +36,7 @@ do_action( 'wfacp_header_print_in_head' );
 ?>
 <!--main panel wrapper open -->
 <div id="wfacp-e-form">
-    <div class="wrapper wfacp-main-container wfacp_form_steps_wrap <?php echo $wrap_width_cls ?>">
+    <div class="wrapper wfacp-main-container wfacp_form_steps_wrap <?php echo esc_attr( $wrap_width_cls ); ?>">
         <div class="wfacp-wrapper-decoration">
             <!-- container wrapper open -->
             <div class="wfacp-panel-wrapper">
@@ -52,7 +52,7 @@ do_action( 'wfacp_header_print_in_head' );
 							}
 							if ( ( is_array( $step_form_data ) && count( $step_form_data ) > 0 ) && $tab_active !== true ) {
 								?>
-                                <div class="wfacp-payment-title wfacp-hg-by-box wfacp_embed_step_<?php echo $number_of_steps; ?>">
+                                <div class="wfacp-payment-title wfacp-hg-by-box wfacp_embed_step_<?php echo esc_attr( $number_of_steps ); ?>">
                                     <div class="wfacp-payment-tab-wrapper clearfix">
 										<?php
 										$count          = 1;
@@ -81,7 +81,7 @@ do_action( 'wfacp_header_print_in_head' );
 											}
 											$activeClass = apply_filters( 'wfacp_embed_active_progress_bar', $activeClass1, $count, $number_of_steps );
 											?>
-                                            <div class="wfacp-payment-tab-list <?php echo $activeClass . ' ' . $page_class . " " . $addfull_width; ?>  wfacp-tab<?php echo $count; ?>" step="<?php echo $steps_count_here; ?>">
+                                            <div class="wfacp-payment-tab-list <?php echo esc_attr( $activeClass . ' ' . $page_class . " " . $addfull_width ); ?>  wfacp-tab<?php echo $count; ?>" step="<?php echo esc_attr( $steps_count_here ); ?>">
                                                 <div class="wfacp-order2StepNumber"><?php echo $count; ?></div>
                                                 <div class="wfacp-order2StepHeaderText">
                                                     <div class="wfacp-order2StepTitle wfacp-order2StepTitleS1 wfacp_tcolor"><?php echo $value[ 'name_' . $key ]; ?></div>
@@ -97,7 +97,7 @@ do_action( 'wfacp_header_print_in_head' );
 								<?php
 							}
 							?>
-                            <div class="wfacp-inner-form-detail-wrap wfacp_step_count_<?php echo $number_of_steps; ?>">
+                            <div class="wfacp-inner-form-detail-wrap wfacp_step_count_<?php echo esc_attr( $number_of_steps ); ?>">
 								<?php include( $instance->wfacp_get_form() ); ?>
                             </div>
                         </div>

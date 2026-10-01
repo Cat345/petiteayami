@@ -19,7 +19,7 @@ $attribute_keys       = array_keys( $attributes ); ?>
 	<?php do_action( 'woocommerce_before_single_product_summary' ); ?>
 </div>
 <div class='wfacp_variable_product_options' style="float: left;width:48%">
-    <form class="variations_form cart" action="<?php echo esc_url( apply_filters( 'woocommerce_add_to_cart_form_action', $product->get_permalink() ) ); ?>" method="post" enctype='multipart/form-data' data-product_id="<?php echo absint( $product->get_id() ); ?>" data-product_variations="<?php echo htmlspecialchars( wp_json_encode( $available_variations ) ); // WPCS: XSS ok. ?>">
+    <form class="variations_form cart" action="<?php echo esc_url( apply_filters( 'woocommerce_add_to_cart_form_action', $product->get_permalink() ) ); ?>" method="post" enctype='multipart/form-data' data-product_id="<?php echo absint( $product->get_id() ); ?>" data-product_variations="<?php echo esc_attr( wp_json_encode( $available_variations ) ); ?>">
 		<?php do_action( 'woocommerce_before_variations_form' ); ?>
 
 		<?php if ( empty( $available_variations ) && false !== $available_variations ) : ?>

@@ -26,6 +26,14 @@ if ( ! class_exists( 'WFOB_Layout_5' ) ) {
 			return WFOB_PLUGIN_URL . '/assets/img/skin-5.jpg';
 		}
 
+		public static function get_skin_label() {
+			return __( 'Compact Card', 'woofunnels-order-bump' );
+		}
+
+		public static function get_skin_description() {
+			return __( 'Compact tinted card: description and price first, a small boxed checkbox line underneath. No button.', 'woofunnels-order-bump' );
+		}
+
 		public function get_admin_schema() {
 			return parent::get_admin_schema();
 		}

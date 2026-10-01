@@ -181,12 +181,12 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Aliea_vat' ) ) {
                     }
 
                     body .wfacp_main_form .aelia_wc_eu_vat_assistant.wfacp-col-full #vat_number-description {
-                        left: <?php echo $px; ?>;
+                        left: <?php echo esc_attr( $px ); ?>;
                     }
                 }
 
                 body .wfacp_main_form #customer_location_self_certified_field {
-                    padding: 0<?php echo $px; ?>;
+                    padding: 0<?php echo esc_attr( $px ); ?>;
                 }
 
                 #wfacp-e-form .wfacp_main_form #vat_number-description {

@@ -82,9 +82,10 @@ class Defer_URL_Coupon extends Base_Model implements Model_Interface {
      */
     public function save_defer_apply_coupon_field( $coupon_id, $coupon ) {
 
-        // Verify WP's nonce to make sure the request is valid before we save ACFW related data.
-        $nonce = sanitize_key( $_POST['_wpnonce'] ?? '' );
-        if ( ! $nonce || false === wp_verify_nonce( $nonce, 'update-post_' . $coupon_id ) ) {
+        // Verify ACFW's dedicated nonce to ensure the request is valid before saving ACFW data.
+        // Uses _acfw_nonce (not _wpnonce) to avoid conflicts with plugins like WooPayments that
+        // may modify the shared _wpnonce field before form submission.
+        if ( ! isset( $_POST['_acfw_nonce'] ) || false === wp_verify_nonce( sanitize_key( $_POST['_acfw_nonce'] ), 'acfw_save_coupon_data_' . $coupon_id ) ) {
             return;
         }
 

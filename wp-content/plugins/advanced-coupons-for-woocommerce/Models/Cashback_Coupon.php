@@ -157,9 +157,10 @@ class Cashback_Coupon extends Base_Model implements Model_Interface {
     public function save_cashback_coupon_fields( $coupon_id, $coupon ) {
         $meta_name = $this->_constants->META_PREFIX . 'cashback_waiting_period';
 
-        // Verify WP's nonce to make sure the request is valid before we save ACFW related data.
-        $nonce = sanitize_key( $_POST['_wpnonce'] ?? '' );
-        if ( ! $nonce || false === wp_verify_nonce( $nonce, 'update-post_' . $coupon_id ) || ! isset( $_POST[ $meta_name ] ) ) {
+        // Verify ACFW's dedicated nonce to ensure the request is valid before saving ACFW data.
+        // Uses _acfw_nonce (not _wpnonce) to avoid conflicts with plugins like WooPayments that
+        // may modify the shared _wpnonce field before form submission.
+        if ( ! isset( $_POST['_acfw_nonce'] ) || false === wp_verify_nonce( sanitize_key( $_POST['_acfw_nonce'] ), 'acfw_save_coupon_data_' . $coupon_id ) || ! isset( $_POST[ $meta_name ] ) ) {
             return;
         }
 

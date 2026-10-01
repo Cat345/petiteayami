@@ -40,12 +40,12 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 			);
 
 			$this->control_groups['styleHeading'] = array(
-				'title' => esc_html__( 'Heading' ),
+				'title' => esc_html__( 'Heading', 'funnel-builder' ),
 				'tab'   => 'style',
 			);
 
 			$this->control_groups['styleDetails'] = array(
-				'title' => esc_html__( 'Details' ),
+				'title' => esc_html__( 'Details', 'funnel-builder' ),
 				'tab'   => 'style',
 			);
 
@@ -63,7 +63,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 			// Control for the customerDetailsHeading
 			$this->controls['customerDetailsHeading'] = array(
 				'group'   => 'contentCustomerDetails',
-				'label'   => esc_html__( 'Heading' ),
+				'label'   => esc_html__( 'Heading', 'funnel-builder' ),
 				'type'    => 'text',
 				'default' => isset( $defaults['customer_details_heading'] ) ? $defaults['customer_details_heading'] : __( 'Customer Details' , 'funnel-builder'),
 			);
@@ -71,7 +71,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 			// Control for the layoutLabel
 			$this->controls['layoutLabel'] = array(
 				'group' => 'contentCustomerDetails',
-				'label' => esc_html__( 'Layout' ),
+				'label' => esc_html__( 'Layout', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
@@ -81,7 +81,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 				'label'    => esc_html__( 'Structure' , 'funnel-builder'),
 				'type'     => 'select',
 				'options'  => array(
-					'50'  => esc_html__( 'Two Columns' ),
+					'50'  => esc_html__( 'Two Columns', 'funnel-builder' ),
 					'100' => esc_html__( 'Full Width' , 'funnel-builder'),
 				),
 				'default'  => '50',
@@ -102,7 +102,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 
 			$this->controls['typographySectionHeading'] = array(
 				'group'   => 'styleHeading',
-				'label'   => esc_html__( 'Typography' ),
+				'label'   => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'exclude' => array( 'text-align' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'default' => array(
@@ -123,7 +123,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 
 			$this->controls['headingAlign'] = array(
 				'group'   => 'styleHeading',
-				'label'   => esc_html__( 'Alignment' ),
+				'label'   => esc_html__( 'Alignment', 'funnel-builder' ),
 				'type'    => 'text-align',
 				'exclude' => array( 'justify' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'css'     => array(
@@ -136,13 +136,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 
 			$this->controls['headingLabel'] = array(
 				'group' => 'styleDetails',
-				'label' => esc_html__( 'Heading' ),
+				'label' => esc_html__( 'Heading', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
 			$this->controls['typographyHeading'] = array(
 				'group'   => 'styleDetails',
-				'label'   => esc_html__( 'Typography' ),
+				'label'   => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'exclude' => array( 'text-align' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'default' => array(
@@ -164,13 +164,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Customer_Details'
 
 			$this->controls['detailsLabel'] = array(
 				'group' => 'styleDetails',
-				'label' => esc_html__( 'Details' ),
+				'label' => esc_html__( 'Details', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
 			$this->controls['typographyDetails'] = array(
 				'group'   => 'styleDetails',
-				'label'   => esc_html__( 'Typography' ),
+				'label'   => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'exclude' => array( 'text-align' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'default' => array(

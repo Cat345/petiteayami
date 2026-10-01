@@ -40,7 +40,7 @@ if ( $is_global_checkout_f === true ) {
 $pay = WFACP_Core()->pay;
 remove_filter( 'woocommerce_get_checkout_url', [ WFACP_Core()->public, 'woocommerce_get_checkout_url' ], 99999 );
 ?>
-<div class="wfacp_main_form woocommerce <?php echo implode( ' ', $form_class ); ?>">
+<div class="wfacp_main_form woocommerce <?php echo esc_attr( implode( ' ', $form_class ) ); ?>">
 	<?php
 	do_action( 'wfacp_outside_header' );
 	$checkout               = WC()->checkout();
@@ -173,8 +173,8 @@ remove_filter( 'woocommerce_get_checkout_url', [ WFACP_Core()->public, 'woocomme
                     <div class="checkout woocommerce-checkout">
                         <div class="wfacp-left-panel wfacp_page">
                             <div class="wfacp-section wfacp-hg-by-box" data-field-count="1">
-                                <div class="wfacp_internal_form_wrap wfacp-comm-title <?php echo $instance->get_heading_title_class() ?>">
-                                    <h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class(); ?>"><?php echo $instance->get_order_pay_summary_heading(); ?></h2>
+                                <div class="wfacp_internal_form_wrap wfacp-comm-title <?php echo esc_attr( $instance->get_heading_title_class() ); ?>">
+                                    <h2 class="wfacp_section_heading wfacp_section_title <?php echo esc_attr( $instance->get_heading_class() ); ?>"><?php echo $instance->get_order_pay_summary_heading(); ?></h2>
                                 </div>
                                 <div class="wfacp-comm-form-detail clearfix">
                                     <div class="wfacp-row">
@@ -185,11 +185,11 @@ remove_filter( 'woocommerce_get_checkout_url', [ WFACP_Core()->public, 'woocomme
                                 </div>
                             </div>
                         </div>
-                        <div class="wfacp-section wfacp_payment form_section_your_order_0_<?php echo $selected_template_slug; ?> wfacp-section-titlex wfacp-hg-by-box">
+                        <div class="wfacp-section wfacp_payment form_section_your_order_0_<?php echo esc_attr( $selected_template_slug ); ?> wfacp-section-titlex wfacp-hg-by-box">
                             <div style="clear: both;"></div>
-                            <div class="wfacp-comm-title <?php echo $border_cls; ?>">
-                                <h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class() ?> "><?php echo $payment_methods_heading; ?></h2>
-                                <h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
+                            <div class="wfacp-comm-title <?php echo esc_attr( $border_cls ); ?>">
+                                <h2 class="wfacp_section_heading wfacp_section_title <?php echo esc_attr( $instance->get_heading_class() ); ?> "><?php echo $payment_methods_heading; ?></h2>
+                                <h4 class="<?php echo esc_attr( $instance->get_sub_heading_class() ); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
                             </div>
                             <div class="woocommerce-checkout-review-order wfacp-oder-detail clearfix">
                                 <div id="payment">
@@ -208,7 +208,7 @@ remove_filter( 'woocommerce_get_checkout_url', [ WFACP_Core()->public, 'woocomme
 									<?php endif; ?>
                                     <div class="form-row">
                                         <input type="hidden" name="woocommerce_pay" value="1"/>
-										<input type="hidden" name="_wfacp_post_id" value="<?php echo WFACP_Common::get_id(); ?>"/>
+										<input type="hidden" name="_wfacp_post_id" value="<?php echo absint( WFACP_Common::get_id() ); ?>"/>
 										<?php wc_get_template( 'checkout/terms.php' ); ?>
 										<?php do_action( 'woocommerce_pay_order_before_submit' ); ?>
 										<?php echo apply_filters( 'woocommerce_pay_order_button_html', '<button type="submit" class="button alt" id="place_order" value="' . esc_attr( $order_button_text ) . '" data-value="' . esc_attr( $order_button_text ) . '">' . esc_html( $order_button_text ) . '</button>' ); // @codingStandardsIgnoreLine

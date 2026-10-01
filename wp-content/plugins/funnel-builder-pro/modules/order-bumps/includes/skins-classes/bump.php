@@ -542,9 +542,9 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				// back to the skin's own default model rather than the horizontal skins' "left".
 				$position_source = ( is_array( $bump_design_data ) && isset( $bump_design_data['product_image_position_class'] ) ) ? $bump_design_data : $this->get_default_models();
 
-				$this->wfob_bump_products[ $product_key . '_featured_image_options' ]['position']  = WFOB_Common::get_skin_default_image_position( $position_source );
-				$this->wfob_bump_products[ $product_key . '_featured_image_options' ]['width']     = '96';
-				$this->wfob_bump_products[ $product_key . '_featured_image_options' ]['type']      = 'product';
+				$this->wfob_bump_products[ $product_key . '_featured_image_options' ]['position'] = WFOB_Common::get_skin_default_image_position( $position_source );
+				$this->wfob_bump_products[ $product_key . '_featured_image_options' ]['width']    = '96';
+				$this->wfob_bump_products[ $product_key . '_featured_image_options' ]['type']     = 'product';
 
 			}
 
@@ -776,6 +776,13 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$group_key   = 'wfob_group_11';
 					$group_label = __( 'Enable Social Proof Tool Tip', 'woocommerce' );
 
+				} elseif ( strpos( $key, 'slider_arrow' ) !== false ) {
+					/*
+					A key that matches no branch would silently land in whichever group the previous
+						key opened — the slider controls belong to the track, not to any of those. */
+					$group_key   = 'wfob_group_12';
+					$group_label = __( 'Slider', 'woofunnels-order-bump' );
+
 				}
 
 				$tmp_fields[ $group_key ]['key']   = $group_key;
@@ -808,6 +815,25 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 		 */
 		public static function get_default_models() {
 			return array();
+		}
+
+		/**
+		 * Skin name shown in the skin picker. Skins override this; a child
+		 * skin inherits its parent's text unless it declares its own.
+		 *
+		 * @return string
+		 */
+		public static function get_skin_label() {
+			return '';
+		}
+
+		/**
+		 * One-line description of how the skin looks.
+		 *
+		 * @return string
+		 */
+		public static function get_skin_description() {
+			return '';
 		}
 
 
@@ -1198,11 +1224,35 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 		/*------------------------------------Enable Pointer--------------------------------------------- */
 
+		/**
+		 * Whether the skin can show the pointing arrow that sits beside the checkbox.
+		 *
+		 * The arrow singles out one card. A slider skin lays its products out in a scrollable
+		 * track where every card carries its own checkbox, so it has nothing to point at — the
+		 * three arrow controls are dropped from that skin's design panel (see the exclude list in
+		 * set_bump_design_selectors). A bump saved while they were still there keeps
+		 * 'header_enable_pointing_arrow' => true in its design data, and honouring that here would
+		 * paint an arrow on every card with no switch left to turn it back off.
+		 *
+		 * @param array $design_data Design data of this bump.
+		 *
+		 * @return bool
+		 */
+		protected function is_pointing_arrow_supported( $design_data ) {
+			$layout = ( is_array( $design_data ) && isset( $design_data['layout'] ) ) ? $design_data['layout'] : '';
+
+			return ( '' === $layout || ! in_array( $layout, $this->get_slider_layouts(), true ) );
+		}
+
 		public function is_enable_pointer( $bump_id, $design_data = array() ) {
 			if ( is_array( $design_data ) && count( $design_data ) == 0 ) {
 				$design_data = $this->get_design_data( $bump_id );
 			}
 			$enable_pointer = '';
+
+			if ( ! $this->is_pointing_arrow_supported( $design_data ) ) {
+				return $enable_pointer;
+			}
 
 			if ( isset( $design_data['header_enable_pointing_arrow'] ) && wc_string_to_bool( $design_data['header_enable_pointing_arrow'] ) ) {
 				$this->blink_url = WFOB_PLUGIN_URL . '/assets/img/arrow-no-blink.gif';
@@ -1385,19 +1435,55 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 		}
 
 		/**
+		 * Whether a slider arrow breakpoint is switched on in the design data.
+		 *
+		 * The two controls are opt-OUT: a bump saved before they existed has neither key, and a
+		 * layout registered as a slider through the `wfob_slider_layouts` filter need not declare
+		 * them at all — both keep the arrows they render today. Only a merchant who unticks the
+		 * checkbox turns one off, and the panel stores that as an empty string (the design data is
+		 * run through wp_kses_post on save, which flattens boolean false to '').
+		 *
+		 * @param array  $design_data Design data of this bump.
+		 * @param string $key         slider_arrow_desktop | slider_arrow_mobile.
+		 *
+		 * @return bool
+		 */
+		protected function is_slider_arrow_enabled( $design_data, $key ) {
+			if ( ! is_array( $design_data ) || ! isset( $design_data[ $key ] ) ) {
+				return true;
+			}
+
+			return wc_string_to_bool( $design_data[ $key ] );
+		}
+
+		/**
 		 * Open the multi-product slider wrapper (track + prev nav) for slider layouts.
 		 * Multiple bump products are echoed inside a single horizontally scrollable track;
 		 * when they overflow the container the frontend reveals prev/next arrows (see public.js).
 		 *
-		 * @param string $layout     Selected layout slug.
-		 * @param bool   $print_bump Whether output is actually being printed.
+		 * The two arrow classes carry the merchant's per-breakpoint choice to the stylesheet, which
+		 * paints an arrow only for a breakpoint whose class is present — the track itself is always
+		 * swipeable/draggable, so switching the chevrons off never traps a product out of reach.
+		 *
+		 * @param string $layout      Selected layout slug.
+		 * @param bool   $print_bump  Whether output is actually being printed.
+		 * @param array  $design_data Design data of this bump.
 		 */
-		protected function print_multi_product_slider_open( $layout, $print_bump ) {
+		protected function print_multi_product_slider_open( $layout, $print_bump, $design_data = array() ) {
 			if ( true !== $print_bump || ! in_array( $layout, $this->get_slider_layouts(), true ) ) {
 				return;
 			}
 			$product_count = is_array( $this->products ) ? count( $this->products ) : 0;
-			echo '<div class="wfob_l12_slider" data-product-count="' . esc_attr( $product_count ) . '">';
+
+			$slider_class = array( 'wfob_l12_slider' );
+			if ( $this->is_slider_arrow_enabled( $design_data, 'slider_arrow_desktop' ) ) {
+				$slider_class[] = 'wfob_l12_arrow_desktop';
+			}
+			if ( $this->is_slider_arrow_enabled( $design_data, 'slider_arrow_mobile' ) ) {
+				$slider_class[] = 'wfob_l12_arrow_mobile';
+			}
+
+			echo '<div class="' . esc_attr( implode( ' ', $slider_class ) ) . '" data-product-count="' . esc_attr( $product_count ) . '">';
 			echo '<button type="button" class="wfob_l12_nav wfob_l12_nav_prev" aria-label="' . esc_attr__( 'Previous products', 'woofunnels-order-bump' ) . '"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
 			echo '<div class="wfob_l12_track">';
 		}
@@ -1445,7 +1531,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			$dynamic_temp_style   = array();
 
 			$slider_layout = isset( $design_data['layout'] ) ? $design_data['layout'] : '';
-			$this->print_multi_product_slider_open( $slider_layout, $print_bump );
+			$this->print_multi_product_slider_open( $slider_layout, $print_bump, $design_data );
 
 			foreach ( $this->products as $product_key => $data ) {
 
@@ -1695,7 +1781,10 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 				$icon_on_button = isset( $design_data['icon_on_button'] ) ? $design_data['icon_on_button'] : '';
 
-				if ( isset( $icon_on_button ) ) {
+				/*
+				Only a real icon choice becomes a wrapper class — 'none' (and the empty value a bump
+					saved before the control existed carries) must not leak a bogus class onto the card. */
+				if ( '' !== $icon_on_button && 'none' !== $icon_on_button ) {
 					$css_class[] = $icon_on_button;
 				}
 
@@ -1740,7 +1829,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$this->dynamic_css[ $product_key ]['mobile'][] = 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]:not(.wfob_img_position_top).wfob_enable_image #wfob_wrapper_' . $bump_id . ' .bwf_display_col_flex.wfob_pro_txt_wrap{width: 100%;}';
 				}
 
-				if ( isset( $design_data['header_enable_pointing_arrow'] ) && wc_string_to_bool( $design_data['header_enable_pointing_arrow'] ) ) {
+				if ( $this->is_pointing_arrow_supported( $design_data ) && isset( $design_data['header_enable_pointing_arrow'] ) && wc_string_to_bool( $design_data['header_enable_pointing_arrow'] ) ) {
 					if ( '1' == $design_data['point_animation'] ) {
 						$css_class[] = 'wfob_point_animation';
 						$css_class[] = 'wfob_pointer_animation_action';
@@ -1867,7 +1956,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			$dynamic_temp_style   = array();
 
 			$slider_layout = isset( $design_data['layout'] ) ? $design_data['layout'] : '';
-			$this->print_multi_product_slider_open( $slider_layout, $print_bump );
+			$this->print_multi_product_slider_open( $slider_layout, $print_bump, $design_data );
 
 			foreach ( $this->products as $product_key => $data ) {
 
@@ -2078,7 +2167,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$this->dynamic_css[ $product_key ]['mobile'][] = 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]:not(.wfob_img_position_top).wfob_enable_image #wfob_wrapper_' . $bump_id . ' .bwf_display_col_flex.wfob_pro_txt_wrap{width: 100%;}';
 				}
 
-				if ( isset( $design_data['header_enable_pointing_arrow'] ) && wc_string_to_bool( $design_data['header_enable_pointing_arrow'] ) ) {
+				if ( $this->is_pointing_arrow_supported( $design_data ) && isset( $design_data['header_enable_pointing_arrow'] ) && wc_string_to_bool( $design_data['header_enable_pointing_arrow'] ) ) {
 					if ( '1' == $design_data['point_animation'] ) {
 						$css_class[] = 'wfob_pointer_animation_action';
 					}
@@ -2605,6 +2694,51 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					'value'     => 'padding:{{value}}px',
 				),
 			);
+
+			/**
+			 * A bump price is printed one of two ways (see WFOB_Dynamic_Merge_Tags::price()):
+			 * discounted products go through wc_format_sale_price() and render <del>old</del> <ins>new</ins>,
+			 * everything else goes through wc_price() and renders a BARE amount as a direct child of
+			 * .wfob_price. That bare amount is the price the customer actually pays, but it has always
+			 * been styled by the Regular Price group — the styling meant for the struck-through original.
+			 * On Skin 12 that shows up side by side: a discounted card renders its sale price in green at
+			 * 14px while an undiscounted card in the very next slide renders its real price in the muted
+			 * struck-through grey at 12px (#9CA3AF/12 vs #2E9E5B/14 by default), reading as disabled and
+			 * visibly smaller than its neighbour.
+			 * So for Skin 12 the bare amount follows the SALE price group — BOTH colour and font size, so
+			 * every actually-charged price in the slider is rendered identically. Every other layout keeps
+			 * the historical mapping. The two groups share one selector list each because the font-size
+			 * and colour fields target exactly the same nodes.
+			 */
+			$plain_price_selectors = array(
+				$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount',
+				$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount *',
+				$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount bdi',
+				$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount span',
+			);
+
+			$regular_price_selectors = array(
+				$bump_selector_wrapper . ' .wfob_price_container .wfob_price del',
+				$bump_selector_wrapper . ' .wfob_price_container .wfob_price del *',
+				$bump_selector_wrapper . ' .wfob_price_container .wfob_price del bdi',
+				$bump_selector_wrapper . ' .wfob_price_container .wfob_price del span *',
+				$bump_selector_wrapper . ' .wfob_price_container .wfob_price del span.amount',
+			);
+
+			$sale_price_selectors = array(
+				$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins',
+				$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins *',
+				$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins bdi',
+				$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins span *',
+				$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins span.amount',
+			);
+
+			if ( 'layout_12' === $selected_layout ) {
+				$sale_price_selectors = array_merge( $sale_price_selectors, $plain_price_selectors );
+			} else {
+				$regular_price_selectors = array_merge( $regular_price_selectors, $plain_price_selectors );
+			}
+
 			$price = array(
 				'enable_price'             => array(
 					'label'        => __( 'Enable Price', 'woofunnels-order-bump' ),
@@ -2637,18 +2771,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					'class'     => 'bwf-field-one-half',
 					'min'       => 0,
 					'styleUnit' => 'px',
-					'selectors' => array(
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del *',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del bdi',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del span *',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del span.amount',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount *',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount bdi',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount span',
-
-					),
+					'selectors' => $regular_price_selectors,
 					'value'     => 'font-size:{{value}}px',
 					'toggler'   => array(
 						'key'   => 'enable_price',
@@ -2661,19 +2784,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					'key'       => 'price_color',
 					'class'     => 'bwf-field-one-half',
 					'stylekey'  => 'color',
-					'selectors' => array(
-
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del *',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del bdi',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del span *',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del span.amount',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount *',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount bdi',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount span',
-
-					),
+					'selectors' => $regular_price_selectors,
 					'value'     => 'color:{{value}}',
 					'toggler'   => array(
 						'key'   => 'enable_price',
@@ -2700,13 +2811,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					'class'     => 'bwf-field-one-half',
 					'min'       => 0,
 					'styleUnit' => 'px',
-					'selectors' => array(
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins *',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins bdi',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins span *',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins span.amount',
-					),
+					'selectors' => $sale_price_selectors,
 					'value'     => 'font-size:{{value}}px',
 					'toggler'   => array(
 						'key'   => 'enable_price',
@@ -2719,13 +2824,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					'key'       => 'price_sale_color',
 					'class'     => 'bwf-field-one-half',
 					'stylekey'  => 'color',
-					'selectors' => array(
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins *',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins bdi',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins span *',
-						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins span.amount',
-					),
+					'selectors' => $sale_price_selectors,
 					'value'     => 'color:{{value}}',
 					'toggler'   => array(
 						'key'   => 'enable_price',
@@ -3071,6 +3170,49 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				),
 			);
 
+			/*--------------------------------Slider arrows (Skin 12 only)--------------------------- */
+
+			/**
+			 * Skin 12 is the one skin whose products render as a horizontally scrolling track, so
+			 * it is the only one that has prev/next chevrons to switch off. Both ship ticked.
+			 *
+			 * These two target .wfob_l12_slider — the track wrapper, which sits ABOVE the per-card
+			 * bump section every other field in this panel is scoped to, because the arrows are
+			 * siblings of the track and not descendants of any one card. Ticked adds the class (see
+			 * applyBumpPreview() in the editor), and the stylesheet paints an arrow only for a
+			 * breakpoint whose class is on the wrapper, so desktop and mobile stay independent.
+			 */
+			$slider_arrows = array();
+
+			if ( 'layout_12' === $selected_layout ) {
+				$slider_arrows = array(
+					'slider_arrow_desktop' => array(
+						'label'        => __( 'Show Arrows on Desktop', 'woofunnels-order-bump' ),
+						'type'         => 'checkbox',
+						'key'          => 'slider_arrow_desktop',
+						'class'        => 'bwf-field-one-full',
+						'contentClass' => 'wfob_l12_arrow_desktop',
+						'selectors'    => array(
+							'body #wfob_wrap .wfob_l12_slider',
+						),
+						'value'        => '',
+						'hint'         => __( 'Arrows only show when the products overflow the slider. Dragging and swiping keep working either way.', 'woofunnels-order-bump' ),
+					),
+					'slider_arrow_mobile'  => array(
+						'label'        => __( 'Show Arrows on Mobile', 'woofunnels-order-bump' ),
+						'type'         => 'checkbox',
+						'key'          => 'slider_arrow_mobile',
+						'class'        => 'bwf-field-one-full',
+						'contentClass' => 'wfob_l12_arrow_mobile',
+						'selectors'    => array(
+							'body #wfob_wrap .wfob_l12_slider',
+						),
+						'value'        => '',
+						'hint'         => __( 'Applies below 768px.', 'woofunnels-order-bump' ),
+					),
+				);
+			}
+
 			/*--------------------------------Old Skins--------------------------------------------- */
 
 			if ( $selected_layout == 'layout_3' || $selected_layout == 'layout_4' ) {
@@ -3171,7 +3313,12 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					'add_button_hover_bg_color' => array(
 						'label'     => __( 'Background Hover Color', 'woofunnels-order-bump' ),
 						'type'      => 'color',
-						'key'       => 'add_button_color',
+						/*
+						Was 'add_button_color' — the button's TEXT colour. The CSS below is emitted
+							from the array key, so the hover background read the right stored value
+							while the panel control edited a different one: the hover background could
+							never be changed, and touching it recoloured the button text instead. */
+						'key'       => 'add_button_hover_bg_color',
 						'stylekey'  => 'background-color',
 						'class'     => 'bwf-field-one-full',
 						'selectors' => array(
@@ -3505,6 +3652,13 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 			}
 
+			/**
+			 * Add Slider arrow settings (Skin 12 only, empty everywhere else)
+			 */
+			if ( count( $slider_arrows ) > 0 ) {
+				$final_fields = array_merge( $final_fields, $slider_arrows );
+			}
+
 			/*---------------------------------Remove Keys from template ------------------------------------------*/
 
 			if ( $selected_layout == 'layout_3' || $selected_layout == 'layout_4' || $selected_layout == 'layout_6' || $selected_layout == 'layout_9' || $selected_layout == 'layout_10' ) {
@@ -3516,6 +3670,17 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$exclude_keys[] = 'heading_box_border_color';
 				$exclude_keys[] = 'heading_box_border_width';
 				$exclude_keys[] = 'heading_box_border_radius';
+			}
+
+			/*
+			The pointing arrow sits beside the checkbox of a single card. A slider skin lays its
+				products out in a scrollable track — every card carries its own checkbox, so the arrow
+				has nothing to single out and the skin never paints one (see is_enable_pointer()).
+				Drop the three controls rather than leave switches that change nothing on screen. */
+			if ( in_array( $selected_layout, $this->get_slider_layouts(), true ) ) {
+				$exclude_keys[] = 'header_enable_pointing_arrow';
+				$exclude_keys[] = 'point_animation';
+				$exclude_keys[] = 'point_animation_color';
 			}
 
 			if ( $selected_layout !== 'layout_3' && $selected_layout !== 'layout_4' ) {

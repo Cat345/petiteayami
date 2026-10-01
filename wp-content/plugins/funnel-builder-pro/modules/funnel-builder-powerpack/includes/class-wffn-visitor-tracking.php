@@ -107,6 +107,22 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			}
 
 			/**
+			 * Administrators and shop managers are not funnel traffic, and the
+			 * journey cookie they accumulate rides into wp-admin with the auth
+			 * cookies, where it can push the request headers past the web server's
+			 * limit (Apache LimitRequestFieldSize, nginx large_client_header_buffers)
+			 * and cause intermittent HTTP 400s. 'remove' additionally makes the JS
+			 * drop any journey cookie already recorded, unlike 'disable' which must
+			 * leave the cookie intact for offer pages.
+			 *
+			 * Filter `wffn_journey_skip_for_user` to widen or narrow who is skipped.
+			 */
+			$skip_journey = current_user_can( 'manage_options' ) || current_user_can( 'manage_woocommerce' );
+			if ( true === apply_filters( 'wffn_journey_skip_for_user', $skip_journey ) ) {
+				$journey_control = 'remove';
+			}
+
+			/**
 			 * On the thank-you page the journey has already been persisted onto the order,
 			 * so the tracker drops the cookie to start the next journey clean.
 			 */
@@ -123,6 +139,14 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 				'wffn_conversion_tracking_localize_data',
 				array(
 					'journeyControl'     => $journey_control,
+					/**
+					 * Journey cookie budget. The oldest entry is dropped as soon as either
+					 * bound is exceeded. 2000 bytes stays well under the ~8 KB Cookie-header
+					 * limit most web servers enforce (clamped below the 4 KB per-cookie
+					 * browser limit); 20 entries is the path depth the metabox shows.
+					 */
+					'journeyMaxBytes'    => min( absint( apply_filters( 'wffn_journey_cookie_max_bytes', 2000 ) ), 3800 ),
+					'journeyMaxEntries'  => absint( apply_filters( 'wffn_journey_max_entries', 20 ) ),
 					'cookie_domain'      => $cookie_domain,
 					'is_thankyou_page'   => $is_thankyou_page,
 					'page_id'            => function_exists( 'get_queried_object_id' ) ? absint( get_queried_object_id() ) : 0,
@@ -272,9 +296,63 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 				if ( ! isset( $data['s'] ) || ! is_array( $data['s'] ) ) {
 					$data['s'] = array();
 				}
-				return $data;
+				$store = $data;
+			} else {
+				$store = array( 'j' => is_array( $data ) ? $data : array(), 's' => array() );
 			}
-			return array( 'j' => is_array( $data ) ? $data : array(), 's' => array() );
+
+			/**
+			 * Titles are not persisted: the metabox resolves them from the entry's
+			 * page id at render time. Strip any left by an older tracker so neither
+			 * the order meta nor the conversion row carries them.
+			 */
+			foreach ( $store['j'] as $key => $entry ) {
+				if ( is_array( $entry ) && array_key_exists( 't', $entry ) ) {
+					unset( $store['j'][ $key ]['t'] );
+				}
+			}
+
+			return $store;
+		}
+
+		/**
+		 * Human-readable label for a journey entry, resolved through WordPress
+		 * rather than read from the stored journey.
+		 *
+		 * The entry's page id is trusted only when the post it names lives on this
+		 * site and its permalink path matches the recorded path; get_queried_object_id()
+		 * also yields term and author ids on archives, which must not be mistaken
+		 * for a post. Falls back to a legacy stored title, then to the path itself.
+		 *
+		 * @param array  $entry    journey entry (u, i, s and, for legacy rows, t)
+		 * @param string $path     decoded path from entry['u']
+		 * @param mixed  $site_idx entry['s'] (v2) or null
+		 * @param array  $sites    the journey 's' map
+		 * @return string
+		 */
+		public static function journey_entry_title( $entry, $path, $site_idx, $sites ) {
+			$is_local = ( null === $site_idx || ! isset( $sites[ $site_idx ] ) || untrailingslashit( $sites[ $site_idx ] ) === self::site_origin() );
+			$post_id  = ( isset( $entry['i'] ) && is_numeric( $entry['i'] ) ) ? absint( $entry['i'] ) : 0;
+
+			if ( $is_local && $post_id > 0 && get_post( $post_id ) instanceof WP_Post ) {
+				$entry_path = wp_parse_url( 'http://x' . '/' . ltrim( $path, '/' ), PHP_URL_PATH );
+				$post_path  = wp_parse_url( get_permalink( $post_id ), PHP_URL_PATH );
+				$entry_path = '/' . trim( is_string( $entry_path ) ? $entry_path : '', '/' );
+				$post_path  = '/' . trim( is_string( $post_path ) ? $post_path : '', '/' );
+
+				if ( $entry_path === $post_path ) {
+					$title = get_the_title( $post_id );
+					if ( '' !== $title ) {
+						return $title;
+					}
+				}
+			}
+
+			if ( ! empty( $entry['t'] ) ) {
+				return rawurldecode( $entry['t'] );
+			}
+
+			return $path;
 		}
 
 		/**
@@ -360,17 +438,12 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 			$parsed_url        = wp_parse_url( $link );
 			$relative_path     = ( is_array( $parsed_url ) && ! empty( $parsed_url['path'] ) ) ? ltrim( $parsed_url['path'], '/' ) : '';
 
-			$data     = wc_clean( wp_unslash( $_POST['data'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$products = ( isset( $data['products'] ) && is_array( $data['products'] ) ) ? array_values( $data['products'] ) : array();
-			$name     = ( ! empty( $products ) && isset( $products[0]['name'] ) ) ? $products[0]['name'] : '';
-
 			$store  = self::journey_normalize( json_decode( $tracking_data['journey'], true ) );
 			$origin = self::site_origin();
 			$idx    = self::journey_site_index( $store, $origin );
 
 			$store['j'][ (int) round( microtime( true ) * 1000 ) ] = array(
 				'u' => '/' . ltrim( $relative_path, '/' ),
-				't' => $name,
 				'i' => $get_current_offer,
 				's' => $idx,
 			);
@@ -436,7 +509,6 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 
 			$store['j'][ (int) round( microtime( true ) * 1000 ) ] = array(
 				'u' => '/' . ltrim( substr( get_permalink(), strlen( home_url( '/' ) ) ), '/' ),
-				't' => get_the_title(),
 				'i' => get_the_ID(),
 				's' => $idx,
 			);
@@ -849,8 +921,8 @@ if ( ! class_exists( 'WFFN_Visitor_Tracking' ) ) {
 							continue;
 						}
 						$path     = stripslashes( rawurldecode( $entry['u'] ) );
-						$title    = ! empty( $entry['t'] ) ? rawurldecode( $entry['t'] ) : $path;
 						$site_idx = isset( $entry['s'] ) ? $entry['s'] : null;
+						$title    = self::journey_entry_title( $entry, $path, $site_idx, $sites );
 						$url      = self::journey_resolve_url( $path, $site_idx, $sites, $home_url );
 
 						$journey_html .= '<li><a href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $title ) . '</a></li>';

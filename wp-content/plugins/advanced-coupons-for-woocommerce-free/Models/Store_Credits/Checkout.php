@@ -28,6 +28,16 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      */
 
     /**
+     * Hook that the reapply store credit discount link carries.
+     *
+     * The link uses this value as both its class and its "href" fragment.
+     *
+     * @since 4.7.6
+     * @var string
+     */
+    const REAPPLY_DISCOUNT_LINK_HOOK = 'acfw-reapply-sc-discount';
+
+    /**
      * Property that houses the model name to be used when calling publicly.
      *
      * @since 4.0
@@ -124,6 +134,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      * @since 4.0
      * @since 4.2.1 Wrap redeem amount with NumberUtil::round function to make sure its precise before comparing it with user's balance.
      * @since 4.5.1 Make method public.
+     * @since 4.7.6 Cap the redeemed amount against the cart total when the minimum order total allowed setting applies.
      * @access public
      *
      * @param int   $user_id User ID.
@@ -207,10 +218,10 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         $amount = apply_filters( 'acfw_store_credits_redeem_amount', min( $amount, $cart_total ), $cart_total );
 
         // minimum order total allowed after store credit deduction.
-        $min_order_total_allowed = get_option( Plugin_Constants::STORE_CREDIT_MIN_ORDER_TOTAL_ALLOWED, 0 );
+        $min_order_total_allowed = (float) get_option( Plugin_Constants::STORE_CREDIT_MIN_ORDER_TOTAL_ALLOWED, 0 );
         if ( ( $cart_total - $amount ) < $min_order_total_allowed ) {
-            // overwrite the applied store credits amount.
-            $amount = $amount - $min_order_total_allowed;
+            // cap the redeemed amount to what the cart can spare, so the order total lands exactly on the minimum.
+            $amount = NumberUtil::round( $cart_total - $min_order_total_allowed, wc_get_price_decimals() );
         }
 
         /**
@@ -481,6 +492,28 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         return $changed_notice;
     }
 
+    /**
+     * Get the notice text that asks the customer to reapply the store credit discount.
+     *
+     * The link carries an "href" fragment, not only a class. WooCommerce sanitizes a
+     * cart or checkout block notice against a fixed allow-list that keeps "href" and
+     * drops "class", so a class alone gives the block checkout no hook to bind on.
+     * The class stays for the classic checkout and for any custom styling.
+     *
+     * @since 4.7.6
+     * @access public
+     *
+     * @return string Notice text, with the reapply link.
+     */
+    public function get_reapply_discount_notice_text() {
+        return sprintf(
+            /* translators: %1$s: opening link tag, %2$s: closing link tag. */
+            __( 'The total of your order changed, please click here to %1$sreapply the store credit discount%2$s.', 'advanced-coupons-for-woocommerce-free' ),
+            '<a class="' . esc_attr( self::REAPPLY_DISCOUNT_LINK_HOOK ) . '" href="#' . esc_attr( self::REAPPLY_DISCOUNT_LINK_HOOK ) . '">',
+            '</a>'
+        );
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Apply store credits after tax.
@@ -566,10 +599,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
 
             // Only trigger on Regular Checkout.
             if ( ! $this->_helper_functions->is_current_request_using_wpjson_wc_api() ) {
-                wc_add_notice(
-                    __( 'The total of your order changed, please click here to <a class="acfw-reapply-sc-discount" href="#">reapply the store credit discount</a>.', 'advanced-coupons-for-woocommerce-free' ),
-                    'error'
-                );
+                wc_add_notice( $this->get_reapply_discount_notice_text(), 'error' );
             }
 
             return $cart_total;
@@ -583,6 +613,74 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
 
         // return the original cart total when viewing it in the cart page.
         return is_cart() ? $cart_total : $cart_total - $sc_data['amount'];
+    }
+
+    /**
+     * Get the store credit discount that is currently deducted from the cart total.
+     *
+     * Payment gateways that build their own amount from the cart breakdown (item total, shipping,
+     * tax, discount total) never see the "after tax and shipping" store credit discount, because
+     * that discount is applied by overwriting the cart total instead of by a coupon or a fee. This
+     * accessor gives those gateways the missing amount.
+     *
+     * There is no check on the "apply type" setting. The "before tax and shipping" mode applies the
+     * credit as a real coupon, which lands in the cart discount total and so is already visible to
+     * the gateway. That mode also stores its credit under a different session key, so the gate
+     * below returns 0.0 for it. Reading the deduction itself, instead of the setting, keeps this
+     * accessor correct even while a stale session from the other mode is still being cleared.
+     *
+     * The value is MEASURED, not read from the session. The session amount is only a gate that
+     * proves an after tax store credit is in play. Two reasons:
+     *
+     * - `apply_store_credit_discount()` does not always deduct `$sc_data['amount']`. On a full
+     *   order credit it deducts the whole cart total, and when the credit no longer fits it
+     *   deducts nothing.
+     * - The cart breakdown sum can differ from the cart total by one minor unit because of per
+     *   item tax rounding. Measuring the difference cancels that drift, so the gateway total
+     *   matches the total the customer sees, to the cent.
+     *
+     * @since 4.7.6
+     * @access public
+     *
+     * @param \WC_Cart|null $cart Cart object. Defaults to the current cart.
+     * @return float Applied store credit discount, in the active currency. 0.0 when none applies.
+     */
+    public function get_applied_store_credit_discount( $cart = null ) {
+        if ( ! $cart instanceof \WC_Cart ) {
+            $cart = \WC()->cart;
+        }
+
+        if ( ! $cart instanceof \WC_Cart || ! \WC()->session ) {
+            return 0.0;
+        }
+
+        // The discount is deliberately not applied to the cart page total, so there is nothing to report there.
+        if ( is_cart() ) {
+            return 0.0;
+        }
+
+        $sc_data = \WC()->session->get( Plugin_Constants::STORE_CREDITS_SESSION, null );
+
+        if ( ! is_array( $sc_data ) || ! isset( $sc_data['amount'], $sc_data['currency'] ) ) {
+            return 0.0;
+        }
+
+        // Skip while a currency switch is still propagating. The discount is not applied yet either.
+        if ( get_woocommerce_currency() !== $sc_data['currency'] || 0 >= (float) $sc_data['amount'] ) {
+            return 0.0;
+        }
+
+        // Sum the cart the way a gateway builds its amount breakdown, then measure what the store
+        // credit deduction took off it.
+        $breakdown_total = (float) $cart->get_subtotal()
+            + (float) $cart->get_fee_total()
+            + (float) $cart->get_shipping_total()
+            + (float) $cart->get_total_tax()
+            - (float) $cart->get_discount_total();
+
+        $applied = $breakdown_total - max( 0.0, (float) $cart->get_total( 'edit' ) );
+
+        return $applied > 0 ? $applied : 0.0;
     }
 
     /**

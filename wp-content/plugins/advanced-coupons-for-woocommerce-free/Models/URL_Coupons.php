@@ -302,9 +302,12 @@ class URL_Coupons implements Model_Interface {
             $redirect_url .= $connector . self::REDIRECT_DEPTH_ARG . '=' . ( $current_depth + 1 );
         }
 
-        // Clear notices when redirecting to an external URL.
+        // Clear notices when redirecting to an external URL. Internal targets carry the success
+        // notice across the redirect instead, so keep that page out of cart aware page caches.
         if ( ! $this->_is_internal_url( $redirect_url ) ) {
             wc_clear_notices();
+        } else {
+            $this->_set_cache_bypass_cookie();
         }
 
         wp_redirect( $redirect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
@@ -393,10 +396,12 @@ class URL_Coupons implements Model_Interface {
             $redirect_url = wc_get_cart_url();
         }
 
-        // Display error notice if redirecting to an internal page.
+        // Display error notice if redirecting to an internal page. That notice is just as personal as
+        // the success one, so keep the page it lands on out of cart aware page caches too.
         if ( $this->_is_internal_url( $redirect_url ) ) {
             $adv_error_message = $coupon->get_advanced_error_message();
             wc_add_notice( $adv_error_message ? $adv_error_message : $error_message, 'error' );
+            $this->_set_cache_bypass_cookie();
         }
 
         wp_redirect( $redirect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
@@ -571,6 +576,11 @@ class URL_Coupons implements Model_Interface {
 
         // Maybe redirect after coupon is applied.
         if ( $is_applied ) {
+            // The applied notice is carried across the redirect below, and wp_safe_redirect() guarantees
+            // the request lands on this site (it falls back to the admin URL for any disallowed host),
+            // so the page that renders the notice has to stay out of cart aware page caches.
+            $this->_set_cache_bypass_cookie();
+
             $redirect_setting = get_option( Plugin_Constants::REDIRECT_AFTER_APPLY_COUPON_VIA_QUERY_STRING, 'same_page' );
 
             switch ( $redirect_setting ) {
@@ -618,6 +628,34 @@ class URL_Coupons implements Model_Interface {
     | Utility functions
     |--------------------------------------------------------------------------
      */
+
+    /**
+     * Flag the current request so cart aware page caches bypass the redirect target.
+     *
+     * URL Coupons apply a coupon while the cart is still empty, so WooCommerce never sets the
+     * 'woocommerce_items_in_cart' cookie that cart aware page caches (Kinsta, WP Engine, fastcgi_cache)
+     * read to decide whether to skip the cache. Without it the redirect target stays cache eligible, so
+     * the queued personalized notice can be stored and then served to other anonymous visitors, or, when
+     * that page was already cached, never reach the visitor who clicked the coupon link at all.
+     *
+     * $_COOKIE is deliberately cleared instead of populated, which matters on the query string entry
+     * point. WC_Cart_Session::maybe_set_cart_cookies() runs on 'wp' at priority 99 and again on
+     * 'shutdown', and on an empty cart it expires this cookie whenever $_COOKIE already carries it.
+     * apply_coupon_from_query_string() runs on 'wp' at the default priority and exits on the redirect,
+     * so WooCommerce's 'wp' pass never runs and its 'shutdown' pass is the one that sees $_COOKIE. Since
+     * WooCommerce keeps the last Set-Cookie header of a given name, leaving $_COOKIE in place would
+     * append a past dated header to this very response and undo the bypass every time a visitor opens
+     * the same coupon link again. On the coupon endpoint the clear is merely harmless: that handler runs
+     * on 'template_redirect', by which point WooCommerce's 'wp' pass has already expired and unset the
+     * cookie itself.
+     *
+     * @since 4.8
+     * @access private
+     */
+    private function _set_cache_bypass_cookie() {
+        wc_setcookie( 'woocommerce_items_in_cart', '1' );
+        unset( $_COOKIE['woocommerce_items_in_cart'] );
+    }
 
     /**
      * Get page by path.

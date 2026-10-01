@@ -52,7 +52,16 @@ if ( ! class_exists( 'WFACP_Compatibility_Klarna_checkout' ) ) {
             <div class="error" style="margin-top:74px">
                 <p>
 					<?php
-					_e( '<strong> Attention: </strong>You are using Klarna Checkout which completely takes over the checkout. To have best experience with WooFunnels Checkout please activate <a href="https://wordpress.org/plugins/klarna-payments-for-woocommerce/" target="_blank">Klarna Payments</a>.', 'funnel-builder' );
+					echo wp_kses(
+						__( '<strong> Attention: </strong>You are using Klarna Checkout which completely takes over the checkout. To have best experience with WooFunnels Checkout please activate <a href="https://wordpress.org/plugins/klarna-payments-for-woocommerce/" target="_blank">Klarna Payments</a>.', 'funnel-builder' ),
+						array(
+							'strong' => array(),
+							'a'      => array(
+								'href'   => array(),
+								'target' => array(),
+							),
+						)
+					);
 					?>
                 </p>
             </div>

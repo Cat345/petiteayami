@@ -100,7 +100,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Map' ) ) {
 
 			$this->controls['mapBorder'] = array(
 				'group' => 'styleMap',
-				'label' => esc_html__( 'Border' ),
+				'label' => esc_html__( 'Border', 'funnel-builder' ),
 				'type'  => 'border',
 				'css'   => array(
 					array(
@@ -112,7 +112,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Map' ) ) {
 
 			$this->controls['messageBackground'] = array(
 				'group' => 'styleMessage',
-				'label' => esc_html__( 'Background' ),
+				'label' => esc_html__( 'Background', 'funnel-builder' ),
 				'type'  => 'color',
 				'css'   => array(
 					array(
@@ -124,7 +124,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Map' ) ) {
 
 			$this->controls['messageTextColor'] = array(
 				'group' => 'styleMessage',
-				'label' => esc_html__( 'Text Color' ),
+				'label' => esc_html__( 'Text Color', 'funnel-builder' ),
 				'type'  => 'color',
 				'css'   => array(
 					array(
@@ -136,7 +136,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Map' ) ) {
 
 			$this->controls['messageBorder'] = array(
 				'group' => 'styleMessage',
-				'label' => esc_html__( 'Border' ),
+				'label' => esc_html__( 'Border', 'funnel-builder' ),
 				'type'  => 'border',
 				'css'   => array(
 					array(

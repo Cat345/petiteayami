@@ -523,7 +523,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 			<div class="btm_btn_sec wfacp_back_cart_link">
 				<div class="wfacp-back-btn-wrap">
-					<a href="<?php echo apply_filters( 'wfacp_return_to_cart_link', $cartURL ); ?>"><?php echo $this->form_data['return_to_cart_text']; ?></a> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<a href="<?php echo esc_url( apply_filters( 'wfacp_return_to_cart_link', $cartURL ) ); ?>"><?php echo $this->form_data['return_to_cart_text']; ?></a> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</div>
 			</div>
 			<?php
@@ -597,7 +597,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 						$text_class = ( ! empty( $value ) ) ? 'wfacp_step_text_have' : 'wfacp_step_text_nohave';
 						echo "<li class='wfacp_step_$key wfacp_bred $bread_visited $active $step' step='$step'>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						?>
-						<a href='javascript:void(0)' class="<?php echo $text_class; ?> wfacp_breadcrumb_link" data-text="<?php echo sanitize_title( $value ); ?>"><?php echo $value; ?></a> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<a href='javascript:void(0)' class="<?php echo esc_attr( $text_class ); ?> wfacp_breadcrumb_link" data-text="<?php echo esc_attr( sanitize_title( $value ) ); ?>"><?php echo esc_html( $value ); ?></a> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						<?php
 
 						echo '</li>';
@@ -966,7 +966,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 								$activeClass = apply_filters( 'wfacp_embed_active_progress_bar', $active, $count, $number_of_steps );
 								?>
-								<div class="wfacp-payment-tab-list <?php echo $activeClass . ' ' . $page_class . ' ' . $addfull_width . ' ' . $bread_visited; ?>  wfacp-tab<?php echo $count; ?>" step="<?php echo $steps_count_here; ?>"> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+								<div class="wfacp-payment-tab-list <?php echo esc_attr( $activeClass . ' ' . $page_class . ' ' . $addfull_width . ' ' . $bread_visited ); ?>  wfacp-tab<?php echo $count; ?>" step="<?php echo esc_attr( $steps_count_here ); ?>"> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 									<div class="wfacp-order2StepNumber"><?php echo $count; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
 									<div class="wfacp-order2StepHeaderText">
 										<?php if ( ! empty( $value['heading'] ) ) : ?>
@@ -1677,11 +1677,13 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 			if ( ! empty( $icon ) && ! empty( $current ) && ! empty( $margin ) ) {
 				if ( $form_step === 'place_order' ) {
 					echo '<style>';
-					echo 'body #wfacp-e-form .' . $current . ' #place_order:' . $content . "{content:'$icon';font-family: 'bwf-icons'; display: inline-block;margin-$margin:8px;position: relative;text-transform: none;top:1px;}"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
+					echo 'body #wfacp-e-form .' . sanitize_html_class( $current ) . ' #place_order:' . sanitize_key( $content ) . "{content:'" . wp_kses( str_replace( array( "'", '"' ), '', $icon ), array() ) . "';font-family: 'bwf-icons'; display: inline-block;margin-" . sanitize_key( $margin ) . ":8px;position: relative;text-transform: none;top:1px;}";
 					echo '</style>';
 				} else {
 					echo '<style>';
-					echo 'body #wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content . "{content:'$icon'; font-family: 'bwf-icons'; display: inline-block;margin-$margin:8px;position: relative;text-transform: none;top:1px;}"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
+					echo 'body #wfacp-e-form .' . sanitize_html_class( $current ) . ' .wfacp-next-btn-wrap button:' . sanitize_key( $content ) . "{content:'" . wp_kses( str_replace( array( "'", '"' ), '', $icon ), array() ) . "'; font-family: 'bwf-icons'; display: inline-block;margin-" . sanitize_key( $margin ) . ":8px;position: relative;text-transform: none;top:1px;}";
 					echo '</style>';
 				}
 			}
@@ -1692,27 +1694,31 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 				$content1          = 'before';
 				if ( $form_step === 'place_order' ) {
 					echo '<style>';
-					echo 'body #wfacp-e-form .' . $current . ' #place_order:' . $content1 . '{top:4px;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '#wfacp-e-form .' . $current . ' #place_order:' . $content . '{content:' . '"' . $button_subheading . '"' . '; display: inline-block ;position: relative;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '#wfacp-e-form .' . $current . ' button#place_order' . '{display:inline-block;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '#wfacp-e-form .' . $current . ' #place_order:' . $content . '{display: block;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
+					echo 'body #wfacp-e-form .' . sanitize_html_class( $current ) . ' #place_order:' . sanitize_key( $content1 ) . '{top:4px;}';
+					echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' #place_order:' . sanitize_key( $content ) . '{content:' . '"' . str_replace( array( '"', '\\', '<', '>' ), '', $button_subheading ) . '"' . '; display: inline-block ;position: relative;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- breakout characters are removed inline; no core escaper can be used here because they all encode & to &amp;, and <style> is raw text so the entity would be printed to the customer.
+					echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' button#place_order' . '{display:inline-block;}';
+					echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' #place_order:' . sanitize_key( $content ) . '{display: block;}';
 					echo '</style>';
 				} else {
 					echo '<style>';
-					echo 'body #wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content1 . '{top:4px;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content . '{content:' . '"' . $button_subheading . '"' . ';  display: inline-block ;position: relative;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button' . '{display:inline-block;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content . '{display: block;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
+					echo 'body #wfacp-e-form .' . sanitize_html_class( $current ) . ' .wfacp-next-btn-wrap button:' . sanitize_key( $content1 ) . '{top:4px;}';
+					echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' .wfacp-next-btn-wrap button:' . sanitize_key( $content ) . '{content:' . '"' . str_replace( array( '"', '\\', '<', '>' ), '', $button_subheading ) . '"' . ';  display: inline-block ;position: relative;}'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- breakout characters are removed inline; no core escaper can be used here because they all encode & to &amp;, and <style> is raw text so the entity would be printed to the customer.
+					echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' .wfacp-next-btn-wrap button' . '{display:inline-block;}';
+					echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' .wfacp-next-btn-wrap button:' . sanitize_key( $content ) . '{display: block;}';
 					echo '</style>';
 				}
 			} elseif ( $form_step === 'place_order' ) {
 				echo '<style>';
-				echo '#wfacp-e-form .' . $current . ' #place_order' . '{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
+				echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' #place_order' . '{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}';
 
 				echo '</style>';
 			} else {
 				echo '<style>';
-				echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button' . '{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
+				echo '#wfacp-e-form .' . sanitize_html_class( $current ) . ' .wfacp-next-btn-wrap button' . '{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}';
 				echo '</style>';
 			}
 		}
@@ -1793,11 +1799,12 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 			$selectors = array_merge( $primary_color, $color_selectors );
 
 			echo '<style>';
+			// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
 			foreach ( $selectors as $key => $value ) {
 				$key = str_replace( '{{WRAPPER}} ', 'body ', $key );
 
 				if ( false !== strpos( $value, '{{VALUE}}' ) ) {
-					echo $key . '{' . str_replace( '{{VALUE}}', $primary_color_value, $value ) . '}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo $key . '{' . str_replace( '{{VALUE}}', esc_attr( $primary_color_value ), $value ) . '}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				} else {
 					echo $key . '{' . $value . '}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
@@ -1908,9 +1915,12 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 			// Initialize low stock amount variable
 			$low_stock_amount = null;
 
-			// Priority 1: Check if product has local low stock amount set
-			if ( isset( $_product->low_stock_amount ) && ! empty( $_product->low_stock_amount ) ) {
-				$low_stock_amount = absint( $_product->low_stock_amount );
+			// Priority 1: Check if product has local low stock amount set.
+			// Use the getter: reading the property directly goes through WC_Abstract_Legacy_Product::__get()
+			// and raises a "called incorrectly" notice.
+			$product_low_stock_amount = method_exists( $_product, 'get_low_stock_amount' ) ? $_product->get_low_stock_amount() : '';
+			if ( '' !== $product_low_stock_amount && null !== $product_low_stock_amount ) {
+				$low_stock_amount = absint( $product_low_stock_amount );
 			}
 			// Priority 2: If no local setting, use global WooCommerce setting
 			else {

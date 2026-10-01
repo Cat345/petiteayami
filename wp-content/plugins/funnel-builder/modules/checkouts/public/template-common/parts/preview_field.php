@@ -13,7 +13,7 @@ if ( 'single_step' != $step ) {
 	$preview_heading    = $instance->get_preview_field_heading();
 	$preview_subheading = $instance->get_preview_field_sub_heading();
 	?>
-	<div class="wfacp_preview_content_box" data-step="<?php echo $step; ?>">
+	<div class="wfacp_preview_content_box" data-step="<?php echo esc_attr( $step ); ?>">
 		<?php
 		if ( '' !== $preview_heading ) {
 			?>

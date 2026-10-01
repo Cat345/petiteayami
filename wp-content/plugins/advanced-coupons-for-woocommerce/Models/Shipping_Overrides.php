@@ -396,6 +396,22 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
         }
     }
 
+    /**
+     * Save shipping overrides discounts to the relative coupon order item meta on Store API orders.
+     *
+     * The block checkout does not fire `woocommerce_checkout_order_processed`. It fires
+     * `woocommerce_store_api_checkout_order_processed` instead, which passes the order
+     * object only. This wrapper adapts that signature to the shared handler.
+     *
+     * @since 4.1
+     * @access public
+     *
+     * @param WC_Order $order Order object.
+     */
+    public function save_shipping_discounts_to_coupon_order_item_via_store_api( $order ) {
+        $this->save_shipping_discounts_to_coupon_order_item( $order->get_id(), array(), $order );
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Coupon amount discount application mode.
@@ -655,6 +671,7 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
      *
      * @since 2.0
      * @since 2.2.3 Add support for non-shipping zone supported methods.
+     * @since 4.1 Show shipping class options for the "Not covered locations" zone methods.
      * @access public
      *
      * @param array $options List of shipping zones with methods.
@@ -668,13 +685,7 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
         };
 
         // get all shipping zones.
-        $zones  = $this->_helper_functions->get_shipping_zones();
-        $vl_map = function ( $method ) {
-            return array(
-                'value' => $method->instance_id,
-                'label' => $method->title,
-            );
-        };
+        $zones = $this->_helper_functions->get_shipping_zones();
 
         foreach ( $zones as $zone ) {
 
@@ -695,7 +706,7 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
             $options[]     = array(
                 'zone_id'   => 0,
                 'zone_name' => __( 'Not covered locations', 'advanced-coupons-for-woocommerce' ),
-                'methods'   => array_values( array_map( $vl_map, $other_methods ) ),
+                'methods'   => $this->_get_zone_shipping_method_options( $other_methods ),
             );
             $zoned_methods = array_reduce( $other_methods, $zoned_methods_reducer, $zoned_methods );
         }
@@ -740,14 +751,8 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
      * @return array list of shipping method options.
      */
     private function _get_zone_shipping_method_options( $zone_methods ) {
-        $method_options      = array();
-        $shipping_classes    = \WC()->shipping()->get_shipping_classes();
-        $shippping_class_ids = array_map(
-            function ( $c ) {
-            return $c->term_id;
-            },
-            $shipping_classes
-        );
+        $method_options   = array();
+        $shipping_classes = \WC()->shipping()->get_shipping_classes();
 
         foreach ( $zone_methods as $zone_method ) {
 
@@ -1070,6 +1075,7 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
 
         // Save shipping override discount data to coupon order item meta.
         add_action( 'woocommerce_checkout_order_processed', array( $this, 'save_shipping_discounts_to_coupon_order_item' ), 10, 3 );
+        add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'save_shipping_discounts_to_coupon_order_item_via_store_api' ), 10, 1 );
 
         // Admin: selectable options for coupon editor.
         add_filter( 'acfw_shipping_override_selectable_options', array( $this, 'populate_selectable_options' ), 10, 1 );

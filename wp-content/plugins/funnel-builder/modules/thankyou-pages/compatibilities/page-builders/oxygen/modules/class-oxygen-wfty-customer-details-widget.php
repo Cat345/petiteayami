@@ -41,7 +41,7 @@ if ( ! class_exists( 'Oxygen_WFTY_Customer_Details_Widget' ) ) {
 			$defaults        = WFFN_Core()->thank_you_pages->default_shortcode_settings();
 			$tab_id          = $this->add_tab( __( 'Customer Details', 'funnel-builder' ) );
 			$default_heading = isset( $defaults['customer_details_heading'] ) ? $defaults['customer_details_heading'] : __( 'Customer Details', 'funnel-builder' );
-			$this->add_text( $tab_id, 'customer_details_heading', __( 'Heading' ), $default_heading );
+			$this->add_text( $tab_id, 'customer_details_heading', __( 'Heading', 'funnel-builder' ), $default_heading );
 
 			$this->add_heading( $tab_id, __( 'Layout', 'funnel-builder' ) );
 			$this->add_select( $tab_id, 'customer_layout', __( 'Layout', 'funnel-builder' ), [

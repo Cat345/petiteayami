@@ -49,20 +49,37 @@ class Recent_Coupons extends Abstract_Coupons_Report_Widget {
      * Query the 5 most recently created coupons based on the end date period.
      *
      * @since 4.3
+     * @since 4.7.6 Set the UTC timezone here instead of relying on an earlier widget in the same
+     *              request having already flipped the shared Date_Period_Range object. Before,
+     *              this bound silently shifted by the site's UTC offset whenever this widget ran
+     *              on its own — which is exactly what happens now that a widget can be
+     *              unregistered before it runs. Also use $wpdb->prepare().
+     *
+     * KNOWN PRE-EXISTING SKEW, deliberately preserved: the bound is formatted in UTC but compared
+     * against `post_date`, which is stored in site-local time. On a site offset from UTC this can
+     * include or exclude coupons created near the period edge. That behaviour predates this change
+     * and is kept so the reported figures stay identical; correcting it (comparing
+     * `post_date_gmt`, or formatting the bound in site time) changes output and is out of scope
+     * for this fix.
+     *
      * @access private
      */
     private function _query_most_recent_coupons() {
         global $wpdb;
 
+        $this->report_period->use_utc_timezone();
+
         $end_period = $this->report_period->end_period->format( 'Y-m-d H:i:s' );
 
-        $query = "SELECT ID, post_title AS code FROM {$wpdb->posts} 
+        $query = $wpdb->prepare(
+            "SELECT ID, post_title AS code FROM {$wpdb->posts}
             WHERE post_type = 'shop_coupon'
                 AND post_status = 'publish'
-                AND post_date <= '{$end_period}'
+                AND post_date <= %s
             ORDER BY post_date DESC
-            LIMIT 0, 5
-        ";
+            LIMIT 0, 5",
+            $end_period
+        );
 
         return $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
     }

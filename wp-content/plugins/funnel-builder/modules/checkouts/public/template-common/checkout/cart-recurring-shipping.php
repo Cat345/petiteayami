@@ -20,12 +20,12 @@ if ( 1 < count( $available_methods ) ) { ?>
             <tr class="shipping recurring-total <?php echo esc_attr( $recurring_cart_key ); ?>">
                 <th><?php
 					echo "<span>" . wp_kses_post( $package_name ) . "</span>";
-					echo '<small>&nbsp;' . sprintf( __( 'via %s', 'funnel-builder' ), WFACP_Common::shipping_method_label( $method ) ) . '</small>';
+					echo '<small>&nbsp;' . wp_kses_post( sprintf( __( 'via %s', 'funnel-builder' ), WFACP_Common::shipping_method_label( $method ) ) ) . '</small>';
 					?>
                 </th>
                 <td data-title="<?php echo esc_attr( $package_name ); ?>">
 					<?php if ( $method->get_cost() == 0 ) {
-						echo '<span>' . _e( 'Free', 'woocommerce' ) . '</span>';
+						echo '<span>' . esc_html__( 'Free', 'woocommerce' ) . '</span>'; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					} else {
 						echo wc_price( $method->get_cost() );
 					}

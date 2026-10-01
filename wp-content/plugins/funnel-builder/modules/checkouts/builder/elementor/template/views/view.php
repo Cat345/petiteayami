@@ -11,7 +11,7 @@
 
 </head>
 
-<body class="<?php echo $this->get_class_from_body() ?> <?php ?>">
+<body class="<?php echo esc_attr( $this->get_class_from_body() ); ?> <?php ?>">
 
 <?php
 //get_header();

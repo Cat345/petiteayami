@@ -26,7 +26,7 @@ add_filter( 'wp_get_attachment_image_attributes', 'WFACP_Common::remove_src_set'
 			<?php
 		}
 		?>
-        <div class="wfacp_order_summary_container wfacp_min_cart_widget wfacp_mini_cart_elementor" data-delete-enabled="<?php echo $enable_delete_item ?>">
+        <div class="wfacp_order_summary_container wfacp_min_cart_widget wfacp_mini_cart_elementor" data-delete-enabled="<?php echo esc_attr( $enable_delete_item ); ?>">
 			<?php
 			include __DIR__ . '/mini-cart-items.php';
 			if ( 'yes' == $settings['enable_coupon'] ) {

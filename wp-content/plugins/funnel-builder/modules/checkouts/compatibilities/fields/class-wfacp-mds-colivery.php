@@ -208,11 +208,11 @@ if ( ! class_exists( 'WFACP_Compatibility_Colivery' ) ) {
 			}
 
 			echo "<style>";
-			echo $bodyClass . '.colliveryfied p.wfacp_shipping_field_hide.active{display:none !important;}';
-			echo $bodyClass . '.colliveryfied p.wfacp_billing_field_hide.active{display:none !important;}';
-			echo $bodyClass . '.colliveryfied p.wfacp_billing_field_show.active{display:block !important;}';
-			echo $bodyClass . '.colliveryfied p.wfacp_shipping_field_show.active{display:block !important;}';
-			echo $bodyClass . '.colliveryfied p.inactive{display:none !important;} .colliveryfield .wfacp_shipping_fields.wfacp_shipping_field_hide {
+			echo esc_attr( $bodyClass ) . '.colliveryfied p.wfacp_shipping_field_hide.active{display:none !important;}';
+			echo esc_attr( $bodyClass ) . '.colliveryfied p.wfacp_billing_field_hide.active{display:none !important;}';
+			echo esc_attr( $bodyClass ) . '.colliveryfied p.wfacp_billing_field_show.active{display:block !important;}';
+			echo esc_attr( $bodyClass ) . '.colliveryfied p.wfacp_shipping_field_show.active{display:block !important;}';
+			echo esc_attr( $bodyClass ) . '.colliveryfied p.inactive{display:none !important;} .colliveryfield .wfacp_shipping_fields.wfacp_shipping_field_hide {
                            display: none !important;
 							}
 #wfacp-e-form .wfacp_main_form .select2-container .select2-selection--single .select2-selection__rendered, #wfacp-e-form .wfacp_main_form .woocommerce-checkout select#join_referral_program {

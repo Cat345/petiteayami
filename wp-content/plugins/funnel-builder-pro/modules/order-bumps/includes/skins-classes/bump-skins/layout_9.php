@@ -26,6 +26,14 @@ if ( ! class_exists( 'WFOB_Layout_9' ) ) {
 			return WFOB_PLUGIN_URL . '/assets/img/skin-3.jpg';
 		}
 
+		public static function get_skin_label() {
+			return __( 'Slim Banner', 'woofunnels-order-bump' );
+		}
+
+		public static function get_skin_description() {
+			return __( 'Slim tinted banner: title, price line and a dark ADD button. Button only, no image or description emphasis.', 'woofunnels-order-bump' );
+		}
+
 		protected function get_product_content_schema( $product, $product_key ) {
 
 			$schema = array();
@@ -145,6 +153,7 @@ if ( ! class_exists( 'WFOB_Layout_9' ) ) {
 				'add_button_hover_color'                 => '',
 				'add_button_bg_color'                    => '#353030',
 				'add_button_hover_bg_color'              => '',
+				'icon_on_button'                         => 'none',
 
 				'added_button_color'                     => '#ffffff',
 				'added_button_bg_color'                  => '#9A9797',

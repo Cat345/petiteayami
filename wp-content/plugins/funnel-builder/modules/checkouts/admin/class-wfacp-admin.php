@@ -65,7 +65,11 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 				$shipping_location = admin_url( 'admin.php?page=wc-settings' );
 				$shipping_methods  = admin_url( 'admin.php?page=wc-settings&tab=shipping' );
-				$msg               = __( sprintf( 'Your store has <a href="%s">shipping location</a> enabled. Depending upon shipping method configuration, checkout may need  "Order Summary" field. Please drag "Order Summary" field to place in form. ', $shipping_location, $shipping_methods ), 'funnel-builder' );
+				$msg               = sprintf(
+					/* translators: %s: URL of the WooCommerce shipping settings screen. */
+					__( 'Your store has <a href="%s">shipping location</a> enabled. Depending upon shipping method configuration, checkout may need  "Order Summary" field. Please drag "Order Summary" field to place in form. ', 'funnel-builder' ),
+					esc_url( $shipping_location )
+				);
 				$aero_messages[]   = array(
 					'message'     => $msg,
 					'ids'         => array(
@@ -237,8 +241,8 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				</div>
 				<div style="margin-top:15px" class="wfacp_order_backend_field_container">
 					<h3 style="display: inline">Checkout</h3>
-					<p><b><?php _e( 'Template', 'funnel-builder' ); ?>:</b> <a href="<?php echo $title_link; ?>" target="_blank"><?php echo $title; ?></a></p>
-					<p><b><?php _e( 'Source', 'funnel-builder' ); ?>:</b> <a href="<?php echo $permalink; ?>" target="_blank"><?php echo $display_text; ?></a></p>
+					<p><b><?php esc_html_e( 'Template', 'funnel-builder' ); ?>:</b> <a href="<?php echo esc_url( $title_link ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $title ); ?></a></p>
+					<p><b><?php esc_html_e( 'Source', 'funnel-builder' ); ?>:</b> <a href="<?php echo esc_url( $permalink ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $display_text ); ?></a></p>
 				</div>
 				<?php
 				$wfacp_id = absint( $wfacp_id );
@@ -410,13 +414,13 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				<div class="wfacp_shortcode">
 					<div class="wfacp_shortcode_inner">
 						<div class="wfacp_description">
-							<label for='wfacp_shortcode_normal'><?php _e( 'Form Shortcode', 'funnel-builder' ); ?></label>
+							<label for='wfacp_shortcode_normal'><?php esc_html_e( 'Form Shortcode', 'funnel-builder' ); ?></label>
 							<input type="text" readonly="readonly" id='wfacp_shorcode_normal' style="width: 100%;" value="<?php echo $normal; ?>">
 						</div>
 						<a href="javascript:void(0)" class="wfacp_copy_text">
 							<svg fill="#0073aa" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20">
 								<path d="M 18.5 5 C 15.480226 5 13 7.4802259 13 10.5 L 13 32.5 C 13 35.519774 15.480226 38 18.5 38 L 34.5 38 C 37.519774 38 40 35.519774 40 32.5 L 40 10.5 C 40 7.4802259 37.519774 5 34.5 5 L 18.5 5 z M 18.5 8 L 34.5 8 C 35.898226 8 37 9.1017741 37 10.5 L 37 32.5 C 37 33.898226 35.898226 35 34.5 35 L 18.5 35 C 17.101774 35 16 33.898226 16 32.5 L 16 10.5 C 16 9.1017741 17.101774 8 18.5 8 z M 11 10 L 9.78125 10.8125 C 8.66825 11.5545 8 12.803625 8 14.140625 L 8 33.5 C 8 38.747 12.253 43 17.5 43 L 30.859375 43 C 32.197375 43 33.4465 42.33175 34.1875 41.21875 L 35 40 L 17.5 40 C 13.91 40 11 37.09 11 33.5 L 11 10 z"></path>
-							</svg><?php _e( 'Copy' ); ?></a>
+							</svg><?php esc_html_e( 'Copy', 'funnel-builder' ); ?></a>
 					</div>
 				</div>
 				<script>
@@ -643,7 +647,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				<script id="wfacp-back-button-template" type="text/html">
 					<div id="wfacp-switch-mode">
 						<a id="wfacp-back-button" class="button button-default button-large" href="<?php echo esc_url( $edit_link ); ?>">
-							<?php echo __( '&#8592; Back to Checkout Page', 'elementor' ); ?>
+							<?php echo wp_kses_post( __( '&#8592; Back to Checkout Page', 'elementor' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
 						</a>
 					</div>
 

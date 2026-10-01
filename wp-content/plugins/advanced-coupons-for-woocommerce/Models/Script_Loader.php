@@ -109,7 +109,7 @@ class Script_Loader extends Base_Model implements Model_Interface {
             $edit_coupon_vite = new Vite_App(
                 'acfwp-edit-advanced-coupon',
                 'packages/acfwp-edit-advanced-coupon/index.ts',
-                array( 'jquery-ui-core', 'jquery-ui-datepicker' ),
+                array( 'jquery-ui-core', 'jquery-ui-datepicker', 'jquery-ui-sortable' ),
             );
             $edit_coupon_vite->enqueue();
 
@@ -171,6 +171,43 @@ class Script_Loader extends Base_Model implements Model_Interface {
 
         // BOGO deals validation error messages.
         $data['same_products_specific_products_error_msg'] = __( '"Same Products" GET type is not compatible with "Specific Products" BUY type. Please select a different combination.', 'advanced-coupons-for-woocommerce' );
+
+        // Product discount rules panel.
+        $data['discount_rules'] = array(
+            'no_rules_added'       => __( 'No rules added', 'advanced-coupons-for-woocommerce' ),
+            'target_products'      => __( 'Products', 'advanced-coupons-for-woocommerce' ),
+            'target_categories'    => __( 'Categories', 'advanced-coupons-for-woocommerce' ),
+            'search_products'      => __( 'Search for a product…', 'advanced-coupons-for-woocommerce' ),
+            'search_categories'    => __( 'Search for a product category…', 'advanced-coupons-for-woocommerce' ),
+            'discount_percent'     => __( 'Percent (%)', 'advanced-coupons-for-woocommerce' ),
+            /* translators: %s: store currency symbol. */
+            'discount_fixed'       => sprintf( __( 'Fixed (%s)', 'advanced-coupons-for-woocommerce' ), html_entity_decode( get_woocommerce_currency_symbol(), ENT_QUOTES, 'UTF-8' ) ),
+            'remove_rule'          => __( 'Remove rule', 'advanced-coupons-for-woocommerce' ),
+            'reorder_rule'         => __( 'Drag to reorder the rule', 'advanced-coupons-for-woocommerce' ),
+            'move_rule_up'         => __( 'Move rule up', 'advanced-coupons-for-woocommerce' ),
+            'move_rule_down'       => __( 'Move rule down', 'advanced-coupons-for-woocommerce' ),
+            // accessible names of the rule row controls, which have no visible label of their own.
+            'target_type_label'    => __( 'Rule target type', 'advanced-coupons-for-woocommerce' ),
+            'discount_type_label'  => __( 'Rule discount type', 'advanced-coupons-for-woocommerce' ),
+            'discount_value_label' => __( 'Rule discount value', 'advanced-coupons-for-woocommerce' ),
+            'save_failed_message'  => __( 'Failed on saving the discount rules.', 'advanced-coupons-for-woocommerce' ),
+        );
+
+        // Tiered cart discount panel.
+        $data['tier_discounts'] = array(
+            'no_tiers_added'       => __( 'No tiers added', 'advanced-coupons-for-woocommerce' ),
+            'discount_percent'     => __( 'Percent (%)', 'advanced-coupons-for-woocommerce' ),
+            /* translators: %s: store currency symbol. */
+            'discount_fixed'       => sprintf( __( 'Fixed (%s)', 'advanced-coupons-for-woocommerce' ), html_entity_decode( get_woocommerce_currency_symbol(), ENT_QUOTES, 'UTF-8' ) ),
+            'remove_tier'          => __( 'Remove tier', 'advanced-coupons-for-woocommerce' ),
+            // accessible names of the tier row controls, which have no visible label of their own.
+            'min_spend_label'      => __( 'Tier spend threshold', 'advanced-coupons-for-woocommerce' ),
+            'discount_value_label' => __( 'Tier discount value', 'advanced-coupons-for-woocommerce' ),
+            'duplicate_threshold'  => __( 'Two tiers cannot share the same spend threshold.', 'advanced-coupons-for-woocommerce' ),
+            'invalid_value'        => __( 'Every tier needs a discount value greater than zero.', 'advanced-coupons-for-woocommerce' ),
+            'invalid_threshold'    => __( 'Every tier needs a spend threshold of zero or more.', 'advanced-coupons-for-woocommerce' ),
+            'save_failed_message'  => __( 'Failed on saving the tier discounts.', 'advanced-coupons-for-woocommerce' ),
+        );
 
         return $data;
     }

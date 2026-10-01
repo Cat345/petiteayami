@@ -46,14 +46,14 @@ if ( $available_methods ) {
 		if ( $chosen_method == $method->get_id() ) {
 			$shippingLabelText = '';
 			if ( apply_filters( 'wfacp_enable_shipping_label', false ) ) {
-				$shippingLabel     = apply_filters( 'wfacp_shipping_label', sprintf( __( 'via %s', 'woocommerce' ), WFACP_Common::shipping_method_label( $method ) ) );
+				$shippingLabel     = apply_filters( 'wfacp_shipping_label', sprintf( __( 'via %s', 'woocommerce' ), wp_kses_post( WFACP_Common::shipping_method_label( $method ) ) ) );
 				$shippingLabelText = '<small>&nbsp;' . $shippingLabel . '</small>';
 			}
 			?>
 			<tr class="shipping_total_fee">
-				<td colspan="<?php echo empty( $colspans['first'] ) ? '1' : $colspans['first']; ?>"><span><?php echo $package_name; ?><?php echo $shippingLabelText; ?></span></td>
-				<td colspan="<?php echo empty( $colspans['second'] ) ? '1' : $colspans['second']; ?>" style="text-align: right" data-title="<?php echo esc_attr( $package_name ); ?>">
-					<span><?php echo WFACP_Common::wc_cart_totals_shipping_method_cost( $method ); ?></span>
+				<td colspan="<?php echo esc_attr( empty( $colspans['first'] ) ? '1' : $colspans['first'] ); ?>"><span><?php echo $package_name; ?><?php echo $shippingLabelText; ?></span></td>
+				<td colspan="<?php echo esc_attr( empty( $colspans['second'] ) ? '1' : $colspans['second'] ); ?>" style="text-align: right" data-title="<?php echo esc_attr( $package_name ); ?>">
+					<span><?php echo wp_kses_post( WFACP_Common::wc_cart_totals_shipping_method_cost( $method ) ); ?></span>
 				</td>
 			</tr>
 			<?php

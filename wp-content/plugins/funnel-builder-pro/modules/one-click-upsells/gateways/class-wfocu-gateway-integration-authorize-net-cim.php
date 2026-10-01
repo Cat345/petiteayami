@@ -1190,8 +1190,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			$gateway       = $this->get_wc_gateway();
 			$refund_reason = isset( $refund_data['refund_reason'] ) ? sanitize_textarea_field( $refund_data['refund_reason'] ) : '';
 
-			// add refund info — stored on the instance to avoid dynamic property writes on WC_Order (PHP 8.2+)
-			$this->current_refund           = new stdClass();
+			// Refund data for the outgoing request; injected in wfocu_modify_refund_request_data().
+			$this->current_refund = new stdClass();
+
 			$this->current_refund->amount   = number_format( $amnt, 2, '.', '' );
 			$this->current_refund->reason   = $refund_reason;
 			$this->current_refund->trans_id = $txn_id;
@@ -1214,6 +1215,13 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 				if ( empty( $this->current_refund->expiry_date ) ) {
 					$this->current_refund->expiry_date = 'XXXX';
 				}
+
+				// Since CIM 3.10.15 the gateway reads the refund object from an internal WeakMap (PHP 8.2+),
+				// not $order->refund, so create_refund()/create_void() build an empty request (E00027). Inject
+				// the fields via the gateway's request-data filter instead — it hits Auth.Net's stable schema,
+				// so it's framework-version independent. See wfocu_modify_refund_request_data().
+				add_filter( 'wc_authorize_net_cim_api_request_data', array( $this, 'wfocu_modify_refund_request_data' ), 10, 2 );
+
 				$response = $api->refund( $order );
 
 				WFOCU_Core()->log->log( 'WFOCU Authorize Offer refund transaction ID' . print_r( $response, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
@@ -1284,6 +1292,32 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 
 				$offer_id = isset( $refund_data['offer_id'] ) ? absint( $refund_data['offer_id'] ) : 0;
 				$order_id = WFOCU_WC_Compatibility::get_order_id( $order );
+
+				// Fill the refund/void fields the gateway left empty (WeakMap not populated in our flow).
+				// Profile and non-profile requests share this createTransactionRequest shape.
+				if ( is_object( $this->current_refund ) && isset( $request_data['createTransactionRequest']['transactionRequest'] ) ) {
+					$transaction_request = &$request_data['createTransactionRequest']['transactionRequest'];
+					$transaction_type    = isset( $transaction_request['transactionType'] ) ? $transaction_request['transactionType'] : '';
+
+					if ( 'refundTransaction' === $transaction_type ) {
+						if ( ! empty( $this->current_refund->amount ) ) {
+							$transaction_request['amount'] = $this->current_refund->amount;
+						}
+						if ( ! empty( $this->current_refund->trans_id ) ) {
+							$transaction_request['refTransId'] = $this->current_refund->trans_id;
+						}
+						if ( ! empty( $this->current_refund->last_four ) ) {
+							$transaction_request['payment']['creditCard']['cardNumber'] = $this->current_refund->last_four;
+						}
+						if ( ! empty( $this->current_refund->expiry_date ) ) {
+							$transaction_request['payment']['creditCard']['expirationDate'] = $this->current_refund->expiry_date;
+						}
+					} elseif ( 'voidTransaction' === $transaction_type && ! empty( $this->current_refund->trans_id ) ) {
+						$transaction_request['refTransId'] = $this->current_refund->trans_id;
+					}
+
+					unset( $transaction_request );
+				}
 
 				if ( isset( $request_data['createCustomerProfileTransactionRequest'] ) && isset( $request_data['createCustomerProfileTransactionRequest']['refId'] ) ) {
 					$request_data['createCustomerProfileTransactionRequest']['refId'] = $order_id . '_' . $offer_id;

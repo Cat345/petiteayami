@@ -476,7 +476,7 @@ class Edit_Coupon implements Model_Interface, Initiable_Interface {
                     sprintf(
                         /* Translators: %1$s: Formatting tag start. %2$s: Formatting tag end. */
                         __(
-                            '%1$sNote:%2$s coupon cannot be auto applied when "Allowed emails", "Usage limit per coupon", "Usage limit per user" and/or "Virtual coupons" option is set.',
+                            '%1$sNote:%2$s this coupon won\'t be auto applied when "Virtual coupons" is enabled, or when "Usage limit per user" is set and the shopper is not logged in. A coupon restricted by "Allowed emails" is auto applied once the customer\'s email is known — a logged-in customer, or a guest who has entered their email on the block-based checkout.',
                             'advanced-coupons-for-woocommerce'
                         ),
                         '<strong>',

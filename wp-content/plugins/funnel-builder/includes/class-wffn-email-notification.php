@@ -341,12 +341,22 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 			$date_string = self::get_date_string( $dates, $frequency );
 			switch ( strtolower( $frequency ) ) {
 				case 'weekly':
-					return sprintf( __( '%s - Weekly Report for %s', 'funnel-builder' ), get_bloginfo( 'name' ), $date_string );//phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText
+					return sprintf(
+						/* translators: 1: site name, 2: reporting period. */
+						__( '%1$s - Weekly Report for %2$s', 'funnel-builder' ),
+						get_bloginfo( 'name' ),
+						$date_string
+					);
 				case 'monthly':
-					return sprintf( __( '%s - Monthly Report for %s', 'funnel-builder' ), get_bloginfo( 'name' ), $date_string );//phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText
+					return sprintf(
+						/* translators: 1: site name, 2: reporting period. */
+						__( '%1$s - Monthly Report for %2$s', 'funnel-builder' ),
+						get_bloginfo( 'name' ),
+						$date_string
+					);
 
 				default:
-					return __( 'Report', 'funnel-builder' );//phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText
+					return __( 'Report', 'funnel-builder' );
 			}
 		}
 

@@ -93,7 +93,7 @@ $totals = $order->get_order_item_totals();
 								<?php } ?>
 
 								<div class="product-name  <?php echo esc_attr( $hideImageCls ); ?> ">
-									<span class="wfacp_order_summary_item_name"><?php echo apply_filters( 'woocommerce_order_item_name', esc_html( $cart_item->get_name() ), $cart_item, false );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+									<span class="wfacp_order_summary_item_name"><?php echo wp_kses_post( apply_filters( 'woocommerce_order_item_name', esc_html( $cart_item->get_name() ), $cart_item, false ) ); ?></span>
 									<?php
 									echo apply_filters( 'woocommerce_order_item_quantity_html', ' <strong class="product-quantity">' . sprintf( '&times; %s', $cart_item->get_quantity() ) . '</strong>', $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 									wc_display_item_meta( $cart_item );

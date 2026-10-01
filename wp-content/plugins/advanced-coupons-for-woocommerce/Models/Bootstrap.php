@@ -441,15 +441,34 @@ class Bootstrap implements Model_Interface {
     }
 
     /**
-     * Declare high performance order storage compatibility.
+     * Declare WooCommerce features compatibility.
+     *
+     * Covers high performance order storage, the cart and checkout blocks, and
+     * product instance caching.
      *
      * @since 3.5.6
+     * @since 4.1 Renamed from declare_hpos_compatibility. Added the cart and checkout blocks and product instance caching declarations.
      * @access public
      */
-    public function declare_hpos_compatibility() {
+    public function declare_woocommerce_features_compatibility() {
         if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+            // Declare that the plugin is compatible with hpos feature.
             \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
                 'custom_order_tables',
+                $this->_constants->MAIN_PLUGIN_FILE_PATH,
+                true
+            );
+
+            // Declare that the plugin is compatible with the cart and checkout blocks feature.
+            \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+                'cart_checkout_blocks',
+                $this->_constants->MAIN_PLUGIN_FILE_PATH,
+                true
+            );
+
+            // Declare that the plugin is compatible with the product instance caching feature.
+            \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+                'product_instance_caching',
                 $this->_constants->MAIN_PLUGIN_FILE_PATH,
                 true
             );
@@ -488,7 +507,7 @@ class Bootstrap implements Model_Interface {
         // Initialize API.
         add_action( 'rest_api_init', array( $this, 'rest_api_init' ) );
 
-        // Declare HPOS caompatibility with WooCommerce.
-        add_action( 'before_woocommerce_init', array( $this, 'declare_hpos_compatibility' ) );
+        // Declare WooCommerce features compatibility.
+        add_action( 'before_woocommerce_init', array( $this, 'declare_woocommerce_features_compatibility' ) );
     }
 }

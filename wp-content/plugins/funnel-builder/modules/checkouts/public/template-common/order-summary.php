@@ -25,11 +25,11 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 	$tax_enabled = 'wfacp_tax_enabled';
 }
 ?>
-	<div class="wfacp_order_summary wfacp_wrapper_start wfacp_order_sec wfacp_order_summary_sec <?php echo $classes . ' ' . $tax_enabled; ?>" id="order_summary_field" <?php echo WFACP_Common::get_fragments_attr();  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> >
+	<div class="wfacp_order_summary wfacp_wrapper_start wfacp_order_sec wfacp_order_summary_sec <?php echo esc_attr( $classes . ' ' . $tax_enabled ); ?>" id="order_summary_field" data-time="<?php echo esc_attr( WFACP_Common::get_fragments_time() ); ?>" >
 		<?php do_action( 'wfacp_before_order_summary', $field, $instance ); ?>
 		<div class="wfacp_order_summary_container">
-			<label class="wfacp-order-summary-label  "><?php echo isset( $field['label'] ) ? $field['label'] : WFACP_Common::translation_string_to_check( __( 'Order Summary', 'woocommerce' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch ?></label>
-			<table class="shop_table woocommerce-checkout-review-order-table <?php echo $instance->get_template_slug();  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
+			<label class="wfacp-order-summary-label  "><?php echo esc_html( isset( $field['label'] ) ? $field['label'] : WFACP_Common::translation_string_to_check( __( 'Order Summary', 'woocommerce' ) ) ); ?></label>
+			<table class="shop_table woocommerce-checkout-review-order-table <?php echo esc_attr( $instance->get_template_slug() ); ?>">
 				<thead>
 				<tr>
 					<th class="product-name-area">
@@ -42,7 +42,7 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 							$hideImageCls = 'wfacp_summary_img_true';
 						}
 						?>
-						<div class="product-name <?php echo $hideImageCls;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
+						<div class="product-name <?php echo esc_attr( $hideImageCls ); ?>">
 							<?php echo apply_filters( 'wfacp_order_summary_column_item_heading', __( 'Product', 'woocommerce' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch ?>
 						</div>
 					</th>
@@ -73,9 +73,9 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 										</div>
 									</div>
 								<?php } ?>
-								<div class="product-name  <?php echo $hideImageCls;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> ">
+								<div class="product-name  <?php echo esc_attr( $hideImageCls ); ?> ">
 									<span class="wfacp_order_summary_item_name">
-									<?php echo apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+									<?php echo wp_kses_post( apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key ) ); ?>
 								</span>
 									<?php
 									do_action( 'wfacp_order_summary_field_after_product_name', $cart_item, $cart_item_key );
@@ -144,7 +144,7 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 				</tbody>
 				<tfoot>
 				<tr class="cart-subtotal">
-					<th <?php echo $colspan_attr; ?>><span><?php _e( 'Subtotal', 'woocommerce' );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.Security.EscapeOutput.UnsafePrintingFunction, WordPress.WP.I18n.TextDomainMismatch ?></span></th>
+					<th <?php echo $colspan_attr; ?>><span><?php esc_html_e( 'Subtotal', 'woocommerce' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></span></th>
 					<td><?php wc_cart_totals_subtotal_html(); ?></td>
 				</tr>
 				<?php foreach ( WC()->cart->get_coupons() as $code => $coupon ) : ?>
@@ -185,7 +185,7 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 				<?php if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) : ?>
 					<?php if ( 'itemized' === get_option( 'woocommerce_tax_total_display' ) ) : ?>
 						<?php foreach ( WC()->cart->get_tax_totals() as $code => $tax ) : ?>
-							<tr class="tax-rate tax-rate-<?php echo sanitize_title( $code );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
+							<tr class="tax-rate tax-rate-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
 								<th <?php echo $colspan_attr; ?>><?php echo esc_html( $tax->label );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
 								<td><?php echo wp_kses_post( $tax->formatted_amount ); ?></td>
 							</tr>
@@ -199,7 +199,7 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 				<?php endif; ?>
 				<?php do_action( 'woocommerce_review_order_before_order_total' ); ?>
 				<tr class="order-total">
-					<th <?php echo $colspan_attr; ?>><span><?php _e( 'Total', 'woocommerce' );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.Security.EscapeOutput.UnsafePrintingFunction, WordPress.WP.I18n.TextDomainMismatch ?></span></th>
+					<th <?php echo $colspan_attr; ?>><span><?php esc_html_e( 'Total', 'woocommerce' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></span></th>
 					<td><?php wc_cart_totals_order_total_html(); ?></td>
 				</tr>
 				<?php

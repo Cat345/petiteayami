@@ -49,10 +49,6 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 							foreach ( $templates as $temp_key => $temp_val ) {
 								$temp_val['template_type'] = $d_key;
 
-								if ( isset( $temp_val['pro'] ) && 'yes' === $temp_val['pro'] ) {
-
-									$temp_val['license_exist'] = 'no';
-								}
 								$this->register_template( $temp_key, $temp_val, $d_key );
 							}
 						}

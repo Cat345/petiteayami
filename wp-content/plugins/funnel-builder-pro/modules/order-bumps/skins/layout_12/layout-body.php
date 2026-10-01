@@ -11,7 +11,10 @@
 
 	<?php
 	/**
-	 * Product Tag ("MOST POPULAR") - per-product exclusive content, rendered once above the title.
+	 * Product Tag ("MOST POPULAR") - per-product exclusive content. Every position the design panel
+	 * offers is rendered; the shared CSS keeps only the copy matching the selected position visible
+	 * (the wrapper carries the chosen wfob_exclusive_* class). The two "Outside - Top" positions are
+	 * rendered above this file by layout-default.php.
 	 */
 	$special_offer_position = 'wfob_exclusive_above_title';
 	require WFOB_SKIN_DIR . '/template-parts/wfob-special-offer.php';
@@ -26,8 +29,14 @@
 
 	<div class="wfob_l12_s_desc wfob_description_wrap">
 		<?php
+		$special_offer_position = 'wfob_exclusive_above_description';
+		require WFOB_SKIN_DIR . '/template-parts/wfob-special-offer.php';
+
 		require WFOB_SKIN_DIR . '/template-parts/wfob-desciption.php';
 		require WFOB_SKIN_DIR . '/template-parts/wfob-variation.php';
+
+		$special_offer_position = 'wfob_exclusive_below_description';
+		require WFOB_SKIN_DIR . '/template-parts/wfob-special-offer.php';
 		?>
 	</div>
 

@@ -94,11 +94,11 @@ if ( ! class_exists( 'WFACP_Compatibility_Delivery_Date_For_WC' ) ) {
 			}
 
 			echo "<style>";
-			echo $bodyClass . ' .wfacp_main_form.woocommerce .wfacp-delivery-date-for-wc input#datepicker{padding-left: 32px !important;}';
-			echo $bodyClass . ' .wfacp_main_form.woocommerce .wfacp-delivery-date-for-wc .ddfwCalander:before{width: 20px;height: 20px;background-size: 20px;top: 50%;margin-top: -10px;}';
-			echo $bodyClass . ' .wfacp_main_form.woocommerce .wfacp-delivery-date-for-wc label.wfacp-form-control-label{left: 40px;}';
-			echo $bodyClass . ' .wfacp_main_form.woocommerce p.wfacp-form-control-wrapper.wfacp-delivery-date-for-wc.wfacp-anim-wrap label.wfacp-form-control-label{left: 40px;}';
-			echo $bodyClass . ' .wfacp_main_form.woocommerce span.woocommerce-input-wrapper.ddfwCalander{position: relative;display: block;}';
+			echo esc_attr( $bodyClass ) . ' .wfacp_main_form.woocommerce .wfacp-delivery-date-for-wc input#datepicker{padding-left: 32px !important;}';
+			echo esc_attr( $bodyClass ) . ' .wfacp_main_form.woocommerce .wfacp-delivery-date-for-wc .ddfwCalander:before{width: 20px;height: 20px;background-size: 20px;top: 50%;margin-top: -10px;}';
+			echo esc_attr( $bodyClass ) . ' .wfacp_main_form.woocommerce .wfacp-delivery-date-for-wc label.wfacp-form-control-label{left: 40px;}';
+			echo esc_attr( $bodyClass ) . ' .wfacp_main_form.woocommerce p.wfacp-form-control-wrapper.wfacp-delivery-date-for-wc.wfacp-anim-wrap label.wfacp-form-control-label{left: 40px;}';
+			echo esc_attr( $bodyClass ) . ' .wfacp_main_form.woocommerce span.woocommerce-input-wrapper.ddfwCalander{position: relative;display: block;}';
 			echo "</style>";
 
 

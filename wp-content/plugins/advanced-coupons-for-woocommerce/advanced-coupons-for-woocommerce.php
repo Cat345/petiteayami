@@ -3,14 +3,14 @@
  * Plugin Name: Advanced Coupons for WooCommerce Premium
  * Plugin URI: https://advancedcouponsplugin.com
  * Description: Advanced Coupons for WooCommerce (Premium Add-on) adds even more advanced features to WooCommerce coupons so store owners can market their stores better.
- * Version: 4.0.9
+ * Version: 4.1.0
  * Author: Rymera Web Co
  * Author URI: https://rymera.com.au/
  * Update URI: advancedcouponsplugin.com
  * Requires at least: 5.9
- * Tested up to: 7.0.2
+ * Tested up to: 7.1
  * WC requires at least: 4.0
- * WC tested up to: 10.9.4
+ * WC tested up to: 11.1.0
  *
  * Text Domain: advanced-coupons-for-woocommerce
  * Domain Path: /languages/
@@ -51,6 +51,7 @@ use ACFWP\Models\Notices;
 use ACFWP\Models\Payment_Methods_Restrict;
 use ACFWP\Models\Percent_Discount_Cap;
 use ACFWP\Models\Product_Attributes;
+use ACFWP\Models\Product_Discount_Rules;
 use ACFWP\Models\REST_API\API_Coupon_Generator_Storage;
 use ACFWP\Models\REST_API\API_Virtual_Coupons;
 use ACFWP\Models\REST_API\Template_Field_Enrichment;
@@ -58,6 +59,7 @@ use ACFWP\Models\Script_Loader;
 use ACFWP\Models\Shipping_Overrides;
 use ACFWP\Models\SLMW\License;
 use ACFWP\Models\SLMW\Update;
+use ACFWP\Models\Tiered_Cart_Discount;
 use ACFWP\Models\Usage_Limits;
 use ACFWP\Models\Virtual_Coupon\Admin as Virtual_Coupon_Admin;
 use ACFWP\Models\Virtual_Coupon\Frontend as Virtual_Coupon_Frontend;
@@ -109,11 +111,18 @@ class ACFWP extends Abstract_Main_Plugin_Class { // phpcs:ignore
     /**
      * Minimum required ACFWF version.
      *
+     * The floor is '4.7.6' because of the auto-apply interchange fix (#1198). That fix needs the
+     * free plugin's "one BOGO coupon" restriction to read the live applied-coupons list, which
+     * ACFWF 4.7.6 adds (free-plugin companion fix ACFWF #1606, premium PR #1590). Against an older
+     * ACFWF, the BOGO interchange ends with no BOGO coupon applied. Do not lower this floor below
+     * '4.7.6'. Issue #1607 raised it.
+     *
      * @since 3.5.5
+     * @since 4.1.0 Raised the floor to '4.7.6' for the auto-apply interchange fix (#1198).
      * @access private
      * @var string
      */
-    private $_required_acfwf_version = '4.6.9';
+    private $_required_acfwf_version = '4.7.6';
 
     /*
     |--------------------------------------------------------------------------
@@ -445,6 +454,8 @@ class ACFWP extends Abstract_Main_Plugin_Class { // phpcs:ignore
             ACFW_Reports::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions ),
             License::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions ),
             Product_Attributes::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions ),
+            Product_Discount_Rules::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions ),
+            Tiered_Cart_Discount::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions ),
             $slmw_license,
             $slmw_update,
             \ACFWP\Models\Coupon_Tab::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions ),

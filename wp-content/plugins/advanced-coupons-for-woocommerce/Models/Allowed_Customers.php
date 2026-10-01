@@ -132,9 +132,10 @@ class Allowed_Customers extends Base_Model implements Model_Interface, Initiable
     public function save_allowed_customers_data( $coupon_id, $coupon ) {
         $meta_name = $this->_constants->META_PREFIX . 'allowed_customers';
 
-        // Verify WP's nonce to make sure the request is valid before we save ACFW related data.
-        $nonce = sanitize_key( $_POST['_wpnonce'] ?? '' );
-        if ( ! $nonce || false === wp_verify_nonce( $nonce, 'update-post_' . $coupon_id ) ) {
+        // Verify ACFW's dedicated nonce to ensure the request is valid before saving ACFW data.
+        // Uses _acfw_nonce (not _wpnonce) to avoid conflicts with plugins like WooPayments that
+        // may modify the shared _wpnonce field before form submission.
+        if ( ! isset( $_POST['_acfw_nonce'] ) || false === wp_verify_nonce( sanitize_key( $_POST['_acfw_nonce'] ), 'acfw_save_coupon_data_' . $coupon_id ) ) {
             return;
         }
 

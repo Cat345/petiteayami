@@ -92,7 +92,7 @@ $permalink = get_the_permalink();
 
     </style>
     <form name="checkout" method="post" class="checkout woocommerce-checkout wfacp_amazon_checkout" action="<?php echo esc_url( get_the_permalink() ); ?>" enctype="multipart/form-data" id="wfacp_checkout_form">
-        <input type="hidden" name="_wfacp_post_id" class="_wfacp_post_id" value="<?php echo WFACP_Common::get_id(); ?>">
+        <input type="hidden" name="_wfacp_post_id" class="_wfacp_post_id" value="<?php echo esc_attr( WFACP_Common::get_id() ); ?>">
 		<?php do_action( 'wfacp_before_checkout_form_fields', $checkout ); ?>
         <div class="wfacp-section  wfacp-hg-by-box">
 			<?php

@@ -599,7 +599,12 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 				'smart_buttons'                            => array(
 					'title'    => __( 'Express Checkout Buttons', 'funnel-builder' ),
 					'heading'  => __( 'Express Checkout Buttons', 'funnel-builder' ),
-					'hint'     => __( "Enable this to show smart buttons for $links_string and $amazonelink for express checkout. For Stripe, Payment Request Buttons should be enabled and configured.", 'funnel-builder' ), //phpcs:ignore WordPress.WP.I18n.InterpolatedVariableText
+					'hint'     => sprintf(
+						/* translators: 1: list of supported express-checkout gateways, 2: Amazon Pay link. */
+						__( 'Enable this to show smart buttons for %1$s and %2$s for express checkout. For Stripe, Payment Request Buttons should be enabled and configured.', 'funnel-builder' ),
+						$links_string,
+						$amazonelink
+					),
 					'slug'     => 'smart_buttons',
 					'fields'   => array(
 						0 => array(

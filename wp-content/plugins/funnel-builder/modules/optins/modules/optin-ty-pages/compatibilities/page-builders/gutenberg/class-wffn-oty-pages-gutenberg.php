@@ -79,9 +79,6 @@ if ( ! class_exists( 'WFFN_OTY_Pages_Gutenberg' ) ) {
 			if ( isset( $designs['gutenberg'] ) && is_array( $designs['gutenberg'] ) ) {
 				foreach ( $designs['gutenberg'] as $d_key => $templates ) {
 
-					if ( isset( $templates['pro'] ) && 'yes' === $templates['pro'] ) {
-						$templates['license_exist'] = WFFN_Core()->admin->get_license_status();
-					}
 					WFOPP_Core()->optin_ty_pages->register_template( $d_key, $templates, 'gutenberg' );
 
 				}

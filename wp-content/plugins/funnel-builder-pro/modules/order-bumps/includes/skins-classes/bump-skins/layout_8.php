@@ -28,6 +28,14 @@ if ( ! class_exists( 'WFOB_Layout_8' ) ) {
 			return WFOB_PLUGIN_URL . '/assets/img/skin-1.jpg';
 		}
 
+		public static function get_skin_label() {
+			return __( 'Product Showcase', 'woofunnels-order-bump' );
+		}
+
+		public static function get_skin_description() {
+			return __( 'Tinted dashed-border box in two stacks: product image, badge and description on top, the arrow-and-checkbox offer line with the price below.', 'woofunnels-order-bump' );
+		}
+
 
 		public static function get_default_models() {
 			return array(

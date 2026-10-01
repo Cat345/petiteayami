@@ -537,6 +537,99 @@ class WFOB_Public {
 		do_action( 'wfob_woocommerce_' . $product->get_type() . '_add_to_cart' );
 	}
 
+	/**
+	 * Callbacks lifted off the single-product furniture hooks while the quick view renders,
+	 * keyed by hook name. Each entry is array( callback, priority, accepted_args ).
+	 *
+	 * @var array
+	 */
+	private $qv_lifted_hooks = array();
+
+	/**
+	 * The hooks whose third-party output the quick view suppresses.
+	 *
+	 * These four wrap the add-to-cart form from the OUTSIDE — WooCommerce core hangs nothing on
+	 * them, so on a product page they carry only third-party furniture: bundle builders, "frequently
+	 * bought together" strips, subscription notices. That furniture belongs on the product page. The
+	 * quick view is a variation picker for one bump product, and it renders the same WooCommerce
+	 * add-to-cart templates (see quick-view/add-to-cart/*.php), so anything listening lands inside
+	 * the bump's modal — e.g. FunnelKit Bundles hooks woocommerce_before_variations_form at priority
+	 * 5 and prints a whole Mix & Match widget above the variation dropdowns, with its own Add
+	 * buttons pointing at a different cart flow.
+	 *
+	 * Deliberately NOT included: woocommerce_before_add_to_cart_button and
+	 * woocommerce_after_add_to_cart_button. Those fire INSIDE the form and are where plugins put
+	 * fields the add-to-cart POST needs — stripping them would break the submission, not just tidy
+	 * the modal. The quick view uses the first of them itself.
+	 *
+	 * @return array
+	 */
+	public function get_quick_view_suppressed_hooks() {
+		/**
+		 * Hooks silenced for the duration of a quick-view render.
+		 *
+		 * Drop one to let an integration render inside the modal again.
+		 *
+		 * @param array $hooks Hook names.
+		 */
+		return apply_filters(
+			'wfob_quick_view_suppressed_hooks',
+			array(
+				'woocommerce_before_add_to_cart_form',
+				'woocommerce_after_add_to_cart_form',
+				'woocommerce_before_variations_form',
+				'woocommerce_after_variations_form',
+			)
+		);
+	}
+
+	/**
+	 * Lift every callback off the furniture hooks, remembering it for restore_quick_view_hooks().
+	 *
+	 * Called before the quick-view template registers its OWN callbacks on these hooks, so what is
+	 * removed here is exactly the third-party set and the template's additions are untouched.
+	 */
+	public function suppress_quick_view_hooks() {
+		global $wp_filter;
+
+		foreach ( $this->get_quick_view_suppressed_hooks() as $hook ) {
+			if ( ! isset( $wp_filter[ $hook ] ) || ! $wp_filter[ $hook ] instanceof WP_Hook ) {
+				continue;
+			}
+
+			/* Collect first, remove after: remove_action() rewrites the very array being walked. */
+			$lifted = array();
+			foreach ( $wp_filter[ $hook ]->callbacks as $priority => $callbacks ) {
+				foreach ( $callbacks as $callback ) {
+					$lifted[] = array( $callback['function'], $priority, $callback['accepted_args'] );
+				}
+			}
+
+			foreach ( $lifted as $entry ) {
+				remove_action( $hook, $entry[0], $entry[1] );
+			}
+
+			$this->qv_lifted_hooks[ $hook ] = $lifted;
+		}
+	}
+
+	/**
+	 * Put the lifted callbacks back once the modal markup is built.
+	 *
+	 * The quick view is the last thing this request renders, so the callbacks it added itself are
+	 * left in place — re-adding at the original priority is enough to leave the hook set intact for
+	 * anything that runs after. Order WITHIN a priority can differ from before; nothing fires these
+	 * hooks again on this request, and relying on same-priority ordering is a bug either way.
+	 */
+	public function restore_quick_view_hooks() {
+		foreach ( $this->qv_lifted_hooks as $hook => $lifted ) {
+			foreach ( $lifted as $entry ) {
+				add_action( $hook, $entry[0], $entry[1], $entry[2] );
+			}
+		}
+		$this->qv_lifted_hooks = array();
+	}
+
 	public function woocommerce_variable_add_to_cart() {
 		global $product;
 

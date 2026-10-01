@@ -462,8 +462,14 @@ class Abilities extends Base_Model implements Model_Interface {
         $coupons = array();
 
         foreach ( $query->posts as $coupon_id ) {
-            $coupon       = new \WC_Coupon( $coupon_id );
-            $date_expires = $coupon->get_date_expires();
+            $coupon = new \WC_Coupon( $coupon_id );
+
+            /*
+             * Read in the 'edit' context. This reports the coupon's stored configuration, while
+             * 'view' reports the scheduler's effective expiry date for a scheduled coupon.
+             * See Scheduler::maybe_override_date_expires().
+             */
+            $date_expires = $coupon->get_date_expires( 'edit' );
 
             $coupons[] = array(
                 'id'            => $coupon->get_id(),
@@ -502,7 +508,8 @@ class Abilities extends Base_Model implements Model_Interface {
             return $coupon;
         }
 
-        $date_expires = $coupon->get_date_expires();
+        // 'edit' context, for the same reason as list_coupons() above.
+        $date_expires = $coupon->get_date_expires( 'edit' );
 
         return array(
             'id'                         => $coupon->get_id(),

@@ -26,6 +26,14 @@ if ( ! class_exists( 'WFOB_Layout_10' ) ) {
 			return WFOB_PLUGIN_URL . '/assets/img/skin-3.jpg';
 		}
 
+		public static function get_skin_label() {
+			return __( 'Minimal Row', 'woofunnels-order-bump' );
+		}
+
+		public static function get_skin_description() {
+			return __( 'Minimal white row: title and description on the left, price and a dark ADD button on the right. Button only, no checkbox.', 'woofunnels-order-bump' );
+		}
+
 		protected function get_product_content_schema( $product, $product_key ) {
 
 			$schema = array();
@@ -144,6 +152,7 @@ if ( ! class_exists( 'WFOB_Layout_10' ) ) {
 				'add_button_hover_color'                 => '',
 				'add_button_bg_color'                    => '#353030',
 				'add_button_hover_bg_color'              => '',
+				'icon_on_button'                         => 'none',
 
 				'added_button_color'                     => '#ffffff',
 				'added_button_bg_color'                  => '#82838E',

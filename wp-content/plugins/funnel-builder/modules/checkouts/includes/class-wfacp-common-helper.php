@@ -86,11 +86,21 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 		 * @return bool
 		 */
 		public static function is_customizer() {
-			if ( isset( $_REQUEST['wfacp_customize'] ) && $_REQUEST['wfacp_customize'] == 'loaded' && isset( $_REQUEST['wfacp_id'] ) && $_REQUEST['wfacp_id'] > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Read-only URL parameter check for customizer detection
-				return true;
+			if ( ! isset( $_REQUEST['wfacp_customize'] ) || 'loaded' !== $_REQUEST['wfacp_customize'] || ! isset( $_REQUEST['wfacp_id'] ) || absint( $_REQUEST['wfacp_id'] ) < 1 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a capability check follows.
+				return false;
 			}
 
-			return false;
+			/**
+			 * Only query parameters said "customizer" before this, so any visitor could put
+			 * ?wfacp_customize=loaded&wfacp_id=N on a checkout URL and put the plugin into
+			 * builder mode. The customizer is opened from wp-admin by someone editing the
+			 * page, so require the capability that context implies.
+			 */
+			if ( function_exists( 'current_user_can' ) && ! current_user_can( 'edit_posts' ) ) {
+				return false;
+			}
+
+			return true;
 		}
 
 
@@ -208,13 +218,25 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 
 		public static function is_theme_builder() {
 
-			return apply_filters( 'wfacp_is_theme_builder', self::is_customizer() );
+			$is_builder = apply_filters( 'wfacp_is_theme_builder', self::is_customizer() );
+
+			/**
+			 * Several builders filter this to __return_true off request parameters an anonymous
+			 * visitor can set (elementor-preview, ct_builder, ...). One capability test here
+			 * covers every one of those filters.
+			 */
+			if ( $is_builder && function_exists( 'current_user_can' ) && ! current_user_can( 'edit_posts' ) ) {
+				return false;
+			}
+
+			return $is_builder;
 		}
 
 		public static function is_edit_screen_open() {
 			$status = false;
-			if ( isset( $_REQUEST['wfacp_customize'] ) || isset( $_REQUEST['wfacp_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Read-only URL parameter check for edit screen detection
-				$status = true;
+			/** Same reasoning as is_customizer(): an edit screen implies someone who can edit. */
+			if ( isset( $_REQUEST['wfacp_customize'] ) || isset( $_REQUEST['wfacp_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a capability check follows.
+				$status = ! function_exists( 'current_user_can' ) || current_user_can( 'edit_posts' );
 			}
 
 			return apply_filters( 'wfacp_is_edit_screen_open', $status );
@@ -2619,8 +2641,8 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 			update_post_meta( $id, '_wfacp_fieldsets_data_bck', $page_field_set );
 
 			$search         = self::get_old_placeholders();
-			$page_layout    = json_encode( $page_layout );
-			$page_field_set = json_encode( $page_field_set );
+			$page_layout    = wp_json_encode( $page_layout );
+			$page_field_set = wp_json_encode( $page_field_set );
 			$page_layout    = str_replace( $search, '', $page_layout );
 			$page_field_set = str_replace( $search, '', $page_field_set );
 			if ( is_null( $page_layout ) || empty( $page_layout ) ) {
@@ -2643,7 +2665,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 		 */
 		public static function update_label_meta( $post_id, $json_data ) {
 			if ( is_array( $json_data ) ) {
-				$json_data = json_encode( $json_data );
+				$json_data = wp_json_encode( $json_data );
 			}
 			if ( empty( $json_data ) ) {
 				return;

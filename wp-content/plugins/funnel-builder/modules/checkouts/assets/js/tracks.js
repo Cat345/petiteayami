@@ -17,7 +17,6 @@
             this.track_id = data.id;
             this.settings = data.settings;
             this.positions = data.positions;
-            this.is_bumpevent = false;
             this.data = {
                 'add_to_cart': data.add_to_cart ? data.add_to_cart : {}, 'checkout': data.checkout, 'payment_info': {}, 'shipping_info': data.shipping_info ? data.shipping_info : {}, 'last_checkout_data': null
             };
@@ -172,21 +171,6 @@
                 }
             });
 
-            $(document.body).on('wfob_product_added', function (e, v) {
-                try {
-                    self.track_bump_item(v);
-                }catch (error) {
-                    console.log( error );
-                }
-
-            });
-            $(document.body).on('wfob_product_removed', function (e, v) {
-                try {
-                    self.track_remove_bump_item(v);
-                }catch (error) {
-                    console.log( error );
-                }
-            });
 
             $(document.body).on('wfacp_product_added', function (e, v) {
                 try {
@@ -286,7 +270,7 @@
         /**
          * Fire JavaScript action hook for add_to_cart events
          * Allows developers to listen and duplicate events (e.g., for Stape)
-         * 
+         *
          * @param {Object} eventData - The event data object
          * @param {String} eventName - The event name (e.g., 'add_to_cart', 'AddToCart', 'addtocart', 'ADD_CART')
          */
@@ -368,37 +352,7 @@
             }
         }
 
-        // Bump Event
 
-        track_bump_item(data) {
-            let present = typeof wfob_frontend == 'object' && wfob_frontend.hasOwnProperty('track');
-            if (present) {
-                if (true == wfob_frontend.track[this.track_name].add_to_cart) {
-                    this.is_bumpevent = true;
-                    this.add_item(data, true);
-                }
-                if (wfob_frontend.track[this.track_name].hasOwnProperty('custom_bump') && true == wfob_frontend.track[this.track_name].custom_bump) {
-                    let customData = {"post_id": wfacp_frontend.id, "page_title": wfacp_frontend.title};
-                    if (wfacp_frontend.hasOwnProperty('funnel_id')) {
-                        customData.funnel_id = wfacp_frontend.funnel_id;
-                    }
-                    if (wfacp_frontend.hasOwnProperty('funnel_title')) {
-                        customData.funnel_title = wfacp_frontend.funnel_title;
-                    }
-                    this.custom_event('Woofunnels_Bump', customData);
-                }
-            }
-        }
-
-        track_remove_bump_item(data) {
-            let present = typeof wfob_frontend == 'object' && wfob_frontend.hasOwnProperty('track');
-            if (present) {
-                if (true == wfob_frontend.track[this.track_name].add_to_cart) {
-                    this.is_bumpevent = true;
-                    this.remove_item(data);
-                }
-            }
-        }
 
     }
 
@@ -570,7 +524,7 @@
         /**
          * Fire JavaScript action hook for add_to_cart events
          * Allows developers to listen and duplicate events (e.g., for Stape)
-         * 
+         *
          * @param {Object} eventData - The event data object
          * @param {String} eventName - The event name (e.g., 'add_to_cart', 'AddToCart', 'addtocart', 'ADD_CART')
          */
@@ -659,7 +613,7 @@
                     event_data = shipping_data[0];
                     event_data.send_to = this.track_id;
                     event_data.non_interaction = true;
-                    
+
                     // Add enhanced shipping data structure (similar to PixelYourSite)
                     if (event_data.shipping_address) {
                         event_data.user_data = event_data.user_data || {};
@@ -690,7 +644,6 @@
             super(data);
             this.track_name = 'google_ads';
             this.idlabel = (typeof data.idlabel !== "undefined") ? data.idlabel : '';
-            this.bumpIdlabel = (typeof data.bumpIdlabel !== "undefined") ? data.bumpIdlabel : '';
             window.dataLayer = window.dataLayer || [];
         }
 
@@ -711,19 +664,17 @@
         }
 
         set_send_id( data ) {
-            if ( this.is_bumpevent === true ) {
-                data.send_to = (typeof this.bumpIdlabel !== "undefined") && '' !== this.bumpIdlabel ? this.bumpIdlabel : this.track_id;
-            } else {
+
                 data.send_to = (typeof this.idlabel !== "undefined") && '' !== this.idlabel ? this.idlabel : this.track_id;
-            }
+
             return data;
         }
 
         event_checkout(checkout_data) {
             var event_data = {
-                send_to: this.track_id, 
-                event_category: "ecommerce", 
-                items: JSON.parse(checkout_data), 
+                send_to: this.track_id,
+                event_category: "ecommerce",
+                items: JSON.parse(checkout_data),
                 non_interaction: true
             };
             event_data = this.set_send_id(event_data);
@@ -1064,15 +1015,7 @@
                     if ( typeof wfacp_analytics_data.google_ads.cart_labels === "string") {
                         gadLabels = wfacp_analytics_data.google_ads.cart_labels.split(',');
                     }
-                    /**
-                     * get bump cart labels
-                     */
-                    let bumpGadLabels = [];
-                    if ((typeof wfob_frontend == 'object') && wfob_frontend.hasOwnProperty('track') && wfob_frontend.track.hasOwnProperty('google_ads')) {
-                        if (typeof wfob_frontend.track.google_ads.cart_labels === "string") {
-                            bumpGadLabels = wfob_frontend.track.google_ads.cart_labels.split(',');
-                        }
-                    }
+
 
                     if (ids.length > 0) {
                         wfacp_frontend.tracks.google_ads = {};
@@ -1087,12 +1030,7 @@
                             if ("undefined" !== typeof gadLabels[f] && gadLabels[f] !== "") {
                                 temp.idlabel = temp.id + '/' + gadLabels[f].trim();
                             }
-                            /**
-                             * set bump add to cart labels
-                             */
-                            if ("undefined" !== typeof bumpGadLabels[f] && bumpGadLabels[f] !== "") {
-                                temp.bumpIdlabel = temp.id + '/' + bumpGadLabels[f].trim();
-                            }
+
                             wfacp_frontend.tracks.google_ads[f_id] = new Google_ads(temp);
                         }
                     }

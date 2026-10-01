@@ -24,7 +24,7 @@ $template = wfacp_template();
 		<?php
 		$temp_slug_h = $template->get_template_slug();
 		?>
-        <form class="woocommerce-form woocommerce-form-login login <?php echo $temp_slug_h; ?>_login_wrap <?php echo apply_filters( 'wfacp_form_login_classes', 'hidden-form' ); ?>" method="post" <?php echo ( $hidden ) ? 'style="display:none;"' : ''; ?> >
+        <form class="woocommerce-form woocommerce-form-login login <?php echo esc_attr( $temp_slug_h ); ?>_login_wrap <?php echo esc_attr( apply_filters( 'wfacp_form_login_classes', 'hidden-form' ) ); ?>" method="post" <?php echo ( $hidden ) ? 'style="display:none;"' : ''; ?> >
             <input type="hidden" id="wfacp_login_hidden" name="wfacp_login_hidden" value="1">
             <div class="wfacp-col-full login_sec_content">
 				<?php do_action( 'woocommerce_login_form_start' ); ?>

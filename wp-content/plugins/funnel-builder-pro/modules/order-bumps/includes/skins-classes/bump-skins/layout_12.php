@@ -28,106 +28,102 @@ if ( ! class_exists( 'WFOB_Layout_12' ) ) {
 			return WFOB_PLUGIN_URL . '/assets/img/skin-12.jpg';
 		}
 
-		protected function get_product_content_schema( $product, $product_key ) {
-
-			$schema = array();
-
-			$description_richeditor = __( 'Use merge tag {{quantity_incrementer}} to show the quantity changer.', 'woofunnels-order-bump' );
-
-			$schema[] = array(
-				'type'      => 'text',
-				'key'       => 'product_' . $product_key . '_title',
-				'label'     => __( 'Title', 'woofunnels-order-bump' ),
-				'selectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_title',
-				'hint'      => __( 'Use merge tag {{product_name}} to show product name dynamically.', 'woofunnels-order-bump' ),
-			);
-
-			$schema[] = array(
-				'type'      => 'richeditor',
-				'key'       => 'product_' . $product_key . '_description',
-				'label'     => __( 'Description', 'woofunnels-order-bump' ),
-				'selectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_skin_description',
-				'default'   => __( 'Natural botanicals to help boost hair growth.', 'woofunnels-order-bump' ),
-				'hint'      => $description_richeditor,
-			);
-
-			$schema[] = array(
-				'type'         => 'checkbox',
-				'key'          => 'product_' . $product_key . '_exclusive_content_enable',
-				'label'        => __( 'Add Product Tag', 'woofunnels-order-bump' ),
-				'contentClass' => 'wfob_active_exclusive',
-				'selectors'    => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]',
-			);
-
-			$schema[] = array(
-				'type'      => 'text',
-				'key'       => 'product_' . $product_key . '_exclusive_content',
-				'label'     => '',
-				'selectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_exclusive_content span',
-				'toggler'   => array(
-					'key'   => 'product_' . $product_key . '_exclusive_content_enable',
-					'value' => true,
-				),
-				'hint'      => __( 'Shown as a small badge above the title, e.g. MOST POPULAR.', 'woofunnels-order-bump' ),
-			);
-
-			$schema[] = array(
-				'type'         => 'checkbox',
-				'key'          => 'product_' . $product_key . '_social_proof_enable',
-				'label'        => __( 'Enable Social Proof Tool Tip', 'woofunnels-order-bump' ),
-				'contentClass' => 'wfob_active_social_proof',
-				'selectors'    => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]',
-			);
-
-			$schema[] = array(
-				'type'      => 'text',
-				'key'       => 'product_' . $product_key . '_social_proof_heading',
-				'label'     => '',
-				'selectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob-social-proof-tooltip .wfob-social-proof-tooltip-header',
-				'toggler'   => array(
-					'key'   => 'product_' . $product_key . '_social_proof_enable',
-					'value' => true,
-				),
-
-			);
-
-			$schema[] = array(
-				'type'      => 'richeditor',
-				'key'       => 'product_' . $product_key . '_social_proof_content',
-				'label'     => '',
-				'selectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob-social-proof-tooltip .wfob-social-proof-tooltip-content',
-				'toggler'   => array(
-					'key'   => 'product_' . $product_key . '_social_proof_enable',
-					'value' => true,
-				),
-			);
-
-			$schema[] = array(
-				'type'      => 'text',
-				'key'       => 'product_' . $product_key . '_add_btn_text',
-				'label'     => __( 'Add Button', 'woofunnels-order-bump' ),
-				'selectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_btn_add span',
-				'default'   => __( 'ADD', 'woofunnels-order-bump' ),
-				'hint'      => '',
-				'class'     => 'bwf-field-one-half',
-			);
-			$schema[] = array(
-				'type'      => 'text',
-				'key'       => 'product_' . $product_key . '_added_btn_text',
-				'label'     => __( 'Added Button', 'woofunnels-order-bump' ),
-				'selectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_btn_add.wfob_btn_remove .wfob_btn_text_added',
-				'default'   => __( 'ADDED', 'woofunnels-order-bump' ),
-				'hint'      => '',
-				'class'     => 'bwf-field-one-half',
-			);
-
-			// Field add added remove button text
-
-			return $schema;
+		public static function get_skin_label() {
+			return __( 'Multi Product Carousel', 'woofunnels-order-bump' );
 		}
 
-		public function get_admin_schema() {
-			return parent::get_admin_schema();
+		public static function get_skin_description() {
+			return __( 'Centred product card - eyebrow label such as MOST POPULAR, name, description, price, pill ADD button. With multiple products the cards become a horizontal slider with prev/next arrows; the only skin that does.', 'woofunnels-order-bump' );
+		}
+
+		protected function get_product_content_schema( $product, $product_key ) {
+
+			/*
+			Every field in this skin is scoped to one product card, so the card selector and the
+				per-product key prefix are built once here instead of being re-concatenated per field. */
+			$card = 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]';
+			$key  = 'product_' . $product_key . '_';
+
+			return array(
+				array(
+					'type'      => 'text',
+					'key'       => $key . 'title',
+					'label'     => __( 'Title', 'woofunnels-order-bump' ),
+					'selectors' => $card . ' .wfob_title',
+					'hint'      => __( 'Use merge tag {{product_name}} to show product name dynamically.', 'woofunnels-order-bump' ),
+				),
+				array(
+					'type'      => 'richeditor',
+					'key'       => $key . 'description',
+					'label'     => __( 'Description', 'woofunnels-order-bump' ),
+					'selectors' => $card . ' .wfob_skin_description',
+					'default'   => __( 'Lorem Ipsum dolor siet consectur', 'woofunnels-order-bump' ),
+					'hint'      => __( 'Use merge tag {{quantity_incrementer}} to show the quantity changer.', 'woofunnels-order-bump' ),
+				),
+				array(
+					'type'         => 'checkbox',
+					'key'          => $key . 'exclusive_content_enable',
+					'label'        => __( 'Add Product Tag', 'woofunnels-order-bump' ),
+					'contentClass' => 'wfob_active_exclusive',
+					'selectors'    => $card,
+				),
+				array(
+					'type'      => 'text',
+					'key'       => $key . 'exclusive_content',
+					'label'     => '',
+					'selectors' => $card . ' .wfob_exclusive_content span',
+					'toggler'   => array(
+						'key'   => $key . 'exclusive_content_enable',
+						'value' => true,
+					),
+					'hint'      => __( 'Shown as a small badge above the title, e.g. MOST POPULAR.', 'woofunnels-order-bump' ),
+				),
+				array(
+					'type'         => 'checkbox',
+					'key'          => $key . 'social_proof_enable',
+					'label'        => __( 'Enable Social Proof Tool Tip', 'woofunnels-order-bump' ),
+					'contentClass' => 'wfob_active_social_proof',
+					'selectors'    => $card,
+				),
+				array(
+					'type'      => 'text',
+					'key'       => $key . 'social_proof_heading',
+					'label'     => '',
+					'selectors' => $card . ' .wfob-social-proof-tooltip .wfob-social-proof-tooltip-header',
+					'toggler'   => array(
+						'key'   => $key . 'social_proof_enable',
+						'value' => true,
+					),
+				),
+				array(
+					'type'      => 'richeditor',
+					'key'       => $key . 'social_proof_content',
+					'label'     => '',
+					'selectors' => $card . ' .wfob-social-proof-tooltip .wfob-social-proof-tooltip-content',
+					'toggler'   => array(
+						'key'   => $key . 'social_proof_enable',
+						'value' => true,
+					),
+				),
+				array(
+					'type'      => 'text',
+					'key'       => $key . 'add_btn_text',
+					'label'     => __( 'Add Button', 'woofunnels-order-bump' ),
+					'selectors' => $card . ' .wfob_btn_add span',
+					'default'   => __( 'ADD', 'woofunnels-order-bump' ),
+					'hint'      => '',
+					'class'     => 'bwf-field-one-half',
+				),
+				array(
+					'type'      => 'text',
+					'key'       => $key . 'added_btn_text',
+					'label'     => __( 'Added Button', 'woofunnels-order-bump' ),
+					'selectors' => $card . ' .wfob_btn_add.wfob_btn_remove .wfob_btn_text_added',
+					'default'   => __( 'ADDED', 'woofunnels-order-bump' ),
+					'hint'      => '',
+					'class'     => 'bwf-field-one-half',
+				),
+			);
 		}
 
 		/**
@@ -141,34 +137,36 @@ if ( ! class_exists( 'WFOB_Layout_12' ) ) {
 		 * @return array
 		 */
 		protected function admin_product_image_field( $product, $product_key ) {
-			$schema   = array();
-			$schema[] = array(
-				'type'         => 'toggle',
-				'key'          => 'product_' . $product_key . '_featured_image',
-				'label'        => __( 'Product Image', 'woofunnels-order-bump' ),
-				'selectors'    => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]',
-				'contentClass' => 'wfob_enable_image',
-			);
+			$card  = 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]';
+			$image = $card . ' .wfob_pro_image_wrap';
+			$key   = 'product_' . $product_key . '_featured_image';
 
-			$schema[] = array(
-				'type'               => 'image',
-				'key'                => 'product_' . $product_key . '_featured_image_options',
-				'label'              => '',
-				'selectors'          => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_pro_image_wrap',
-				'alignmentSelectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]',
-				'alignmentClassList' => array(
-					'left'  => 'wfob_img_position_left',
-					'right' => 'wfob_img_position_right',
-					'top'   => 'wfob_img_position_top',
+			return array(
+				array(
+					'type'         => 'toggle',
+					'key'          => $key,
+					'label'        => __( 'Product Image', 'woofunnels-order-bump' ),
+					'selectors'    => $card,
+					'contentClass' => 'wfob_enable_image',
 				),
-				'widthSelectors'     => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_pro_image_wrap',
-				'toggler'            => array(
-					'key'   => 'product_' . $product_key . '_featured_image',
-					'value' => true,
+				array(
+					'type'               => 'image',
+					'key'                => $key . '_options',
+					'label'              => '',
+					'selectors'          => $image,
+					'alignmentSelectors' => $card,
+					'alignmentClassList' => array(
+						'left'  => 'wfob_img_position_left',
+						'right' => 'wfob_img_position_right',
+						'top'   => 'wfob_img_position_top',
+					),
+					'widthSelectors'     => $image,
+					'toggler'            => array(
+						'key'   => $key,
+						'value' => true,
+					),
 				),
 			);
-
-			return $schema;
 		}
 
 		public static function get_default_models() {
@@ -220,8 +218,12 @@ if ( ! class_exists( 'WFOB_Layout_12' ) ) {
 
 				'add_button_color'                       => '#23272A',
 				'add_button_hover_color'                 => '#ffffff',
-				'add_button_bg_color'                    => 'transparent',
+				/*
+				The outlined pill reads as transparent because it is painted with the card's own
+					background — NOT with the `transparent` keyword. See get_design_data(). */
+				'add_button_bg_color'                    => '#F5F3EF',
 				'add_button_hover_bg_color'              => '#23272A',
+				'icon_on_button'                         => 'none',
 
 				'added_button_color'                     => '#ffffff',
 				'added_button_bg_color'                  => '#23272A',
@@ -229,13 +231,17 @@ if ( ! class_exists( 'WFOB_Layout_12' ) ) {
 				'box_background'                         => '#F5F3EF',
 				'box_background_hover'                   => '',
 				'box_padding'                            => '24 10 24 10',
-				'enable_box_border'                      => 'false',
+				/*
+				The shared "Enable Box Border" toggle has no UI (bwf-field-hide), so this must ship
+					open like every other skin — see get_design_data(). The card still renders borderless
+					by default because border_width is 0; the merchant's Border Width is what decides. */
+				'enable_box_border'                      => 'true',
 				'border_style'                           => 'solid',
 				'border_color'                           => '#EDEAE4',
 				'border_width'                           => '0',
 				'box_border_radius'                      => '16',
 
-				'exclusive_content_bg_color'             => 'transparent',
+				'exclusive_content_bg_color'             => '#F5F3EF',
 				'exclusive_content_font_size'            => '12',
 				'exclusive_content_color'                => '#2E6E7E',
 				'exclusive_content_enable'               => 'true',
@@ -254,6 +260,13 @@ if ( ! class_exists( 'WFOB_Layout_12' ) ) {
 
 				'bump_max_width'                         => '',
 
+				/*
+				Prev/next chevrons of the multi-product slider, one switch per breakpoint. Both ship
+					on: the arrows are the only cue on a pointer device that the row scrolls at all, and
+					they still only paint when the products actually overflow the track. */
+				'slider_arrow_desktop'                   => 'true',
+				'slider_arrow_mobile'                    => 'true',
+
 				'layout'                                 => 'layout_12',
 				'layout_name'                            => __( 'Skin 12', 'woofunnels-order-bump' ),
 				'class_name'                             => 'WFOB_Layout_12',
@@ -262,7 +275,7 @@ if ( ! class_exists( 'WFOB_Layout_12' ) ) {
 				'product_preview_title'                  => __( 'Hair Serum', 'woofunnels-order-bump' ),
 
 				'product_featured_image'                 => 'true',
-				'product_description'                    => __( 'Natural botanicals to help boost hair growth.', 'woofunnels-order-bump' ),
+				'product_description'                    => __( 'Lorem Ipsum dolor siet consectur', 'woofunnels-order-bump' ),
 				'product_add_button_text'                => __( 'ADD', 'woofunnels-order-bump' ),
 				'product_added_button_text'              => __( 'ADDED', 'woofunnels-order-bump' ),
 				'product_remove_button_text'             => __( 'REMOVE', 'woofunnels-order-bump' ),
@@ -284,6 +297,56 @@ if ( ! class_exists( 'WFOB_Layout_12' ) ) {
 		}
 
 
+		/**
+		 * Skin 12 used to ship the literal keyword `transparent` as the stored value of the colour
+		 * controls that sit flush on the card. The design panel's colour picker seeds its alpha
+		 * channel from the stored value, so a picker that opens on `transparent` (alpha 0) emits
+		 * every colour the merchant then picks as a fully transparent 8-digit hex (#RRGGBB00) —
+		 * the swatch changes but nothing repaints, neither in the editor nor on the frontend.
+		 *
+		 * Swap the keyword for the card's own background: these elements sit directly on the card,
+		 * so the rendering is byte-for-byte what `transparent` produced, but the picker now opens
+		 * fully opaque and the control works. Bumps saved before this fix are normalised on read.
+		 *
+		 * @return array
+		 */
+		public function get_design_data() {
+			$design_data = parent::get_design_data();
+
+			if ( ! is_array( $design_data ) || 0 === count( $design_data ) ) {
+				return $design_data;
+			}
+
+			$card_background = ( isset( $design_data['box_background'] ) && '' !== $design_data['box_background'] && 'transparent' !== $design_data['box_background'] ) ? $design_data['box_background'] : '#F5F3EF';
+
+			foreach ( array( 'add_button_bg_color', 'exclusive_content_bg_color' ) as $color_key ) {
+				if ( isset( $design_data[ $color_key ] ) && 'transparent' === $design_data[ $color_key ] ) {
+					$design_data[ $color_key ] = $card_background;
+				}
+			}
+
+			/**
+			 * The design panel exposes Border Style / Colour / Width for this skin but NOT the
+			 * `enable_box_border` toggle that gates them — the shared field carries `bwf-field-hide`.
+			 * The panel seeds that hidden field from the skin default and saves whatever it seeded, so
+			 * every bump built on the old 'false' default has it persisted as an empty string, which the
+			 * renderer reads as "off" twice over: global-inline-css.php rewrites border_width to
+			 * `0 0 0 0`, and the field's own ref_key emits `border-style:none !important`. The border then
+			 * paints in the design panel (which applies the three controls directly) and is invisible at
+			 * checkout — the merchant sets a 5px dotted border and nothing reaches the card.
+			 *
+			 * Since the gate is unreachable in this skin's UI, a closed value never expresses merchant
+			 * intent — only the absent control. Assert it open and let Border Width, which defaults to 0
+			 * here, decide whether a border actually shows. Bumps saved before this fix are normalised
+			 * on read, so none of them needs a re-save.
+			 */
+			$design_data['enable_box_border'] = 'true';
+
+			$this->design_data = $design_data;
+
+			return $design_data;
+		}
+
 		public function get_bump_product_other_fields( $bump_id, $product_key, $design_data = array(), $key = '', $old_key = '' ) {
 			if ( is_array( $design_data ) && count( $design_data ) == 0 ) {
 				$design_data = $this->get_design_data( $bump_id );
@@ -303,6 +366,9 @@ if ( ! class_exists( 'WFOB_Layout_12' ) ) {
 
 			$bump_id = $object->get_id();
 
+			/* Both overrides below target this bump's own card, so the (long) scope is built once. */
+			$scope = 'body #wfob_wrap .wfob_wrapper[data-wfob-id="' . $bump_id . '"] .wfob_bump.wfob_layout_12.wfob_bump_section #wfob_wrapper_' . $bump_id . ' ';
+
 			/**
 			 * The shared renderer force-sets a global `exclusive_content_color` just before printing,
 			 * which would repaint this card's "MOST POPULAR" eyebrow. Re-assert the skin's configured
@@ -312,7 +378,7 @@ if ( ! class_exists( 'WFOB_Layout_12' ) ) {
 			$design_data   = $this->get_design_data();
 			$eyebrow_color = ( isset( $design_data['exclusive_content_color'] ) && '' !== $design_data['exclusive_content_color'] ) ? $design_data['exclusive_content_color'] : '#2E6E7E';
 
-			$selector = 'body #wfob_wrap .wfob_wrapper[data-wfob-id="' . $bump_id . '"] .wfob_bump.wfob_layout_12.wfob_bump_section #wfob_wrapper_' . $bump_id . ' .wfob_exclusive_content';
+			$selector = $scope . '.wfob_exclusive_content';
 
 			$dynamic_style[ $bump_id ]['desktop'][] = $selector . ',' . $selector . ' span,' . $selector . ' *{color:' . esc_attr( $eyebrow_color ) . '}';
 
@@ -322,18 +388,17 @@ if ( ! class_exists( 'WFOB_Layout_12' ) ) {
 			 * the button taller than the flex ADD button. Re-assert it as a centered flex box last so the
 			 * ADD → ADDED toggle keeps the exact same height.
 			 */
-			$added_btn = 'body #wfob_wrap .wfob_wrapper[data-wfob-id="' . $bump_id . '"] .wfob_bump.wfob_layout_12.wfob_bump_section #wfob_wrapper_' . $bump_id . ' a.wfob_l3_f_btn.wfob_btn_remove.wfob_item_present';
-
-			$dynamic_style[ $bump_id ]['desktop'][] = $added_btn . '{display:inline-flex;align-items:center;justify-content:center;line-height:1;}';
+			$dynamic_style[ $bump_id ]['desktop'][] = $scope . 'a.wfob_l3_f_btn.wfob_btn_remove.wfob_item_present{display:inline-flex;align-items:center;justify-content:center;line-height:1;}';
 
 			return $dynamic_style;
 		}
 
 		public function print_bump_price( $final_data = array(), $product_key = '' ) {
 
-			if ( isset( $final_data[ $product_key ]['printed_price'] ) ) {
-				$printed_price = $final_data[ $product_key ]['printed_price'];
-			}
+			/*
+			wfob-price.php echoes $printed_price, so it must always be defined — a product whose
+				price row hasn't been prepared would otherwise raise an undefined-variable warning. */
+			$printed_price = isset( $final_data[ $product_key ]['printed_price'] ) ? $final_data[ $product_key ]['printed_price'] : '';
 
 			include WFOB_SKIN_DIR . '/template-parts/wfob-price.php';
 		}

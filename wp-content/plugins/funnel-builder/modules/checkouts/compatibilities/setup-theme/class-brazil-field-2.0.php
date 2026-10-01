@@ -334,12 +334,10 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 		 * CPF/CNPJ document field plus number/neighborhood, using the plugin's Portuguese labels.
 		 */
 		private function setup_new_plugin_billing_fields() {
-			$domain = 'woo-better-shipping-calculator-for-brazil';
-
 			new WFACP_Add_Address_Field(
 				'document',
 				array(
-					'label'       => __( 'CPF/CNPJ', $domain ),
+					'label'       => __( 'CPF/CNPJ', 'woo-better-shipping-calculator-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberately reuses the Brazil plugin's own translations for its own field labels.
 					'placeholder' => '',
 					'class'       => array( 'form-row-wide', 'person-type-field' ),
 					'cssready'    => array( 'wfacp-col-full' ),
@@ -354,7 +352,7 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 			new WFACP_Add_Address_Field(
 				'number',
 				array(
-					'label'       => __( 'Número', $domain ),
+					'label'       => __( 'Número', 'woo-better-shipping-calculator-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberately reuses the Brazil plugin's own translations for its own field labels.
 					'placeholder' => '',
 					'class'       => array( 'form-row-first', 'address-field' ),
 					'cssready'    => array( 'wfacp-col-left-half' ),
@@ -369,7 +367,7 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 			new WFACP_Add_Address_Field(
 				'neighborhood',
 				array(
-					'label'       => __( 'Bairro', $domain ),
+					'label'       => __( 'Bairro', 'woo-better-shipping-calculator-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberately reuses the Brazil plugin's own translations for its own field labels.
 					'placeholder' => '',
 					'class'       => array( 'form-row-first', 'address-field' ),
 					'cssready'    => array( 'wfacp-col-left-half' ),
@@ -441,7 +439,7 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 		public function add_dependency_messages( $messages ) {
 
 			$messages[] = array(
-				'message'     => __( '"WooCommerce Extra Checkout Fields for Brazil" is activated. Learn about the right away to configure it with ' . 'Funnelkit' . ' Checkout.<a target="_blank" href="//funnelkit.com/docs/aerocheckout/compatibility/woocommerce-extra-checkout-fields-for-Brazil"> Know more</a>', 'funnel-builder' ),
+				'message'     => __( '"WooCommerce Extra Checkout Fields for Brazil" is activated. Learn about the right away to configure it with Funnelkit Checkout.<a target="_blank" href="//funnelkit.com/docs/aerocheckout/compatibility/woocommerce-extra-checkout-fields-for-Brazil"> Know more</a>', 'funnel-builder' ),
 				'id'          => '',
 				'show'        => 'yes',
 				'dismissible' => true,

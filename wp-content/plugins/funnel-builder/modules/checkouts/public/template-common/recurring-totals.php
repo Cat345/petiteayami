@@ -27,7 +27,7 @@ if ( class_exists( 'WC_Subscriptions' ) && version_compare( WC_Subscriptions::$v
 ?>
 
 <tr class="recurring-totals">
-    <th colspan="<?php echo $recurring_colspan_section_heading; ?>">
+    <th colspan="<?php echo esc_attr( $recurring_colspan_section_heading ); ?>">
 		<span><?php echo $total_title; ?></span>
     </th>
 </tr>
@@ -43,8 +43,8 @@ if ( class_exists( 'WC_Subscriptions' ) && version_compare( WC_Subscriptions::$v
 		if ( $display_th ) :
 			$display_th = false;
 			?>
-            <th colspan="<?php echo $recurring_colspan_heading; ?>" rowspan="<?php echo esc_attr( $carts_with_multiple_payments ); ?>"><span><?php esc_html_e( 'Subtotal', 'woocommerce-subscriptions' ); ?></span></th>
-            <td colspan="<?php echo $recurring_colspan; ?>" data-title="<?php esc_attr_e( 'Subtotal', 'woocommerce-subscriptions' ); ?>"><?php wcs_cart_totals_subtotal_html( $recurring_cart ); ?></td>
+            <th colspan="<?php echo esc_attr( $recurring_colspan_heading ); ?>" rowspan="<?php echo esc_attr( $carts_with_multiple_payments ); ?>"><span><?php esc_html_e( 'Subtotal', 'woocommerce-subscriptions' ); ?></span></th>
+            <td colspan="<?php echo esc_attr( $recurring_colspan ); ?>" data-title="<?php esc_attr_e( 'Subtotal', 'woocommerce-subscriptions' ); ?>"><?php wcs_cart_totals_subtotal_html( $recurring_cart ); ?></td>
 		<?php else : ?>
             <td><?php wcs_cart_totals_subtotal_html( $recurring_cart ); ?></td>
 		<?php endif; ?>
@@ -70,8 +70,8 @@ if ( class_exists( 'WC_Subscriptions' ) && version_compare( WC_Subscriptions::$v
 				if ( $display_th ) :
 					$display_th = false;
 					?>
-                    <th colspan="<?php echo $recurring_colspan_heading; ?>" rowspan="<?php echo esc_attr( $carts_with_multiple_payments ); ?>"><span><?php wc_cart_totals_coupon_label( $coupon ); ?></span></th>
-                    <td data-title="<?php wc_cart_totals_coupon_label( $coupon ); ?>" colspan="<?php echo $recurring_colspan; ?>"><?php wcs_cart_totals_coupon_html( $recurring_coupon, $recurring_cart ); ?></td>
+                    <th colspan="<?php echo esc_attr( $recurring_colspan_heading ); ?>" rowspan="<?php echo esc_attr( $carts_with_multiple_payments ); ?>"><span><?php wc_cart_totals_coupon_label( $coupon ); ?></span></th>
+                    <td data-title="<?php wc_cart_totals_coupon_label( $coupon ); ?>" colspan="<?php echo esc_attr( $recurring_colspan ); ?>"><?php wcs_cart_totals_coupon_html( $recurring_coupon, $recurring_cart ); ?></td>
 				<?php else : ?>
                     <td><?php wcs_cart_totals_coupon_html( $recurring_coupon, $recurring_cart ); ?></td>
 				<?php endif; ?>
@@ -97,8 +97,8 @@ if ( class_exists( 'WC_Subscriptions' ) && version_compare( WC_Subscriptions::$v
 			}
 			?>
             <tr class="fee recurring-total">
-                <th colspan="<?php echo $recurring_colspan_heading; ?>"><span><?php echo esc_html( $fee->name ); ?></span></th>
-                <td colspan="<?php echo $recurring_colspan; ?>"><?php wc_cart_totals_fee_html( $fee ); ?></td>
+                <th colspan="<?php echo esc_attr( $recurring_colspan_heading ); ?>"><span><?php echo esc_html( $fee->name ); ?></span></th>
+                <td colspan="<?php echo esc_attr( $recurring_colspan ); ?>"><?php wc_cart_totals_fee_html( $fee ); ?></td>
             </tr>
 		<?php endforeach; ?>
 	<?php endforeach; ?>
@@ -123,11 +123,11 @@ if ( class_exists( 'WC_Subscriptions' ) && version_compare( WC_Subscriptions::$v
 						if ( $display_th ) :
 							$display_th = false;
 							?>
-                            <th colspan="<?php echo $recurring_colspan_heading; ?>"><span><?php echo esc_html( $recurring_tax->label ); ?></span></th>
-                            <td colspan="<?php echo $recurring_colspan; ?>" data-title="<?php echo esc_attr( $recurring_tax->label ); ?>"><?php echo wp_kses_post( wcs_cart_price_string( $recurring_tax->formatted_amount, $recurring_cart ) ); ?></td>
+                            <th colspan="<?php echo esc_attr( $recurring_colspan_heading ); ?>"><span><?php echo esc_html( $recurring_tax->label ); ?></span></th>
+                            <td colspan="<?php echo esc_attr( $recurring_colspan ); ?>" data-title="<?php echo esc_attr( $recurring_tax->label ); ?>"><?php echo wp_kses_post( wcs_cart_price_string( $recurring_tax->formatted_amount, $recurring_cart ) ); ?></td>
 						<?php else : ?>
-                            <th colspan="<?php echo $recurring_colspan_heading; ?>"></th>
-                            <td colspan="<?php echo $recurring_colspan; ?>"><?php echo wp_kses_post( wcs_cart_price_string( $recurring_tax->formatted_amount, $recurring_cart ) ); ?></td>
+                            <th colspan="<?php echo esc_attr( $recurring_colspan_heading ); ?>"></th>
+                            <td colspan="<?php echo esc_attr( $recurring_colspan ); ?>"><?php echo wp_kses_post( wcs_cart_price_string( $recurring_tax->formatted_amount, $recurring_cart ) ); ?></td>
 						<?php endif; ?>
                     </tr>
 				<?php endforeach; ?>
@@ -146,11 +146,11 @@ if ( class_exists( 'WC_Subscriptions' ) && version_compare( WC_Subscriptions::$v
 				if ( $display_th ) :
 					$display_th = false;
 					?>
-                    <th colspan="<?php echo $recurring_colspan_heading; ?>"><span><?php echo esc_html( WC()->countries->tax_or_vat() ); ?></span></th>
-                    <td colspan="<?php echo $recurring_colspan; ?>" data-title="<?php echo esc_attr( WC()->countries->tax_or_vat() ); ?>"><?php echo wp_kses_post( wcs_cart_price_string( $recurring_cart->get_taxes_total(), $recurring_cart ) ); ?></td>
+                    <th colspan="<?php echo esc_attr( $recurring_colspan_heading ); ?>"><span><?php echo esc_html( WC()->countries->tax_or_vat() ); ?></span></th>
+                    <td colspan="<?php echo esc_attr( $recurring_colspan ); ?>" data-title="<?php echo esc_attr( WC()->countries->tax_or_vat() ); ?>"><?php echo wp_kses_post( wcs_cart_price_string( $recurring_cart->get_taxes_total(), $recurring_cart ) ); ?></td>
 				<?php else : ?>
-                    <th colspan="<?php echo $recurring_colspan_heading; ?>"></th>
-                    <td colspan="<?php echo $recurring_colspan; ?>"><?php echo wp_kses_post( wcs_cart_price_string( $recurring_cart->get_taxes_total(), $recurring_cart ) ); ?></td>
+                    <th colspan="<?php echo esc_attr( $recurring_colspan_heading ); ?>"></th>
+                    <td colspan="<?php echo esc_attr( $recurring_colspan ); ?>"><?php echo wp_kses_post( wcs_cart_price_string( $recurring_cart->get_taxes_total(), $recurring_cart ) ); ?></td>
 				<?php endif; ?>
             </tr>
 		<?php endforeach; ?>
@@ -167,10 +167,10 @@ if ( class_exists( 'WC_Subscriptions' ) && version_compare( WC_Subscriptions::$v
 		if ( $display_th ) :
 			$display_th = false;
 			?>
-            <th colspan="<?php echo $recurring_colspan_heading; ?>" rowspan="<?php echo esc_attr( $carts_with_multiple_payments ); ?>"><span><?php esc_html_e( 'Recurring Total', 'woocommerce-subscriptions' ); ?></span></th>
-            <td colspan="<?php echo $recurring_colspan; ?>" data-title="<?php esc_attr_e( 'Recurring Total', 'woocommerce-subscriptions' ); ?>"><?php wcs_cart_totals_order_total_html( $recurring_cart ); ?></td>
+            <th colspan="<?php echo esc_attr( $recurring_colspan_heading ); ?>" rowspan="<?php echo esc_attr( $carts_with_multiple_payments ); ?>"><span><?php esc_html_e( 'Recurring Total', 'woocommerce-subscriptions' ); ?></span></th>
+            <td colspan="<?php echo esc_attr( $recurring_colspan ); ?>" data-title="<?php esc_attr_e( 'Recurring Total', 'woocommerce-subscriptions' ); ?>"><?php wcs_cart_totals_order_total_html( $recurring_cart ); ?></td>
 		<?php else : ?>
-            <td colspan="<?php echo $recurring_colspan_heading; ?>"><?php wcs_cart_totals_order_total_html( $recurring_cart ); ?></td>
+            <td colspan="<?php echo esc_attr( $recurring_colspan_heading ); ?>"><?php wcs_cart_totals_order_total_html( $recurring_cart ); ?></td>
 		<?php endif; ?>
     </tr>
 

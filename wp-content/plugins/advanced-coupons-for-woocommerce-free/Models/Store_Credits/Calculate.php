@@ -277,6 +277,7 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
      * @since 4.0
      * @since 4.2 Add hook to trigger actions based on customer's current store credits balance.
      * @since 4.2.1 Wrap returned value with NumberUtil::round round function so it returns precise value.
+     * @since 4.7.6 Use the cached balance when a fresh calculation isn't requested, and bail early for guests.
      * @access private
      *
      * @param int  $user_id  User ID.
@@ -284,6 +285,15 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
      * @return float Customer balance.
      */
     public function get_customer_balance( $user_id, $is_fresh = false ) {
+        /**
+         * Guests have no balance. Bail before any query, as an empty user ID makes
+         * _get_entries_sum() drop its user filter and sum the whole ledger instead.
+         */
+        $user_id = absint( $user_id );
+        if ( ! $user_id ) {
+            return 0.0;
+        }
+
         /**
          * Expire user's credits when user last active is not valid anymore.
          * We also return 0.00 as user's balance here as user's full balance will be expired in this scenario.
@@ -295,7 +305,13 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
 
         $cached_balance = get_user_meta( $user_id, Plugin_Constants::STORE_CREDIT_USER_BALANCE, true );
 
-        if ( $is_fresh || false !== $cached_balance ) {
+        /**
+         * Only recalculate when explicitly asked for, or when there is no cached value.
+         * get_user_meta() returns an empty string when the meta key is unset, so that is
+         * what a cache miss looks like here. A cached '0' is a valid hit and must not be
+         * treated as a miss.
+         */
+        if ( $is_fresh || '' === $cached_balance ) {
             $balance = $this->_calculate_customer_balance( $user_id );
             update_user_meta( $user_id, Plugin_Constants::STORE_CREDIT_USER_BALANCE, $balance );
 
@@ -306,7 +322,7 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
             do_action( 'acfw_get_customer_store_credit_balance', $balance, $user_id );
 
         } else {
-            $balance = $cached_balance;
+            $balance = (float) $cached_balance; // Meta values are stored as strings.
         }
 
         return NumberUtil::round( $balance, wc_get_price_decimals() );
@@ -608,6 +624,62 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
     }
 
     /**
+     * Refresh a customer's cached store credit balance.
+     *
+     * Hooked to 'acfw_store_credits_total_changed', which Store_Credit_Entry fires after every
+     * entry it saves or deletes. Every write that goes through that object is covered, including
+     * the ones that never refresh the balance themselves (third party imports, loyalty point and
+     * gift card redemptions). The two paths that bypass the object and delete rows with direct
+     * SQL (the pro plugin's bulk "delete all entries" and store credits admin) set the balance
+     * meta themselves, so they need no help from here.
+     *
+     * This is not optional bookkeeping: Store_Credit_Entry::_validate_customer_balance() asks for
+     * a fresh balance *before* the row is written, so without this the meta would be left holding
+     * the pre-save figure after every entry.
+     *
+     * The balance is recalculated and rewritten rather than blanked out. A blank would work as a
+     * cache miss for get_customer_balance(), but the meta is also read directly elsewhere and an
+     * empty string is not a neutral placeholder in those places: the customer list endpoint would
+     * report the balance as 0, and the pro plugin filters customers on this key with a
+     * 'DECIMAL(10,2)' BETWEEN meta query, where an empty string casts to 0.00. That would silently
+     * mis-target bulk adjustments at exactly the customers whose balance just changed. Keeping the
+     * stored value true at all times avoids handing those readers a sentinel they cannot recognise.
+     *
+     * The sum is written straight to the meta instead of going through get_customer_balance(),
+     * because that method does more than read a total: it runs the balance expiry check and fires
+     * 'acfw_get_customer_store_credit_balance' for third parties. Both are wrong in a write hook.
+     * get_last_active() memoises the customer's last activity for the request and is populated
+     * before the row lands, so the expiry check here would still see the pre-write date and could
+     * expire the credit that was just added. This listener only keeps the cache honest.
+     *
+     * The entry is null when the whole ledger changed at once (bulk adjustments). Those callers
+     * set the balance meta themselves, so there is nothing to refresh.
+     *
+     * @since 4.7.6
+     * @access public
+     *
+     * @param Store_Credit_Entry|null $entry Store credit entry that changed.
+     */
+    public function refresh_customer_balance_cache( $entry = null ) {
+        if ( ! $entry instanceof Store_Credit_Entry ) {
+            return;
+        }
+
+        // Read in edit context so this matches the user the row was actually written against.
+        $user_id = absint( $entry->get_prop( 'user_id', 'edit' ) );
+
+        if ( ! $user_id ) {
+            return;
+        }
+
+        update_user_meta(
+            $user_id,
+            Plugin_Constants::STORE_CREDIT_USER_BALANCE,
+            $this->_calculate_customer_balance( $user_id, true )
+        );
+    }
+
+    /**
      * Get the total store credits discount for a given order.
      *
      * @since 4.5.2
@@ -827,5 +899,6 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
      */
     public function run() {
         add_action( 'acfw_store_credits_total_changed', array( $this, 'delete_store_credits_cached_data' ) );
+        add_action( 'acfw_store_credits_total_changed', array( $this, 'refresh_customer_balance_cache' ) );
     }
 }

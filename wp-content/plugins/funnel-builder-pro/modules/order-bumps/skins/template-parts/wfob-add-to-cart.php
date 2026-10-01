@@ -24,7 +24,13 @@
 	?>
 
 	<a data-key="<?php echo esc_attr( $product_key ); ?>" href="#" class="wfob_l3_f_btn wfob_btn_add <?php echo esc_attr( $checkbox_class ); ?>" style="<?php echo '' !== $cart_item_key ? 'display:none' : ''; ?>">
-		<?php echo wp_kses_post( $add_btn_text ); ?>
+		<?php
+		/*
+		The "Show Icon" choice appends one of the inline SVGs above to the label, so this
+			output needs an SVG-aware allow-list: wp_kses_post() knows no <svg>/<path> and would
+			drop the icon on every skin, both at checkout and in the admin preview. */
+		echo WFOB_Common::kses_bump_svg_content( $add_btn_text ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sanitised on the line above.
+		?>
 	</a>
 	<a data-key="<?php echo esc_attr( $product_key ); ?>" href="#" class="wfob_l3_f_btn wfob_btn_add wfob_btn_remove <?php echo '' !== $cart_item_key ? 'wfob_item_present' : ''; ?>">
 		<span class="wfob_btn_text_added"><?php echo wp_kses_post( $added_btn_text ); ?></span>

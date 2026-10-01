@@ -525,7 +525,7 @@ if ( ! class_exists( 'WFOP_Divi_Field' ) ) {
 				'selector'  => $selectors,
 			);
 
-			$fields_keys[]  = $this->add_subheading( $tab_id, __( 'Border', 'funnel-builder', '', $conditions ) );
+			$fields_keys[]  = $this->add_subheading( $tab_id, __( 'Border', 'funnel-builder' ), '', $conditions );
 			$border_type    = $this->add_select( $tab_id, $key . '_border_type', __( 'Type', 'funnel-builder' ), $border_option, $default['border_type'] );
 			$fields_keys[]  = $border_type;
 			$type_condition = array( $border_type => array( 'solid', 'double', 'dotted', 'dashed', 'groove' ) );

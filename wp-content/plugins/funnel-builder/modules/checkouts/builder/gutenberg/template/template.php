@@ -25,7 +25,10 @@ if ( ! class_exists( 'WFACP_Template_Gutenberg' ) ) {
 		}
 
 		public function set_selected_template( $data ) {
-			if ( empty( $data ) ) {
+			if ( empty( $data ) || ! isset( $data['slug'] ) || false === strpos( $data['slug'], 'gutenberg' ) ) {
+				// Not a gutenberg template registration (e.g. block preview ajax on a page saved
+				// with another builder): keep this template's own gutenberg identity so the form
+				// renders with the gutenberg markup and styles.
 				parent::set_selected_template( $data );
 
 				return;

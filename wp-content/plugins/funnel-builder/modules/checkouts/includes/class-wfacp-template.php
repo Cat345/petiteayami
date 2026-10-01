@@ -212,10 +212,50 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			add_action( 'wp_head', array( $this, 'no_follow_no_index' ), - 1 );
 			add_action( 'wp_head', array( $this, 'add_header_script' ), 99 );
 			add_action( 'wp_print_styles', array( $this, 'remove_woocommerce_js_css' ), 99 );
+			add_filter( 'style_loader_tag', array( $this, 'dequeue_foreign_intl_css' ), 10, 3 );
 			add_action( 'wp_footer', array( $this, 'add_footer_script' ) );
 			add_action( 'wp_footer', array( $this, 'localize_locals' ) );
 			add_filter( 'body_class', array( $this, 'add_body_class' ) );
 			add_action( 'wfacp_outside_header', array( $this, 'handle_copy_billing_shipping_code' ) );
+		}
+
+		/**
+		 * Keep only our intl-tel-input stylesheet on the checkout.
+		 *
+		 * Other plugins ship their own intlTelInput CSS (often under a different handle); a second copy
+		 * on our checkout breaks the phone-field layout. This runs on the style_loader_tag filter, which
+		 * fires for every stylesheet at the moment its <link> is generated — head or footer, enqueued
+		 * early or late — so it catches every case a print-time dequeue would miss. We return an empty
+		 * tag for any foreign intlTelInput*.css, leaving exactly one copy: ours (wfacp-intl-css). Only
+		 * hooked on our checkout page, so other pages keep their own intl styles.
+		 *
+		 * @param string $tag    The full <link> markup for this stylesheet.
+		 * @param string $handle The style handle.
+		 * @param string $href   The stylesheet URL.
+		 *
+		 * @return string Empty string to drop a foreign intl stylesheet, original tag otherwise.
+		 */
+		public function dequeue_foreign_intl_css( $tag, $handle, $href ) {
+			if ( 'wfacp-intl-css' === $handle ) {
+				return $tag;
+			}
+			// Only prune duplicates when the checkout's phone-flag feature is on — i.e. our own
+			// intl stylesheet is actually enqueued (or already printed). Otherwise leave foreign CSS alone.
+			if ( ! wp_style_is( 'wfacp-intl-css', 'enqueued' ) && ! wp_style_is( 'wfacp-intl-css', 'done' ) ) {
+				return $tag;
+			}
+			if ( ! is_string( $href ) || '' === $href ) {
+				return $tag;
+			}
+			// Never touch a FunnelKit-shipped stylesheet.
+			if ( false !== strpos( $href, '/funnel-builder' ) || false !== strpos( $href, '/funnelkit' ) ) {
+				return $tag;
+			}
+			if ( preg_match( '#intltelinput[^/]*\.css#i', $href ) ) {
+				return '';
+			}
+
+			return $tag;
 		}
 
 		private function woocommerce_field_hooks() {
@@ -1072,8 +1112,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 							$class = 'wfacp_coupon_applied';
 						}
 						?>
-						<div class="<?php echo $class; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> wfacp-notice-wrap <?php echo $type_class_mapping[ $type ]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
-							<div class="wfacp-message wfacp-<?php echo $type; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"><?php echo $message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+						<div class="<?php echo esc_attr( $class ); ?> wfacp-notice-wrap <?php echo esc_attr( $type_class_mapping[ $type ] ); ?>">
+							<div class="wfacp-message wfacp-<?php echo esc_attr( $type ); ?>"><?php echo $message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
 						</div>
 						<?php
 					endforeach;

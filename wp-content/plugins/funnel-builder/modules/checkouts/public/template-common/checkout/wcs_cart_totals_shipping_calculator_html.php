@@ -58,7 +58,7 @@ try {
 					$shipping_method          = $only_one_shipping_option ? current( $package['rates'] ) : $package['rates'][ $chosen_initial_method ];
 					$recurring_shipping_count = $only_one_shipping_option ? 'wfacp_recuring_shiping_count_one' : '';
 					?>
-                    <tr class="shipping recurring-total <?php echo esc_attr( $recurring_cart_key ) . ' ' . $recurring_shipping_count; ?>" style="display:none">
+                    <tr class="shipping recurring-total <?php echo esc_attr( $recurring_cart_key ) . ' ' . esc_attr( $recurring_shipping_count ); ?>" style="display:none">
                         <td colspan="">
 							<?php
 							if ( ! empty( $show_package_details ) ) :
@@ -68,13 +68,13 @@ try {
                             <style>.wfacp_recurring_shipping_label {
                                     display: none !important;
                                 }</style>
-                            <ul id="shipping_method_<?php echo md5( $show_package_details ); ?>" class="woocommerce-shipping-methods">
+                            <ul id="shipping_method_<?php echo esc_attr( md5( $show_package_details ) ); ?>" class="woocommerce-shipping-methods">
                                 <li class="wfacp_single_shipping_method">
                                     <div class="wfacp_single_shipping">
                                         <div class="wfacp_shipping_radio">
 											<?php
 											wcs_cart_print_shipping_input( $recurring_cart_package_key, $shipping_method, $shipping_method->id, 'radio' );
-											printf( '<label for="shipping_method_%1$s_%2$s">%3$s</label>', esc_attr( $recurring_cart_package_key ), esc_attr( sanitize_title( $shipping_method->id ) ), WFACP_Common::shipping_method_label( $shipping_method ) );
+											printf( '<label for="shipping_method_%1$s_%2$s">%3$s</label>', esc_attr( $recurring_cart_package_key ), esc_attr( sanitize_title( $shipping_method->id ) ), wp_kses_post( WFACP_Common::shipping_method_label( $shipping_method ) ) );
 											?>
                                         </div>
                                         <div class="wfacp_shipping_price">
@@ -97,6 +97,14 @@ try {
 					$shipping_selection_displayed = true;
 					$package_name                 = '';
 					if ( $show_package_name ) {
+						/*
+						 * Mirrors WooCommerce Subscriptions' own cart template string verbatim so the
+						 * package label resolves against their translation catalogue. The singular
+						 * deliberately carries no placeholder ("Shipping", then "Shipping 2"...);
+						 * WPCS flags that, but rewriting the pair would change the rendered label and
+						 * lose the borrowed translation, since gettext keys plural entries by the
+						 * singular/plural msgid pair. Left as-is on purpose.
+						 */
 						$package_name = apply_filters( 'woocommerce_shipping_package_name', sprintf( _n( 'Shipping', 'Shipping %d', ( $package_index + 1 ), 'woocommerce-subscriptions' ), ( $package_index + 1 ) ), $package_index, $package );
 					}
 

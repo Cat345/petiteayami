@@ -24,9 +24,9 @@ if ( false == wc_string_to_bool( $is_disable_coupon_sidebar ) ) {
 	$coupon_class = 'wfacp_in_active_coupon';
 }
 ?>
-<div class="wfacp_form_cart <?php echo $rbox_mobile; ?> div_wrap_sec <?php echo $instance->get_field_label_position(); ?>" <?php echo WFACP_Common::get_fragments_attr(); ?> >
+<div class="wfacp_form_cart <?php echo esc_attr( $rbox_mobile ); ?> div_wrap_sec <?php echo esc_attr( $instance->get_field_label_position() ); ?>" data-time="<?php echo esc_attr( WFACP_Common::get_fragments_time() ); ?>" >
 	<div class="wfacp_order_sec wfacp_order_summary_layout_9 wfacp_order_summary_sec">
-		<div class="<?php echo $coupon_class; ?>">
+		<div class="<?php echo esc_attr( $coupon_class ); ?>">
 			<?php
 			require __DIR__ . '/order-review.php';
 			require __DIR__ . '/form-coupon.php';

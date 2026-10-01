@@ -1149,7 +1149,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 		 * @return array
 		 */
 		private function get_widget_state() {
-			$pro_outdated = WFFN_Pro_Update_Required::get_instance()->is_outdated();
+			$pro_outdated = WFFN_Core()->admin->is_outdated();
 
 			$defaults = array(
 				'analytics_path'   => '',

@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Advanced Coupons for WooCommerce Premium plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Advanced Coupons for WooCommerce Premium 4.0.8\n"
+"Project-Id-Version: Advanced Coupons for WooCommerce Premium 4.0.9\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/advanced-coupons-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-27T04:47:26+00:00\n"
+"POT-Creation-Date: 2026-09-16T03:22:52+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: advanced-coupons-for-woocommerce\n"
@@ -40,31 +40,31 @@ msgid "https://rymera.com.au/"
 msgstr ""
 
 #. translators: %1$s: Plugin activation URL
-#: advanced-coupons-for-woocommerce.php:173
+#: advanced-coupons-for-woocommerce.php:182
 #, php-format
 msgid "<a class=\"action-button\" href=\"%1$s\" title=\"Activate this plugin\">Click here to activate &rarr;</a><span><em>Plugin Detected</em></span>"
 msgstr ""
 
 #. translators: %1$s: Install plugin URL
-#: advanced-coupons-for-woocommerce.php:179
+#: advanced-coupons-for-woocommerce.php:188
 #, php-format
 msgid "<a class=\"action-button\" href=\"%1$s\" title=\"Install this plugin\">Click here to install from WordPress.org repo &rarr;</a>"
 msgstr ""
 
 #. translators: %1$s is Plugin URL, %2$s is Plugin name
-#: advanced-coupons-for-woocommerce.php:186
+#: advanced-coupons-for-woocommerce.php:195
 #, php-format
 msgid "Please ensure you have the <a href=\"%1$s\" target=\"_blank\">%2$s</a> plugin installed and activated.<br/>"
 msgstr ""
 
 #. translators: %1$s is the update plugin URL, %2$s is the plugin name.
-#: advanced-coupons-for-woocommerce.php:221
+#: advanced-coupons-for-woocommerce.php:230
 #, php-format
 msgid "<a href=\"%1$s\">Click here to update %2$s &rarr;</a>"
 msgstr ""
 
 #. translators: %1$s is the update plugin URL, %2$s is the plugin name.
-#: advanced-coupons-for-woocommerce.php:228
+#: advanced-coupons-for-woocommerce.php:237
 #, php-format
 msgid "Please ensure you have the latest version of <a href=\"%1$s\" target=\"_blank\">%2$s</a> plugin installed and activated.<br/>"
 msgstr ""
@@ -81,12 +81,14 @@ msgstr ""
 #: Helpers/Helper_Functions.php:581
 #: Models/Add_Products.php:950
 #: Models/Add_Products.php:1000
-#: Models/Apply_Notification.php:238
-#: Models/Auto_Apply.php:524
+#: Models/Apply_Notification.php:256
+#: Models/Auto_Apply.php:679
 #: Models/BOGO/Admin.php:385
 #: Models/Emails/Emails.php:149
-#: Models/Shipping_Overrides.php:924
-#: Models/Shipping_Overrides.php:968
+#: Models/Product_Discount_Rules.php:869
+#: Models/Shipping_Overrides.php:929
+#: Models/Shipping_Overrides.php:973
+#: Models/Tiered_Cart_Discount.php:1536
 #: Models/Usage_Limits.php:308
 msgid "You are not allowed to do this"
 msgstr ""
@@ -268,11 +270,13 @@ msgstr ""
 #: Models/ACFW_Reports.php:463
 #: Models/Add_Products.php:942
 #: Models/Add_Products.php:995
-#: Models/Apply_Notification.php:233
-#: Models/Auto_Apply.php:519
+#: Models/Apply_Notification.php:251
+#: Models/Auto_Apply.php:674
 #: Models/BOGO/Admin.php:377
-#: Models/Shipping_Overrides.php:916
-#: Models/Shipping_Overrides.php:963
+#: Models/Product_Discount_Rules.php:859
+#: Models/Shipping_Overrides.php:921
+#: Models/Shipping_Overrides.php:968
+#: Models/Tiered_Cart_Discount.php:1526
 #: Models/Usage_Limits.php:303
 msgid "Invalid AJAX call"
 msgstr ""
@@ -292,8 +296,10 @@ msgstr ""
 #: Models/Add_Products.php:955
 #: Models/Add_Products.php:1005
 #: Models/BOGO/Admin.php:390
-#: Models/Shipping_Overrides.php:929
-#: Models/Shipping_Overrides.php:973
+#: Models/Product_Discount_Rules.php:876
+#: Models/Shipping_Overrides.php:934
+#: Models/Shipping_Overrides.php:978
+#: Models/Tiered_Cart_Discount.php:1543
 msgid "Missing required post data"
 msgstr ""
 
@@ -306,7 +312,7 @@ msgid "\"Add Products\" data has been cleared successfully!"
 msgstr ""
 
 #: Models/Add_Products.php:1026
-#: Models/Shipping_Overrides.php:988
+#: Models/Shipping_Overrides.php:993
 msgid "Failed on clearing or there were no changes to save."
 msgstr ""
 
@@ -328,32 +334,32 @@ msgstr ""
 msgid "You are not allowed to use this coupon."
 msgstr ""
 
-#: Models/Apply_Notification.php:98
+#: Models/Apply_Notification.php:99
 #: Models/Edit_Coupon.php:166
 msgid "Your current cart is eligible for a coupon."
 msgstr ""
 
-#: Models/Apply_Notification.php:99
+#: Models/Apply_Notification.php:100
 #: Models/Edit_Coupon.php:179
 msgid "Apply Coupon"
 msgstr ""
 
-#: Models/Apply_Notification.php:249
+#: Models/Apply_Notification.php:267
 msgid "Appy notification coupons cache have been cleared successfully."
 msgstr ""
 
 #. Translators: %s: Count of validated one click apply coupons.
-#: Models/Apply_Notification.php:259
+#: Models/Apply_Notification.php:277
 #, php-format
 msgid "Appy notification coupons cache has been rebuilt successfully. %s coupon(s) have been validated."
 msgstr ""
 
-#: Models/Auto_Apply.php:534
+#: Models/Auto_Apply.php:689
 msgid "Auto apply coupons cache have been cleared successfully."
 msgstr ""
 
 #. Translators: %s: Count of validated auto apply coupons.
-#: Models/Auto_Apply.php:544
+#: Models/Auto_Apply.php:699
 #, php-format
 msgid "Auto apply coupons cache has been rebuilt successfully. %s coupon(s) have been validated."
 msgstr ""
@@ -437,363 +443,393 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: Models/Cart_Conditions.php:76
+#: Models/Cart_Conditions.php:89
 msgid "Product Quantity In The Cart"
 msgstr ""
 
-#: Models/Cart_Conditions.php:77
-#: Models/Cart_Conditions.php:434
+#: Models/Cart_Conditions.php:90
+#: Models/Cart_Conditions.php:473
 msgid "Cart Weight"
 msgstr ""
 
-#: Models/Cart_Conditions.php:78
+#: Models/Cart_Conditions.php:91
 msgid "Custom Taxonomy Exist In The Cart"
 msgstr ""
 
-#: Models/Cart_Conditions.php:79
-#: Models/Cart_Conditions.php:445
+#: Models/Cart_Conditions.php:92
+#: Models/Cart_Conditions.php:484
 msgid "Within Hours After Customer Registered"
 msgstr ""
 
-#: Models/Cart_Conditions.php:80
-#: Models/Cart_Conditions.php:452
+#: Models/Cart_Conditions.php:93
+#: Models/Cart_Conditions.php:491
 msgid "Within Hours After Customer Last Order"
 msgstr ""
 
-#: Models/Cart_Conditions.php:81
-#: Models/Cart_Conditions.php:576
+#: Models/Cart_Conditions.php:94
+#: Models/Cart_Conditions.php:615
 msgid "Custom User Meta"
 msgstr ""
 
-#: Models/Cart_Conditions.php:82
-#: Models/Cart_Conditions.php:589
+#: Models/Cart_Conditions.php:95
+#: Models/Cart_Conditions.php:628
 msgid "Custom Cart Item Meta"
 msgstr ""
 
-#: Models/Cart_Conditions.php:83
-#: Models/Cart_Conditions.php:459
+#: Models/Cart_Conditions.php:96
+#: Models/Cart_Conditions.php:498
 msgid "Total Customer Spend"
 msgstr ""
 
-#: Models/Cart_Conditions.php:84
-#: Models/Cart_Conditions.php:467
+#: Models/Cart_Conditions.php:97
+#: Models/Cart_Conditions.php:506
 msgid "Product Stock Availability Exists In Cart"
 msgstr ""
 
-#: Models/Cart_Conditions.php:85
+#: Models/Cart_Conditions.php:98
 msgid "Has Ordered Before"
 msgstr ""
 
-#: Models/Cart_Conditions.php:86
+#: Models/Cart_Conditions.php:99
 msgid "Has Ordered Product Categories Before"
 msgstr ""
 
-#: Models/Cart_Conditions.php:87
+#: Models/Cart_Conditions.php:100
 msgid "Total Customer Spend on a certain product category"
 msgstr ""
 
-#: Models/Cart_Conditions.php:88
-#: Models/Cart_Conditions.php:499
+#: Models/Cart_Conditions.php:101
+#: Models/Cart_Conditions.php:538
 msgid "Shipping Zone And Region"
 msgstr ""
 
-#: Models/Cart_Conditions.php:89
-#: Models/Cart_Conditions.php:623
+#: Models/Cart_Conditions.php:102
+#: Models/Cart_Conditions.php:671
 msgid "Cart Total"
 msgstr ""
 
-#: Models/Cart_Conditions.php:90
-#: Models/Cart_Conditions.php:632
+#: Models/Cart_Conditions.php:103
+#: Models/Cart_Conditions.php:680
 msgid "Category Subtotal"
 msgstr ""
 
-#: Models/Cart_Conditions.php:419
-#: Models/Cart_Conditions.php:511
+#: Models/Cart_Conditions.php:458
+#: Models/Cart_Conditions.php:550
 msgid "Product Type"
 msgstr ""
 
-#: Models/Cart_Conditions.php:426
+#: Models/Cart_Conditions.php:465
 msgid "Product Quantities Exists In Cart"
 msgstr ""
 
-#: Models/Cart_Conditions.php:427
-#: Models/Cart_Conditions.php:479
+#: Models/Cart_Conditions.php:466
+#: Models/Cart_Conditions.php:518
 #: views/coupons/view-add-products-data-panel.php:42
 msgid "Product"
 msgstr ""
 
-#: Models/Cart_Conditions.php:428
-#: Models/Cart_Conditions.php:480
-#: Models/Cart_Conditions.php:532
-#: Models/Cart_Conditions.php:567
+#: Models/Cart_Conditions.php:467
+#: Models/Cart_Conditions.php:519
+#: Models/Cart_Conditions.php:571
+#: Models/Cart_Conditions.php:606
 msgid "Condition"
 msgstr ""
 
-#: Models/Cart_Conditions.php:429
-#: Models/Cart_Conditions.php:481
-#: Models/Cart_Conditions.php:533
-#: Models/Cart_Conditions.php:613
+#: Models/Cart_Conditions.php:468
+#: Models/Cart_Conditions.php:520
+#: Models/Cart_Conditions.php:572
+#: Models/Cart_Conditions.php:652
 #: views/coupons/view-add-products-data-panel.php:43
 msgid "Quantity"
 msgstr ""
 
-#: Models/Cart_Conditions.php:435
+#: Models/Cart_Conditions.php:474
 msgid "Total weight of cart items"
 msgstr ""
 
 #. translators: %s: Weight unit
-#: Models/Cart_Conditions.php:438
+#: Models/Cart_Conditions.php:477
 #, php-format
 msgid "Cart Weight (%s)"
 msgstr ""
 
-#: Models/Cart_Conditions.php:446
+#: Models/Cart_Conditions.php:485
 msgid "Allow usage of this coupon within hours after customer was registered"
 msgstr ""
 
-#: Models/Cart_Conditions.php:447
-#: Models/Cart_Conditions.php:454
+#: Models/Cart_Conditions.php:486
+#: Models/Cart_Conditions.php:493
 msgid "Hours"
 msgstr ""
 
-#: Models/Cart_Conditions.php:453
+#: Models/Cart_Conditions.php:492
 msgid "Allow usage of this coupon within hours after customer has ordered"
 msgstr ""
 
-#: Models/Cart_Conditions.php:460
+#: Models/Cart_Conditions.php:499
 msgid "Total amount customer spent for the last x number of days. Setting offset to 0 will get overall customer total spend."
 msgstr ""
 
-#: Models/Cart_Conditions.php:461
-#: Models/Cart_Conditions.php:556
+#: Models/Cart_Conditions.php:500
+#: Models/Cart_Conditions.php:595
 msgid "Total Spend"
 msgstr ""
 
-#: Models/Cart_Conditions.php:462
+#: Models/Cart_Conditions.php:501
 msgid "Days offset"
 msgstr ""
 
-#: Models/Cart_Conditions.php:469
+#: Models/Cart_Conditions.php:508
 msgid "Product has already been added to the table"
 msgstr ""
 
-#: Models/Cart_Conditions.php:472
+#: Models/Cart_Conditions.php:511
 msgid "In Stock"
 msgstr ""
 
-#: Models/Cart_Conditions.php:473
+#: Models/Cart_Conditions.php:512
 msgid "Out of Stock"
 msgstr ""
 
-#: Models/Cart_Conditions.php:474
+#: Models/Cart_Conditions.php:513
 msgid "On Backorder"
 msgstr ""
 
-#: Models/Cart_Conditions.php:490
+#: Models/Cart_Conditions.php:529
 msgid "Customer Has Ordered Products Before"
 msgstr ""
 
-#: Models/Cart_Conditions.php:491
-#: Models/Cart_Conditions.php:519
-#: Models/Cart_Conditions.php:542
+#: Models/Cart_Conditions.php:530
+#: Models/Cart_Conditions.php:558
+#: Models/Cart_Conditions.php:581
 #: Models/Edit_Coupon.php:267
 msgid "Type"
 msgstr ""
 
-#: Models/Cart_Conditions.php:492
-#: Models/Cart_Conditions.php:520
-#: Models/Cart_Conditions.php:546
-#: Models/Cart_Conditions.php:553
+#: Models/Cart_Conditions.php:531
+#: Models/Cart_Conditions.php:559
+#: Models/Cart_Conditions.php:585
+#: Models/Cart_Conditions.php:592
 msgid "Within a period"
 msgstr ""
 
-#: Models/Cart_Conditions.php:493
-#: Models/Cart_Conditions.php:521
-#: Models/Cart_Conditions.php:550
+#: Models/Cart_Conditions.php:532
+#: Models/Cart_Conditions.php:560
+#: Models/Cart_Conditions.php:589
 msgid "Number of orders"
 msgstr ""
 
-#: Models/Cart_Conditions.php:494
-#: Models/Cart_Conditions.php:522
-#: Models/Cart_Conditions.php:555
-#: Models/Cart_Conditions.php:605
+#: Models/Cart_Conditions.php:533
+#: Models/Cart_Conditions.php:561
+#: Models/Cart_Conditions.php:594
+#: Models/Cart_Conditions.php:644
 msgid "No. of previous days"
 msgstr ""
 
-#: Models/Cart_Conditions.php:500
+#: Models/Cart_Conditions.php:539
 #: views/coupons/view-shipping-overrides-data-panel.php:38
 msgid "Shipping Zone"
 msgstr ""
 
-#: Models/Cart_Conditions.php:501
+#: Models/Cart_Conditions.php:540
 msgid "Select shipping zone"
 msgstr ""
 
-#: Models/Cart_Conditions.php:502
+#: Models/Cart_Conditions.php:541
 msgid "Zone Region(s)"
 msgstr ""
 
-#: Models/Cart_Conditions.php:503
+#: Models/Cart_Conditions.php:542
 msgid "Select zone region(s)"
 msgstr ""
 
-#: Models/Cart_Conditions.php:509
+#: Models/Cart_Conditions.php:548
 msgid "Custom Taxonomy Exists In Cart"
 msgstr ""
 
-#: Models/Cart_Conditions.php:510
+#: Models/Cart_Conditions.php:549
 msgid "Select taxonomy"
 msgstr ""
 
-#: Models/Cart_Conditions.php:512
+#: Models/Cart_Conditions.php:551
 msgid "Select terms"
 msgstr ""
 
-#: Models/Cart_Conditions.php:518
+#: Models/Cart_Conditions.php:557
 msgid "Customer Has Ordered Product Categories Before"
 msgstr ""
 
-#: Models/Cart_Conditions.php:525
-#: Models/Cart_Conditions.php:560
+#: Models/Cart_Conditions.php:564
+#: Models/Cart_Conditions.php:599
 msgid "Product Category has already been added to the table"
 msgstr ""
 
-#: Models/Cart_Conditions.php:528
-#: Models/Cart_Conditions.php:563
+#: Models/Cart_Conditions.php:567
+#: Models/Cart_Conditions.php:602
 msgid "Add Category"
 msgstr ""
 
-#: Models/Cart_Conditions.php:531
-#: Models/Cart_Conditions.php:566
+#: Models/Cart_Conditions.php:570
+#: Models/Cart_Conditions.php:605
 msgid "Category"
 msgstr ""
 
-#: Models/Cart_Conditions.php:541
+#: Models/Cart_Conditions.php:580
 msgid "Total Customer Spend on a Certain Product Category"
 msgstr ""
 
-#: Models/Cart_Conditions.php:554
+#: Models/Cart_Conditions.php:593
 msgid "No. of orders"
 msgstr ""
 
-#: Models/Cart_Conditions.php:558
-#: Models/Cart_Conditions.php:643
+#: Models/Cart_Conditions.php:597
+#: Models/Cart_Conditions.php:691
+#: Models/Script_Loader.php:179
 msgid "Categories"
 msgstr ""
 
-#: Models/Cart_Conditions.php:568
+#: Models/Cart_Conditions.php:607
 msgid "Spend"
 msgstr ""
 
-#: Models/Cart_Conditions.php:577
-#: Models/Cart_Conditions.php:590
+#: Models/Cart_Conditions.php:616
+#: Models/Cart_Conditions.php:629
 msgid "Meta Key"
 msgstr ""
 
-#: Models/Cart_Conditions.php:578
-#: Models/Cart_Conditions.php:591
+#: Models/Cart_Conditions.php:617
+#: Models/Cart_Conditions.php:630
 msgid "Meta Value"
 msgstr ""
 
-#: Models/Cart_Conditions.php:579
-#: Models/Cart_Conditions.php:592
+#: Models/Cart_Conditions.php:618
+#: Models/Cart_Conditions.php:631
 msgid "Value type"
 msgstr ""
 
-#: Models/Cart_Conditions.php:581
-#: Models/Cart_Conditions.php:594
+#: Models/Cart_Conditions.php:620
+#: Models/Cart_Conditions.php:633
 msgid "Text"
 msgstr ""
 
-#: Models/Cart_Conditions.php:582
-#: Models/Cart_Conditions.php:595
+#: Models/Cart_Conditions.php:621
+#: Models/Cart_Conditions.php:634
 msgid "Number"
 msgstr ""
 
-#: Models/Cart_Conditions.php:583
-#: Models/Cart_Conditions.php:596
+#: Models/Cart_Conditions.php:622
+#: Models/Cart_Conditions.php:635
 msgid "Price"
 msgstr ""
 
-#: Models/Cart_Conditions.php:602
+#: Models/Cart_Conditions.php:641
 msgid "Number of Customer Orders"
 msgstr ""
 
-#: Models/Cart_Conditions.php:603
+#: Models/Cart_Conditions.php:642
 msgid "Currently logged in customer's total number of orders"
 msgstr ""
 
-#: Models/Cart_Conditions.php:604
+#: Models/Cart_Conditions.php:643
 msgid "Count"
 msgstr ""
 
-#: Models/Cart_Conditions.php:610
+#: Models/Cart_Conditions.php:649
 msgid "Coupons Applied In Cart"
 msgstr ""
 
-#: Models/Cart_Conditions.php:611
+#: Models/Cart_Conditions.php:650
 msgid "Check if certain coupon(s) has been applied in the cart"
 msgstr ""
 
-#: Models/Cart_Conditions.php:612
+#: Models/Cart_Conditions.php:651
 msgid "Coupon(s)"
 msgstr ""
 
-#: Models/Cart_Conditions.php:614
+#: Models/Cart_Conditions.php:653
 msgid "Select coupon(s)..."
 msgstr ""
 
-#: Models/Cart_Conditions.php:616
+#: Models/Cart_Conditions.php:655
 msgid "AT LEAST"
 msgstr ""
 
-#: Models/Cart_Conditions.php:617
+#: Models/Cart_Conditions.php:656
 msgid "ALL"
 msgstr ""
 
-#: Models/Cart_Conditions.php:624
+#: Models/Cart_Conditions.php:658
+msgid "Match type"
+msgstr ""
+
+#: Models/Cart_Conditions.php:660
+msgid "EXACT"
+msgstr ""
+
+#: Models/Cart_Conditions.php:661
+msgid "STARTS WITH"
+msgstr ""
+
+#: Models/Cart_Conditions.php:662
+msgid "ENDS WITH"
+msgstr ""
+
+#: Models/Cart_Conditions.php:663
+#: Models/Script_Loader.php:165
+msgid "CONTAINS"
+msgstr ""
+
+#: Models/Cart_Conditions.php:665
+msgid "Pattern(s)"
+msgstr ""
+
+#: Models/Cart_Conditions.php:666
+msgid "Enter comma-separated text, e.g. black-friday, summer"
+msgstr ""
+
+#: Models/Cart_Conditions.php:672
 msgid "After any price modifications"
 msgstr ""
 
 #. Translators: %s: Currency symbol.
-#: Models/Cart_Conditions.php:626
+#: Models/Cart_Conditions.php:674
 #, php-format
 msgid "Cart total (%s)"
 msgstr ""
 
-#: Models/Cart_Conditions.php:627
-#: Models/Cart_Conditions.php:636
+#: Models/Cart_Conditions.php:675
+#: Models/Cart_Conditions.php:684
 msgid "Include Tax?"
 msgstr ""
 
-#: Models/Cart_Conditions.php:633
+#: Models/Cart_Conditions.php:681
 msgid "Subtotal of cart items in the selected categories only (before discounts)"
 msgstr ""
 
 #. Translators: %s: Currency symbol.
-#: Models/Cart_Conditions.php:635
+#: Models/Cart_Conditions.php:683
 #, php-format
 msgid "Subtotal (%s)"
 msgstr ""
 
-#: Models/Cart_Conditions.php:637
+#: Models/Cart_Conditions.php:685
 msgid "Mode"
 msgstr ""
 
-#: Models/Cart_Conditions.php:639
+#: Models/Cart_Conditions.php:687
 msgid "Include"
 msgstr ""
 
-#: Models/Cart_Conditions.php:640
+#: Models/Cart_Conditions.php:688
 msgid "Exclude"
 msgstr ""
 
-#: Models/Cart_Conditions.php:644
+#: Models/Cart_Conditions.php:692
 msgid "Select product categories"
 msgstr ""
 
 #. Translators: %s: Continent name.
-#: Models/Cart_Conditions.php:1976
+#: Models/Cart_Conditions.php:2181
 #, php-format
 msgid "%s (continent)"
 msgstr ""
@@ -825,44 +861,44 @@ msgstr ""
 msgid "Number of days to delay giving the store credits cashback after the order is completed."
 msgstr ""
 
-#: Models/Cashback_Coupon.php:221
+#: Models/Cashback_Coupon.php:222
 #: Models/Module_Settings.php:328
 msgid "Cashback coupons are only for registered customers."
 msgstr ""
 
-#: Models/Cashback_Coupon.php:223
+#: Models/Cashback_Coupon.php:224
 #: Models/Module_Settings.php:336
 msgid "Login"
 msgstr ""
 
-#: Models/Cashback_Coupon.php:300
-#: Models/Cashback_Coupon.php:350
+#: Models/Cashback_Coupon.php:301
+#: Models/Cashback_Coupon.php:351
 msgid "cashback"
 msgstr ""
 
 #. Translators: %s number of days.
-#: Models/Cashback_Coupon.php:320
+#: Models/Cashback_Coupon.php:321
 #, php-format
 msgid "Will be earned as store credits %s day after the order has been completed."
 msgid_plural "Will be earned as store credits %s days after the order has been completed."
 msgstr[0] ""
 msgstr[1] ""
 
-#: Models/Cashback_Coupon.php:329
+#: Models/Cashback_Coupon.php:330
 msgid "Will be earned as store credits after the order has been completed."
 msgstr ""
 
 #. Translators: Partial sentence, used on the order summary as "$123.00 (will be added on 1st January 2023)"
-#: Models/Cashback_Coupon.php:563
+#: Models/Cashback_Coupon.php:564
 msgid "will be added on"
 msgstr ""
 
-#: Models/Cashback_Coupon.php:572
+#: Models/Cashback_Coupon.php:573
 #: views/orders/view-order-cashback-coupon-summary.php:38
 msgid "pending"
 msgstr ""
 
-#: Models/Cashback_Coupon.php:578
+#: Models/Cashback_Coupon.php:579
 #: views/orders/view-order-cashback-coupon-summary.php:11
 msgid "Cashback (store credits)"
 msgstr ""
@@ -1100,7 +1136,7 @@ msgstr ""
 #. Translators: %1$s: Formatting tag start. %2$s: Formatting tag end.
 #: Models/Edit_Coupon.php:478
 #, php-format
-msgid "%1$sNote:%2$s coupon cannot be auto applied when \"Allowed emails\", \"Usage limit per coupon\", \"Usage limit per user\" and/or \"Virtual coupons\" option is set."
+msgid "%1$sNote:%2$s this coupon won't be auto applied when \"Virtual coupons\" is enabled, or when \"Usage limit per user\" is set and the shopper is not logged in. A coupon restricted by \"Allowed emails\" is auto applied once the customer's email is known — a logged-in customer, or a guest who has entered their email on the block-based checkout."
 msgstr ""
 
 #: Models/Edit_Coupon.php:491
@@ -1372,7 +1408,7 @@ msgstr ""
 
 #: Models/Module_Settings.php:178
 #: Models/Scheduler.php:110
-#: Models/Scheduler.php:212
+#: Models/Scheduler.php:213
 msgid "The {coupon_code} coupon cannot be applied at this day or time."
 msgstr ""
 
@@ -1513,7 +1549,7 @@ msgid "Processing"
 msgstr ""
 
 #: Models/Module_Settings.php:357
-#: Models/Script_Loader.php:575
+#: Models/Script_Loader.php:636
 msgid "Completed"
 msgstr ""
 
@@ -1550,37 +1586,37 @@ msgid "The reminder has been successfully emailed to customer_account"
 msgstr ""
 
 #: Models/Module_Settings.php:460
-#: Models/Script_Loader.php:405
+#: Models/Script_Loader.php:442
 msgid "Utilities"
 msgstr ""
 
 #: Models/Module_Settings.php:466
-#: Models/Script_Loader.php:310
+#: Models/Script_Loader.php:347
 msgid "Rebuild/Clear Auto Apply Coupons Cache"
 msgstr ""
 
 #: Models/Module_Settings.php:468
-#: Models/Script_Loader.php:311
+#: Models/Script_Loader.php:348
 msgid "Manually rebuild and validate all auto apply coupons within the cache or clear the cache entirely."
 msgstr ""
 
 #: Models/Module_Settings.php:473
-#: Models/Script_Loader.php:333
+#: Models/Script_Loader.php:370
 msgid "Rebuild/Clear Apply Notification Coupons Cache"
 msgstr ""
 
 #: Models/Module_Settings.php:475
-#: Models/Script_Loader.php:334
+#: Models/Script_Loader.php:371
 msgid "Manually rebuild and validate all apply notification coupons within the cache or clear the cache entirely."
 msgstr ""
 
 #: Models/Module_Settings.php:480
-#: Models/Script_Loader.php:356
+#: Models/Script_Loader.php:393
 msgid "Reset coupons usage limit"
 msgstr ""
 
 #: Models/Module_Settings.php:482
-#: Models/Script_Loader.php:357
+#: Models/Script_Loader.php:394
 msgid "Manually run cron for resetting usage limit for all applicable coupons."
 msgstr ""
 
@@ -1726,9 +1762,47 @@ msgid "The %s coupon can't be applied. This coupon requires specific product att
 msgstr ""
 
 #. Translators: %s: Coupon code.
-#: Models/Product_Attributes.php:238
+#: Models/Product_Attributes.php:239
 #, php-format
 msgid "The %s coupon can't be applied. This coupon is not allowed to be used with certain product attribute(s) present in your cart."
+msgstr ""
+
+#: Models/Product_Discount_Rules.php:109
+#: Models/Product_Discount_Rules.php:147
+msgid "Product Discount Rules"
+msgstr ""
+
+#. translators: %d: number of discarded discount rules.
+#: Models/Product_Discount_Rules.php:810
+#, php-format
+msgid "%d incomplete rule was discarded."
+msgid_plural "%d incomplete rules were discarded."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of discount rules whose percentage was capped at 100.
+#: Models/Product_Discount_Rules.php:823
+#, php-format
+msgid "The percentage of %d rule was capped at 100."
+msgid_plural "The percentage of %d rules was capped at 100."
+msgstr[0] ""
+msgstr[1] ""
+
+#: Models/Product_Discount_Rules.php:902
+msgid "Discount rules have been saved successfully!"
+msgstr ""
+
+#: Models/Product_Discount_Rules.php:909
+#: Models/Script_Loader.php:193
+msgid "Failed on saving the discount rules."
+msgstr ""
+
+#: Models/Product_Discount_Rules.php:933
+msgid "Discount rules have been cleared successfully!"
+msgstr ""
+
+#: Models/Product_Discount_Rules.php:938
+msgid "Failed on clearing the discount rules."
 msgstr ""
 
 #: Models/REST_API/API_Bulk_Adjust.php:125
@@ -1807,29 +1881,29 @@ msgid "The filters matched too many users to export at once. Please narrow your 
 msgstr ""
 
 #: Models/REST_API/API_Bulk_Adjust.php:685
-#: Models/Script_Loader.php:586
+#: Models/Script_Loader.php:647
 msgid "User ID"
 msgstr ""
 
 #: Models/REST_API/API_Bulk_Adjust.php:686
-#: Models/Script_Loader.php:484
-#: Models/Script_Loader.php:587
+#: Models/Script_Loader.php:521
+#: Models/Script_Loader.php:648
 msgid "Email"
 msgstr ""
 
 #: Models/REST_API/API_Bulk_Adjust.php:687
-#: Models/Script_Loader.php:588
+#: Models/Script_Loader.php:649
 msgid "Display Name"
 msgstr ""
 
 #: Models/REST_API/API_Bulk_Adjust.php:688
-#: Models/Script_Loader.php:485
-#: Models/Script_Loader.php:589
+#: Models/Script_Loader.php:522
+#: Models/Script_Loader.php:650
 msgid "Current Balance"
 msgstr ""
 
 #: Models/REST_API/API_Bulk_Adjust.php:689
-#: Models/Script_Loader.php:590
+#: Models/Script_Loader.php:651
 msgid "Registered At"
 msgstr ""
 
@@ -1948,35 +2022,35 @@ msgstr ""
 msgid "Coupon code \"%s\" has been applied to your cart."
 msgstr ""
 
-#: Models/Scheduler.php:298
+#: Models/Scheduler.php:299
 msgid "Monday"
 msgstr ""
 
-#: Models/Scheduler.php:299
+#: Models/Scheduler.php:300
 msgid "Tuesday"
 msgstr ""
 
-#: Models/Scheduler.php:300
+#: Models/Scheduler.php:301
 msgid "Wednesday"
 msgstr ""
 
-#: Models/Scheduler.php:301
+#: Models/Scheduler.php:302
 msgid "Thursday"
 msgstr ""
 
-#: Models/Scheduler.php:302
+#: Models/Scheduler.php:303
 msgid "Friday"
 msgstr ""
 
-#: Models/Scheduler.php:303
+#: Models/Scheduler.php:304
 msgid "Saturday"
 msgstr ""
 
-#: Models/Scheduler.php:304
+#: Models/Scheduler.php:305
 msgid "Sunday"
 msgstr ""
 
-#: Models/Scheduler.php:325
+#: Models/Scheduler.php:326
 msgid "An error occured while trying to validate the schedule for the coupon."
 msgstr ""
 
@@ -2008,10 +2082,6 @@ msgstr ""
 msgid "DOESN'T EXIST"
 msgstr ""
 
-#: Models/Script_Loader.php:165
-msgid "CONTAINS"
-msgstr ""
-
 #: Models/Script_Loader.php:168
 msgid "Cashback percentage"
 msgstr ""
@@ -2024,533 +2094,688 @@ msgstr ""
 msgid "\"Same Products\" GET type is not compatible with \"Specific Products\" BUY type. Please select a different combination."
 msgstr ""
 
-#: Models/Script_Loader.php:221
+#: Models/Script_Loader.php:177
+#: views/coupons/view-coupon-discount-rules-data-panel.php:52
+msgid "No rules added"
+msgstr ""
+
+#: Models/Script_Loader.php:178
+msgid "Products"
+msgstr ""
+
+#: Models/Script_Loader.php:180
+msgid "Search for a product…"
+msgstr ""
+
+#: Models/Script_Loader.php:181
+msgid "Search for a product category…"
+msgstr ""
+
+#: Models/Script_Loader.php:182
+#: Models/Script_Loader.php:199
+#: views/coupons/view-coupon-tier-discounts-data-panel.php:46
+msgid "Percent (%)"
+msgstr ""
+
+#. translators: %s: store currency symbol.
+#: Models/Script_Loader.php:184
+#: Models/Script_Loader.php:201
+#: views/coupons/view-coupon-tier-discounts-data-panel.php:40
+#, php-format
+msgid "Fixed (%s)"
+msgstr ""
+
+#: Models/Script_Loader.php:185
+msgid "Remove rule"
+msgstr ""
+
+#: Models/Script_Loader.php:186
+msgid "Drag to reorder the rule"
+msgstr ""
+
+#: Models/Script_Loader.php:187
+msgid "Move rule up"
+msgstr ""
+
+#: Models/Script_Loader.php:188
+msgid "Move rule down"
+msgstr ""
+
+#: Models/Script_Loader.php:190
+msgid "Rule target type"
+msgstr ""
+
+#: Models/Script_Loader.php:191
+msgid "Rule discount type"
+msgstr ""
+
+#: Models/Script_Loader.php:192
+msgid "Rule discount value"
+msgstr ""
+
+#: Models/Script_Loader.php:198
+#: views/coupons/view-coupon-tier-discounts-data-panel.php:70
+msgid "No tiers added"
+msgstr ""
+
+#: Models/Script_Loader.php:202
+msgid "Remove tier"
+msgstr ""
+
+#: Models/Script_Loader.php:204
+msgid "Tier spend threshold"
+msgstr ""
+
+#: Models/Script_Loader.php:205
+msgid "Tier discount value"
+msgstr ""
+
+#: Models/Script_Loader.php:206
+msgid "Two tiers cannot share the same spend threshold."
+msgstr ""
+
+#: Models/Script_Loader.php:207
+msgid "Every tier needs a discount value greater than zero."
+msgstr ""
+
+#: Models/Script_Loader.php:208
+msgid "Every tier needs a spend threshold of zero or more."
+msgstr ""
+
+#: Models/Script_Loader.php:209
+#: Models/Tiered_Cart_Discount.php:1578
+msgid "Failed on saving the tier discounts."
+msgstr ""
+
+#: Models/Script_Loader.php:258
 msgid "Please enter a valid price"
 msgstr ""
 
-#: Models/Script_Loader.php:222
+#: Models/Script_Loader.php:259
 msgid "An error occurred. Please refresh the page and try again."
 msgstr ""
 
-#: Models/Script_Loader.php:263
+#: Models/Script_Loader.php:300
 #: Models/SLMW/License.php:401
 #: views/slmw/view-license-settings-page.php:21
 msgid "License is Active"
 msgstr ""
 
-#: Models/Script_Loader.php:264
+#: Models/Script_Loader.php:301
 #: Models/SLMW/License.php:402
 #: views/slmw/view-license-settings-page.php:23
 msgid "Not Activated Yet"
 msgstr ""
 
-#: Models/Script_Loader.php:268
-#: Models/Script_Loader.php:275
+#: Models/Script_Loader.php:305
+#: Models/Script_Loader.php:312
 #: views/slmw/view-license-settings-page.php:28
 #: views/slmw/view-license-settings-page.php:37
 msgid "Premium Version"
 msgstr ""
 
-#: Models/Script_Loader.php:269
+#: Models/Script_Loader.php:306
 #: views/slmw/view-license-settings-page.php:29
 msgid "You are currently using Advanced Coupons for WooCommerce Premium version. The premium version gives you a massive range of extra extra features for your WooCommerce coupons so you can promote your store better. As the Premium version functions like an add-on, you must have Advanced Coupons for WooCommerce Free installed and activated along with WooCommerce (which is required for both)."
 msgstr ""
 
-#: Models/Script_Loader.php:274
+#: Models/Script_Loader.php:311
 #: views/slmw/view-license-settings-page.php:33
 msgid "Plan"
 msgstr ""
 
-#: Models/Script_Loader.php:278
+#: Models/Script_Loader.php:315
 #: views/slmw/view-license-settings-page.php:34
 msgid "Version"
 msgstr ""
 
-#: Models/Script_Loader.php:284
+#: Models/Script_Loader.php:321
 #: views/notices/view-no-license-notice.php:83
 #: views/slmw/view-license-settings-page.php:45
 msgid "License Key:"
 msgstr ""
 
-#: Models/Script_Loader.php:285
+#: Models/Script_Loader.php:322
 #: views/slmw/view-license-settings-page.php:49
 msgid "Activation Email:"
 msgstr ""
 
-#: Models/Script_Loader.php:286
+#: Models/Script_Loader.php:323
 #: Models/SLMW/License.php:397
 #: views/notices/view-no-license-notice.php:92
 #: views/slmw/view-license-settings-page.php:53
 msgid "Activate Key"
 msgstr ""
 
-#: Models/Script_Loader.php:288
+#: Models/Script_Loader.php:325
 #: views/slmw/view-license-settings-page.php:61
 msgid "Can’t find your key?"
 msgstr ""
 
-#: Models/Script_Loader.php:290
+#: Models/Script_Loader.php:327
 #: views/notices/view-no-license-notice.php:103
 msgid "Login to your account"
 msgstr ""
 
-#: Models/Script_Loader.php:316
-#: Models/Script_Loader.php:339
+#: Models/Script_Loader.php:353
+#: Models/Script_Loader.php:376
 msgid "Rebuild cache"
 msgstr ""
 
-#: Models/Script_Loader.php:321
-#: Models/Script_Loader.php:344
+#: Models/Script_Loader.php:358
+#: Models/Script_Loader.php:381
 msgid "Clear cache"
 msgstr ""
 
-#: Models/Script_Loader.php:362
+#: Models/Script_Loader.php:399
 msgid "Trigger reset cron"
 msgstr ""
 
-#: Models/Script_Loader.php:373
+#: Models/Script_Loader.php:410
 msgid "Refetch Plugin Update Data"
 msgstr ""
 
-#: Models/Script_Loader.php:374
+#: Models/Script_Loader.php:411
 msgid "This will refetch the plugin update data. Useful for debugging failed plugin update operations."
 msgstr ""
 
-#: Models/Script_Loader.php:379
+#: Models/Script_Loader.php:416
 msgid "Refetch Update Data"
 msgstr ""
 
-#: Models/Script_Loader.php:387
+#: Models/Script_Loader.php:424
 msgid "Check license status"
 msgstr ""
 
-#: Models/Script_Loader.php:388
+#: Models/Script_Loader.php:425
 msgid "Check the current status of your Advanced Coupons premium license."
 msgstr ""
 
-#: Models/Script_Loader.php:393
+#: Models/Script_Loader.php:430
 msgid "Check License Status"
 msgstr ""
 
-#: Models/Script_Loader.php:419
+#: Models/Script_Loader.php:456
 msgid "From"
 msgstr ""
 
-#: Models/Script_Loader.php:420
+#: Models/Script_Loader.php:457
 msgid "To"
 msgstr ""
 
-#: Models/Script_Loader.php:455
+#: Models/Script_Loader.php:492
 msgid "Filter Users"
 msgstr ""
 
-#: Models/Script_Loader.php:456
+#: Models/Script_Loader.php:493
 msgid "Set the criteria to find users whose store credit balances you want to adjust."
 msgstr ""
 
-#: Models/Script_Loader.php:457
+#: Models/Script_Loader.php:494
 msgid "User Roles"
 msgstr ""
 
-#: Models/Script_Loader.php:458
+#: Models/Script_Loader.php:495
 msgid "Select roles..."
 msgstr ""
 
-#: Models/Script_Loader.php:459
+#: Models/Script_Loader.php:496
 msgid "Balance"
 msgstr ""
 
-#: Models/Script_Loader.php:460
+#: Models/Script_Loader.php:497
 msgid "Min"
 msgstr ""
 
-#: Models/Script_Loader.php:461
+#: Models/Script_Loader.php:498
 msgid "Max"
 msgstr ""
 
-#: Models/Script_Loader.php:462
+#: Models/Script_Loader.php:499
 msgid "Registered"
 msgstr ""
 
-#: Models/Script_Loader.php:463
+#: Models/Script_Loader.php:500
 msgid "Last Order"
 msgstr ""
 
-#: Models/Script_Loader.php:466
+#: Models/Script_Loader.php:503
 msgid "Include Users"
 msgstr ""
 
-#: Models/Script_Loader.php:467
+#: Models/Script_Loader.php:504
 msgid "Exclude Users"
 msgstr ""
 
-#: Models/Script_Loader.php:468
+#: Models/Script_Loader.php:505
 msgid "Search by name or email..."
 msgstr ""
 
-#: Models/Script_Loader.php:469
+#: Models/Script_Loader.php:506
 msgid "Users must match all of the filters you set."
 msgstr ""
 
-#: Models/Script_Loader.php:470
+#: Models/Script_Loader.php:507
 msgid "Preview Users"
 msgstr ""
 
-#: Models/Script_Loader.php:471
+#: Models/Script_Loader.php:508
 msgid "Set at least one filter or user to preview."
 msgstr ""
 
-#: Models/Script_Loader.php:472
+#: Models/Script_Loader.php:509
 msgid "Reset Filters"
 msgstr ""
 
-#: Models/Script_Loader.php:473
+#: Models/Script_Loader.php:510
 msgid "Clear all filters?"
 msgstr ""
 
-#: Models/Script_Loader.php:474
+#: Models/Script_Loader.php:511
 msgid "Reset"
 msgstr ""
 
-#: Models/Script_Loader.php:475
-#: Models/Script_Loader.php:537
-#: Models/Virtual_Coupon/Admin.php:242
+#: Models/Script_Loader.php:512
+#: Models/Virtual_Coupon/Admin.php:243
 msgid "Cancel"
 msgstr ""
 
 #. translators: %s: number of users matched.
-#: Models/Script_Loader.php:479
+#: Models/Script_Loader.php:516
 #, php-format
 msgid "%s users matched"
 msgstr ""
 
-#: Models/Script_Loader.php:480
+#: Models/Script_Loader.php:517
 msgid "No users matched the selected filters."
 msgstr ""
 
-#: Models/Script_Loader.php:481
+#: Models/Script_Loader.php:518
 msgid "Try loosening or removing some filters."
 msgstr ""
 
-#: Models/Script_Loader.php:482
+#: Models/Script_Loader.php:519
 msgid "Set your filters and click \"Preview Users\" to see the matched customers."
 msgstr ""
 
-#: Models/Script_Loader.php:483
+#: Models/Script_Loader.php:520
 msgid "Name"
 msgstr ""
 
-#: Models/Script_Loader.php:486
+#: Models/Script_Loader.php:523
 msgid "Role"
 msgstr ""
 
-#: Models/Script_Loader.php:487
+#: Models/Script_Loader.php:524
 msgid "Adjustment Amount"
 msgstr ""
 
-#: Models/Script_Loader.php:488
+#: Models/Script_Loader.php:525
 msgid "New Balance"
 msgstr ""
 
-#: Models/Script_Loader.php:491
+#: Models/Script_Loader.php:528
 msgid "Configure Adjustment"
 msgstr ""
 
-#: Models/Script_Loader.php:492
+#: Models/Script_Loader.php:529
 msgid "Adjustment Type"
 msgstr ""
 
-#: Models/Script_Loader.php:493
+#: Models/Script_Loader.php:530
 msgid "Increase"
 msgstr ""
 
-#: Models/Script_Loader.php:494
+#: Models/Script_Loader.php:531
 msgid "Decrease"
 msgstr ""
 
-#: Models/Script_Loader.php:495
+#: Models/Script_Loader.php:532
 msgid "Amount Mode"
 msgstr ""
 
-#: Models/Script_Loader.php:496
+#: Models/Script_Loader.php:533
 msgid "Fixed"
 msgstr ""
 
-#: Models/Script_Loader.php:497
+#: Models/Script_Loader.php:534
 msgid "Percentage"
 msgstr ""
 
-#: Models/Script_Loader.php:498
+#: Models/Script_Loader.php:535
 msgid "Amount"
 msgstr ""
 
-#: Models/Script_Loader.php:501
+#: Models/Script_Loader.php:538
 msgid "Projected impact"
 msgstr ""
 
-#: Models/Script_Loader.php:502
+#: Models/Script_Loader.php:539
 msgid "Users matched"
 msgstr ""
 
-#: Models/Script_Loader.php:503
+#: Models/Script_Loader.php:540
 msgid "Projected total"
 msgstr ""
 
-#: Models/Script_Loader.php:504
+#: Models/Script_Loader.php:541
 msgid "Sample new balance"
 msgstr ""
 
 #. translators: 1: current balance, 2: projected new balance.
-#: Models/Script_Loader.php:506
+#: Models/Script_Loader.php:543
 #, php-format
 msgid "%1$s → %2$s"
 msgstr ""
 
-#: Models/Script_Loader.php:507
+#: Models/Script_Loader.php:544
 msgid "Updating preview…"
 msgstr ""
 
-#: Models/Script_Loader.php:508
+#: Models/Script_Loader.php:545
 msgid "Note"
 msgstr ""
 
-#: Models/Script_Loader.php:509
+#: Models/Script_Loader.php:546
 msgid "e.g. Q2 loyalty bonus"
 msgstr ""
 
-#: Models/Script_Loader.php:510
+#: Models/Script_Loader.php:547
 msgid "Send email to users"
 msgstr ""
 
-#: Models/Script_Loader.php:511
-msgid "Apply Adjustment"
-msgstr ""
-
-#: Models/Script_Loader.php:514
-#: Models/Script_Loader.php:530
+#: Models/Script_Loader.php:550
+#: Models/Script_Loader.php:568
 msgid "Operation"
 msgstr ""
 
-#: Models/Script_Loader.php:516
+#: Models/Script_Loader.php:552
+msgid "Destructive actions"
+msgstr ""
+
+#: Models/Script_Loader.php:554
 msgid "Adjust"
 msgstr ""
 
-#: Models/Script_Loader.php:517
+#: Models/Script_Loader.php:555
 msgid "Reset to Zero"
 msgstr ""
 
-#: Models/Script_Loader.php:518
+#: Models/Script_Loader.php:556
 msgid "Delete All Entries"
 msgstr ""
 
-#: Models/Script_Loader.php:521
+#: Models/Script_Loader.php:559
 msgid "Increase or decrease balances by a fixed or percentage amount."
 msgstr ""
 
-#: Models/Script_Loader.php:522
+#: Models/Script_Loader.php:560
 msgid "Set balance to zero, keep history."
 msgstr ""
 
-#: Models/Script_Loader.php:523
+#: Models/Script_Loader.php:561
 msgid "Remove all entries for matched users — history will be lost."
 msgstr ""
 
-#: Models/Script_Loader.php:527
+#: Models/Script_Loader.php:565
 msgid "Confirm Bulk Adjustment"
 msgstr ""
 
-#: Models/Script_Loader.php:528
+#: Models/Script_Loader.php:566
 msgid "Users affected"
 msgstr ""
 
-#: Models/Script_Loader.php:529
+#: Models/Script_Loader.php:567
 msgid "Adjustment"
 msgstr ""
 
 #. translators: 1: increase/decrease, 2: formatted amount, 3: fixed/percentage
-#: Models/Script_Loader.php:532
+#: Models/Script_Loader.php:570
 #, php-format
 msgid "%1$s %2$s (%3$s)"
 msgstr ""
 
-#: Models/Script_Loader.php:533
+#: Models/Script_Loader.php:571
 msgid "Total credits"
 msgstr ""
 
-#: Models/Script_Loader.php:534
+#: Models/Script_Loader.php:572
 msgid "Email notify"
 msgstr ""
 
-#: Models/Script_Loader.php:535
-#: Models/Virtual_Coupon/Admin.php:243
+#: Models/Script_Loader.php:573
+#: Models/Virtual_Coupon/Admin.php:244
 msgid "Yes"
 msgstr ""
 
-#: Models/Script_Loader.php:536
+#: Models/Script_Loader.php:574
 msgid "No"
 msgstr ""
 
-#: Models/Script_Loader.php:538
+#: Models/Script_Loader.php:575
 msgid "Confirm"
 msgstr ""
 
-#: Models/Script_Loader.php:540
+#: Models/Script_Loader.php:578
+msgid "Reset Balances"
+msgstr ""
+
+#: Models/Script_Loader.php:579
+msgid "Delete Entries"
+msgstr ""
+
+#: Models/Script_Loader.php:582
+msgctxt "bulk store credit delete confirmation phrase the user must type"
+msgid "DELETE"
+msgstr ""
+
+#. translators: %s: the word the user must type (e.g. DELETE).
+#: Models/Script_Loader.php:584
+#, php-format
+msgid "Type %s to confirm"
+msgstr ""
+
+#: Models/Script_Loader.php:586
 msgid "This will set every matched user's store credit balance to zero. The ledger history is preserved, but the operation cannot be reversed."
 msgstr ""
 
-#: Models/Script_Loader.php:541
+#: Models/Script_Loader.php:587
 msgid "This will permanently delete every store credit entry for the matched users. Both the balance and the full ledger history will be wiped, and the operation cannot be reversed."
 msgstr ""
 
-#: Models/Script_Loader.php:545
+#: Models/Script_Loader.php:593
+msgid "Find users"
+msgstr ""
+
+#: Models/Script_Loader.php:594
+msgid "Filter & preview"
+msgstr ""
+
+#: Models/Script_Loader.php:595
+msgid "Configure"
+msgstr ""
+
+#: Models/Script_Loader.php:596
+msgid "Set the adjustment"
+msgstr ""
+
+#: Models/Script_Loader.php:597
+msgid "Review & run"
+msgstr ""
+
+#: Models/Script_Loader.php:598
+msgid "Confirm & apply"
+msgstr ""
+
+#: Models/Script_Loader.php:599
+msgid "Next"
+msgstr ""
+
+#: Models/Script_Loader.php:600
+msgid "Back"
+msgstr ""
+
+#: Models/Script_Loader.php:601
+msgid "Preview at least one matching user to continue."
+msgstr ""
+
+#: Models/Script_Loader.php:602
+msgid "How it works"
+msgstr ""
+
+#: Models/Script_Loader.php:603
+msgid "Adjust store credit for many customers in three steps: (1) find users with filters, (2) configure the adjustment, (3) review and run. Nothing changes until you run it on the final step."
+msgstr ""
+
+#: Models/Script_Loader.php:606
 msgid "Bulk Adjustment Queued"
 msgstr ""
 
-#: Models/Script_Loader.php:546
+#: Models/Script_Loader.php:607
 msgid "Bulk Adjustment In Progress"
 msgstr ""
 
-#: Models/Script_Loader.php:547
+#: Models/Script_Loader.php:608
 msgid "Bulk Adjustment Completed"
 msgstr ""
 
-#: Models/Script_Loader.php:548
+#: Models/Script_Loader.php:609
 msgid "Bulk Adjustment Failed"
 msgstr ""
 
-#: Models/Script_Loader.php:549
+#: Models/Script_Loader.php:610
 msgid "Progress"
 msgstr ""
 
 #. translators: 1: processed count, 2: total count.
-#: Models/Script_Loader.php:551
+#: Models/Script_Loader.php:612
 #, php-format
 msgid "%1$s / %2$s"
 msgstr ""
 
 #. translators: 1: processed count, 2: total count.
-#: Models/Script_Loader.php:553
+#: Models/Script_Loader.php:614
 #, php-format
 msgid "%1$s of %2$s users processed"
 msgstr ""
 
-#: Models/Script_Loader.php:554
-#: Models/Virtual_Coupon/Admin.php:251
+#: Models/Script_Loader.php:615
+#: Models/Virtual_Coupon/Admin.php:252
 #: views/reports/orders-with-coupons-report.php:88
 msgid "Status"
 msgstr ""
 
-#: Models/Script_Loader.php:555
+#: Models/Script_Loader.php:616
 msgid "Started"
 msgstr ""
 
-#: Models/Script_Loader.php:556
-#: Models/Script_Loader.php:576
+#: Models/Script_Loader.php:617
+#: Models/Script_Loader.php:637
 msgid "Failed"
 msgstr ""
 
-#: Models/Script_Loader.php:557
+#: Models/Script_Loader.php:618
 msgid "The bulk adjustment did not finish successfully. Some users may not have been processed."
 msgstr ""
 
-#: Models/Script_Loader.php:558
+#: Models/Script_Loader.php:619
 msgid "You can navigate away and return later."
 msgstr ""
 
-#: Models/Script_Loader.php:559
+#: Models/Script_Loader.php:620
 msgid "Start New Adjustment"
 msgstr ""
 
-#: Models/Script_Loader.php:562
+#: Models/Script_Loader.php:623
 msgid "Status refresh failed:"
 msgstr ""
 
-#: Models/Script_Loader.php:563
+#: Models/Script_Loader.php:624
 msgid "Could not verify whether a bulk operation is already running."
 msgstr ""
 
-#: Models/Script_Loader.php:564
+#: Models/Script_Loader.php:625
 msgid "Retry"
 msgstr ""
 
-#: Models/Script_Loader.php:565
+#: Models/Script_Loader.php:626
 msgid "Could not dismiss the completed operation. Please try again."
 msgstr ""
 
-#: Models/Script_Loader.php:573
+#: Models/Script_Loader.php:634
 msgid "Queued"
 msgstr ""
 
-#: Models/Script_Loader.php:574
+#: Models/Script_Loader.php:635
 msgid "In Progress"
 msgstr ""
 
-#: Models/Script_Loader.php:577
+#: Models/Script_Loader.php:638
 msgid "Idle"
 msgstr ""
 
-#: Models/Script_Loader.php:581
+#: Models/Script_Loader.php:642
 #: views/reports/orders-with-coupons-report.php:36
 msgid "Export CSV"
 msgstr ""
 
-#: Models/Script_Loader.php:582
+#: Models/Script_Loader.php:643
 msgid "Failed to export users. Please try again."
 msgstr ""
 
-#: Models/Script_Loader.php:583
+#: Models/Script_Loader.php:644
 msgid "Too many users matched to export at once. Please narrow your filters and try again."
 msgstr ""
 
-#: Models/Script_Loader.php:584
+#: Models/Script_Loader.php:645
 msgid "store-credits-users"
 msgstr ""
 
-#: Models/Script_Loader.php:594
+#: Models/Script_Loader.php:655
 msgid "Failed to load preview. Please try again."
 msgstr ""
 
-#: Models/Script_Loader.php:595
+#: Models/Script_Loader.php:656
 msgid "Min balance cannot be greater than Max balance."
 msgstr ""
 
 #. translators: 1: From-date label, 2: To-date label.
-#: Models/Script_Loader.php:598
+#: Models/Script_Loader.php:659
 #, php-format
 msgid "%1$s date cannot be after %2$s date."
 msgstr ""
 
-#: Models/Script_Loader.php:602
+#: Models/Script_Loader.php:663
 msgid "Failed to schedule the bulk adjustment. Please try again."
 msgstr ""
 
-#: Models/Script_Loader.php:603
+#: Models/Script_Loader.php:664
 msgid "Please enter a valid amount greater than zero."
 msgstr ""
 
-#: Models/Script_Loader.php:606
+#: Models/Script_Loader.php:667
 msgid "Bulk adjustment scheduled successfully."
 msgstr ""
 
 #. translators: %s: shipping method label
-#: Models/Shipping_Overrides.php:550
+#: Models/Shipping_Overrides.php:566
 #, php-format
 msgid "Shipping discount (%s):"
 msgstr ""
 
-#: Models/Shipping_Overrides.php:697
+#: Models/Shipping_Overrides.php:708
 msgid "Not covered locations"
 msgstr ""
 
-#: Models/Shipping_Overrides.php:715
+#: Models/Shipping_Overrides.php:726
 msgid "Non-shipping zone methods"
 msgstr ""
 
-#: Models/Shipping_Overrides.php:939
+#: Models/Shipping_Overrides.php:944
 msgid "Shipping overrides have been saved successfully!"
 msgstr ""
 
-#: Models/Shipping_Overrides.php:983
+#: Models/Shipping_Overrides.php:988
 msgid "Shipping overides has been cleared successfully!"
 msgstr ""
 
@@ -2855,6 +3080,70 @@ msgstr ""
 msgid "Schedule Expire Error Message (global)"
 msgstr ""
 
+#: Models/Tiered_Cart_Discount.php:177
+#: Models/Tiered_Cart_Discount.php:215
+#: Models/Tiered_Cart_Discount.php:276
+msgid "Tiered Cart Discount"
+msgstr ""
+
+#: Models/Tiered_Cart_Discount.php:399
+msgid "This coupon has no spend tiers set up yet."
+msgstr ""
+
+#. translators: %s: formatted shortfall amount.
+#: Models/Tiered_Cart_Discount.php:418
+#, php-format
+msgid "Spend %s more to use this coupon."
+msgstr ""
+
+#. translators: %s: tier discount percentage.
+#: Models/Tiered_Cart_Discount.php:609
+#, php-format
+msgid "%s%% off"
+msgstr ""
+
+#. translators: %s: formatted tier spend threshold.
+#: Models/Tiered_Cart_Discount.php:618
+#, php-format
+msgid "Spend %s or more"
+msgstr ""
+
+#. translators: %d: number of tiers dropped for repeating a spend threshold.
+#: Models/Tiered_Cart_Discount.php:1396
+#, php-format
+msgid "%d tier repeated a spend threshold and was discarded."
+msgid_plural "%d tiers repeated a spend threshold and were discarded."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of discarded tiers.
+#: Models/Tiered_Cart_Discount.php:1409
+#, php-format
+msgid "%d incomplete tier was discarded."
+msgid_plural "%d incomplete tiers were discarded."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of tiers whose percentage was capped at 100.
+#: Models/Tiered_Cart_Discount.php:1422
+#, php-format
+msgid "The percentage of %d tier was capped at 100."
+msgid_plural "The percentage of %d tiers was capped at 100."
+msgstr[0] ""
+msgstr[1] ""
+
+#: Models/Tiered_Cart_Discount.php:1570
+msgid "Tier discounts have been saved successfully!"
+msgstr ""
+
+#: Models/Tiered_Cart_Discount.php:1604
+msgid "Tier discounts have been cleared successfully!"
+msgstr ""
+
+#: Models/Tiered_Cart_Discount.php:1609
+msgid "Failed on clearing the tier discounts."
+msgstr ""
+
 #: Models/Usage_Limits.php:234
 msgid "Manually reset usage limit"
 msgstr ""
@@ -2865,145 +3154,145 @@ msgstr ""
 msgid "Usage limits for %s coupon(s) have been reset successfully."
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:226
+#: Models/Virtual_Coupon/Admin.php:227
 msgid "Manage virtual coupons"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:227
+#: Models/Virtual_Coupon/Admin.php:228
 msgid "Number of codes:"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:228
+#: Models/Virtual_Coupon/Admin.php:229
 msgid "Generate virtual coupon codes"
 msgstr ""
 
 #. Translators: %s Status tag.
-#: Models/Virtual_Coupon/Admin.php:230
+#: Models/Virtual_Coupon/Admin.php:231
 #, php-format
 msgid "%s virtual coupon codes have been used for this coupon."
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:231
+#: Models/Virtual_Coupon/Admin.php:232
 msgid "Copy all new virtual coupon codes"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:232
+#: Models/Virtual_Coupon/Admin.php:233
 msgid "Manage Virtual Coupons"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:233
+#: Models/Virtual_Coupon/Admin.php:234
 msgid "Virtual Coupon Code"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:234
+#: Models/Virtual_Coupon/Admin.php:235
 msgid "Coupon"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:235
+#: Models/Virtual_Coupon/Admin.php:236
 msgid "Usage Status"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:236
+#: Models/Virtual_Coupon/Admin.php:237
 msgid "Date Created"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:237
+#: Models/Virtual_Coupon/Admin.php:238
 msgid "Date Expire"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:238
+#: Models/Virtual_Coupon/Admin.php:239
 msgid "Customer"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:239
+#: Models/Virtual_Coupon/Admin.php:240
 msgid "Select date"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:240
+#: Models/Virtual_Coupon/Admin.php:241
 msgid "Search customer"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:241
+#: Models/Virtual_Coupon/Admin.php:242
 msgid "Edit"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:244
+#: Models/Virtual_Coupon/Admin.php:245
 msgid "Are you sure you want to delete this virtual coupon?"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:245
+#: Models/Virtual_Coupon/Admin.php:246
 msgid "Bulk Delete"
 msgstr ""
 
 #. Translators: %s: Count of virtual coupons to delete.
-#: Models/Virtual_Coupon/Admin.php:247
+#: Models/Virtual_Coupon/Admin.php:248
 #, php-format
 msgid "Are you sure you want to delete these %s virtual coupons?"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:248
+#: Models/Virtual_Coupon/Admin.php:249
 #: views/reports/orders-with-coupons-report.php:55
 msgid "Search..."
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:249
+#: Models/Virtual_Coupon/Admin.php:250
 msgid "Select a status"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:250
+#: Models/Virtual_Coupon/Admin.php:251
 msgid "Search"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:252
+#: Models/Virtual_Coupon/Admin.php:253
 msgid "Pending"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:253
+#: Models/Virtual_Coupon/Admin.php:254
 msgid "Used"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:254
+#: Models/Virtual_Coupon/Admin.php:255
 msgid "unlimited"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:255
+#: Models/Virtual_Coupon/Admin.php:256
 msgid "recent"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:256
+#: Models/Virtual_Coupon/Admin.php:257
 msgid "Recently generated"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:257
+#: Models/Virtual_Coupon/Admin.php:258
 #: views/reports/orders-with-coupons-report.php:68
 msgid "Filter"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:258
+#: Models/Virtual_Coupon/Admin.php:259
 msgid "Copy Virtual Coupons"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:259
+#: Models/Virtual_Coupon/Admin.php:260
 msgid "Copy all"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:260
+#: Models/Virtual_Coupon/Admin.php:261
 msgid "Virtual coupon codes have been copied!"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:261
+#: Models/Virtual_Coupon/Admin.php:262
 msgid "Download as CSV"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:262
+#: Models/Virtual_Coupon/Admin.php:263
 msgid "Virtual Coupon URL"
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:263
+#: Models/Virtual_Coupon/Admin.php:264
 msgid "Virtual coupon URL has been copied."
 msgstr ""
 
-#: Models/Virtual_Coupon/Admin.php:264
+#: Models/Virtual_Coupon/Admin.php:265
 msgid "URL managed on individual Virtual Coupons."
 msgstr ""
 
@@ -3134,6 +3423,50 @@ msgstr ""
 msgid "Choose whether to apply the BOGO discount to the least or most expensive eligible products first"
 msgstr ""
 
+#: views/coupons/view-coupon-discount-rules-data-panel.php:28
+msgid "Discount rules"
+msgstr ""
+
+#: views/coupons/view-coupon-discount-rules-data-panel.php:29
+msgid "Rules are checked top to bottom — the first matching rule is applied. A product is only ever discounted by one rule."
+msgstr ""
+
+#: views/coupons/view-coupon-discount-rules-data-panel.php:38
+msgid "Target type"
+msgstr ""
+
+#: views/coupons/view-coupon-discount-rules-data-panel.php:41
+msgid "Products / categories"
+msgstr ""
+
+#: views/coupons/view-coupon-discount-rules-data-panel.php:44
+#: views/coupons/view-coupon-tier-discounts-data-panel.php:62
+#: views/coupons/view-shipping-overrides-data-panel.php:44
+msgid "Discount"
+msgstr ""
+
+#: views/coupons/view-coupon-discount-rules-data-panel.php:61
+msgid "Add rule"
+msgstr ""
+
+#: views/coupons/view-coupon-discount-rules-data-panel.php:71
+msgid "Save Rules"
+msgstr ""
+
+#: views/coupons/view-coupon-discount-rules-data-panel.php:74
+msgid "Are you sure you want to remove all discount rules from this coupon?"
+msgstr ""
+
+#: views/coupons/view-coupon-discount-rules-data-panel.php:75
+#: views/coupons/view-coupon-tier-discounts-data-panel.php:95
+msgid "Clear"
+msgstr ""
+
+#: views/coupons/view-coupon-discount-rules-data-panel.php:78
+#: views/coupons/view-coupon-tier-discounts-data-panel.php:98
+msgid "Saved instantly — publishes the coupon if it's still a draft."
+msgstr ""
+
 #: views/coupons/view-coupon-sort-priority-field.php:8
 msgid "Sort priority in cart"
 msgstr ""
@@ -3145,6 +3478,38 @@ msgstr ""
 
 #: views/coupons/view-coupon-sort-priority-field.php:16
 msgid "Sort priority value that will be used to determine the order of the coupon. Coupons are sorted (ascendingly) in the cart/checkout during calculation of the cart totals. Set to a lower value to prioritize the coupon or a higher value if you want it to be applied last. Default value is \"Normal (30)\"."
+msgstr ""
+
+#: views/coupons/view-coupon-tier-discounts-data-panel.php:29
+msgid "Spend tiers"
+msgstr ""
+
+#: views/coupons/view-coupon-tier-discounts-data-panel.php:30
+msgid "The cart takes the discount of the highest spend tier it reaches. Tiers never stack."
+msgstr ""
+
+#: views/coupons/view-coupon-tier-discounts-data-panel.php:34
+msgid "Tier discount type"
+msgstr ""
+
+#: views/coupons/view-coupon-tier-discounts-data-panel.php:50
+msgid "The discount type is the same for every tier of this coupon."
+msgstr ""
+
+#: views/coupons/view-coupon-tier-discounts-data-panel.php:59
+msgid "Spend at least"
+msgstr ""
+
+#: views/coupons/view-coupon-tier-discounts-data-panel.php:79
+msgid "Add tier"
+msgstr ""
+
+#: views/coupons/view-coupon-tier-discounts-data-panel.php:91
+msgid "Save Tiers"
+msgstr ""
+
+#: views/coupons/view-coupon-tier-discounts-data-panel.php:94
+msgid "Are you sure you want to remove all spend tiers from this coupon?"
 msgstr ""
 
 #: views/coupons/view-daytime-schedules-panel.php:9
@@ -3209,10 +3574,6 @@ msgstr ""
 
 #: views/coupons/view-shipping-overrides-data-panel.php:41
 msgid "Shipping Method"
-msgstr ""
-
-#: views/coupons/view-shipping-overrides-data-panel.php:44
-msgid "Discount"
 msgstr ""
 
 #: views/coupons/view-shipping-overrides-data-panel.php:52

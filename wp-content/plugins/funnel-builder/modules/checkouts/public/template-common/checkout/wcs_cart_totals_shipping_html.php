@@ -56,7 +56,7 @@ try {
 					// packages match, display shipping amounts only
 					?>
                     <tr class="shipping recurring-total <?php echo esc_attr( $recurring_cart_key ); ?>">
-                        <th><span><?php echo( sprintf( __( 'Shipping via %s', 'woocommerce-subscriptions' ), WFACP_Common::shipping_method_label( $shipping_method ) ) ); ?></span></th>
+                        <th><span><?php echo wp_kses_post( sprintf( __( 'Shipping via %s', 'woocommerce-subscriptions' ), WFACP_Common::shipping_method_label( $shipping_method ) ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></span></th>
                         <td>
 							<?php echo wp_kses_post( wcs_cart_totals_shipping_method_price_label( $shipping_method, $recurring_cart ) ); ?>
 							<?php if ( 1 === count( $package['rates'] ) ) : ?>
@@ -78,6 +78,14 @@ try {
 					$shipping_selection_displayed = true;
 
 					if ( $show_package_name ) {
+						/*
+						 * Mirrors WooCommerce Subscriptions' own cart template string verbatim so the
+						 * package label resolves against their translation catalogue. The singular
+						 * deliberately carries no placeholder ("Shipping", then "Shipping 2"...);
+						 * WPCS flags that, but rewriting the pair would change the rendered label and
+						 * lose the borrowed translation, since gettext keys plural entries by the
+						 * singular/plural msgid pair. Left as-is on purpose.
+						 */
 						$package_name = apply_filters( 'woocommerce_shipping_package_name', sprintf( _n( 'Shipping', 'Shipping %d', ( $package_index + 1 ), 'woocommerce-subscriptions' ), ( $package_index + 1 ) ), $package_index, $package );
 					} else {
 						$package_name = '';

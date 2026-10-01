@@ -50,9 +50,6 @@ if ( ! class_exists( 'WFFN_Landing_Pages_Elementor' ) ) {
 			if ( isset( $designs['elementor'] ) && is_array( $designs['elementor'] ) ) {
 				foreach ( $designs['elementor'] as $d_key => $templates ) {
 
-					if ( isset( $templates['pro'] ) && 'yes' === $templates['pro'] ) {
-						$templates['license_exist'] = WFFN_Core()->admin->get_license_status();
-					}
 					WFFN_Core()->landing_pages->admin->register_template( $d_key, $templates, 'elementor' );
 
 				}

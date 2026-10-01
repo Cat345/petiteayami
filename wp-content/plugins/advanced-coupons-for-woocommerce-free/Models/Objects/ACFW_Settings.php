@@ -790,10 +790,10 @@ class ACFW_Settings extends \WC_Settings_Page {
             ),
 
             array(
-                'title'    => __( 'Total paid deducted with store credit payments on completed orders', 'advanced-coupons-for-woocommerce-free' ),
+                'title'    => __( 'Total paid deducted with store credit payments', 'advanced-coupons-for-woocommerce-free' ),
                 'type'     => 'checkbox',
-                'desc'     => __( 'Enable this to deduct total paid with store credit amounts for completed orders.', 'advanced-coupons-for-woocommerce-free' ),
-                'desc_tip' => __( 'When enabled, the total paid amount shown for completed orders will include any portion paid using store credit.', 'advanced-coupons-for-woocommerce-free' ),
+                'desc'     => __( 'Exclude the store credit portion from the Total Paid amount shown on the order.', 'advanced-coupons-for-woocommerce-free' ),
+                'desc_tip' => __( 'Applies to Processing, Completed and Refunded orders that have a payment date recorded. When enabled, the Total Paid amount excludes the portion covered by store credit, so it reflects only what was collected through the payment gateway.', 'advanced-coupons-for-woocommerce-free' ),
                 'id'       => Plugin_Constants::STORE_CREDITS_DEDUCT_TOTAL_PAID_ON_COMPLETED_ORDERS,
                 'default'  => 'no',
             ),

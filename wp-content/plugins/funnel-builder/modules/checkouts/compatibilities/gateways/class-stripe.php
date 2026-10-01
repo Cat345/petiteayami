@@ -134,7 +134,7 @@ if ( ! class_exists( 'WFACP_Stripe_GPAY_AND_APAY' ) ) {
 
 			echo '<style>';
 
-			echo $bodyClass . ' #payment ul.payment_methods li .card-brand-icons img{position: absolute;}';
+			echo esc_attr( $bodyClass ) . ' #payment ul.payment_methods li .card-brand-icons img{position: absolute;}';
 			echo '.wfacp_smart_button_container #wc-stripe-payment-request-button-separator{display:none !important}';
 			echo '.wfacp_smart_button_container #wc-stripe-payment-request-wrapper{margin-top:0 !important}';
 			echo '</style>';

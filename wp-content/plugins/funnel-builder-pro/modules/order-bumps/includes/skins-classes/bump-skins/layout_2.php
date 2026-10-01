@@ -26,6 +26,17 @@ if ( ! class_exists( 'WFOB_Layout_2' ) ) {
 			return WFOB_PLUGIN_URL . '/assets/img/skin-2.jpg';
 		}
 
+		/**
+		 * Not offered in the skin picker; keep it from inheriting Layout 1's text.
+		 */
+		public static function get_skin_label() {
+			return '';
+		}
+
+		public static function get_skin_description() {
+			return '';
+		}
+
 		public function get_admin_schema() {
 			return parent::get_admin_schema();
 		}

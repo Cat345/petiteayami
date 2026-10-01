@@ -19,7 +19,6 @@
 
             this.add_to_cart_run = false;
             this.checkout_event_run = false;
-            this.is_bumpevent = false;
             this.init();
             this.attach_triggers();
 
@@ -155,20 +154,6 @@
                 }
             });
 
-            $(document.body).on('wfob_product_added', function (e, v) {
-                try {
-                    self.track_bump_item(v);
-                }catch (error) {
-                    console.log( error );
-                }
-            });
-            $(document.body).on('wfob_product_removed', function (e, v) {
-                try {
-                    self.track_remove_bump_item(v);
-                }catch (error) {
-                    console.log( error );
-                }
-            });
 
             $(document.body).on('wfacp_product_added', function (e, v) {
                 try {
@@ -267,7 +252,7 @@
         /**
          * Fire JavaScript action hook for add_to_cart events
          * Allows developers to listen and duplicate events (e.g., for Stape)
-         * 
+         *
          * @param {Object} eventData - The event data object
          * @param {String} eventName - The event name (e.g., 'add_to_cart', 'AddToCart', 'addtocart', 'ADD_CART')
          */
@@ -334,31 +319,6 @@
 
         }
 
-        // Bump Event
-
-        track_bump_item(data) {
-            let present = typeof wfob_frontend == 'object' && wfob_frontend.hasOwnProperty('track');
-            if (present) {
-                if ('1' == wfob_frontend.track[this.track_name].add_to_cart) {
-                    this.is_bumpevent = true;
-                    this.add_item(data, true);
-                }
-                if (wfob_frontend.track[this.track_name].hasOwnProperty('custom_bump') && '1' == wfob_frontend.track[this.track_name].custom_bump) {
-                    let customData = {"post_id": wfacp_analytics_data.wfacp_frontend.id, "page_title": wfacp_analytics_data.wfacp_frontend.title};
-                    this.custom_event('Woofunnels_Bump', customData);
-                }
-            }
-        }
-
-        track_remove_bump_item(data) {
-            let present = typeof wfob_frontend == 'object' && wfob_frontend.hasOwnProperty('track');
-            if (present) {
-                if ('1' == wfob_frontend.track[this.track_name].add_to_cart) {
-                    this.is_bumpevent = true;
-                    this.remove_item(data);
-                }
-            }
-        }
 
     }
 
@@ -614,7 +574,7 @@
         /**
          * Fire JavaScript action hook for add_to_cart events
          * Allows developers to listen and duplicate events (e.g., for Stape)
-         * 
+         *
          * @param {Object} eventData - The event data object
          * @param {String} eventName - The event name (e.g., 'add_to_cart', 'AddToCart', 'addtocart', 'ADD_CART')
          */
@@ -703,7 +663,7 @@
                     event_data = shipping_data[0];
                     event_data.send_to = this.track_id;
                     event_data.non_interaction = true;
-                    
+
                     // Add enhanced shipping data structure (similar to PixelYourSite)
                     if (event_data.shipping_address) {
                         event_data.user_data = event_data.user_data || {};
@@ -734,7 +694,6 @@
             super(data);
             this.track_name = 'google_ads';
             this.idlabel = (typeof data.idlabel !== "undefined") ? data.idlabel : '';
-            this.bumpIdlabel = (typeof data.bumpIdlabel !== "undefined") ? data.bumpIdlabel : '';
             window.dataLayer = window.dataLayer || [];
         }
 
@@ -756,18 +715,16 @@
         }
 
         set_send_id( data ) {
-            if ( this.is_bumpevent === true ) {
-                data.send_to = (typeof this.bumpIdlabel !== "undefined") && '' !== this.bumpIdlabel ? this.bumpIdlabel : this.track_id;
-            } else {
+
                 data.send_to = (typeof this.idlabel !== "undefined") && '' !== this.idlabel ? this.idlabel : this.track_id;
-            }
+
             return data;
         }
         event_checkout(checkout_data) {
             var event_data = {
-                send_to: this.track_id, 
-                event_category: "ecommerce", 
-                items: JSON.parse(checkout_data), 
+                send_to: this.track_id,
+                event_category: "ecommerce",
+                items: JSON.parse(checkout_data),
                 non_interaction: true
             };
             event_data = this.set_send_id(event_data);
@@ -835,7 +792,7 @@
 
         event_checkout(checkout_data) {
             let c_data = JSON.parse(checkout_data);
-            
+
             // Helper function to hash email with SHA256
             const hashEmail = async (email) => {
                 if (!email || typeof email !== 'string') return null;
@@ -845,7 +802,7 @@
                 const hashArray = Array.from(new Uint8Array(hashBuffer));
                 return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
             };
-            
+
             // Get email from checkout form if not already in data
             const getEmailFromForm = () => {
                 const emailField = $('#billing_email');
@@ -854,11 +811,11 @@
                 }
                 return null;
             };
-            
+
             // Process checkout data - ensure email and external_id are included
             if (Array.isArray(c_data) && c_data.length > 0) {
                 const checkoutEventData = c_data[0];
-                
+
                 // Add email if not present
                 if (!checkoutEventData.em) {
                     const formEmail = getEmailFromForm();
@@ -876,7 +833,7 @@
                     }
                 }
             }
-            
+
             this.pint('InitiateCheckout', c_data);
         }
 
@@ -1153,15 +1110,7 @@
                     if ( typeof wfacp_analytics_data.google_ads.cart_labels === "string") {
                         gadLabels = wfacp_analytics_data.google_ads.cart_labels.split(',');
                     }
-                    /**
-                     * get bump cart labels
-                     */
-                    let bumpGadLabels = [];
-                    if ((typeof wfob_frontend == 'object') && wfob_frontend.hasOwnProperty('track') && wfob_frontend.track.hasOwnProperty('google_ads')) {
-                        if (typeof wfob_frontend.track.google_ads.cart_labels === "string") {
-                            bumpGadLabels = wfob_frontend.track.google_ads.cart_labels.split(',');
-                        }
-                    }
+
 
                     if (ids.length > 0) {
                         if (!bwf_gtag_load) {
@@ -1180,12 +1129,7 @@
                             if ("undefined" !== typeof gadLabels[f] && gadLabels[f] !== "") {
                                 temp.idlabel = temp.id + '/' + gadLabels[f].trim();
                             }
-                            /**
-                             * set bump add to cart labels
-                             */
-                            if ("undefined" !== typeof bumpGadLabels[f] && bumpGadLabels[f] !== "") {
-                                temp.bumpIdlabel = temp.id + '/' + bumpGadLabels[f].trim();
-                            }
+
                             wfacp_analytics_data.wfacp_frontend.tracks.google_ads[f_id] = new Google_ads(temp);
                         }
                     }

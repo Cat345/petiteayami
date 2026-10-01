@@ -594,7 +594,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 
 			$type_condition = array();
 			if ( ! in_array( $key, $exclude_border_keys ) ) {
-				$fields_keys[]  = $this->add_heading( $tab_id, __( 'Border', 'funnel-builder', '', $conditions ) );
+				$fields_keys[]  = $this->add_heading( $tab_id, __( 'Border', 'funnel-builder' ), '', $conditions );
 				$border_type    = $this->add_select( $tab_id, $key . '_border_type', __( 'Type', 'funnel-builder' ), $border_option, $default['border_type'] );
 				$fields_keys[]  = $border_type;
 				$type_condition = array( $border_type => 'none' );
@@ -694,7 +694,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'selector'  => $selectors,
 			);
 
-			$fields_keys[] = $this->add_heading( $tab_id, __( 'Box Shadow', 'funnel-builder', '', $conditions ) );
+			$fields_keys[] = $this->add_heading( $tab_id, __( 'Box Shadow', 'funnel-builder' ), '', $conditions );
 			$enabled       = $this->add_switcher( $tab_id, $key . '_shadow_enable', __( 'Enable', 'funnel-builder' ), $default['enable'], $conditions );
 
 			$type_condition = array( $enabled => 'on' );

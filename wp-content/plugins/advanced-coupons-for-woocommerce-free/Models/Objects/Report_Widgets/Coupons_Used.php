@@ -49,20 +49,18 @@ class Coupons_Used extends Abstract_Report_Widget {
      * Query report data freshly from the database.
      *
      * @since 4.3
+     * @since 4.7.6 Source from the shared coupon-usage dataset instead of hydrating every order.
      * @access protected
      */
     protected function _query_report_data() {
-        $orders         = $this->_query_orders();
-        $this->raw_data = 0;
+        $count = 0;
 
-        foreach ( $orders as $order ) {
-            // Skip if order has no coupons applied.
-            if ( empty( $order->get_coupons() ) ) {
-                continue;
-            }
-
-            $this->raw_data += count( $order->get_coupons() );
+        // Counted by iteration rather than count(): the fallback path yields a Generator.
+        foreach ( $this->_get_coupon_usage_rows( false ) as $row ) {
+            ++$count;
         }
+
+        $this->raw_data = $count;
     }
 
     /*

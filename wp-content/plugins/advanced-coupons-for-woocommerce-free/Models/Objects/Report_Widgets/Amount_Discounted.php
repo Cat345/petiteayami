@@ -3,6 +3,7 @@
 namespace ACFWF\Models\Objects\Report_Widgets;
 
 use ACFWF\Abstracts\Abstract_Report_Widget;
+use ACFWF\Models\Objects\Report_Coupon_Usage_Query;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -51,23 +52,21 @@ class Amount_Discounted extends Abstract_Report_Widget {
      * @since 4.3
      * @since 4.5.1 Add support for BOGO, Add Products and Shipping overrides discounts.
      * @since 4.5.6 Refactor query so it is valid for HPOS.
+     * @since 4.7.6   Source from the shared coupon-usage dataset instead of hydrating every order.
      * @access protected
      */
     protected function _query_report_data() {
-        $orders         = $this->_query_orders();
         $total_discount = wc_add_number_precision( 0.0 );
 
         /**
          * Get total discounts.
          * - The formula to get total discounts is : discount + discount_tax + extra_discount.
          */
-        foreach ( $orders as $order ) {
-            foreach ( $order->get_coupons() as $item ) {
-                $discount        = (float) apply_filters( 'acfw_query_report_get_discount', $item->get_discount(), $item, $order );
-                $discount_tax    = (float) apply_filters( 'acfw_query_report_get_discount_tax', $item->get_discount_tax(), $item, $order );
-                $extra_discount  = (float) apply_filters( 'acfw_query_report_extra_discount', \ACFWF()->Helper_Functions->get_coupon_order_item_extra_discounts( $item ), $item, $order );
-                $total_discount += wc_add_number_precision( $discount ) + wc_add_number_precision( $discount_tax ) + $extra_discount;
-            }
+        foreach ( $this->_get_coupon_usage_rows() as $row ) {
+            $discount        = (float) apply_filters( 'acfw_query_report_get_discount', $row['discount'], $row['item'], $row['order'] );
+            $discount_tax    = (float) apply_filters( 'acfw_query_report_get_discount_tax', $row['discount_tax'], $row['item'], $row['order'] );
+            $extra_discount  = (float) apply_filters( 'acfw_query_report_extra_discount', Report_Coupon_Usage_Query::get_extra_discount( $row, true ), $row['item'], $row['order'] );
+            $total_discount += wc_add_number_precision( $discount ) + wc_add_number_precision( $discount_tax ) + $extra_discount;
         }
 
         $this->raw_data = wc_remove_number_precision( $total_discount );

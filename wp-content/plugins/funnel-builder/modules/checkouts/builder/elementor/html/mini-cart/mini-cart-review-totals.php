@@ -39,23 +39,23 @@ add_filter( 'wfacp_order_shipping_colspan', 'WFACP_Common_Helper::order_review_s
 do_action( 'wfacp_mini_cart_before_order_total', $this, [] );
 
 ?>
-    <table class="shop_table <?php echo $instance->get_template_slug(); ?> wfacp_mini_cart_reviews mini_cart_wrap_here" id="wfacp_mini_cart_reviews_<?php echo $widget_id ?>">
+    <table class="shop_table <?php echo esc_attr( $instance->get_template_slug() ); ?> wfacp_mini_cart_reviews mini_cart_wrap_here" id="wfacp_mini_cart_reviews_<?php echo esc_attr( $widget_id ); ?>">
 
         <tr class="cart-subtotal">
-            <th colspan="<?php echo $colspan_first ?>"><span><?php _e( 'Subtotal', 'woocommerce' ); ?></span></th>
-            <td colspan="<?php echo $colspan_second ?>"><?php wc_cart_totals_subtotal_html(); ?></td>
+            <th colspan="<?php echo esc_attr( $colspan_first ); ?>"><span><?php esc_html_e( 'Subtotal', 'woocommerce' ); ?></span></th>
+            <td colspan="<?php echo esc_attr( $colspan_second ); ?>"><?php wc_cart_totals_subtotal_html(); ?></td>
         </tr>
 		<?php foreach ( WC()->cart->get_coupons() as $code => $coupon ) : ?>
             <tr class="cart-subtotal cart-discount coupon-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
-                <th colspan="<?php echo $colspan_first ?>"><span><?php $instance->wc_cart_totals_coupon_label( $coupon ) ?></span></th>
-                <td colspan="<?php echo $colspan_second ?>"><?php wc_cart_totals_coupon_html( $coupon ); ?></td>
+                <th colspan="<?php echo esc_attr( $colspan_first ); ?>"><span><?php $instance->wc_cart_totals_coupon_label( $coupon ) ?></span></th>
+                <td colspan="<?php echo esc_attr( $colspan_second ); ?>"><?php wc_cart_totals_coupon_html( $coupon ); ?></td>
             </tr>
 		<?php endforeach; ?>
 
 		<?php foreach ( WC()->cart->get_fees() as $fee ) : ?>
             <tr class="cart-subtotal fee">
-                <th colspan="<?php echo $colspan_first ?>"><span><?php echo esc_html( $fee->name ); ?></span></th>
-                <td colspan="<?php echo $colspan_second ?>"><?php wc_cart_totals_fee_html( $fee ); ?></td>
+                <th colspan="<?php echo esc_attr( $colspan_first ); ?>"><span><?php echo esc_html( $fee->name ); ?></span></th>
+                <td colspan="<?php echo esc_attr( $colspan_second ); ?>"><?php wc_cart_totals_fee_html( $fee ); ?></td>
             </tr>
 		<?php endforeach; ?>
 
@@ -72,15 +72,15 @@ do_action( 'wfacp_mini_cart_before_order_total', $this, [] );
 		<?php if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) : ?>
 			<?php if ( 'itemized' === get_option( 'woocommerce_tax_total_display' ) ) : ?>
 				<?php foreach ( WC()->cart->get_tax_totals() as $code => $tax ) : ?>
-                    <tr class="cart-subtotal tax-rate tax-rate-<?php echo sanitize_title( $code ); ?>">
-                        <th colspan="<?php echo $colspan_first ?>"><span><?php echo esc_html( $tax->label ); ?></span></th>
-                        <td colspan="<?php echo $colspan_second ?>"><?php echo wp_kses_post( $tax->formatted_amount ); ?></td>
+                    <tr class="cart-subtotal tax-rate tax-rate-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
+                        <th colspan="<?php echo esc_attr( $colspan_first ); ?>"><span><?php echo esc_html( $tax->label ); ?></span></th>
+                        <td colspan="<?php echo esc_attr( $colspan_second ); ?>"><?php echo wp_kses_post( $tax->formatted_amount ); ?></td>
                     </tr>
 				<?php endforeach; ?>
 			<?php else : ?>
                 <tr class="cart-subtotal tax-total">
-                    <th colspan="<?php echo $colspan_first ?>"><span><?php echo esc_html( WC()->countries->tax_or_vat() ); ?></span></th>
-                    <td colspan="<?php echo $colspan_second ?>"><?php wc_cart_totals_taxes_total_html(); ?></td>
+                    <th colspan="<?php echo esc_attr( $colspan_first ); ?>"><span><?php echo esc_html( WC()->countries->tax_or_vat() ); ?></span></th>
+                    <td colspan="<?php echo esc_attr( $colspan_second ); ?>"><?php wc_cart_totals_taxes_total_html(); ?></td>
                 </tr>
 			<?php endif; ?>
 		<?php endif; ?>
@@ -88,8 +88,8 @@ do_action( 'wfacp_mini_cart_before_order_total', $this, [] );
 		<?php do_action( 'woocommerce_review_order_before_order_total' ); ?>
 
         <tr class="order-total">
-            <th colspan="<?php echo $colspan_first ?>"><span><?php _e( 'Total', 'woocommerce' ); ?></span></th>
-            <td colspan="<?php echo $colspan_second ?>"><?php wc_cart_totals_order_total_html(); ?></td>
+            <th colspan="<?php echo esc_attr( $colspan_first ); ?>"><span><?php esc_html_e( 'Total', 'woocommerce' ); ?></span></th>
+            <td colspan="<?php echo esc_attr( $colspan_second ); ?>"><?php wc_cart_totals_order_total_html(); ?></td>
         </tr>
 		<?php
 		if ( apply_filters( 'wfacp_disable_subscriptions_sidebar_summary', true ) ) {

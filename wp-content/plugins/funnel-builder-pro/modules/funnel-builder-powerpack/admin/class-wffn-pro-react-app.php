@@ -39,7 +39,7 @@ if ( ! class_exists( 'WFFN_Pro_React_App' ) ) {
 		 * plain 'main'.
 		 */
 		public function get_app_name() {
-			$app_name = 'main-20260820134040'; //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
+			$app_name = 'main-20260904103854'; //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
 
 			return str_replace( '-{{{APP_VERSION}}}', '', $app_name ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
 		}

@@ -106,7 +106,21 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 							</a>
 							<p>
 								<?php
-								_e( sprintf( 'Attention: There is an update available of <strong>%s</strong> plugin. &nbsp;<a href="%s" class="">Go to updates</a>', implode( ', ', array_map( 'esc_html', $plugin_names ) ), esc_url( admin_url( 'plugins.php?s=funnelkit&plugin_status=all' ) ) ), 'funnel-builder' ); // phpcs:ignore WordPress.Security.EscapeOutput, WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment, WordPress.WP.I18n.NonSingularStringLiteralText
+								printf(
+									/* translators: 1: comma-separated list of plugin names, 2: URL of the WordPress updates screen. */
+									wp_kses(
+										__( 'Attention: There is an update available of <strong>%1$s</strong> plugin. &nbsp;<a href="%2$s" class="">Go to updates</a>', 'funnel-builder' ),
+										array(
+											'strong' => array(),
+											'a'      => array(
+												'href'  => array(),
+												'class' => array(),
+											),
+										)
+									),
+									esc_html( implode( ', ', $plugin_names ) ),
+									esc_url( admin_url( 'plugins.php?s=funnelkit&plugin_status=all' ) )
+								);
 								?>
 							</p>
 						</div>

@@ -450,6 +450,49 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 		 *
 		 * @return mixed|void
 		 */
+		/**
+		 * Whether the current request is entitled to read the given order.
+		 *
+		 * An order id arriving in the URL is attacker-controlled. Anything that prints order
+		 * data off the back of one -- the [wfacp_order_custom_field] and [wfty_*] shortcodes,
+		 * the wfty_customer_* helpers -- must call this first, or a visitor can walk order ids
+		 * and read other customers' name, email, phone and address.
+		 *
+		 * Mirrors the order-key test in WFFN_Thank_You_WC_Pages: the key is the secret
+		 * WooCommerce embeds in the order-received URL, and WFTY_Common adds it to FunnelKit's
+		 * own thank-you links, so legitimate traffic is unaffected.
+		 *
+		 * @param int $order_id Order id taken from the request.
+		 *
+		 * @return bool
+		 */
+		public static function current_request_can_view_order( $order_id ) {
+			$order_id = absint( $order_id );
+			if ( $order_id < 1 || ! function_exists( 'wc_get_order' ) ) {
+				return false;
+			}
+
+			$order = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
+
+			/** Possessing the order key is the credential. */
+			$request_key = isset( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the key is itself the credential being checked.
+			if ( '' !== $request_key && hash_equals( (string) $order->get_order_key(), $request_key ) ) {
+				return true;
+			}
+
+			/** A logged-in customer reading their own order. */
+			$customer_id = $order->get_customer_id();
+			if ( $customer_id > 0 && get_current_user_id() === $customer_id ) {
+				return true;
+			}
+
+			/** Anyone who can manage orders already sees this in wp-admin. */
+			return current_user_can( 'edit_shop_orders' );
+		}
+
 		public static function wffn_is_funnel_pro_active() {
 			return defined( 'WFFN_PRO_FILE' ) && WFFN_Core()->admin->get_license_status();
 		}

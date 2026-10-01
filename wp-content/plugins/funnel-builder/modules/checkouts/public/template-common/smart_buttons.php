@@ -147,7 +147,19 @@ if ( ! $show_smart_button_shimmer ) {
 			margin: 0 auto;
 		}
 
-		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container iframe {
+		/*
+		 * Single-wallet gateways render one button per iframe, so clamping the
+		 * iframe to one button height keeps the row even.
+		 *
+		 * The WooPayments Express Checkout Element is the exception: Stripe packs
+		 * EVERY enabled wallet into that one iframe and wraps them onto a second
+		 * row once there are more than its grid fits per line (e.g. Apple Pay +
+		 * Google Pay, then Amazon Pay underneath). Clamping it to 42px cropped
+		 * every row past the first, so those wallets silently disappeared here
+		 * while the native checkout showed them. Exclude that slot and let Stripe
+		 * size its own iframe, as it does on the native checkout.
+		 */
+		#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container:not(#wfacp_smart_button_wc_payment_gpay_apay) iframe {
 			max-height: 42px !important;
 			height: 100% !important;
 		}

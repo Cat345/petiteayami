@@ -16,7 +16,7 @@ $change_back_btn = apply_filters( 'wfacp_change_back_btn', 'Previous Step', $nex
 if ( $change_back_btn != '' ) {
 	?>
     <div class="wfacp-back-btn-wrap wfacp_back_wrap">
-        <a class='wfacp_back_page_button' data-next-step="<?php echo $next_action; ?>" data-current-step='<?php echo $current_action; ?>' href='javascript:void(0)'>
+        <a class='wfacp_back_page_button' data-next-step="<?php echo esc_attr( $next_action ); ?>" data-current-step='<?php echo esc_attr( $current_action ); ?>' href='javascript:void(0)'>
 			<?php echo wp_kses_post( $change_back_btn ); ?>
         </a>
     </div>

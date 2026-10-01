@@ -18,6 +18,16 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 		public $has_intent_secret = false;
 
 		/**
+		 * True once we registered the cart-level `subscriptions` Store API extension, which makes
+		 * WooPayments' express checkout client create its Stripe Elements with
+		 * setup_future_usage=off_session so confirmation tokens are tokenizable for upsells —
+		 * exactly how it tokenizes express payments for subscription carts.
+		 *
+		 * @var bool
+		 */
+		protected $express_future_usage_declared = false;
+
+		/**
 		 * Constructor
 		 */
 		public function __construct() {
@@ -45,6 +55,24 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 				add_filter( 'woocommerce_checkout_posted_data', array( $this, 'force_save_payment_method' ), 9 );
 				add_action( 'woocommerce_before_pay_action', array( $this, 'force_save_payment_method_for_order_pay' ), 11 );
 				add_action( 'woocommerce_rest_checkout_process_payment_with_context', array( $this, 'force_save_payment_method_for_store_api' ), 8, 2 );
+
+				/**
+				 * The two client-side declarations WooPayments' express checkout reads to create its
+				 * Stripe Elements with setup_future_usage=off_session — the same inputs its
+				 * subscriptions support uses. Without them a wallet's confirmation token is not
+				 * authorized for saving and the forced save above would fail the payment.
+				 *
+				 * Gateway integrations load on `wp_loaded`, after `woocommerce_blocks_loaded` has
+				 * fired, so register right away; the hook is only a fallback for earlier loading.
+				 * Registering after WooCommerce Subscriptions matters: the Store API keeps the LAST
+				 * registration for a namespace, and ours wraps theirs.
+				 */
+				if ( did_action( 'woocommerce_blocks_loaded' ) ) {
+					$this->maybe_declare_express_future_usage();
+				} else {
+					add_action( 'woocommerce_blocks_loaded', array( $this, 'maybe_declare_express_future_usage' ), 100 );
+				}
+				add_filter( 'wcpay_express_checkout_js_params', array( $this, 'declare_express_future_usage_on_product_page' ) );
 			} else {
 				add_action( 'wp_footer', array( $this, 'maybe_render_script_to_allow_tokenization' ) );
 			}
@@ -853,6 +881,18 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 				return;
 			}
 
+			/**
+			 * The pay-for-order page has no cart and no product params, so its express confirmation
+			 * tokens can never be authorized for saving — forcing the save would fail the payment
+			 * with confirmation_token_setup_future_usage_mismatch. Skip the force for them; the
+			 * payment completes normally and the upsell is skipped. Typed-card payments send a pm_
+			 * and keep the full flow.
+			 */
+			$ctoken = isset( $_POST['wcpay-confirmation-token'] ) ? bwf_clean( wp_unslash( $_POST['wcpay-confirmation-token'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+			if ( is_string( $ctoken ) && 0 === strpos( $ctoken, 'ctoken_' ) ) {
+				return;
+			}
+
 			$_POST[ 'wc-' . $this->get_key() . '-new-payment-method' ] = 'true'; //phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Guest checkout has no capability to check; this only flags the card for tokenization and WooPayments validates it.
 		}
 
@@ -886,9 +926,165 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_WooCommerce_Payments' ) ) {
 
 			$payment_data = (array) $context->payment_data;
 
+			/**
+			 * WooPayments' express checkout buttons (Google Pay / Apple Pay / Link) pay through the
+			 * Store API with a Stripe Confirmation Token — from ANY checkout page, including ours.
+			 * A confirmation token carries the setup_future_usage its Stripe Elements were created
+			 * with, and Stripe requires the intent's value to match it — forcing the save against a
+			 * token that was not authorized fails the whole payment.
+			 *
+			 * When our declarations are active (see maybe_declare_express_future_usage()), the
+			 * Elements were created with setup_future_usage=off_session — the same value the server
+			 * adds when saving — so forcing the save is safe and yields a reusable token for the
+			 * upsell, exactly like a subscription purchase. If the declaration could not be
+			 * registered, the token carries no authorization and the force must be skipped: the
+			 * primary order completes normally and the upsell is skipped gracefully. Typed-card
+			 * payments send a pm_ and keep the full upsell flow either way.
+			 */
+			foreach ( array( 'wcpay-confirmation-token', 'wcpay-payment-method' ) as $pm_key ) {
+				if ( ! empty( $payment_data[ $pm_key ] ) && is_string( $payment_data[ $pm_key ] ) && 0 === strpos( $payment_data[ $pm_key ], 'ctoken_' ) ) {
+					if ( true !== $this->express_future_usage_declared ) {
+						return;
+					}
+					break;
+				}
+			}
+
 			$payment_data[ 'wc-' . $this->get_key() . '-new-payment-method' ] = 'true';
 
 			$context->set_payment_data( $payment_data );
+		}
+
+		/**
+		 * Make WooPayments' express checkout buttons tokenizable for upsells, the same way they are
+		 * for subscription carts.
+		 *
+		 * Their express checkout client (both dist/express-checkout.js and dist/blocks-checkout.js)
+		 * decides the Stripe Elements' setup_future_usage from the Store API cart response: a
+		 * non-empty cart-level `extensions.subscriptions` array means "this cart needs future
+		 * off-session payments" and the Elements are created with setup_future_usage=off_session.
+		 * The confirmation token then inherits that value, matching the setup_future_usage the
+		 * server adds while saving the payment method (WC_Payment_Gateway_WCPay, triggered by our
+		 * forced save flag — the same must_save_payment_method_to_store() path its subscriptions
+		 * trait forces). An upsell funnel needs future off-session payments just like a
+		 * subscription does, so we declare it through the same extension.
+		 *
+		 * WooCommerce Subscriptions registers this namespace too, and the Store API keeps the LAST
+		 * registration, so we register after it (gateway integrations load on wp_loaded) and our
+		 * callbacks delegate to its own before appending our marker — subscription carts keep their
+		 * exact data with or without us.
+		 */
+		public function maybe_declare_express_future_usage() {
+			if ( ! function_exists( 'woocommerce_store_api_register_endpoint_data' ) ) {
+				return;
+			}
+
+			try {
+				woocommerce_store_api_register_endpoint_data(
+					array(
+						'endpoint'        => 'cart',
+						'namespace'       => 'subscriptions',
+						'data_callback'   => array( $this, 'get_express_future_usage_data' ),
+						'schema_callback' => array( $this, 'get_express_future_usage_schema' ),
+						'schema_type'     => ARRAY_N,
+					)
+				);
+				$this->express_future_usage_declared = true;
+			} catch ( Exception $e ) {
+				$this->express_future_usage_declared = false;
+				WFOCU_Core()->log->log( 'WC Payments: unable to declare express future usage on the Store API cart. ' . $e->getMessage() );
+			}
+		}
+
+		/**
+		 * Cart-level data for the extension registered in maybe_declare_express_future_usage().
+		 *
+		 * WooCommerce Subscriptions' own data (future subscriptions with totals/shipping) is
+		 * returned untouched whenever it applies; our marker is appended only when the cart would
+		 * otherwise declare nothing and an upsell funnel applies, so regular carts keep the default
+		 * express behaviour (no setup_future_usage, no tokenization).
+		 *
+		 * @return array
+		 */
+		public function get_express_future_usage_data() {
+			$data = array();
+
+			if ( is_callable( array( 'WC_Subscriptions_Extend_Store_Endpoint', 'extend_cart_data' ) ) ) {
+				try {
+					$data = (array) WC_Subscriptions_Extend_Store_Endpoint::extend_cart_data();
+				} catch ( Throwable $e ) {
+					$data = array();
+				}
+			}
+
+			if ( count( $data ) > 0 ) {
+				return $data;
+			}
+
+			if ( ! $this->is_enabled() ) {
+				return $data;
+			}
+
+			$have_funnel = WFOCU_Core()->funnels->setup_funnels();
+			if ( ! is_array( $have_funnel ) || count( $have_funnel ) === 0 ) {
+				return $data;
+			}
+
+			$data[] = array( 'key' => 'wfocu_upsell' );
+
+			return $data;
+		}
+
+		/**
+		 * Schema for the extension registered in maybe_declare_express_future_usage(). Delegates to
+		 * WooCommerce Subscriptions' schema when available so its data stays fully described.
+		 *
+		 * @return array
+		 */
+		public function get_express_future_usage_schema() {
+			if ( is_callable( array( 'WC_Subscriptions_Extend_Store_Endpoint', 'extend_cart_schema' ) ) ) {
+				try {
+					return (array) WC_Subscriptions_Extend_Store_Endpoint::extend_cart_schema();
+				} catch ( Throwable $e ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+					// Fall through to the minimal schema below.
+				}
+			}
+
+			return array(
+				'key' => array(
+					'description' => __( 'Reason the cart declares future off-session usage.', 'woofunnels-upstroke-one-click-upsell' ),
+					'type'        => 'string',
+				),
+			);
+		}
+
+		/**
+		 * On product pages the express checkout client cannot read a cart (none exists when the
+		 * button renders), so it decides setup_future_usage from the localized `has_subscription`
+		 * flag instead — the same flag WooPayments localizes for subscription products. Declare
+		 * future usage through it so product-page express payments also produce authorized
+		 * confirmation tokens and their upsells can charge; without it the forced save would fail
+		 * the payment ("not authorized to be saved for future payments") whenever a funnel applies.
+		 * Cart/checkout contexts are driven by the cart extension and are left untouched.
+		 *
+		 * @param mixed $params Localized express checkout JS params.
+		 *
+		 * @return mixed
+		 */
+		public function declare_express_future_usage_on_product_page( $params ) {
+			if ( true !== $this->express_future_usage_declared || ! is_array( $params ) ) {
+				return $params;
+			}
+
+			if ( isset( $params['button_context'] ) && 'product' !== $params['button_context'] ) {
+				return $params;
+			}
+
+			if ( $this->is_enabled() ) {
+				$params['has_subscription'] = true;
+			}
+
+			return $params;
 		}
 
 		public function get_nw_card_html() {

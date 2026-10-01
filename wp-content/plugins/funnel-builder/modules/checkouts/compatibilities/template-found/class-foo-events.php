@@ -94,23 +94,23 @@ if ( ! class_exists( 'WFACP_Compatibility_With_FooEvent' ) ) {
                     font-size: 20px;
                     line-height: 1.5;
                     margin: 0 0 15px;
-                    padding-left: <?php echo $px; ?>;
-                    padding-right: <?php echo $px; ?>;
+                    padding-left: <?php echo esc_attr( $px ); ?>;
+                    padding-right: <?php echo esc_attr( $px ); ?>;
                 }
 
                 body #wfacp-sec-wrapper .foo_event_wrap h4 {
                     font-size: 15px;
                     line-height: 1.5;
                     margin: 0 0 15px;
-                    padding-left: <?php echo $px; ?>;
-                    padding-right: <?php echo $px; ?>;
+                    padding-left: <?php echo esc_attr( $px ); ?>;
+                    padding-right: <?php echo esc_attr( $px ); ?>;
                 }
 
 
                 body #wfacp-sec-wrapper .fooevents-checkout-attendee-info + p {
                     width: auto;
-                    padding-left: <?php echo $px; ?>;
-                    padding-right: <?php echo $px; ?>;
+                    padding-left: <?php echo esc_attr( $px ); ?>;
+                    padding-right: <?php echo esc_attr( $px ); ?>;
                 }
 
                 body #wfacp-sec-wrapper .foo_event_wrap .dashicons, .dashicons-before:before {

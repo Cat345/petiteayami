@@ -126,7 +126,7 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 				'',
 				'<a href="' . esc_url( $link ) . '" target="_blank">' . esc_html( $title ) . '</a>',
 				'manage_options',
-				'upgrade_pro',
+				'wffn_upgrade_pro',
 				function () {
 				},
 				100
@@ -149,7 +149,7 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 					null,
 					'<a href="' . $link . '" style="background-color:#1DA867; color:white;" target="_blank"><strong>' . __( 'Upgrade to Pro', 'funnel-builder' ) . '</strong></a>',
 					'manage_options',
-					'upgrade_pro',
+					'wffn_upgrade_pro',
 					function () {
 					},
 					99

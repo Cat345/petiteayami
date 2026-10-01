@@ -47,7 +47,7 @@ if ( $is_global_checkout_f === true ) {
 $is_theme_builder = WFACP_Common::is_theme_builder();
 
 ?>
-	<div class="wfacp_main_form woocommerce <?php echo implode( ' ', $form_class ); ?>">
+	<div class="wfacp_main_form woocommerce <?php echo esc_attr( implode( ' ', $form_class ) ); ?>">
 		<?php
 		$payment_needed                   = false;
 		$stepData                         = array();
@@ -132,7 +132,7 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 						$last_step = 'wfacp_last_page';
 					}
 					?>
-					<div class="wfacp-left-panel wfacp_page <?php echo $template_type . ' ' . $step . ' ' . $last_step; ?>" data-step="<?php echo $step; ?>">
+					<div class="wfacp-left-panel wfacp_page <?php echo esc_attr( $template_type . ' ' . $step . ' ' . $last_step ); ?>" data-step="<?php echo $step; ?>">
 						<?php
 						$count_increment = 0;
 						do_action( 'wfacp_form_' . $step . '_start', $step, $instance, $last_step );
@@ -178,13 +178,13 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 								do_action( 'wfacp_template_section_start', $step, $section_index, $section );
 								do_action( 'wfacp_template_section_' . $section_index . '_' . $step . '_start', $step, $section_index, $section );
 								?>
-								<div class="wfacp-section wfacp-hg-by-box <?php echo $custom_class . ' ' . $section_class; ?>" data-field-count="<?php echo count( $fields ); ?>">
-									<div class="wfacp_internal_form_wrap wfacp-comm-title <?php echo $instance->get_heading_title_class(); ?>">
-										<h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class(); ?>"><?php echo $section['name']; ?></h2>
+								<div class="wfacp-section wfacp-hg-by-box <?php echo esc_attr( $custom_class . ' ' . $section_class ); ?>" data-field-count="<?php echo esc_attr( count( $fields ) ); ?>">
+									<div class="wfacp_internal_form_wrap wfacp-comm-title <?php echo esc_attr( $instance->get_heading_title_class() ); ?>">
+										<h2 class="wfacp_section_heading wfacp_section_title <?php echo esc_attr( $instance->get_heading_class() ); ?>"><?php echo $section['name']; ?></h2>
 										<?php
 										if ( isset( $section['sub_heading'] ) && '' != $section['sub_heading'] ) {
 											?>
-											<h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $section['sub_heading']; ?></h4>
+											<h4 class="<?php echo esc_attr( $instance->get_sub_heading_class() ); ?>"><?php echo $section['sub_heading']; ?></h4>
 											<?php
 										}
 										?>

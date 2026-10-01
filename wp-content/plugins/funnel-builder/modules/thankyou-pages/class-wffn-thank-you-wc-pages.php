@@ -436,7 +436,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 				$order_key = $order->get_order_key();
 				if ( ! empty( $order_key ) && filter_input( INPUT_GET, 'key', FILTER_SANITIZE_SPECIAL_CHARS ) !== $order_key ) {
 					if ( $this->is_wfty_page() ) {
-						wp_die( __( 'Unable to process your request.', 'funnel-builder' ) ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						wp_die( esc_html__( 'Unable to process your request.', 'funnel-builder' ) );
 					}
 					$this->data->reset_order();
 

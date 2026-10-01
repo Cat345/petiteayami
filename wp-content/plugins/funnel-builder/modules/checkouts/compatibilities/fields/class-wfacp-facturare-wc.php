@@ -190,7 +190,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Facturare_WC' ) ) {
             <style>
 
                 body .wfacp_main_form.woocommerce #tip_facturare_field {
-                    padding: 0 <?php echo $this->px ?>px;
+                    padding: 0 <?php echo esc_attr( $this->px ) ?>px;
                 }
 
                 body .wfacp_main_form.woocommerce p#tip_facturare_field input[type="radio"] {

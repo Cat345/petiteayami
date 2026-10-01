@@ -41,6 +41,8 @@ if ( ! class_exists( 'WFFN_License_Admin_UI' ) ) {
 			add_action( 'admin_menu', array( $this, 'register_license_expired_menu' ), 999 );
 			add_action( 'after_plugin_row_meta', array( $this, 'maybe_add_notice' ), 10 );
 			add_filter( 'plugin_action_links', array( $this, 'plugin_action_link' ), 10, 2 );
+			add_action( 'admin_post_bwf_force_plugin_update', array( $this, 'handle_force_plugin_update' ) );
+			add_action( 'admin_notices', array( $this, 'force_update_notice' ) );
 		}
 
 		/**
@@ -699,6 +701,14 @@ if ( ! class_exists( 'WFFN_License_Admin_UI' ) ) {
 				WooFunnels_licenses::get_instance()->get_plugins_list();
 			}
 
+			if ( current_user_can( 'update_plugins' ) ) {
+				$check_url                      = wp_nonce_url(
+					add_query_arg( 'action', 'bwf_force_plugin_update', admin_url( 'admin-post.php' ) ),
+					'bwf_force_plugin_update'
+				);
+				$new_action['bwf_force_update'] = '<a href="' . esc_url( $check_url ) . '">' . esc_html__( 'Check for update', 'funnel-builder-pro' ) . '</a>';
+			}
+
 			if ( $this->is_expired() ) {
 				$link                          = esc_url( 'https://funnelkit.com/my-account/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Plugin+Inline+Notice' );
 				$new_action['renewal_license'] = '<style>tr[data-slug="funnelkit-funnel-builder-pro"] .renewal_license{position: relative}tr[data-slug="funnelkit-funnel-builder-pro"] .renewal_license svg{position:absolute;top:1px;left:0}</style><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -715,6 +725,143 @@ if ( ! class_exists( 'WFFN_License_Admin_UI' ) ) {
 			}
 
 			return array_merge( $new_action, $actions );
+		}
+
+		/**
+		 * admin-post handler behind the "Check for update" action link.
+		 *
+		 * Runs a live check against the licensing server (no transient, no
+		 * WordPress update cron involved) and, when a newer version is found,
+		 * installs it immediately via WP core's own Plugin_Upgrader -- all in
+		 * this one request. The outcome is stashed in a short-lived,
+		 * user-scoped transient and the request always lands back on
+		 * plugins.php with a clean URL; force_update_notice() picks the
+		 * transient up from there instead of trusting a query arg (which
+		 * would otherwise survive reloads and get resubmitted).
+		 *
+		 * @return void
+		 */
+		public function handle_force_plugin_update() {
+			if ( ! current_user_can( 'update_plugins' ) ) {
+				wp_die( esc_html__( 'You do not have permission to do this.', 'funnel-builder-pro' ), '', array( 'response' => 403 ) );
+			}
+
+			check_admin_referer( 'bwf_force_plugin_update' );
+
+			$result = 'no_response';
+			if ( defined( 'WFFN_PRO_PLUGIN_BASENAME' ) && class_exists( 'WooFunnels_License_Controller' ) ) {
+				$hash      = sha1( WFFN_PRO_PLUGIN_BASENAME );
+				$instances = WooFunnels_License_Controller::get_all_plugins();
+
+				if ( isset( $instances[ $hash ] ) && method_exists( $instances[ $hash ], 'force_check_update' ) ) {
+					$check = $instances[ $hash ]->force_check_update();
+
+					if ( 'update_available' === $check['status'] ) {
+						$result = $this->install_pending_update( WFFN_PRO_PLUGIN_BASENAME, $check['version_info'] ) ? 'success' : 'failed';
+					} else {
+						$result = $check['status'];
+					}
+				}
+			}
+
+			set_transient( 'bwf_force_update_notice_' . get_current_user_id(), $result, MINUTE_IN_SECONDS );
+
+			wp_safe_redirect( admin_url( 'plugins.php' ) );
+			exit;
+		}
+
+		/**
+		 * Installs an already-fetched update package for one plugin, right now,
+		 * using WP core's Plugin_Upgrader -- no waiting on the next scheduled
+		 * update check.
+		 *
+		 * Only proceeds when direct filesystem writes are available; per design,
+		 * a host that needs FTP/SSH credentials fails cleanly here rather than
+		 * attempting an interactive credentials flow inside an admin-post request.
+		 *
+		 * Uses bulk_upgrade() rather than upgrade() -- this is deliberate. A
+		 * single-plugin upgrade() runs through the `deactivate_plugin_before_upgrade`
+		 * filter, which deactivates the plugin before replacing its files and
+		 * (outside of wp_doing_cron()) never reactivates it afterwards; that filter
+		 * is never attached to bulk_upgrade(). WP core's own single-plugin admin-post
+		 * handler (wp_ajax_update_plugin() in ajax-actions.php) upgrades the exact
+		 * same way, via bulk_upgrade() with a one-element array, so this keeps the
+		 * plugin active across the update just like clicking "update now" in wp-admin.
+		 *
+		 * @param string $basename     Plugin basename, e.g. funnel-builder-pro/funnel-builder-pro.php.
+		 * @param object $version_info Version info object from force_check_update() (new_version, package, slug, plugin).
+		 *
+		 * @return bool
+		 */
+		private function install_pending_update( $basename, $version_info ) {
+			if ( ! is_object( $version_info ) || empty( $version_info->package ) ) {
+				return false;
+			}
+
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+			require_once ABSPATH . 'wp-admin/includes/misc.php';
+			require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+
+			/* Direct-write only -- an FTP/SSH credentials prompt has nowhere to render in this request. */
+			if ( 'direct' !== get_filesystem_method() || ! WP_Filesystem() ) {
+				return false;
+			}
+
+			$current = get_site_transient( 'update_plugins' );
+			if ( ! is_object( $current ) ) {
+				$current = new stdClass();
+			}
+			if ( ! isset( $current->response ) || ! is_array( $current->response ) ) {
+				$current->response = array();
+			}
+			if ( ! isset( $current->checked ) || ! is_array( $current->checked ) ) {
+				$current->checked = array();
+			}
+
+			$current->response[ $basename ] = $version_info;
+			$current->checked[ $basename ]  = defined( 'WFFN_PRO_VERSION' ) ? WFFN_PRO_VERSION : '';
+			$current->last_checked          = current_time( 'timestamp' );
+			set_site_transient( 'update_plugins', $current );
+
+			$upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
+			$result   = $upgrader->bulk_upgrade( array( $basename ), array( 'clear_update_cache' => true ) );
+
+			return is_array( $result ) && ! empty( $result[ $basename ] ) && is_array( $result[ $basename ] );
+		}
+
+		/**
+		 * Admin notice reporting the outcome of a "Check for update" click.
+		 *
+		 * Reads the outcome from the short-lived transient set by
+		 * handle_force_plugin_update() rather than a query arg, so the notice
+		 * is one-shot and the URL stays clean (no stale param to resubmit on
+		 * refresh).
+		 *
+		 * @return void
+		 */
+		public function force_update_notice() {
+			$transient_key = 'bwf_force_update_notice_' . get_current_user_id();
+			$status        = get_transient( $transient_key );
+			if ( empty( $status ) ) {
+				return;
+			}
+			delete_transient( $transient_key );
+
+			$messages = array(
+				'success'     => array( 'success', __( 'FunnelKit Funnel Builder Pro was updated to the latest version.', 'funnel-builder-pro' ) ),
+				'up_to_date'  => array( 'info', __( 'FunnelKit Funnel Builder Pro is already up to date.', 'funnel-builder-pro' ) ),
+				'no_response' => array( 'error', __( 'Unable to retrieve update information right now. Please try again later.', 'funnel-builder-pro' ) ),
+				'failed'      => array( 'error', __( 'An update is available but could not be installed automatically. Please check your file permissions or update manually.', 'funnel-builder-pro' ) ),
+			);
+
+			if ( ! isset( $messages[ $status ] ) ) {
+				return;
+			}
+
+			list( $type, $text ) = $messages[ $status ];
+
+			printf( '<div class="notice notice-%1$s is-dismissible"><p>%2$s</p></div>', esc_attr( $type ), esc_html( $text ) );
 		}
 	}
 

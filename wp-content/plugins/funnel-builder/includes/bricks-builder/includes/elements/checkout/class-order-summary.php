@@ -39,7 +39,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			$this->control_groups = array();
 
 			$this->control_groups['contentHeading'] = array(
-				'title' => esc_html__( 'Heading' ),
+				'title' => esc_html__( 'Heading', 'funnel-builder' ),
 				'tab'   => 'content',
 			);
 
@@ -54,7 +54,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			);
 
 			$this->control_groups['styleHeading'] = array(
-				'title' => esc_html__( 'Heading' ),
+				'title' => esc_html__( 'Heading', 'funnel-builder' ),
 				'tab'   => 'style',
 			);
 
@@ -75,7 +75,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			);
 
 			$this->control_groups['styleSettings'] = array(
-				'title' => esc_html__( 'Settings' ),
+				'title' => esc_html__( 'Settings', 'funnel-builder' ),
 				'tab'   => 'style',
 			);
 
@@ -93,7 +93,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			 */
 			$this->controls['mini_cart_heading'] = array(
 				'group'   => 'contentHeading',
-				'label'   => esc_html__( 'Title' ),
+				'label'   => esc_html__( 'Title', 'funnel-builder' ),
 				'type'    => 'text',
 				'default' => esc_html__( 'Order Summary' , 'funnel-builder'),
 			);
@@ -103,7 +103,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			 */
 			$this->controls['enable_product_image'] = array(
 				'group'   => 'contentProducts',
-				'label'   => esc_html__( 'Image' ),
+				'label'   => esc_html__( 'Image', 'funnel-builder' ),
 				'type'    => 'checkbox',
 				'default' => true,
 			);
@@ -167,7 +167,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			 */
 			$this->controls['enable_coupon'] = array(
 				'group'   => 'contentCoupon',
-				'label'   => esc_html__( 'Enable' ),
+				'label'   => esc_html__( 'Enable', 'funnel-builder' ),
 				'type'    => 'checkbox',
 				'default' => false,
 			);
@@ -193,7 +193,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			 */
 			$this->controls['mini_cart_section_typo'] = array(
 				'group' => 'styleHeading',
-				'label' => esc_html__( 'Typography' ),
+				'label' => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'  => 'typography',
 				'css'   => array(
 					array(
@@ -235,7 +235,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			}
 			$this->controls['mini_cart_product_typo'] = array(
 				'group'  => 'styleProducts',
-				'label'  => esc_html__( 'Typography' ),
+				'label'  => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'   => 'typography',
 				'inline' => true,
 				'popup'  => false,
@@ -323,14 +323,14 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['separatorStyleCouponLink'] = array(
 				'group'    => 'styleCoupon',
-				'label'    => esc_html__( 'Link' ),
+				'label'    => esc_html__( 'Link', 'funnel-builder' ),
 				'type'     => 'separator',
 				'required' => array( 'enable_coupon_collapsible', '=', true ),
 			);
 
 			$this->controls['mini_cart_coupon_heading_typo'] = array(
 				'group'    => 'styleCoupon',
-				'label'    => esc_html__( 'Typography' ),
+				'label'    => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'     => 'typography',
 				'css'      => array(
 					array(
@@ -405,7 +405,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['wfacp_form_mini_cart_coupon_border'] = array(
 				'group'   => 'styleCoupon',
-				'label'   => esc_html__( 'Border' ),
+				'label'   => esc_html__( 'Border', 'funnel-builder' ),
 				'type'    => 'border',
 				'default' => array(
 					'radius' => array(
@@ -425,13 +425,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['separatorStyleCouponButton'] = array(
 				'group' => 'styleCoupon',
-				'label' => esc_html__( 'Button' ),
+				'label' => esc_html__( 'Button', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
 			$this->controls['mini_cart_coupon_btn_color'] = array(
 				'group' => 'styleCoupon',
-				'label' => esc_html__( 'Background' ),
+				'label' => esc_html__( 'Background', 'funnel-builder' ),
 				'type'  => 'color',
 				'css'   => array(
 					array(
@@ -484,7 +484,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['mini_cart_product_meta_typo'] = array(
 				'group'  => 'styleCartTotal',
-				'label'  => esc_html__( 'Typography' ),
+				'label'  => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'   => 'typography',
 				'css'    => $css,
 				'inline' => true,
@@ -530,7 +530,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['mini_cart_coupon_display_label_color'] = array(
 				'group' => 'styleCartTotal',
-				'label' => esc_html__( 'Text Color' ),
+				'label' => esc_html__( 'Text Color', 'funnel-builder' ),
 				'type'  => 'color',
 				'css'   => array(
 					array(
@@ -638,7 +638,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			);
 
 			$this->set_current_group( 'styleCartTotal' );
-			$this->add_color( 'mini_cart_total_color', $cart_total_color_option, '', __( 'Color' ) );
+			$this->add_color( 'mini_cart_total_color', $cart_total_color_option, '', __( 'Color', 'funnel-builder' ) );
 
 			/* ------------------------------------ End ------------------------------------ */
 
@@ -702,7 +702,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['mini_cart_divider_color'] = array(
 				'group' => 'styleSettings',
-				'label' => esc_html__( 'Color' ),
+				'label' => esc_html__( 'Color', 'funnel-builder' ),
 				'type'  => 'color',
 				'css'   => array(
 					array(

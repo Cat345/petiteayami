@@ -37,7 +37,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_PRO' ) ) {
 			if ( empty( $panels_data ) ) {
 				return false;
 			}
-			$shortcodes = json_encode( $panels_data );
+			$shortcodes = wp_json_encode( $panels_data );
 
 			$start_position = strpos( $shortcodes, '[wfacp_forms' );
 			if ( false === $start_position ) {

@@ -69,7 +69,14 @@ $settings_text    = '<u style="text-decoration: underline;"><a rel="noreferrer n
 																							<span
                                                                                                 style="mso-line-height-alt: 130%; font-size: 12px;"
                                                                                                 class="has-font-size">
-                                                                                                <?php echo sprintf( esc_html__( 'This performance report email was sent from you site %s for period %s.', 'funnel-builder' ), wp_kses($business_details , 'funnelkit'), esc_html($date) ); ?>
+                                                                                                <?php
+																								printf(
+																									/* translators: 1: store name and address, 2: reporting period. */
+																									esc_html__( 'This performance report email was sent from your site %1$s for period %2$s.', 'funnel-builder' ),
+																									wp_kses( $business_details, 'funnelkit' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_kses() escapes.
+																									esc_html( $date )
+																								);
+																								?>
 																							</span>
 																						</span>
                                                     <br/>

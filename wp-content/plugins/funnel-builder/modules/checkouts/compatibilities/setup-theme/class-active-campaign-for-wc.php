@@ -107,13 +107,13 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_ActiveCompaign' ) ) {
 
 			ob_start();
 			?>
-            <p class="test <?php echo implode( ' ', $args['class'] ); ?>">
+            <p class="test <?php echo esc_attr( implode( ' ', $args['class'] ) ); ?>">
                 <input
                     id="activecampaign_for_woocommerce_accepts_marketing"
                     class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox"
                     type="checkbox"
                     name="activecampaign_for_woocommerce_accepts_marketing"
-                    value='<?php echo $value; ?>'
+                    value='<?php echo esc_attr( $value ); ?>'
 					<?php
 					if ( $ac_checked ) {
 						echo 'checked="checked"';
@@ -172,8 +172,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_ActiveCompaign' ) ) {
             <style>
                 <?php
 			  if ( isset( $px ) ) {
-				echo 'body .wfacp_main_form #activecampaign_for_woocommerce_accepts_marketing_field {padding: 0 '.$px.'px;}';
-				echo 'body .wfacp_main_form.woocommerce .wfacp_ac_wrap input[type=checkbox] {left:'.$px.'px;}';
+				echo 'body .wfacp_main_form #activecampaign_for_woocommerce_accepts_marketing_field {padding: 0 '.esc_attr( $px ).'px;}';
+				echo 'body .wfacp_main_form.woocommerce .wfacp_ac_wrap input[type=checkbox] {left:'.esc_attr( $px ).'px;}';
 				 }
 				?>
                 body #activecampaign_for_woocommerce_accepts_marketing_field span.optional {

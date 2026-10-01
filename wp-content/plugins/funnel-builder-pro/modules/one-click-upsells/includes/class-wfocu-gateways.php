@@ -176,6 +176,7 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 				'fkwcs_stripe_mbway',
 				'airwallex_card',
 				'fkwcppcp_card',
+				'fkwcs_stripe_ideal',
 			);
 
 			$gateways = apply_filters(

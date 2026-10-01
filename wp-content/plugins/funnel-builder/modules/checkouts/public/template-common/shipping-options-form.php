@@ -33,7 +33,7 @@ if ( false == $instance->have_shipping_method() ) {
 	$class .= ' wfacp_no_shipping_method_field_used';
 }
 ?>
-<tr class="shipping <?php echo $class; ?> <?php echo $display_package_name ? 'wfacp_package_name_display' : ''; ?>">
+<tr class="shipping <?php echo esc_attr( $class ); ?> <?php echo $display_package_name ? 'wfacp_package_name_display' : ''; ?>">
 	<?php
 	if ( false == $instance->have_shipping_method() ) {
 		?>
@@ -59,11 +59,11 @@ if ( false == $instance->have_shipping_method() ) {
                         <div class="wfacp_single_shipping">
                             <div class="wfacp_shipping_radio">
 								<?php
-								echo sprintf( '<input type="radio" name="shipping_method[%1$d]" data-index="%1$d" id="shipping_method_%1$d_%2$s" value="%3$s" class="shipping_method" %4$s />', $index, sanitize_title( $method->id ), esc_attr( $method->id ), checked( $method->id, $chosen_method, false ) );
+								echo sprintf( '<input type="radio" name="shipping_method[%1$d]" data-index="%1$d" id="shipping_method_%1$d_%2$s" value="%3$s" class="shipping_method" %4$s />', $index, esc_attr( sanitize_title( $method->id ) ), esc_attr( $method->id ), checked( $method->id, $chosen_method, false ) );
 								if ( true == $instance->have_shipping_method() ) {
-									echo sprintf( '<label for="shipping_method_%s_%s">%s</label>', $index, sanitize_title( $method->id ), WFACP_Common::shipping_method_label( $method ) );
+									echo sprintf( '<label for="shipping_method_%s_%s">%s</label>', $index, esc_attr( sanitize_title( $method->id ) ), wp_kses_post( WFACP_Common::shipping_method_label( $method ) ) );
 								} else {
-									echo sprintf( '<label for="shipping_method_%s_%s">%s: <span class="wfacp_shipping_cost_no_field_used">%s</span></label>', $index, sanitize_title( $method->id ), WFACP_Common::shipping_method_label( $method ), WFACP_Common::wc_cart_totals_shipping_method_cost( $method ) );
+									echo sprintf( '<label for="shipping_method_%s_%s">%s: <span class="wfacp_shipping_cost_no_field_used">%s</span></label>', $index, esc_attr( sanitize_title( $method->id ) ), wp_kses_post( WFACP_Common::shipping_method_label( $method ) ), wp_kses_post( WFACP_Common::wc_cart_totals_shipping_method_cost( $method ) ) );
 								}
 								?>
                             </div>
@@ -72,7 +72,7 @@ if ( false == $instance->have_shipping_method() ) {
 								?>
                                 <div class="wfacp_shipping_price">
 									<?php
-									echo WFACP_Common::wc_cart_totals_shipping_method_cost( $method );
+									echo wp_kses_post( WFACP_Common::wc_cart_totals_shipping_method_cost( $method ) );
 									?>
                                 </div>
 							<?php } ?>
@@ -92,13 +92,13 @@ if ( false == $instance->have_shipping_method() ) {
                         <div class="wfacp_single_shipping">
                             <div class="wfacp_shipping_radio">
 								<?php
-								echo sprintf( '<input type="radio" name="shipping_method[%1$d]" data-index="%1$d" id="shipping_method_%1$d_%2$s" value="%3$s" class="shipping_method" %4$s />', $index, sanitize_title( $method->id ), esc_attr( $method->id ), checked( $method->id, $chosen_method, false ) );
-								echo sprintf( '<label for="shipping_method_%s_%s">%s</label>', $index, sanitize_title( $method->id ), WFACP_Common::shipping_method_label( $method ) );
+								echo sprintf( '<input type="radio" name="shipping_method[%1$d]" data-index="%1$d" id="shipping_method_%1$d_%2$s" value="%3$s" class="shipping_method" %4$s />', $index, esc_attr( sanitize_title( $method->id ) ), esc_attr( $method->id ), checked( $method->id, $chosen_method, false ) );
+								echo sprintf( '<label for="shipping_method_%s_%s">%s</label>', $index, esc_attr( sanitize_title( $method->id ) ), wp_kses_post( WFACP_Common::shipping_method_label( $method ) ) );
 								?>
                             </div>
                             <div class="wfacp_shipping_price">
 								<?php
-								echo WFACP_Common::wc_cart_totals_shipping_method_cost( $method );
+								echo wp_kses_post( WFACP_Common::wc_cart_totals_shipping_method_cost( $method ) );
 								?>
                             </div>
                         </div>
@@ -113,9 +113,9 @@ if ( false == $instance->have_shipping_method() ) {
                 <li>
 					<?php
 					if ( is_cart() ) {
-						echo apply_filters( 'woocommerce_cart_no_shipping_available_html', wpautop( __( 'There are no shipping options available. Please ensure that your address has been entered correctly, or contact us if you need any help.', 'woocommerce' ) ) );
+						echo wp_kses_post( apply_filters( 'woocommerce_cart_no_shipping_available_html', wpautop( __( 'There are no shipping options available. Please ensure that your address has been entered correctly, or contact us if you need any help.', 'woocommerce' ) ) ) );
 					} else {
-						echo apply_filters( 'woocommerce_no_shipping_available_html', wpautop( __( 'There are no shipping options available. Please ensure that your address has been entered correctly, or contact us if you need any help.', 'woocommerce' ) ) );
+						echo wp_kses_post( apply_filters( 'woocommerce_no_shipping_available_html', wpautop( __( 'There are no shipping options available. Please ensure that your address has been entered correctly, or contact us if you need any help.', 'woocommerce' ) ) ) );
 					}
 					?>
                 </li>

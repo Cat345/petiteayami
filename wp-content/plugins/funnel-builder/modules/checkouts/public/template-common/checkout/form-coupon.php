@@ -44,12 +44,12 @@ $apply_coupon_button_text  = apply_filters( 'wfacp_apply_coupon_button_text', __
             <div class="wfacp-row">
                 <p class="wfacp-coupon-code-title wfacp-col-full "><?php esc_html_e( 'If you have a coupon code, please apply it below.', 'woocommerce' ); ?></p>
 
-                <p class="form-row form-row-first wfacp-form-control-wrapper <?php echo $coupon_left_cls; ?> wfacp-input-form wfacp-coupon-code-input-wrap">
+                <p class="form-row form-row-first wfacp-form-control-wrapper <?php echo esc_attr( $coupon_left_cls ); ?> wfacp-input-form wfacp-coupon-code-input-wrap">
                     <label for="coupon_code" class="wfacp-form-control-label wfacp-coupon-label"><?php echo $wfacp_default_coupon_text; ?></label>
-                    <input type="text" name="coupon_code" class="input-text wfacp-form-control" placeholder="<?php echo $wfacp_default_coupon_text; ?>" id="coupon_code" value=""/>
+                    <input type="text" name="coupon_code" class="input-text wfacp-form-control" placeholder="<?php echo esc_attr( $wfacp_default_coupon_text ); ?>" id="coupon_code" value=""/>
                 </p>
-                <p class="form-row form-row-last <?php echo $coupon_cls; ?> wfacp-coupon-code-btn-wrap">
-                    <button type="submit" class="button wfacp-coupon-btn" name="apply_coupon" value="<?php echo $apply_coupon_button_text; ?>" disabled="disabled">
+                <p class="form-row form-row-last <?php echo esc_attr( $coupon_cls ); ?> wfacp-coupon-code-btn-wrap">
+                    <button type="submit" class="button wfacp-coupon-btn" name="apply_coupon" value="<?php echo esc_attr( $apply_coupon_button_text ); ?>" disabled="disabled">
 						<?php echo $apply_coupon_button_text; ?></button>
                 </p>
                 <div class="clear"></div>

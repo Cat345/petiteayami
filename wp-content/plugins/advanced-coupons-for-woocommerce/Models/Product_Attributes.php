@@ -228,9 +228,10 @@ class Product_Attributes extends Base_Model implements Model_Interface, Initiabl
             );
         }
 
-        // If excluded product attributes are specified and matching products are found,
-        // and the coupon is not of type 'fixed_product', 'percent', or 'acfw_percentage_cashback', throw an error.
-        if ( ! empty( $product_attribute_exclude ) && ! empty( $excluded_product_ids ) && ! in_array( $coupon->get_discount_type(), array( 'fixed_product', 'percent', 'acfw_percentage_cashback' ), true ) ) {
+        // If excluded product attributes are specified and matching products are found, and the coupon is not
+        // of a per item type, throw an error. Per item types skip just the offending item instead, which is
+        // handled by restrict_product_attributes_discount() on woocommerce_coupon_is_valid_for_product.
+        if ( ! empty( $product_attribute_exclude ) && ! empty( $excluded_product_ids ) && ! in_array( $coupon->get_discount_type(), array( 'fixed_product', 'percent', 'acfw_percentage_cashback', Product_Discount_Rules::DISCOUNT_TYPE ), true ) ) {
             throw new \Exception(
                 wp_kses_post(
                     sprintf(

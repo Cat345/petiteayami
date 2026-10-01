@@ -861,7 +861,7 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 			$events = WFFN_Tracking_SiteWide::get_instance()->get_pending_events();
 
 			if ( ! is_null( $events ) && is_array( $events ) && count( $events ) > 0 ) {
-				$message .= "<div id='wffn_late_event' dir='" . json_encode( $events ) . "'></div>"; //phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
+				$message .= "<div id='wffn_late_event' dir='" . esc_attr( wp_json_encode( $events ) ) . "'></div>";
 				WFFN_Core()->public->clear_pending_events_data_from_session();
 			}
 
@@ -878,7 +878,8 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 			if ( function_exists( 'WC' ) && ! is_null( WC()->session ) && method_exists( WC()->session, 'has_session' ) && WC()->session->has_session() ) {
 				$events = WC()->session->get( 'wffn_pending_data' );
 				if ( ! is_null( $events ) && is_array( $events ) && count( $events ) > 0 ) {
-					echo "<div id='wffn_late_event' style='display:none' dir='" . json_encode( $events ) . "'></div>"; //phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the only dynamic part is esc_attr()'d above.
+					echo "<div id='wffn_late_event' style='display:none' dir='" . esc_attr( wp_json_encode( $events ) ) . "'></div>";
 					WFFN_Core()->public->clear_pending_events_data_from_session();
 				}
 			}

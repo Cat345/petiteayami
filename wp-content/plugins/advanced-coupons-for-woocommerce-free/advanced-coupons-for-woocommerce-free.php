@@ -4,13 +4,13 @@
  * Plugin Name: Advanced Coupons for WooCommerce Free
  * Plugin URI: https://advancedcouponsplugin.com
  * Description: Advanced Coupons for WooCommerce (Free Version) gives WooCommerce store owners extra coupon features so they can market their stores better.
- * Version: 4.7.5
+ * Version: 4.7.6
  * Author: Rymera Web Co
  * Author URI: https://rymera.com.au
  * Requires at least: 5.9
- * Tested up to: 7.0.2
+ * Tested up to: 7.1
  * WC requires at least: 4.0
- * WC tested up to: 10.9.4
+ * WC tested up to: 11.1.0
  *
  * Text Domain: advanced-coupons-for-woocommerce-free
  * Domain Path: /languages/
@@ -59,6 +59,7 @@ use ACFWF\Models\Store_Credits\My_Account as Store_Credits_My_Account;
 use ACFWF\Models\Store_Credits\Registry as Store_Credits_Registry;
 use ACFWF\Models\Third_Party_Integrations\FunnelKit;
 use ACFWF\Models\Third_Party_Integrations\Aelia\Currency_Switcher;
+use ACFWF\Models\Third_Party_Integrations\SaveTo_Wishlist;
 use ACFWF\Models\Third_Party_Integrations\Wholesale_Suite;
 use ACFWF\Models\Third_Party_Integrations\Woocs;
 use ACFWF\Models\Third_Party_Integrations\WPML_Support;
@@ -465,6 +466,7 @@ class ACFWF extends Abstract_Main_Plugin_Class { // phpcs:ignore
         WPML_Support::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         Woocs::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         Wholesale_Suite::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        SaveTo_Wishlist::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $funnelkit        = FunnelKit::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $wc_payments      = ACFWF\Models\Third_Party_Integrations\WC_Payments::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $speed_optimizer  = Speed_Optimizer::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
@@ -472,6 +474,7 @@ class ACFWF extends Abstract_Main_Plugin_Class { // phpcs:ignore
         $pushengage       = ACFWF\Models\Third_Party_Integrations\PushEngage::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $getting_started  = ACFWF\Models\Getting_Started::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $elementor        = ACFWF\Models\Third_Party_Integrations\Elementor::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        ACFWF\Models\Third_Party_Integrations\PayPal_Payments::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
 
         // boostrap args.
         $initiables     = array( $cart_conditions, $admin_app, $edit_coupon, $bogo_admin, $notices, $upsell, $admin_notes, $help_links, $editor_blocks, $store_credits_admin, $store_credits_checkout, $store_credits_myaccount, $usage, $emails, $plugin_installer, $checkout, $funnelkit, $wc_payments, $notifications );

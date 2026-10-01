@@ -105,9 +105,6 @@ if ( ! class_exists( 'WFOP_Template_Group_Divi5' ) ) {
 			$remote_templates = array();
 			if ( isset( $designs['divi'] ) && is_array( $designs['divi'] ) ) {
 				foreach ( $designs['divi'] as $d_key => $template_data ) {
-					if ( isset( $template_data['pro'] ) && 'yes' === $template_data['pro'] ) {
-						$template_data['license_exist'] = WFFN_Core()->admin->get_license_status();
-					}
 					$remote_templates[ $d_key ] = $template_data;
 				}
 			}
@@ -175,7 +172,7 @@ if ( ! class_exists( 'WFOP_Template_Group_Divi5' ) ) {
 		}
 
 		public function handle_remote_import( $data ) {
-			return is_string( $data ) ? $data : json_encode( $data );
+			return is_string( $data ) ? $data : wp_json_encode( $data );
 		}
 
 		public function handle_remote_import_error( $data ) {

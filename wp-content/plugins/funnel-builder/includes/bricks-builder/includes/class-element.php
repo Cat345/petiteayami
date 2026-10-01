@@ -127,7 +127,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		public function add_background_color( $key, $selectors, $default = '#000000', $label = '', $required = array() ) {
 			// Ensure the label has a default value
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Background color' );
+				$label = esc_html__( 'Background color', 'funnel-builder' );
 			}
 
 			$css = array();
@@ -170,7 +170,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		public function add_color( $key, $selectors, $default = '', $label = '', $required = array(), $important = false ) {
 			// Ensure the label has a default value
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Color' );
+				$label = esc_html__( 'Color', 'funnel-builder' );
 			}
 
 			$css = array();
@@ -236,7 +236,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 			// Structure the control array
 			$this->controls[ $key ] = array(
 				'group'   => $this->get_current_group(),
-				'label'   => esc_html__( 'Padding' ),
+				'label'   => esc_html__( 'Padding', 'funnel-builder' ),
 				'type'    => 'spacing',
 				'default' => $default,
 				'css'     => $css,
@@ -275,7 +275,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 			// Structure the control array
 			$this->controls[ $key ] = array(
 				'group'   => $this->get_current_group(),
-				'label'   => esc_html__( 'Margin' ),
+				'label'   => esc_html__( 'Margin', 'funnel-builder' ),
 				'type'    => 'spacing',
 				'default' => $default,
 				'css'     => $css,
@@ -306,7 +306,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 
 			$this->controls[ $key ] = array(
 				'group' => $this->get_current_group(),
-				'label' => esc_html__( 'Border' ),
+				'label' => esc_html__( 'Border', 'funnel-builder' ),
 				'type'  => 'border',
 				'css'   => $css,
 			);
@@ -382,7 +382,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 */
 		public function add_typography( $key, $selectors, $default = array(), $required = array(), $label = '', $exclude = array() ) {
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Typography' );
+				$label = esc_html__( 'Typography', 'funnel-builder' );
 			}
 
 			if ( ! is_array( $selectors ) ) {
@@ -427,7 +427,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 */
 		public function add_text_alignments( $key, $selectors, $label = '', $default = 'left', $required = array() ) {
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Alignment' );
+				$label = esc_html__( 'Alignment', 'funnel-builder' );
 			}
 
 			$css = array();
@@ -600,7 +600,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 */
 		public function add_switcher( $key, $label = '', $default = false, $css = array(), $rerender = true ) {
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Enable' );
+				$label = esc_html__( 'Enable', 'funnel-builder' );
 			}
 
 			$this->controls[ $key ] = array(
@@ -628,7 +628,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 */
 		public function add_text( $key, $label = '', $default = '', $required = array(), $description = '', $plceholder = '' ) {
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Text' );
+				$label = esc_html__( 'Text', 'funnel-builder' );
 			}
 
 			$this->controls[ $key ] = array(
@@ -654,7 +654,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 */
 		public function add_textarea( $key, $label = '', $default = '', $required = array() ) {
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Text' );
+				$label = esc_html__( 'Text', 'funnel-builder' );
 			}
 
 			$this->controls[ $key ] = array(
@@ -730,7 +730,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Element' ) ) {
 		 */
 		public function add_width( $key, $selectors, $label = '', $default = '', $required = array(), $units = array() ) {
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Width' );
+				$label = esc_html__( 'Width', 'funnel-builder' );
 			}
 
 			if ( empty( $units ) ) {

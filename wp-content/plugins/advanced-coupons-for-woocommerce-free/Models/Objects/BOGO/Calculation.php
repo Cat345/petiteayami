@@ -145,10 +145,11 @@ class Calculation {
     /**
      * Refresh the list of BOGO Deals and BOGO Coupon codes from the current cart state.
      *
-     * The Calculation singleton may be instantiated during coupon validation (via
-     * Frontend::restrict_cart_to_only_one_bogo_deal) before any BOGO coupons are applied
-     * to the cart, leaving $_all_bogo_deals empty for the rest of the request. Re-reading
-     * the current cart here lets the implementation loop process every applied BOGO deal.
+     * The Calculation singleton can be instantiated by any early consumer (e.g. price filters)
+     * before the BOGO coupons are applied to the cart, leaving $_all_bogo_deals empty for the
+     * rest of the request. Re-reading the current cart here lets the implementation loop
+     * process every applied BOGO deal. (Before 4.7.6 the coupon-validity restriction was one
+     * such early consumer; it now reads the applied-coupons list directly.)
      *
      * @since 4.7.4
      * @access public

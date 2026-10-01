@@ -43,7 +43,12 @@ if ( ! wp_doing_ajax() ) {
 		if ( apply_filters( 'wfacp_display_place_order_buttons', true, wfacp_template() ) ) { ?>
             <div class="form-row place-order">
                 <noscript>
-					<?php _e( 'Since your browser does not support JavaScript, or it is disabled, please ensure you click the <em>Update Totals</em> button before placing your order. You may be charged more than the amount stated above if you fail to do so.', 'woocommerce' ); ?>
+					<?php
+					echo wp_kses(
+						__( 'Since your browser does not support JavaScript, or it is disabled, please ensure you click the <em>Update Totals</em> button before placing your order. You may be charged more than the amount stated above if you fail to do so.', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						array( 'em' => array() )
+					);
+					?>
                     <br/><input type="submit" class="button alt" name="woocommerce_checkout_update_totals" value="<?php esc_attr_e( 'Update totals', 'woocommerce' ); ?>"/>
                 </noscript>
 

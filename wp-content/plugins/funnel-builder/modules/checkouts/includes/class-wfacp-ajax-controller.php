@@ -623,9 +623,29 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function analytics() {
 			self::check_nonce();
-			$resp           = array( 'status' => false );
-			$data           = isset( $_POST['data'] ) ? map_deep( wp_unslash( $_POST['data'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce already verified in check_nonce()
-			$allowed_events = array( 'InitiateCheckout', 'AddPaymentInfo', 'AddToCart' );
+			$resp = array( 'status' => false );
+			$data = isset( $_POST['data'] ) ? map_deep( wp_unslash( $_POST['data'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce already verified in check_nonce()
+			/*
+			 * Events the checkout page is allowed to forward to the Conversions API.
+			 *
+			 * This is a public endpoint, so the list stays explicit: a visitor with a
+			 * valid nonce must not be able to push a conversion event to the merchant's
+			 * pixel. Purchase in particular is deliberately absent - it fires
+			 * server-side from the WooCommerce order hooks only.
+			 *
+			 * Everything here is an event the checkout JS actually emits (see the
+			 * this.fbq() calls in assets/js/public.js) and none of them carry a
+			 * purchase value. The two custom ones are spelled exactly as the JS sends
+			 * does not - because the membership test below is strict.
+			 */
+			$allowed_events = array(
+				'InitiateCheckout',
+				'AddPaymentInfo',
+				'AddToCart',
+				'RemoveFromCart',
+				'PageView',
+				'WooFunnels_Checkout',
+			);
 			$event_data     = isset( $data['event_data'] ) && is_array( $data['event_data'] )
 								? array_slice( $data['event_data'], 0, 5 )
 								: array();

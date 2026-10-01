@@ -1348,7 +1348,7 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 						$logo        = WFACP_Common::get_option( $partial_key );
 						$no_logo_img = WFACP_PLUGIN_URL . '/admin/assets/img/no_logo.jpg';
 						?>
-						<img src="<?php echo $logo ? $logo : $no_logo_img; ?>" alt="<?php bloginfo( 'name' ); ?>"
+						<img src="<?php echo esc_url( $logo ? $logo : $no_logo_img ); ?>" alt="<?php bloginfo( 'name' ); ?>"
 							title="<?php bloginfo( 'name' ); ?>"/>
 						<?php
 						$logo_img_html = ob_get_clean();
@@ -1379,7 +1379,7 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 				?>
 
 
-				<img class="wfacp-logo" src="<?php echo $logo ? $logo : $no_logo_img; ?>" alt="<?php the_title(); ?>">
+				<img class="wfacp-logo" src="<?php echo esc_url( $logo ? $logo : $no_logo_img ); ?>" alt="<?php the_title(); ?>">
 
 
 				<?php
@@ -1399,7 +1399,7 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 
 				ob_start();
 				?>
-				<a href='javascript:void(0)' class="<?php echo $text_class_nner; ?>"><?php echo $step_value_text; ?></a>
+				<a href='javascript:void(0)' class="<?php echo esc_attr( $text_class_nner ); ?>"><?php echo $step_value_text; ?></a>
 				<?php
 				$step_value_text_html = ob_get_clean();
 
@@ -1413,10 +1413,10 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 			<div id="wfacp_form_popup_content" style="display: none;">
 
 				<h3>
-					<?php _e( 'CSS Ready Classes', 'funnel-builder' ); ?>
+					<?php esc_html_e( 'CSS Ready Classes', 'funnel-builder' ); ?>
 				</h3>
 				<div class="wfacp_des_wrap">
-					<?php _e( 'Here are set of CSS classes that can be used to style the checkout form', 'funnel-builder' ); ?>
+					<?php esc_html_e( 'Here are set of CSS classes that can be used to style the checkout form', 'funnel-builder' ); ?>
 
 				</div>
 
@@ -1424,9 +1424,9 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 				<table class="table widefat">
 					<thead>
 					<tr>
-						<td><?php _e( 'Title', 'funnel-builder' ); ?></td>
+						<td><?php esc_html_e( 'Title', 'funnel-builder' ); ?></td>
 						<td style="width: 70%;">
-							<?php _e( 'Classes', 'funnel-builder' ); ?>
+							<?php esc_html_e( 'Classes', 'funnel-builder' ); ?>
 						</td>
 
 					</tr>
@@ -1434,27 +1434,27 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 					<tbody>
 
 					<tr>
-						<td><?php _e( 'To create full width field', 'funnel-builder' ); ?></td>
+						<td><?php esc_html_e( 'To create full width field', 'funnel-builder' ); ?></td>
 						<td><input type="text" readonly onClick="this.select()" value='wfacp-col-full'/></td>
 					</tr>
 
 					<tr>
-						<td><?php _e( 'To create two columns structure and set field left side', 'funnel-builder' ); ?></td>
+						<td><?php esc_html_e( 'To create two columns structure and set field left side', 'funnel-builder' ); ?></td>
 						<td><input type="text" readonly onClick="this.select()" value='wfacp-col-left-half'/></td>
 					</tr>
 
 					<tr>
-						<td><?php _e( 'To create three columns structure and set field left side', 'funnel-builder' ); ?></td>
+						<td><?php esc_html_e( 'To create three columns structure and set field left side', 'funnel-builder' ); ?></td>
 						<td><input type="text" readonly onClick="this.select()" value='wfacp-col-left-third'/></td>
 					</tr>
 
 
 					<tr>
-						<td><?php _e( 'To create two third columns structure', 'funnel-builder' ); ?></td>
+						<td><?php esc_html_e( 'To create two third columns structure', 'funnel-builder' ); ?></td>
 						<td><input type="text" readonly onClick="this.select()" value='wfacp-col-two-third'/></td>
 					</tr>
 					<tr>
-						<td><?php _e( 'To create field from new line use clearfix', 'funnel-builder' ); ?></td>
+						<td><?php esc_html_e( 'To create field from new line use clearfix', 'funnel-builder' ); ?></td>
 						<td><input type="text" readonly onClick="this.select()" value='wfacp-col-clearfix'/></td>
 					</tr>
 

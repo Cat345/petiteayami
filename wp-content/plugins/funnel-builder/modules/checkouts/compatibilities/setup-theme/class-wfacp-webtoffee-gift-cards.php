@@ -32,8 +32,8 @@ if ( ! class_exists( 'WFACP_Webtoffee_Gift_Cards_Compatiblity' ) ) {
 			}
 
 			echo '<style>';
-			echo $bodyClass . ' .woocommerce-checkout-review-order.wfacp-oder-detail{position:relative;}';
-			echo $bodyClass . ' .wt_gc_checkout_store_credit_balance{padding:0 33px;}';
+			echo esc_attr( $bodyClass ) . ' .woocommerce-checkout-review-order.wfacp-oder-detail{position:relative;}';
+			echo esc_attr( $bodyClass ) . ' .wt_gc_checkout_store_credit_balance{padding:0 33px;}';
 			echo '</style>';
 		}
 	}

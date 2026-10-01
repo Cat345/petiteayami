@@ -157,7 +157,7 @@ if ( ! class_exists( 'BWF_Admin_Settings' ) ) {
 							}
 							?>
 							<li class="<?php echo esc_attr( $class ); ?>">
-								<a href="<?php echo esc_url_raw( $menu['link'] ); ?>">
+								<a href="<?php echo esc_url( $menu['link'] ); ?>">
 									<?php echo esc_attr( $menu['title'] ); ?>
 								</a>
 							</li>

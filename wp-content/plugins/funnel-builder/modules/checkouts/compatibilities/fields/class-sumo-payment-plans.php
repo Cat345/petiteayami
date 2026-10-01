@@ -91,14 +91,14 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Sumo_Payment_Plans' ) ) {
 			}
 
 			echo "<style>";
-			echo $bodyClass . '#wfacp_sumo_pp_checkout_manager{clear:both;padding:0 ' . $px . '}';
-			echo $bodyClass . '._sumo_pp_orderpp_fields input {position: relative !important;left: auto;right: auto;top: auto;margin: 0;}';
-			echo $bodyClass . 'table.shop_table._sumo_pp_orderpp_fields td {padding: 10px !important;}';
-			echo $bodyClass . 'table.shop_table._sumo_pp_orderpp_fields {    margin-bottom: 20px !important;border: 1px solid #bfbfbf !important;}';
-			echo $bodyClass . '#wfacp_sumo_pp_checkout_manager input[type="checkbox"]{position: relative !important;left: auto;right: auto;top: auto;margin: 0;}';
-			echo $bodyClass . '#wfacp_sumo_pp_checkout_manager input[type="radio"]{position: relative !important;left: auto;right: auto;top: auto;margin: 0;}';
-			echo $bodyClass . '#wfacp_sumo_pp_checkout_manager  tr td:first-child {    width: 50%;}';
-			echo $bodyClass . '#wfacp_sumo_pp_checkout_manager  table{ table-layout: fixed;}';
+			echo esc_attr( $bodyClass ) . '#wfacp_sumo_pp_checkout_manager{clear:both;padding:0 ' . esc_attr( $px ) . '}';
+			echo esc_attr( $bodyClass ) . '._sumo_pp_orderpp_fields input {position: relative !important;left: auto;right: auto;top: auto;margin: 0;}';
+			echo esc_attr( $bodyClass ) . 'table.shop_table._sumo_pp_orderpp_fields td {padding: 10px !important;}';
+			echo esc_attr( $bodyClass ) . 'table.shop_table._sumo_pp_orderpp_fields {    margin-bottom: 20px !important;border: 1px solid #bfbfbf !important;}';
+			echo esc_attr( $bodyClass ) . '#wfacp_sumo_pp_checkout_manager input[type="checkbox"]{position: relative !important;left: auto;right: auto;top: auto;margin: 0;}';
+			echo esc_attr( $bodyClass ) . '#wfacp_sumo_pp_checkout_manager input[type="radio"]{position: relative !important;left: auto;right: auto;top: auto;margin: 0;}';
+			echo esc_attr( $bodyClass ) . '#wfacp_sumo_pp_checkout_manager  tr td:first-child {    width: 50%;}';
+			echo esc_attr( $bodyClass ) . '#wfacp_sumo_pp_checkout_manager  table{ table-layout: fixed;}';
 
 			echo "</style>";
 

@@ -17,10 +17,10 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 }
 $instance = wfacp_template();
 ?>
-<table class="wfacp_mini_cart_reviews shop_table woocommerce-checkout-review-order-table_layout_9 wfacp_template_9_cart_total_details layout_9_order_summary <?php echo $tax_enabled; ?>" <?php echo WFACP_Common::get_fragments_attr() ?> >
+<table class="wfacp_mini_cart_reviews shop_table woocommerce-checkout-review-order-table_layout_9 wfacp_template_9_cart_total_details layout_9_order_summary <?php echo esc_attr( $tax_enabled ); ?>" data-time="<?php echo esc_attr( WFACP_Common::get_fragments_time() ); ?>" >
     <tfoot>
     <tr class="cart-subtotal">
-        <th <?php echo $colspan_attr; ?>><span><?php _e( 'Subtotal', 'woocommerce' ); ?></span></th>
+        <th <?php echo $colspan_attr; ?>><span><?php esc_html_e( 'Subtotal', 'woocommerce' ); ?></span></th>
         <td><?php wc_cart_totals_subtotal_html(); ?></td>
     </tr>
 
@@ -60,7 +60,7 @@ $instance = wfacp_template();
 	<?php if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) : ?>
 		<?php if ( 'itemized' === get_option( 'woocommerce_tax_total_display' ) ) : ?>
 			<?php foreach ( WC()->cart->get_tax_totals() as $code => $tax ) : ?>
-                <tr class="tax-rate tax-rate-<?php echo sanitize_title( $code ); ?>">
+                <tr class="tax-rate tax-rate-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
                     <th <?php echo $colspan_attr; ?>><span><?php echo esc_html( $tax->label ); ?></span></th>
                     <td><?php echo wp_kses_post( $tax->formatted_amount ); ?></td>
                 </tr>
@@ -85,7 +85,7 @@ $instance = wfacp_template();
 	?>
 
     <tr class="order-total">
-        <th <?php echo $colspan_attr; ?>><span><?php _e( 'Total', 'woocommerce' ); ?></span></th>
+        <th <?php echo $colspan_attr; ?>><span><?php esc_html_e( 'Total', 'woocommerce' ); ?></span></th>
         <td><?php wc_cart_totals_order_total_html(); ?></td>
     </tr>
 	<?php do_action( 'woocommerce_review_order_after_order_total' );

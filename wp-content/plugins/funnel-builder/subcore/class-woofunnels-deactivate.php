@@ -165,14 +165,17 @@ if ( ! class_exists( 'WooFunnels_Deactivate' ) ) {
 				if ( ! current_user_can( 'install_plugins' ) ) {
 					wp_send_json_error();
 				}
-				if ( ! isset( $_POST['reason_id'] ) ) {
+				$reason_id = isset( $_POST['reason_id'] ) ? sanitize_text_field( wp_unslash( $_POST['reason_id'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification handled by AJAX system
+
+				// No reason given (e.g. skipped) - don't phone home.
+				if ( '' === $reason_id ) {
 					wp_send_json_error();
 				}
 
 				$reason_info = isset( $_POST['reason_info'] ) ? sanitize_textarea_field( bwf_clean( wp_unslash( $_POST['reason_info'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification handled by AJAX system
 
 				$reason = array(
-					'id'   => sanitize_text_field( wp_unslash( $_POST['reason_id'] ) ), // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification handled by AJAX system
+					'id'   => $reason_id,
 					'info' => substr( $reason_info, 0, 128 ),
 				);
 

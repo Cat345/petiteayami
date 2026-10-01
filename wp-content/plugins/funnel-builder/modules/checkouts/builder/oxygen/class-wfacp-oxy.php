@@ -91,7 +91,12 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 				} else {
 					$temp_id = 0;
 				}
-				$post_new = get_post( $temp_id );
+				/**
+				 * The id comes from the URL, so require the caller to be able to edit that
+				 * specific post before rendering it. Without this an unauthenticated request
+				 * could swap in any checkout post, drafts included.
+				 */
+				$post_new = ( $temp_id > 0 && current_user_can( 'edit_post', $temp_id ) ) ? get_post( $temp_id ) : null;
 				if ( $post_new instanceof WP_Post && WFACP_Common::get_post_type_slug() === $post_new->post_type ) {
 					$post = $post_new;
 				}

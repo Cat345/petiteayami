@@ -29,6 +29,34 @@ var wffnUtm_terms = wffnUtm.cookieKeys, wffnCookieManage = {
     }
 };
 
+/**
+ * Byte budget for each scalar wffn_* cookie (UTM values, click ids, referrers).
+ * The server truncates all of these to the 255-char column width (referrers are
+ * reduced to host + path), so a larger client-side value is dead weight riding
+ * on every request. 512 leaves room for percent-encoded multibyte characters.
+ */
+var wffnScalarCookieMax = 512;
+
+/**
+ * Cap a scalar cookie value so one long referrer or ad-platform UTM value cannot
+ * inflate the Cookie header. For URLs the query string is dropped first; only
+ * then is the value hard-cut. A trailing partial percent-escape is removed so
+ * the value stays decodable on the server.
+ */
+function wffnCapCookieValue(value, maxLen) {
+    value = (value === undefined || value === null) ? '' : String(value);
+    if (value.length <= maxLen) {
+        return value;
+    }
+    var q = value.indexOf('?');
+    if (q > 0 && /^https?:\/\//i.test(value)) {
+        value = value.substring(0, q);
+        if (value.length <= maxLen) {
+            return value;
+        }
+    }
+    return value.substring(0, maxLen).replace(/%[0-9A-Fa-f]?$/, '');
+}
 
 function wffnGetHost(url) {
     var o = {
@@ -217,7 +245,7 @@ function wffnManageCookies() {
     try {
         var source = wffnGetTrafficSource();
         if (source !== 'direct') {
-            wffnCookieManage.setCookie('wffn_traffic_source', source, 2);
+            wffnCookieManage.setCookie('wffn_traffic_source', wffnCapCookieValue(source, wffnScalarCookieMax), 2);
         } else {
             wffnCookieManage.remove('wffn_traffic_source');
         }
@@ -232,10 +260,10 @@ function wffnManageCookies() {
                  */
                 if (['flt', 'fl_url', 'referrer'].indexOf(wffnUtm_terms[k]) !== -1) {
                     if ('undefined' !== typeof wffnCookieManage && '' === wffnCookieManage.getCookie('wffn_' + wffnUtm_terms[k])) {
-                        wffnCookieManage.setCookie('wffn_' + wffnUtm_terms[k], queryVars[wffnUtm_terms[k]], 2);
+                        wffnCookieManage.setCookie('wffn_' + wffnUtm_terms[k], wffnCapCookieValue(queryVars[wffnUtm_terms[k]], wffnScalarCookieMax), 2);
                     }
                 } else {
-                    wffnCookieManage.setCookie('wffn_' + wffnUtm_terms[k], queryVars[wffnUtm_terms[k]], 2);
+                    wffnCookieManage.setCookie('wffn_' + wffnUtm_terms[k], wffnCapCookieValue(queryVars[wffnUtm_terms[k]], wffnScalarCookieMax), 2);
                 }
             }
         }
@@ -270,13 +298,23 @@ function wffnManageCookies() {
  * still render (they simply lack an `s` field).
  */
 function wffnJourneyNormalize(data) {
+    var store;
     if (data && typeof data === 'object' && data.j && typeof data.j === 'object') {
         if (typeof data.s !== 'object' || data.s === null) {
             data.s = {};
         }
-        return data;
+        store = data;
+    } else {
+        store = { j: (data && typeof data === 'object') ? data : {}, s: {} };
     }
-    return { j: (data && typeof data === 'object') ? data : {}, s: {} };
+    // Titles are no longer stored; shed any left by a previous version so the
+    // cookie shrinks on the very next page view rather than when it rolls off.
+    Object.keys(store.j).forEach(function (k) {
+        if (store.j[k] && typeof store.j[k] === 'object' && typeof store.j[k].t !== 'undefined') {
+            delete store.j[k].t;
+        }
+    });
+    return store;
 }
 
 /**
@@ -302,11 +340,22 @@ function wffnJourneySiteIndex(store, origin) {
 /**
  * Append the current page to the journey cookie.
  *
- * Each entry is keyed by epoch second and stores { u: url, t: title, i: page_id }.
- * Consecutive duplicate URLs are skipped and the cookie is capped to keep it under
- * the browser cookie size budget (oldest entries are dropped first).
+ * Each entry is keyed by epoch second and stores { u: path, i: page_id, s: site_idx }.
+ * No title is stored: the admin resolves it from page_id via WordPress at render
+ * time. Consecutive duplicate URLs are skipped and the cookie is capped both by
+ * entry count and by bytes (oldest entries are dropped first).
  */
 function wffnJourney() {
+    // 'remove' (administrators): recording is off AND any previously-recorded
+    // journey is dropped, so the cookie stops riding into wp-admin immediately.
+    // 'disable' (upsell offer pages): recording pauses but the cookie must
+    // survive — the offer view is appended to it server-side.
+    if (wffnUtm.journeyControl === 'remove') {
+        if ('' !== wffnCookieManage.getCookie('wffn_journey')) {
+            wffnCookieManage.remove('wffn_journey');
+        }
+        return;
+    }
     if (wffnUtm.journeyControl === 'disable') {
         return;
     }
@@ -335,20 +384,28 @@ function wffnJourney() {
     let siteIdx = wffnJourneySiteIndex(store, origin);
 
     let pageData = {};
-    pageData['u'] = encodeURIComponent(wffnAddSlashes(fullPath));
-    pageData['t'] = encodeURIComponent(document.title);
-    pageData['i'] = wffnUtm.page_id;
-    pageData['s'] = siteIdx;
+    pageData.u = encodeURIComponent(wffnAddSlashes(fullPath));
+    pageData.i = wffnUtm.page_id;
+    pageData.s = siteIdx;
 
     // Dedup on the (path, site) pair so the same path on two sites is not collapsed.
-    if (wffnGetLastEntry(store.j, 'u') === pageData['u'] && wffnGetLastEntry(store.j, 's') === pageData['s']) {
+    if (wffnGetLastEntry(store.j, 'u') === pageData.u && wffnGetLastEntry(store.j, 's') === pageData.s) {
         return;
     }
 
     let wffnTime = Math.round(Date.now() / 1000);
     store.j[wffnTime] = pageData;
 
-    store = wffn_MaxCookieLength(store, 3872);
+    // Both caps are server-configurable (filterable) via localized data; keep safe defaults.
+    var journeyMaxBytes = (typeof wffnUtm !== 'undefined' && wffnUtm.journeyMaxBytes) ? parseInt(wffnUtm.journeyMaxBytes, 10) : 2000;
+    if (isNaN(journeyMaxBytes) || journeyMaxBytes <= 0) {
+        journeyMaxBytes = 2000;
+    }
+    var journeyMaxEntries = (typeof wffnUtm !== 'undefined' && wffnUtm.journeyMaxEntries) ? parseInt(wffnUtm.journeyMaxEntries, 10) : 20;
+    if (isNaN(journeyMaxEntries) || journeyMaxEntries <= 0) {
+        journeyMaxEntries = 20;
+    }
+    store = wffn_MaxCookieLength(store, journeyMaxBytes, journeyMaxEntries);
     wffnCookieManage.setCookie('wffn_journey', JSON.stringify(store), 2);
 }
 
@@ -375,20 +432,22 @@ function wffnGetLastEntry(jmap, field) {
 }
 
 /**
- * Trim oldest journey entries when the cookie would exceed maxSize bytes.
- * Operates on store.j (the entry map); store.s is pruned of orphans.
+ * Trim oldest journey entries while the cookie exceeds maxSize bytes OR holds
+ * more than maxEntries entries, whichever bound is hit first. Operates on
+ * store.j (v2 entry map); tolerates a flat legacy store (no .j) by trimming its
+ * own keys directly.
  */
-/**
- * Trim oldest journey entries when the cookie would exceed maxSize bytes.
- * Operates on store.j (v2 entry map); tolerates a flat legacy store (no .j)
- * by trimming its own keys directly.
- */
-function wffn_MaxCookieLength(store, maxSize) {
-    var totalCookieSize = document.cookie.length;
-    if (totalCookieSize + JSON.stringify(store).length > maxSize) {
-        while (JSON.stringify(store).length > maxSize / 2 && Object.keys(store.j ? store.j : store).length > 0) {
-            store = wffnDeleteFirstEl(store);
-        }
+function wffn_MaxCookieLength(store, maxSize, maxEntries) {
+    // Bound only the journey cookie's own serialized size. Other cookies are
+    // deliberately not counted: HttpOnly cookies (e.g. WP auth) are invisible to
+    // document.cookie anyway, and budgeting against visible third-party cookies
+    // would shrink journeys for reasons unrelated to this cookie. Sites near
+    // their server's header limit lower wffn_journey_cookie_max_bytes instead.
+    maxEntries = (typeof maxEntries === 'number' && maxEntries > 0) ? maxEntries : Infinity;
+    var map = store.j ? store.j : store;
+    while (Object.keys(map).length > 0 && (JSON.stringify(store).length > maxSize || Object.keys(map).length > maxEntries)) {
+        store = wffnDeleteFirstEl(store);
+        map = store.j ? store.j : store;
     }
     return store;
 }

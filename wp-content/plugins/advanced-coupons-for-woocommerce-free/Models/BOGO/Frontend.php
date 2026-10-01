@@ -82,6 +82,19 @@ class Frontend extends Base_Model implements Model_Interface {
      */
     private $_removing_unqualified_items = false;
 
+    /**
+     * Cart item keys whose price BOGO changed in the current request.
+     *
+     * The reset_bogo_deals_prices() method must only restore the items BOGO actually repriced.
+     * Every other cart line keeps the price WooCommerce and other plugins resolved
+     * for it (issue #1622).
+     *
+     * @since 4.7.6
+     * @access private
+     * @var array
+     */
+    private $_repriced_cart_items = array();
+
     /*
     |--------------------------------------------------------------------------
     | Class Methods
@@ -114,19 +127,34 @@ class Frontend extends Base_Model implements Model_Interface {
      * Restrict cart to only allow one BOGO to be applied.
      *
      * @since 4.1
+     * @since 4.7.6 Count BOGO coupons from the live applied-coupons list instead of the
+     *              Calculation singleton cache. The cache is only rebuilt on instantiation and
+     *              on implementation, so within a single request it can still hold a BOGO coupon
+     *              that was already removed from the cart (e.g. an auto-apply BOGO invalidated by
+     *              its cart conditions). That stale entry incorrectly blocked the replacement
+     *              BOGO coupon until the next page load (ACFWP issue #1198).
      * @access public
      *
      * @param bool            $value Filter return value.
      * @param Advanced_Coupon $coupon Advanced coupon object.
-     * @return string Notice markup.
+     * @return bool Filter return value (unchanged when the coupon is allowed).
      * @throws \Exception When BOGO coupon is already applied to the cart.
      */
     public function restrict_cart_to_only_one_bogo_deal( $value, $coupon ) {
-        if ( $coupon->is_type( 'acfw_bogo' ) && ! empty( \WC()->cart->get_applied_coupons() ) ) {
+        // Only read the cart once the coupon is known to be a BOGO deal, and only when a cart
+        // exists. This filter also runs from WC_Discounts::is_coupon_valid() in cart-less contexts
+        // such as the orders REST controller, where WC()->cart is null.
+        if ( ! $coupon->is_type( 'acfw_bogo' ) || ! \WC()->cart ) {
+            return $value;
+        }
 
-            $calculation = Calculation::get_instance();
+        $applied_coupons = \WC()->cart->get_applied_coupons();
 
-            if ( ! in_array( $coupon->get_code(), $calculation->get_bogo_coupon_codes(), true ) && get_option( ACFWF()->Plugin_Constants->ALLOWED_BOGO_COUPONS_COUNT, 1 ) <= count( $calculation->get_bogo_coupon_codes() ) ) {
+        if ( ! empty( $applied_coupons ) ) {
+
+            $bogo_coupon_codes = $this->_get_applied_bogo_coupon_codes( $applied_coupons );
+
+            if ( ! in_array( (string) $coupon->get_code(), $bogo_coupon_codes, true ) && get_option( ACFWF()->Plugin_Constants->ALLOWED_BOGO_COUPONS_COUNT, 1 ) <= count( $bogo_coupon_codes ) ) {
                 // Translators: %s is the coupon code.
                 $message = __( 'Sorry, coupon "%s" cannot be used in conjunction with the other coupons already applied.', 'advanced-coupons-for-woocommerce-free' );
                 do_action( 'acfw_restrict_allowed_bogo_coupons_error_message', $message, 100, $coupon );
@@ -136,6 +164,47 @@ class Frontend extends Base_Model implements Model_Interface {
         }
 
         return $value;
+    }
+
+    /**
+     * Get the codes of the applied coupons that count as BOGO deals, from the live applied list.
+     *
+     * Matches the predicate `Calculation::get_bogo_deals_from_cart()` uses: a BOGO-typed coupon
+     * with no configured deal data never consumed a restriction slot, and must not start
+     * consuming one.
+     *
+     * Memoised per applied-coupons signature: `woocommerce_coupon_is_valid` fires once per
+     * coupon per validation pass, and rebuilding the coupon objects each time would re-fire
+     * `woocommerce_get_shop_coupon_data` (and, for store-credit virtual coupons, a
+     * session-writing filter chain) more often than before. The cache key is the applied list
+     * itself, so the count stays live across cart changes within the request.
+     *
+     * @since 4.7.6
+     * @access private
+     *
+     * @param array $applied_coupons Applied coupon codes from the cart.
+     * @return string[] Applied coupon codes that are configured BOGO deals.
+     */
+    private function _get_applied_bogo_coupon_codes( $applied_coupons ) {
+        static $cache = array();
+
+        $cache_key = md5( (string) wp_json_encode( array_values( $applied_coupons ) ) );
+
+        if ( ! isset( $cache[ $cache_key ] ) ) {
+            $bogo_coupon_codes = array();
+
+            foreach ( $applied_coupons as $code ) {
+                $applied_coupon = new Advanced_Coupon( (string) $code );
+
+                if ( $applied_coupon->is_type( 'acfw_bogo' ) && $applied_coupon->get_advanced_prop( 'bogo_deals' ) ) {
+                    $bogo_coupon_codes[] = (string) $code;
+                }
+            }
+
+            $cache[ $cache_key ] = $bogo_coupon_codes;
+        }
+
+        return $cache[ $cache_key ];
     }
 
     /**
@@ -197,9 +266,9 @@ class Frontend extends Base_Model implements Model_Interface {
             Calculation::clear_session_data();
 
             // Refresh BOGO deals from the current cart. The Calculation singleton may have been
-            // instantiated during coupon validation (restrict_cart_to_only_one_bogo_deal) before any
-            // BOGO coupons were applied, leaving its deal list stale/empty. Re-reading the cart here
-            // ensures every applied BOGO deal is processed (e.g. two simultaneous auto-apply BOGOs).
+            // instantiated by an early consumer (e.g. price filters) before any BOGO coupons were
+            // applied, leaving its deal list stale/empty. Re-reading the cart here ensures every
+            // applied BOGO deal is processed (e.g. two simultaneous auto-apply BOGOs).
             $this->_calculation->refresh_bogo_deals();
 
             foreach ( $this->_calculation->get_all_bogo_deals() as $bogo_deal ) {
@@ -439,6 +508,7 @@ class Frontend extends Base_Model implements Model_Interface {
                     $bogo_new_price = apply_filters( 'acfw_bogo_get_item_new_price', $new_price, $cart_item );
                     $cart_item['data']->update_meta_data( self::BOGO_LOCKED_PRICE_META_KEY, (float) $bogo_new_price );
                     $cart_item['data']->set_price( $bogo_new_price );
+                    $this->_repriced_cart_items[ $key ] = true;
                 }
 
                 // add details to $this->_price_display property price differences on cart table.
@@ -479,6 +549,7 @@ class Frontend extends Base_Model implements Model_Interface {
 
             $price = $this->_helper_functions->get_price( $cart_item['data'], array( 'ignore_always_use_regular_price' => 'all_valid' !== get_option( Plugin_Constants::ALWAYS_USE_REGULAR_PRICE ) ) );
             $cart_item['data']->set_price( apply_filters( 'acfw_bogo_set_trigger_item_price', $price, $cart_item ) );
+            $this->_repriced_cart_items[ $key ] = true;
         }
     }
 
@@ -488,9 +559,13 @@ class Frontend extends Base_Model implements Model_Interface {
      * This method is used to undo any price modifications applied by the BOGO logic
      * when conditions are not met or the coupon becomes invalid.
      * It skips items already recorded in the internal `_price_display` array to prevent
-     * overwriting already discounted items, and resets the remaining deal item prices to their base value.
+     * overwriting already discounted items, and it skips items BOGO never repriced. What
+     * it can reach is therefore the trigger priced lines only. Trigger pricing sits behind
+     * the `acfw_enable_matching_cart_triggers_prices` filter, which defaults to false, so
+     * on a default install this method resets nothing.
      *
      * @since 4.6.7
+     * @since 4.7.6 Only reset the cart items BOGO actually repriced (issue #1622).
      * @access public
      */
     public function reset_bogo_deals_prices() {
@@ -500,6 +575,13 @@ class Frontend extends Base_Model implements Model_Interface {
         foreach ( $this->_price_display as $key => $data ) {
             if ( ! in_array( $key, $cart_keys, true ) ) {
                 unset( $this->_price_display[ $key ] );
+            }
+        }
+
+        // Drop reprice records for items that are no longer in cart.
+        foreach ( $this->_repriced_cart_items as $key => $unused ) {
+            if ( ! in_array( $key, $cart_keys, true ) ) {
+                unset( $this->_repriced_cart_items[ $key ] );
             }
         }
 
@@ -515,6 +597,15 @@ class Frontend extends Base_Model implements Model_Interface {
 
             // Skip items that have BOGO discounts.
             if ( isset( $this->_price_display[ $key ] ) ) {
+                continue;
+            }
+
+            // Skip items BOGO never repriced. Resetting them would overwrite the price
+            // WooCommerce and other plugins resolved for the line — for example the
+            // Wholesale Prices sale price on a cart that holds no BOGO deal at all
+            // (issue #1622). Deal-priced items are already skipped by the _price_display
+            // check above, so what remains here are the trigger-priced items.
+            if ( ! isset( $this->_repriced_cart_items[ $key ] ) ) {
                 continue;
             }
 
@@ -1010,7 +1101,7 @@ class Frontend extends Base_Model implements Model_Interface {
      * Check if BOGO Deals discounts should be applied to the coupon amount instead of
      * modifying the deal item prices.
      *
-     * @since 4.8
+     * @since 4.7.6
      * @access public
      *
      * @return bool True when the "coupon amount" discount application mode is selected.
@@ -1029,7 +1120,7 @@ class Frontend extends Base_Model implements Model_Interface {
      * coupon type makes all cart items eligible (mirrors the Cashback coupon type approach);
      * items without matched deal entries simply receive a zero discount.
      *
-     * @since 4.8
+     * @since 4.7.6
      * @access public
      *
      * @param array $types Cart coupon types.
@@ -1062,7 +1153,7 @@ class Frontend extends Base_Model implements Model_Interface {
      * - Order recalculations pass order items instead of cart items and are intentionally
      *   ignored (the persisted order coupon line and meta are the durable record).
      *
-     * @since 4.8
+     * @since 4.7.6
      * @access public
      *
      * @param float      $discount           Discount amount.

@@ -23,4 +23,4 @@ $device_type     = $instance->device_type;
     <title><?php echo $page_meta_title ? $page_meta_title : get_bloginfo( 'name' ); ?></title>
 	<?php wp_head(); ?>
 </head>
-<body class="wfacp_main_wrapper wfacpef_page <?php echo 'wfacp-' . $device_type; ?>">
+<body class="wfacp_main_wrapper wfacpef_page <?php echo esc_attr( 'wfacp-' . $device_type ); ?>">

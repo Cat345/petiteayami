@@ -26,6 +26,14 @@ if ( ! class_exists( 'WFOB_Layout_6' ) ) {
 			return WFOB_PLUGIN_URL . '/assets/img/skin-6.jpg';
 		}
 
+		public static function get_skin_label() {
+			return __( 'Smart Toggle', 'woofunnels-order-bump' );
+		}
+
+		public static function get_skin_description() {
+			return __( 'Warm rounded card with an on/off toggle switch in place of a checkbox: title line with the switch on the right, badge, description and price below. Flipping the switch adds the product.', 'woofunnels-order-bump' );
+		}
+
 		public function get_admin_schema() {
 			return parent::get_admin_schema();
 		}

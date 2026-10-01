@@ -24,7 +24,7 @@ do_action( 'wfacp_before_order_total_field' );
 $classes = isset( $args['cssready'] ) ? implode( ' ', $args['cssready'] ) : '';
 
 ?>
-<div class="wfacp_order_total wfacp_order_total_field wfacp_clear <?php echo $classes; ?>" id="order_total_field" <?php echo WFACP_Common::get_fragments_attr() ?> >
+<div class="wfacp_order_total wfacp_order_total_field wfacp_clear <?php echo esc_attr( $classes ); ?>" id="order_total_field" data-time="<?php echo esc_attr( WFACP_Common::get_fragments_time() ); ?>" >
 	<?php
 
 
@@ -38,7 +38,7 @@ $classes = isset( $args['cssready'] ) ? implode( ' ', $args['cssready'] ) : '';
             <tbody>
 
             <tr class="wfacp_order_subtotal">
-                <td> <?php _e( 'Subtotal', 'woocommerce' ); ?></td>
+                <td> <?php esc_html_e( 'Subtotal', 'woocommerce' ); ?></td>
                 <td><?php echo wc_price( WC()->cart->get_subtotal() ); ?></td>
             </tr>
 
@@ -92,7 +92,7 @@ $classes = isset( $args['cssready'] ) ? implode( ' ', $args['cssready'] ) : '';
                     <table class="wfacp_tax_wrap yes">
                         <tbody>
 						<?php foreach ( WC()->cart->get_tax_totals() as $code => $tax ) : ?>
-                            <tr class="tax-rate tax-rate-<?php echo sanitize_title( $code ); ?>">
+                            <tr class="tax-rate tax-rate-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
                                 <td class="wfacp_order_total_label"<?php echo $colspan_attr; ?>><?php echo esc_html( $tax->label ); ?></td>
                                 <td class="wfacp_order_total_value"><?php echo wp_kses_post( $tax->formatted_amount ); ?></td>
                             </tr>
@@ -119,7 +119,7 @@ $classes = isset( $args['cssready'] ) ? implode( ' ', $args['cssready'] ) : '';
     <table class="wfacp_order_total_wrap">
         <tbody>
         <tr>
-            <td><?php echo isset( $args['label'] ) ? $args['label'] : __( 'Order Total', 'funnel-builder' ); ?></td>
+            <td><?php echo esc_html( isset( $args['label'] ) ? $args['label'] : __( 'Order Total', 'funnel-builder' ) ); ?></td>
             <td class="wfacp_wc_cart_totals_order_total_html"><?php wc_cart_totals_order_total_html(); ?></td>
         </tr>
         </tbody>

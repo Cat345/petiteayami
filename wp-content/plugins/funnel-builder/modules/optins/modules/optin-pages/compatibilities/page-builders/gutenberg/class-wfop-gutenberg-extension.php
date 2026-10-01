@@ -133,9 +133,6 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 			$designs   = isset( $templates['optin'] ) ? $templates['optin'] : array();
 			if ( isset( $designs['gutenberg'] ) && is_array( $designs['gutenberg'] ) ) {
 				foreach ( $designs['gutenberg'] as $d_key => $templates ) {
-					if ( isset( $templates['pro'] ) && 'yes' === $templates['pro'] ) {
-						$templates['license_exist'] = WFFN_Core()->admin->get_license_status();
-					}
 					WFOPP_Core()->optin_pages->register_template( $d_key, $templates, 'gutenberg' );
 				}
 			} else {
@@ -211,8 +208,8 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 						'post_id'          => $post->ID,
 						'i18n'             => BWF_I18N,
 						'get_fields'       => $get_fields,
-						'first_name'       => esc_html__( 'Your First Name', BWF_I18N ), // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralDomain
-						'email'            => esc_html__( 'Your Email', BWF_I18N ), // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralDomain
+						'first_name'       => esc_html__( 'Your First Name', 'funnel-builder' ),
+						'email'            => esc_html__( 'Your Email', 'funnel-builder' ),
 						'bwf_g_fonts'      => bwf_get_fonts_list( 'all' ),
 						'bwf_g_font_names' => bwf_get_fonts_list( 'name_only' ),
 						'system_font_path' => file_exists( $system_font_path ) ? include $system_font_path : array(),

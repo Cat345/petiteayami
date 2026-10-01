@@ -131,7 +131,22 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
     /**
      * Validate coupon for auto apply.
      *
+     * Usage limits and the "Allowed emails" restriction are enforced by
+     * `WC_Discounts::is_coupon_valid()` at cart time, so they no longer block auto apply here.
+     *
+     * The one exception is the per-user usage limit for a guest, and the guard below is the ONLY
+     * thing enforcing it — do not "simplify" it away. Core's
+     * `validate_coupon_user_usage_limit()` returns early when there is no user ID. On the classic
+     * checkout the only fallback is `WC_Cart::check_customer_coupons()` on
+     * `woocommerce_after_checkout_validation`, which adds an error notice but does NOT remove the
+     * coupon, so the guest is hard-blocked at "Place order" with no way to clear it. On the block
+     * checkout there is no fallback at all — the Store API never fires
+     * `woocommerce_after_checkout_validation` — so the guest could redeem the coupon without limit.
+     * Both outcomes are worse than simply not auto applying it (#1310).
+     *
      * @since 2.0
+     * @since 4.1 Allow auto apply for coupons with usage limits and allowed emails, except for the
+     *             per-user usage limit on a guest shopper (#1310).
      * @access private
      *
      * @param WC_Coupon $coupon WooCommerce coupon object.
@@ -142,14 +157,9 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
             return false;
         }
 
-        // ACFWP-160 disable auto apply for coupons with usage limits.
-        if ( $coupon->get_usage_limit() || $coupon->get_usage_limit_per_user() ) {
-            return false;
-        }
-
-        // disable auto apply for coupons that has value for allowed emails meta.
-        $allowed_emails = $coupon->get_meta( 'customer_email', true );
-        if ( is_array( $allowed_emails ) && ! empty( $allowed_emails ) ) {
+        // Disable auto apply for guests on coupons limited per user, as core can only enforce that
+        // limit once the shopper is identified.
+        if ( $coupon->get_usage_limit_per_user() && ! get_current_user_id() ) {
             return false;
         }
 
@@ -164,6 +174,8 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
      * @since 4.0.5 Enhanced individual use coupon validation with case-insensitive comparison.
      * @since 4.0.9 Run on `woocommerce_before_calculate_totals` and suppress the re-entrant
      *              `calculate_totals()` recalc to avoid zeroing dynamically priced products (#1450).
+     * @since 4.0.10 Re-validate auto-applied coupons and remove invalidated ones before applying
+     *               new auto-apply coupons, so they can interchange in a single request (#1198).
      * @access public
      */
     public function implement_auto_apply_coupons() {
@@ -186,8 +198,9 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
         $suppress_recalc = ! is_null( \WC()->cart )
             && remove_action( 'woocommerce_applied_coupon', array( \WC()->cart, 'calculate_totals' ), 20 );
 
-        $auto_coupons = array();
-        $applied      = array();
+        $auto_coupons    = array();
+        $applied         = array();
+        $removed_coupons = array();
 
         // Wrap the application logic so the temporarily detached hook/filter are always
         // restored, even if a third-party filter or coupon validation throws (issue #1450).
@@ -214,6 +227,20 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
 
                 // Seed the subtotal so "cart subtotal" conditions validate correctly here (#1450).
                 $this->_seed_cart_subtotal_for_validation( $discounts );
+
+                /**
+                 * Re-validate the auto-applied coupons in the cart and drop the ones that are no
+                 * longer valid, BEFORE trying to apply new auto-apply coupons — then exclude them
+                 * from the apply list so they are not pointlessly re-validated. This lets
+                 * auto-apply coupons interchange within a single request (issue #1198).
+                 * Requires ACFWF 4.7.6+ for the BOGO case (the "one BOGO coupon" restriction
+                 * must read the live applied-coupons list).
+                 */
+                $removed_coupons = $this->_remove_invalid_auto_applied_coupons( $auto_coupons, $discounts );
+
+                // Normalize to ints so the diff against the removed IDs is an explicit int match.
+                $auto_coupons = array_diff( array_map( 'absint', $auto_coupons ), $removed_coupons );
+
                 foreach ( $auto_coupons as $coupon_id ) {
 
                     if ( get_post_type( $coupon_id ) !== 'shop_coupon' ) {
@@ -308,10 +335,15 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
          * Hook to run after auto apply coupons.
          *
          * @since 4.0.4
+         * @since 4.0.10 Add the `$removed_coupons` parameter.
          *
-         * @param array $auto_coupons List of auto apply coupon IDs.
+         * @param array $applied         List of coupon codes that were auto applied on this run.
+         * @param array $auto_coupons    List of auto apply coupon IDs that remain after the invalid
+         *                               ones were removed (see `$removed_coupons`).
+         * @param array $removed_coupons List of auto apply coupon IDs that were removed from the cart
+         *                               on this run because they were no longer valid.
          */
-        do_action( 'acfwp_after_auto_apply_coupons', $applied, $auto_coupons );
+        do_action( 'acfwp_after_auto_apply_coupons', $applied, $auto_coupons, $removed_coupons );
     }
 
     /**
@@ -337,6 +369,129 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
 
         $subtotal_cents = array_sum( wp_list_pluck( $discounts->get_items(), 'price' ) );
         $cart->set_subtotal( wc_remove_number_precision( $subtotal_cents ) );
+    }
+
+    /**
+     * Re-validate auto-applied coupons in the cart and drop the ones that are no longer valid.
+     *
+     * WooCommerce removes invalid applied coupons in `check_cart_coupons()` (hooked to
+     * `woocommerce_check_cart_items`) and, on the Store API, in
+     * `CartController::validate_cart_coupons()`. Neither runs during the mid-request
+     * recalculations (update-cart POST, cart fragments, `update_order_review`), so without this
+     * pass a replacement auto-apply coupon whose validity depends on the invalid coupon being
+     * gone (e.g. the "only one BOGO coupon allowed" restriction) could only apply on the next
+     * page load (issue #1198).
+     *
+     * Coupons are dropped with `set_applied_coupons()` — the same mechanism as
+     * `remove_auto_applied_coupons_from_cart()` — deliberately NOT `remove_coupon()`: this runs
+     * inside `woocommerce_before_calculate_totals`, and firing `woocommerce_removed_coupon` from
+     * here would trigger a re-entrant `calculate_totals()`, set the `refresh_totals` session
+     * flag mid-calculation, and reach removal listeners (e.g. Virtual Coupons) that do not
+     * expect to run at this point. Deal/add-product items granted by a dropped coupon are
+     * cleaned up by their own `woocommerce_before_calculate_totals` passes (BOGO at priority 11,
+     * Add Products at 19), which run after this one (priority 9).
+     *
+     * Because this pass drops the coupon before WooCommerce gets to it, WooCommerce never shows
+     * its own "it has now been removed from your order" notice. This method adds that same notice
+     * itself (`WC_Coupon::E_WC_COUPON_INVALID_REMOVED`, the message `check_cart_coupons()` uses),
+     * so the shopper still learns the coupon is gone, but only in the contexts
+     * `_can_announce_coupon_removal()` allows. The cart-condition reason notice still goes
+     * through the existing `acfw_auto_apply_coupon_invalid` pipeline, which honors the coupon's
+     * "display notice" setting, notice type, dedupe, and page-context gating.
+     *
+     * @since 4.0.10
+     * @access private
+     *
+     * @param array         $auto_coupons List of auto apply coupon IDs.
+     * @param \WC_Discounts $discounts    WooCommerce discounts object.
+     * @return array List of auto apply coupon IDs that were dropped from the cart.
+     */
+    private function _remove_invalid_auto_applied_coupons( $auto_coupons, $discounts ) {
+        $applied_coupons = \WC()->cart->get_applied_coupons();
+
+        if ( empty( $applied_coupons ) ) {
+            return array();
+        }
+
+        $auto_coupon_ids = array_map( 'absint', (array) $auto_coupons );
+        $removed_ids     = array();
+        $removed_codes   = array();
+
+        $notify = $this->_can_announce_coupon_removal();
+
+        foreach ( $applied_coupons as $coupon_code ) {
+
+            $coupon_id = wc_get_coupon_id_by_code( $coupon_code );
+
+            // skip coupons that are not registered for auto apply.
+            if ( ! $coupon_id || ! in_array( absint( $coupon_id ), $auto_coupon_ids, true ) ) {
+                continue;
+            }
+
+            $coupon = new Advanced_Coupon( $coupon_id );
+            $check  = $discounts->is_coupon_valid( $coupon );
+
+            if ( ! is_wp_error( $check ) ) {
+                continue;
+            }
+
+            $removed_ids[]   = absint( $coupon_id );
+            $removed_codes[] = $coupon_code;
+
+            // tell the shopper the coupon is gone, exactly as WooCommerce would have.
+            if ( $notify ) {
+                $coupon->add_coupon_message( \WC_Coupon::E_WC_COUPON_INVALID_REMOVED );
+            }
+
+            /** This action is documented in Models/Auto_Apply.php (implement_auto_apply_coupons). */
+            do_action( 'acfw_auto_apply_coupon_invalid', $coupon, $check );
+        }
+
+        if ( ! empty( $removed_codes ) ) {
+            \WC()->cart->set_applied_coupons( array_diff( $applied_coupons, $removed_codes ) );
+        }
+
+        return $removed_ids;
+    }
+
+    /**
+     * Check if the current request can show the "coupon has been removed" notice.
+     *
+     * The notice uses `WC_Coupon::E_WC_COUPON_INVALID_REMOVED` (code 101), so WooCommerce always
+     * queues it as an `error` notice. On the Store API, `CartController::validate_cart()` converts
+     * every buffered `error` notice into a `WP_Error` and throws a 409 `InvalidCartException`.
+     * The cart is valid once the invalid coupon is dropped, so an error notice that reaches that
+     * point fails an otherwise good request.
+     *
+     * Only the Store API checkout routes call `validate_cart()`. The notice is therefore allowed
+     * on:
+     *
+     * - the classic cart and checkout pages, where WooCommerce itself shows it;
+     * - the Cart Block page and the Store API cart routes, which never call `validate_cart()`.
+     *
+     * It is suppressed on the Checkout Block page and on the Store API checkout routes, because a
+     * notice queued there is read by the next `validate_cart()` call. The `$removed_coupons`
+     * payload passed to `acfwp_after_auto_apply_coupons` stays available for block-aware
+     * consumers that want to surface the removal through the cart extension schema.
+     *
+     * @since 4.0.10
+     * @access private
+     *
+     * @return bool True if the removal notice is safe to queue, false otherwise.
+     */
+    private function _can_announce_coupon_removal() {
+        if ( $this->_helper_functions->is_store_api_request() ) {
+            $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+
+            return ! str_contains( $request_uri, 'wc/store/v1/checkout' );
+        }
+
+        // the checkout block reads queued notices on its next Store API checkout request.
+        if ( is_checkout() && $this->_helper_functions->is_cart_block() ) {
+            return false;
+        }
+
+        return is_cart() || is_checkout() || $this->_helper_functions->is_cart_block();
     }
 
     /**

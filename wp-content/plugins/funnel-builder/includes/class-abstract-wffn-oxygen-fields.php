@@ -79,7 +79,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 
 		public function add_heading( $control, $heading, $separator = '', $conditions = [] ) {
 			$key            = $this->get_unique_id();
-			$custom_control = $control->addCustomControl( __( '<div class="oxygen-option-default"  style="color: #fff; line-height: 1.3; font-size: 15px;font-weight: 900;    text-transform: uppercase;    text-decoration: underline;">' . $heading . '</div>' , 'funnel-builder'), 'description' );
+			$custom_control = $control->addCustomControl( '<div class="oxygen-option-default"  style="color: #fff; line-height: 1.3; font-size: 15px;font-weight: 900;    text-transform: uppercase;    text-decoration: underline;">' . $heading . '</div>', 'description' );
 			$custom_control->setParam( $key, '' );
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$condition_string = $this->get_condition_string( $key, $conditions );
@@ -118,7 +118,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 
 		public function add_sub_heading( $control, $heading, $separator = '', $conditions = [] ) {
 			$key            = $this->get_unique_id();
-			$custom_control = $control->addCustomControl( __( '<div class="oxygen-option-default"  style="color: #fff; line-height: 1.3; font-size: 13px;font-weight: 600;    text-transform: uppercase;    text-decoration: underline;">' . $heading . '</div>' , 'funnel-builder'), 'description' );
+			$custom_control = $control->addCustomControl( '<div class="oxygen-option-default"  style="color: #fff; line-height: 1.3; font-size: 13px;font-weight: 600;    text-transform: uppercase;    text-decoration: underline;">' . $heading . '</div>', 'description' );
 			$custom_control->setParam( $key, '' );
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$condition_string = $this->get_condition_string( $key, $conditions );
@@ -398,7 +398,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 				"type"    => "radio",
 				"name"    => $label,
 				"slug"    => $key,
-				"value"   => [ 'on' => __( "Yes" ), "off" => __( 'No' ) ],
+				"value"   => [ 'on' => __( "Yes", 'funnel-builder' ), "off" => __( 'No', 'funnel-builder' ) ],
 				"default" => $default
 			];
 
@@ -681,7 +681,7 @@ if ( ! class_exists( 'WFFN_OXY_Field' ) ) {
 
 		protected function add_border( $tab_id, $key, $selectors, $label = '' ) {
 			if ( empty( $label ) ) {
-				$label = __( "Border" );
+				$label = __( "Border", 'funnel-builder' );
 			}
 			$tab_id->borderSection( $label, $selectors, $this );
 

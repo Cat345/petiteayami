@@ -12,6 +12,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 global $product;
 
+/**
+ * Silence the third-party single-product furniture BEFORE this file registers anything of its own.
+ *
+ * The quick view renders real WooCommerce add-to-cart templates, so every plugin that decorates a
+ * product page renders into the bump's modal too — see WFOB_Public::get_quick_view_suppressed_hooks()
+ * for what is lifted and why the in-form hooks are left alone. Restored at the bottom of this file;
+ * the ordering matters, because the add_action() calls below target two of the same hooks and must
+ * survive.
+ */
+WFOB_Core()->public->suppress_quick_view_hooks();
 
 add_action( 'wfob_qv_summary', 'woocommerce_template_single_title', 5 );
 add_action(
@@ -133,3 +143,7 @@ add_action(
 	</div>
 	<div class="wfob_option_btn"><?php _e( 'Choose an option', 'woocommerce' ); ?></div>
 </div>
+
+<?php
+/* The modal markup is built — hand the furniture hooks back the way we found them. */
+WFOB_Core()->public->restore_quick_view_hooks();

@@ -143,12 +143,12 @@ class Force_Apply extends Base_Model implements Model_Interface {
      * @param Advanced_Coupon $coupon Coupon object.
      */
     public function save_force_apply_coupons_data( $coupon_id, $coupon ) {
-        // Verify WP's nonce to make sure this is a real coupon-editor form save before mutating data.
+        // Verify ACFW's dedicated nonce to make sure this is a real coupon-editor form save before mutating data.
         // Without this guard, firing acfw_save_coupon from a non-form context (e.g. the Abilities API,
         // REST, or WP-CLI) where $_POST is empty would silently reset force_apply_url_coupon.
-        // Matches the guard in Cashback_Coupon::save_cashback_coupon_fields and Scheduler::save_day_time_scheduler_fields.
-        $nonce = sanitize_key( $_POST['_wpnonce'] ?? '' );
-        if ( ! $nonce || false === wp_verify_nonce( $nonce, 'update-post_' . $coupon_id ) ) {
+        // Uses _acfw_nonce (not _wpnonce) to avoid conflicts with plugins like WooPayments that
+        // may modify the shared _wpnonce field before form submission.
+        if ( ! isset( $_POST['_acfw_nonce'] ) || false === wp_verify_nonce( sanitize_key( $_POST['_acfw_nonce'] ), 'acfw_save_coupon_data_' . $coupon_id ) ) {
             return;
         }
 

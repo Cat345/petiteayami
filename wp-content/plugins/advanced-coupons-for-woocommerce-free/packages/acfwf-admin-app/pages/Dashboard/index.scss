@@ -1,5 +1,5 @@
 // Import CrossPromo styles
-@import './CrossPromo.scss';
+@import "./CrossPromo.scss";
 
 .dashboard-page {
   max-width: 1300px;
@@ -7,7 +7,7 @@
   .dashboard-header {
     margin-bottom: 2em;
   }
-  
+
   .quick-create-coupon {
     display: inline-block;
     margin: 0.3em 0 1.2em;
@@ -22,11 +22,20 @@
       font-size: 0.9em;
     }
   }
-  
+
   .report-date-range-picker {
     display: block;
     float: right;
     margin-bottom: 1em;
+  }
+
+  .report-widgets-error {
+    padding: 1em;
+    margin-bottom: 1em;
+    background: #fff2f0;
+    border: 1px solid #ffccc7;
+    border-radius: 4px;
+    color: #cf1322;
   }
 
   .report-widgets {
@@ -49,15 +58,16 @@
         flex-flow: row;
         align-items: flex-end;
         margin-bottom: 0.5em;
-      
+
         h3 {
           display: inline-block;
-          margin:0 0.3em 0 0;
+          margin: 0 0.3em 0 0;
         }
       }
     }
 
-    .big-number-widget, .upsell-widget {
+    .big-number-widget,
+    .upsell-widget {
       border: 0;
       box-shadow: 0 2px 4px 0px rgb(0 0 0 / 23%);
 
@@ -110,9 +120,7 @@
     }
 
     .upsell-widget {
-
       .ant-card-body {
-
         p.title {
           font-size: 1.8em;
           line-height: 3em;
@@ -122,15 +130,13 @@
           border-bottom: 1px solid #1890ff;
         }
       }
-
-      
     }
   }
 
   .dashboard-sidebar .sidebar-inner {
     padding: 0.4em 1.3em;
-    background: #FAFAFA;
-    border: 1px solid #D5D5D5;
+    background: #fafafa;
+    border: 1px solid #d5d5d5;
 
     .ant-list-header {
       border: 0;
@@ -140,11 +146,10 @@
         font-weight: bold;
         margin: 0;
       }
-    
     }
 
     .ant-list-item {
-      border-color: #E5E5E5;
+      border-color: #e5e5e5;
     }
 
     .view-licenses {
@@ -153,12 +158,10 @@
   }
 
   .resources-section {
-
     li.ant-list-item {
-
       a {
         display: flex;
-        flex-flow:row;
+        flex-flow: row;
         align-items: center;
         color: inherit;
 
@@ -176,7 +179,6 @@
   }
 
   .plugins-section {
-
     li.ant-list-item {
       justify-content: left;
       padding: 0.3em 0;
@@ -188,15 +190,15 @@
         font-size: 1.5em;
 
         &.anticon-check-square {
-          color: #45BE93;
+          color: #45be93;
         }
 
         &.anticon-issues-close {
-          color: #D96208;
+          color: #d96208;
         }
 
         &.anticon-warning {
-          color: #E11111;
+          color: #e11111;
         }
       }
 
@@ -206,17 +208,16 @@
       }
 
       .plugin-status {
-        
         &.active {
-          color: #45BE93;
+          color: #45be93;
         }
 
         &.inactive {
-          color: #D96208;
+          color: #d96208;
         }
 
         &.expired {
-          color: #E11111;
+          color: #e11111;
         }
       }
     }
@@ -225,7 +226,6 @@
   span.tooltip {
     font-size: 16px;
   }
-
 }
 
 .dashboard-tooltip .ant-popover-content {

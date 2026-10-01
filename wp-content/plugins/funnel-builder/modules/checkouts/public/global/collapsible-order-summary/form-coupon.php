@@ -52,15 +52,15 @@ if ( apply_filters( 'wfacp_form_coupon_widgets_enable', false, $this ) ) {
 			}
 			?>
             <div class='wfacp_mini_cart_classes '>
-                <form class="wfacp_layout_shopcheckout checkout_coupon woocommerce-form-coupon <?php echo $classBlock; ?>" method="post">
+                <form class="wfacp_layout_shopcheckout checkout_coupon woocommerce-form-coupon <?php echo esc_attr( $classBlock ); ?>" method="post">
                     <div class="wfacp-row wfacp_coupon_row">
-                        <p class="form-row form-row-first wfacp-form-control-wrapper <?php echo $coupon_cls; ?> wfacp-input-form">
+                        <p class="form-row form-row-first wfacp-form-control-wrapper <?php echo esc_attr( $coupon_cls ); ?> wfacp-input-form">
                             <label for="coupon_code" class="wfacp-form-control-label"><?php echo $wfacp_sidebar_coupon_text; ?></label>
-                            <input type="text" name="coupon_code" class="input-text wfacp-form-control" placeholder="<?php echo 'wfacp-modern-label' == $instance->get_field_label_position() ? $wfacp_sidebar_coupon_text : ''; ?>" id="coupon_code" value=""/>
+                            <input type="text" name="coupon_code" class="input-text wfacp-form-control" placeholder="<?php echo esc_attr( 'wfacp-modern-label' == $instance->get_field_label_position() ? $wfacp_sidebar_coupon_text : '' ); ?>" id="coupon_code" value=""/>
                         </p>
-                        <p class="form-row form-row-last <?php echo $coupon_cls; ?>">
+                        <p class="form-row form-row-last <?php echo esc_attr( $coupon_cls ); ?>">
                             <label class="wfacp-form-control-label">&nbsp;</label>
-                            <button type="submit" class="button wfacp-coupon-btn" name="apply_coupon" value="<?php echo $apply_coupon_button_text; ?>" disabled="disabled"><?php echo $apply_coupon_button_text; ?></button>
+                            <button type="submit" class="button wfacp-coupon-btn" name="apply_coupon" value="<?php echo esc_attr( $apply_coupon_button_text ); ?>" disabled="disabled"><?php echo $apply_coupon_button_text; ?></button>
                         </p>
                         <div class="clear"></div>
                     </div>

@@ -24,7 +24,7 @@ $classes = isset( $args['class'] ) ? implode( ' ', $args['class'] ) : '';
 
 if ( WFACP_Common::is_theme_builder() || apply_filters( 'wfacp_display_shipping_placeholder_message', false ) ) {
 	?>
-	<div class="wfacp_anim wfacp_shipping_options <?php echo esc_attr( $classes ); ?>" id="shipping_calculator_field" <?php echo WFACP_Common::get_fragments_attr(); ?> >
+	<div class="wfacp_anim wfacp_shipping_options <?php echo esc_attr( $classes ); ?>" id="shipping_calculator_field" data-time="<?php echo esc_attr( WFACP_Common::get_fragments_time() ); ?>" >
 		<ul id="shipping_method" class="wfacp_no_add_here">
 			<li>
 				<p><?php echo esc_html( apply_filters( 'wfacp_default_shipping_message', $placeholder ) ); ?></p>
@@ -48,7 +48,7 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 	}
 }
 ?>
-<div class="wfacp_anim wfacp_shipping_options <?php echo esc_attr( $classes ); ?>" id="shipping_calculator_field" <?php echo WFACP_Common::get_fragments_attr(); ?> >
+<div class="wfacp_anim wfacp_shipping_options <?php echo esc_attr( $classes ); ?>" id="shipping_calculator_field" data-time="<?php echo esc_attr( WFACP_Common::get_fragments_time() ); ?>" >
 	<?php
 	$number_parents_fields = WC()->session->get( 'wfacp_shipping_method_parent_fields_count_' . WFACP_Common::get_id(), false );
 	$is_cart_is_virtual    = WFACP_Common::is_cart_is_virtual();
@@ -218,7 +218,7 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 
 			<ul id="shipping_method" class="wfacp_no_add_here">
 				<li class="wfacp_no_shipping wfacp_clearfix">
-					<label><?php _e( 'Shipping method', 'woocommerce' ); ?></label>
+					<label><?php esc_html_e( 'Shipping method', 'woocommerce' ); ?></label>
 				</li>
 			</ul>
 			<?php

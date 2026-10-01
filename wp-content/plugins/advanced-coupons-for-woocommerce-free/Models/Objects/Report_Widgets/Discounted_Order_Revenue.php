@@ -49,22 +49,26 @@ class Discounted_Order_Revenue extends Abstract_Report_Widget {
      * Query report data freshly from the database.
      *
      * @since 4.3
+     * @since 4.7.6 Source from the shared coupon-usage dataset instead of hydrating every order.
+     *            Each order still counts once, even when it carries more than one coupon line
+     *            item, and always at full gross value (refunds do not touch coupon line items).
      * @access protected
      */
     protected function _query_report_data() {
-        $orders        = $this->_query_orders();
-        $total_revenue = wc_add_number_precision( 0.0 );
+        $total_revenue  = wc_add_number_precision( 0.0 );
+        $counted_orders = array();
 
-        // Get total order revenue.
-        foreach ( $orders as $order ) {
-            // Skip if order has no coupons applied.
-            if ( empty( $order->get_coupons() ) ) {
+        // Get total order revenue, once per distinct order.
+        foreach ( $this->_get_coupon_usage_rows() as $row ) {
+            if ( isset( $counted_orders[ $row['order_id'] ] ) ) {
                 continue;
             }
 
+            $counted_orders[ $row['order_id'] ] = true;
+
             // Get order total.
-            $order_total    = apply_filters( 'acfw_filter_amount', floatval( $order->get_total() ), true, array( 'user_currency' => $order->get_currency() ) );
-            $order_total    = apply_filters( 'acfw_query_report_data_order_total', $order_total, $order );
+            $order_total    = apply_filters( 'acfw_filter_amount', (float) $row['order_total'], true, array( 'user_currency' => $row['order_currency'] ) );
+            $order_total    = apply_filters( 'acfw_query_report_data_order_total', $order_total, $row['order'] );
             $total_revenue += wc_add_number_precision( $order_total );
         }
 

@@ -63,13 +63,13 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Point_Rewards_For_WC' ) ) {
 			?>
             <style>
                 @media (max-width: 767px) {
-                <?php echo $bodyClass; ?> #wfacp_custom_point_checkout_wrap .custom_point_checkout #mwb_cart_points,
-                <?php echo $bodyClass; ?> #wfacp_custom_point_checkout_wrap .custom_point_checkout input#wps_cart_points {
+                <?php echo esc_attr( $bodyClass ); ?> #wfacp_custom_point_checkout_wrap .custom_point_checkout #mwb_cart_points,
+                <?php echo esc_attr( $bodyClass ); ?> #wfacp_custom_point_checkout_wrap .custom_point_checkout input#wps_cart_points {
                     margin: 0 0 10px;
                     width: 100%;
                 }
 
-                <?php echo $bodyClass; ?> #wfacp_custom_point_checkout_wrap .custom_point_checkout button {
+                <?php echo esc_attr( $bodyClass ); ?> #wfacp_custom_point_checkout_wrap .custom_point_checkout button {
                                               width: 100%;
                                               display: block;
                                               max-width: 100%;

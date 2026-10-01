@@ -44,7 +44,7 @@ class Plugin_Constants {
     // Plugin configuration constants.
     const TOKEN               = 'acfwf';
     const INSTALLED_VERSION   = 'acfwf_installed_version';
-    const VERSION             = '4.7.5';
+    const VERSION             = '4.7.6';
     const TEXT_DOMAIN         = 'advanced-coupons-for-woocommerce-free';
     const THEME_TEMPLATE_PATH = 'advanced-coupons-for-woocommerce-free';
     const META_PREFIX         = '_acfw_';
@@ -102,6 +102,10 @@ class Plugin_Constants {
     const STORE_CREDIT_API_NAMESPACE    = 'store-credits/v1';
     const STORE_CREDIT_USER_BALANCE     = 'acfw_store_credit_balance';
     const STORE_CREDIT_WC_API_NAMESPACE = 'wc-store-credits/v1';
+
+    // Wishlist restriction.
+    const WISHLISTED_CART_ITEMS_SESSION     = 'acfwf_wishlisted_cart_items';
+    const WISHLIST_RESTRICTION_IN_USE_CACHE = 'acfwf_wishlist_restriction_in_use';
 
     // Store Credits.
     const STORE_CREDITS_SESSION                      = 'acfw_store_credits_discount';
@@ -262,6 +266,7 @@ class Plugin_Constants {
     const STORE_TOOLKIT_PLUGIN        = 'woocommerce-store-toolkit/store-toolkit.php';
     const STORE_EXPORTER_PLUGIN       = 'woocommerce-exporter/exporter.php';
     const ELEMENTOR_PLUGIN            = 'elementor/elementor.php';
+    const PAYPAL_PAYMENTS_PLUGIN      = 'woocommerce-paypal-payments/woocommerce-paypal-payments.php';
 
     // Notifications.
     const NOTIFICATIONS_SCHEDULE_HOOK = 'acfwf_fetch_notifications';

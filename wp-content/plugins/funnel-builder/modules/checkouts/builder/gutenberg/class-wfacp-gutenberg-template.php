@@ -697,7 +697,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			?>
 			<div class="btm_btn_sec wfacp_back_cart_link">
 				<div class="wfacp-back-btn-wrap">
-					<a href="<?php echo esc_attr( $cartURL ); ?>"><?php echo wp_kses_post( $this->form_data['return_to_cart_text'] );//phpcs:ignore WordPressVIPMinimum.Security.ProperEscapingFunction.hrefSrcEscUrl ?></a>
+					<a href="<?php echo esc_url( $cartURL ); ?>"><?php echo wp_kses_post( $this->form_data['return_to_cart_text'] );//phpcs:ignore WordPressVIPMinimum.Security.ProperEscapingFunction.hrefSrcEscUrl ?></a>
 				</div>
 			</div>
 			<?php

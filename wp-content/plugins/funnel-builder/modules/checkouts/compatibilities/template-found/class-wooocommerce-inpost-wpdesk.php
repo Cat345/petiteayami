@@ -74,13 +74,13 @@ if ( ! class_exists( 'WFACP_Shipping_Packzkomaty_impost' ) ) {
 			}
 
 			echo '<style>';
-			echo $bodyClass . '#wfacp_checkout_form .paczkomaty-shipping select{width: 100%;margin-bottom:10px;}';
-			echo $bodyClass . '#wfacp_checkout_form .paczkomaty-shipping .select2-container{width: 100% !important;}';
-			echo $bodyClass . '#wfacp_checkout_form .paczkomaty-shipping {border-bottom: 0;}';
-			echo $bodyClass . '#wfacp_checkout_form #open-geowidget{display: inline-block;margin-top: 10px;}';
-			echo $bodyClass . '#wfacp_checkout_form #paczkomat_id_wrapper .select2-selection__rendered{    padding: 12px;}';
-			echo $bodyClass . '#wfacp_checkout_form a#open-geowidget {width: auto;background: #e9e9e9;color: #565656;margin: 0;height: auto;display: inline-block;min-height: 1px;}';
-			echo $bodyClass . '#wfacp_checkout_form #wfacp_paczkomat_id_wrapper { width: 100%;}';
+			echo esc_attr( $bodyClass ) . '#wfacp_checkout_form .paczkomaty-shipping select{width: 100%;margin-bottom:10px;}';
+			echo esc_attr( $bodyClass ) . '#wfacp_checkout_form .paczkomaty-shipping .select2-container{width: 100% !important;}';
+			echo esc_attr( $bodyClass ) . '#wfacp_checkout_form .paczkomaty-shipping {border-bottom: 0;}';
+			echo esc_attr( $bodyClass ) . '#wfacp_checkout_form #open-geowidget{display: inline-block;margin-top: 10px;}';
+			echo esc_attr( $bodyClass ) . '#wfacp_checkout_form #paczkomat_id_wrapper .select2-selection__rendered{    padding: 12px;}';
+			echo esc_attr( $bodyClass ) . '#wfacp_checkout_form a#open-geowidget {width: auto;background: #e9e9e9;color: #565656;margin: 0;height: auto;display: inline-block;min-height: 1px;}';
+			echo esc_attr( $bodyClass ) . '#wfacp_checkout_form #wfacp_paczkomat_id_wrapper { width: 100%;}';
 
 			echo '</style>';
 		}

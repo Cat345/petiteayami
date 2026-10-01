@@ -67,9 +67,6 @@ if ( ! class_exists( 'WFFN_ThankYou_WC_Pages_Oxygen' ) ) {
 			if ( isset( $designs['oxy'] ) && is_array( $designs['oxy'] ) ) {
 				foreach ( $designs['oxy'] as $d_key => $templates ) {
 
-					if ( isset( $templates['pro'] ) && 'yes' === $templates['pro'] ) {
-						$templates['license_exist'] = WFFN_Core()->admin->get_license_status();
-					}
 					WFFN_Core()->thank_you_pages->register_template( $d_key, $templates, 'oxy' );
 
 				}

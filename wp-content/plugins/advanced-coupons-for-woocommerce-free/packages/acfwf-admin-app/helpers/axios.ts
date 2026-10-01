@@ -9,7 +9,7 @@ const CancelToken = axios.CancelToken;
 export default axios.create({
   baseURL: wpApiSettings.root,
   timeout: 0,
-  headers: { "X-WP-Nonce": wpApiSettings.nonce, "X-ACFW-Context": "admin" },
+  headers: { 'X-WP-Nonce': wpApiSettings.nonce, 'X-ACFW-Context': 'admin' },
 });
 
 // variable to save all axios cancels.
@@ -25,5 +25,8 @@ export const axiosCancel = (id: string) => {
 };
 
 // export cancel token.
-export const getCancelToken = (id: string) =>
-  new CancelToken((c: any) => axiosCancelMap.set(id, c));
+export const getCancelToken = (id: string) => new CancelToken((c: any) => axiosCancelMap.set(id, c));
+
+// Report whether a rejection came from axiosCancel() rather than a real request failure.
+// A cancelled request is a normal part of replacing an in-flight request, not an error.
+export const isCancel = (error: any) => axios.isCancel(error);

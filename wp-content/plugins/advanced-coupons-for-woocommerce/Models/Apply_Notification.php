@@ -69,9 +69,10 @@ class Apply_Notification extends Base_Model implements Model_Interface, Initiabl
      * Get one click apply notices.
      *
      * @since 3.5.9
+     * @since 4.1 return the message, coupon code and button label separately instead of pre-rendered button markup.
      * @access public
      *
-     * @return array|null Notices data or null if condition is not satisfied.
+     * @return array|null List of notices, each with `message`, `type`, `code` and `button_text` keys. Null if condition is not satisfied.
      */
     public function get_one_click_apply_notices() {
         $apply_notifications = apply_filters( 'acfwp_apply_notification_coupons', \ACFWF()->Helper_Functions->get_option( $this->_constants->APPLY_NOTIFICATION_CACHE, array() ) );
@@ -96,7 +97,7 @@ class Apply_Notification extends Base_Model implements Model_Interface, Initiabl
             }
 
             $message     = $coupon->get_advanced_prop( 'apply_notification_message', __( 'Your current cart is eligible for a coupon.', 'advanced-coupons-for-woocommerce' ) );
-            $button      = '<button type="button" class="acfw_apply_notification button" value="' . esc_attr( $code ) . '">' . $coupon->get_advanced_prop( 'apply_notification_btn_text', __( 'Apply Coupon', 'advanced-coupons-for-woocommerce' ) ) . '</button>';
+            $button_text = $coupon->get_advanced_prop( 'apply_notification_btn_text', __( 'Apply Coupon', 'advanced-coupons-for-woocommerce' ) );
             $notice_type = $coupon->get_advanced_prop( 'apply_notification_type', 'notice' );
 
             // it's necessary to change notice type to 'info' if we are on cart/checkout block, because wc notice block can't handle 'notice' type.
@@ -104,9 +105,19 @@ class Apply_Notification extends Base_Model implements Model_Interface, Initiabl
                 $notice_type = 'info';
             }
 
+            /*
+             * The apply button markup is not included here on purpose. WooCommerce Blocks
+             * sanitizes notice content against an allow list that drops `<button>` (keeping
+             * only its text), so the block notice renders the button label as plain text.
+             * The message, coupon code and button label are returned separately instead, and
+             * each consumer builds its own control: the classic pages below, and the
+             * `OneClickApply` block component via the Store API cart extension data.
+             */
             $notices[] = array(
-                'message' => $message . $button,
-                'type'    => $notice_type,
+                'message'     => $message,
+                'type'        => $notice_type,
+                'code'        => $code,
+                'button_text' => $button_text,
             );
         }
 
@@ -120,6 +131,7 @@ class Apply_Notification extends Base_Model implements Model_Interface, Initiabl
      * @since 3.2.1 improve checkout page check condition logic. prevent to run implementation more than once.
      * @since 3.4.1 change hook priorirty from 20 to 2000. this is due to a conflict with a third party plugin (see issue-#474).
      * @since 3.5.9 implement apply notifications on cart/checkout classic page.
+     * @since 4.1 build the apply button markup here, separated from the message by a space.
      * @access public
      */
     public function implement_apply_notifications() {
@@ -141,7 +153,13 @@ class Apply_Notification extends Base_Model implements Model_Interface, Initiabl
         }
 
         foreach ( $notices as $notice ) {
-            wc_add_notice( $notice['message'], $notice['type'] );
+            $button = sprintf(
+                '<button type="button" class="acfw_apply_notification button" value="%1$s">%2$s</button>',
+                esc_attr( $notice['code'] ),
+                esc_html( $notice['button_text'] )
+            );
+
+            wc_add_notice( $notice['message'] . ' ' . $button, $notice['type'] );
         }
 
         $this->_implementation_run = true;

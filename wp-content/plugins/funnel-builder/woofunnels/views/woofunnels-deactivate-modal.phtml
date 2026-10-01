@@ -295,11 +295,14 @@ foreach ( $reasons as $reason ) {
                 }
 
                 var _parent = $(this).parents('.woofunnels-modal:first');
-                var _this = $(this);
-
 
                 var $radio = $('input[type="radio"]:checked');
 
+                // No reason selected (e.g. "Skip & Deactivate") - deactivate without phoning home.
+                if (0 === $radio.length) {
+                    window.location.href = $deactivateLinks[currentPluginName];
+                    return;
+                }
 
                 var $selected_reason = $radio.parents('li:first'),
                     $input = $selected_reason.find('textarea, input[type="text"]');
@@ -310,7 +313,7 @@ foreach ( $reasons as $reason ) {
                     method: 'POST',
                     data: {
                         'action': 'woofunnels_submit_uninstall_reason',
-                        'reason_id': (0 !== $radio.length) ? $radio.val() : '',
+                        'reason_id': $radio.val(),
                         'reason_info': (0 !== $input.length) ? $input.val().trim() : '',
                         'plugin_basename': currentPluginName,
                         'licenses': WooFunnelsallLicenses,

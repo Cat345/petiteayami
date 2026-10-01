@@ -63,6 +63,9 @@ class Advanced_Coupon extends \ACFWF\Models\Objects\Advanced_Coupon {
             'cashback_waiting_period'                  => 0,
             'product_attributes'                       => array(),
             'excluded_product_attributes'              => array(),
+            'discount_rules'                           => array(),
+            'tier_discounts'                           => array(),
+            'tier_discount_type'                       => 'fixed',
         );
     }
 
@@ -103,6 +106,7 @@ class Advanced_Coupon extends \ACFWF\Models\Objects\Advanced_Coupon {
             case 'enable_shipping_overrides':
             case 'enable_day_time_schedules':
             case 'day_time_schedule_error_msg':
+            case 'tier_discount_type':
                 $data = 'string' === gettype( $raw_data ) ? $raw_data : $default_data;
                 break;
 
@@ -121,6 +125,8 @@ class Advanced_Coupon extends \ACFWF\Models\Objects\Advanced_Coupon {
             case 'shipping_overrides':
             case 'product_attributes':
             case 'excluded_product_attributes':
+            case 'discount_rules':
+            case 'tier_discounts':
                 $data = is_array( $raw_data ) ? $raw_data : $default_data;
                 break;
 

@@ -91,7 +91,7 @@ if ( ! class_exists( 'WFACP_Importer' ) ) {
 							}
 
 							$obj            = new WFACP_Elementor_Importer();
-							$elementor_data = is_string( $acp_meta['_elementor_data'] ) ? $acp_meta['_elementor_data'] : json_encode( $acp_meta['_elementor_data'] );
+							$elementor_data = is_string( $acp_meta['_elementor_data'] ) ? $acp_meta['_elementor_data'] : wp_json_encode( $acp_meta['_elementor_data'] );
 							$obj->import_aero_template( $acp_id, $elementor_data );
 						}
 					}

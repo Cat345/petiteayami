@@ -36,6 +36,19 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
      */
     private $_premium_field_options;
 
+    /**
+     * Code of the coupon currently being validated.
+     *
+     * WooCommerce revalidates every applied coupon on each cart/checkout load via
+     * `WC_Cart::check_cart_coupons()`, and the coupon is still in the applied list at that
+     * point. The pattern matcher must not let a coupon satisfy its own condition.
+     *
+     * @since 4.0.10
+     * @access private
+     * @var string
+     */
+    private $_validating_coupon_code = '';
+
     /*
     |--------------------------------------------------------------------------
     | Class Methods
@@ -89,6 +102,25 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
             'cart-total'                                => __( 'Cart Total', 'advanced-coupons-for-woocommerce' ),
             'category-subtotal'                         => __( 'Category Subtotal', 'advanced-coupons-for-woocommerce' ),
         );
+    }
+
+    /**
+     * Record the code of the coupon currently being validated.
+     *
+     * Runs before the cart conditions are evaluated so the pattern matcher can exclude the
+     * coupon under validation from the applied coupon codes it matches against.
+     *
+     * @since 4.0.10
+     * @access public
+     *
+     * @param bool       $valid  Whether the coupon is valid.
+     * @param \WC_Coupon $coupon Coupon object being validated.
+     * @return bool Unchanged validity value.
+     */
+    public function record_validating_coupon( $valid, $coupon ) {
+        $this->_validating_coupon_code = $coupon instanceof \WC_Coupon ? wc_format_coupon_code( $coupon->get_code() ) : '';
+
+        return $valid;
     }
 
     /**
@@ -310,10 +342,17 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
                 );
                 break;
             case 'coupons-applied-in-cart':
+                $allowed_match_types = array_merge( array( 'exact' ), $this->_get_coupon_pattern_match_types() );
+                $match_type          = sanitize_text_field( $condition_field['data']['match_type'] ?? 'exact' );
+                $raw_patterns        = isset( $condition_field['data']['patterns'] ) && is_array( $condition_field['data']['patterns'] ) ? $condition_field['data']['patterns'] : array();
+                $patterns            = $this->_normalize_coupon_patterns( array_map( 'sanitize_text_field', $raw_patterns ) );
+
                 $data = array(
-                    'condition' => sanitize_text_field( $condition_field['data']['condition'] ?? 'atleast' ),
-                    'value'     => array_map( 'sanitize_text_field', $condition_field['data']['value'] ?? array() ),
-                    'quantity'  => intval( $condition_field['data']['quantity'] ?? 1 ),
+                    'condition'  => sanitize_text_field( $condition_field['data']['condition'] ?? 'atleast' ),
+                    'value'      => array_map( 'sanitize_text_field', $condition_field['data']['value'] ?? array() ),
+                    'quantity'   => intval( $condition_field['data']['quantity'] ?? 1 ),
+                    'match_type' => in_array( $match_type, $allowed_match_types, true ) ? $match_type : 'exact',
+                    'patterns'   => $patterns,
                 );
                 break;
         }
@@ -605,17 +644,26 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
                 'prev_days_label' => __( 'No. of previous days', 'advanced-coupons-for-woocommerce' ),
             ),
             'coupons_applied_in_cart'                   => array(
-                'group'             => 'cart-items',
-                'key'               => 'coupons-applied-in-cart',
-                'title'             => __( 'Coupons Applied In Cart', 'advanced-coupons-for-woocommerce' ),
-                'desc'              => __( 'Check if certain coupon(s) has been applied in the cart', 'advanced-coupons-for-woocommerce' ),
-                'coupons_label'     => __( 'Coupon(s)', 'advanced-coupons-for-woocommerce' ),
-                'quantity_label'    => __( 'Quantity', 'advanced-coupons-for-woocommerce' ),
-                'select_coupons'    => __( 'Select coupon(s)...', 'advanced-coupons-for-woocommerce' ),
-                'condition_options' => array(
+                'group'                => 'cart-items',
+                'key'                  => 'coupons-applied-in-cart',
+                'title'                => __( 'Coupons Applied In Cart', 'advanced-coupons-for-woocommerce' ),
+                'desc'                 => __( 'Check if certain coupon(s) has been applied in the cart', 'advanced-coupons-for-woocommerce' ),
+                'coupons_label'        => __( 'Coupon(s)', 'advanced-coupons-for-woocommerce' ),
+                'quantity_label'       => __( 'Quantity', 'advanced-coupons-for-woocommerce' ),
+                'select_coupons'       => __( 'Select coupon(s)...', 'advanced-coupons-for-woocommerce' ),
+                'condition_options'    => array(
                     'atleast' => __( 'AT LEAST', 'advanced-coupons-for-woocommerce' ),
                     'all'     => __( 'ALL', 'advanced-coupons-for-woocommerce' ),
                 ),
+                'match_label'          => __( 'Match type', 'advanced-coupons-for-woocommerce' ),
+                'match_options'        => array(
+                    'exact'      => __( 'EXACT', 'advanced-coupons-for-woocommerce' ),
+                    'startswith' => __( 'STARTS WITH', 'advanced-coupons-for-woocommerce' ),
+                    'endswith'   => __( 'ENDS WITH', 'advanced-coupons-for-woocommerce' ),
+                    'contains'   => __( 'CONTAINS', 'advanced-coupons-for-woocommerce' ),
+                ),
+                'patterns_label'       => __( 'Pattern(s)', 'advanced-coupons-for-woocommerce' ),
+                'patterns_placeholder' => __( 'Enter comma-separated text, e.g. black-friday, summer', 'advanced-coupons-for-woocommerce' ),
             ),
             'cart_total'                                => array(
                 'group'     => 'cart-items',
@@ -1571,12 +1619,21 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
      * Get coupons applied in cart condition field value.
      *
      * @since 3.6.0
+     * @since 4.0.10 Add pattern matching (STARTS WITH / ENDS WITH / CONTAINS) support.
      * @access private
      *
      * @param array $data Condition data.
      * @return bool Condition field value.
      */
     private function _get_coupons_applied_in_cart_condition_field_value( $data ) {
+        $match_type = $data['match_type'] ?? 'exact';
+
+        // any unknown or absent match type behaves as EXACT, so a row that reached the meta
+        // outside the sanitizer can never silently stop matching.
+        if ( in_array( $match_type, $this->_get_coupon_pattern_match_types(), true ) ) {
+            return $this->_get_coupons_applied_in_cart_pattern_match( $data );
+        }
+
         $applied_coupons   = $this->_helper_functions->get_coupon_ids_applied_in_cart();
         $condition_coupons = $this->_helper_functions->get_coupon_ids_for_select_coupons_field_value( $data['value'] );
 
@@ -1595,6 +1652,154 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
 
         // validate cart condition for ALL condition type.
         return count( $intersect ) === count( $data['value'] );
+    }
+
+    /**
+     * Get coupons applied in cart condition field value using pattern matching.
+     *
+     * Matches applied coupon CODES (not IDs) against the stored `patterns`, using the
+     * selected `match_type`. Patterns are matched literally (no regex, no glob).
+     *
+     * @since 4.0.10
+     * @access private
+     *
+     * @param array $data Condition data.
+     * @return bool Condition field value.
+     */
+    private function _get_coupons_applied_in_cart_pattern_match( $data ) {
+        $patterns = isset( $data['patterns'] ) && is_array( $data['patterns'] ) ? $data['patterns'] : array();
+        $patterns = $this->_normalize_coupon_patterns( $patterns );
+
+        // an empty pattern list can never satisfy the condition.
+        if ( empty( $patterns ) ) {
+            return false;
+        }
+
+        // exclude the coupon being validated. WooCommerce revalidates applied coupons on every
+        // cart load while they are still applied, so without this a coupon could match its own code.
+        $applied_codes = array_diff(
+            array_map( 'wc_format_coupon_code', \WC()->cart->get_applied_coupons() ),
+            array_filter( array( $this->_validating_coupon_code ) )
+        );
+
+        $matched_codes    = array();
+        $matched_patterns = array();
+
+        foreach ( $patterns as $pattern ) {
+            foreach ( $applied_codes as $applied_code ) {
+                if ( $this->_coupon_code_matches_pattern( $applied_code, $pattern, $data['match_type'] ) ) {
+                    $matched_codes[ $applied_code ] = true;
+                    $matched_patterns[ $pattern ]   = true;
+                }
+            }
+        }
+
+        // return false if no matching applied coupon codes found.
+        if ( empty( $matched_codes ) ) {
+            return false;
+        }
+
+        // validate cart condition for ATLEAST condition type, counting distinct matched codes.
+        if ( 'atleast' === $data['condition'] ) {
+            return count( $matched_codes ) >= intval( $data['quantity'] ?? 0 );
+        }
+
+        // validate cart condition for ALL condition type: every non-empty pattern must match at least one applied code.
+        return count( $matched_patterns ) === count( $patterns );
+    }
+
+    /**
+     * Normalize a list of coupon code patterns.
+     *
+     * Trims each pattern, drops empty ones, and drops duplicates. Duplicates are compared
+     * without case, because `_coupon_code_matches_pattern()` also matches without case. The
+     * `all` condition type counts matched patterns against this list, so a duplicate pattern
+     * would otherwise make the condition impossible to satisfy.
+     *
+     * @since 4.0.10
+     * @access private
+     *
+     * @param array $patterns Raw pattern list.
+     * @return array Trimmed, non-empty, unique pattern list.
+     */
+    private function _normalize_coupon_patterns( $patterns ) {
+        if ( ! is_array( $patterns ) ) {
+            return array();
+        }
+
+        $normalized = array();
+        $seen       = array();
+
+        foreach ( $patterns as $pattern ) {
+            $pattern = trim( (string) $pattern );
+
+            if ( '' === $pattern ) {
+                continue;
+            }
+
+            $key = wc_strtolower( $pattern );
+
+            if ( isset( $seen[ $key ] ) ) {
+                continue;
+            }
+
+            $seen[ $key ] = true;
+            $normalized[] = $pattern;
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Get the match types that use pattern matching.
+     *
+     * Shared by the sanitizer and the evaluator so the two ends cannot drift apart. `exact` is
+     * deliberately absent: it is the fallback, not a pattern type.
+     *
+     * @since 4.0.10
+     * @access private
+     *
+     * @return array List of pattern match types.
+     */
+    private function _get_coupon_pattern_match_types() {
+        return array( 'startswith', 'endswith', 'contains' );
+    }
+
+    /**
+     * Check if a coupon code matches a pattern for a given match type.
+     *
+     * Both sides are normalised with `wc_format_coupon_code()` and trimmed before comparing,
+     * so the match is case-insensitive and edge-whitespace-insensitive. Matching is always
+     * literal — no regex, no glob, no SQL wildcards.
+     *
+     * @since 4.0.10
+     * @access private
+     *
+     * @param string $code       Applied coupon code.
+     * @param string $pattern    Pattern to match against.
+     * @param string $match_type Match type (startswith|endswith|contains).
+     * @return bool Whether the code matches the pattern.
+     */
+    private function _coupon_code_matches_pattern( $code, $pattern, $match_type ) {
+        $code    = wc_format_coupon_code( trim( $code ) );
+        $pattern = wc_strtolower( trim( $pattern ) );
+
+        if ( '' === $pattern ) {
+            return false;
+        }
+
+        switch ( $match_type ) {
+            case 'startswith':
+                return str_starts_with( $code, $pattern );
+
+            case 'endswith':
+                return str_ends_with( $code, $pattern );
+
+            case 'contains':
+                return str_contains( $code, $pattern );
+        }
+
+        return false;
     }
 
     /*
@@ -2140,6 +2345,7 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
             return;
         }
 
+        add_filter( 'woocommerce_coupon_is_valid', array( $this, 'record_validating_coupon' ), 1, 2 );
         add_filter( 'acfw_get_cart_condition_field_value', array( $this, 'get_condition_field_value' ), 10, 3 );
         add_filter( 'acfw_cart_condition_field_options', array( $this, 'cart_condition_premium_field_options' ) );
         add_filter( 'acfw_sanitize_cart_condition_field', array( $this, 'sanitize_cart_condition_field' ), 10, 3 );

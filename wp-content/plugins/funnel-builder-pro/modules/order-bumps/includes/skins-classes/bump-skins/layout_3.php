@@ -165,6 +165,7 @@ if ( ! class_exists( 'WFOB_Layout_3' ) ) {
 				'add_button_hover_color'                 => '',
 				'add_button_bg_color'                    => '#353030',
 				'add_button_hover_bg_color'              => '',
+				'icon_on_button'                         => 'none',
 
 				'added_button_color'                     => '#ffffff',
 				'added_button_bg_color'                  => '#9A9797',

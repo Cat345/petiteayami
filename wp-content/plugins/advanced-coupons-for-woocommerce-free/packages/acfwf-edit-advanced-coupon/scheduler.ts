@@ -17,15 +17,11 @@ export default function edit_link_scheduler_fields() {
   // @ts-ignore
   const scheduler_tab = document.querySelector('#acfw_scheduler') as HTMLElement,
     schedule_start_field = scheduler_tab.querySelector('#_acfw_schedule_start') as HTMLInputElement,
-    schedule_expire_field = scheduler_tab.querySelector('#_acfw_schedule_expire') as HTMLInputElement,
-    wc_default_expiry_field = document.querySelector('#general_coupon_data p.expiry_date_field') as HTMLInputElement;
+    schedule_expire_field = scheduler_tab.querySelector('#_acfw_schedule_expire') as HTMLInputElement;
 
   $(scheduler_tab).on('change', '.date-field,.date-hour,.date-minute', toggle_fields_required_prop);
 
   $(scheduler_tab).on('click', '.clear-scheduler-fields', clear_scheduler_fields_values);
-
-  // hide the default WC coupon expiry date field from the DOM.
-  $(wc_default_expiry_field).css('display', 'none');
 
   $(schedule_start_field).trigger('change acfw_load');
   $(schedule_expire_field).trigger('change acfw_load');
@@ -194,5 +190,30 @@ function toggleSchedulerSection() {
     $options.find('.date-field,.days-time-field label input,textarea').prop('disabled', true);
   }
 
+  // Only the date range schedules section replaces WooCommerce's own coupon expiry date field,
+  // so only that section's toggle decides whether that field is shown.
+  if ($section.hasClass('acfw-date-range-schedules-section')) {
+    toggleDefaultExpiryField($input.is(':checked'));
+  }
+
   $options.find('input').trigger('change');
+}
+
+/**
+ * Show or hide WooCommerce's own coupon expiry date field.
+ *
+ * The date range schedules replace that field, so it is hidden while they are in use and shown
+ * again when they are not. Hiding sets the style inline to override the styling that shows the
+ * field for BOGO coupons, and showing clears it again so that styling still applies.
+ *
+ * @since 4.8
+ *
+ * @param {boolean} isSchedulerEnabled Whether the date range schedules are enabled.
+ */
+function toggleDefaultExpiryField(isSchedulerEnabled: boolean) {
+  const wc_default_expiry_field = document.querySelector('#general_coupon_data p.expiry_date_field');
+
+  if (!wc_default_expiry_field) return;
+
+  $(wc_default_expiry_field).css('display', isSchedulerEnabled ? 'none' : '');
 }

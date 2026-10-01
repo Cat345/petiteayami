@@ -175,6 +175,14 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			}
 			add_action( 'bwf_global_save_settings_funnelkit_notifications', array( $this, 'save_settings_for_email_notification' ), 10, 1 );
 			add_filter( 'use_block_editor_for_post', array( $this, 'maybe_enable_gutenberg_for_funnel_steps' ), PHP_INT_MAX, 2 );
+
+			/** Update-required surfaces while the installed Pro/Basic is older than WFFN_MIN_PRO_VERSION */
+			if ( is_admin() ) {
+				add_action( 'admin_notices', array( $this, 'maybe_render_sitewide_notice' ) );
+				add_action( 'admin_init', array( $this, 'maybe_register_update_row_message' ) );
+			}
+			add_action( 'admin_bar_menu', array( $this, 'maybe_add_admin_bar_state' ), 100 );
+			add_filter( 'wffn_admin_notifications', array( $this, 'maybe_have_outdated_notif' ) );
 		}
 
 		/**
@@ -796,10 +804,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 		public function bwf_funnel_pages() {
 
-			if ( WFFN_Pro_Update_Required::get_instance()->maybe_render() ) {
-				return;
-			}
-
 			?>
 			<div id="wffn-contacts" class="wffn-page">
 			</div>
@@ -822,8 +826,8 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 				wp_enqueue_style( 'wffn-flex-admin', $this->get_admin_url() . '/assets/css/admin.css', array(), WFFN_VERSION_DEV );
 
-				if ( WFFN_Core()->admin->is_wffn_flex_page() && ! WFFN_Pro_Update_Required::get_instance()->is_outdated() ) {
-					$this->load_react_app( 'main-20260820133547' ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
+				if ( WFFN_Core()->admin->is_wffn_flex_page() ) {
+					$this->load_react_app( 'main-20260904101952' ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
 					if ( isset( $_GET['page'] ) && $_GET['page'] === 'bwf' && method_exists( 'BWF_Admin_General_Settings', 'get_localized_bwf_data' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						wp_localize_script( 'wffn-contact-admin', 'bwfAdminGen', BWF_Admin_General_Settings::get_instance()->get_localized_bwf_data() );
 
@@ -2798,12 +2802,19 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		 *
 		 * @return false|mixed version number if update available, false if not available
 		 */
-		public function is_update_available() {
+		public function is_update_available( $only_pro = false ) {
 
 			$plugins = get_site_transient( 'update_plugins' );
-			if ( isset( $plugins->response ) && is_array( $plugins->response ) && isset( $plugins->response[ WFFN_PLUGIN_BASENAME ] ) ) {
 
-				return $this->compare_version( WFFN_VERSION, $plugins->response[ WFFN_PLUGIN_BASENAME ]->new_version );
+			if ( $only_pro ) {
+				if ( defined( 'WFFN_PRO_PLUGIN_BASENAME' ) && isset( $plugins->response ) && is_array( $plugins->response ) && isset( $plugins->response[ WFFN_PRO_PLUGIN_BASENAME ] ) ) {
+					return $this->compare_version( WFFN_PRO_VERSION, $plugins->response[ WFFN_PRO_PLUGIN_BASENAME ]->new_version );
+				} else {
+					return false;
+				}
+			} elseif ( isset( $plugins->response ) && is_array( $plugins->response ) && isset( $plugins->response[ WFFN_PLUGIN_BASENAME ] ) ) {
+
+					return $this->compare_version( WFFN_VERSION, $plugins->response[ WFFN_PLUGIN_BASENAME ]->new_version );
 			} elseif ( defined( 'WFFN_PRO_PLUGIN_BASENAME' ) && isset( $plugins->response ) && is_array( $plugins->response ) && isset( $plugins->response[ WFFN_PRO_PLUGIN_BASENAME ] ) ) {
 				return $this->compare_version( WFFN_PRO_VERSION, $plugins->response[ WFFN_PRO_PLUGIN_BASENAME ]->new_version );
 			}
@@ -3121,6 +3132,403 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		 */
 		public function is_language_support_enabled() {
 			return '' !== WFFN_Plugin_Compatibilities::get_language_compatible_plugin();
+		}
+
+		/**
+		 * Whether the installed Funnel Builder Pro is older than the build this
+		 * release pairs with (WFFN_MIN_PRO_VERSION).
+		 *
+		 * @return bool
+		 */
+		public function is_outdated() {
+			if ( ! defined( 'WFFN_PRO_VERSION' ) || ! defined( 'WFFN_MIN_PRO_VERSION' ) ) {
+				return false;
+			}
+
+			/** Source checkouts carry an unstamped build placeholder, not a comparable version. */
+			if ( false !== strpos( WFFN_PRO_VERSION, '{{{' ) ) {
+				return false;
+			}
+
+			return version_compare( WFFN_PRO_VERSION, WFFN_MIN_PRO_VERSION, '<' );
+		}
+
+		/**
+		 * Name of the installed premium companion plugin the pairing applies to.
+		 *
+		 * @return string
+		 */
+		public function get_companion_name() {
+			return defined( 'WFFN_BASIC_FILE' )
+				? __( 'FunnelKit Funnel Builder Basic', 'funnel-builder' )
+				: __( 'FunnelKit Funnel Builder Pro', 'funnel-builder' );
+		}
+
+		/**
+		 * Companion plugin name without the brand prefix, for tight spaces.
+		 *
+		 * @return string
+		 */
+		public function get_companion_short_name() {
+			return defined( 'WFFN_BASIC_FILE' )
+				? __( 'Funnel Builder Basic', 'funnel-builder' )
+				: __( 'Funnel Builder Pro', 'funnel-builder' );
+		}
+
+		/**
+		 * Adds a pairing-requirement row under the free Funnel Builder plugin on
+		 * the plugins page. A separate row on its own hook — the core update rows
+		 * (both plugins') stay untouched. Registered on admin_init so it also
+		 * covers the AJAX search rerender, where load-plugins.php never fires.
+		 *
+		 * @return void
+		 */
+		public function maybe_register_update_row_message() {
+			if ( ! $this->is_outdated() || ! defined( 'WFFN_PLUGIN_BASENAME' ) ) {
+				return;
+			}
+
+			add_action( 'in_plugin_update_message-' . WFFN_PLUGIN_BASENAME, array( $this, 'render_in_core_update_row' ) );
+			add_action( 'after_plugin_row_' . WFFN_PLUGIN_BASENAME, array( $this, 'render_update_row' ), 11, 2 );
+		}
+
+		/**
+		 * Appended inside the core "There is a new version…" row when the free
+		 * plugin itself has an update on offer.
+		 *
+		 * @return void
+		 */
+		public function render_in_core_update_row() {
+			$this->render_pairing_warning_block( true );
+		}
+
+		/**
+		 * The warning block shared by both plugins-page placements.
+		 *
+		 * @param bool $with_separator Whether a core message precedes the block.
+		 *
+		 * @return void
+		 */
+		private function render_pairing_warning_block( $with_separator ) {
+			$update_link = '';
+			if ( defined( 'WFFN_PRO_FILE' ) && current_user_can( 'update_plugins' ) ) {
+				$pro_file = plugin_basename( WFFN_PRO_FILE );
+				$updates  = get_site_transient( 'update_plugins' );
+				if ( ! empty( $updates->response[ $pro_file ]->package ) ) {
+					$update_link = sprintf(
+						' <a href="%1$s" aria-label="%2$s">%3$s</a>',
+						esc_url( wp_nonce_url( self_admin_url( 'update.php?action=upgrade-plugin&plugin=' ) . $pro_file, 'upgrade-plugin_' . $pro_file ) ),
+						esc_attr( sprintf( /* translators: %s: premium plugin name */ __( 'Update %s now', 'funnel-builder' ), $this->get_companion_name() ) ),
+						esc_html__( 'Update now', 'funnel-builder' )
+					);
+				}
+			}
+
+			if ( $with_separator ) {
+				?>
+				<hr class="wffn-pairing-warning__separator" />
+				<?php
+			}
+			?>
+			<div class="wffn-pairing-warning">
+				<div class="wffn-pairing-warning__icon">
+					<span class="dashicons dashicons-info" aria-hidden="true"></span>
+				</div>
+				<div>
+					<div class="wffn-pairing-warning__title">
+						<?php
+						printf( /* translators: %s: premium plugin name */
+							esc_html__( 'Update Required: %s', 'funnel-builder' ),
+							esc_html( $this->get_companion_name() )
+						);
+						?>
+					</div>
+					<div class="wffn-pairing-warning__message">
+						<?php
+						printf( /* translators: 1: premium plugin name, 2: required version, 3: installed version */
+							esc_html__( 'This version of Funnel Builder pairs with %1$s %2$s or newer, but %3$s is installed.', 'funnel-builder' ),
+							esc_html( $this->get_companion_name() ),
+							esc_html( WFFN_MIN_PRO_VERSION ),
+							esc_html( WFFN_PRO_VERSION )
+						);
+						echo wp_kses_post( $update_link );
+						?>
+					</div>
+				</div>
+			</div>
+			<style>
+				/* Inline so the block also survives the AJAX search rerender of the list table. */
+				.wffn-pairing-warning {
+					display: flex;
+					max-width: 1000px;
+					margin-block-end: 5px;
+				}
+
+				.wffn-pairing-warning__separator {
+					margin: 15px -12px;
+					border: 1px solid #ffb900;
+					border-bottom: none;
+				}
+
+				.wffn-pairing-warning__icon {
+					margin-inline-end: 9px;
+					margin-inline-start: 2px;
+					color: #f56e28;
+				}
+
+				.wffn-pairing-warning__icon .dashicons {
+					font-size: 17px;
+					width: 17px;
+					height: 17px;
+					vertical-align: text-top;
+				}
+
+				.wffn-pairing-warning__title {
+					font-weight: 600;
+					margin-block-end: 10px;
+				}
+
+				.wffn-pairing-warning ~ p {
+					display: none;
+				}
+			</style>
+			<?php
+		}
+
+		/**
+		 * Same markup core uses for its update row, so styling and the shiny
+		 * (AJAX) update flow keep working.
+		 *
+		 * @param string $file        Plugin basename.
+		 * @param array  $plugin_data Plugin headers.
+		 *
+		 * @return void
+		 */
+		public function render_update_row( $file, $plugin_data ) {
+			/** The core update row is present instead; the block renders inside it. */
+			$updates = get_site_transient( 'update_plugins' );
+			if ( isset( $updates->response[ $file ] ) ) {
+				return;
+			}
+
+			$wp_list_table = _get_list_table( 'WP_Plugins_List_Table', array( 'screen' => get_current_screen() ) );
+			$active_class  = is_plugin_active( $file ) ? ' active' : '';
+			?>
+			<tr class="plugin-update-tr wffn-pro-pairing-tr<?php echo esc_attr( $active_class ); ?>" id="wffn-pro-pairing-update" data-plugin="<?php echo esc_attr( $file ); ?>">
+				<td colspan="<?php echo esc_attr( $wp_list_table->get_column_count() ); ?>" class="plugin-update colspanchange">
+					<div class="update-message notice inline notice-warning notice-alt">
+						<?php $this->render_pairing_warning_block( false ); ?>
+					</div>
+				</td>
+			</tr>
+			<?php
+		}
+
+		/**
+		 * Site-wide admin notice while Pro is outdated. Skipped on the FunnelKit
+		 * app screens, where the full-page prompt already covers it.
+		 *
+		 * @return void
+		 */
+		public function maybe_render_sitewide_notice() {
+			if ( ! $this->is_outdated() ) {
+				return;
+			}
+
+			if ( class_exists( 'WFFN_Role_Capability' ) && ! WFFN_Role_Capability::get_instance()->user_access( 'menu', 'read' ) ) {
+				return;
+			}
+
+			if ( $this->is_wffn_flex_page( 'all' ) ) {
+				return;
+			}
+			?>
+			<div class="notice notice-warning">
+				<p>
+					<strong>
+						<?php
+						printf( /* translators: %s: premium plugin name */
+							esc_html__( 'Update %s', 'funnel-builder' ),
+							esc_html( $this->get_companion_name() )
+						);
+						?>
+					</strong>
+				</p>
+				<p>
+					<?php
+					printf( /* translators: 1: installed Funnel Builder version, 2: premium plugin name without brand prefix, 3: required version */
+						esc_html__( 'Funnel Builder %1$s pairs with %2$s version %3$s or higher.', 'funnel-builder' ),
+						esc_html( WFFN_VERSION ),
+						esc_html( $this->get_companion_short_name() ),
+						esc_html( WFFN_MIN_PRO_VERSION )
+					);
+					echo ' ';
+					esc_html_e( 'Some Pro features may not work correctly until Pro is updated. Updating takes about a minute.', 'funnel-builder' );
+					?>
+				</p>
+				<p>
+					<a class="button button-primary" href="<?php echo esc_url( self_admin_url( 'plugins.php?s=FunnelKit+Funnel+Builder' ) ); ?>"><?php esc_html_e( 'Update Now', 'funnel-builder' ); ?></a>
+				</p>
+			</div>
+			<?php
+		}
+
+		/**
+		 * Marks the FunnelKit toolbar menu while Pro is outdated: a badge on the
+		 * top-level node and an update link as the only dropdown entry.
+		 *
+		 * @param WP_Admin_Bar $wp_admin_bar
+		 *
+		 * @return void
+		 */
+		public function maybe_add_admin_bar_state( WP_Admin_Bar $wp_admin_bar ) {
+			if ( ! $this->is_outdated() ) {
+				return;
+			}
+
+			$node = $wp_admin_bar->get_node( 'wffn_funnel' );
+			if ( empty( $node ) ) {
+				return;
+			}
+
+			$wp_admin_bar->add_node(
+				array(
+					'id'    => 'wffn_funnel',
+					'title' => $node->title . '<span class="wffn-ab-update-badge" aria-label="' . esc_attr__( 'Update Required', 'funnel-builder' ) . '"><span class="wffn-ab-update-badge__dot"></span></span>',
+					'href'  => self_admin_url( 'plugins.php?s=FunnelKit+Funnel+Builder' ),
+				)
+			);
+
+			/** The admin app is replaced by the update prompt, so its routes lead nowhere. */
+			$dead_parents = array( 'wffn_funnel' );
+			do {
+				$removed = false;
+				foreach ( (array) $wp_admin_bar->get_nodes() as $sub_node ) {
+					if ( 'wffn_funnel' !== $sub_node->id && in_array( $sub_node->parent, $dead_parents, true ) ) {
+						$wp_admin_bar->remove_node( $sub_node->id );
+						$dead_parents[] = $sub_node->id;
+						$removed        = true;
+					}
+				}
+			} while ( $removed );
+
+			$wp_admin_bar->add_menu(
+				array(
+					'id'     => 'wffn_funnel_update_required',
+					'parent' => 'wffn_funnel',
+					'title'  => '<span class="wffn-ab-update-title">' . sprintf( /* translators: %s: premium plugin name without brand prefix */ esc_html__( 'Update %s', 'funnel-builder' ), esc_html( $this->get_companion_short_name() ) ) . '</span><span class="wffn-ab-update-sub">' . sprintf( /* translators: %s: required version ("+" stands for "or higher") */ esc_html__( 'Requires %s+', 'funnel-builder' ), esc_html( WFFN_MIN_PRO_VERSION ) ) . '</span>',
+					'href'   => self_admin_url( 'plugins.php?s=FunnelKit+Funnel+Builder' ),
+				)
+			);
+			?>
+			<style type="text/css">
+				#wp-admin-bar-wffn_funnel .wffn-ab-update-badge {
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					width: 16px;
+					height: 16px;
+					margin-left: 6px;
+					border-radius: 50%;
+					background: #f2c14b2e;
+					vertical-align: middle;
+				}
+
+				#wp-admin-bar-wffn_funnel .wffn-ab-update-badge__dot {
+					width: 8px;
+					height: 8px;
+					border-radius: 50%;
+					background: #f2c14b;
+				}
+
+				#wpadminbar ul#wp-admin-bar-wffn_funnel-default li#wp-admin-bar-wffn_funnel_update_required a.ab-item {
+					height: auto;
+					padding-top: 4px;
+					padding-bottom: 6px;
+					line-height: 18px;
+				}
+
+				#wpadminbar ul#wp-admin-bar-wffn_funnel-default .wffn-ab-update-title {
+					display: block;
+					font-weight: 600;
+					line-height: 18px;
+					color: #e2b644;
+				}
+
+				#wpadminbar ul#wp-admin-bar-wffn_funnel-default .wffn-ab-update-sub {
+					display: block;
+					margin-top: 2px;
+					line-height: 18px;
+					color: #a7aaad;
+				}
+			</style>
+			<?php
+		}
+
+		/**
+		 * Adds the update-required entry to the in-app notifications feed while
+		 * Pro is outdated.
+		 *
+		 * @param array $notifs
+		 *
+		 * @return array
+		 */
+		public function maybe_have_outdated_notif( $notifs ) {
+			if ( $this->is_outdated() ) {
+				if ( false !== $this->is_update_available( true ) ) {
+					$notifs[] = array(
+						'key'             => 'fb_required_update_3_16',
+						'content'         => '<div class="bwf-notifications-message current">
+						<h3 class="bwf-notifications-title">' . sprintf( __( 'Alert! Your %s version is not in sync with the current lite version.', 'funnel-builder' ), $this->get_companion_name() ) . '</h3>
+						<p class="bwf-notifications-content">' . __( 'Due to some technical changes in how admin application is loaded, the free version has fallen out of sync with the premium version. Consider updating the premium version.', 'funnel-builder' ) . '</p>
+					</div>',
+						'not_dismissible' => true,
+						'customButtons'   => array(
+							array(
+								'label'     => __( 'Update Now', 'funnel-builder' ),
+								'href'      => admin_url( 'plugins.php?s=FunnelKit+Funnel+Builder' ),
+								'className' => 'is-primary',
+								'target'    => '__blank',
+							),
+
+						),
+						'index'           => 9,
+
+					);
+				} else {
+					$url            = 'https://myaccount.funnelkit.com/';
+					$deactivate_url = '';
+					if ( defined( 'WFFN_PRO_FILE' ) ) {
+						$pro_basename   = plugin_basename( WFFN_PRO_FILE );
+						$deactivate_url = wp_nonce_url( self_admin_url( 'plugins.php?action=deactivate&plugin=' . rawurlencode( $pro_basename ) ), 'deactivate-plugin_' . $pro_basename );
+					}
+					$notifs[] = array(
+						'key'             => 'fb_required_update_3_16',
+						'content'         => '<div class="bwf-notifications-message current">
+						<h3 class="bwf-notifications-title">' . sprintf( __( 'Alert! Your %s version is not in sync with the current lite version.', 'funnel-builder' ), $this->get_companion_name() ) . '</h3>
+						<p class="bwf-notifications-content">' . __( 'Due to some technical changes in how admin application is loaded, the free version has fallen out of sync with the premium version. We recommend logging into the Funnelkit accounts and downloading the latest version.', 'funnel-builder' ) . '</p>
+					</div>',
+						'not_dismissible' => true,
+						'customButtons'   => array(
+							array(
+								'label'     => __( 'Get the latest version', 'funnel-builder' ),
+								'href'      => $url,
+								'className' => 'is-primary',
+								'target'    => '__blank',
+							),
+							array(
+								'label'  => __( 'Deactivate Funnel Builder Pro', 'funnel-builder' ),
+								'href'   => $deactivate_url,
+								'target' => '__blank',
+							),
+						),
+						'index'           => 9,
+
+					);
+				}
+			}
+
+			return $notifs;
 		}
 	}
 

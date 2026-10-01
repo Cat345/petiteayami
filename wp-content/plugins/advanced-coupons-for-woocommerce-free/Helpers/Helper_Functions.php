@@ -40,6 +40,18 @@ class Helper_Functions {
      */
     private $_constants;
 
+    /**
+     * Wholesale sale price data, keyed by product id and wholesale role.
+     *
+     * The get_price() method runs several times per cart line per request, so the WWPP
+     * lookup is cached for the request (issue #1622).
+     *
+     * @since 4.7.6
+     * @access private
+     * @var array
+     */
+    private $_wholesale_sale_price_cache = array();
+
     /*
     |--------------------------------------------------------------------------
     | Class Methods
@@ -684,6 +696,7 @@ class Helper_Functions {
      *
      * @since 1.0
      * @since 4.2 Add "Always use regular price" setting
+     * @since 4.7.6 Apply the wholesale sale price when one is active (issue #1622)
      * @access private
      *
      * @param WC_Product $product Product object.
@@ -697,8 +710,12 @@ class Helper_Functions {
             $settings,
             array(
                 'ignore_always_use_regular_price' => false,
+                'cart_item'                       => array(),
             )
         );
+
+        $always_regular_price_option = get_option( Plugin_Constants::ALWAYS_USE_REGULAR_PRICE );
+        $use_regular_price           = in_array( $always_regular_price_option, array( 'yes', 'all_valid' ), true ) && ! $settings['ignore_always_use_regular_price'];
 
         // get wholesale price if present.
         if ( is_object( $wc_wholesale_prices ) && class_exists( 'WWP_Wholesale_Prices' ) ) {
@@ -708,6 +725,13 @@ class Helper_Functions {
             if ( is_array( $wwp_wholesale_roles ) && ! empty( $wwp_wholesale_roles ) && method_exists( 'WWP_Wholesale_Prices', 'get_product_wholesale_price_on_shop_v3' ) ) {
 
                 $data = \WWP_Wholesale_Prices::get_product_wholesale_price_on_shop_v3( $product->get_id(), $wwp_wholesale_roles );
+
+                // Apply the wholesale sale price when the role has an active one. The
+                // "Always use regular price" setting suppresses it, the same way it
+                // suppresses the shop sale price further down.
+                if ( ! $use_regular_price ) {
+                    $data = $this->_maybe_apply_wholesale_sale_price( $data, $product, $wwp_wholesale_roles );
+                }
 
                 // Get Product level mapping price.
                 if ( class_exists( 'WWPP_Helper_Functions' ) && $settings['cart_item'] ) {
@@ -745,12 +769,77 @@ class Helper_Functions {
         }
 
         // return regular price when setting is set to yes.
-        $always_regular_price_option = get_option( Plugin_Constants::ALWAYS_USE_REGULAR_PRICE );
-        if ( in_array( $always_regular_price_option, array( 'yes', 'all_valid' ), true ) && ! $settings['ignore_always_use_regular_price'] ) {
+        if ( $use_regular_price ) {
             return (float) $product->get_regular_price();
         }
 
         return $product->is_on_sale() ? (float) $product->get_sale_price() : (float) $product->get_regular_price();
+    }
+
+    /**
+     * Replace the wholesale price with the wholesale sale price when one is active.
+     *
+     * WWP's shop level lookup is not sale price aware. WWPP applies the wholesale sale
+     * price only on its cart level filter, so a price resolved from the shop level lookup
+     * shows the wholesale regular price on the cart. This mirrors WWPP's own cart rule
+     * (issue #1622).
+     *
+     * @since 4.7.6
+     * @access private
+     *
+     * @param array      $data            Wholesale price data from WWP.
+     * @param WC_Product $product         Product object.
+     * @param array      $wholesale_roles Wholesale roles of the current user.
+     * @return array|mixed Wholesale price data, or the original $data when it is not a wholesale price array.
+     */
+    private function _maybe_apply_wholesale_sale_price( $data, $product, $wholesale_roles ) {
+        if ( ! is_array( $data ) || empty( $data['wholesale_price'] ) || empty( $wholesale_roles ) ) {
+            return $data;
+        }
+
+        if ( ! class_exists( 'WWPP_Wholesale_Prices' ) || ! method_exists( 'WWPP_Wholesale_Prices', 'get_product_wholesale_sale_price' ) ) {
+            return $data;
+        }
+
+        // Read the switch first. It keeps the more expensive WWPP lookup off every cart
+        // item that has no wholesale sale price.
+        $role = reset( $wholesale_roles );
+        if ( 'yes' !== $product->get_meta( $role . '_have_on_sale_wholesale_sale_price', true ) ) {
+            return $data;
+        }
+
+        $cache_key = $product->get_id() . '|' . $role;
+
+        if ( ! isset( $this->_wholesale_sale_price_cache[ $cache_key ] ) ) {
+            $this->_wholesale_sale_price_cache[ $cache_key ] = \WWPP_Wholesale_Prices::get_product_wholesale_sale_price( $product->get_id(), $wholesale_roles );
+        }
+
+        $sale_data = $this->_wholesale_sale_price_cache[ $cache_key ];
+
+        // WWPP admits any set value here, 0 included. Note that get_price() below still
+        // falls through on a 0 price, because it tests the value for truthiness.
+        if ( ! is_array( $sale_data ) || empty( $sale_data['is_on_sale'] ) || ! isset( $sale_data['wholesale_sale_price'] ) || '' === (string) $sale_data['wholesale_sale_price'] ) {
+            return $data;
+        }
+
+        $sale_price_with_tax = isset( $sale_data['wholesale_sale_price_with_tax'] ) ? (string) $sale_data['wholesale_sale_price_with_tax'] : '';
+
+        // Keep both keys in one price domain. get_price() reads wholesale_price_with_tax
+        // before wholesale_price on a tax inclusive store, so a sale price paired with the
+        // regular price with tax would silently return the regular price.
+        if ( ! empty( $data['wholesale_price_with_tax'] ) && '' === $sale_price_with_tax ) {
+            return $data;
+        }
+
+        // Only these two keys are read back, here and by get_price(). The raw and
+        // no-tax keys keep the wholesale regular values.
+        $data['wholesale_price'] = $sale_data['wholesale_sale_price'];
+
+        if ( '' !== $sale_price_with_tax ) {
+            $data['wholesale_price_with_tax'] = $sale_price_with_tax;
+        }
+
+        return $data;
     }
 
     /**

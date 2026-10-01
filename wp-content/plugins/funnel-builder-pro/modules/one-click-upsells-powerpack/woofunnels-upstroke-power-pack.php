@@ -117,14 +117,15 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 		}
 
 		public function load_sublium() {
-			if ( ! class_exists( '\Sublium_WCS\Plugin', false ) ) {
+
+
+			if ( ! function_exists( 'sublium_init' ) ) {
 				return;
 			}
 
 			// Bail if the One Click Upsells base is not loaded (e.g. WooCommerce inactive). Its
 			// WFOCU_Plugin_Compatibilities class is required by the compat file's register() call at
-			// file scope; without it that include fatals. This runs on plugins_loaded@100, after the
-			// base registers on plugins_loaded@1, so the class is present whenever the base loaded.
+			// file scope; without it that include fatals.
 			if ( ! class_exists( 'WFOCU_Plugin_Compatibilities' ) ) {
 				return;
 			}

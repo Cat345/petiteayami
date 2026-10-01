@@ -482,7 +482,7 @@ if ( ! class_exists( 'WFACP_Elementor' ) ) {
 				$instance = new WFACP_Elementor_Importer();
 				if ( ! is_null( $instance ) ) {
 					if ( is_array( $contents ) ) {
-						$contents = json_encode( $contents );
+						$contents = wp_json_encode( $contents );
 
 					}
 					$instance->delete_page_meta = false;

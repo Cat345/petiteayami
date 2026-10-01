@@ -31,6 +31,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 4.3
  */
 class API_Reports implements Model_Interface {
+    /**
+     * Reserved key under which the license status cache records which of its statuses came from the locally stored
+     * license flags, mapping each such plugin key to the time its status was taken. Never collides with a plugin key,
+     * as those are all plugin slugs.
+     *
+     * @since 4.7.6
+     * @var string
+     */
+    const DEGRADED_CACHE_KEY = '_degraded';
+
     /*
     |--------------------------------------------------------------------------
     | Class Properties
@@ -219,8 +229,32 @@ class API_Reports implements Model_Interface {
         do_action( 'acfw_before_get_setting_fields' );
         do_action( 'acfw_rest_api_context', $request );
 
-        $report_period = new Date_Period_Range( $request->get_param( 'startPeriod' ), $request->get_param( 'endPeriod' ) );
-        $response      = \rest_ensure_response( $this->prepare_dashboard_report_data( $report_period ) );
+        try {
+            $report_period = new Date_Period_Range( $request->get_param( 'startPeriod' ), $request->get_param( 'endPeriod' ) );
+            $response      = \rest_ensure_response( $this->prepare_dashboard_report_data( $report_period ) );
+        } catch ( \Throwable $e ) {
+            // A catchable failure must come back as JSON with an error status, never an HTML
+            // fatal behind an HTTP 200. Note: an actual out-of-memory fatal cannot be caught
+            // here — this only covers exceptions/errors that PHP is able to throw.
+            // Keep the cause in the log: the response is deliberately generic, so without this
+            // a report failure leaves support with nothing to work from.
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+                    sprintf(
+                        'ACFW dashboard reports failed: %1$s in %2$s:%3$d',
+                        $e->getMessage(),
+                        $e->getFile(),
+                        $e->getLine()
+                    )
+                );
+            }
+
+            return new \WP_Error(
+                'acfw_dashboard_reports_failed',
+                __( 'The report data could not be loaded. Please reload the page to try again.', 'advanced-coupons-for-woocommerce-free' ),
+                array( 'status' => 500 )
+            );
+        }
 
         return apply_filters( 'acfw_filter_dashboard_reports_response', $response );
     }
@@ -337,6 +371,7 @@ class API_Reports implements Model_Interface {
      * one of the plugins are deactivated, or when the license status is updated in the license form.
      *
      * @since 4.3
+     * @since 4.7.6 Cache statuses derived from the locally stored license flags for a shorter period.
      * @access private
      */
     private function _check_premium_plugins_licenses() {
@@ -350,6 +385,15 @@ class API_Reports implements Model_Interface {
         $cached       = is_array( $cached ) && ! empty( $cached ) ? $cached : array();
         $update_cache = false;
 
+        /**
+         * Which of the cached statuses came from the locally stored license flags. Stored alongside the statuses under
+         * a reserved key, so a later request that only fills in a newly activated add-on still knows the retained
+         * statuses are fallback-derived and must not be given the full-day lifetime.
+         */
+        $degraded = isset( $cached[ self::DEGRADED_CACHE_KEY ] ) && is_array( $cached[ self::DEGRADED_CACHE_KEY ] )
+            ? $cached[ self::DEGRADED_CACHE_KEY ]
+            : array();
+
         // get list of active plugins.
         $active_plugins = array();
         foreach ( $plugin_basenames as $key => $plugin_basename ) {
@@ -359,7 +403,8 @@ class API_Reports implements Model_Interface {
 
                 // invalidate the cache data when at least one of the premium plugins already present in the cache is deactivated.
                 if ( isset( $cached[ $key ] ) ) {
-                    $cached = array();
+                    $cached   = array();
+                    $degraded = array();
                 }
 
                 $this->_license_status[ $key ] = 'learn_more';
@@ -371,14 +416,34 @@ class API_Reports implements Model_Interface {
                 continue;
             }
 
-            $cached[ $key ]                = $this->_get_premium_plugin_license_status( $key, $plugin_basename );
+            $is_degraded                   = false;
+            $cached[ $key ]                = $this->_get_premium_plugin_license_status( $key, $plugin_basename, $is_degraded );
             $this->_license_status[ $key ] = $cached[ $key ];
+            $degraded[ $key ]              = $is_degraded ? time() : 0;
             $update_cache                  = true;
         }
 
         // cache status response for the active premium plugins if present.
         if ( ! empty( $cached ) && $update_cache ) {
-            \set_site_transient( Plugin_Constants::PREMIUM_LICENSE_STATUS_CACHE, $cached, DAY_IN_SECONDS );
+
+            // drop the record of statuses that are no longer cached.
+            unset( $cached[ self::DEGRADED_CACHE_KEY ] );
+            $degraded = array_map( 'intval', array_intersect_key( array_filter( $degraded ), $cached ) );
+
+            /**
+             * A status derived from the locally stored license flags is cached briefly only, so a license that was
+             * revoked on the server side can't be pinned as active for a whole day. Each one records when it was
+             * taken, so re-writing the cache to fill in another add-on leaves the oldest one's hour running instead
+             * of restarting it. A minute is kept as the floor, as a non-positive expiration means "never expires".
+             */
+            $expiration = DAY_IN_SECONDS;
+
+            if ( ! empty( $degraded ) ) {
+                $expiration                         = max( MINUTE_IN_SECONDS, min( $degraded ) + HOUR_IN_SECONDS - time() );
+                $cached[ self::DEGRADED_CACHE_KEY ] = $degraded;
+            }
+
+            \set_site_transient( Plugin_Constants::PREMIUM_LICENSE_STATUS_CACHE, $cached, $expiration );
         }
     }
 
@@ -387,30 +452,34 @@ class API_Reports implements Model_Interface {
      *
      * @since 4.3
      * @since 4.4.1 Add explicit software key values for each premium plugin.
+     * @since 4.7.6 Fall back to the locally stored license status when the server response is unusable.
      * @access private
      *
      * @param string $plugin_key      Plugin key.
      * @param string $plugin_basename Plugin basename.
+     * @param bool   $is_degraded     Raised to true when the returned status came from the locally stored flags.
      * @return string License status.
      */
-    private function _get_premium_plugin_license_status( $plugin_key, $plugin_basename ) {
+    private function _get_premium_plugin_license_status( $plugin_key, $plugin_basename, &$is_degraded ) {
         switch ( $plugin_basename ) {
             case Plugin_Constants::PREMIUM_PLUGIN:
-                $activation_email = get_site_option( \ACFWP()->Plugin_Constants->OPTION_ACTIVATION_EMAIL );
-                $license_key      = get_site_option( \ACFWP()->Plugin_Constants->OPTION_LICENSE_KEY );
-                $software_key     = 'ACFW';
+                $constants    = \ACFWP()->Plugin_Constants;
+                $software_key = 'ACFW';
                 break;
             case Plugin_Constants::LOYALTY_PLUGIN:
-                $activation_email = get_site_option( \LPFW()->Plugin_Constants->OPTION_ACTIVATION_EMAIL );
-                $license_key      = get_site_option( \LPFW()->Plugin_Constants->OPTION_LICENSE_KEY );
-                $software_key     = 'LPFW';
+                $constants    = \LPFW()->Plugin_Constants;
+                $software_key = 'LPFW';
                 break;
             case Plugin_Constants::GIFT_CARDS_PLUGIN:
-                $activation_email = get_site_option( \AGCFW()->Plugin_Constants->OPTION_ACTIVATION_EMAIL );
-                $license_key      = get_site_option( \AGCFW()->Plugin_Constants->OPTION_LICENSE_KEY );
-                $software_key     = 'AGC';
+                $constants    = \AGCFW()->Plugin_Constants;
+                $software_key = 'AGC';
                 break;
+            default:
+                return 'inactive';
         }
+
+        $activation_email = get_site_option( $constants->OPTION_ACTIVATION_EMAIL );
+        $license_key      = get_site_option( $constants->OPTION_LICENSE_KEY );
 
         // return inactive when activation email or license is not available.
         if ( ! $activation_email || ! $license_key ) {
@@ -420,6 +489,12 @@ class API_Reports implements Model_Interface {
         // request license data from SLMW server.
         $result = $this->_dashboard_request_license_data( $software_key, $activation_email, $license_key );
 
+        // defer to the locally stored status when the server response can't be read (network error, non-JSON body).
+        if ( ! is_array( $result ) || ! isset( $result['status'] ) ) {
+            $is_degraded = true;
+            return $this->_get_local_license_status( $constants );
+        }
+
         // handle failed response.
         if ( 'fail' === $result['status'] ) {
 
@@ -428,10 +503,42 @@ class API_Reports implements Model_Interface {
                 return 'expired';
             }
 
-            return 'inactive';
+            /**
+             * The server rejected the check without reporting an expiry. Defer to the locally stored status so the
+             * dashboard widget agrees with the plugin's own license page instead of reporting an activated license
+             * as inactive.
+             */
+            $is_degraded = true;
+            return $this->_get_local_license_status( $constants );
         }
 
         return 'active';
+    }
+
+    /**
+     * Get the license status of a premium plugin as recorded locally by its own license form.
+     *
+     * @since 4.7.6
+     * @access private
+     *
+     * @param object $constants Premium plugin's constants object.
+     * @return string License status.
+     */
+    private function _get_local_license_status( $constants ) {
+        if ( ! is_object( $constants ) ) {
+            return 'inactive';
+        }
+
+        // the plugin's license page renders from the activated flag alone, so it wins over the expired flag.
+        if ( 'yes' === get_site_option( $constants->OPTION_LICENSE_ACTIVATED ) ) {
+            return 'active';
+        }
+
+        if ( get_site_option( $constants->OPTION_LICENSE_EXPIRED ) ) {
+            return 'expired';
+        }
+
+        return 'inactive';
     }
 
     /**

@@ -79,7 +79,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Cornerstone' ) ) {
 			}
 
 			// Convert to JSON string for searching
-			$json_data = json_encode( $cornerstone_data );
+			$json_data = wp_json_encode( $cornerstone_data );
 			if ( false === $json_data ) {
 				return false;
 			}

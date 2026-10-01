@@ -142,21 +142,21 @@ $permalink = get_the_permalink();
     </style>
 
     <form name="checkout" method="post" class="checkout woocommerce-checkout wfacp_paypal_express" action="<?php echo esc_url( get_the_permalink() ); ?>" enctype="multipart/form-data" id="wfacp_checkout_form">
-        <input type="hidden" name="_wfacp_post_id" class="_wfacp_post_id" value="<?php echo WFACP_Common::get_id(); ?>">
+        <input type="hidden" name="_wfacp_post_id" class="_wfacp_post_id" value="<?php echo esc_attr( WFACP_Common::get_id() ); ?>">
 		<?php do_action( 'wfacp_before_checkout_form_fields', $checkout ); ?>
         <div class="wfacp-section  wfacp-hg-by-box">
             <div class="wfacp-comm-title">
-                <h2 class="wfacp_section_heading wfacp_section_title"><?php _e( 'Confirm your PayPal order', 'woocommerce-gateway-paypal-express-checkout' ); ?></h2>
+                <h2 class="wfacp_section_heading wfacp_section_title"><?php esc_html_e( 'Confirm your PayPal order', 'woocommerce-gateway-paypal-express-checkout' ); ?></h2>
             </div>
             <div class="wfacp_express_formatted_address clearfix">
                 <div class="wfacp_express_formatted_billing_address">
-                    <h3><?php _e( 'Billing details', 'woocommerce' ); ?></h3>
+                    <h3><?php esc_html_e( 'Billing details', 'woocommerce' ); ?></h3>
 					<?php
 
 					if ( WFACP_Core()->public->paypal_billing_address ) {
 						?>
                         <div>
-                            <strong><?php _e( 'Address', 'woocommerce' ); ?></strong>
+                            <strong><?php esc_html_e( 'Address', 'woocommerce' ); ?></strong>
                             <address>
 								<?php
 								$formatted_address = WC()->countries->get_formatted_address( WFACP_Core()->public->billing_details );
@@ -174,21 +174,21 @@ $permalink = get_the_permalink();
 					}
 					?>
 					<?php if ( ! empty( WFACP_Core()->public->billing_details['email'] ) ) : ?>
-                        <p style="margin-bottom: 0px;"><strong><?php _e( 'Email', 'woocommerce' ); ?></strong></p>
+                        <p style="margin-bottom: 0px;"><strong><?php esc_html_e( 'Email', 'woocommerce' ); ?></strong></p>
                         <address><?php echo esc_html( WFACP_Core()->public->billing_details['email'] ); ?></address>
 					<?php endif; ?>
 					<?php
 					if ( $instance->have_billing_address() ) {
 						?>
-                        <a href="#" class="wfacp_edit_address" data-type="billing"><?php _e( 'Edit', 'woocommerce' ); ?></a>
+                        <a href="#" class="wfacp_edit_address" data-type="billing"><?php esc_html_e( 'Edit', 'woocommerce' ); ?></a>
 						<?php
 					}
 					?>
                 </div>
                 <div class="wfacp_express_formatted_shipping_address">
-                    <h3><?php _e( 'Shipping details', 'woocommerce' ); ?></h3>
+                    <h3><?php esc_html_e( 'Shipping details', 'woocommerce' ); ?></h3>
                     <div>
-                        <strong><?php _e( 'Address', 'woocommerce' ); ?></strong>
+                        <strong><?php esc_html_e( 'Address', 'woocommerce' ); ?></strong>
                         <address>
 
 							<?php
@@ -201,7 +201,7 @@ $permalink = get_the_permalink();
 						<?php
 						if ( $instance->have_shipping_address() ) {
 							?>
-                            <a href="#" class="wfacp_edit_address" data-type="shipping"><?php _e( 'Edit', 'woocommerce' ); ?></a>
+                            <a href="#" class="wfacp_edit_address" data-type="shipping"><?php esc_html_e( 'Edit', 'woocommerce' ); ?></a>
 							<?php
 						}
 						?>
@@ -214,7 +214,7 @@ $permalink = get_the_permalink();
 					if ( $instance->have_billing_address() ) {
 						?>
                         <div class="wfacp_express_billing_address clearfix">
-                            <h3><?php _e( 'Billing Address', 'woocommerce' ); ?></h3>
+                            <h3><?php esc_html_e( 'Billing Address', 'woocommerce' ); ?></h3>
 							<?php
 							$fields = $checkout->get_checkout_fields( 'billing' );
 							foreach ( $fields as $key => $field ) {
@@ -247,7 +247,7 @@ $permalink = get_the_permalink();
 					if ( $instance->have_shipping_address() ) {
 						?>
                         <div class="wfacp_express_shipping_address clearfix">
-                            <h3><?php _e( 'Shipping Address', 'woocommerce' ); ?></h3>
+                            <h3><?php esc_html_e( 'Shipping Address', 'woocommerce' ); ?></h3>
 							<?php
 							$fields = $checkout->get_checkout_fields( 'shipping' );
 							foreach ( $fields as $key => $field ) {

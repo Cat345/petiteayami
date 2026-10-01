@@ -41,10 +41,10 @@ if ( ! defined( 'WFACP_DIVI5_MODULES_LOADED' ) ) {
 	// The constant prevents multiple loads, but we need the hook registration to happen first
 
 	// Load ModuleRegistry
-	$module_registry_path = plugin_dir_path( __FILE__ ) . 'ModuleRegistry.php';
+	$wfacp_module_registry_path = plugin_dir_path( __FILE__ ) . 'ModuleRegistry.php';
 
-	if ( file_exists( $module_registry_path ) ) {
-		require_once $module_registry_path;
+	if ( file_exists( $wfacp_module_registry_path ) ) {
+		require_once $wfacp_module_registry_path;
 	}
 
 	// CRITICAL: Hook into Divi 5 module registration

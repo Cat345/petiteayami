@@ -90,9 +90,6 @@ if ( ! class_exists( 'WFTY_Template_Group_Divi5' ) ) {
 			$remote    = array();
 			if ( isset( $designs['divi'] ) && is_array( $designs['divi'] ) ) {
 				foreach ( $designs['divi'] as $d_key => $template_data ) {
-					if ( isset( $template_data['pro'] ) && 'yes' === $template_data['pro'] ) {
-						$template_data['license_exist'] = WFFN_Core()->admin->get_license_status();
-					}
 					$remote[ $d_key ] = $template_data;
 				}
 			}

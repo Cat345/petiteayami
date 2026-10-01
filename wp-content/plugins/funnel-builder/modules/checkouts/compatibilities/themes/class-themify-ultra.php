@@ -85,7 +85,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Themify_Ultra' ) ) {
                 }
 
                 body .wfacp_main_form.woocommerce form .form-row {
-                    padding: 0 <?php echo $this->px ?>px;
+                    padding: 0 <?php echo esc_attr( $this->px ) ?>px;
                     margin: 0 0 15px;
 
 

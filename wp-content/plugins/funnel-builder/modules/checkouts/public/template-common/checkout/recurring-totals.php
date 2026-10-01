@@ -141,7 +141,7 @@ if ( class_exists( 'WC_Subscriptions' ) && version_compare( WC_Subscriptions::$v
     <tr class="order-total recurring-total">
 		<?php if ( $display_th ) : $display_th = false; ?>
             <th rowspan="<?php echo esc_attr( $carts_with_multiple_payments ); ?>"><span><?php echo $total_title; ?></span></th>
-            <td data-title="<?php echo $total_title; ?>"><?php wcs_cart_totals_order_total_html( $recurring_cart ); ?></td>
+            <td data-title="<?php echo esc_attr( $total_title ); ?>"><?php wcs_cart_totals_order_total_html( $recurring_cart ); ?></td>
 		<?php else : ?>
             <td><?php wcs_cart_totals_order_total_html( $recurring_cart ); ?></td>
 		<?php endif; ?>

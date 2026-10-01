@@ -33,11 +33,11 @@ if ( ! empty( $payment_des ) ) {
 	$payment_des_class = 'wfacp-payment-dec-active';
 }
 ?>
-<div class="wfacp-section wfacp_payment <?php echo $hide_payment_cls; ?>  <?php echo $payment_des_class; ?> form_section_your_order_0_<?php echo $selected_template_slug; ?> wfacp-section-title wfacp-hg-by-box">
+<div class="wfacp-section wfacp_payment <?php echo esc_attr( $hide_payment_cls ); ?>  <?php echo esc_attr( $payment_des_class ); ?> form_section_your_order_0_<?php echo esc_attr( $selected_template_slug ); ?> wfacp-section-title wfacp-hg-by-box">
     <div style="clear: both;"></div>
-    <div class="wfacp-comm-title <?php echo $border_cls; ?>">
-        <h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class() ?> "><?php echo $payment_methods_heading; ?></h2>
-        <h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
+    <div class="wfacp-comm-title <?php echo esc_attr( $border_cls ); ?>">
+        <h2 class="wfacp_section_heading wfacp_section_title <?php echo esc_attr( $instance->get_heading_class() ); ?> "><?php echo $payment_methods_heading; ?></h2>
+        <h4 class="<?php echo esc_attr( $instance->get_sub_heading_class() ); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
     </div>
 	<?php do_action( 'wfacp_checkout_before_order_review' ); ?>
     <div class="woocommerce-checkout-review-order wfacp-oder-detail clearfix">

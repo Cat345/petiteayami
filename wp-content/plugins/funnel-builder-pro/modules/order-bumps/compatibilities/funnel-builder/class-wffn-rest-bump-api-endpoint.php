@@ -1017,8 +1017,9 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 			);
 
 			$temp      = array();
-			$bump_list = array();
-			$bump_html = array();
+			$bump_list  = array();
+			$bump_html  = array();
+			$skin_texts = (array) WFOB_Bump_Fc::get_layouts_info();
 
 			add_filter(
 				'wfob_maximum_bump_print',
@@ -1056,6 +1057,7 @@ if ( ! class_exists( 'WFFN_REST_BUMP_API_EndPoint' ) ) {
 				$temp[ $bump_id ]->get_order_bump_html( false );
 				$bump_list[ $layout ]['html']               = $temp[ $bump_id ]->get_single_bump_html();
 				$bump_list[ $layout ]['dynamic_inline_css'] = $temp[ $bump_id ]->get_dynamic_inline_css();
+				$bump_list[ $layout ]['label']              = isset( $skin_texts[ $layout ]['label'] ) ? $skin_texts[ $layout ]['label'] : '';
 
 			}
 

@@ -234,7 +234,7 @@ if ( ! class_exists( 'WFFN_Header' ) ) {
 
 						?>
 						<span>
-						<span class="bwfan-tag-rounded bwfan_ml_12 <?php echo esc_attr( $is_control ); ?>"><?php echo ( 'clr-green' === $is_control ) ? __( 'Original', 'funnel-builder' ) : __( 'Variant', 'funnel-builder' ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+						<span class="bwfan-tag-rounded bwfan_ml_12 <?php echo esc_attr( $is_control ); ?>"><?php echo esc_html( ( 'clr-green' === $is_control ) ? __( 'Original', 'funnel-builder' ) : __( 'Variant', 'funnel-builder' ) ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended ?></span>
 						</span>
 						<?php
 					}

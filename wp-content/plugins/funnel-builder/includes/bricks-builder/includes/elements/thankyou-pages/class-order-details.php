@@ -46,17 +46,17 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 			);
 
 			$this->control_groups['contentDownload'] = array(
-				'title' => esc_html__( 'Download' ),
+				'title' => esc_html__( 'Download', 'funnel-builder' ),
 				'tab'   => 'content',
 			);
 
 			$this->control_groups['styleHeading'] = array(
-				'title' => esc_html__( 'Heading' ),
+				'title' => esc_html__( 'Heading', 'funnel-builder' ),
 				'tab'   => 'style',
 			);
 
 			$this->control_groups['styleDetails'] = array(
-				'title' => esc_html__( 'Details' ),
+				'title' => esc_html__( 'Details', 'funnel-builder' ),
 				'tab'   => 'style',
 			);
 
@@ -66,7 +66,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 			);
 
 			$this->control_groups['styleDownload'] = array(
-				'title' => esc_html__( 'Download' ),
+				'title' => esc_html__( 'Download', 'funnel-builder' ),
 				'tab'   => 'style',
 			);
 
@@ -83,7 +83,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['orderDetailsHeading'] = array(
 				'group'   => 'contentOrderDetails',
-				'label'   => esc_html__( 'Heading' ),
+				'label'   => esc_html__( 'Heading', 'funnel-builder' ),
 				'type'    => 'text',
 				'default' => isset( $defaults['order_details_heading'] ) ? $defaults['order_details_heading'] : __( 'Order Details' , 'funnel-builder'),
 			);
@@ -96,7 +96,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['orderSubscriptionHeading'] = array(
 				'group'   => 'contentSubscription',
-				'label'   => esc_html__( 'Heading' ),
+				'label'   => esc_html__( 'Heading', 'funnel-builder' ),
 				'type'    => 'text',
 				'default' => isset( $defaults['order_subscription_heading'] ) ? $defaults['order_subscription_heading'] : __( 'Subscription' , 'funnel-builder'),
 			);
@@ -115,7 +115,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['orderDownloadHeading'] = array(
 				'group'   => 'contentDownload',
-				'label'   => esc_html__( 'Heading' ),
+				'label'   => esc_html__( 'Heading', 'funnel-builder' ),
 				'type'    => 'text',
 				'default' => isset( $defaults['order_download_heading'] ) ? $defaults['order_download_heading'] : __( 'Downloads' , 'funnel-builder'),
 			);
@@ -147,7 +147,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['typographyHeading'] = array(
 				'group'   => 'styleHeading',
-				'label'   => esc_html__( 'Typography' ),
+				'label'   => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'default' => array(
 					'font-family' => 'Open Sans',
@@ -188,7 +188,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['productTypography'] = array(
 				'group'   => 'styleDetails',
-				'label'   => esc_html__( 'Typography' ),
+				'label'   => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'default' => array(
 					'font-family' => 'Open Sans',
@@ -209,7 +209,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['orderDetailsImg'] = array(
 				'group'   => 'styleDetails',
-				'label'   => esc_html__( 'Show Images' ),
+				'label'   => esc_html__( 'Show Images', 'funnel-builder' ),
 				'type'    => 'checkbox',
 				'default' => true,
 			);
@@ -222,7 +222,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['subtotalTypography'] = array(
 				'group'   => 'styleDetails',
-				'label'   => esc_html__( 'Typography' ),
+				'label'   => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'default' => array(
 					'font-family' => 'Open Sans',
@@ -249,7 +249,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['totalTypography'] = array(
 				'group'   => 'styleDetails',
-				'label'   => esc_html__( 'Typography' ),
+				'label'   => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'default' => array(
 					'font-family' => 'Open Sans',
@@ -270,13 +270,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['variationLabel'] = array(
 				'group' => 'styleDetails',
-				'label' => esc_html__( 'Variation' ),
+				'label' => esc_html__( 'Variation', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
 			$this->controls['variationTypography'] = array(
 				'group'   => 'styleDetails',
-				'label'   => esc_html__( 'Typography' ),
+				'label'   => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'default' => array(
 					'font-family' => 'Open Sans',
@@ -303,7 +303,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['dividerColor'] = array(
 				'group'   => 'styleDetails',
-				'label'   => esc_html__( 'Color' ),
+				'label'   => esc_html__( 'Color', 'funnel-builder' ),
 				'type'    => 'color',
 				'css'     => array(
 					array(
@@ -346,7 +346,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['subscriptionTypography'] = array(
 				'group'   => 'styleSubscription',
-				'label'   => esc_html__( 'Typography' ),
+				'label'   => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'default' => array(
 					'font-family' => 'Open Sans',
@@ -367,13 +367,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['subscriptionButtonLabel'] = array(
 				'group' => 'styleSubscription',
-				'label' => esc_html__( 'Button' ),
+				'label' => esc_html__( 'Button', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
 			$this->controls['buttonTextColor'] = array(
 				'group'   => 'styleSubscription',
-				'label'   => esc_html__( 'Label' ),
+				'label'   => esc_html__( 'Label', 'funnel-builder' ),
 				'type'    => 'color',
 				'css'     => array(
 					array(
@@ -388,7 +388,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['buttonBackgroundColor'] = array(
 				'group'   => 'styleSubscription',
-				'label'   => esc_html__( 'Background' ),
+				'label'   => esc_html__( 'Background', 'funnel-builder' ),
 				'type'    => 'color',
 				'css'     => array(
 					array(
@@ -403,7 +403,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['downloadTypography'] = array(
 				'group'   => 'styleDownload',
-				'label'   => esc_html__( 'Typography' ),
+				'label'   => esc_html__( 'Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'default' => array(
 					'font-family' => 'Open Sans',
@@ -424,13 +424,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['downloadButtonLabel'] = array(
 				'group' => 'styleDownload',
-				'label' => esc_html__( 'Button' ),
+				'label' => esc_html__( 'Button', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
 			$this->controls['downloadButtonTextColor'] = array(
 				'group'   => 'styleDownload',
-				'label'   => esc_html__( 'Label' ),
+				'label'   => esc_html__( 'Label', 'funnel-builder' ),
 				'type'    => 'color',
 				'css'     => array(
 					array(
@@ -445,7 +445,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->controls['downloadBackgroundColor'] = array(
 				'group'   => 'styleDownload',
-				'label'   => esc_html__( 'Background' ),
+				'label'   => esc_html__( 'Background', 'funnel-builder' ),
 				'type'    => 'color',
 				'css'     => array(
 					array(

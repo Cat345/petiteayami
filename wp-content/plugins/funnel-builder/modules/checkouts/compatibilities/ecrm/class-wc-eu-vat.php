@@ -118,24 +118,24 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_EU_Vat' ) ) {
                     margin: 0 0 5px;
                     padding-top: 0;
                     padding-bottom: 0;
-                    padding-left: <?php echo $px; ?>;
-                    padding-right: <?php echo $px; ?>;
+                    padding-left: <?php echo esc_attr( $px ); ?>;
+                    padding-right: <?php echo esc_attr( $px ); ?>;
                 }
 
                 body .wfacp_main_form #woocommerce_eu_vat_compliance .form-row {
                     margin-bottom: 16px;
                     padding-top: 0;
                     padding-bottom: 0;
-                    padding-left: <?php echo $px; ?>;
-                    padding-right: <?php echo $px; ?>;
+                    padding-left: <?php echo esc_attr( $px ); ?>;
+                    padding-right: <?php echo esc_attr( $px ); ?>;
                 }
 
                 body .wfacp_main_form #woocommerce_eu_vat_compliance #woocommerce_eu_vat_compliance_vat_number h3 + p {
                     margin-bottom: 15px;
                     padding-top: 0;
                     padding-bottom: 0;
-                    padding-left: <?php echo $px; ?>;
-                    padding-right: <?php echo $px; ?>;
+                    padding-left: <?php echo esc_attr( $px ); ?>;
+                    padding-right: <?php echo esc_attr( $px ); ?>;
                 }
 
                 #wfacp-e-form .wfacp_main_form .ia_subscription_items h3,

@@ -44,9 +44,6 @@ if ( ! class_exists( 'WFFN_Oty_Pages_Divi' ) ) {
 			if ( isset( $designs['divi'] ) && is_array( $designs['divi'] ) ) {
 				foreach ( $designs['divi'] as $d_key => $templates ) {
 
-					if ( isset( $templates['pro'] ) && 'yes' === $templates['pro'] ) {
-						$templates['license_exist'] = WFFN_Core()->admin->get_license_status();
-					}
 					WFOPP_Core()->optin_ty_pages->register_template( $d_key, $templates, 'divi' );
 
 				}

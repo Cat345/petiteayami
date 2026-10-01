@@ -165,10 +165,22 @@ if ( ! class_exists( 'WFFN_REST_Licenses' ) ) {
 
 				}
 
-				$license_data = '';
-				if ( isset( $data['activated'] ) && true === $data['activated'] && isset( $data['data_extra'] ) ) {
-					$license_data = $data['data_extra'];
+				/** activate_license() returns false when the remote call fails or the body is empty/non-JSON — never report that as an activation */
+				if ( false === $data || ! is_array( $data ) ) {
+					return array(
+						'code'  => 400,
+						'error' => __( 'We could not reach the licensing server. Please try again in a few minutes or contact support.', 'funnel-builder-pro' ),
+					);
 				}
+
+				if ( ! isset( $data['activated'] ) || true !== $data['activated'] ) {
+					return array(
+						'code'  => 400,
+						'error' => __( 'We couldn\'t confirm activation for this domain. Please contact support.', 'funnel-builder-pro' ),
+					);
+				}
+
+				$license_data = isset( $data['data_extra'] ) ? $data['data_extra'] : '';
 
 				$msg = __( 'License activated successfully.', 'funnel-builder-pro' );
 

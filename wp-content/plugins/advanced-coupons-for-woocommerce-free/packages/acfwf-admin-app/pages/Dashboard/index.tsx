@@ -61,9 +61,10 @@ const Dashboard = (props: IProps) => {
   const [startPeriod, setStartPeriod] = useState(moment().startOf('month'));
   const [endPeriod, setEndPeriod] = useState(moment().startOf('day'));
   const [loading, setLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   const {
-    dashboard_page: { title },
+    dashboard_page: { title, report_error },
   } = acfwAdminApp;
 
   /**
@@ -72,11 +73,19 @@ const Dashboard = (props: IProps) => {
    */
   useEffect(() => {
     setLoading(true);
+    setHasError(false);
     axiosCancel('dashboardwidgets');
     actions.readDashboardWidgetsData({
       startPeriod: startPeriod.format('YYYY-MM-DD'),
       endPeriod: endPeriod.format('YYYY-MM-DD'),
-      successCB: () => setLoading(false),
+      successCB: () => {
+        setLoading(false);
+        setHasError(false);
+      },
+      failCB: () => {
+        setLoading(false);
+        setHasError(true);
+      },
     });
   }, [startPeriod, endPeriod]);
 
@@ -124,7 +133,15 @@ const Dashboard = (props: IProps) => {
             onPeriodChange={handlePeriodChange}
             onCustomDateRange={handleCustomDateRange}
           />
-          {loading ? <ReportWidgetsSkeleton /> : <ReportWidgets widgets={widgets} />}
+          {loading ? (
+            <ReportWidgetsSkeleton />
+          ) : hasError ? (
+            <div className="report-widgets-error" role="alert">
+              {report_error}
+            </div>
+          ) : (
+            <ReportWidgets widgets={widgets} />
+          )}
         </Col>
         <Col className="dashboard-sidebar" span={6}>
           <Sidebar />

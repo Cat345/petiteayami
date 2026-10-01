@@ -99,12 +99,12 @@ if ( ! class_exists( 'WFOP_Divi_HTML_BLOCK' ) ) {
             <script>
                 function <?php echo $this->get_slug();//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>_fields(utils, props) {
                     let data = {};
-                    data.typography =<?php echo count( $this->typography ) > 0 ? json_encode( $this->typography ) : '{}';//phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode ?>;
-                    data.margin_padding =<?php echo count( $margin_padding_data ) > 0 ? json_encode( $margin_padding_data ) : '{}'; //phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode?>;
-                    data.normal_data =<?php echo count( $normal_data ) > 0 ? json_encode( $normal_data ) : '{}'; //phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode?>;
-                    data.typography_data =<?php echo count( $typography_data ) > 0 ? json_encode( $typography_data ) : '{}'; //phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode?>;
-                    data.border_data =<?php echo count( $border_data ) > 0 ? json_encode( $border_data ) : '{}'; //phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode?>;
-                    data.box_shadow =<?php echo count( $box_data ) > 0 ? json_encode( $box_data ) : '{}'; //phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode?>;
+                    data.typography =<?php echo count( $this->typography ) > 0 ? wp_json_encode( $this->typography ) : '{}'; ?>;
+                    data.margin_padding =<?php echo count( $margin_padding_data ) > 0 ? wp_json_encode( $margin_padding_data ) : '{}'; ?>;
+                    data.normal_data =<?php echo count( $normal_data ) > 0 ? wp_json_encode( $normal_data ) : '{}'; ?>;
+                    data.typography_data =<?php echo count( $typography_data ) > 0 ? wp_json_encode( $typography_data ) : '{}'; ?>;
+                    data.border_data =<?php echo count( $border_data ) > 0 ? wp_json_encode( $border_data ) : '{}'; ?>;
+                    data.box_shadow =<?php echo count( $box_data ) > 0 ? wp_json_encode( $box_data ) : '{}'; ?>;
                     return wfop_prepare_divi_css(data, utils, props);
                 }
             </script>

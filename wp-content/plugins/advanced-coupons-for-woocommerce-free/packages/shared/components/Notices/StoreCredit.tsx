@@ -8,20 +8,35 @@ import { WC_CHECKOUT } from '../../../shared/library/Context';
 const $ = jQuery;
 
 /**
+ * Selector for the reapply store credit discount link.
+ *
+ * WooCommerce sanitizes a block notice against a fixed allow-list that keeps "href"
+ * and drops "class", so the link can only be matched on its "href" fragment here.
+ * The notice banner around it survives sanitization, so scope the match to that and
+ * a stray anchor carrying the same fragment elsewhere on the page cannot fire this.
+ *
+ * @since 4.7.6
+ */
+const REAPPLY_LINK_SELECTOR = '.wc-block-components-notice-banner a[href="#acfw-reapply-sc-discount"]';
+
+/**
  * Show store credit notice.
  *
  * @since 4.6.0
  * @param {string} notice_store_credits_text - Notice store credits text.
  */
 const showStoreCreditNotice = (notice_store_credits_text: string) => {
+  // Bind on the document, because the notice renders after this call. Rebind from
+  // scratch every time, so a repeated notice cannot stack duplicate handlers.
+  $(document).off('click', REAPPLY_LINK_SELECTOR, reapplyStoreCreditsLink);
+  $(document).on('click', REAPPLY_LINK_SELECTOR, reapplyStoreCreditsLink);
+
   // Debounce event
   setTimeout(function () {
     dispatch(CORE_NOTICE).createNotice('error', notice_store_credits_text, {
       context: WC_CHECKOUT,
       id: ID_NOTICE.ACFWF_NOTICE_STORE_CREDIT,
     });
-
-    $('.acfw-reapply-sc-discount').on('click', reapplyStoreCreditsLink);
   }, 400);
 };
 
@@ -29,8 +44,11 @@ const showStoreCreditNotice = (notice_store_credits_text: string) => {
  * Reapply store credits link and perform auto-scroll and focus.
  *
  * @since 4.6.0
+ * @param {JQuery.ClickEvent} event - The click event on the reapply link.
  */
-const reapplyStoreCreditsLink = () => {
+const reapplyStoreCreditsLink = (event: JQuery.ClickEvent) => {
+  event.preventDefault();
+
   const storeCreditsAccordion = $('.acfw-checkout-ui-block');
   const storeCreditsBlock = storeCreditsAccordion.find('.acfw-store-credits-checkout-ui');
   const accordion = storeCreditsAccordion.find('h3');

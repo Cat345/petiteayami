@@ -1182,7 +1182,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 					display: inline-flex;
 					top: 12px;
 					" href="<?php echo esc_url( $dismiss_url ); ?>"><?php esc_html_e( 'Dismiss', 'funnel-builder' ); ?></a>
-					<h3 class="bwf-notifications-title"> <?php echo __( 'Funnel Builder Quick Setup', 'funnel-builder' ); ?></h3> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<h3 class="bwf-notifications-title"> <?php echo esc_html__( 'Funnel Builder Quick Setup', 'funnel-builder' ); ?></h3>
 
 					<p><?php esc_html_e( 'Thank you for activating Funnel Builder by FunnelKit. Go through a quick setup to ensure most optimal experience.', 'funnel-builder' ); ?></p>
 					<p>

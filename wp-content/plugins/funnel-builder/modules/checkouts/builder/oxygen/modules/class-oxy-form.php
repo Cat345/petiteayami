@@ -225,7 +225,7 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 
 			$heading_tab_id = $this->add_tab( __( 'Heading', 'funnel-builder' ) );
 
-			$this->add_heading( $heading_tab_id, __( 'Typography' ) );
+			$this->add_heading( $heading_tab_id, __( 'Typography', 'funnel-builder' ) );
 			$default = array(
 				'font_size' => '16',
 			);
@@ -236,13 +236,13 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 			$heading_typography = '#wfacp-e-form .wfacp_main_form.woocommerce .wfacp_section_heading.wfacp_section_title';
 			$this->custom_typography( $heading_tab_id, $this->slug . '_heading_typography', $heading_typography, '', $default );
 
-			$this->add_heading( $heading_tab_id, __( 'Color' ) );
+			$this->add_heading( $heading_tab_id, __( 'Color', 'funnel-builder' ) );
 			$this->add_color( $heading_tab_id, $this->slug . '_heading_color', $heading_typography, 'Text Color', '#333333' );
 
-			$this->add_heading( $heading_tab_id, __( 'Alignment' ) );
+			$this->add_heading( $heading_tab_id, __( 'Alignment', 'funnel-builder' ) );
 			$this->add_text_alignments( $heading_tab_id, $this->slug . '_heading_alignment', $heading_typography );
 
-			$this->add_heading( $heading_tab_id, __( 'Advanced' ) );
+			$this->add_heading( $heading_tab_id, __( 'Advanced', 'funnel-builder' ) );
 			$this->add_background_color( $heading_tab_id, $this->slug . '_heading_section_bg_color', $heading_wrapper, 'transparent' );
 
 			$this->add_padding( $heading_tab_id, $this->slug . '_form_heading_padding', $heading_wrapper );
@@ -264,10 +264,10 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 
 			$this->custom_typography( $subheading_tab_id, $this->slug . '_subheading_typography', $subheading_typography, '', $default );
 
-			$this->add_heading( $subheading_tab_id, __( 'Color' ) );
+			$this->add_heading( $subheading_tab_id, __( 'Color', 'funnel-builder' ) );
 			$this->add_color( $subheading_tab_id, $this->slug . '_subheading_color', $subheading_typography, 'Text Color', '#333333' );
 
-			$this->add_heading( $subheading_tab_id, __( 'Alignment' ) );
+			$this->add_heading( $subheading_tab_id, __( 'Alignment', 'funnel-builder' ) );
 			$this->add_text_alignments( $subheading_tab_id, $this->slug . '_subheading_alignment', $subheading_typography );
 		}
 
@@ -277,11 +277,11 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 
 			$form_section_bg_color = '#wfacp-e-form .wfacp-section';
 
-			$this->add_heading( $section_id, __( 'Color' ) );
+			$this->add_heading( $section_id, __( 'Color', 'funnel-builder' ) );
 
 			$this->add_background_color( $section_id, 'form_section_bg_color', $form_section_bg_color, '', __( 'Background Color', 'funnel-builder' ) );
 			$this->add_box_shadow( $section_id, 'form_section_box_shadow', '#wfacp-e-form .wfacp-section' );
-			$this->add_heading( $section_id, __( 'Advanced' ) );
+			$this->add_heading( $section_id, __( 'Advanced', 'funnel-builder' ) );
 			$this->add_padding( $section_id, 'form_section_padding', '#wfacp-e-form .wfacp-section' );
 			$this->add_margin( $section_id, 'form_section_margin', '#wfacp-e-form .wfacp-section' );
 			$this->add_border( $section_id, 'form_section_border', $form_section_bg_color );
@@ -722,8 +722,31 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 				'#wfacp-e-form .wfacp_main_form.woocommerce .button.wfacp_next_page_button',
 			);
 
-			$selector        = implode( ',', $selector );
-			$button_selector = $selector;
+			$selector = implode( ',', $selector );
+
+			/*
+			 * Dedicated typography selector for the checkout buttons.
+			 *
+			 * The base stylesheet (css/wfacp-oxygen.css:37) ships
+			 * `body:not(.wfacpef_page) #wfacp-e-form .woocommerce #payment button#place_order`
+			 * at specificity (0,3,2,2) and hard-sets font-size:16px/font-weight:bold. The
+			 * default place-order selector above is only (0,2,2,1), so a merchant's Oxygen
+			 * Typography choices never won on a dedicated Oxygen checkout page. The variants
+			 * below out-specify that base rule on both page contexts without !important
+			 * (matching this file's no-!important convention). The control key is unchanged
+			 * so saved page data keeps applying.
+			 */
+			$button_typo_selector = array(
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .button.wfacp_next_page_button',
+				// (0,4,2,1) — beats the base (0,3,2,2) rule on a dedicated Oxygen page.
+				'#wfacp-e-form .wfacp_main_form.woocommerce #wfacp_checkout_form #payment button#place_order',
+				// (0,3,2,1) — wins by source order on an embedded (wfacpef_page) checkout.
+				'#wfacp-e-form .wfacp_main_form.woocommerce #payment button#place_order',
+			);
+
+			$button_selector = implode( ',', $button_typo_selector );
 
 			$this->add_switcher( $tab_id, 'wfacp_make_button_sticky_on_mobile', __( 'Sticky on Mobile', 'funnel-builder' ), 'off' );
 

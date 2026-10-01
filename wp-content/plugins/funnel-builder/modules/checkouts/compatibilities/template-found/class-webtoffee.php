@@ -41,7 +41,7 @@ if ( ! class_exists( 'WFACP_Compatibility_HF_Woocommerce_Subscription' ) ) {
 				return '';
 			}
 			if ( in_array( $_product->get_type(), [ 'variable-subscription', 'subscription', 'subscription_variation' ] ) && class_exists( 'HF_Woocommerce_Subscription' ) ) {
-				echo WFACP_Common::display_subscription_price( $_product, $cart_item, $cart_item_key );
+				echo wp_kses_post( WFACP_Common::display_subscription_price( $_product, $cart_item, $cart_item_key ) );
 			}
 		}
 	}

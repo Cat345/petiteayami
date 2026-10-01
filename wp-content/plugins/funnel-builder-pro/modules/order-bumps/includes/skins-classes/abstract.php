@@ -35,7 +35,18 @@ if ( ! class_exists( 'WFOB_Bump_Fc' ) ) {
 		 * Return array of available layout with id & name $preview url
 		 */
 		public static function get_layouts_info() {
-			return self::$layouts_info;
+			$info = self::$layouts_info;
+
+			foreach ( self::$layouts as $slug => $class ) {
+				if ( ! is_subclass_of( $class, 'WFOB_Bump' ) ) {
+					continue;
+				}
+
+				$info[ $slug ]['label']       = (string) $class::get_skin_label();
+				$info[ $slug ]['description'] = (string) $class::get_skin_description();
+			}
+
+			return $info;
 		}
 
 		public static function reset_bumps() {

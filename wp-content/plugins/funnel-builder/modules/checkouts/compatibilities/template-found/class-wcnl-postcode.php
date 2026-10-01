@@ -58,8 +58,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 					},
 					50
 				);
-				$this->main_object = WFACP_Common::remove_actions( 'wp_enqueue_scripts', 'PostcodeNl\AddressAutocomplete\Main', 'enqueueScripts' );
-				WFACP_Common::add_actions( 'wp_enqueue_scripts', 'enqueueScripts', $this->main_object );
+				// Note: the Postcode.eu enqueueScripts re-hook lives in class-postcode-eu-address-validation.php
+				// so it also loads for stores running Postcode.eu standalone (without WP Overnight's NL Postcode Checker).
 			} catch ( Exception | Error $e ) {
 			}
 		}
@@ -468,8 +468,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 				window.addEventListener('load', function () {
 					(function ($) {
 						var billing_country_nl, shipping_country_nl;
-						billing_country_nl = "<?php echo $this->billing_country_nl; ?>";
-						shipping_country_nl = "<?php echo $this->shipping_country_nl; ?>";
+						billing_country_nl = "<?php echo esc_attr( $this->billing_country_nl ); ?>";
+						shipping_country_nl = "<?php echo esc_attr( $this->shipping_country_nl ); ?>";
 
 						function execute_toggle_slide(country, wrapper) {
 							var thisform = wrapper;

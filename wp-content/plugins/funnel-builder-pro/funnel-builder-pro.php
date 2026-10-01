@@ -3,7 +3,7 @@
  * Plugin Name: FunnelKit Funnel Builder Pro
  * Plugin URI: https://funnelkit.com/wordpress-funnel-builder/
  * Description: Extend Funnel Builder with One Click Upsells, Order Bumps, Optin Modals, In-depth Funnel Reporting and much more!
- * Version: 3.16.0.5
+ * Version: 3.16.0.7
  * Author: FunnelKit
  * Author URI: https://funnelkit.com
  * License: GPLv3 or later
@@ -34,7 +34,7 @@
  * Defining necessary constants
  */
 define( 'WFFN_PRO_FILE', __FILE__ );
-define( 'WFFN_PRO_BUILD_VERSION', '3.16.0.5' );
+define( 'WFFN_PRO_BUILD_VERSION', '3.16.0.7' );
 
 
 /**
