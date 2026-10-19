@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'facebookincubator/facebook-for-woocommerce',
-        'pretty_version' => '3.7.6',
-        'version' => '3.7.6.0',
+        'pretty_version' => '3.7.8',
+        'version' => '3.7.8.0',
         'reference' => null,
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
@@ -20,17 +20,17 @@
             'dev_requirement' => false,
         ),
         'facebook/capi-param-builder-php' => array(
-            'pretty_version' => '1.3.1',
-            'version' => '1.3.1.0',
-            'reference' => '66a7eb84e29a65aa999089366c1f7c3c0e49bdb7',
+            'pretty_version' => '1.3.2',
+            'version' => '1.3.2.0',
+            'reference' => 'e9510b8ee9fdb5270e39eaec4676354f6eb7e6e1',
             'type' => 'library',
             'install_path' => __DIR__ . '/../facebook/capi-param-builder-php',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
         'facebookincubator/facebook-for-woocommerce' => array(
-            'pretty_version' => '3.7.6',
-            'version' => '3.7.6.0',
+            'pretty_version' => '3.7.8',
+            'version' => '3.7.8.0',
             'reference' => null,
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
@@ -61,7 +61,7 @@
         'woocommerce/grow' => array(
             'pretty_version' => 'dev-compat-checker',
             'version' => 'dev-compat-checker',
-            'reference' => '3bc225916439d7b93d4f5ecb209c94fb47e76172',
+            'reference' => 'b0a37a0633c8df8c0a64ed89437f0f7490766ccd',
             'type' => 'library',
             'install_path' => __DIR__ . '/../woocommerce/grow',
             'aliases' => array(),

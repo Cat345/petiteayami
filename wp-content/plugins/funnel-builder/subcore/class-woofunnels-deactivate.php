@@ -67,15 +67,15 @@ if ( ! class_exists( 'WooFunnels_Deactivate' ) ) {
 		 * Checking current page and pushing html, js and css for this task
 		 *
 		 * @global string $pagenow current admin page
-		 * @global array $VARS global vars to pass to view file
+		 * @global array $wffn_deactivate_vars global vars to pass to view file
 		 */
 		public static function maybe_load_deactivate_options() {
 			global $pagenow;
 
 			if ( $pagenow === 'plugins.php' ) {
-				global $VARS;
+				global $wffn_deactivate_vars;
 
-				$VARS = array(
+				$wffn_deactivate_vars = array(
 					'slug'    => '',
 					'reasons' => self::deactivate_options(),
 				);
@@ -172,7 +172,7 @@ if ( ! class_exists( 'WooFunnels_Deactivate' ) ) {
 					wp_send_json_error();
 				}
 
-				$reason_info = isset( $_POST['reason_info'] ) ? sanitize_textarea_field( bwf_clean( wp_unslash( $_POST['reason_info'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification handled by AJAX system
+				$reason_info = isset( $_POST['reason_info'] ) ? sanitize_textarea_field( bwf_clean( wp_unslash( $_POST['reason_info'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verification handled by AJAX system Also: input sanitized via a recursive sanitize_text_field() wrapper on this line.
 
 				$reason = array(
 					'id'   => $reason_id,
@@ -181,7 +181,7 @@ if ( ! class_exists( 'WooFunnels_Deactivate' ) ) {
 
 				$installed       = WooFunnels_addons::get_installed_plugins();
 				$version         = 'NA';
-				$plugin_basename = isset( $_POST['plugin_basename'] ) ? bwf_clean( wp_unslash( $_POST['plugin_basename'] ) ) : '';
+				$plugin_basename = isset( $_POST['plugin_basename'] ) ? bwf_clean( wp_unslash( $_POST['plugin_basename'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 
 				if ( $installed && count( $installed ) > 0 ) {
 					foreach ( $installed as $key => $inst ) {

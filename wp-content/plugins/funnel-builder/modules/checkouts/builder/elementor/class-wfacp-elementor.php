@@ -409,7 +409,7 @@ if ( ! class_exists( 'WFACP_Elementor' ) ) {
 			);
 			$links['elementor'] = array(
 				'url'         => $url,
-				'button_text' => __( 'Edit', 'elementor' ),
+				'button_text' => __( 'Edit', 'funnel-builder' ),
 			);
 
 			return $links;

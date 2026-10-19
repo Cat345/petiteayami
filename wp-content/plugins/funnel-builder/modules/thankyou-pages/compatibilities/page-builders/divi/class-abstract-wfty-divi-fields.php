@@ -90,8 +90,8 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 				'default'         => $default,
 				'option_category' => 'configuration',
 				'options'         => array(
-					'on'  => esc_html__( 'Yes', 'et_builder' ),
-					'off' => esc_html__( 'No', 'et_builder' ),
+					'on'  => esc_html__( 'Yes', 'funnel-builder' ),
+					'off' => esc_html__( 'No', 'funnel-builder' ),
 				),
 			);
 
@@ -193,7 +193,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 
 		protected function add_text_alignments( $tab_id, $key, $selectors = '', $label = '', $default = 'left', $conditions = array() ) {
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Alignment', 'et_builder' );
+				$label = esc_html__( 'Alignment', 'funnel-builder' );
 			}
 			$this->modules_fields[ $key ] = array(
 				'label'          => $label,
@@ -214,7 +214,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 		protected function add_font_size( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Font Size', 'et_builder' );
+				$label = esc_html__( 'Font Size', 'funnel-builder' );
 			}
 			if ( empty( $default ) ) {
 				$default = array(
@@ -260,7 +260,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 		protected function add_letter_spacing( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Letter Spacing', 'et_builder' );
+				$label = esc_html__( 'Letter Spacing', 'funnel-builder' );
 			}
 			if ( empty( $default ) ) {
 				$default = array(
@@ -303,7 +303,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 
 		protected function add_font( $tab_id, $key, $selectors = '', $label = '', $default = '', $conditions = array() ) {
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Select Font', 'et_builder' );
+				$label = esc_html__( 'Select Font', 'funnel-builder' );
 			}
 			$key = $key . '_typograhy';
 
@@ -344,7 +344,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 		public function add_background_color( $tab_id, $key, $selectors = array(), $default = '#000000', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_attr__( 'Background', 'divi' );
+				$label = esc_attr__( 'Background', 'funnel-builder' );
 			}
 
 			$this->modules_fields[ $key ] = array(
@@ -367,7 +367,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 		public function add_border_color( $tab_id, $key, $selectors = array(), $default = '#000000', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_attr__( 'Color', 'divi' );
+				$label = esc_attr__( 'Color', 'funnel-builder' );
 			}
 
 			$this->modules_fields[ $key ] = array(
@@ -388,7 +388,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 
 		protected function add_border_radius( $tab_id, $key, $selector, $conditions = array(), $default = array(), $custom_label = '' ) {
 
-			$label = __( 'Border Radius', 'divi' );
+			$label = __( 'Border Radius', 'funnel-builder' );
 
 			if ( ! empty( $custom_label ) ) {
 				$label = $custom_label;
@@ -426,7 +426,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 		protected function add_padding( $tab_id, $key, $selector, $default = '', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Padding', 'et_builder' );
+				$label = esc_html__( 'Padding', 'funnel-builder' );
 			}
 
 			$this->modules_fields[ $key ] = array(
@@ -451,7 +451,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 		protected function add_margin( $tab_id, $key, $selector, $default = '', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Margin', 'et_builder' );
+				$label = esc_html__( 'Margin', 'funnel-builder' );
 			}
 			$this->modules_fields[ $key ] = array(
 				'label'           => $label,
@@ -612,7 +612,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 		protected function add_line_height( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Line Height', 'et_builder' );
+				$label = esc_html__( 'Line Height', 'funnel-builder' );
 			}
 			if ( empty( $default ) ) {
 				$default = array(
@@ -658,7 +658,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 		protected function add_width( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Width', 'et_builder' );
+				$label = esc_html__( 'Width', 'funnel-builder' );
 			}
 			if ( empty( $default ) ) {
 				$default = array(
@@ -702,7 +702,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 		protected function add_min_width( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Min Width', 'et_builder' );
+				$label = esc_html__( 'Min Width', 'funnel-builder' );
 			}
 			if ( empty( $default ) ) {
 				$default = array(
@@ -803,16 +803,16 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 				'type'            => 'select_animation',
 				'option_category' => 'configuration',
 				'default'         => $default,
-				'description'     => esc_html__( 'Pick an animation style to enable animations for this element. Once enabled, you will be able to customize your animation style further. To disable animations, choose the None option.', 'et_builder' ),
+				'description'     => esc_html__( 'Pick an animation style to enable animations for this element. Once enabled, you will be able to customize your animation style further. To disable animations, choose the None option.', 'funnel-builder' ),
 				'options'         => array(
-					'none'   => esc_html__( 'None', 'et_builder' ),
-					'fade'   => esc_html__( 'Fade', 'et_builder' ),
-					'slide'  => esc_html__( 'Slide', 'et_builder' ),
-					'bounce' => esc_html__( 'Bounce', 'et_builder' ),
-					'zoom'   => esc_html__( 'Zoom', 'et_builder' ),
-					'flip'   => esc_html__( 'Flip', 'et_builder' ),
-					'fold'   => esc_html__( 'Fold', 'et_builder' ),
-					'roll'   => esc_html__( 'Roll', 'et_builder' ),
+					'none'   => esc_html__( 'None', 'funnel-builder' ),
+					'fade'   => esc_html__( 'Fade', 'funnel-builder' ),
+					'slide'  => esc_html__( 'Slide', 'funnel-builder' ),
+					'bounce' => esc_html__( 'Bounce', 'funnel-builder' ),
+					'zoom'   => esc_html__( 'Zoom', 'funnel-builder' ),
+					'flip'   => esc_html__( 'Flip', 'funnel-builder' ),
+					'fold'   => esc_html__( 'Fold', 'funnel-builder' ),
+					'roll'   => esc_html__( 'Roll', 'funnel-builder' ),
 				),
 			);
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
@@ -826,7 +826,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 
 		protected function add_icon( $tab_id, $key, $label = '', $default = '', $conditions = array() ) {
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Icon', 'et_builder' );
+				$label = esc_html__( 'Icon', 'funnel-builder' );
 			}
 			$this->modules_fields[ $key ] = array(
 				'label'           => $label,

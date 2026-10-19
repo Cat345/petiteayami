@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'BWF_Google_Fonts' ) ) {
 	#[AllowDynamicProperties]
 
-  class BWF_Google_Fonts {
+  class BWF_Google_Fonts { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- BWF_ is the established WooFunnels framework prefix (3 chars, below PCP's 4-char detection floor); shared across the plugin family.
 
 		public static $google_fonts = [];
 
@@ -84,7 +84,7 @@ if ( ! class_exists( 'BWF_Google_Fonts' ) ) {
 
 			if ( ! in_array( $font_name, self::$google_fonts, true ) ) {
 				// Allow themes to disable enqueuing fonts, helpful for custom fonts.
-				if ( apply_filters( 'bwfblock_enqueue_font', true, $font_name ) ) {
+				if ( apply_filters( 'bwfblock_enqueue_font', true, $font_name ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 					self::$google_fonts[] = $font_name;
 				}
 			}
@@ -136,7 +136,7 @@ if ( ! class_exists( 'BWF_Google_Fonts' ) ) {
 			wp_enqueue_style( $handle, $fonts_url ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 
 			if ( ! empty( $default_font ) ) {
-				$default_font_selector = apply_filters( 'bwfblock_default_font_selector', 'body, body *' );
+				$default_font_selector = apply_filters( 'bwfblock_default_font_selector', 'body, body *' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				$default_font_css      = "$default_font_selector{font-family:$default_font;}";
 
 				wp_add_inline_style( $handle, $default_font_css );

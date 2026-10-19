@@ -2,8 +2,8 @@
 Contributors: facebook
 Tags: meta, facebook, whatsapp, conversions api, catalog sync
 Requires at least: 5.6
-Tested up to: 7.0
-Stable tag: 3.7.5
+Tested up to: 7.1
+Stable tag: 3.7.6
 Requires PHP: 7.4
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -48,11 +48,30 @@ When that happens, the site still recovers on the next request, but the disable 
 
 == Changelog ==
 
-= 3.7.6 - 2026-07-23 =
-* Fix - Fix/prepare release changelog fix by @bojanaivovic in #3972
-* Fix - ci(e2e): run all shards on ubuntu-latest instead of custom runner pools by @vahidkay-meta in #3976
-* Fix - Improve escaping and WordPress Plugin Check compliance by @vahidkay-meta in #3980
-* Fix - Clear remaining WordPress Plugin Check errors by @vahidkay-meta in #3981
-* Dev - ci(release): fix readme Tested-up-to minor version + propagate Stable tag to git by @vahidkay-meta in #3983
+= 3.7.8 - 2026-10-05 =
+* Tweak - Prefer CPI sources for install sync with FBE fallback ladder by @jczhuoMeta in #4048
+* Fix - Create product sets during onboarding instead of waiting for the heartbeat by @vahidkay-meta in #4056
+* Fix - Send product set names to Meta as the merchant typed them by @vahidkay-meta in #4063
+* Fix - Fix variations bulk edit by @ukilla in #4066
+* Dev - Consolidate Dependabot dependency updates by @vahidkay-meta in #4067
+* Fix - Stop net revenue losing a cent to floating point truncation by @vahidkay-meta in #4055
+* Fix - Fix missing Purchase contents during order creation by @ukilla in #4076
+* Add - Add Signal hold/release integration guides by @iodic in #4041
+* Fix - Stop the Attribute Mapping tab requesting a script that is never built by @vahidkay-meta in #4054
+* Add - Report physical store purchases as offline events, behind an opt-in by @vahidkay-meta in #4040
 
 [See changelog for all versions](https://raw.githubusercontent.com/facebook/facebook-for-woocommerce/refs/heads/main/changelog.txt).
+
+== Terms of Use ==
+
+Your use of this project is governed by [Meta's Terms of Use](https://opensource.fb.com/legal/terms).
+
+== Privacy Policy ==
+
+For information about how Meta collects and uses data, please review [Meta's Privacy Policy](https://opensource.fb.com/legal/privacy).
+
+== Copyright ==
+
+Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
+
+Meta for WooCommerce is distributed under the terms of the GNU General Public License v2.0 (or later). See the LICENSE file in the plugin's source repository for the full license text.

@@ -74,7 +74,7 @@ abstract class AbstractField implements FieldInterface
  // we will not wrap around. However, because the logic exists today
  // per the above documentation, fixing the bug from #89
  if ($step > $this->rangeEnd) {
- $thisRange = [$this->fullRange[$step % \count($this->fullRange)]];
+ $thisRange = [$this->fullRange[(int) $step % \count($this->fullRange)]];
  } else {
  if ($step > ($rangeEnd - $rangeStart)) {
  $thisRange[$rangeStart] = (int) $rangeStart;
@@ -113,7 +113,7 @@ abstract class AbstractField implements FieldInterface
  }
  $offset = '*' === $offset ? $this->rangeStart : $offset;
  if ($stepSize >= $this->rangeEnd) {
- $values = [$this->fullRange[$stepSize % \count($this->fullRange)]];
+ $values = [$this->fullRange[(int) $stepSize % \count($this->fullRange)]];
  } else {
  for ($i = $offset; $i <= $to; $i += $stepSize) {
  $values[] = (int) $i;

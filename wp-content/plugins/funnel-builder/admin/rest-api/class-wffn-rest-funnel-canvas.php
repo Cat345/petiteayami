@@ -408,7 +408,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 			if ( count( $optin_ids ) > 0 ) {
 				$optin_ids = array_map( 'absint', $optin_ids );
 
-				$get_optin_record = $wpdb->get_results(
+				$get_optin_record = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					$wpdb->prepare(
 						"SELECT step_id as 'object_id', COUNT(id) as 'converted', 0 as 'revenue' FROM " . $wpdb->prefix . 'bwf_optin_entries WHERE step_id IN ( ' . implode( ', ', array_fill( 0, count( $optin_ids ), '%d' ) ) . ' ) GROUP BY step_id',
 						$optin_ids
@@ -431,9 +431,9 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 			if ( count( $checkout_ids ) > 0 ) {
 				$checkout_ids = array_map( 'absint', $checkout_ids );
 
-				$get_checkout_record = $wpdb->get_results(
+				$get_checkout_record = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					$wpdb->prepare(
-						"SELECT conv.step_id AS 'object_id', conv.source_id AS 'source_id', COUNT( conv.step_id ) AS 'converted', SUM(conv.checkout_total) AS 'revenue' FROM " . $wpdb->prefix . 'bwf_conversion_tracking AS conv WHERE type=2 AND conv.step_id IN ( ' . implode( ', ', array_fill( 0, count( $checkout_ids ), '%d' ) ) . ' ) GROUP BY conv.step_id, conv.source_id',
+						"SELECT conv.step_id AS 'object_id', conv.source_id AS 'source_id', COUNT( conv.step_id ) AS 'converted', SUM(conv.checkout_total) AS 'revenue', SUM(conv.bump_total) AS 'bump_revenue', SUM(conv.offer_total) AS 'offer_revenue' FROM " . $wpdb->prefix . 'bwf_conversion_tracking AS conv WHERE type=2 AND conv.step_id IN ( ' . implode( ', ', array_fill( 0, count( $checkout_ids ), '%d' ) ) . ' ) GROUP BY conv.step_id, conv.source_id',
 						$checkout_ids
 					),
 					ARRAY_A
@@ -454,7 +454,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 			if ( count( $offer_ids ) > 0 ) {
 				$offer_ids = array_map( 'absint', $offer_ids );
 
-				$get_offer_record = $wpdb->get_results(
+				$get_offer_record = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					$wpdb->prepare(
 						'SELECT object_id, COUNT(CASE WHEN action_type_id = 4 THEN 1 END) AS `converted`, COUNT(CASE WHEN action_type_id = 2 THEN 1 END) AS `views`, SUM(value) as revenue FROM ' . $wpdb->prefix . 'wfocu_event WHERE object_id IN ( ' . implode( ', ', array_fill( 0, count( $offer_ids ), '%d' ) ) . " ) AND (action_type_id = '2' OR action_type_id = '4' ) GROUP BY object_id",
 						$offer_ids
@@ -479,7 +479,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 
 				// Query each bump ID separately using wfob_stats table
 				foreach ( $bump_ids as $bump_id ) {
-					$bump_result = $wpdb->get_results(
+					$bump_result = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 						$wpdb->prepare(
 							"SELECT %d as 'object_id',
 							COUNT(CASE WHEN bump.converted = 1 THEN 1 END) AS `converted`,
@@ -514,7 +514,22 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 						$data[ $item['object_id'] ]['conversion_rate'] = $this->get_percentage( $data[ $item['object_id'] ]['views'], $data[ $item['object_id'] ]['conversions'] );
 
 						if ( isset( $item['source_id'] ) && array_key_exists( $item['source_id'], $data ) ) {
-							$data[ $item['source_id'] ]['revenue'] = $data[ $item['source_id'] ]['revenue'] + ( empty( $item['revenue'] ) ? $data[ $item['object_id'] ]['revenue'] : floatval( number_format( $item['revenue'], 2, '.', '' ) ) );
+							/**
+							 * Attributed Revenue: the landing/sales step (source_id) gets
+							 * checkout + bump + offer, not just checkout -- bump_revenue/
+							 * offer_revenue only exist on checkout-sourced $converted_data
+							 * items (the only query that carries source_id at all; wfob_stats/
+							 * wfocu_event have no source_id column to attribute by). The
+							 * checkout term's own pre-existing fallback (empty revenue ->
+							 * use the step's own just-updated revenue) is left exactly as it
+							 * was -- bump/offer are purely additive on top of it, not a
+							 * rewrite of that existing logic.
+							 */
+							$checkout_component = empty( $item['revenue'] ) ? $data[ $item['object_id'] ]['revenue'] : floatval( number_format( $item['revenue'], 2, '.', '' ) );
+							$bump_component     = empty( $item['bump_revenue'] ) ? 0 : floatval( number_format( $item['bump_revenue'], 2, '.', '' ) );
+							$offer_component    = empty( $item['offer_revenue'] ) ? 0 : floatval( number_format( $item['offer_revenue'], 2, '.', '' ) );
+
+							$data[ $item['source_id'] ]['revenue'] = $data[ $item['source_id'] ]['revenue'] + $checkout_component + $bump_component + $offer_component;
 						}
 					}
 				}
@@ -591,7 +606,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 			$step_ids = implode( ',', $ids );
 
 			$optin_sql        = 'SELECT COUNT(id) as cn FROM ' . $wpdb->prefix . 'bwf_optin_entries' . ' WHERE step_id IN(' . $step_ids . ') ' . $con_date_query . ' ORDER BY step_id ASC';
-			$get_optin_record = $wpdb->get_row( $optin_sql, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$get_optin_record = $wpdb->get_row( $optin_sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 				if ( true === $db_error['db_error'] ) {
@@ -664,9 +679,9 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 				'wffn_report_views_row',
 				array(),
 				array(
-					'context'    => 'step_stats',
-					'object_ids' => $ids,
-					'view_type'  => $view_type,
+					'context'      => 'step_stats',
+					'object_ids'   => $ids,
+					'view_type'    => $view_type,
 					'convert_type' => $convert_type,
 				)
 			);
@@ -720,9 +735,9 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 				'wffn_report_views_row',
 				array(),
 				array(
-					'context'    => 'step_stats',
-					'object_ids' => $ids,
-					'view_type'  => $view_type,
+					'context'      => 'step_stats',
+					'object_ids'   => $ids,
+					'view_type'    => $view_type,
 					'convert_type' => $convert_type,
 				)
 			);
@@ -775,7 +790,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 
 			$aero_sql = "SELECT SUM(total_revenue) as 'total_revenue',COUNT(ID) as cn FROM " . $wpdb->prefix . 'wfacp_stats' . ' WHERE wfacp_id IN(' . $step_ids . ') ' . $con_date_query . '  ORDER BY wfacp_id ASC';
 
-			$get_all_checkout_records = $wpdb->get_row( $aero_sql, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$get_all_checkout_records = $wpdb->get_row( $aero_sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 				if ( true === $db_error['db_error'] ) {
@@ -833,7 +848,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 			}
 
 			$get_query = "SELECT COUNT(CASE WHEN action_type_id = 4 THEN 1 END) AS `converted`, COUNT(CASE WHEN action_type_id = 2 THEN 1 END) AS `viewed`, object_id  as 'offer', action_type_id, SUM(value) as revenue FROM " . $wpdb->prefix . 'wfocu_event' . ' WHERE object_id = ' . $step_id . " AND (action_type_id = '2' OR action_type_id = '4' ) GROUP BY object_id";
-			$get_data  = $wpdb->get_row( $get_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$get_data  = $wpdb->get_row( $get_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 				if ( true === $db_error['db_error'] ) {
@@ -935,7 +950,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 				$step_id
 			);
 
-			$get_data = $wpdb->get_row( $get_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$get_data = $wpdb->get_row( $get_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 				if ( true === $db_error['db_error'] ) {

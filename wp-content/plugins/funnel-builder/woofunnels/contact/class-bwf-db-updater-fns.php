@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 if ( ! class_exists( 'BWF_DB_Updater_Fns' ) ) {
 
-	class BWF_DB_Updater_Fns {
+	class BWF_DB_Updater_Fns { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 
 		/**
 		 *
@@ -44,7 +44,7 @@ if ( ! class_exists( 'BWF_DB_Updater_Fns' ) ) {
 				} else {
 					$order_table      = $wpdb->prefix . 'wc_orders';
 					$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
-					$query            = $wpdb->prepare( "SELECT COUNT(p.id) FROM {$order_table} AS p LEFT JOIN {$order_meta_table} AS pm ON ( p.id = pm.order_id AND pm.meta_key = '_woofunnel_cid') WHERE 1=1 AND pm.order_id IS NULL AND p.billing_email != '' AND 
+					$query            = $wpdb->prepare( "SELECT COUNT(p.id) FROM {$order_table} AS p LEFT JOIN {$order_meta_table} AS pm ON ( p.id = pm.order_id AND pm.meta_key = '_woofunnel_cid') WHERE 1=1 AND pm.order_id IS NULL AND p.billing_email != '' AND
 													p.type = %s  AND p.status IN ({$paid_statuses})
 		                               ORDER BY p.date_created_gmt DESC", 'shop_order' );
 
@@ -52,7 +52,7 @@ if ( ! class_exists( 'BWF_DB_Updater_Fns' ) ) {
 				}
 
 
-				$query_results = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$query_results = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- query built with $wpdb->prepare() above. prepared with placeholders in the branch above; the variable-passed result is invisible to taint tracking.
 
 
 				$get_threshold_order = $query_results;
@@ -71,12 +71,12 @@ if ( ! class_exists( 'BWF_DB_Updater_Fns' ) ) {
 
 				$order_table      = $wpdb->prefix . 'wc_orders';
 				$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
-				$query            = $wpdb->prepare( "SELECT p.id as ID FROM {$order_table} AS p LEFT JOIN {$order_meta_table} AS pm ON ( p.id = pm.order_id AND pm.meta_key = '_woofunnel_cid') WHERE 1=1 AND pm.order_id IS NULL AND p.billing_email != '' AND 
+				$query            = $wpdb->prepare( "SELECT p.id as ID FROM {$order_table} AS p LEFT JOIN {$order_meta_table} AS pm ON ( p.id = pm.order_id AND pm.meta_key = '_woofunnel_cid') WHERE 1=1 AND pm.order_id IS NULL AND p.billing_email != '' AND
 													p.type = %s  AND p.status IN ({$paid_statuses})
 		                               ORDER BY p.date_created_gmt DESC LIMIT 0, %d", 'shop_order', $numberposts );
 
 			}
-			$query_results = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query_results = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- prepared above; paid statuses are quoted, esc_sql'd internal WC statuses. prepared with placeholders in the branch above; the variable-passed result is invisible to taint tracking.
 
 
 			if ( empty( $query_results ) || ! is_array( $query_results ) ) {

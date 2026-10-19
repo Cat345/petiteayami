@@ -120,7 +120,7 @@ if ( ! class_exists( 'WFACP_FluentPro' ) ) {
 				$px        = "7px";
 			}
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#wfacp_fluent_wc_subscription_checkbox {clear:both;}";
 
 			if ( ! empty( $px ) ) {
@@ -128,8 +128,7 @@ if ( ! class_exists( 'WFACP_FluentPro' ) ) {
 				$cssHtml .= $bodyClass . "#wfacp_fluent_wc_subscription_checkbox p {padding:0 $px;}";
 			}
 
-			$cssHtml .= "</style>";
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 
 
 		}

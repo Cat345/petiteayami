@@ -6,7 +6,7 @@ if ( ! class_exists( 'BWF_Plugin_Compatibilities' ) ) {
 	 * Loads all the compatibilities files we have to provide compatibility with each plugin
 	 */
 	#[AllowDynamicProperties]
-	class BWF_Plugin_Compatibilities {
+	class BWF_Plugin_Compatibilities { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 
 		public static $plugin_compatibilities = array();
 

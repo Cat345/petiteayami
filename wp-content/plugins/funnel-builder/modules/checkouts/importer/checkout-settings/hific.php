@@ -2,9 +2,9 @@
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 $product_field  = WFACP_Common::get_product_field();
 $advanced_field = WFACP_Common::get_advanced_fields();
-$settings       = [
-	'show_on_next_step'          => [
-		'single_step' => [
+$settings       = array(
+	'show_on_next_step'          => array(
+		'single_step' => array(
 			'billing_email'       => 'true',
 			'billing_first_name'  => 'true',
 			'billing_last_name'   => 'true',
@@ -12,124 +12,124 @@ $settings       = [
 			'shipping-address'    => 'true',
 			'billing_phone'       => 'true',
 			'shipping_calculator' => 'true',
-		],
-	],
+		),
+	),
 	'enable_phone_flag'          => 'true',
 	'enable_phone_validation'    => 'true',
 	'autocomplete_enable'        => 'false',
 	'autocomplete_google_key'    => '',
 	'preferred_countries_enable' => 'false',
 	'preferred_countries'        => '',
-];
+);
 
-$steps = [
-	'single_step' => [
+$steps = array(
+	'single_step' => array(
 		'name'          => __( 'Step 1', 'funnel-builder' ),
 		'slug'          => 'single_step',
 		'friendly_name' => __( 'Single Step Checkout', 'funnel-builder' ),
 		'active'        => 'yes',
-	],
-	'two_step'    => [
+	),
+	'two_step'    => array(
 		'name'          => __( 'Step 2', 'funnel-builder' ),
 		'slug'          => 'two_step',
 		'friendly_name' => __( 'Two Step Checkout', 'funnel-builder' ),
 		'active'        => 'no',
-	],
-	'third_step'  => [
+	),
+	'third_step'  => array(
 		'name'          => __( 'Step 3', 'funnel-builder' ),
 		'slug'          => 'third_step',
 		'friendly_name' => __( 'Three Step Checkout', 'funnel-builder' ),
 		'active'        => 'no',
-	],
-];
+	),
+);
 
-$pageLayout = [
+$pageLayout = array(
 	'steps'                       => $steps,
-	'fieldsets'                   => [
-		'single_step' => [
-			[
+	'fieldsets'                   => array(
+		'single_step' => array(
+			array(
 				'name'        => WFACP_Common::translation_string_to_check( __( 'Shipping Information', 'funnel-builder' ) ),
 				'class'       => '',
 				'sub_heading' => '',
-				'fields'      => [
-					[
-						'label'        => __( 'Email', 'woocommerce' ),
+				'fields'      => array(
+					array(
+						'label'        => __( 'Email', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'required'     => 'true',
 						'type'         => 'email',
-						'class'        => [ 0 => 'form-row-wide', ],
-						'validate'     => [ 0 => 'email', ],
+						'class'        => array( 0 => 'form-row-wide' ),
+						'validate'     => array( 0 => 'email' ),
 						'autocomplete' => 'email username',
 						'priority'     => '110',
 						'id'           => 'billing_email',
 						'field_type'   => 'billing',
 						'placeholder'  => '',
-					],
-					[
-						'label'        => __( 'First name', 'woocommerce' ),
+					),
+					array(
+						'label'        => __( 'First name', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'required'     => 'true',
-						'class'        => [ 0 => 'form-row-first', ],
+						'class'        => array( 0 => 'form-row-first' ),
 						'autocomplete' => 'given-name',
 						'priority'     => '10',
 						'type'         => 'text',
 						'id'           => 'billing_first_name',
 						'field_type'   => 'billing',
 						'placeholder'  => '',
-					],
-					[
-						'label'        => __( 'Last name', 'woocommerce' ),
+					),
+					array(
+						'label'        => __( 'Last name', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'required'     => 'true',
-						'class'        => [ 0 => 'form-row-last', ],
+						'class'        => array( 0 => 'form-row-last' ),
 						'autocomplete' => 'family-name',
 						'priority'     => '20',
 						'type'         => 'text',
 						'id'           => 'billing_last_name',
 						'field_type'   => 'billing',
 						'placeholder'  => '',
-					],
+					),
 					WFACP_Common::get_single_address_fields( 'shipping' ),
 					WFACP_Common::get_single_address_fields(),
 
-					[
-						'label'        => __( 'Phone', 'woocommerce' ),
+					array(
+						'label'        => __( 'Phone', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'type'         => 'tel',
-						'class'        => [ 'form-row-wide' ],
+						'class'        => array( 'form-row-wide' ),
 						'id'           => 'billing_phone',
 						'field_type'   => 'billing',
-						'validate'     => [ 'phone' ],
+						'validate'     => array( 'phone' ),
 						'placeholder'  => '',
 						'autocomplete' => 'tel',
 						'priority'     => 100,
-					],
-				],
-			],
-			[
-				'name'        => WFACP_Common::translation_string_to_check(__( 'Shipping Method', 'funnel-builder' )),
+					),
+				),
+			),
+			array(
+				'name'        => WFACP_Common::translation_string_to_check( __( 'Shipping Method', 'funnel-builder' ) ),
 				'class'       => '',
 				'sub_heading' => '',
-				'html_fields' => [ 'shipping_calculator' => true ],
-				'fields'      => [
-					isset( $advanced_field['shipping_calculator'] ) ? $advanced_field['shipping_calculator'] : []
-				],
-			],
+				'html_fields' => array( 'shipping_calculator' => true ),
+				'fields'      => array(
+					isset( $advanced_field['shipping_calculator'] ) ? $advanced_field['shipping_calculator'] : array(),
+				),
+			),
 
-			[
-				'name'        => WFACP_Common::translation_string_to_check(__( 'Order Summary', 'woocommerce' )),
+			array(
+				'name'        => WFACP_Common::translation_string_to_check( __( 'Order Summary', 'woocommerce' ) ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 				'class'       => '',
 				'sub_heading' => '',
-				'html_fields' => [
+				'html_fields' => array(
 					'order_coupon'  => 'true',
 					'order_summary' => 'true',
-				],
-				'fields'      => [
+				),
+				'fields'      => array(
 
 					$advanced_field['order_coupon'],
 					$advanced_field['order_summary'],
-				],
-			],
-		],
+				),
+			),
+		),
 
-	],
-	'product_settings'            => [],
+	),
+	'product_settings'            => array(),
 	'have_coupon_field'           => 'true',
 	'have_billing_address'        => 'true',
 	'have_shipping_address'       => 'true',
@@ -138,10 +138,10 @@ $pageLayout = [
 	'enabled_product_switching'   => 'yes',
 	'have_shipping_method'        => 'true',
 	'current_step'                => 'single_step',
-];
+);
 
 
-return [
+return array(
 	'page_layout'   => $pageLayout,
 	'page_settings' => $settings,
-];
+);

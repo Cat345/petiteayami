@@ -72,7 +72,7 @@ if ( ! function_exists( 'wffn_alter_conversion_table' ) ) {
 
 		$conv_table = BWF_Ecomm_Tracking_Common::get_instance()->conversion_table_name();
 		$table_name = $wpdb->prefix . $conv_table;
-		$is_col     = $wpdb->get_col( $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = %s AND column_name = 'checkout_total'", $table_name ) );
+		$is_col     = $wpdb->get_col( $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = %s AND column_name = 'checkout_total'", $table_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 		if ( ! empty( $is_col ) ) {
 			return;
@@ -95,7 +95,7 @@ if ( ! function_exists( 'wffn_alter_conversion_table' ) ) {
 			    ADD INDEX (offer_rejected),
 			    ADD INDEX (first_landing_url)";
 
-		$wpdb->query( $sql_query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$wpdb->query( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 	}
 }
 
@@ -120,7 +120,7 @@ if ( ! function_exists( 'wffn_add_utm_columns_in_conversion_table' ) ) {
 
 		$conv_table = BWF_Ecomm_Tracking_Common::get_instance()->conversion_table_name();
 		$table_name = $wpdb->prefix . $conv_table;
-		$is_col     = $wpdb->get_col( $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = %s AND column_name = 'referrer_last'", $table_name ) );
+		$is_col     = $wpdb->get_col( $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = %s AND column_name = 'referrer_last'", $table_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 		if ( ! empty( $is_col ) ) {
 			return;
@@ -141,7 +141,7 @@ if ( ! function_exists( 'wffn_add_utm_columns_in_conversion_table' ) ) {
 				ADD INDEX (utm_medium_last($max_index_length)),
 				ADD INDEX (utm_campaign_last($max_index_length)),
 				ADD INDEX (utm_term_last($max_index_length))";
-		$wpdb->query( $sql_query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$wpdb->query( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 	}
 }
 
@@ -165,7 +165,7 @@ if ( ! function_exists( 'wffn_alter_conversion_table_add_source' ) ) {
 
 			$conv_table = BWF_Ecomm_Tracking_Common::get_instance()->conversion_table_name();
 			$table_name = $wpdb->prefix . $conv_table;
-			$is_col     = $wpdb->get_col( $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND table_name = %s AND column_name = 'source_id'", $wpdb->dbname, $table_name ) );
+			$is_col     = $wpdb->get_col( $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND table_name = %s AND column_name = 'source_id'", $wpdb->dbname, $table_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			/**
 			 * Check if column already exists
 			 */
@@ -181,7 +181,7 @@ if ( ! function_exists( 'wffn_alter_conversion_table_add_source' ) ) {
 				ADD `source_id` bigint(20) unsigned NOT NULL default 0 COMMENT 'save checkout revenue source',
 				ADD INDEX `source_id` (`source_id`)";
 
-			$wpdb->query( $sql_query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->query( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 			// Log database errors or success
 			if ( $wpdb->last_error ) {
@@ -216,7 +216,7 @@ if ( ! function_exists( 'wffn_add_order_number_column_in_conversion_table' ) ) {
 
 			$conv_table = BWF_Ecomm_Tracking_Common::get_instance()->conversion_table_name();
 			$table_name = $wpdb->prefix . $conv_table;
-			$is_col     = $wpdb->get_col( $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND table_name = %s AND column_name = 'order_number'", $wpdb->dbname, $table_name ) );
+			$is_col     = $wpdb->get_col( $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND table_name = %s AND column_name = 'order_number'", $wpdb->dbname, $table_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			/**
 			 * Check if column already exists
@@ -231,7 +231,7 @@ if ( ! function_exists( 'wffn_add_order_number_column_in_conversion_table' ) ) {
 				ADD `order_number` varchar(100) DEFAULT '' NOT NULL COMMENT 'stores sequential/custom order number',
 				ADD INDEX `order_number` (`order_number`)";
 
-			$wpdb->query( $sql_query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->query( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 			if ( $wpdb->last_error ) {
 				WFFN_Core()->logger->log( __FUNCTION__ . ' Database error during adding order_number column: ' . $wpdb->last_error, 'wffn', true );
@@ -306,13 +306,13 @@ if ( ! function_exists( 'wffn_update_currency_switcher_data' ) ) {
 
 		// Update database values
 		global $wpdb;
-		$table_name = $wpdb->prefix . 'bwf_conversion_tracking';
+		$table_name = esc_sql( $wpdb->prefix . 'bwf_conversion_tracking' );
 		WFFN_Core()->logger->log( 'Time before query:: ' . current_time( 'timestamp' ), 'wffn', true );
 
 		/**
 		 * This query below will only update the value column for all the rows where checkout_total or bump_total or offer_total is not 0
 		 */
-		$wpdb->query(
+		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 			$wpdb->prepare(
 				"UPDATE {$table_name}
 			 SET value = IFNULL(checkout_total, %d) + IFNULL(bump_total, %d) + IFNULL(offer_total, %d) WHERE IFNULL(checkout_total, 0) <> 0 OR IFNULL(bump_total, 0) <> 0;",

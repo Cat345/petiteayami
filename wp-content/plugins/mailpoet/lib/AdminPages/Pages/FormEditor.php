@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) exit;
 use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
+use MailPoet\Config\AccessControl;
 use MailPoet\Config\Localizer;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\FormEntity;
@@ -285,6 +286,7 @@ class FormEditor {
       'product_categories' => $this->wpPostListLoader->getWooCommerceCategories(),
       'product_tags' => $this->wpPostListLoader->getWooCommerceTags(),
       'is_administrator' => $this->wp->currentUserCan('administrator'),
+      'can_manage_subscribers' => $this->wp->currentUserCan(AccessControl::PERMISSION_MANAGE_SUBSCRIBERS),
       'tracking_consent_capture_enabled' => $this->trackingConsentCapture->isCaptureEnabled(),
       'theme_support_widgets' => $this->wp->wpGetThemeSupport('widgets'),
       'theme_support_fse' => $this->wp->wpGetTheme()->is_block_theme(),

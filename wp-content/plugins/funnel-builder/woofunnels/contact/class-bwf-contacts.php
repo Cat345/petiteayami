@@ -11,7 +11,7 @@ if ( ! class_exists( 'BWF_Contacts' ) ) {
 	 *
 	 */
 	#[AllowDynamicProperties]
-	class BWF_Contacts {
+	class BWF_Contacts { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		/**
 		 * @var static instance
 		 */
@@ -46,7 +46,7 @@ if ( ! class_exists( 'BWF_Contacts' ) ) {
 		 * @return mixed|void
 		 */
 		public static function get_registerd_child_entities() {
-			$entities = apply_filters( 'bwf_child_entities', array( 'customer' => 'WooFunnels_Customer' ) );
+			$entities = apply_filters( 'bwf_child_entities', array( 'customer' => 'WooFunnels_Customer' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			return $entities;
 		}

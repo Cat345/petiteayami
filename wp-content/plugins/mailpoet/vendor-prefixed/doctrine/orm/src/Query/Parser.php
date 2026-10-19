@@ -60,6 +60,7 @@ class Parser
  private $query;
  private $queryComponents = [];
  private $nestingLevel = 0;
+ private $withJoinConditionNestingLevel = 0;
  private $customTreeWalkers = [];
  private $customOutputWalker;
  private $identVariableExpressions = [];
@@ -722,7 +723,7 @@ class Parser
  $this->match(TokenType::T_COMMA);
  $orderByItems[] = $this->OrderByItem();
  }
- return new AST\OrderByClause($orderByItems);
+ return new AST\OrderByClause($orderByItems, $this->withJoinConditionNestingLevel === 0);
  }
  public function Subselect()
  {
@@ -864,7 +865,12 @@ class Parser
  // Check for ad-hoc Join conditions
  if ($adhocConditions) {
  $this->match(TokenType::T_WITH);
+ try {
+ $this->withJoinConditionNestingLevel++;
  $join->conditionalExpression = $this->ConditionalExpression();
+ } finally {
+ $this->withJoinConditionNestingLevel--;
+ }
  }
  return $join;
  }

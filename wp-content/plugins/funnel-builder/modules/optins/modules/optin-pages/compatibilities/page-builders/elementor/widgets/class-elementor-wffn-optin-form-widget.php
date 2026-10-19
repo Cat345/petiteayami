@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 	#[AllowDynamicProperties]
 
-	class Elementor_WFFN_Optin_Form_Widget extends \Elementor\Widget_Base {
+	class Elementor_WFFN_Optin_Form_Widget extends \Elementor\Widget_Base { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- vendor-convention widget class carrying the WF module prefix; referenced by the Pro plugin.
 
 		private $add_tab_number     = 1;
 		private $add_heading_number = 1;
@@ -566,7 +566,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 				\Elementor\Group_Control_Background::get_type(),
 				array(
 					'name'     => $field_key . '_background',
-					'label'    => __( 'Background', 'elementor' ),
+					'label'    => __( 'Background', 'funnel-builder' ),
 					'types'    => array( 'classic', 'gradient' ),
 					'selector' => $selector,
 				)
@@ -574,7 +574,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 			$this->add_responsive_control(
 				$field_key . '_width',
 				array(
-					'label'      => __( 'Width', 'elementor' ),
+					'label'      => __( 'Width', 'funnel-builder' ),
 					'type'       => Controls_Manager::SLIDER,
 					'size_units' => array( 'px', '%' ),
 					'range'      => array(
@@ -605,7 +605,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 
 		protected function add_width( $field_key, $selector, $label = '', $default = array(), $condition = array(), $size_unit = array(), $tablet_default = array(), $mobile_default = array() ) {
 			if ( empty( $label ) ) {
-				$label = __( 'Width', 'elementor' );
+				$label = __( 'Width', 'funnel-builder' );
 			}
 
 			if ( empty( $size_unit ) ) {
@@ -658,7 +658,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 			}
 
 			$args = array(
-				'label'      => __( 'Padding', 'elementor' ),
+				'label'      => __( 'Padding', 'funnel-builder' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => array( 'px', 'em', '%' ),
 				'default'    => $default,
@@ -690,7 +690,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 				);
 			}
 			$args = array(
-				'label'      => __( 'Margin', 'elementor' ),
+				'label'      => __( 'Margin', 'funnel-builder' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => array( 'px', 'em', '%' ),
 				'default'    => $default,
@@ -735,7 +735,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 			$this->add_responsive_control(
 				$field_key . '_border_radius',
 				array(
-					'label'      => __( 'Border Radius', 'elementor' ),
+					'label'      => __( 'Border Radius', 'funnel-builder' ),
 					'type'       => Controls_Manager::DIMENSIONS,
 					'size_units' => array( 'px', 'em', '%' ),
 					'default'    => $default,
@@ -748,7 +748,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 		}
 
 		protected function add_border_radius( $field_key, $selector, $condition = array(), $default = array(), $fields_options = array(), $custom_label = '' ) {
-			$label = __( 'Border Radius', 'elementor' );
+			$label = __( 'Border Radius', 'funnel-builder' );
 
 			if ( ! empty( $custom_label ) ) {
 				$label = $custom_label;
@@ -856,7 +856,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 
 		public function add_color( $field_key, $selectors = array(), $default = '', $label = '', $conditions = array() ) {
 			if ( empty( $label ) ) {
-				$label = esc_attr__( 'Label', 'elementor' );
+				$label = esc_attr__( 'Label', 'funnel-builder' );
 			}
 
 			$color_selectors = array();
@@ -879,7 +879,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 
 		public function add_background_color( $field_key, $selectors = array(), $default = '#000000', $label = '', $conditions = array() ) {
 			if ( empty( $label ) ) {
-				$label = esc_attr__( 'Background', 'elementor' );
+				$label = esc_attr__( 'Background', 'funnel-builder' );
 			}
 			$color_selectors = array();
 			if ( is_array( $selectors ) && count( $selectors ) > 0 ) {
@@ -911,7 +911,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 
 		public function add_controls_tab( $key, $label ) {
 			if ( empty( $label ) ) {
-				$label = esc_attr__( 'Normal', 'elementor' );
+				$label = esc_attr__( 'Normal', 'funnel-builder' );
 			}
 
 			$this->start_controls_tab(
@@ -932,7 +932,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 
 		public function add_border_color( $field_key, $selectors = array(), $default = '#000000', $label = '', $box_shadow = false, $conditions = array() ) {
 			if ( empty( $label ) ) {
-				$label = esc_attr__( 'Color', 'elementor' );
+				$label = esc_attr__( 'Color', 'funnel-builder' );
 			}
 
 			$color_selectors = array();
@@ -984,7 +984,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 
 		public function add_background( $field_key, $selector, $default = '#000000', $label = '', $types = array(), $conditions = array(), $bg_type = array() ) {
 			if ( empty( $label ) ) {
-				$label = __( 'Background', 'elementor' );
+				$label = __( 'Background', 'funnel-builder' );
 			}
 			if ( empty( $bg_type ) ) {
 				$types = array( 'classic', 'gradient' );
@@ -1176,7 +1176,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 				}
 			}
 			if ( empty( $label ) ) {
-				$label = __( 'Alignment', 'elementor' );
+				$label = __( 'Alignment', 'funnel-builder' );
 			}
 			if ( empty( $options ) ) {
 				$options = array(
@@ -1251,7 +1251,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 
 		public function add_border_shadow( $field_key, $selector = '', $label = '' ) {
 			if ( empty( $label ) ) {
-				$label = __( 'Box Shadow', 'elementor' );
+				$label = __( 'Box Shadow', 'funnel-builder' );
 			}
 
 			$this->add_group_control(
@@ -1266,7 +1266,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 
 		public function add_icon( $field_key, $selectors, $label = '' ) {
 			if ( empty( $label ) ) {
-				$label = __( 'Icon', 'elementor' );
+				$label = __( 'Icon', 'funnel-builder' );
 			}
 			$this->add_control(
 				$field_key,
@@ -1281,7 +1281,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 
 		public function add_icon_position( $field_key, $selectors, $label = '' ) {
 			if ( empty( $label ) ) {
-				$label = __( 'Icon Position', 'elementor' );
+				$label = __( 'Icon Position', 'funnel-builder' );
 			}
 
 			$this->add_control(
@@ -1291,8 +1291,8 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 					'type'     => Controls_Manager::SELECT,
 					'selector' => $selectors,
 					'options'  => array(
-						'left'  => __( 'Before', 'elementor' ),
-						'right' => __( 'After', 'elementor' ),
+						'left'  => __( 'Before', 'funnel-builder' ),
+						'right' => __( 'After', 'funnel-builder' ),
 					),
 				)
 			);
@@ -1300,7 +1300,7 @@ if ( ! class_exists( 'Elementor_WFFN_Optin_Form_Widget' ) ) {
 
 		public function add_icon_indent( $field_key, $selectors, $label = '', $default = '' ) {
 			if ( empty( $label ) ) {
-				$label = __( 'Icon Spacing', 'elementor' );
+				$label = __( 'Icon Spacing', 'funnel-builder' );
 			}
 			$this->add_control(
 				$field_key,

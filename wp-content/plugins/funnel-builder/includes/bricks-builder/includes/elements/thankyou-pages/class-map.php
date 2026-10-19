@@ -1,6 +1,6 @@
 <?php
 
-namespace FunnelKit\Bricks\Elements\ThankYouPages;
+namespace FunnelKit\Bricks\Elements\ThankYouPages; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound -- FunnelKit brand namespace, unique to this plugin family; Pro extends these elements.
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -176,8 +176,8 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Map' ) ) {
 
 			$this->set_attribute( 'wrapper', 'class', 'bricks-map-widget-wrapper' );
 			?>
-			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-				<div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- builder render-attribute API string; the builder escapes attribute values. ?>>
+				<div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- builder render-attribute API string; the builder escapes attribute values. ?>>
 					<?php
 					echo do_shortcode( '[wfty-map-widget enable_map="' . $enable_map . '" enable_message="' . $enable_message . '" enable_timeline="' . $enable_timeline . '"]' );
 					?>

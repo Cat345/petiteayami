@@ -4,10 +4,10 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 	#[AllowDynamicProperties]
 	final class WFACP_Template_Custom_Page extends WFACP_Pre_Built {
 
-		private static $ins = null;
-		protected $template_type = 'embed_form';
-		protected $form_steps_data = [];
-		public $steps_inline_styles = [];
+		private static $ins         = null;
+		protected $template_type    = 'embed_form';
+		protected $form_steps_data  = array();
+		public $steps_inline_styles = array();
 
 		/**
 		 * Using protected method no one create new instance this class
@@ -17,28 +17,27 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 			parent::__construct();
 			$this->template_dir  = __DIR__;
 			$this->template_slug = 'embed_forms_2';
-			$this->css_classes   = [];
+			$this->css_classes   = array();
 
 			define( 'WFACP_TEMPLATE_MODULE_DIR', __DIR__ . '/views/template-parts/sections' );
 			$this->url             = WFACP_PLUGIN_URL . '/builder/customizer/templates/embed_forms_1/views/';
 			$is_customizer_preview = WFACP_Common::is_customizer();
 			if ( true == $is_customizer_preview ) {
-				add_action( 'wp_print_styles', [ $this, 'remove_theme_css_and_scripts' ], 100 );
+				add_action( 'wp_print_styles', array( $this, 'remove_theme_css_and_scripts' ), 100 );
 			}
-			add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_style' ], 9999 );
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_style' ), 9999 );
 
-			add_action( 'wfacp_header_print_in_head', [ $this, 'add_step_form_style' ] );
+			add_action( 'wfacp_header_print_in_head', array( $this, 'add_step_form_style' ) );
 
-			add_action( 'wfacpef_before_form', [ $this, 'get_step_forms_data' ] );
-			add_filter( 'wfacp_style_default_setting', [ $this, 'wfacp_multi_tab_default_setting' ], 11, 2 );
-			add_filter( 'wfacp_load_template', [ $this, 'disable_template_loading' ] );
+			add_action( 'wfacpef_before_form', array( $this, 'get_step_forms_data' ) );
+			add_filter( 'wfacp_style_default_setting', array( $this, 'wfacp_multi_tab_default_setting' ), 11, 2 );
+			add_filter( 'wfacp_load_template', array( $this, 'disable_template_loading' ) );
 			add_filter( 'wfacp_order_summary_cols_span', '__return_empty_string' );
 
 			/* Activate DIvi Customizer csss for embed form */
-			add_action( 'wp', [ $this, 'run_divi_customizer_css' ] );
-			add_filter( 'body_class', [ $this, 'add_body_class' ] );
-			add_action( 'wfacp_internal_css', [ $this, 'add_internal_css' ] );
-
+			add_action( 'wp', array( $this, 'run_divi_customizer_css' ) );
+			add_filter( 'body_class', array( $this, 'add_body_class' ) );
+			add_action( 'wfacp_internal_css', array( $this, 'add_internal_css' ) );
 		}
 
 		public static function get_instance() {
@@ -78,18 +77,16 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 			$data[ $section_key ]['layout']['step_form_max_width'] = WFACP_Common::get_option( $section_key . '_section_' . $layout_key . 'step_form_max_width' );
 			$data[ $section_key ]['layout']['disable_steps_bar']   = WFACP_Common::get_option( $section_key . '_section_' . $layout_key . 'disable_steps_bar' );
 
-
 			/* Stepbar styling */
 			$data[ $section_key ]['steps_styling']['step_heading_font_size']     = WFACP_Common::get_option( $section_key . '_section_' . $layout_key . 'step_heading_font_size' );
 			$data[ $section_key ]['steps_styling']['step_sub_heading_font_size'] = WFACP_Common::get_option( $section_key . '_section_' . $layout_key . 'step_sub_heading_font_size' );
 			$data[ $section_key ]['steps_styling']['step_alignment']             = WFACP_Common::get_option( $section_key . '_section_' . $layout_key . 'step_alignment' );
 
-
 			/* Step Data Section */
 
 			$no_of_fields = $this->get_step_count();
 			$count_is     = 1;
-			for ( $i = 0; $i < $no_of_fields; $i ++ ) {
+			for ( $i = 0; $i < $no_of_fields; $i++ ) {
 				$stepData           = array();
 				$field_key_name     = 'name_' . $i;
 				$field_key_headling = 'headline_' . $i;
@@ -102,12 +99,12 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 					$stepData[ $field_key_headling ]     = $heading_text;
 					$data[ $section_key ]['step_form'][] = $stepData;
 				} else {
-					$data[ $section_key ]['step_form'][] = [
+					$data[ $section_key ]['step_form'][] = array(
 						'name_' . $i     => 'Step ' . $count_is . ' Heading',
 						'headline_' . $i => 'Step ' . $count_is . ' Sub heading',
-					];
+					);
 				}
-				$count_is ++;
+				++$count_is;
 
 			}
 
@@ -128,9 +125,7 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 			$data[ $section_key ]['border-color']['inactive_step_count_border_color'] = WFACP_Common::get_option( $section_key . '_section_' . $layout_key . 'inactive_step_count_border_color' );
 			$data[ $section_key ]['border-color']['inactive_step_tab_border_color']   = WFACP_Common::get_option( $section_key . '_section_' . $layout_key . 'inactive_step_tab_border_color' );
 
-
 			$data[ $section_key ]['colors']['form_content_color'] = WFACP_Common::get_option( $section_key . '_section_' . $layout_key . 'form_content_color' );
-
 
 			$data[ $section_key ]['other']['field_border_width'] = WFACP_Common::get_option( $section_key . '_section_' . $layout_key . 'field_border_width' );
 
@@ -140,7 +135,6 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 			$data[ $section_key ]['other']['form_border']['border-width'] = WFACP_Common::get_option( $section_key . '_section_' . $layout_key . 'form_border_width' );
 			$data[ $section_key ]['other']['form_border']['border-color'] = WFACP_Common::get_option( $section_key . '_section_' . $layout_key . 'form_border_color' );
 			$data[ $section_key ]['other']['padding']                     = WFACP_Common::get_option( $section_key . '_section_' . $layout_key . 'form_inner_padding' );
-
 
 			if ( isset( $data[ $section_key ]['other']['form_border'] ) ) {
 				$form_border = $data[ $section_key ]['other']['form_border'];
@@ -158,28 +152,21 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 								$this->steps_inline_styles['desktop']['body.wfacpef_page #wfacp-e-form .wfacp_form .wfacp-inner-form-detail-wrap']['border-bottom-width'] = $fborder . $px;
 								continue;
 							}
-
-
 						}
 						$this->steps_inline_styles['desktop']['body.wfacpef_page #wfacp-e-form .wfacp_form .wfacp-inner-form-detail-wrap'][ $fkey ] = $fborder . $px;
 
-
 					}
-
 				}
 			}
 
-
 			if ( isset( $data[ $section_key ]['other']['padding'] ) ) {
-				$this->steps_inline_styles['desktop']['body #wfacp-e-form .wfacp_form .wfacp-inner-form-detail-wrap']['padding'] = $data[ $section_key ]['other']['padding'] . "px";
+				$this->steps_inline_styles['desktop']['body #wfacp-e-form .wfacp_form .wfacp-inner-form-detail-wrap']['padding'] = $data[ $section_key ]['other']['padding'] . 'px';
 			}
-
 
 			$this->form_steps_data = $data;
 
-
 			if ( isset( $data[ $section_key ]['colors']['form_content_color'] ) ) {
-				$form_content_color                                                           = $data[ $section_key ]['colors']['form_content_color'];
+				$form_content_color = $data[ $section_key ]['colors']['form_content_color'];
 				$this->steps_inline_styles['desktop']['body .wfacp_main_form label']['color'] = $form_content_color;
 
 				$this->steps_inline_styles['desktop']['body .wfacp_main_form p']['color']                                    = $form_content_color;
@@ -208,7 +195,7 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 				$this->steps_inline_styles['desktop']['body .wfacp_main_form .shop_table.wfacp-product-switch-panel .wfacp-product-switch-title']['color']            = $form_content_color;
 				$this->steps_inline_styles['desktop']['body .wfacp_main_form .wfacp-product-switch-title .product-remove']['color']                                   = $form_content_color;
 				$this->steps_inline_styles['desktop']['body .wfacp_main_form .wfacp-product-switch-title .product-quantity']['color']                                 = $form_content_color;
-				$this->steps_inline_styles['desktop']['body .wfacp_main_form .wfacp_shipping_table tr.shipping td']['color']                                          = $form_content_color;
+				$this->steps_inline_styles['desktop']['body .wfacp_main_form .wfacp_shipping_table tr.shipping td']['color'] = $form_content_color;
 
 			}
 
@@ -217,9 +204,8 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 
 				$popup_width = $step_form_max_width + 10;
 
-				$this->steps_inline_styles['desktop'][ 'body .' . $section_key ]['max-width']                                                 = $step_form_max_width . 'px';
+				$this->steps_inline_styles['desktop'][ 'body .' . $section_key ]['max-width'] = $step_form_max_width . 'px';
 				$this->steps_inline_styles['desktop']['body .wfacp_modal_outerwrap .wfacp_modal_innerwrap #wfacp_modal_content']['max-width'] = $popup_width . 'px';
-
 
 				$this->steps_inline_styles['desktop']['body .wfacp_form']['padding'] = '0';
 
@@ -229,46 +215,46 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 
 			$data[ $section_key ]['colors']['section_bg_color'] = WFACP_Common::get_option( $section_key . '_section_' . $layout_key . 'section_bg_color' );
 			if ( isset( $data[ $section_key ]['colors']['section_bg_color'] ) ) {
-				$section_bg_color                                                                                                        = $data[ $section_key ]['colors']['section_bg_color'];
+				$section_bg_color = $data[ $section_key ]['colors']['section_bg_color'];
 				$this->steps_inline_styles['desktop'][ 'body .' . $section_key . ' .wfacp-inner-form-detail-wrap' ]['background-color']  = $section_bg_color;
 				$this->steps_inline_styles['desktop'][ 'body .' . $section_key . ' .woocommerce-checkout #payment' ]['background-color'] = $section_bg_color;
 			}
 
 			if ( isset( $data[ $section_key ]['colors']['active_step_bg_color'] ) ) {
-				$active_step_bg_color                                                                                                          = $data[ $section_key ]['colors']['active_step_bg_color'];
+				$active_step_bg_color = $data[ $section_key ]['colors']['active_step_bg_color'];
 				$this->steps_inline_styles['desktop'][ 'body .' . $section_key . ' .wfacp-payment-tab-list.wfacp-active' ]['background-color'] = $active_step_bg_color;
 			}
 
 			if ( isset( $data[ $section_key ]['colors']['active_step_text_color'] ) ) {
-				$active_step_text_color                                                                                                           = $data[ $section_key ]['colors']['active_step_text_color'];
+				$active_step_text_color = $data[ $section_key ]['colors']['active_step_text_color'];
 				$this->steps_inline_styles['desktop'][ 'body .' . $section_key . ' .wfacp-payment-tab-list.wfacp-active .wfacp_tcolor' ]['color'] = $active_step_text_color;
 			}
 
 			if ( isset( $data[ $section_key ]['colors']['inactive_step_bg_color'] ) ) {
-				$inactive_step_bg_color                                                                                           = $data[ $section_key ]['colors']['inactive_step_bg_color'];
+				$inactive_step_bg_color = $data[ $section_key ]['colors']['inactive_step_bg_color'];
 				$this->steps_inline_styles['desktop'][ 'body .' . $section_key . ' .wfacp-payment-tab-list' ]['background-color'] = $inactive_step_bg_color;
-				//	$this->steps_inline_styles['desktop'][ 'body .' . $section_key . ' .wfacp-payment-tab-wrapper' ]['background-color'] = $inactive_step_bg_color;
+				// $this->steps_inline_styles['desktop'][ 'body .' . $section_key . ' .wfacp-payment-tab-wrapper' ]['background-color'] = $inactive_step_bg_color;
 			}
 			if ( isset( $data[ $section_key ]['colors']['inactive_step_text_color'] ) ) {
-				$inactive_step_text_color                                                                                            = $data[ $section_key ]['colors']['inactive_step_text_color'];
+				$inactive_step_text_color = $data[ $section_key ]['colors']['inactive_step_text_color'];
 				$this->steps_inline_styles['desktop'][ 'body .' . $section_key . ' .wfacp-payment-tab-list .wfacp_tcolor' ]['color'] = $inactive_step_text_color;
 			}
 			if ( isset( $data[ $section_key ]['colors']['active_step_count_bg_color'] ) ) {
-				$active_step_count_bg_color                                                                                                                            = $data[ $section_key ]['colors']['active_step_count_bg_color'];
+				$active_step_count_bg_color = $data[ $section_key ]['colors']['active_step_count_bg_color'];
 				$this->steps_inline_styles['desktop'][ 'body .' . $section_key . ' .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber' ]['background-color'] = $active_step_count_bg_color;
 			}
 
 			if ( isset( $data[ $section_key ]['colors']['active_step_count_text_color'] ) ) {
-				$active_step_count_text_color                                                                                                               = $data[ $section_key ]['colors']['active_step_count_text_color'];
+				$active_step_count_text_color = $data[ $section_key ]['colors']['active_step_count_text_color'];
 				$this->steps_inline_styles['desktop'][ 'body .' . $section_key . ' .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber' ]['color'] = $active_step_count_text_color;
 			}
 
 			if ( isset( $data[ $section_key ]['colors']['inactive_step_count_bg_color'] ) ) {
-				$inactive_step_count_bg_color                                                                                                             = $data[ $section_key ]['colors']['inactive_step_count_bg_color'];
+				$inactive_step_count_bg_color = $data[ $section_key ]['colors']['inactive_step_count_bg_color'];
 				$this->steps_inline_styles['desktop'][ 'body .' . $section_key . ' .wfacp-payment-tab-list .wfacp-order2StepNumber' ]['background-color'] = $inactive_step_count_bg_color;
 			}
 			if ( isset( $data[ $section_key ]['colors']['inactive_step_count_text_color'] ) ) {
-				$inactive_step_count_text_color                                                                                                = $data[ $section_key ]['colors']['inactive_step_count_text_color'];
+				$inactive_step_count_text_color = $data[ $section_key ]['colors']['inactive_step_count_text_color'];
 				$this->steps_inline_styles['desktop'][ 'body .' . $section_key . ' .wfacp-payment-tab-list .wfacp-order2StepNumber' ]['color'] = $inactive_step_count_text_color;
 			}
 			if ( isset( $data[ $section_key ]['steps_styling']['step_alignment'] ) ) {
@@ -278,46 +264,42 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 
 			}
 
-
 			/* Active border color */
 			if ( isset( $data[ $section_key ]['border-color']['active_step_count_border_color'] ) ) {
-				$active_step_count_border_color                                                                                                                     = $data[ $section_key ]['border-color']['active_step_count_border_color'];
+				$active_step_count_border_color = $data[ $section_key ]['border-color']['active_step_count_border_color'];
 				$this->steps_inline_styles['desktop'][ 'body .' . $section_key . '  .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber' ]['border-color'] = $active_step_count_border_color;
 			}
 
 			if ( isset( $data[ $section_key ]['border-color']['active_step_tab_border_color'] ) ) {
-				$active_step_tab_border_color                                                                                               = $data[ $section_key ]['border-color']['active_step_tab_border_color'];
+				$active_step_tab_border_color = $data[ $section_key ]['border-color']['active_step_tab_border_color'];
 				$this->steps_inline_styles['desktop'][ 'body .' . $section_key . '  .wfacp-payment-tab-list.wfacp-active' ]['border-color'] = $active_step_tab_border_color;
 
 			}
 
 			/* inActive border color */
 			if ( isset( $data[ $section_key ]['border-color']['inactive_step_count_border_color'] ) ) {
-				$inactive_step_count_border_color                                                                                                                        = $data[ $section_key ]['border-color']['inactive_step_count_border_color'];
+				$inactive_step_count_border_color = $data[ $section_key ]['border-color']['inactive_step_count_border_color'];
 				$this->steps_inline_styles['desktop'][ 'body .' . $section_key . ' .wfacp-payment-tab-list:not(.wfacp-active) .wfacp-order2StepNumber' ]['border-color'] = $inactive_step_count_border_color;
 			}
 			if ( isset( $data[ $section_key ]['border-color']['inactive_step_tab_border_color'] ) ) {
-				$inactive_step_tab_border_color                                                                                                   = $data[ $section_key ]['border-color']['inactive_step_tab_border_color'];
+				$inactive_step_tab_border_color = $data[ $section_key ]['border-color']['inactive_step_tab_border_color'];
 				$this->steps_inline_styles['desktop'][ 'body .' . $section_key . '  .wfacp-payment-tab-list:not(.wfacp-active)' ]['border-color'] = $inactive_step_tab_border_color;
 			}
 
-			$step_heading_fonts = [
+			$step_heading_fonts = array(
 				'section_key' => 'wfacp_form',
 				'target_to'   => 'body .wfacp-order2StepTitle',
 				'source_from' => 'step_heading_font_size',
-			];
-
+			);
 
 			$this->wfacp_font_size( $data[ $section_key ]['steps_styling'], $step_heading_fonts );
 
-			$step_subheading_fonts = [
+			$step_subheading_fonts = array(
 				'section_key' => 'wfacp_form',
 				'target_to'   => 'body .wfacp-order2StepSubTitle',
 				'source_from' => 'step_sub_heading_font_size',
-			];
+			);
 			$this->wfacp_font_size( $data[ $section_key ]['steps_styling'], $step_subheading_fonts );
-
-
 		}
 
 
@@ -333,17 +315,15 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 			$this->customizer_css['desktop']['p .select2 span.selection']['display'] = 'block';
 
 			if ( true == WFACP_Embed_Form_loader::$pop_up_trigger ) {
-				$this->customizer_css['desktop']['p .select2 span.selection']['display']                                                 = 'none';
+				$this->customizer_css['desktop']['p .select2 span.selection']['display'] = 'none';
 				$this->customizer_css['desktop']['body.wfacpef_page.et_divi_builder #et_builder_outer_content .et_pb_column']['z-index'] = '999';
 			}
-
 
 			foreach ( $this->steps_inline_styles as $key1 => $value ) {
 				$this->customizer_css[ $key1 ] = array_merge( $this->customizer_css[ $key1 ], $value );
 			}
 
-
-			$form_id          = [
+			$form_id          = array(
 				'#wfacp_qr_model_wrap .wfacp_qr_wrap .button:hover',
 				'#wfacp_qr_model_wrap .wfacp_qr_wrap .button',
 				'body #wfacp_qr_model_wrap .wfacp_qr_wrap .button',
@@ -361,13 +341,12 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 				'body #et-boc #wfacp-e-form .wfacp-form a',
 				'body #et-boc #wfacp-e-form .wfacp-form a:hover',
 				'#et-boc .et-l span.select2-selection.select2-selection--multiple',
-			];
-			$body_not_removed = [
+			);
+			$body_not_removed = array(
 				'body.wfacpef_page #wfacp-e-form .wfacp_form',
 				'body.wfacpef_page .wfacp-payment-title.wfacp_embed_step_3',
-				'body #wfacp-e-form .wfacp_form .wfacp-inner-form-detail-wrap'
-			];
-
+				'body #wfacp-e-form .wfacp_form .wfacp-inner-form-detail-wrap',
+			);
 
 			if ( isset( $this->customizer_css['desktop'] ) && is_array( $this->customizer_css['desktop'] ) && count( $this->customizer_css['desktop'] ) > 0 ) {
 				foreach ( $this->customizer_css['desktop'] as $key => $value ) {
@@ -377,21 +356,17 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 						$elment = str_replace( 'body', '', $key );
 					}
 
-
 					if ( ! in_array( $key, $form_id ) ) {
 						$elment = 'body #wfacp-e-form ' . $elment;
 					}
 
-
-					$pixel_used_property = [ 'font-size', 'border-width' ];
-
+					$pixel_used_property = array( 'font-size', 'border-width' );
 
 					foreach ( $value as $css_property => $css_value ) {
 						if ( '' == $css_value ) {
 							continue;
 						}
 						$suffix = '';
-
 
 						if ( in_array( $css_property, $pixel_used_property ) && false == strpos( $css_value, 'px' ) ) {
 							$suffix = 'px';
@@ -400,22 +375,20 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 							$css_value = '0px';
 						}
 						if ( $css_property == 'content' ) {
-							if ( strpos( $css_value, "&#039;" ) !== false ) {
-								$selector = $css_property . ':"' . str_replace( "&#039;", "'", $css_value ) . '"';
+							if ( strpos( $css_value, '&#039;' ) !== false ) {
+								$selector = $css_property . ':"' . str_replace( '&#039;', "'", $css_value ) . '"';
 							} else {
 								$selector = $css_property . ':"' . $css_value . '"';
 							}
-
 						} else {
 							$selector = $css_property . ':' . $css_value . $suffix;
 						}
 
-						$style_inline      = $elment . '{' . $selector . ';}';
+						$style_inline       = $elment . '{' . $selector . ';}';
 						$deskotp_css_style .= $style_inline;
 					}
 				}
 			}
-
 
 			if ( isset( $this->customizer_css['tablet'] ) && is_array( $this->customizer_css['tablet'] ) && count( $this->customizer_css['tablet'] ) > 0 ) {
 				$tablet_css_style .= '@media (max-width: 991px) {';
@@ -427,8 +400,8 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 					}
 					$elment = 'body #wfacp-e-form ' . $elment;
 					foreach ( $value as $css_property => $css_value ) {
-						$selector         = $css_property . ':' . $css_value;
-						$style_inline     = $elment . '{' . $selector . ';}';
+						$selector          = $css_property . ':' . $css_value;
+						$style_inline      = $elment . '{' . $selector . ';}';
 						$tablet_css_style .= $style_inline;
 					}
 				}
@@ -445,8 +418,8 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 					}
 					$elment = 'body #wfacp-e-form ' . $elment;
 					foreach ( $value as $css_property => $css_value ) {
-						$selector         = $css_property . ':' . $css_value;
-						$style_inline     = $elment . '{' . $selector . ';}';
+						$selector          = $css_property . ':' . $css_value;
+						$style_inline      = $elment . '{' . $selector . ';}';
 						$mobile_css_style .= $style_inline;
 					}
 				}
@@ -454,9 +427,9 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 			}
 
 			echo '<style>';
-			echo $deskotp_css_style;
-			echo $tablet_css_style;
-			echo $mobile_css_style;
+			echo wp_strip_all_tags( $deskotp_css_style ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
+			echo wp_strip_all_tags( $tablet_css_style ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
+			echo wp_strip_all_tags( $mobile_css_style ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 			echo '</style>';
 		}
 
@@ -475,11 +448,10 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 
 		public function change_cancel_url( $url ) {
 			if ( ! WFACP_Core()->public->is_checkout_override() ) {
-				if ( isset( $_REQUEST['wfacp_embed_form_page_id'] ) ) {
-					$embed_id = filter_input( INPUT_POST, 'wfacp_embed_form_page_id', FILTER_UNSAFE_RAW );
+				if ( isset( $_REQUEST['wfacp_embed_form_page_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Runs during WooCommerce checkout processing; WC core has already verified its own checkout nonce upstream.
+					$embed_id = isset( $_POST['wfacp_embed_form_page_id'] ) ? absint( $_POST['wfacp_embed_form_page_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- read-only cancel-URL computation, see guard above.
 					$url      = get_the_permalink( $embed_id );
 				}
-
 			}
 
 			return $url;
@@ -499,7 +471,6 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 			}
 
 			return $panel_details;
-
 		}
 
 		public function disable_template_loading( $status ) {
@@ -533,29 +504,25 @@ if ( ! class_exists( 'WFACP_Template_Custom_Page' ) ) {
 
 		public function add_internal_css() {
 
-			echo "<style>";
-			echo ".customize-partial-edit-shortcuts-shown #wfacp-e-form .wfacp_form {margin: auto;}";
-			echo ".customize-partial-edit-shortcuts-shown .wfacpef_page #wfacp-e-form .wfacp_form .wfacp-inner-form-detail-wrap {border-top-width: 0px;}";
-			echo ".customize-partial-edit-shortcuts-shown a.wfacp_qv-button.var_product {pointer-events: none !important;}";
-			echo "body #wfacp-e-form .wfacp_form .wfacp-inner-form-detail-wrap {padding: 15px;}";
-			echo "body.wfacpef_page #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-section.wfacp_order_coupon_box,body.wfacpef_page #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-section.wfacp_order_summary_box {margin-bottom: 0;}";
-			echo "body.wfacpef_page #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-info {padding-bottom: 0 !important;}";
+			echo '<style>';
+			echo '.customize-partial-edit-shortcuts-shown #wfacp-e-form .wfacp_form {margin: auto;}';
+			echo '.customize-partial-edit-shortcuts-shown .wfacpef_page #wfacp-e-form .wfacp_form .wfacp-inner-form-detail-wrap {border-top-width: 0px;}';
+			echo '.customize-partial-edit-shortcuts-shown a.wfacp_qv-button.var_product {pointer-events: none !important;}';
+			echo 'body #wfacp-e-form .wfacp_form .wfacp-inner-form-detail-wrap {padding: 15px;}';
+			echo 'body.wfacpef_page #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-section.wfacp_order_coupon_box,body.wfacpef_page #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-section.wfacp_order_summary_box {margin-bottom: 0;}';
+			echo 'body.wfacpef_page #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-info {padding-bottom: 0 !important;}';
 			echo 'body.wfacpef_page .wfacp-coupon-section.wfacp_custom_row_wrap.clearfix {margin-bottom: 20px !important;margin-top: 10px;}';
 			echo 'body.wfacpef_page #wfacp-e-form .woocommerce-notices-wrapper + .wfacp-coupon-section.clearfix {margin-bottom: 15px;}';
 			echo 'body.wfacpef_page #wfacp-e-form .wfacp-order2StepTitle {font-weight: 700;}';
 			echo 'body:not(.wfacpef_page) #wfacp-e-form .wfacp-order2StepTitle {font-size: 17px;}';
-			echo "<style>";
-
+			echo '<style>';
 		}
 
 		public function get_payment_desc() {
 
 			return WFACP_Common::get_option( 'wfacp_form_section_' . $this->template_slug . '_wfacp_form_section_text_below_placeorder_btn' );
-
 		}
-
 	}
 
 	return WFACP_Template_Custom_Page::get_instance();
 }
-

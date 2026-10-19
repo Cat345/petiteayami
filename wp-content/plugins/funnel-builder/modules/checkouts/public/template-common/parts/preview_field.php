@@ -19,11 +19,11 @@ if ( 'single_step' != $step ) {
 			?>
 			<div class="wfacp-section">
 				<div class="wfacp-comm-title wfacp_none">
-					<h2 class="wfacp_section_heading wfacp_section_title wfacp-normal"><?php echo $preview_heading; ?> </h2>
+					<h2 class="wfacp_section_heading wfacp_section_title wfacp-normal"><?php echo wp_kses_post( $preview_heading ); ?> </h2>
 					<?php
 					if ( '' !== $preview_subheading ) {
 						?>
-						<h4 class="wfacp-text-left wfacp-normal"><?php echo $preview_subheading; ?></h4>
+						<h4 class="wfacp-text-left wfacp-normal"><?php echo wp_kses_post( $preview_subheading ); ?></h4>
 						<?php
 					}
 					?>

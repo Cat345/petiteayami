@@ -106,14 +106,14 @@ if ( ! class_exists( 'WFFN_Optin_TY_Pages' ) ) {
 						'labels'              => array(
 							'name'          => $this->get_module_title( true ),
 							'singular_name' => $this->get_module_title(),
-							'add_new'       => sprintf( __( 'Add %s', 'funnel-builder' ), $this->get_module_title() ),
-							'add_new_item'  => sprintf( __( 'Add New %s', 'funnel-builder' ), $this->get_module_title() ),
-							'search_items'  => sprintf( esc_html__( 'Search %s', 'funnel-builder' ), $this->get_module_title( true ) ),
-							'all_items'     => sprintf( esc_html__( 'All %s', 'funnel-builder' ), $this->get_module_title( true ) ),
-							'edit_item'     => sprintf( esc_html__( 'Edit %s', 'funnel-builder' ), $this->get_module_title() ),
-							'view_item'     => sprintf( esc_html__( 'View %s', 'funnel-builder' ), $this->get_module_title() ),
-							'update_item'   => sprintf( esc_html__( 'Update %s', 'funnel-builder' ), $this->get_module_title() ),
-							'new_item_name' => sprintf( esc_html__( 'New %s', 'funnel-builder' ), $this->get_module_title() ),
+							'add_new'       => sprintf( /* translators: %s: module title (e.g. Optin Confirmation). */ __( 'Add %s', 'funnel-builder' ), $this->get_module_title() ),
+							'add_new_item'  => sprintf( /* translators: %s: module title (e.g. Optin Confirmation). */ __( 'Add New %s', 'funnel-builder' ), $this->get_module_title() ),
+							'search_items'  => sprintf( /* translators: %s: module title (e.g. Optin Confirmation). */ esc_html__( 'Search %s', 'funnel-builder' ), $this->get_module_title( true ) ),
+							'all_items'     => sprintf( /* translators: %s: module title (e.g. Optin Confirmation). */ esc_html__( 'All %s', 'funnel-builder' ), $this->get_module_title( true ) ),
+							'edit_item'     => sprintf( /* translators: %s: module title (e.g. Optin Confirmation). */ esc_html__( 'Edit %s', 'funnel-builder' ), $this->get_module_title() ),
+							'view_item'     => sprintf( /* translators: %s: module title (e.g. Optin Confirmation). */ esc_html__( 'View %s', 'funnel-builder' ), $this->get_module_title() ),
+							'update_item'   => sprintf( /* translators: %s: module title (e.g. Optin Confirmation). */ esc_html__( 'Update %s', 'funnel-builder' ), $this->get_module_title() ),
+							'new_item_name' => sprintf( /* translators: %s: module title (e.g. Optin Confirmation). */ esc_html__( 'New %s', 'funnel-builder' ), $this->get_module_title() ),
 						),
 						'public'              => true,
 						'show_ui'             => true,
@@ -313,7 +313,7 @@ if ( ! class_exists( 'WFFN_Optin_TY_Pages' ) ) {
 
 						global $wpdb;
 
-						$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d", $oty_page_id ) );
+						$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d", $oty_page_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 						if ( ! empty( $post_meta_all ) ) {
 							$sql_query_selects = array();
@@ -359,7 +359,7 @@ if ( ! class_exists( 'WFFN_Optin_TY_Pages' ) ) {
 							}
 
 							$sql_query_meta_val = implode( ',', $sql_query_selects );
-							$wpdb->query( $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta ) );//phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared
+							$wpdb->query( $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta ) ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- values esc_sql()d in the assembly loop above and the table bound via placeholder; the loop-built VALUES string is invisible to taint tracking. direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 							if ( in_array( $oty_page->post_type, $this->get_inherit_supported_post_type(), true ) ) {
 								$template = WFFN_Core()->admin->get_selected_template( $oty_page_id, $post_meta_all );
@@ -463,7 +463,7 @@ if ( ! class_exists( 'WFFN_Optin_TY_Pages' ) ) {
 		public function get_template_url( $main_template ) {
 			global $post;
 			$oty_id        = $post->ID;
-			$page_template = apply_filters( 'bwf_page_template', get_post_meta( $oty_id, '_wp_page_template', true ), $oty_id );
+			$page_template = apply_filters( 'bwf_page_template', get_post_meta( $oty_id, '_wp_page_template', true ), $oty_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			$file         = '';
 			$body_classes = array();
@@ -644,6 +644,16 @@ if ( ! class_exists( 'WFFN_Optin_TY_Pages' ) ) {
 
 				// Add CPT to the list of post types WP will include when it queries based on the post name.
 				$query->set( 'post_type', array( 'post', 'page', $this->get_post_type_slug() ) );
+				/**
+				 * Pages are hierarchical, so WordPress only resolves a child page at its full
+				 * path. Adding 'page' above would otherwise let a child page's slug match at the
+				 * site root: /child/ returned the page instead of 404ing, and because there was no
+				 * 404 WordPress never ran redirect_canonical(), so the visitor was never sent on to
+				 * /parent/child/. The step post types this rule exists for are always top level, so
+				 * restricting to top level keeps them resolving at the root and leaves page
+				 * hierarchy, and its canonical redirect, to WordPress.
+				 */
+				$query->set( 'post_parent', 0 );
 			}
 		}
 

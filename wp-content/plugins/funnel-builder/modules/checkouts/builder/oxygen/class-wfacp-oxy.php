@@ -161,7 +161,7 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 		}
 
 		public static function is_template_editor() {
-			return isset( $_REQUEST['action'] ) && ( 'ct_save_components_tree' == $_REQUEST['action'] || 'ct_render_innercontent' == $_REQUEST['action'] );
+			return isset( $_REQUEST['action'] ) && ( 'ct_save_components_tree' == $_REQUEST['action'] || 'ct_render_innercontent' == $_REQUEST['action'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
 		}
 
 		public function init_extension() {
@@ -184,8 +184,8 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 				$post_id = absint( $_REQUEST['post'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 
-			if ( wp_doing_ajax() && isset( $_REQUEST['wfacp_id'] ) ) {
-				$post_id = $_REQUEST['wfacp_id'];
+			if ( wp_doing_ajax() && isset( $_REQUEST['wfacp_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
+				$post_id = absint( $_REQUEST['wfacp_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
 			}
 
 			if ( $post_id > 0 ) {
@@ -204,8 +204,8 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 		 * @return void
 		 */
 		public function setup_oxygen_widgets() {
-			if ( isset( $_POST['builder'] ) && 'oxy' == $_POST['builder'] && class_exists( 'OxyEl' ) ) {
-				$post_id = absint( $_POST['wfacp_id'] );
+			if ( isset( $_POST['builder'] ) && 'oxy' == $_POST['builder'] && class_exists( 'OxyEl' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Runs only during the wfacp_import_template AJAX flow, whose handler nonce-verifies via WFACP_AJAX_Controller::check_nonce() at entry.
+				$post_id = isset( $_POST['wfacp_id'] ) ? absint( $_POST['wfacp_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Runs only during the wfacp_import_template AJAX flow, whose handler nonce-verifies via WFACP_AJAX_Controller::check_nonce() at entry.
 				WFACP_Common::set_id( $post_id );
 				WFACP_Core()->template_loader->load_template( $post_id );
 				$this->run_widgets();
@@ -347,7 +347,7 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 
 
 		public function enable_self_page_css() {
-			if ( apply_filters( 'bwf_enable_oxygen_universal_css', true, $this ) ) {
+			if ( apply_filters( 'bwf_enable_oxygen_universal_css', true, $this ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				return;
 			}
 			add_filter( 'pre_option_oxygen_vsb_universal_css_cache', array( $this, 'disable_universal_css' ) );

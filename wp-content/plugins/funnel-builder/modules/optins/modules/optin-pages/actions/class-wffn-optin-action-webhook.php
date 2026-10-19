@@ -89,7 +89,7 @@ if ( ! class_exists( 'WFFN_Optin_Action_Webhook' ) ) {
 		public function send_utm_tracking_data( $post_fields ) {
 			try {
 				/** Visitor-collected fields are supplied by the Pro plugin through this filter */
-				$utm_data = apply_filters( 'bwf_tracking_visitor_data', array(), 'webhook', $post_fields );
+				$utm_data = apply_filters( 'bwf_tracking_visitor_data', array(), 'webhook', $post_fields ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 				if ( empty( $utm_data ) || ! is_array( $utm_data ) ) {
 					return $post_fields;

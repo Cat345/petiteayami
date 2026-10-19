@@ -89,7 +89,7 @@ if ( ! class_exists( 'WFFN_Form_Builder' ) ) {
 		 * @return array|mixed
 		 */
 		public function get_preview_form_config() {
-			$data = isset( $_POST['wffn_custom_form'] ) ? wffn_clean( json_decode( wp_unslash( $_POST['wffn_custom_form'] ), true ) ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- AJAX nonce verification handled by WordPress AJAX system; JSON data is sanitized recursively by wffn_clean()
+			$data = isset( $_POST['wffn_custom_form'] ) ? map_deep( json_decode( wp_unslash( $_POST['wffn_custom_form'] ), true ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- AJAX nonce verification handled by WordPress AJAX system; decoded JSON is sanitized recursively with map_deep( …, 'sanitize_text_field' ).
 
 			return $data;
 		}

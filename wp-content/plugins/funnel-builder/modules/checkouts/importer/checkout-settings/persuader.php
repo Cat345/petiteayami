@@ -3,40 +3,40 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 $product_field  = WFACP_Common::get_product_field();
 $advanced_field = WFACP_Common::get_advanced_fields();
 
-$steps = [
-	'single_step' => [
+$steps = array(
+	'single_step' => array(
 		'name'          => __( 'Step 1', 'funnel-builder' ),
 		'slug'          => 'single_step',
 		'friendly_name' => __( 'Single Step Checkout', 'funnel-builder' ),
 		'active'        => 'yes',
-	],
-	'two_step'    => [
+	),
+	'two_step'    => array(
 		'name'          => __( 'Step 2', 'funnel-builder' ),
 		'slug'          => 'two_step',
 		'friendly_name' => __( 'Two Step Checkout', 'funnel-builder' ),
 		'active'        => 'no',
-	],
-	'third_step'  => [
+	),
+	'third_step'  => array(
 		'name'          => __( 'Step 3', 'funnel-builder' ),
 		'slug'          => 'third_step',
 		'friendly_name' => __( 'Three Step Checkout', 'funnel-builder' ),
 		'active'        => 'no',
-	],
-];
+	),
+);
 
 
-$pageLayout = [
+$pageLayout = array(
 	'steps'                       => $steps,
-	'fieldsets'                   => [
+	'fieldsets'                   => array(
 		'single_step' => array(
 			array(
-				'name'        => WFACP_Common::translation_string_to_check(__( 'Contact Information', 'woocommerce' )),
+				'name'        => WFACP_Common::translation_string_to_check( __( 'Contact Information', 'woocommerce' ) ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 				'class'       => '',
 				'is_default'  => 'yes',
 				'sub_heading' => '',
 				'fields'      => array(
 					array(
-						'label'        => __( 'Email', 'woocommerce' ),
+						'label'        => __( 'Email', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'required'     => 'true',
 						'type'         => 'email',
 						'class'        => array(
@@ -52,7 +52,7 @@ $pageLayout = [
 						'placeholder'  => '',
 					),
 					array(
-						'label'        => __( 'First name', 'woocommerce' ),
+						'label'        => __( 'First name', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'required'     => 'true',
 						'class'        => array(
 							0 => 'form-row-first',
@@ -66,7 +66,7 @@ $pageLayout = [
 
 					),
 					array(
-						'label'        => __( 'Last name', 'woocommerce' ),
+						'label'        => __( 'Last name', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'required'     => 'true',
 						'class'        => array(
 							0 => 'form-row-last',
@@ -82,7 +82,7 @@ $pageLayout = [
 					WFACP_Common::get_single_address_fields(),
 
 					array(
-						'label'        => __( 'Phone', 'woocommerce' ),
+						'label'        => __( 'Phone', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'type'         => 'tel',
 						'class'        => array( 'form-row-wide' ),
 						'id'           => 'billing_phone',
@@ -97,19 +97,19 @@ $pageLayout = [
 			),
 			array(
 
-				'name'        => WFACP_Common::translation_string_to_check(__( 'Shipping Method', 'funnel-builder' )),
+				'name'        => WFACP_Common::translation_string_to_check( __( 'Shipping Method', 'funnel-builder' ) ),
 				'class'       => '',
 				'sub_heading' => '',
-				'html_fields' => [ 'shipping_calculator' => true ],
+				'html_fields' => array( 'shipping_calculator' => true ),
 				'fields'      => array(
-					isset( $advanced_field['shipping_calculator'] ) ? $advanced_field['shipping_calculator'] : []
+					isset( $advanced_field['shipping_calculator'] ) ? $advanced_field['shipping_calculator'] : array(),
 				),
 
 			),
 
 
 			array(
-				'name'        => WFACP_Common::translation_string_to_check(__( 'Order Summary', 'woocommerce' )),
+				'name'        => WFACP_Common::translation_string_to_check( __( 'Order Summary', 'woocommerce' ) ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 				'class'       => '',
 				'sub_heading' => '',
 				'html_fields' => array(
@@ -121,11 +121,11 @@ $pageLayout = [
 					$advanced_field['order_summary'],
 				),
 			),
-		)
+		),
 
 
-	],
-	'product_settings'            => [],
+	),
+	'product_settings'            => array(),
 	'have_coupon_field'           => 'true',
 	'have_billing_address'        => 'true',
 	'have_shipping_address'       => 'true',
@@ -134,6 +134,6 @@ $pageLayout = [
 	'enabled_product_switching'   => 'yes',
 	'have_shipping_method'        => 'true',
 	'current_step'                => 'single_step',
-];
+);
 
-return [ 'page_layout' => $pageLayout];
+return array( 'page_layout' => $pageLayout );

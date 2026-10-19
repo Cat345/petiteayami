@@ -47,8 +47,8 @@ if ( ! class_exists( 'WFACP_Customer_Reviews_WooCommerce' ) ) {
 		 */
 		public function prevent_theme_builder_for_products( $is_theme_builder ) {
 			// Only act when in Elementor editor context
-			$is_elementor = isset( $_REQUEST['elementor-preview'] )
-				|| ( isset( $_REQUEST['action'] ) && in_array( $_REQUEST['action'], array( 'elementor', 'elementor_ajax' ), true ) )
+			$is_elementor = isset( $_REQUEST['elementor-preview'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
+				|| ( isset( $_REQUEST['action'] ) && in_array( $_REQUEST['action'], array( 'elementor', 'elementor_ajax' ), true ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
 				|| ( isset( $_REQUEST['preview_id'] ) && isset( $_REQUEST['preview_nonce'] ) );//phpcs:ignore 
 
 			if ( ! $is_elementor ) {

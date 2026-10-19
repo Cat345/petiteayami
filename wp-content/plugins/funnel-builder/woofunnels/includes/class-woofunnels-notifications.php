@@ -18,7 +18,7 @@ if ( ! class_exists( 'WooFunnels_Notifications' ) ) {
 			add_action( 'admin_footer', [ $this, 'notification_inline_script' ] );
 
 			/** Ajax function dismiss to  woofunnels notifications */
-			add_action( 'wp_ajax_wf_dismiss_link', array( $this, 'wf_dismiss_link' ) );
+			add_action( 'wp_ajax_bwf_dismiss_link', array( $this, 'bwf_dismiss_link' ) );
 		}
 
 		/**
@@ -337,10 +337,10 @@ if ( ! class_exists( 'WooFunnels_Notifications' ) ) {
                                 url: ajaxurl,
                                 type: "POST",
                                 data: {
-                                    action: 'wf_dismiss_link',
+                                    action: 'bwf_dismiss_link',
                                     noticeGroup: noticeGroup,
                                     noticekey: noticekey,
-                                    _nonce: '<?php echo wp_create_nonce( 'bwf_notice_dismiss' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>',
+                                    _nonce: '<?php echo esc_js( wp_create_nonce( 'bwf_notice_dismiss' ) ); ?>',
                                 },
                                 success: function (result) {
                                     if (result.status === 'success' && result.success === 'true') {
@@ -378,7 +378,7 @@ if ( ! class_exists( 'WooFunnels_Notifications' ) ) {
 		/**
 		 * Dismiss the notification
 		 */
-		public function wf_dismiss_link() {
+		public function bwf_dismiss_link() {
 			$results = array(
 				'status'  => 'failed',
 				'success' => 'false',
@@ -386,7 +386,7 @@ if ( ! class_exists( 'WooFunnels_Notifications' ) ) {
 			);
 
 			if ( ! current_user_can( 'manage_woocommerce' ) ) {
-				$results['msg'] = __( 'You do not have permission to perform this action.', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				$results['msg'] = __( 'You do not have permission to perform this action.', 'funnel-builder' );
 				wp_send_json( $results, 403 );
 			}
 

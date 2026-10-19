@@ -43,7 +43,7 @@ if ( ! class_exists( 'BWF_WC_Compatibility' ) ) :
 	 * @version 1.0
 	 */
 	#[AllowDynamicProperties]
-	class BWF_WC_Compatibility {
+	class BWF_WC_Compatibility { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- BWF_ is the established WooFunnels framework prefix (3 chars, below PCP's 4-char auto-detection floor); the class is shared across the plugin family and cannot be renamed.
 
 		/**
 		 * Compatibility function for outputting a woocommerce attribute label
@@ -77,7 +77,7 @@ if ( ! class_exists( 'BWF_WC_Compatibility' ) ) :
 		 */
 		public static function woocommerce_get_formatted_product_name( $product ) {
 			if ( ! $product instanceof WC_Product ) {
-				return __( 'No title', 'funnel-builder' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				return __( 'No title', 'funnel-builder' );
 			}
 
 			return $product->get_formatted_name();

@@ -50,12 +50,12 @@ if ( ! class_exists( 'WFACP_Compatibility_With_SendCloud_Shipping' ) ) {
                     display: inline-block;
                     padding: 10px 14px;
                     width: auto;
-                    margin: 6px 0 6px<?php echo $padd; ?>;
+                    margin: 6px 0 6px<?php echo esc_attr( $padd ); ?>;
                 }
 
                 div#sendcloudshipping_service_point_selected_label {
                     line-height: 1.5;
-                    padding-left: <?php echo $padd; ?>;
+                    padding-left: <?php echo esc_attr( $padd ); ?>;
                 }
 
             </style>

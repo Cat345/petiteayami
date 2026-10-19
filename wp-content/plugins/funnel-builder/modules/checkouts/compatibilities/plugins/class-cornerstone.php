@@ -36,6 +36,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Cornerstone' ) ) {
 
 			// Fallback: Process shortcodes in the_content filter
 			// Priority 999 ensures it runs after most other filters
+			// Reasoning note (not code): do_shortcode() here only ever runs on the_content, which WordPress already gates to published post content; process_shortcodes_in_content() further requires our own [wfacp_forms]/[wfacp_mini_cart] shortcode and a Cornerstone-built page. No request input reaches this path.
 			add_filter( 'the_content', array( $this, 'process_shortcodes_in_content' ), 999, 1 );
 		}
 

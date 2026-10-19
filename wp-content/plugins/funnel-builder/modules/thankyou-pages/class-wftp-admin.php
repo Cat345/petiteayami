@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || exit; //Exit if accessed directly
 if ( ! class_exists( 'WFTP_Admin' ) ) {
 	#[AllowDynamicProperties]
 
-  class WFTP_Admin {
+  class WFTP_Admin { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- WFTP_/WFCO_ is an established FunnelKit family prefix; PCP's frequency-based prefix detection is distribution-dependent and misses small families.
 
 		private static $ins = null;
 

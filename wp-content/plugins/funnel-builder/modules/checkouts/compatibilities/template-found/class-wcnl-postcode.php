@@ -91,10 +91,10 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 
 		public function toev_field( $posted_data ) {
 			if ( isset( $_REQUEST['billing_house_number_suffix'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce checkout field filter, nonce verification handled by WooCommerce
-				$posted_data['billing_house_number_suffix'] = sanitize_text_field( wp_unslash( $_REQUEST['billing_house_number_suffix'] ) );
+				$posted_data['billing_house_number_suffix'] = sanitize_text_field( wp_unslash( $_REQUEST['billing_house_number_suffix'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs during WooCommerce checkout processing; WC core has already verified its own checkout nonce upstream.
 			}
 			if ( isset( $_REQUEST['shipping_house_number_suffix'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce checkout field filter, nonce verification handled by WooCommerce
-				$posted_data['shipping_house_number_suffix'] = sanitize_text_field( wp_unslash( $_REQUEST['shipping_house_number_suffix'] ) );
+				$posted_data['shipping_house_number_suffix'] = sanitize_text_field( wp_unslash( $_REQUEST['shipping_house_number_suffix'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs during WooCommerce checkout processing; WC core has already verified its own checkout nonce upstream.
 			}
 
 			return $posted_data;
@@ -107,23 +107,23 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 			if ( ! empty( $postcode_countries ) ) {
 				$required = in_array( $billing_country, $postcode_countries );
 			}
-			$house_number_label = __( 'Nr.', 'wpo_wcnlpc' );
+			$house_number_label = __( 'Nr.', 'wpo_wcnlpc' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 			if ( get_option( 'woocommerce_wcnlpc_full_field_names', 'no' ) == 'yes' ) {
-				$house_number_label = __( 'House number', 'wpo_wcnlpc' );
+				$house_number_label = __( 'House number', 'wpo_wcnlpc' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 			}
 
 			if ( isset( $template_fields['billing'] ) ) {
 				$form = 'billing';
 				$template_fields['billing'][ $form . '_street_name' ]  = array(
-					'label'       => __( 'Street name', 'wpo_wcnlpc' ),
-					'placeholder' => __( 'Street name', 'wpo_wcnlpc' ),
-					'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-first' ), $form, 'street_name' ),
+					'label'       => __( 'Street name', 'wpo_wcnlpc' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+					'placeholder' => __( 'Street name', 'wpo_wcnlpc' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+					'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-first' ), $form, 'street_name' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 					'required'    => $required,
 				);
 				$template_fields['billing'][ $form . '_house_number' ] = array(
 					'label'             => $house_number_label,
 					'placeholder'       => $house_number_label,
-					'class'             => apply_filters( 'nl_custom_address_field_class', array( 'form-row-quart-first' ), $form, 'house_number' ),
+					'class'             => apply_filters( 'nl_custom_address_field_class', array( 'form-row-quart-first' ), $form, 'house_number' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 					'required'          => $required, // Only required for NL
 					'type'              => 'number',
 					'custom_attributes' => array( 'pattern' => '[0-9]*' ),
@@ -137,15 +137,15 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 			if ( isset( $template_fields['shipping'] ) ) {
 				$form = 'shipping';
 				$template_fields['shipping'][ $form . '_street_name' ]  = array(
-					'label'       => __( 'Street name', 'wpo_wcnlpc' ),
-					'placeholder' => __( 'Street name', 'wpo_wcnlpc' ),
-					'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-first' ), $form, 'street_name' ),
+					'label'       => __( 'Street name', 'wpo_wcnlpc' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+					'placeholder' => __( 'Street name', 'wpo_wcnlpc' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+					'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-first' ), $form, 'street_name' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 					'required'    => $required,
 				);
 				$template_fields['shipping'][ $form . '_house_number' ] = array(
 					'label'             => $house_number_label,
 					'placeholder'       => $house_number_label,
-					'class'             => apply_filters( 'nl_custom_address_field_class', array( 'form-row-quart-first' ), $form, 'house_number' ),
+					'class'             => apply_filters( 'nl_custom_address_field_class', array( 'form-row-quart-first' ), $form, 'house_number' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 					'required'          => $required, // Only required for NL
 					'type'              => 'number',
 					'custom_attributes' => array( 'pattern' => '[0-9]*' ),
@@ -209,19 +209,19 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 						$class1 = 'wfacp-col-full';
 						$class2 = 'wfacp-col-full';
 					}
-					$house_number_label  = __( 'Nr.', 'wpo_wcnlpc' );
-					$house_number_suffix = _x( 'Suffix', 'abbreviated string', 'wpo_wcnlpc' );
+					$house_number_label  = __( 'Nr.', 'wpo_wcnlpc' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+					$house_number_suffix = _x( 'Suffix', 'abbreviated string', 'wpo_wcnlpc' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 					if ( get_option( 'woocommerce_wcnlpc_full_field_names', 'no' ) == 'yes' ) {
-						$house_number_label  = __( 'House number', 'wpo_wcnlpc' );
-						$house_number_suffix = _x( 'Suffix', 'full string', 'wpo_wcnlpc' );
+						$house_number_label  = __( 'House number', 'wpo_wcnlpc' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						$house_number_suffix = _x( 'Suffix', 'full string', 'wpo_wcnlpc' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 					}
 					// Add Street name
 					$new_fields[] = array(
-						'label'       => __( 'Street name', 'wpo_wcnlpc' ),
-						'placeholder' => __( 'Street name', 'wpo_wcnlpc' ),
+						'label'       => __( 'Street name', 'wpo_wcnlpc' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						'placeholder' => __( 'Street name', 'wpo_wcnlpc' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 						'cssready'    => array( "wfacp_postcode_checker $class1" ),
 						'id'          => $form . '_street_name',
-						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'wfacp_postcode_checker form-row-first', $class1 ), $form, 'street_name' ),
+						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'wfacp_postcode_checker form-row-first', $class1 ), $form, 'street_name' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 						'required'    => $required, // Only required for NL
 						'priority'    => $base_priority + 1,
 					);
@@ -229,7 +229,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 					$new_fields[] = array(
 						'label'             => $house_number_label,
 						'placeholder'       => $house_number_label,
-						'class'             => apply_filters( 'nl_custom_address_field_class', array( 'form-row-quart-first', $class1 ), $form, 'house_number' ),
+						'class'             => apply_filters( 'nl_custom_address_field_class', array( 'form-row-quart-first', $class1 ), $form, 'house_number' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 						'required'          => $required, // Only required for NL
 						'type'              => 'number',
 						'id'                => $form . '_house_number',
@@ -243,7 +243,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 						'placeholder' => $house_number_suffix,
 						'cssready'    => array( "wfacp_postcode_checker $class2" ),
 						'id'          => $form . '_house_number_suffix',
-						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'wfacp_postcode_checker form-row-quart', $class1 ), $form, 'house_number_suffix' ),
+						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'wfacp_postcode_checker form-row-quart', $class1 ), $form, 'house_number_suffix' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 						'required'    => false,
 						'priority'    => $base_priority + 3,
 					);
@@ -332,24 +332,24 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 					$form = 'shipping';
 					// Add Street name
 					$new_fields[]        = array(
-						'label'       => __( 'Street name', 'wpo_wcnlpc' ),
-						'placeholder' => __( 'Street name', 'wpo_wcnlpc' ),
+						'label'       => __( 'Street name', 'wpo_wcnlpc' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						'placeholder' => __( 'Street name', 'wpo_wcnlpc' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 						'cssready'    => array( "wfacp_postcode_checker $class1" ),
 						'id'          => $form . '_street_name',
-						'class'       => apply_filters( 'nl_custom_address_field_class1', array( 'form-row-first', $class1 ), $form, 'street_name' ),
+						'class'       => apply_filters( 'nl_custom_address_field_class1', array( 'form-row-first', $class1 ), $form, 'street_name' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 						'required'    => $required, // Only required for NL
 					);
-					$house_number_label  = __( 'Nr.', 'wpo_wcnlpc' );
-					$house_number_suffix = _x( 'Suffix', 'abbreviated string', 'wpo_wcnlpc' );
+					$house_number_label  = __( 'Nr.', 'wpo_wcnlpc' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+					$house_number_suffix = _x( 'Suffix', 'abbreviated string', 'wpo_wcnlpc' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 					if ( get_option( 'woocommerce_wcnlpc_full_field_names', 'no' ) == 'yes' ) {
-						$house_number_label  = __( 'House number', 'wpo_wcnlpc' );
-						$house_number_suffix = _x( 'Suffix', 'full string', 'wpo_wcnlpc' );
+						$house_number_label  = __( 'House number', 'wpo_wcnlpc' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						$house_number_suffix = _x( 'Suffix', 'full string', 'wpo_wcnlpc' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 					}
 					// Add house number
 					$new_fields[] = array(
 						'label'             => $house_number_label,
 						'placeholder'       => $house_number_label,
-						'class'             => apply_filters( 'nl_custom_address_field_class', array( 'form-row-quart-first', $class1 ), $form, 'house_number' ),
+						'class'             => apply_filters( 'nl_custom_address_field_class', array( 'form-row-quart-first', $class1 ), $form, 'house_number' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 						'required'          => $required, // Only required for NL
 						'type'              => 'number',
 						'id'                => $form . '_house_number',
@@ -362,7 +362,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 						'placeholder' => $house_number_suffix,
 						'cssready'    => array( "wfacp_postcode_checker $class2" ),
 						'id'          => $form . '_house_number_suffix',
-						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'wfacp_postcode_checker form-row-quart', $class1 ), $form, 'house_number_suffix' ),
+						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'wfacp_postcode_checker form-row-quart', $class1 ), $form, 'house_number_suffix' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 						'required'    => false,
 					);
 					$this->wcnl_postcode_field_keys[] = $new_fields;
@@ -426,7 +426,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 
 				<?php
 				if ( isset( $px ) ) {
-					echo "body .wfacp_main_form p.wcnlpc-manual {padding: 0 $px" . 'px;';}
+					echo 'body .wfacp_main_form p.wcnlpc-manual {padding: 0 ' . (int) $px . 'px;';}
 				?>
 				.wfacp_main_form .woocommerce-page form .form-row-quart-first, .woocommerce form .form-row-quart-first {
 					margin-right: 0 !important;

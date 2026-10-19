@@ -57,7 +57,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Enfold' ) ) {
 				return $status;
 			}
 
-			if ( isset( $_REQUEST['avia-save-nonce'] ) && ! empty( $_REQUEST['avia-save-nonce'] ) ) {
+			if ( isset( $_REQUEST['avia-save-nonce'] ) && ! empty( $_REQUEST['avia-save-nonce'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Presence check of Enfold's own save-nonce to detect its builder save request; Enfold verifies that nonce itself.
 				return true;
 			}
 
@@ -106,7 +106,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Enfold' ) ) {
 				return;
 			}
 
-			echo '<style id="wfacp-enfold-compat">' . $css . '</style>';
+			echo '<style id="wfacp-enfold-compat">' . wp_strip_all_tags( $css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 	}
 

@@ -157,7 +157,7 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 
 			if ( class_exists( 'WFFN_Thank_You_WC_Pages' ) && ! is_null( $post ) && WFFN_Thank_You_WC_Pages::get_post_type_slug() === $post->post_type && 'post.php' === $pagenow && isset( $_GET['post'] ) && intval( $_GET['post'] ) > 0 ) { //phpcs:ignore
 
-				defined( 'BWF_I18N' ) || define( 'BWF_I18N', 'funnel-builder' );
+				defined( 'BWF_I18N' ) || define( 'BWF_I18N', 'funnel-builder' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 				$app_name     = 'wfty-block-editor';
 				$frontend_dir = defined( 'WFTY_REACT_ENVIRONMENT' ) ? WFTY_REACT_ENVIRONMENT : $this->url . 'dist';
 
@@ -182,7 +182,6 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 				);
 
 				$js_path    = "/$app_name.js";
-				$style_path = "/$app_name.css";
 
 				$deps    = ( isset( $assets['dependencies'] ) ? array_merge( $assets['dependencies'], array( 'jquery' ) ) : array( 'jquery' ) );
 				$version = time();
@@ -299,7 +298,7 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 					}
 					if ( ! $is_system ) {
 						$font_url = 'https://fonts.googleapis.com/css?family=' . rawurlencode( $default_font ) . ':100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic';
-						wp_enqueue_style( 'bwfblock-editor-default-google-font', $font_url, array(), null );
+						wp_enqueue_style( 'bwfblock-editor-default-google-font', $font_url, array(), null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- version deliberately null: the Google Fonts URL carries its own cache semantics and an appended ver param corrupts the querystring.
 					}
 					wp_add_inline_style( 'wfty-block-editor', '#editor .editor-styles-wrapper { font-family: ' . esc_attr( $default_font ) . '; }' );
 				}
@@ -335,7 +334,7 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 			$default_font = get_post_meta( $post->ID, 'bwfblock_default_font', true );
 
 			if ( ! empty( $default_font ) ) {
-				echo "<style id='bwfblock-default-font'>#editor .editor-styles-wrapper { font-family:$default_font; }</style>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo "<style id='bwfblock-default-font'>#editor .editor-styles-wrapper { font-family:" . esc_html( $default_font ) . '; }</style>';
 			}
 		}
 

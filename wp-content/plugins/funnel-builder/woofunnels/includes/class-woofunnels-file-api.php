@@ -232,11 +232,8 @@ if ( class_exists( 'WP_Filesystem_Direct' ) ) {
 			if ( parent::is_writable( $this->upload_dir ) ) {
 				if ( false === $this->is_dir( $this->woofunnels_core_dir ) ) {
 					$this->mkdir( $this->woofunnels_core_dir );
-					$file_handle = @fopen( trailingslashit( $this->woofunnels_core_dir ) . '/.htaccess', 'w' ); // phpcs:ignore WordPressVIPMinimum.PHP.SilencedErrors.Silenced, Generic.PHP.NoSilencedErrors.Discouraged, Generic.PHP.NoSilencedErrors.Forbidden, WordPress.WP.AlternativeFunctions.file_system_read_fopen, WordPress.WP.AlternativeFunctions.file_system_operations, WordPress.WP.AlternativeFunctions.file_system_operations_fopen
-					if ( $file_handle ) {
-						fwrite( $file_handle, 'deny from all' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite, WordPress.WP.AlternativeFunctions.file_system_operations
-						fclose( $file_handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose, WordPress.WP.AlternativeFunctions.file_system_operations, WordPress.WP.AlternativeFunctions.file_system_operations_fclose
-					}
+					// parent:: on purpose - the local put_contents() override remaps paths through file_path().
+					parent::put_contents( trailingslashit( $this->woofunnels_core_dir ) . '.htaccess', 'deny from all', FS_CHMOD_FILE );
 				}
 				$dir = $this->woofunnels_core_dir . '/' . $component;
 				if ( false === $this->is_dir( $dir ) ) {

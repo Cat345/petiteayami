@@ -113,7 +113,20 @@ example.demo.com. This option may be less accurate.
  $param_builder = new FacebookAds\ParamBuilder();
 ```
 
-3. Call `processRequest` to process fbc, fbp and fbi(client_ip_address).
+3. [Recommended] Call `processRequestFromContext` to process fbc, fbp,
+   client_ip_address, event_source_url and referrer_url. Pass your framework's
+   request context (or `null` to read from the `$_SERVER` / `$_COOKIE` / `$_GET`
+   superglobals) — the SDK extracts host / cookies / query / referer (and the
+   request URI for `event_source_url`) for you, and returns the recommended
+   cookies to set. See the [Framework support](#framework-support) section for
+   exactly what to pass for your framework.
+
+```
+$cookie_to_set = $param_builder->processRequestFromContext(); // reads from $_SERVER
+```
+
+**Deprecated:** `processRequest` is still supported but deprecated. It does not
+construct `event_source_url`. Prefer `processRequestFromContext` above.
 
 ```
 $param_builder->processRequest(
@@ -134,7 +147,7 @@ $param_builder->processRequest(
 Recommended: get `$cookie_to_set` from API call in step 3.
 
 ```
-$cookie_to_set = $param_builder->processRequest(...)
+$cookie_to_set = $param_builder->processRequestFromContext();
 ```
 
 Optional: getCookiesToSet API
@@ -158,7 +171,7 @@ foreach ($cookie_to_set as $cookie) {
 
 If there is no change to your current cookies, the returned list will be empty.
 
-5. Get fbc/fbp, client_ip_address, normalized and hashed PII values
+5. Get fbc/fbp, client_ip_address, event_source_url, referrer_url, normalized and hashed PII values
 
 ```
 
@@ -174,6 +187,16 @@ $fbp = $param_builder->getFbp();
 
 
 $client_ip_address = $param_builder->getClientIpAddress();
+
+
+```
+
+$event_source_url = $param_builder->getEventSourceUrl();
+
+```
+
+
+$referrer_url = $param_builder->getReferrerUrl();
 
 
 ```
@@ -197,13 +220,16 @@ API is to get normalized and hashed (sha256) PII from input piiValue, supported 
 
 ```
 
-6. Send fbc, fbp, client_ip_address, email and phone back through Conversions
-   API.
+6. Send the parameters back to the Conversions API. `event_source_url` and
+   `referrer_url` are sent at the event level; `fbc`, `fbp`, `client_ip_address`,
+   `em` (email) and `ph` (phone) are sent inside `user_data`.
 
 ```
 data=[
- 'event_name: '...',
+ 'event_name': '...',
  'event_time': <your_time>,
+ 'event_source_url': $event_source_url, // The value provided in step 5
+ 'referrer_url': $referrer_url, // The value provided in step 5
  'user_data': {
    'fbc': $fbc, // The value provided in step 5
    'fbp': $fbp, // The value provided in step 5
@@ -238,6 +264,54 @@ the box:
 For any other framework, you can build a `PlainDataObject` directly and pass it
 in, or fall back to the original `processRequest($host, $queries, $cookies, $referer)`
 call.
+
+## URL support
+
+The SDK can extract `event_source_url` and `referrer_url` from the incoming
+HTTP request. These values help improve Conversions API event matching and
+attribution quality.
+
+**Using `processRequestFromContext` (recommended):**
+
+```php
+$param_builder->processRequestFromContext(); // reads from $_SERVER automatically
+
+$event_source_url = $param_builder->getEventSourceUrl();
+$referrer_url = $param_builder->getReferrerUrl();
+```
+
+**Using `processRequest` (deprecated):**
+
+`processRequest` does not construct `event_source_url` — only `referrer_url`
+is available via the referer parameter. Use `processRequestFromContext` if you
+need `event_source_url`.
+
+<details>
+<summary>How it works</summary>
+
+- `event_source_url` is constructed from the scheme, host, and request URI
+  of the incoming HTTP request.
+- `referrer_url` is captured from the `Referer` header before any fbclid
+  extraction, with an SDK version appendix added.
+- Both return `null` when the required information is not available.
+
+</details>
+
+**Send them with your Conversions API payload:**
+
+```php
+$data = [
+    'event_name' => '...',
+    'event_time' => time(),
+    'event_source_url' => $param_builder->getEventSourceUrl(),
+    'referrer_url' => $param_builder->getReferrerUrl(),
+    'user_data' => [
+        'fbc' => $param_builder->getFbc(),
+        'fbp' => $param_builder->getFbp(),
+        'client_ip_address' => $param_builder->getClientIpAddress(),
+    ],
+];
+```
 
 ## License
 

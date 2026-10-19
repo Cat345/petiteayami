@@ -49,7 +49,7 @@ if ( ! class_exists( 'BWF_Admin_Settings' ) ) {
 
 		public function maybe_open_correct_settings() {
 
-			if ( is_admin() && 'woofunnels_settings' === filter_input( INPUT_GET, 'page', FILTER_UNSAFE_RAW ) ) {
+			if ( is_admin() && 'woofunnels_settings' === filter_input( INPUT_GET, 'page', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) ) {
 				$get_all_registered_settings = apply_filters( 'woofunnels_global_settings', array() );
 				usort(
 					$get_all_registered_settings,
@@ -62,7 +62,7 @@ if ( ! class_exists( 'BWF_Admin_Settings' ) ) {
 					}
 				);
 				$first_menu = array_values( $get_all_registered_settings )[0];
-				wp_redirect( $first_menu['link'] );
+				wp_redirect( $first_menu['link'] ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- registered settings tab links flow through the bwf_*_settings_link filters (other FunnelKit plugins register their own); wp_safe_redirect would silently reroute filtered values to the admin fallback.
 			}
 		}
 

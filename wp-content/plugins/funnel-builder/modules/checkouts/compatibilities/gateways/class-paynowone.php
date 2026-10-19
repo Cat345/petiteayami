@@ -11,7 +11,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_payonecw' ) ) {
 		}
 
 		public function skip_detection( $status ) {
-			if ( isset( $_REQUEST['cwcontroller'] ) && 'redirection' == $_REQUEST['cwcontroller'] ) {
+			if ( isset( $_REQUEST['cwcontroller'] ) && 'redirection' == $_REQUEST['cwcontroller'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 				return true;
 			}
 			// We need to be in checkout, to calculate the complete order total

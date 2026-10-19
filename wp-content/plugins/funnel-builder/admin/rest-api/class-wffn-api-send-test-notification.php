@@ -159,7 +159,7 @@ if ( ! class_exists( 'WFFN_API_Send_Test_Notification' ) ) {
 					$sent[ $frequency ] = true;
 					break;
 				} else {
-					$errors->add( $frequency, sprintf( __( 'Unable to send test notification for frequency: %s', 'funnel-builder' ), $frequency ) );
+					$errors->add( $frequency, sprintf( /* translators: %s: notification frequency (e.g. weekly). */ __( 'Unable to send test notification for frequency: %s', 'funnel-builder' ), $frequency ) );
 				}
 			}
 

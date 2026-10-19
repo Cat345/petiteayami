@@ -86,7 +86,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 		 * @return bool
 		 */
 		public static function is_customizer() {
-			if ( ! isset( $_REQUEST['wfacp_customize'] ) || 'loaded' !== $_REQUEST['wfacp_customize'] || ! isset( $_REQUEST['wfacp_id'] ) || absint( $_REQUEST['wfacp_id'] ) < 1 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a capability check follows.
+			if ( ! isset( $_REQUEST['wfacp_customize'] ) || 'loaded' !== $_REQUEST['wfacp_customize'] || ! isset( $_REQUEST['wfacp_id'] ) || absint( $_REQUEST['wfacp_id'] ) < 1 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- a capability check follows.
 				return false;
 			}
 
@@ -182,7 +182,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 			}
 			global $wpdb;
 			$slug                  = WFACP_Common::get_post_type_slug();
-			self::$get_saved_pages = $wpdb->get_results( $wpdb->prepare( "SELECT `ID`, `post_title`, `post_type` FROM `{$wpdb->prefix}posts` WHERE `post_type` = %s AND `post_title` != '' AND `post_status` = 'publish' ORDER BY `post_title` ASC", $slug ), ARRAY_A );
+			self::$get_saved_pages = $wpdb->get_results( $wpdb->prepare( "SELECT `ID`, `post_title`, `post_type` FROM `{$wpdb->prefix}posts` WHERE `post_type` = %s AND `post_title` != '' AND `post_status` = 'publish' ORDER BY `post_title` ASC", $slug ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 			return self::$get_saved_pages;
 		}
@@ -353,7 +353,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 				$address_fields = array( 'address_1', 'address_2', 'city', 'postcode', 'country', 'state' );
 				foreach ( $address_fields as $key => $val ) {
 					if ( isset( $_POST[ 's_' . $val ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- WooCommerce checkout handles nonce verification
-						$_POST[ $val ] = filter_input( INPUT_POST, 's_' . $val, FILTER_UNSAFE_RAW ); // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+						$_POST[ $val ] = filter_input( INPUT_POST, 's_' . $val, FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ); // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 					}
 				}
 			}
@@ -541,7 +541,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 				}
 			}
 
-			return apply_filters( 'wc_cart_totals_shipping_method_cost', $output, $method );
+			return apply_filters( 'wc_cart_totals_shipping_method_cost', $output, $method ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 		}
 
 		/**
@@ -601,7 +601,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 						'show_shipping_calculator' => is_cart() && $first,
 						'package_details'          => implode( ', ', $product_names ),
 						/* translators: %d: Shipping package number */
-						'package_name'             => apply_filters( 'woocommerce_shipping_package_name', ( ( $i + 1 ) > 1 ) ? sprintf( __( 'Shipping %d', 'woocommerce' ), ( $i + 1 ) ) : __( 'Shipping', 'woocommerce' ), $i, $package ),
+						'package_name'             => apply_filters( 'woocommerce_shipping_package_name', ( ( $i + 1 ) > 1 ) ? sprintf( __( 'Shipping %d', 'woocommerce' ), ( $i + 1 ) ) : __( 'Shipping', 'woocommerce' ), $i, $package ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'index'                    => $i,
 						'chosen_method'            => $chosen_method,
 						'formatted_destination'    => WC()->countries->get_formatted_address( $package['destination'], ', ' ),
@@ -2337,9 +2337,15 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
   <path fill-rule="evenodd" clip-rule="evenodd" d="M1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z" fill="currentColor"/>
 </svg>';
 
+				$remove_label = __( 'Remove item from cart', 'funnel-builder' );
+				if ( isset( $cart_item['data'] ) && $cart_item['data'] instanceof WC_Product ) {
+					/* translators: %s: product name */
+					$remove_label = sprintf( __( 'Remove %s from cart', 'funnel-builder' ), wp_strip_all_tags( $cart_item['data']->get_name() ) );
+				}
+
 				?>
 				<div class="wfacp_order_summary_item_delete wfacp_delete_item_wrap">
-					<a href="javascript:void(0)" class="wfacp_remove_item_from_order_summary" data-cart_key="<?php echo esc_attr( $cart_item_key ); ?>"><?php echo $item_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a>
+					<a href="javascript:void(0)" role="button" aria-label="<?php echo esc_attr( $remove_label ); ?>" class="wfacp_remove_item_from_order_summary" data-cart_key="<?php echo esc_attr( $cart_item_key ); ?>"><?php echo $item_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- internal SVG icon literal; other values escaped. ?></a>
 				</div>
 				<?php
 			}
@@ -2541,7 +2547,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 
 		public static function maybe_insert_log( $content ) {
 
-			if ( true === apply_filters( 'bwf_conversion_api_checkout_event_logs', false ) && self::is_enabled_log() ) {
+			if ( true === apply_filters( 'bwf_conversion_api_checkout_event_logs', false ) && self::is_enabled_log() ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				wc_get_logger()->log( 'info', $content, array( 'source' => 'bwf_facebook_conversion_api' ) );
 			}
 		}
@@ -2585,9 +2591,9 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 			 *
 			 * @since 0.71
 			 */
-			$content = apply_filters( 'the_content', $content );
+			$content = apply_filters( 'the_content', $content ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 			$content = str_replace( ']]>', ']]&gt;', $content );
-			echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core parity: the_content()/block output, raw like WP core.
 		}
 
 		/* Modern Label*/

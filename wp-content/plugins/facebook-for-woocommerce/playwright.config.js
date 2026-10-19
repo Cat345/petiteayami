@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
+ *
+ * This source code is licensed under the license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 import { defineConfig, devices } from '@playwright/test';
 
 const CUSTOMER_EVENTS_SPEC = '**/events-test.spec.js';
@@ -32,8 +39,8 @@ const privacySandboxOrigin = process.env.WORDPRESS_URL
   : null;
 
 const privacySandboxArgs = [
-  '--enable-features=BrowsingTopics,InterestGroupStorage,AdInterestGroupAPI,Fledge,RunAdAuction,PrivacySandboxAdsAPIsOverride',
-  '--enable-blink-features=BrowsingTopics,InterestGroupStorage,AdInterestGroupAPI,RunAdAuction',
+  '--enable-features=InterestGroupStorage,AdInterestGroupAPI,Fledge,RunAdAuction,PrivacySandboxAdsAPIsOverride',
+  '--enable-blink-features=InterestGroupStorage,AdInterestGroupAPI,RunAdAuction',
   '--test-third-party-cookie-phaseout',
   ...(privacySandboxOrigin ? [`--unsafely-treat-insecure-origin-as-secure=${privacySandboxOrigin}`] : []),
 ];

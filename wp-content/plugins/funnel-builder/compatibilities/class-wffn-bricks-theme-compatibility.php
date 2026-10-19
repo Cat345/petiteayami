@@ -35,8 +35,8 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Bricks_Theme' ) ) {
 			if ( true !== $this->is_enable() ) {
 				return $page_id;
 			}
-			if ( isset( $_POST['action'] ) && $_POST['action'] === 'bricks_get_element_html' && isset( $_POST['postId'] ) ) {
-				return $_POST['postId'];
+			if ( isset( $_POST['action'] ) && $_POST['action'] === 'bricks_get_element_html' && isset( $_POST['postId'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Bricks editor AJAX (bricks_get_element_html); Bricks verifies its own nonce before rendering, and this filter only derives the preview post id via absint().
+				return absint( $_POST['postId'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Bricks editor AJAX (bricks_get_element_html); Bricks verifies its own nonce before rendering, and this filter only derives the preview post id via absint().
 			}
 
 			return $page_id;

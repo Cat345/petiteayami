@@ -36,7 +36,7 @@ add_filter( 'wfacp_skip_form_printing', '__return_true' );
 	add_filter( 'wfacp_skip_form_printing', '__return_false' );
 	$atts_string = WFACP_Common::get_template_container_atts();
 	?>
-    <div class="wfacp-template-wrap wfacp-template-container" <?php echo trim( $atts_string ); ?>>
+    <div class="wfacp-template-wrap wfacp-template-container" <?php echo trim( $atts_string ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- extension slot: WFACP_Common::get_template_container_atts() returns '' in Lite; overrides supply complete attributes. ?>>
 
         <div class="wfacp-template-primary">
 			<?php

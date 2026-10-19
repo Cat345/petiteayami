@@ -134,8 +134,8 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller_Custom_Form' ) ) {
 			$optinid = intval( filter_input( INPUT_POST, 'optin_id', FILTER_SANITIZE_NUMBER_INT ) );
 			if ( $optinid > 0 ) {
 				$optin_id  = $optinid;
-				$class     = filter_input( INPUT_POST, 'op_class' );
-				$form_mode = filter_input( INPUT_POST, 'op_mode' );
+				$class     = filter_input( INPUT_POST, 'op_class', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
+				$form_mode = filter_input( INPUT_POST, 'op_mode', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 				$status    = true;
 			}
 
@@ -174,7 +174,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller_Custom_Form' ) ) {
 			);
 
 			do_action( 'wfopp_output_form_before', $optinPageId, $optin_settings, $form_mode, $customizations, $class, $optin_layout );
-			echo $this->add_recaptcha_script(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->add_recaptcha_script(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- internal reCAPTCHA/icon markup that must keep its <script>/<svg>.
 			?>
 			<div class="bwf_clear"></div>
 			<div class="wffn-optin-form bwfac_forms_outer <?php echo esc_attr( $class ); ?>" data-field-size="<?php echo esc_attr( $field_size ); ?>">
@@ -206,7 +206,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller_Custom_Form' ) ) {
 						<?php
 
 					}
-					$is_preview = wffn_string_to_bool( filter_input( INPUT_GET, 'preview' ) );
+					$is_preview = wffn_string_to_bool( filter_input( INPUT_GET, 'preview', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) );
 					do_action( 'wfopp_inside_form_before_submit', $optinPageId, $optin_settings, $this );
 					?>
 					<div class="bwfac_form_sec submit_button">
@@ -217,7 +217,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller_Custom_Form' ) ) {
 						<input type="hidden" value="<?php echo esc_attr( $optin_settings['formBuilder'] ); ?>" name="formBuilder">
 						<?php $this->wffn_get_button_html( $button_args ); ?>
 					</div>
-					<?php echo $this->add_recaptcha_field();//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php echo $this->add_recaptcha_field();//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- internal reCAPTCHA/icon markup that must keep its <script>/<svg>. ?>
 				</form>
 				<?php do_action( 'wfopp_output_form_tag_after', $optinPageId, $optin_settings, $form_mode, $customizations, $class, $optin_layout ); ?>
 
@@ -296,9 +296,33 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller_Custom_Form' ) ) {
 		}
 
 		/**
-		 * Get Redirecting to next step if next link is in URL
+		 * Get Redirecting to next step if next link is in URL, falling back to the home URL
 		 */
 		public function get_redirect_to_next_step( $posted_data ) {
+			return $this->maybe_fallback_to_home( $this->get_next_step_url( $posted_data ) );
+		}
+
+		/**
+		 * Wrap a next step URL for the redirect: home URL when empty, plus the funnel session param
+		 *
+		 * @param string $next_step_url
+		 *
+		 * @return string
+		 */
+		private function maybe_fallback_to_home( $next_step_url ) {
+			$url = empty( $next_step_url ) ? site_url() : $next_step_url;
+
+			return WFFN_Core()->data->maybe_add_funnel_session_param( $url );
+		}
+
+		/**
+		 * Get the URL of the step (or custom redirect page) after this opt-in, without any fallback
+		 *
+		 * @param array $posted_data
+		 *
+		 * @return string Empty when the opt-in has no next step.
+		 */
+		public function get_next_step_url( $posted_data ) {
 			$current_step = WFFN_Core()->data->get_current_step();
 
 			$step_id         = isset( $current_step['id'] ) ? $current_step['id'] : 0;
@@ -321,13 +345,11 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller_Custom_Form' ) ) {
 			}
 			$url_from_filter = apply_filters( 'wffn_optin_redirect', $url_from_filter, $current_step, $posted_data );
 
-			if ( ! empty( $url_from_filter ) ) {
-				$url_from_filter = add_query_arg( array( 'opid' => $posted_data['opid'] ), $url_from_filter );
+			if ( empty( $url_from_filter ) ) {
+				return '';
 			}
 
-			$url = empty( $url_from_filter ) ? site_url() : $url_from_filter;
-
-			return WFFN_Core()->data->maybe_add_funnel_session_param( $url );
+			return add_query_arg( array( 'opid' => $posted_data['opid'] ), $url_from_filter );
 		}
 
 		/**
@@ -375,8 +397,10 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller_Custom_Form' ) ) {
 
 				WFFN_Core()->logger->log( 'Actions ran successfully' . print_r( $result['posted_data'], true ) );  //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
-				$result             = apply_filters( 'wfopp_modify_form_submit_result', $result, $optin_page_id );
-				$result['next_url'] = $this->get_redirect_to_next_step( $result['posted_data'] );
+				$result                  = apply_filters( 'wfopp_modify_form_submit_result', $result, $optin_page_id );
+				$next_step_url           = $this->get_next_step_url( $result['posted_data'] );
+				$result['next_url']      = $this->maybe_fallback_to_home( $next_step_url );
+				$result['has_next_step'] = ! empty( $next_step_url );
 
 				WFFN_Core()->data->set( 'source_id', $optin_page_id )->save();
 				WFFN_Core()->logger->log( 'returning : ' . print_r( $result, true ) );  //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
@@ -431,7 +455,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller_Custom_Form' ) ) {
 							if ( $args['show_icon'] ) {
 
 								if ( isset( $args['icon_html'] ) && ! empty( $args['icon_html'] ) ) {
-									echo $args['icon_html']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+									echo $args['icon_html']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- internal reCAPTCHA/icon markup that must keep its <script>/<svg>.
 
 								} else {
 									$this->maybe_get_icon_html( $args );
@@ -499,7 +523,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller_Custom_Form' ) ) {
 
 		public function maybe_handle_crm_return() {
 
-			if ( 'yes' === filter_input( INPUT_GET, 'wffn-next-link' ) ) {
+			if ( 'yes' === filter_input( INPUT_GET, 'wffn-next-link', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) ) {
 
 				if ( false === WFFN_Core()->data->has_valid_session() ) {
 					return;
@@ -529,7 +553,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controller_Custom_Form' ) ) {
 				if ( empty( $redirect ) ) {
 					return;
 				}
-				wp_redirect( $redirect );
+				wp_redirect( $redirect ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- funnel-author redirect passed through the public wffn_optin_redirect filter; off-site destinations are legal by design and wp_safe_redirect would silently reroute them.
 				exit;
 			}
 		}

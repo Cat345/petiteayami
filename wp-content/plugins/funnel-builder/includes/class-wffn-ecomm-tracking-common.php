@@ -314,7 +314,12 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 			}
 
 			if ( $content_id_format === 'product_sku' ) {
-				$content_id = get_post_meta( $product_id, '_sku', true );
+				// get_sku() falls back to the parent SKU for a variation without one of its own.
+				$product    = wc_get_product( $product_id );
+				$content_id = $product instanceof WC_Product ? $product->get_sku() : '';
+				if ( '' === $content_id ) {
+					$content_id = $product_id;
+				}
 			} else {
 				$content_id = $product_id;
 			}
@@ -358,6 +363,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 					if (typeof fbq === 'function') {
 						console.trace();
 						var trafficParams = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent({}) : {};
+						trafficParams['event_url'] = window.location.href;
 						fbq('track', 'PageView', trafficParams, {'eventID': 'PageView_'+wffn_ev_view_fb_event_id});
 					}
 				} catch (error) {
@@ -392,7 +398,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				$has_events = true;
 				?>
 			try {
-				wffnEvents.push({event: 'PageView', 'event_id': 'PageView_'+wffn_ev_view_fb_event_id});
+				wffnEvents.push({event: 'PageView', 'event_id': 'PageView_'+wffn_ev_view_fb_event_id, 'data': {'event_url': window.location.href}});
 			} catch (error) {
 				console.log('WFFN PageView event preparation error:', error);
 			}
@@ -403,7 +409,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				$has_events = true;
 				?>
 			try {
-				wffnEvents.push({event: '<?php echo esc_attr( $this->get_custom_event_name() ); ?>', 'event_id': '<?php echo esc_attr( $this->get_custom_event_name() ); ?>_'+wffn_ev_custom_fb_event_id});
+				wffnEvents.push({event: '<?php echo esc_attr( $this->get_custom_event_name() ); ?>', 'event_id': '<?php echo esc_attr( $this->get_custom_event_name() ); ?>_'+wffn_ev_custom_fb_event_id, 'data': {'event_url': window.location.href}});
 			} catch (error) {
 				console.log('WFFN custom event preparation error:', error);
 			}
@@ -445,7 +451,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 
-			$get_pixel_key = apply_filters( 'bwf_fb_pixel_ids', $key );
+			$get_pixel_key = apply_filters( 'bwf_fb_pixel_ids', $key ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			return empty( $get_pixel_key ) ? false : $get_pixel_key;
 		}
@@ -467,7 +473,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 
-			$get_pixel_key = apply_filters( 'bwf_fb_pint_ids', $key );
+			$get_pixel_key = apply_filters( 'bwf_fb_pint_ids', $key ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			return empty( $get_pixel_key ) ? false : $get_pixel_key;
 		}
@@ -774,7 +780,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 										snaptr('track', 'PAGE_VIEW');
 									}
 									<?php } ?>
-									<?php esc_js( $this->maybe_print_snapchat_ecomm() ); ?> //phpcs:ignore
+									<?php esc_js( $this->maybe_print_snapchat_ecomm() ); ?>
 								} catch (error) {
 									console.log('Snapchat base tracking error:', error);
 								}
@@ -805,7 +811,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 
-			$get_ga_key = apply_filters( 'bwf_tiktok_pixel', $key );
+			$get_ga_key = apply_filters( 'bwf_tiktok_pixel', $key ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			return empty( $get_ga_key ) ? false : $get_ga_key;
 		}
@@ -984,7 +990,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 
-			$get_ga_key = apply_filters( 'bwf_ga_key', $key );
+			$get_ga_key = apply_filters( 'bwf_ga_key', $key ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			return empty( $get_ga_key ) ? false : $get_ga_key;
 		}
@@ -1005,7 +1011,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 
-			$get_gad_conversion_label = apply_filters( 'bwf_get_conversion_label', $key );
+			$get_gad_conversion_label = apply_filters( 'bwf_get_conversion_label', $key ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			return empty( $get_gad_conversion_label ) ? false : $get_gad_conversion_label;
 		}
@@ -1025,7 +1031,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 
-			$get_ga_key = apply_filters( 'bwf_gad_key', $key );
+			$get_ga_key = apply_filters( 'bwf_gad_key', $key ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			return empty( $get_ga_key ) ? false : $get_ga_key;
 		}
@@ -1046,7 +1052,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 
-			$get_ga_key = apply_filters( 'bwf_snapchat_pixel', $key );
+			$get_ga_key = apply_filters( 'bwf_snapchat_pixel', $key ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			return empty( $get_ga_key ) ? false : $get_ga_key;
 		}
@@ -1056,15 +1062,19 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				return $event . '_' . $order_id;
 			}
 
-			return $event . '_' . time();
+			// A bare timestamp collides across concurrent visitors within the same second, and Meta
+			// dedupes by event name + event_id — so colliding IDs silently drop real events. Callers
+			// generate the ID once and reuse it for both the pixel and the CAPI copy, so uniqueness
+			// here cannot break browser/server matching.
+			return $event . '_' . time() . '_' . wp_rand( 100000, 999999 );
 		}
 
 		public function getRequestUri( $is_ajax = false ) {
 			$request_uri = null;
 			if ( true === $is_ajax ) {
 
-				if ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {//phpcs:ignore
-					return $_SERVER['HTTP_REFERER'];//phpcs:ignore
+				if ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
+					return sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables -- sanitize_url() sanitizes; read only to build the tracking event URL, percent-encoding preserved.
 				}
 
 				$current_step = WFFN_Core()->data->get_current_step();
@@ -1073,8 +1083,13 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 			if ( ! empty( $_SERVER['REQUEST_URI'] ) ) {
-				$start       = ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http' ) . '://';
-				$request_uri = $start . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; //phpcs:ignore
+				$start = ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http' ) . '://';
+				// Deliberately the real Host header, not home_url(): this builds the pixel/CAPI event_url,
+				// which must match what the visitor's browser actually reported (window.location.href) for
+				// Meta/Google to deduplicate client and server events. home_url() can diverge from the real
+				// host on domain-mapped multisite, a reverse proxy, or language-subdomain setups.
+				$http_host   = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+				$request_uri = $start . $http_host . sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables -- sanitize_url() sanitizes; read only to build the tracking event URL, percent-encoding preserved.
 			}
 
 			return $request_uri;
@@ -1083,7 +1098,9 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 		public function getEventRequestUri() {
 			$request_uri = '';
 			if ( ! empty( $_SERVER['REQUEST_URI'] ) ) {
-				$request_uri = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; //phpcs:ignore
+				// Deliberately the real Host header, not home_url() - see getRequestUri() above for why.
+				$http_host   = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+				$request_uri = $http_host . sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables -- sanitize_url() sanitizes; read only to build the tracking event URL, percent-encoding preserved.
 			}
 
 			return $request_uri;
@@ -1197,7 +1214,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 
-			$get_pixel_key = apply_filters( 'bwf_conversion_api_access_token', $key );
+			$get_pixel_key = apply_filters( 'bwf_conversion_api_access_token', $key ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			return empty( $get_pixel_key ) ? false : $get_pixel_key;
 		}
@@ -1219,7 +1236,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 
-			$get_pixel_key = apply_filters( 'bwf_conversion_api_test_event_code', $key );
+			$get_pixel_key = apply_filters( 'bwf_conversion_api_test_event_code', $key ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			return empty( $get_pixel_key ) ? false : $get_pixel_key;
 		}
@@ -1259,11 +1276,27 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 			}
 
 			$getEventparams = $this->get_generic_event_params_for_conv_api();
+
+			/**
+			 * Prefer the page URL captured with the event over re-deriving it from HTTP_REFERER, which
+			 * collapses to the site origin when a Referrer-Policy header strips the full referrer.
+			 */
+			$event_source_url = ( isset( $event['data']['event_url'] ) && is_string( $event['data']['event_url'] ) && '' !== $event['data']['event_url'] ) ? sanitize_url( $event['data']['event_url'] ) : $this->getRequestUri( $is_ajax );
+
+			/**
+			 * Filter the event_source_url sent to Meta Conversion API so store owners can override it.
+			 *
+			 * @param string $event_source_url Resolved event source URL.
+			 * @param string $type             Event type (PageView, Purchase, etc.).
+			 * @param array  $event            Full event payload.
+			 */
+			$event_source_url = apply_filters( 'wffn_conversion_api_event_source_url', $event_source_url, $type, $event );
+
 			switch ( $type ) {
 				case 'PageView':
 					$instance->set_event_id( $event_id );
 					$instance->set_user_data( $this->get_user_data( $type, true ) );
-					$instance->set_event_source_url( $this->getRequestUri( $is_ajax ) );
+					$instance->set_event_source_url( $event_source_url );
 					$instance->set_event_data( 'PageView', array( $event_id ) );
 					if ( isset( $event['data'] ) && isset( $event['data'] ) ) {
 						$instance->set_event_data( 'PageView', $event['data'] );
@@ -1274,7 +1307,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 					}
 					break;
 				case 'Purchase':
-					$instance->set_event_source_url( $this->getRequestUri( $is_ajax ) );
+					$instance->set_event_source_url( $event_source_url );
 					$instance->set_event_id( $event_id );
 					$instance->set_user_data( $this->get_user_data( $type, true ) );
 					$instance->set_event_data( 'Purchase', $this->get_purchase_params() );
@@ -1282,14 +1315,14 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				case 'trackCustom':
 					$instance->set_event_id( $event_id );
 					$instance->set_user_data( $this->get_user_data( $type, true ) );
-					$instance->set_event_source_url( $this->getRequestUri( $is_ajax ) );
+					$instance->set_event_source_url( $event_source_url );
 					$getEventName = $this->admin_general_settings->get_option( 'general_event_name' );
 					$instance->set_event_data( $getEventName, $getEventparams );
 					break;
 				default:
 					$instance->set_event_id( $event_id );
 					$instance->set_user_data( $this->get_user_data( $type, true ) );
-					$instance->set_event_source_url( $this->getRequestUri( $is_ajax ) );
+					$instance->set_event_source_url( $event_source_url );
 
 					if ( isset( $event['data'] ) && isset( $event['data'] ) ) {
 						$instance->set_event_data( $type, $event['data'] );
@@ -1314,7 +1347,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 		 */
 		public function maybe_insert_log( $content, $event = '' ) {
 
-			if ( true === apply_filters( 'bwf_conversion_api_checkout_event_logs', in_array( $event, array( 'Purchase', 'AddToCart' ), true ), $event ) && $this->is_enabled_log() ) {
+			if ( true === apply_filters( 'bwf_conversion_api_checkout_event_logs', in_array( $event, array( 'Purchase', 'AddToCart' ), true ), $event ) && $this->is_enabled_log() ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				wc_get_logger()->log( 'info', $content, array( 'source' => 'bwf_facebook_conversion_api' ) );
 			}
 		}
@@ -1374,12 +1407,12 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 			$user_data['client_ip_address'] = wffn_get_ip_address();
 			$user_data['client_user_agent'] = wffn_get_user_agent();
 			if ( isset( $_COOKIE['_fbp'] ) && ! empty( $_COOKIE['_fbp'] ) ) {
-				$user_data['_fbp'] = wffn_clean( wp_unslash( $_COOKIE['_fbp'] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+				$user_data['_fbp'] = wffn_clean( wp_unslash( $_COOKIE['_fbp'] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 			}
 			if ( isset( $_COOKIE['_fbc'] ) && ! empty( $_COOKIE['_fbc'] ) ) {
-				$user_data['_fbc'] = wffn_clean( wp_unslash( $_COOKIE['_fbc'] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+				$user_data['_fbc'] = wffn_clean( wp_unslash( $_COOKIE['_fbc'] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 			} elseif ( isset( $_COOKIE['wffn_fbclid'] ) && isset( $_COOKIE['wffn_flt'] ) && ! empty( $_COOKIE['wffn_fbclid'] ) ) {
-				$user_data['_fbc'] = 'fb.1.' . strtotime( wffn_clean( wp_unslash( $_COOKIE['wffn_flt'] ) ) ) . '.' . wffn_clean( wp_unslash( $_COOKIE['wffn_fbclid'] ) );
+				$user_data['_fbc'] = 'fb.1.' . strtotime( wffn_clean( wp_unslash( $_COOKIE['wffn_flt'] ) ) ) . '.' . wffn_clean( wp_unslash( $_COOKIE['wffn_fbclid'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 			}
 
 			return $user_data;
@@ -1397,7 +1430,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				?>
 				try {
 					if (typeof fbq === 'function') {
-						var trafficParams = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(<?php echo $this->get_custom_event_params(); ?>) : <?php echo $this->get_custom_event_params(); ?>; <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						var trafficParams = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(<?php echo $this->get_custom_event_params(); ?>) : <?php echo $this->get_custom_event_params(); ?>; <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- returns wp_json_encode() output. ?>
 						fbq('trackCustom', '<?php echo esc_attr( $this->get_custom_event_name() ); ?>', trafficParams, {'eventID': '<?php echo esc_attr( $this->get_custom_event_name() ); ?>_'+wffn_ev_custom_fb_event_id});
 					}
 				} catch (error) {
@@ -1415,7 +1448,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 				?>
 				try {
 					if (typeof pintrk === 'function') {
-						var trafficParams = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(<?php echo $this->get_custom_event_params(); ?>) : <?php echo $this->get_custom_event_params(); ?>; <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						var trafficParams = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(<?php echo $this->get_custom_event_params(); ?>) : <?php echo $this->get_custom_event_params(); ?>; <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- returns wp_json_encode() output. ?>
 						pintrk('track', '<?php echo esc_attr( $this->get_custom_event_name() ); ?>', trafficParams);
 					}
 				} catch (error) {

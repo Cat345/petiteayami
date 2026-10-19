@@ -27,7 +27,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Divi_builder' ) ) {
 		}
 
 		public function remove_action() {
-			if ( ( isset( $_GET['page'] ) ) && isset( $_GET['tab'] ) && ( $_GET['tab'] == 'wfacp-wizard' && $_GET['page'] == 'wfacp' ) ) {
+			if ( ( isset( $_GET['page'] ) ) && isset( $_GET['tab'] ) && ( $_GET['tab'] == 'wfacp-wizard' && $_GET['page'] == 'wfacp' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin request routing; WP core builds this URL without a nonce.
 				remove_action( 'admin_init', 'et_theme_builder_load_portability' );
 			}
 		}
@@ -35,10 +35,10 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Divi_builder' ) ) {
 		public function remove_meta( $wfacp_id ) {
 			if ( $wfacp_id > 0 ) {
 				global $wpdb;
-				$wpdb->delete(
+				$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					$wpdb->postmeta,
 					array(
-						'meta_key' => '_et_pb_use_builder',
+						'meta_key' => '_et_pb_use_builder', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Targeted DELETE on postmeta keyed by post_id (indexed), not a meta_key SELECT.
 						'post_id'  => $wfacp_id,
 					)
 				);

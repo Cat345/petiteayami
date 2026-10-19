@@ -1,6 +1,6 @@
 <?php
 
-namespace FunnelKit;
+namespace FunnelKit; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound -- FunnelKit brand namespace, unique to this plugin family; Pro extends these elements.
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 

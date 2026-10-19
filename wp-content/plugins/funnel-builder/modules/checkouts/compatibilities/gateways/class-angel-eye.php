@@ -98,7 +98,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 		}
 
 		public function woocommerce_checkout_fields( $field ) {
-			if ( wp_doing_ajax() && did_action( 'woocommerce_checkout_process' ) > 0 && isset( $_POST['payment_method'] ) && 'paypal_express' == $_POST['payment_method'] ) {
+			if ( wp_doing_ajax() && did_action( 'woocommerce_checkout_process' ) > 0 && isset( $_POST['payment_method'] ) && 'paypal_express' == $_POST['payment_method'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Checkout-fields filter during WC checkout processing; WooCommerce core has already verified its checkout nonce before this hook/filter runs.
 				return $field;
 			}
 
@@ -186,17 +186,17 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 			}
 
 			if ( isset( $_POST['pp_action'] ) && 'set_express_checkout' === sanitize_text_field( wp_unslash( $_POST['pp_action'] ) ) && isset( $_POST['wfacp_is_checkout_override'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Payment gateway callback, nonce verification handled by payment gateway
-				if ( 'yes' === sanitize_text_field( wp_unslash( $_POST['wfacp_is_checkout_override'] ) ) ) {
-					if ( isset( $_POST['wfacp_embed_form_page_id'] ) && '' !== sanitize_text_field( wp_unslash( $_POST['wfacp_embed_form_page_id'] ) ) ) {
-						$aero_id = absint( wp_unslash( $_POST['wfacp_embed_form_page_id'] ) );
+				if ( 'yes' === sanitize_text_field( wp_unslash( $_POST['wfacp_is_checkout_override'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Payment gateway callback, nonce verification handled by payment gateway.
+					if ( isset( $_POST['wfacp_embed_form_page_id'] ) && '' !== sanitize_text_field( wp_unslash( $_POST['wfacp_embed_form_page_id'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Payment gateway callback, nonce verification handled by payment gateway.
+						$aero_id = absint( wp_unslash( $_POST['wfacp_embed_form_page_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Payment gateway callback, nonce verification handled by payment gateway.
 						$url     = get_the_permalink( $aero_id );
 					} else {
 						$url = wc_get_checkout_url();
 					}
 				} else {
-					$aero_id = isset( $_POST['wfacp_id'] ) ? absint( wp_unslash( $_POST['wfacp_id'] ) ) : 0;
-					if ( isset( $_POST['wfacp_embed_page_id'] ) && '' !== sanitize_text_field( wp_unslash( $_POST['wfacp_embed_page_id'] ) ) ) {
-						$aero_id = absint( wp_unslash( $_POST['wfacp_embed_form_page_id'] ) );
+					$aero_id = isset( $_POST['wfacp_id'] ) ? absint( wp_unslash( $_POST['wfacp_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Payment gateway callback, nonce verification handled by payment gateway.
+					if ( isset( $_POST['wfacp_embed_page_id'] ) && '' !== sanitize_text_field( wp_unslash( $_POST['wfacp_embed_page_id'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Payment gateway callback, nonce verification handled by payment gateway.
+						$aero_id = absint( wp_unslash( $_POST['wfacp_embed_form_page_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Payment gateway callback, nonce verification handled by payment gateway.
 					}
 					$url = get_the_permalink( $aero_id );
 				}
@@ -208,9 +208,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 
 			if ( isset( $_REQUEST['pp_action'] ) && 'get_express_checkout_details' === sanitize_text_field( wp_unslash( $_REQUEST['pp_action'] ) ) && isset( $_REQUEST['wfacp_is_checkout_override'] ) && 'no' === sanitize_text_field( wp_unslash( $_REQUEST['wfacp_is_checkout_override'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway callback, nonce verification handled by payment gateway
 
-				$aero_id = isset( $_REQUEST['wfacp_id'] ) ? absint( wp_unslash( $_REQUEST['wfacp_id'] ) ) : 0;
-				if ( isset( $_REQUEST['wfacp_embed_page_id'] ) && '' !== sanitize_text_field( wp_unslash( $_REQUEST['wfacp_embed_page_id'] ) ) ) {
-					$aero_id = absint( wp_unslash( $_REQUEST['wfacp_embed_page_id'] ) );
+				$aero_id = isset( $_REQUEST['wfacp_id'] ) ? absint( wp_unslash( $_REQUEST['wfacp_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
+				if ( isset( $_REQUEST['wfacp_embed_page_id'] ) && '' !== sanitize_text_field( wp_unslash( $_REQUEST['wfacp_embed_page_id'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
+					$aero_id = absint( wp_unslash( $_REQUEST['wfacp_embed_page_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 				}
 
 				$notice_count = wc_notice_count();
@@ -231,12 +231,12 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 
 			if ( isset( $_REQUEST['wfacp_id'] ) && absint( wp_unslash( $_REQUEST['wfacp_id'] ) ) > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway callback, nonce verification handled by payment gateway
 
-				$aero_id   = absint( wp_unslash( $_REQUEST['wfacp_id'] ) );
-				$is_global = isset( $_REQUEST['wfacp_is_checkout_override'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wfacp_is_checkout_override'] ) ) : 'no';
+				$aero_id   = absint( wp_unslash( $_REQUEST['wfacp_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
+				$is_global = isset( $_REQUEST['wfacp_is_checkout_override'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wfacp_is_checkout_override'] ) ) : 'no'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 
 				$embed_page_id = '';
-				if ( ! empty( $_REQUEST['wfacp_embed_form_page_id'] ) ) {
-					$embed_page_id = absint( wp_unslash( $_REQUEST['wfacp_embed_form_page_id'] ) );
+				if ( ! empty( $_REQUEST['wfacp_embed_form_page_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
+					$embed_page_id = absint( wp_unslash( $_REQUEST['wfacp_embed_form_page_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 				}
 				$request['SECFields']['cancelurl']     = add_query_arg(
 					array(
@@ -281,18 +281,18 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 					WC()->session->set( 'paypal_express_checkout', null );
 				}
 				// Cancel Url is set
-				$is_global = isset( $_REQUEST['wfacp_is_checkout_override'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wfacp_is_checkout_override'] ) ) : 'no';
-				$wfacp_id  = isset( $_REQUEST['wfacp_id'] ) ? absint( wp_unslash( $_REQUEST['wfacp_id'] ) ) : 0;
+				$is_global = isset( $_REQUEST['wfacp_is_checkout_override'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wfacp_is_checkout_override'] ) ) : 'no'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
+				$wfacp_id  = isset( $_REQUEST['wfacp_id'] ) ? absint( wp_unslash( $_REQUEST['wfacp_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 				// User Make payment from global checkout page
 
 				if ( 'yes' === $is_global ) {
-					wp_redirect( wc_get_checkout_url() );
+					wp_safe_redirect( wc_get_checkout_url() );
 				} else {
-					if ( isset( $_REQUEST['wfacp_embed_page_id'] ) && '' !== sanitize_text_field( wp_unslash( $_REQUEST['wfacp_embed_page_id'] ) ) ) {
-						$wfacp_id = absint( wp_unslash( $_REQUEST['wfacp_embed_page_id'] ) );
+					if ( isset( $_REQUEST['wfacp_embed_page_id'] ) && '' !== sanitize_text_field( wp_unslash( $_REQUEST['wfacp_embed_page_id'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
+						$wfacp_id = absint( wp_unslash( $_REQUEST['wfacp_embed_page_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 					}
 
-					wp_redirect( get_the_permalink( $wfacp_id ) );
+					wp_safe_redirect( get_the_permalink( $wfacp_id ) );
 				}
 				exit;
 			}
@@ -306,7 +306,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 				$url = WC()->session->get( 'wfacp_angell_eye_error', '' );
 				if ( '' !== $url ) {
 					WC()->session->set( 'wfacp_angell_eye_error', '' );
-					wp_redirect( $url );
+					wp_safe_redirect( $url );
 					exit;
 				}
 			}
@@ -395,13 +395,14 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 			$override             = isset( $http_referer['wfacp_is_checkout_override'] ) ? $http_referer['wfacp_is_checkout_override'] : '';
 
 			if ( $wfacp_id === 0 ) {
-				$wfacp_id = filter_input( INPUT_GET, 'wfacp_id', FILTER_UNSAFE_RAW );
+				$wfacp_id = isset( $_GET['wfacp_id'] ) ? absint( $_GET['wfacp_id'] ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Payment gateway callback fallback; nonce verification handled by the payment gateway, read-only ID resolution.
 			}
 			if ( $override === '' ) {
-				$override = filter_input( INPUT_GET, 'wfacp_is_checkout_override', FILTER_UNSAFE_RAW );
+				$override = isset( $_GET['wfacp_is_checkout_override'] ) ? sanitize_text_field( wp_unslash( $_GET['wfacp_is_checkout_override'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Payment gateway callback fallback; nonce verification handled by the payment gateway, read-only routing.
 			}
 
 			if ( ! is_null( $wfacp_id ) && ! is_null( $payment_request_type ) && ( 'paypal_express' === $payment_request_type ) ) {
+				$wfacp_id = absint( $wfacp_id );
 
 				$order->update_meta_data( '_wfacp_post_id', $wfacp_id );
 
@@ -440,13 +441,14 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 			$override             = isset( $http_referer['wfacp_is_checkout_override'] ) ? $http_referer['wfacp_is_checkout_override'] : '';
 
 			if ( $wfacp_id === 0 ) {
-				$wfacp_id = filter_input( INPUT_GET, 'wfacp_id', FILTER_UNSAFE_RAW );
+				$wfacp_id = isset( $_GET['wfacp_id'] ) ? absint( $_GET['wfacp_id'] ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Payment gateway callback fallback; nonce verification handled by the payment gateway, read-only ID resolution.
 			}
 			if ( $override === '' ) {
-				$override = filter_input( INPUT_GET, 'wfacp_is_checkout_override', FILTER_UNSAFE_RAW );
+				$override = isset( $_GET['wfacp_is_checkout_override'] ) ? sanitize_text_field( wp_unslash( $_GET['wfacp_is_checkout_override'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Payment gateway callback fallback; nonce verification handled by the payment gateway, read-only routing.
 			}
 
 			if ( ! is_null( $wfacp_id ) && ! is_null( $payment_request_type ) && ( 'paypal_express' === $payment_request_type ) ) {
+				$wfacp_id = absint( $wfacp_id );
 				if ( ! is_null( $override ) ) {
 					if ( 'yes' === $override ) {
 						$link = wc_get_checkout_url();

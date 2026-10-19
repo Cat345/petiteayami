@@ -49,9 +49,9 @@ if ( ! class_exists( 'WFACP_WooCommerce_MyParcel5' ) ) {
 			new WFACP_Add_Address_Field(
 				'street_name',
 				array(
-					'label'    => __( 'Street name', 'woocommerce-postnl' ),
+					'label'    => __( 'Street name', 'woocommerce-postnl' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 					'cssready' => array( 'wfacp-col-left-third' ),
-					'class'    => apply_filters( 'mpwc_checkout_field_street_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
+					'class'    => apply_filters( 'mpwc_checkout_field_street_class', array( 'form-row-third first', 'wfacp-col-full' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 					'required' => false, // Only required for NL
 					'priority' => 60,
 				),
@@ -61,9 +61,9 @@ if ( ! class_exists( 'WFACP_WooCommerce_MyParcel5' ) ) {
 			new WFACP_Add_Address_Field(
 				'house_number',
 				array(
-					'label'    => __( 'No.', 'woocommerce-postnl' ),
+					'label'    => __( 'No.', 'woocommerce-postnl' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 					'cssready' => array( 'wfacp-col-left-half' ),
-					'class'    => apply_filters( 'mpwc_checkout_field_number_class', array( 'form-row-third', 'wfacp-col-left-half' ) ),
+					'class'    => apply_filters( 'mpwc_checkout_field_number_class', array( 'form-row-third', 'wfacp-col-left-half' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 					'required' => false, // Only required for NL
 					'type'     => 'number',
 					'priority' => 61,
@@ -74,9 +74,9 @@ if ( ! class_exists( 'WFACP_WooCommerce_MyParcel5' ) ) {
 			new WFACP_Add_Address_Field(
 				'house_number_suffix',
 				array(
-					'label'     => __( 'Suffix', 'woocommerce-postnl' ),
+					'label'     => __( 'Suffix', 'woocommerce-postnl' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 					'cssready'  => array( 'wfacp-col-left-half' ),
-					'class'     => apply_filters( 'mpwc_checkout_field_number_suffix_class', array( 'form-row-third last', 'wfacp-col-left-half' ) ),
+					'class'     => apply_filters( 'mpwc_checkout_field_number_suffix_class', array( 'form-row-third last', 'wfacp-col-left-half' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 					'required'  => false,
 					'maxlength' => 4,
 					'priority'  => 62,

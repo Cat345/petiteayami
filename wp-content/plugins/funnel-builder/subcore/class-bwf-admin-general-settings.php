@@ -1,4 +1,5 @@
 <?php
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -26,7 +27,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 						array(
 							'title' => __( 'General', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 						'slug'      => 'woofunnels_general_settings',
-						'link'      => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ),
+						'link'      => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 						'priority'  => 5,
 						)
 					);
@@ -115,7 +116,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 							</div>
 
 
-							<?php if ( apply_filters( 'bwf_enable_ecommerce_integration_gad', false ) ) { ?>
+							<?php if ( apply_filters( 'bwf_enable_ecommerce_integration_gad', false ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family. ?>
 								<div class="bwf-tab-title" data-tab="
 								<?php
 								++$i;
@@ -126,7 +127,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 								</div>
 								<?php
 							}
-							if ( apply_filters( 'bwf_enable_ecommerce_integration_pinterest', false ) ) {
+							if ( apply_filters( 'bwf_enable_ecommerce_integration_pinterest', false ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 								?>
 								<div class="bwf-tab-title" data-tab="
 								<?php
@@ -139,7 +140,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 								<?php
 							}
 
-							if ( apply_filters( 'bwf_enable_ecommerce_integration_tiktok', false ) ) {
+							if ( apply_filters( 'bwf_enable_ecommerce_integration_tiktok', false ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 								?>
 								<div class="bwf-tab-title" data-tab="
 								<?php
@@ -151,7 +152,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 								</div>
 								<?php
 							}
-							if ( apply_filters( 'bwf_enable_ecommerce_integration_snapchat', false ) ) {
+							if ( apply_filters( 'bwf_enable_ecommerce_integration_snapchat', false ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 								?>
 								<div class="bwf-tab-title" data-tab="
 								<?php
@@ -193,7 +194,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 		public function default_general_settings() {
 
 			return apply_filters(
-				'bwf_general_settings_default_config',
+				'bwf_general_settings_default_config', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				array(
 					'tiktok_pixel'                        => '',
 					'is_tiktok_add_to_cart_bump'          => '',
@@ -278,6 +279,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 					'pixel_add_payment_info_event'        => '',
 					'is_fb_purchase_page_view'            => array(),
 					'is_fb_purchase_event'                => array(),
+					'exclude_renewal_purchase_event'      => array(),
 					'enable_general_event'                => array(),
 					'general_event_name'                  => 'GeneralEvent',
 					'is_fb_custom_events'                 => '',
@@ -362,7 +364,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 		}
 
 		public function maybe_add_js() {
-			wp_enqueue_script( 'bwf-general-settings', plugin_dir_url( WooFunnel_Loader::$ultimate_path ) . 'woofunnels/assets/js/bwf-general-settings.js', array(), BWF_VERSION );
+			wp_enqueue_script( 'bwf-general-settings', plugin_dir_url( WooFunnel_Loader::$ultimate_path ) . 'woofunnels/assets/js/bwf-general-settings.js', array(), BWF_VERSION, true );
 			wp_enqueue_style( 'bwf-general-settings', plugin_dir_url( WooFunnel_Loader::$ultimate_path ) . 'woofunnels/assets/css/bwf-general-settings.css', array(), BWF_VERSION );
 
 			wp_localize_script( 'bwf-general-settings', 'bwfAdminGen', $this->get_localized_data() );
@@ -390,27 +392,27 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 				),
 			);
 
-			$localized_data['is_pinterest_enabled']         = ( true === apply_filters( 'bwf_enable_ecommerce_integration_pinterest', false ) ) ? 1 : 0;
-			$localized_data['is_tiktok_enabled']            = ( true === apply_filters( 'bwf_enable_ecommerce_integration_tiktok', false ) ) ? 1 : 0;
-			$localized_data['is_snapchat_enabled']          = ( true === apply_filters( 'bwf_enable_ecommerce_integration_snapchat', false ) ) ? 1 : 0;
-			$localized_data['is_gad_enabled']               = ( true === apply_filters( 'bwf_enable_ecommerce_integration_gad', false ) ) ? 1 : 0;
-			$localized_data['is_pixel_enabled']             = ( true === apply_filters( 'bwf_enable_ecommerce_integration_pixel', false ) ) ? 1 : 0;
-			$localized_data['is_ga_enabled']                = ( true === apply_filters( 'bwf_enable_ecommerce_integration_ga', false ) ) ? 1 : 0;
-			$localized_data['if_fb_checkout_enabled']       = ( true === apply_filters( 'bwf_enable_ecommerce_integration_fb_checkout', false ) ) ? 1 : 0;
-			$localized_data['if_fb_purchase_enabled']       = ( true === apply_filters( 'bwf_enable_ecommerce_integration_fb_purchase', false ) ) ? 1 : 0;
-			$localized_data['if_ga_checkout_enabled']       = ( true === apply_filters( 'bwf_enable_ecommerce_integration_ga_checkout', false ) ) ? 1 : 0;
-			$localized_data['if_ga_purchase_enabled']       = ( true === apply_filters( 'bwf_enable_ecommerce_integration_ga_purchase', false ) ) ? 1 : 0;
-			$localized_data['if_gad_checkout_enabled']      = ( true === apply_filters( 'bwf_enable_ecommerce_integration_gad_checkout', false ) ) ? 1 : 0;
-			$localized_data['if_gad_purchase_enabled']      = ( true === apply_filters( 'bwf_enable_ecommerce_integration_gad_purchase', false ) ) ? 1 : 0;
-			$localized_data['if_pint_checkout_enabled']     = ( true === apply_filters( 'bwf_enable_ecommerce_integration_pint_checkout', false ) ) ? 1 : 0;
-			$localized_data['if_pint_purchase_enabled']     = ( true === apply_filters( 'bwf_enable_ecommerce_integration_pint_purchase', false ) ) ? 1 : 0;
-			$localized_data['if_tiktok_checkout_enabled']   = ( true === apply_filters( 'bwf_enable_ecommerce_integration_tiktok_checkout', false ) ) ? 1 : 0;
-			$localized_data['if_tiktok_purchase_enabled']   = ( true === apply_filters( 'bwf_enable_ecommerce_integration_tiktok_purchase', false ) ) ? 1 : 0;
-			$localized_data['if_snapchat_checkout_enabled'] = ( true === apply_filters( 'bwf_enable_ecommerce_integration_snapchat_checkout', false ) ) ? 1 : 0;
-			$localized_data['if_snapchat_purchase_enabled'] = ( true === apply_filters( 'bwf_enable_ecommerce_integration_snapchat_purchase', false ) ) ? 1 : 0;
-			$localized_data['if_landing_enabled']           = ( true === apply_filters( 'bwf_enable_ecommerce_integration_landing', false ) ) ? 1 : 0;
-			$localized_data['if_optin_enabled']             = ( true === apply_filters( 'bwf_enable_ecommerce_integration_optin', false ) ) ? 1 : 0;
-			$localized_data['if_ga4_enabled']               = ( true === apply_filters( 'bwf_enable_ga4', false ) ) ? 1 : 0;
+			$localized_data['is_pinterest_enabled']         = ( true === apply_filters( 'bwf_enable_ecommerce_integration_pinterest', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['is_tiktok_enabled']            = ( true === apply_filters( 'bwf_enable_ecommerce_integration_tiktok', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['is_snapchat_enabled']          = ( true === apply_filters( 'bwf_enable_ecommerce_integration_snapchat', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['is_gad_enabled']               = ( true === apply_filters( 'bwf_enable_ecommerce_integration_gad', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['is_pixel_enabled']             = ( true === apply_filters( 'bwf_enable_ecommerce_integration_pixel', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['is_ga_enabled']                = ( true === apply_filters( 'bwf_enable_ecommerce_integration_ga', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_fb_checkout_enabled']       = ( true === apply_filters( 'bwf_enable_ecommerce_integration_fb_checkout', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_fb_purchase_enabled']       = ( true === apply_filters( 'bwf_enable_ecommerce_integration_fb_purchase', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_ga_checkout_enabled']       = ( true === apply_filters( 'bwf_enable_ecommerce_integration_ga_checkout', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_ga_purchase_enabled']       = ( true === apply_filters( 'bwf_enable_ecommerce_integration_ga_purchase', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_gad_checkout_enabled']      = ( true === apply_filters( 'bwf_enable_ecommerce_integration_gad_checkout', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_gad_purchase_enabled']      = ( true === apply_filters( 'bwf_enable_ecommerce_integration_gad_purchase', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_pint_checkout_enabled']     = ( true === apply_filters( 'bwf_enable_ecommerce_integration_pint_checkout', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_pint_purchase_enabled']     = ( true === apply_filters( 'bwf_enable_ecommerce_integration_pint_purchase', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_tiktok_checkout_enabled']   = ( true === apply_filters( 'bwf_enable_ecommerce_integration_tiktok_checkout', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_tiktok_purchase_enabled']   = ( true === apply_filters( 'bwf_enable_ecommerce_integration_tiktok_purchase', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_snapchat_checkout_enabled'] = ( true === apply_filters( 'bwf_enable_ecommerce_integration_snapchat_checkout', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_snapchat_purchase_enabled'] = ( true === apply_filters( 'bwf_enable_ecommerce_integration_snapchat_purchase', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_landing_enabled']           = ( true === apply_filters( 'bwf_enable_ecommerce_integration_landing', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_optin_enabled']             = ( true === apply_filters( 'bwf_enable_ecommerce_integration_optin', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$localized_data['if_ga4_enabled']               = ( true === apply_filters( 'bwf_enable_ga4', false ) ) ? 1 : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 			$checkout_page_slug                             = 'checkout';
 			$checkout_id                                    = function_exists( 'wc_get_page_id' ) ? wc_get_page_id( 'checkout' ) : 0;
 			if ( $checkout_id > - 1 ) {
@@ -448,7 +450,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 			);
 
 			/** Populated by legacy-license-module.php (excluded from the free build); empty array otherwise */
-			$localized_data['pro_status'] = apply_filters( 'bwf_general_settings_pro_status', array() );
+			$localized_data['pro_status'] = apply_filters( 'bwf_general_settings_pro_status', array() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			return $localized_data;
 		}
@@ -465,7 +467,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 				);
 			}
 			check_admin_referer( 'bwf_general_settings_update', '_nonce' );
-			$options = isset( $_POST['data'] ) ? bwf_clean( $_POST['data'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			$options = isset( $_POST['data'] ) ? bwf_clean( $_POST['data'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 			$resp    = $this->update_global_settings_fields( $options );
 			wp_send_json( $resp );
 		}
@@ -493,20 +495,20 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 
 				$resp['status'] = true;
 			}
-			do_action( 'bwf_general_settings_updated', $options );
+			do_action( 'bwf_general_settings_updated', $options ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			return $resp;
 		}
 
 		public function get_settings_link() {
-			return apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' );
+			return apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 		}
 
 		public function hide_from_menu() {
 			global $woofunnels_menu_slug;
 
 			global $parent_file, $plugin_page, $submenu_file; //phpcs:ignore
-			if ( filter_input( INPUT_GET, 'tab', FILTER_UNSAFE_RAW ) === 'bwf_settings' ) :
+			if ( filter_input( INPUT_GET, 'tab', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) === 'bwf_settings' ) :
 				$parent_file  = $woofunnels_menu_slug;//phpcs:ignore
 				$submenu_file = 'admin.php?page=woofunnels_settings'; //phpcs:ignore
 			endif;
@@ -534,7 +536,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 		}
 
 		public function maybe_change_title( $title ) {
-			if ( 'bwf_settings' === filter_input( INPUT_GET, 'tab', FILTER_UNSAFE_RAW ) || 'bwf_settings' === filter_input( INPUT_GET, 'section', FILTER_UNSAFE_RAW ) ) {
+			if ( 'bwf_settings' === filter_input( INPUT_GET, 'tab', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) || 'bwf_settings' === filter_input( INPUT_GET, 'section', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) ) {
 				$admin_title = get_bloginfo( 'name' );
 				$title       = sprintf( __( '%1$s &lsaquo; %2$s &#8212; WordPress', 'funnel-builder' ), 'FunnelKit', $admin_title ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
 			}
@@ -548,7 +550,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 			// woofunnels core); read it __DIR__-local so it resolves no matter which core
 			// set $ultimate_path.
 			$static_config  = include __DIR__ . '/settings.php';
-			$legacy         = apply_filters( 'bwf_general_settings_fields', array() );
+			$legacy         = apply_filters( 'bwf_general_settings_fields', array() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 			$legacy_altered = array();
 			if ( count( $legacy ) > 0 ) {
 				$i = 0;

@@ -1,6 +1,6 @@
 <?php
 
-namespace FunnelKit\Bricks\Elements\Checkout;
+namespace FunnelKit\Bricks\Elements\Checkout; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound -- FunnelKit brand namespace, unique to this plugin family; Pro extends these elements.
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -22,7 +22,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 		 * @return string The label for the Mini Cart element.
 		 */
 		public function get_label() {
-			return esc_html__( 'Mini Cart' , 'funnel-builder');
+			return esc_html__( 'Mini Cart', 'funnel-builder' );
 		}
 
 		/**
@@ -44,12 +44,12 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			);
 
 			$this->control_groups['contentProducts'] = array(
-				'title' => esc_html__( 'Products' , 'funnel-builder'),
+				'title' => esc_html__( 'Products', 'funnel-builder' ),
 				'tab'   => 'content',
 			);
 
 			$this->control_groups['contentCoupon'] = array(
-				'title' => esc_html__( 'Coupon' , 'funnel-builder'),
+				'title' => esc_html__( 'Coupon', 'funnel-builder' ),
 				'tab'   => 'content',
 			);
 
@@ -59,18 +59,18 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			);
 
 			$this->control_groups['styleProducts'] = array(
-				'title' => esc_html__( 'Products' , 'funnel-builder'),
+				'title' => esc_html__( 'Products', 'funnel-builder' ),
 				'tab'   => 'style',
 			);
 
 			$this->control_groups['styleCoupon'] = array(
-				'title'    => esc_html__( 'Coupon' , 'funnel-builder'),
+				'title'    => esc_html__( 'Coupon', 'funnel-builder' ),
 				'tab'      => 'style',
 				'required' => array( 'enable_coupon', '=', true ),
 			);
 
 			$this->control_groups['styleCartTotal'] = array(
-				'title' => esc_html__( 'Cart Total' , 'funnel-builder'),
+				'title' => esc_html__( 'Cart Total', 'funnel-builder' ),
 				'tab'   => 'style',
 			);
 
@@ -95,7 +95,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				'group'   => 'contentHeading',
 				'label'   => esc_html__( 'Title', 'funnel-builder' ),
 				'type'    => 'text',
-				'default' => esc_html__( 'Order Summary' , 'funnel-builder'),
+				'default' => esc_html__( 'Order Summary', 'funnel-builder' ),
 			);
 
 			/**
@@ -110,14 +110,14 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['enable_quantity_box'] = array(
 				'group'   => 'contentProducts',
-				'label'   => esc_html__( 'Quantity Switcher' , 'funnel-builder'),
+				'label'   => esc_html__( 'Quantity Switcher', 'funnel-builder' ),
 				'type'    => 'checkbox',
 				'default' => false,
 			);
 
 			$this->controls['enable_delete_item'] = array(
 				'group'   => 'contentProducts',
-				'label'   => esc_html__( 'Allow Deletion' , 'funnel-builder'),
+				'label'   => esc_html__( 'Allow Deletion', 'funnel-builder' ),
 				'type'    => 'checkbox',
 				'default' => false,
 			);
@@ -174,7 +174,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['enable_coupon_collapsible'] = array(
 				'group'    => 'contentCoupon',
-				'label'    => esc_html__( 'Collapsible' , 'funnel-builder'),
+				'label'    => esc_html__( 'Collapsible', 'funnel-builder' ),
 				'type'     => 'checkbox',
 				'default'  => false,
 				'required' => array( 'enable_coupon', '=', true ),
@@ -182,9 +182,9 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['mini_cart_coupon_button_text'] = array(
 				'group'    => 'contentCoupon',
-				'label'    => esc_html__( 'Coupon Button Text' , 'funnel-builder'),
+				'label'    => esc_html__( 'Coupon Button Text', 'funnel-builder' ),
 				'type'     => 'text',
-				'default'  => esc_html__( 'Apply', 'woocommerce' ),
+				'default'  => esc_html__( 'Apply', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 				'required' => array( 'enable_coupon', '=', true ),
 			);
 
@@ -244,7 +244,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['mini_cart_product_image_border'] = array(
 				'group' => 'styleProducts',
-				'label' => esc_html__( 'Image Border' , 'funnel-builder'),
+				'label' => esc_html__( 'Image Border', 'funnel-builder' ),
 				'type'  => 'border',
 				'css'   => array(
 					array(
@@ -269,7 +269,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['mini_cart_strike_through_typo'] = array(
 				'group' => 'styleProducts',
-				'label' => esc_html__( 'Strike Through Typography' , 'funnel-builder'),
+				'label' => esc_html__( 'Strike Through Typography', 'funnel-builder' ),
 				'type'  => 'typography',
 				'css'   => array(
 					array(
@@ -287,7 +287,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			);
 			$this->controls['mini_cart_low_stock_message_typo'] = array(
 				'group' => 'styleProducts',
-				'label' => esc_html__( 'Low Stock Typography' , 'funnel-builder'),
+				'label' => esc_html__( 'Low Stock Typography', 'funnel-builder' ),
 				'type'  => 'typography',
 				'css'   => array(
 					array(
@@ -309,7 +309,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['mini_cart_enable_saving_price_message_typo'] = array(
 				'group' => 'styleProducts',
-				'label' => esc_html__( 'Save Price Typography' , 'funnel-builder'),
+				'label' => esc_html__( 'Save Price Typography', 'funnel-builder' ),
 				'type'  => 'typography',
 				'css'   => array(
 					array(
@@ -343,13 +343,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['separatorStyleCouponField'] = array(
 				'group' => 'styleCoupon',
-				'label' => esc_html__( 'Field' , 'funnel-builder'),
+				'label' => esc_html__( 'Field', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
 			$this->controls['wfacp_form_mini_cart_coupon_label_typo'] = array(
 				'group'   => 'styleCoupon',
-				'label'   => esc_html__( 'Label Typography' , 'funnel-builder'),
+				'label'   => esc_html__( 'Label Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'default' => array(
 					'font-weight' => '400',
@@ -389,7 +389,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['wfacp_form_mini_cart_coupon_input_typo'] = array(
 				'group'   => 'styleCoupon',
-				'label'   => esc_html__( 'Coupon Typography' , 'funnel-builder'),
+				'label'   => esc_html__( 'Coupon Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'css'     => array(
 					array(
@@ -401,7 +401,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			);
 
 			$this->set_current_group( 'styleCoupon' );
-			$this->add_border_color( 'wfacp_form_mini_cart_coupon_focus_color', array( '.wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control:focus' ), '#61bdf7', __( 'Focus Color' , 'funnel-builder'), true, array(), '.wfacp_mini_cart_start_h' );
+			$this->add_border_color( 'wfacp_form_mini_cart_coupon_focus_color', array( '.wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control:focus' ), '#61bdf7', __( 'Focus Color', 'funnel-builder' ), true, array(), '.wfacp_mini_cart_start_h' );
 
 			$this->controls['wfacp_form_mini_cart_coupon_border'] = array(
 				'group'   => 'styleCoupon',
@@ -443,7 +443,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['wfacp_form_mini_cart_coupon_button_typo'] = array(
 				'group' => 'styleCoupon',
-				'label' => esc_html__( 'Button Typography' , 'funnel-builder'),
+				'label' => esc_html__( 'Button Typography', 'funnel-builder' ),
 				'type'  => 'typography',
 				'css'   => array(
 					array(
@@ -459,7 +459,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['separatorStyleSubtotal'] = array(
 				'group' => 'styleCartTotal',
-				'label' => esc_html__( 'Subtotal' , 'funnel-builder'),
+				'label' => esc_html__( 'Subtotal', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
@@ -496,7 +496,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['separatorStyleCouponCode'] = array(
 				'group' => 'styleCartTotal',
-				'label' => esc_html__( 'Coupon code' , 'funnel-builder'),
+				'label' => esc_html__( 'Coupon code', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
@@ -510,7 +510,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['mini_cart_coupon_display_font_size'] = array(
 				'group'   => 'styleCartTotal',
-				'label'   => esc_html__( 'Font Size (in px)' , 'funnel-builder'),
+				'label'   => esc_html__( 'Font Size (in px)', 'funnel-builder' ),
 				'type'    => 'slider',
 				'css'     => $this->generate_css( $coupon_selector, 'font-size' ),
 				'units'   => array(
@@ -551,7 +551,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['mini_cart_coupon_display_val_color'] = array(
 				'group'   => 'styleCartTotal',
-				'label'   => esc_html__( 'Code Color' , 'funnel-builder'),
+				'label'   => esc_html__( 'Code Color', 'funnel-builder' ),
 				'type'    => 'color',
 				'default' => array(
 					'hex' => '#24ae4e',
@@ -570,7 +570,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['separatorStyleTotal'] = array(
 				'group' => 'styleCartTotal',
-				'label' => esc_html__( 'Total' , 'funnel-builder'),
+				'label' => esc_html__( 'Total', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
@@ -615,7 +615,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['mini_cart_total_label_typo'] = array(
 				'group'   => 'styleCartTotal',
-				'label'   => esc_html__( 'Label Typography' , 'funnel-builder'),
+				'label'   => esc_html__( 'Label Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'css'     => $css,
 				'exclude' => array( 'text-align', 'color' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
@@ -631,7 +631,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['mini_cart_total_typo'] = array(
 				'group'   => 'styleCartTotal',
-				'label'   => esc_html__( 'Price Typography' , 'funnel-builder'),
+				'label'   => esc_html__( 'Price Typography', 'funnel-builder' ),
 				'type'    => 'typography',
 				'css'     => $css,
 				'exclude' => array( 'text-align', 'color' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
@@ -646,7 +646,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['separatorStyleDefaultFont'] = array(
 				'group' => 'styleSettings',
-				'label' => esc_html__( 'Default Font' , 'funnel-builder'),
+				'label' => esc_html__( 'Default Font', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
@@ -696,7 +696,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			$this->controls['separatorStyleDivider'] = array(
 				'group' => 'styleSettings',
-				'label' => esc_html__( 'Divider' , 'funnel-builder'),
+				'label' => esc_html__( 'Divider', 'funnel-builder' ),
 				'type'  => 'separator',
 			);
 
@@ -752,7 +752,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			WFACP_Common::set_session( $key, $widgets );
 
 			?>
-			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- builder render-attribute API string; the builder escapes attribute values. ?>>
 				<div style="height: 1px"></div>
 				<?php $template->get_mini_cart_widget( $this->id ); ?>
 			</div>

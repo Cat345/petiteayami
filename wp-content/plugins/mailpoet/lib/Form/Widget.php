@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) exit;
 
 
 use MailPoet\API\JSON\API;
+use MailPoet\Captcha\FormRenderStamp;
 use MailPoet\Config\Env;
 use MailPoet\Config\RendererFactory;
 use MailPoet\DI\ContainerWrapper;
@@ -35,6 +36,9 @@ class Widget extends \WP_Widget {
   /** @var SettingsController */
   private $settings;
 
+  /** @var FormRenderStamp */
+  private $formRenderStamp;
+
   public function __construct() {
     parent::__construct(
       'mailpoet_form',
@@ -49,6 +53,7 @@ class Widget extends \WP_Widget {
     $this->formRenderer = ContainerWrapper::getInstance()->get(FormRenderer::class);
     $this->formsRepository = ContainerWrapper::getInstance()->get(FormsRepository::class);
     $this->customFonts = ContainerWrapper::getInstance()->get(CustomFonts::class);
+    $this->formRenderStamp = ContainerWrapper::getInstance()->get(FormRenderStamp::class);
 
     if (!$this->wp->isAdmin()) {
       $this->setupIframe();
@@ -263,6 +268,7 @@ class Widget extends \WP_Widget {
 
       // generate security token
       $data['token'] = $this->wp->wpCreateNonce('mailpoet_token');
+      $data['form_stamp'] = $this->formRenderStamp->issue();
 
       // add API version
       $data['api_version'] = API::CURRENT_VERSION;

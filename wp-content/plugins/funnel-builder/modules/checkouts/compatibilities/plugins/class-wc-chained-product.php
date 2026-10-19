@@ -49,7 +49,7 @@ if ( ! class_exists( 'WFACP_WooCommerce_Chained_Products' ) ) {
 		public function display_item_quantity( $cart_item ) {
 			if ( isset( $cart_item['chained_item_of'] ) ) {
 				?>
-                <span><?php echo $cart_item['quantity']; ?></span>
+                <span><?php echo esc_html( $cart_item['quantity'] ); ?></span>
 				<?php
 			}
 		}

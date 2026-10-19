@@ -72,7 +72,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_OxygenBuilder' ) ) {
 			if ( $this->is_xlink_open() ) {
 				return $shortcode_exist;
 			}
-			if ( isset( $_REQUEST['ct_builder'] ) ) {
+			if ( isset( $_REQUEST['ct_builder'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
 				return $shortcode_exist;
 			}
 			//return $shortcode_exist;
@@ -101,7 +101,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_OxygenBuilder' ) ) {
 		}
 
 		public function is_xlink_open() {
-			if ( isset( $_REQUEST['xlink'] ) || isset( $_REQUEST['nouniversal'] ) ) {
+			if ( isset( $_REQUEST['xlink'] ) || isset( $_REQUEST['nouniversal'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
 				return true;
 			}
 
@@ -122,7 +122,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_OxygenBuilder' ) ) {
 		}
 
 		public function is_edit_mode_open( $data ) {
-			if ( isset( $_REQUEST['ct_builder'] ) ) {
+			if ( isset( $_REQUEST['ct_builder'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
 				$data['edit_mode'] = 'yes';
 			}
 
@@ -131,7 +131,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_OxygenBuilder' ) ) {
 
 		public function add_html_height() {
 			global $post;
-			if ( isset( $_REQUEST['ct_builder'] ) && ! is_null( $post ) && $post->post_type == WFACP_Common::get_post_type_slug() ) {
+			if ( isset( $_REQUEST['ct_builder'] ) && ! is_null( $post ) && $post->post_type == WFACP_Common::get_post_type_slug() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
 				echo "<style>html {height: 100%;}</style>";
 			}
 		}

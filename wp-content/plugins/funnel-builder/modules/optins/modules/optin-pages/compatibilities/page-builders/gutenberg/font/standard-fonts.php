@@ -77,4 +77,4 @@ $system_font = [
         'google' => false,
     ],
 ];
-return apply_filters( 'bwf_custom_system_font', $system_font );
+return apply_filters( 'bwf_custom_system_font', $system_font ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.

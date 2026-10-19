@@ -3,8 +3,8 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
-$instance     = wfacp_template();
-$data         = $instance->get_checkout_fields();
+$wfacp_instance     = wfacp_template();
+$data         = $wfacp_instance->get_checkout_fields();
 $colspan_attr = '';
 if ( apply_filters( 'wfacp_cart_show_product_thumbnail', false ) ) {
 	$colspan_attr1    = ' colspan="2"';
@@ -14,7 +14,7 @@ if ( apply_filters( 'wfacp_cart_show_product_thumbnail', false ) ) {
 $total_col              = 2;
 $section_key            = '';
 $cart_data              = array();
-$selected_template_type = $instance->get_template_type();
+$selected_template_type = $wfacp_instance->get_template_type();
 if ( $selected_template_type != 'pre_built' ) {
 	$rbox_mobile = 'wfacp_none';
 }
@@ -24,7 +24,7 @@ if ( false == wc_string_to_bool( $is_disable_coupon_sidebar ) ) {
 	$coupon_class = 'wfacp_in_active_coupon';
 }
 ?>
-<div class="wfacp_form_cart <?php echo esc_attr( $rbox_mobile ); ?> div_wrap_sec <?php echo esc_attr( $instance->get_field_label_position() ); ?>" data-time="<?php echo esc_attr( WFACP_Common::get_fragments_time() ); ?>" >
+<div class="wfacp_form_cart <?php echo esc_attr( $rbox_mobile ); ?> div_wrap_sec <?php echo esc_attr( $wfacp_instance->get_field_label_position() ); ?>" data-time="<?php echo esc_attr( WFACP_Common::get_fragments_time() ); ?>" >
 	<div class="wfacp_order_sec wfacp_order_summary_layout_9 wfacp_order_summary_sec">
 		<div class="<?php echo esc_attr( $coupon_class ); ?>">
 			<?php

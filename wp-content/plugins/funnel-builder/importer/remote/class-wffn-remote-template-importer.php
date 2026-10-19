@@ -25,7 +25,7 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 			$messages = array(
 				'license-or-domain-invalid' => __( 'This site does not have access to template library.  To get access activate the license. For any further help contact support.', 'funnel-builder' ),
 				'license-expired'           => __( 'This site does not have access to template library as license has expired. To get access renew the license. For any further help contact support.', 'funnel-builder' ),
-				'invalid-step'              => sprintf( __( 'Please check if you have valid license key. Try activating the license again. For any further help contact support. <a href=%s target="_blank">Go to Licenses</a>', 'funnel-builder' ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings' ) ) ),
+				'invalid-step'              => sprintf( /* translators: %s: URL of the licenses page. */ __( 'Please check if you have valid license key. Try activating the license again. For any further help contact support. <a href=%s target="_blank">Go to Licenses</a>', 'funnel-builder' ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings' ) ) ),
 				'template-not-exists'       => __( 'Template not available in cloud library. Please contact support.', 'funnel-builder' ),
 			);
 			if ( isset( $messages[ $code ] ) ) {
@@ -246,7 +246,7 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 				 */
 				$active_plugins = get_site_option( 'active_sitewide_plugins', array() );
 
-				if ( is_array( $active_plugins ) && in_array( WFFN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( WFFN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) {
+				if ( is_array( $active_plugins ) && in_array( WFFN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( WFFN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 					$domain = get_site_url( get_network()->site_id );
 				}
 			}
@@ -272,7 +272,7 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 				 */
 				$active_plugins = get_site_option( 'active_sitewide_plugins', array() );
 
-				if ( is_array( $active_plugins ) && defined( 'WFFN_PRO_PLUGIN_BASENAME' ) && ( in_array( WFFN_PRO_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( WFFN_PRO_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) ) {
+				if ( is_array( $active_plugins ) && defined( 'WFFN_PRO_PLUGIN_BASENAME' ) && ( in_array( WFFN_PRO_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( WFFN_PRO_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 					$woofunnels_data = get_blog_option( get_network()->site_id, 'woofunnels_plugins_info', array() );
 				} else {
 					$woofunnels_data = get_option( 'woofunnels_plugins_info', array() );

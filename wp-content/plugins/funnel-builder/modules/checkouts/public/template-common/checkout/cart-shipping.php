@@ -46,12 +46,12 @@ if ( $available_methods ) {
 		if ( $chosen_method == $method->get_id() ) {
 			$shippingLabelText = '';
 			if ( apply_filters( 'wfacp_enable_shipping_label', false ) ) {
-				$shippingLabel     = apply_filters( 'wfacp_shipping_label', sprintf( __( 'via %s', 'woocommerce' ), wp_kses_post( WFACP_Common::shipping_method_label( $method ) ) ) );
+				$shippingLabel     = apply_filters( 'wfacp_shipping_label', sprintf( /* translators: %s: shipping method label. */ __( 'via %s', 'woocommerce' ), wp_kses_post( WFACP_Common::shipping_method_label( $method ) ) ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 				$shippingLabelText = '<small>&nbsp;' . $shippingLabel . '</small>';
 			}
 			?>
 			<tr class="shipping_total_fee">
-				<td colspan="<?php echo esc_attr( empty( $colspans['first'] ) ? '1' : $colspans['first'] ); ?>"><span><?php echo $package_name; ?><?php echo $shippingLabelText; ?></span></td>
+				<td colspan="<?php echo esc_attr( empty( $colspans['first'] ) ? '1' : $colspans['first'] ); ?>"><span><?php echo wp_kses_post( $package_name ); ?><?php echo wp_kses_post( $shippingLabelText ); ?></span></td>
 				<td colspan="<?php echo esc_attr( empty( $colspans['second'] ) ? '1' : $colspans['second'] ); ?>" style="text-align: right" data-title="<?php echo esc_attr( $package_name ); ?>">
 					<span><?php echo wp_kses_post( WFACP_Common::wc_cart_totals_shipping_method_cost( $method ) ); ?></span>
 				</td>
@@ -63,17 +63,17 @@ if ( $available_methods ) {
 	$colspans_first  = empty( $colspans['first'] ) ? '1' : $colspans['first'];
 	$colspans_second = empty( $colspans['second'] ) ? '1' : $colspans['second'];
 	echo '<tr class="shipping_total_fee">';
-	echo "<td {$colspans_first}><span>" . wp_kses_post( $package_name ) . '</span></td>';
-	echo "<td {$colspans_second} style=text-align:right;'><span>";
+	echo "<td {$colspans_first}><span>" . wp_kses_post( $package_name ) . '</span></td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- colspan is a complete attribute from the cols-span filter.
+	echo "<td {$colspans_second} style=text-align:right;'><span>"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- colspan is a complete attribute from the cols-span filter.
 
 	if ( ! $has_calculated_shipping || ! $formatted_destination ) {
 
 		echo esc_html( apply_filters( 'wfacp_default_shipping_placeholder_text', __( 'Enter your address to view shipping options.', 'funnel-builder' ) ) );
 	} elseif ( ! is_cart() ) {
-		echo wp_kses_post( apply_filters( 'woocommerce_no_shipping_available_html', __( 'There are no shipping options available. Please ensure that your address has been entered correctly, or contact us if you need any help.', 'woocommerce' ) ) );
+		echo wp_kses_post( apply_filters( 'woocommerce_no_shipping_available_html', __( 'There are no shipping options available. Please ensure that your address has been entered correctly, or contact us if you need any help.', 'woocommerce' ) ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 	} else {
 		// Translators: $s shipping destination.
-		echo wp_kses_post( apply_filters( 'woocommerce_cart_no_shipping_available_html', sprintf( esc_html__( 'No shipping options were found for %s.', 'woocommerce' ) . ' ', '<strong>' . esc_html( $formatted_destination ) . '</strong>' ) ) );
+		echo wp_kses_post( apply_filters( 'woocommerce_cart_no_shipping_available_html', sprintf( esc_html__( 'No shipping options were found for %s.', 'woocommerce' ) . ' ', '<strong>' . esc_html( $formatted_destination ) . '</strong>' ) ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 	}
 	if ( $show_package_details ) :
 		echo '<p class="woocommerce-shipping-contents"><small>' . esc_html( $package_details ) . '</small></p>';

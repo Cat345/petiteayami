@@ -205,7 +205,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Order_Delivery_Date_Tyche_Pro' ) ) {
 				$bodyClass = 'body #wfacp-e-form ';
 			}
 
-			$cssHtml  = '<style>';
+			$cssHtml  = '';
 			$cssHtml .= $bodyClass . '';
 			$cssHtml .= $bodyClass . '';
 			$cssHtml .= $bodyClass . '';
@@ -216,7 +216,6 @@ if ( ! class_exists( 'WFACP_Compatibility_Order_Delivery_Date_Tyche_Pro' ) ) {
 			$cssHtml .= $bodyClass . '';
 			$cssHtml .= $bodyClass . '';
 
-			$cssHtml .= '</style>';
 
 			?>
 
@@ -365,7 +364,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Order_Delivery_Date_Tyche_Pro' ) ) {
 
 			<?php
 
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 	}
 

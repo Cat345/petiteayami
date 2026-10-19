@@ -35,7 +35,7 @@ if ( ! class_exists( 'WooFunnels_API' ) ) :
 			$api_params = self::get_api_args( array(
 				'action' => 'get_woofunnels_plugins',
 				'attrs'  => array(
-					'meta_query' => array(
+					'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Payload for a remote licensing-API request; no local WP_Query runs with this argument.
 						array(
 							'key'     => 'is_visible_in_dashboard',
 							'value'   => 'yes',
@@ -227,7 +227,7 @@ if ( ! class_exists( 'WooFunnels_API' ) ) :
 			$get_deactivation_data = array(
 				'site'          => home_url(),
 				'deactivations' => $deactivations,
-				'logged_errors' => apply_filters( 'send_filter_deactivations_data', [] )
+				'logged_errors' => apply_filters( 'send_filter_deactivations_data', [] ) // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 			);
 
 			$api_params = self::get_api_args( array(

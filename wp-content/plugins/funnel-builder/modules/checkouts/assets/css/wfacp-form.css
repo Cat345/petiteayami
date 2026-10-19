@@ -104,11 +104,6 @@ body #wfacp-e-form .wfacp_row_wrap .product-name .wfacp_product_sec .wfacp_pro_a
     font-size: 12px;
     color: #666;
 }
-
-#wfacp-e-form .variation p {
-    margin: 0;
-}
-
 body #wfacp-e-form .wfacp_main_form .wfacp-comm-title:not(.wfacp_internal_form_wrap).wfacp_none {
     padding: 0;
 }
@@ -529,15 +524,6 @@ body #wfacp-e-form .wfacp_main_form .wfacp-comm-title {
 
 #wfacp-e-form .sec_text_wrap {
     position: relative;
-}
-
-body:not(.wfacpef_page):not(.wfacp_oxygen_template) #wfacp-e-form .wfacp_main_form .wfacp-order-place-btn-wrap,
-body:not(.wfacpef_page):not(.wfacp_oxygen_template) #wfacp-e-form .wfacp_main_form .wfacp-next-btn-wrap button {
-    color: #ffffff;
-    font-weight: bold;
-    border-radius: 4px;
-    font-size: 16px;
-    width: 100%;
 }
 
 #wfacp-e-form .wfacp_main_form .woocommerce-checkout .wfacp-order-place-btn-wrap {
@@ -1313,12 +1299,6 @@ body #wfacp-e-form .woocommerce-checkout #payment ul.payment_methods li:last-chi
     margin-bottom: -11px;
 
 }
-
-
-body #wfacp-e-form #payment ul.payment_methods li img.stripe-icon {
-    float: unset;
-}
-
 #wfacp-e-form .wfacp-relative-wrapper img {
     max-width: 57px;
     height: auto;
@@ -1548,10 +1528,6 @@ body #wfacp-sec-wrapper  #account_password_field span.woocommerce-input-wrapper.
     padding-top: 0;
 }
 
-body:not(.wfacp_oxygen_template) #wfacp-e-form p.woocommerce-invalid-required-field .wfacp-form-control {
-    border-color: #E15334;
-}
-
 
 #wfacp-e-form .wfacp_main_form .wfacp_shipping_options label {
     display: block;
@@ -1612,11 +1588,6 @@ body .wfacp_main_form .woocommerce-checkout .button.wfacp_next_page_button:hover
 #wfacp-e-form .wfacp_main_form .wfacp_shipping_table tr.shipping td p {
     font-weight: normal;
 }
-
-#wfacp-e-form .wfacp_main_form .wfacp_order_summary label.wfacp-order-summary-label {
-    display: none;
-}
-
 #wfacp-e-form .wfacp_order_summary_layout_9 a {
     color: #dd7575;
 }
@@ -2848,8 +2819,7 @@ body .wfacp_main_form del {
     transform: rotate(20deg);
 }
 
-#wfacp-e-form .wfacp_show_icon_wrap,
-.et-db #et-boc #wfacp-e-form .wfacp_show_icon_wrap {
+#wfacp-e-form .wfacp_show_icon_wrap {
     max-width: 195px;
     float: left;
     position:relative;
@@ -2857,8 +2827,7 @@ body .wfacp_main_form del {
     padding-left: 25px;
     min-height: 20px;
 }
-#wfacp-e-form .wfacp_show_icon_wrap svg,
-.et-db #et-boc #wfacp-e-form .wfacp_show_icon_wrap svg {
+#wfacp-e-form .wfacp_show_icon_wrap svg {
     width: 16px;
     height: 16px;
     position: absolute;
@@ -2952,11 +2921,6 @@ body #wfacp-e-form .wfacp_main_form.woocommerce table.shop_table.woocommerce-che
 body #wfacp-e-form .wfacp_main_form.woocommerce .ebanx_billing_argentina_document span.optional {
     display: none;
 }
-
-#wfacp-e-form .wfacp_main_form .wfacp_order_summary label.wfacp-order-summary-label {
-    display: none;
-}
-
 #wfacp-e-form .wfacp_main_form .wfacp_order_summary label.wfacp-order-summary-label {
     display: none;
 }
@@ -3072,11 +3036,6 @@ body #wfacp-e-form .col-xs-12,
 #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout-payment input[type=radio] + label {
     display: inline-block;
 }
-
-body #wfacp-e-form .woocommerce_paypal_ec_checkout_message p:last-child {
-    margin: 0;
-}
-
 #wfacp-e-form .wfacp_main_form .wfacp_recuring_shiping_count_one ul li input[type=radio] + label, body .wfacp_main_form .wfacp_recuring_shiping_count_one ul li label {
     padding: 0;
 }
@@ -3141,29 +3100,6 @@ span.wfacp_mini_cart_item_title {
 }
 
 body .wfacp_coupon_msg i {
-    display: none;
-}
-
-/*-----------------------------------Smart buttons-------------------------------------------------  */
-
-body.elementor-editor-active #wfacp_smart_buttons .placeholder-line {
-    background: url(../img/smart_button_preview.png) center center no-repeat;
-    animation: unset;
-    max-width: 100%;
-    border: none;
-    height: 42px;
-}
-
-body.elementor-editor-active #wfacp_smart_buttons .dynamic-checkout__skeleton {
-    animation: unset;
-    max-width: 100%;
-    border: none;
-    position: relative;
-    background: transparent;
-    min-height: 42px;
-}
-
-body.elementor-editor-active #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container {
     display: none;
 }
 
@@ -4335,24 +4271,6 @@ span.wfacp_mini_cart_item_title strong.product-quantity {
 }
 
 
-.elementor-editor-active #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_custom_field_multiselect select {
-    padding: 10px;
-    background: transparent;
-    height: 58px;
-}
-
-.elementor-editor-active #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_custom_field_multiselect select option {
-    background-color: #e4e4e4;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    cursor: default;
-    float: left;
-    margin-right: 5px;
-    margin-top: 5px;
-    padding: 0 5px;
-}
-
-
 body #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_custom_field_select2 .select2-container--default .select2-selection--single .select2-selection__arrow b {
     display: block !important;
     height: auto;
@@ -5110,14 +5028,6 @@ body #wfacp-e-form .wfacp_show_price_wrap span bdi {
     font-size: 18px;
 }
 
-/* -----------------Place this css rule to allow gutenberg to add this css file---------------------*/
-
-
-.editor-styles-wrapper .wp-block {
-    margin-left: auto;
-    margin-right: auto;
-}
-
 
 body #wfacp-e-form a:focus {
     box-shadow: none;
@@ -5203,15 +5113,6 @@ body .wfob_bump_wrapper.wfacp_below_mini_cart_items:empty + .shop_table {
 #wfacp-e-form .wfacp_main_form .wfacp_checkbox_field input[type=checkbox],
 #wfacp-e-form .wfacp_checkbox_sec input[type=checkbox] {
     top: auto;
-}
-
-
-body:not(.wfacpef_page):not(.wfacp_oxygen_template) #wfacp-e-form .woocommerce #place_order,
-body:not(.wfacpef_page):not(.wfacp_oxygen_template) #wfacp-e-form .woocommerce .wfacp-next-btn-wrap button {
-    padding-top: 16px;
-    padding-bottom: 16px;
-    padding-right: 24px;
-    padding-left: 24px;
 }
 
 /* Social Login, Social Sharing by miniOrange  */
@@ -5304,16 +5205,6 @@ body #wfacp-e-form .wfacp_collapsible_order_summary_wrap.wfacp .wfacp-top label.
 /*-------------------------------------------Theme Elementor--------------------------------------------*/
 body button.button.wfacp-coupon-btn {
     border: none;
-}
-
-/*--------------------------------------------Theme Bricks--------------------------------------------*/
-/* Scoped to the Bricks checkout template body class so other builders keep the themed checkbox. */
-body.wfacp_bricks_template #wfacp-e-form input#rememberme{
-    display: inline-block !important;
-    appearance: checkbox !important;
-    -webkit-appearance: checkbox !important;
-    -moz-appearance: checkbox !important;
-    -ms-appearance: checkbox !important;
 }
 
 
@@ -5693,11 +5584,6 @@ body.wfacp_bricks_template #wfacp-e-form input#rememberme{
         padding: 0;
     }
 
-    body.elementor-editor-active #wfacp_smart_buttons .placeholder-line {
-        background-size: contain;
-        height: 60px;
-    }
-
     #wfacp-e-form .wfacp_desktop .wfacp_mb_mini_cart_wrap,
     #wfacp-e-form .wfacp_tablet .wfacp_mb_mini_cart_wrap,
     #wfacp-e-form .wfacp_desktop .wfacp_form_steps,
@@ -5771,15 +5657,6 @@ body.wfacp_bricks_template #wfacp-e-form input#rememberme{
         width: 100%;
         margin: 0;
     }
-
-
-    #wfacp-e-form .wfacp-form .wfacp_main_form .woocommerce-checkout button.wfacp_next_page_button,
-    #wfacp-e-form .wfacp-form .wfacp_main_form .woocommerce-checkout #place_order {
-        margin: 0;
-        padding: 14px 20px;
-        width: 100%;
-    }
-
     #wfacp-e-form .wfacp-form .wfacp_main_form .woocommerce-checkout button.wfacp_next_page_button,
     #wfacp-e-form .wfacp-form .wfacp_main_form .woocommerce-checkout #place_order {
         margin: 0;

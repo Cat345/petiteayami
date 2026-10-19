@@ -83,13 +83,17 @@ class Product_Attributes extends Abstract_Settings_Screen {
 
 		wp_enqueue_style( 'woocommerce_admin_styles' );
 
-		wp_enqueue_script(
+		// This screen has no bundled script of its own: the behavior it needs is printed inline by
+		// render() and by the inline script below. The handle is registered without a source so it
+		// can still carry those dependencies and the inline script.
+		wp_register_script(
 			'facebook-for-woocommerce-product-attributes',
-			facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/product-attributes.js',
+			false,
 			array( 'jquery', 'jquery-tiptip', 'wc-enhanced-select' ),
 			\WC_Facebookcommerce::PLUGIN_VERSION,
 			true // Load in footer
 		);
+		wp_enqueue_script( 'facebook-for-woocommerce-product-attributes' );
 
 		// Add dismissible notice handlers
 		wp_add_inline_script(
@@ -942,9 +946,6 @@ class Product_Attributes extends Abstract_Settings_Screen {
 		if ( method_exists( 'WooCommerce\Facebook\ProductAttributeMapper', 'set_custom_attribute_mappings' ) ) {
 			ProductAttributeMapper::set_custom_attribute_mappings( $new_mappings );
 		}
-
-		// Update last sync time
-		update_option( 'wc_facebook_last_attribute_sync', current_time( 'mysql' ) );
 
 		// Check if we need to clear the unmapped attribute banner
 		$this->clear_unmapped_attribute_banner( $new_mappings );

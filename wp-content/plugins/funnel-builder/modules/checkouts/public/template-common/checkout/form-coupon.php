@@ -24,37 +24,37 @@ if ( $this->template_type == 'embed_form' ) {
 
 }
 
-$wfacp_default_coupon_text = apply_filters( 'wfacp_default_coupon_text', __( 'Coupon code', 'woocommerce' ) );
+$wfacp_default_coupon_text = apply_filters( 'wfacp_default_coupon_text', __( 'Coupon code', 'woocommerce' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 $apply_coupon_button_text  = apply_filters( 'wfacp_apply_coupon_button_text', __( 'Apply', 'funnel-builder' ) )
 
 ?>
 <div class="wfacp-coupon-section wfacp_custom_row_wrap clearfix">
-    <div class="wfacp-coupon-page">
-        <div class="woocommerce-form-coupon-toggle wfacp-woocom-coupon">
-			<?php wc_print_notice( apply_filters( 'woocommerce_checkout_coupon_message', ' <a href="#" class="showcoupon">' . __( 'Have a coupon?', 'woocommerce' ) . ' ' . __( 'Click here to enter your code', 'woocommerce' ) . '</a>' ), 'notice' ); ?>
-        </div>
+	<div class="wfacp-coupon-page">
+		<div class="woocommerce-form-coupon-toggle wfacp-woocom-coupon">
+			<?php wc_print_notice( apply_filters( 'woocommerce_checkout_coupon_message', ' <a href="#" class="showcoupon">' . __( 'Have a coupon?', 'woocommerce' ) . ' ' . __( 'Click here to enter your code', 'woocommerce' ) . '</a>' ), 'notice' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?>
+		</div>
 
-        <div class="wfacp-row">
-            <div class="wfacp_coupon_msg"><div class="woocommerce-message"></div></div>
-            <div class="wfacp_coupon_notices"></div>
-        </div>
+		<div class="wfacp-row">
+			<div class="wfacp_coupon_msg"><div class="woocommerce-message"></div></div>
+			<div class="wfacp_coupon_notices"></div>
+		</div>
 
-        <form class="checkout_coupon woocommerce-form-coupon " method="post" style="display:none">
+		<form class="checkout_coupon woocommerce-form-coupon " method="post" style="display:none">
 
-            <div class="wfacp-row">
-                <p class="wfacp-coupon-code-title wfacp-col-full "><?php esc_html_e( 'If you have a coupon code, please apply it below.', 'woocommerce' ); ?></p>
+			<div class="wfacp-row">
+				<p class="wfacp-coupon-code-title wfacp-col-full "><?php esc_html_e( 'If you have a coupon code, please apply it below.', 'woocommerce' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?></p>
 
-                <p class="form-row form-row-first wfacp-form-control-wrapper <?php echo esc_attr( $coupon_left_cls ); ?> wfacp-input-form wfacp-coupon-code-input-wrap">
-                    <label for="coupon_code" class="wfacp-form-control-label wfacp-coupon-label"><?php echo $wfacp_default_coupon_text; ?></label>
-                    <input type="text" name="coupon_code" class="input-text wfacp-form-control" placeholder="<?php echo esc_attr( $wfacp_default_coupon_text ); ?>" id="coupon_code" value=""/>
-                </p>
-                <p class="form-row form-row-last <?php echo esc_attr( $coupon_cls ); ?> wfacp-coupon-code-btn-wrap">
-                    <button type="submit" class="button wfacp-coupon-btn" name="apply_coupon" value="<?php echo esc_attr( $apply_coupon_button_text ); ?>" disabled="disabled">
-						<?php echo $apply_coupon_button_text; ?></button>
-                </p>
-                <div class="clear"></div>
-            </div>
+				<p class="form-row form-row-first wfacp-form-control-wrapper <?php echo esc_attr( $coupon_left_cls ); ?> wfacp-input-form wfacp-coupon-code-input-wrap">
+					<label for="coupon_code" class="wfacp-form-control-label wfacp-coupon-label"><?php echo esc_html( $wfacp_default_coupon_text ); ?></label>
+					<input type="text" name="coupon_code" class="input-text wfacp-form-control" placeholder="<?php echo esc_attr( $wfacp_default_coupon_text ); ?>" id="coupon_code" value=""/>
+				</p>
+				<p class="form-row form-row-last <?php echo esc_attr( $coupon_cls ); ?> wfacp-coupon-code-btn-wrap">
+					<button type="submit" class="button wfacp-coupon-btn" name="apply_coupon" value="<?php echo esc_attr( $apply_coupon_button_text ); ?>" disabled="disabled">
+						<?php echo esc_html( $apply_coupon_button_text ); ?></button>
+				</p>
+				<div class="clear"></div>
+			</div>
 
-        </form>
-    </div>
+		</form>
+	</div>
 </div>

@@ -121,11 +121,10 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Taxamo' ) ) {
 			}
 
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#wfacp_taxamo{clear: both;}";
 			$cssHtml .= "#wfacp_taxamo label.wfacp-form-control-label {bottom: auto;margin: 0;top: 16px;}";
-			$cssHtml .= "</style>";
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 
 

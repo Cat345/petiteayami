@@ -75,7 +75,7 @@ if ( ! class_exists( 'WFACP_WC_Order_Pay' ) ) {
 				$bodyClass = 'body.woocommerce-order-pay #wfacp-e-form ';
 			}
 
-			$cssHtml = '<style>';
+			$cssHtml = '';
 
 			$cssHtml .= $bodyClass . ".woocommerce ul.order_details:after{content: '';display: table;}";
 			$cssHtml .= $bodyClass . ".woocommerce ul.order_details:before{content: '';display: table;}";
@@ -102,9 +102,8 @@ if ( ! class_exists( 'WFACP_WC_Order_Pay' ) ) {
 			// the order-pay form's own #order_review panel (get_order_pay_summary()),
 			// so hide the empty mini-cart widget on order-pay.
 			$cssHtml .= 'body.woocommerce-order-pay .elementor-widget-wfacp_form_summary{display:none !important;}';
-			$cssHtml .= '</style>';
 
-			echo $cssHtml; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 	}
 

@@ -16,7 +16,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woocommerce_Social_Login' ) ) {
 
 		public function __construct() {
 			/* checkout page */
-			add_action( 'wfacp_after_template_found', [ $this, 'remove_actions' ] );
+			add_action( 'wfacp_after_template_found', array( $this, 'remove_actions' ) );
 		}
 
 
@@ -28,17 +28,14 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woocommerce_Social_Login' ) ) {
 
 			$page_settings = WFACP_Common::get_page_settings( WFACP_Common::get_id() );
 
-			$smart_login = isset( $page_settings['display_smart_login'] ) ? trim( $page_settings['display_smart_login'] ) : "false";
+			$smart_login = isset( $page_settings['display_smart_login'] ) ? trim( $page_settings['display_smart_login'] ) : 'false';
 
-
-			if ( "false" === $smart_login ) {
+			if ( 'false' === $smart_login ) {
 				return;
 			}
 			$this->instance = WFACP_Common::remove_actions( 'woocommerce_add_notice', 'WC_Social_Login_Frontend', 'checkout_social_login_message' );
 
-
-			add_filter( 'woocommerce_add_notice', [ $this, 'checkout_social_login_message' ], 9999 );
-
+			add_filter( 'woocommerce_add_notice', array( $this, 'checkout_social_login_message' ), 9999 );
 		}
 
 		public function checkout_social_login_message( $message ) {
@@ -46,18 +43,16 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woocommerce_Social_Login' ) ) {
 				return $message;
 			}
 
-
 			if ( is_checkout() && $this->instance->is_displayed_on( 'checkout' ) && strpos( $message, '<a href="#" class="showlogin">' ) !== false ) {
 				try {
 
-
 					$available_providers = wc_social_login()->get_available_providers();
 					if ( count( $available_providers ) > 0 ) {
-						$message .= '. <br/>' . get_option( 'wc_social_login_text' ) . ' <a href="#" class="wfacp_display_smart_login">' . esc_html__( 'Click here to login', 'woocommerce-social-login' ) . '</a>';
+						$message .= '. <br/>' . get_option( 'wc_social_login_text' ) . ' <a href="#" class="wfacp_display_smart_login">' . esc_html__( 'Click here to login', 'woocommerce-social-login' ) . '</a>'; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 					}
 				} catch ( Exception $e ) {
 					if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-						error_log( 'WFACP Social Login providers error: ' . $e->getMessage() );
+						error_log( 'WFACP Social Login providers error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Exception-path logging, already gated behind WP_DEBUG.
 					}
 				}
 			}

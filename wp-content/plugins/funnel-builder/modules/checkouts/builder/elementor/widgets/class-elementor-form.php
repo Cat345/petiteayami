@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 	#[\AllowDynamicProperties]
 	class El_WFACP_Form_Widget extends WFACP_Elementor_HTML_BLOCK {
+ // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- vendor-convention widget class carrying the WF module prefix; referenced by the Pro plugin.
 
 		private $html_fields       = array();
 		public $typo_default_value = array();
@@ -67,8 +68,8 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 
 		private function coupon_fields() {
 
-			$this->add_tab( __( 'Coupon', 'woocommerce' ), 1 );
-			$this->add_text( 'form_coupon_button_text', __( 'Coupon Button Text', 'funnel-builder' ), __( 'Apply', 'woocommerce' ) );
+			$this->add_tab( __( 'Coupon', 'woocommerce' ), 1 ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			$this->add_text( 'form_coupon_button_text', __( 'Coupon Button Text', 'funnel-builder' ), __( 'Apply', 'woocommerce' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			$this->end_tab();
 		}
 
@@ -78,7 +79,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 		/* ----------------Order Summary field Under Content Section----------------------- */
 
 		private function order_summary_fields() {
-			$this->add_tab( WFACP_Common::translation_string_to_check( __( 'Order Summary', 'woocommerce' ) ), 5 );
+			$this->add_tab( WFACP_Common::translation_string_to_check( __( 'Order Summary', 'woocommerce' ) ), 5 ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			$this->add_switcher( 'order_summary_enable_product_image', __( 'Enable Image', 'funnel-builder' ), '', '', 'yes', 'yes', array(), '', '', 'wfacp_elementor_device_hide' );
 			$this->ajax_session_settings[] = 'order_summary_enable_product_image';
 			$this->end_tab();
@@ -170,7 +171,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 			foreach ( $temp_fields as $loop_key => $field ) {
 
 				if ( in_array( $loop_key, array( 'wfacp_start_divider_billing', 'wfacp_start_divider_shipping' ), true ) ) {
-					$address_key_group = ( $loop_key == 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' );
+					$address_key_group = ( $loop_key == 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 					$this->add_heading( $address_key_group, 'none' );
 				}
 
@@ -222,7 +223,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 
 				$button_default_text = __( 'NEXT STEP →', 'funnel-builder' );
 				$button_key          = 'wfacp_payment_button_' . $i . '_text';
-				$button_label        = sprintf( __( 'Step %d', 'funnel-builder' ), $i );
+				$button_label        = sprintf( /* translators: %d: step number. */ __( 'Step %d', 'funnel-builder' ), $i );
 				$text_key            = $i;
 				if ( $i == $count ) {
 					$button_key          = 'wfacp_payment_place_order_text';
@@ -247,7 +248,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 					$backCount                     = $i - 1;
 					$this->ajax_session_settings[] = 'payment_button_back_' . $i . '_text';
 					$backLinkArr[ 'payment_button_back_' . $i . '_text' ] = array(
-						'label'   => sprintf( __( 'Return to Step %d', 'funnel-builder' ), $backCount ),
+						'label'   => sprintf( /* translators: %d: step number. */ __( 'Return to Step %d', 'funnel-builder' ), $backCount ),
 						'default' => sprintf( '« Return to Step %s ', $i - 1 ),
 					);
 
@@ -284,7 +285,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 				'aero-e900' => __( 'Lock 2', 'funnel-builder' ),
 			);
 
-			$bwf_icon_list = apply_filters( 'bwf_icon_list', $icon_list );
+			$bwf_icon_list = apply_filters( 'bwf_icon_list', $icon_list ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			$this->add_switcher_without_responsive( 'enable_icon_with_place_order_' . $counter_step, __( 'Enable Icon', 'funnel-builder' ), '', '', 'no', 'yes', array() );
 
@@ -310,7 +311,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 			$this->add_text( 'cart_collapse_title', __( 'Collapsed View Text', 'funnel-builder' ), WFACP_Common::translation_string_to_check( __( 'Show Order Summary', 'funnel-builder' ) ), $enable_callapse_order_summary_condition );
 			$this->add_text( 'cart_expanded_title', __( 'Expanded View Text', 'funnel-builder' ), WFACP_Common::translation_string_to_check( __( 'Hide Order Summary', 'funnel-builder' ) ), $enable_callapse_order_summary_condition );
 
-			$this->add_text( 'collapse_coupon_button_text', __( 'Coupon Button Text', 'funnel-builder' ), __( 'Apply', 'woocommerce' ), $enable_callapse_order_summary_condition );
+			$this->add_text( 'collapse_coupon_button_text', __( 'Coupon Button Text', 'funnel-builder' ), __( 'Apply', 'woocommerce' ), $enable_callapse_order_summary_condition ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 
 			$this->add_switcher_without_responsive( 'collapse_enable_coupon', __( 'Enable Coupon', 'funnel-builder' ), '', '', 'false', 'true', $enable_callapse_order_summary_condition, 'true', 'true', '' );
 			$this->add_switcher_without_responsive( 'collapse_enable_coupon_collapsible', __( 'Collapsible Coupon Field', 'funnel-builder' ), '', '', 'false', 'true', $enable_callapse_order_summary_condition, 'true', 'true', '' );
@@ -342,7 +343,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 
 			$field_key = 'wfacp_collapsible_summary';
 			$condition = array( 'collapse_enable_coupon' => 'true' );
-			$this->add_heading( __( 'Coupon', 'woocommerce' ), '', $condition );
+			$this->add_heading( __( 'Coupon', 'woocommerce' ), '', $condition ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			$this->add_heading( __( 'Link', 'funnel-builder' ), '', $condition );
 			$coupon_typography_opt = array(
 				'{{WRAPPER}} #wfacp-e-form .wfacp_woocommerce_form_coupon .wfacp-coupon-section .woocommerce-info span',
@@ -468,7 +469,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 				$labels = array(
 
 					array(
-						'heading'     => __( 'Shipping', 'woocommerce' ),
+						'heading'     => __( 'Shipping', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'sub-heading' => __( 'Where to ship it?', 'funnel-builder' ),
 					),
 					array(
@@ -476,7 +477,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 						'sub-heading' => __( 'Select your product', 'funnel-builder' ),
 					),
 					array(
-						'heading'     => __( 'Payment', 'woocommerce' ),
+						'heading'     => __( 'Payment', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'sub-heading' => __( 'Confirm your order', 'funnel-builder' ),
 					),
 
@@ -531,7 +532,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 
 					$cartTitle          = __( 'Title', 'funnel-builder' );
 					$progresscartTitle  = __( 'Cart title', 'funnel-builder' );
-					$settingDescription = __( 'Note: Cart settings will work for Global Checkout when user navigates from Product > Cart > Checkout', 'funnel-builder' );
+					$settingDescription = __( 'Note: The cart step is added only on the Store Checkout, when the shopper reaches checkout from the cart page (Product > Cart > Checkout). It is not shown on funnel checkouts, on direct checkout links or in the builder preview.', 'funnel-builder' );
 					$cartText           = __( 'Cart', 'funnel-builder' );
 
 					$options = array(
@@ -541,9 +542,9 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 					);
 					$this->add_heading( 'Cart', 'none', $bredcrumb_controls );
 
-					$this->add_select( 'step_cart_link_enable', 'Add to Breadcrumb', $options, 'yes', $condtion_control );
+					$this->add_select( 'step_cart_link_enable', 'Add to Breadcrumb', $options, 'yes', $condtion_control, $settingDescription );
 					$this->add_text( 'step_cart_progress_bar_link', $progresscartTitle, $cartText, $progress_controls );
-					$this->add_text( 'step_cart_bredcrumb_link', $cartTitle, $cartText, $bredcrumb_controls, '', $settingDescription );
+					$this->add_text( 'step_cart_bredcrumb_link', $cartTitle, $cartText, $bredcrumb_controls );
 
 				}
 
@@ -765,7 +766,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 		private function fields_typo_settings() {
 			$this->add_tab( __( 'Fields', 'funnel-builder' ), 2 );
 
-			$this->add_heading( __( 'Label', 'elementor' ) );
+			$this->add_heading( __( 'Label', 'funnel-builder' ) );
 
 			$options = array(
 				'wfacp-modern-label' => __( 'Floating', 'funnel-builder' ),
@@ -816,7 +817,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 
 			$fields_options = array(
 				'font_size' => array(
-					'label'          => _x( 'Size', 'Typography Control', 'elementor' ),
+					'label'          => _x( 'Size', 'Typography Control', 'funnel-builder' ),
 					'default'        => array(
 						'unit' => 'px',
 						'size' => 14,
@@ -1070,7 +1071,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 			);
 
 			/* Button Background hover tab */
-			$this->add_heading( __( 'Color', 'elementor' ) );
+			$this->add_heading( __( 'Color', 'funnel-builder' ) );
 			$this->add_controls_tabs( 'wfacp_button_style_tab' );
 			$this->add_controls_tab( 'wfacp_button_style_normal_tab', 'Normal' );
 			$this->add_background_color( 'wfacp_button_bg_color', $selector1, '', 'Background' );
@@ -1590,7 +1591,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 			foreach ( $sections as $keys => $val ) {
 				foreach ( $val as $loop_key => $field ) {
 					if ( in_array( $loop_key, array( 'wfacp_start_divider_billing', 'wfacp_start_divider_shipping' ), true ) ) {
-						$address_key_group = ( $loop_key == 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' );
+						$address_key_group = ( $loop_key == 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						$this->add_heading( $address_key_group, 'none' );
 					}
 

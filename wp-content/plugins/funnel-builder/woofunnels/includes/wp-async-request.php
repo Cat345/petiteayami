@@ -130,7 +130,7 @@ if ( ! class_exists( 'WP_Async_Request' ) ) {
 				'blocking'  => false,
 				'body'      => $this->data,
 				'cookies'   => $_COOKIE,
-				'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
+				'sslverify' => apply_filters( 'https_local_ssl_verify', false ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 			);
 		}
 

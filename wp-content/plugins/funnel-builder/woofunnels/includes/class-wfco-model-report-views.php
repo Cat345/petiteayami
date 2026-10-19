@@ -32,7 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 if ( ! class_exists( 'WFCO_Model_Report_views' ) ) {
 	#[AllowDynamicProperties]
-	class WFCO_Model_Report_views {
+	class WFCO_Model_Report_views { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- WFCO is the FunnelKit CRM shared prefix; shared report-views store.
 
 		/**
 		 * Whether the premium plugin's store is loaded.

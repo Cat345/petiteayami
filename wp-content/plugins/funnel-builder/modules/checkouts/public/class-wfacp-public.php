@@ -294,7 +294,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 						return;
 					}
 					// case of default checkout and no cart is empty then i  redirect to cart native way
-					wp_redirect( get_the_permalink( wc_get_page_id( 'cart' ) ) );
+					wp_safe_redirect( get_the_permalink( wc_get_page_id( 'cart' ) ) );
 					exit;
 				}
 				WC()->session->set( 'wfacp_id', WFACP_Common::get_id() );
@@ -360,7 +360,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 			}
 			$default_value_parameter = $this->aero_default_value_parameter();
 			if ( isset( $_GET[ $default_value_parameter ] ) && '' != $_GET[ $default_value_parameter ] ) {
-				$best_value = filter_input( INPUT_GET, $default_value_parameter, FILTER_UNSAFE_RAW );
+				$best_value = filter_input( INPUT_GET, $default_value_parameter, FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 				WC()->session->set( 'wfacp_product_default_value_parameter_' . WFACP_Common::get_id(), $best_value );
 			} else {
 				WC()->session->set( 'wfacp_product_default_value_parameter_' . WFACP_Common::get_id(), '' );
@@ -373,7 +373,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 			}
 			$best_value_parameter = $this->aero_best_value_parameter();
 			if ( isset( $_GET[ $best_value_parameter ] ) && '' != $_GET[ $best_value_parameter ] ) {
-				$best_value = filter_input( INPUT_GET, $best_value_parameter, FILTER_UNSAFE_RAW );
+				$best_value = filter_input( INPUT_GET, $best_value_parameter, FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 				WC()->session->set( 'wfacp_product_best_value_by_parameter_' . WFACP_Common::get_id(), $best_value );
 			} else {
 				WC()->session->set( 'wfacp_product_best_value_by_parameter_' . WFACP_Common::get_id(), '' );
@@ -611,11 +611,11 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 					'wfacp_is_checkout_override' => ( $this->is_checkout_override ) ? 'yes' : 'no',
 				);
 				if ( isset( $_REQUEST['currency'] ) ) { // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Passing currency param to AJAX endpoint.
-					$query['currency'] = filter_input( INPUT_GET, 'currency', FILTER_UNSAFE_RAW );
+					$query['currency'] = filter_input( INPUT_GET, 'currency', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 
 				}
 				if ( isset( $_REQUEST['lang'] ) ) { // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Passing lang param to AJAX endpoint.
-					$query['lang'] = filter_input( INPUT_GET, 'lang', FILTER_UNSAFE_RAW );
+					$query['lang'] = filter_input( INPUT_GET, 'lang', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 				}
 				$query            = apply_filters( 'wfacp_ajax_endpoint_parameters', $query, $this );
 				$query['wc-ajax'] = $request;
@@ -655,15 +655,11 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 		 */
 		public function set_nocache_constants() {
 
-			$this->maybe_define_constant( 'DONOTCACHEPAGE', true );
+			if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+				define( 'DONOTCACHEPAGE', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Standard WP cache-control constant read by caching plugins; it must not carry a plugin prefix.
+			}
 
 			return null;
-		}
-
-		function maybe_define_constant( $name, $value ) {
-			if ( ! defined( $name ) ) {
-				define( $name, $value );
-			}
 		}
 
 		public function woocommerce_get_checkout_url( $url ) {
@@ -760,7 +756,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 
 			$c = WC()->session->get( 'wfacp_woocommerce_applied_coupon_' . WFACP_Common::get_Id(), array() );
 			if ( isset( $_REQUEST['wfacp_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Reading checkout ID for session context.
-				$id       = filter_input( INPUT_GET, 'wfacp_id', FILTER_UNSAFE_RAW );
+				$id       = filter_input( INPUT_GET, 'wfacp_id', FILTER_SANITIZE_NUMBER_INT );
 				$id       = absint( $id );
 				$c[ $id ] = true;
 			}
@@ -783,7 +779,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 			}
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Runs inside woocommerce_checkout_process which is nonce-verified by WooCommerce.
 			if ( isset( $_POST['wfacp_cart_hash'] ) && '' !== $_POST['wfacp_cart_hash'] ) {
-				$wfacp_cart_hash = filter_input( INPUT_POST, 'wfacp_cart_hash', FILTER_UNSAFE_RAW );
+				$wfacp_cart_hash = filter_input( INPUT_POST, 'wfacp_cart_hash', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 				$form_cart_hash  = trim( $wfacp_cart_hash );
 				$cart_hash       = trim( WC()->session->get( 'wfacp_cart_hash', '' ) );
 				if ( '' !== $cart_hash && ( $form_cart_hash !== $cart_hash ) ) {
@@ -850,13 +846,13 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 
 			if ( isset( $_GET[ $add_checkout_parameter ] ) && '' != $_GET[ $add_checkout_parameter ] ) {
 				$this->add_to_cart_via_url = true;
-				$t_add_checkout_parameter  = filter_input( INPUT_GET, $add_checkout_parameter, FILTER_UNSAFE_RAW );
+				$t_add_checkout_parameter  = filter_input( INPUT_GET, $add_checkout_parameter, FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 				WC()->session->set( 'aero_add_to_checkout_parameter_' . WFACP_Common::get_Id(), $t_add_checkout_parameter );
 				$products           = explode( ',', $t_add_checkout_parameter );
 				$products_qty       = array();
 				$quantity_parameter = $this->aero_add_to_checkout_product_quantity_parameter();
 				if ( isset( $_GET[ $quantity_parameter ] ) ) {
-					$t_quantity_parameter = filter_input( INPUT_GET, $quantity_parameter, FILTER_UNSAFE_RAW );
+					$t_quantity_parameter = filter_input( INPUT_GET, $quantity_parameter, FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 					$products_qty         = explode( ',', $t_quantity_parameter );
 				}
 				if ( is_array( $products ) && count( $products ) > 0 ) {
@@ -1112,7 +1108,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 				$data = WC()->session->get( 'wfacp_product_default_value_parameter_' . WFACP_Common::get_id(), '' );
 
 				if ( '' !== $data ) {
-					$t_default    = filter_input( INPUT_GET, $default, FILTER_UNSAFE_RAW );
+					$t_default    = filter_input( INPUT_GET, $default, FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 					$default_data = explode( ',', $t_default );
 
 					if ( ! empty( $default_data ) ) {

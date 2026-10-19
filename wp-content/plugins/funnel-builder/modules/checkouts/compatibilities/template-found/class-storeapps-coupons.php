@@ -26,10 +26,10 @@ if ( ! class_exists( 'WFACP_Storeapps_Coupons' ) ) {
 		public function handle_aero_coupons() {
 			// Check if direct coupon-code is present in URL
 			if ( isset( $_REQUEST['coupon-code'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for coupon code, nonce verification not required
-				$coupon_code = sanitize_text_field( wp_unslash( $_REQUEST['coupon-code'] ) );
+				$coupon_code = sanitize_text_field( wp_unslash( $_REQUEST['coupon-code'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for coupon code, nonce verification not required.
 			} // Otherwise check for aero-coupons parameter
 			elseif ( isset( $_REQUEST['aero-coupons'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for coupon code, nonce verification not required
-				$coupon_code             = sanitize_text_field( wp_unslash( $_REQUEST['aero-coupons'] ) );
+				$coupon_code             = sanitize_text_field( wp_unslash( $_REQUEST['aero-coupons'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for coupon code, nonce verification not required.
 				$_REQUEST['coupon-code'] = $coupon_code;
 			} else {
 				return;

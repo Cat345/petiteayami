@@ -22,7 +22,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooMulti_Curcy' ) ) {
 				add_filter( 'wfacp_product_raw_data', [ $this, 'wfacp_product_raw_data' ], 10, 2 );
 				add_filter( 'wfacp_product_switcher_price_data', [ $this, 'change_price' ], 20, 3 );
 			} catch ( Exception $e ) {
-				error_log( 'WFACP_Compatibility_With_WooMulti_Curcy::__construct - ' . $e->getMessage() );
+				error_log( 'WFACP_Compatibility_With_WooMulti_Curcy::__construct - ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Exception-path logging only; keeps the third-party compat failure diagnosable without breaking checkout.
 			}
 
 		}
@@ -43,7 +43,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooMulti_Curcy' ) ) {
 					add_action( 'wfacp_footer_before_print_scripts', array( $this->instance, 'show_action' ) );
 				}
 			} catch ( Exception $e ) {
-				error_log( 'WFACP_Compatibility_With_WooMulti_Curcy::action - ' . $e->getMessage() );
+				error_log( 'WFACP_Compatibility_With_WooMulti_Curcy::action - ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Exception-path logging only; keeps the third-party compat failure diagnosable without breaking checkout.
 			}
 		}
 
@@ -96,7 +96,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooMulti_Curcy' ) ) {
 
 				return $raw_data;
 			} catch ( Exception $e ) {
-				error_log( 'WFACP_Compatibility_With_WooMulti_Curcy::wfacp_product_raw_data - ' . $e->getMessage() );
+				error_log( 'WFACP_Compatibility_With_WooMulti_Curcy::wfacp_product_raw_data - ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Exception-path logging only; keeps the third-party compat failure diagnosable without breaking checkout.
 
 				return $raw_data;
 			}
@@ -116,7 +116,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooMulti_Curcy' ) ) {
 
 				return $this->woo_multi_currency_data;
 			} catch ( Exception $e ) {
-				error_log( 'WFACP_Compatibility_With_WooMulti_Curcy::get_currency_instance - ' . $e->getMessage() );
+				error_log( 'WFACP_Compatibility_With_WooMulti_Curcy::get_currency_instance - ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Exception-path logging only; keeps the third-party compat failure diagnosable without breaking checkout.
 
 				return null;
 			}

@@ -48,12 +48,41 @@ if ( ! class_exists( 'WFACP_Compatibility_With_EU_UK_Vat_Manager_For_WC' ) ) {
 			if ( ! $this->is_enable() ) {
 				return;
 			}
-			$this->instance = WFACP_Common::remove_actions( 'woocommerce_checkout_fields', $this->get_core_class_name(), 'add_eu_vat_checkout_field_to_frontend' );
+			$core_class     = $this->get_core_class_name();
+			$this->instance = WFACP_Common::remove_actions( 'woocommerce_checkout_fields', $core_class, 'add_eu_vat_checkout_field_to_frontend' );
+
+			// WPFactory adds the VAT field a second time through add_frontend_edit_billing_fields() on
+			// woocommerce_billing_fields (priority 10). call_to_action() renders the only copy we want, so
+			// that one goes too; otherwise the billing block carries a second, empty #billing_eu_vat_number
+			// that Aero marks required and the multistep Next button never passes. This runs on the page
+			// render only (wfacp_after_checkout_page_found), never during the checkout AJAX request, so
+			// WPFactory still validates and saves the posted number.
+			WFACP_Common::remove_actions( 'woocommerce_billing_fields', $core_class, 'add_frontend_edit_billing_fields' );
+			add_filter( 'wfacp_third_party_billing_fields', array( $this, 'remove_third_party_vat_field' ) );
 
 			// Print JS on the Aero footer script hook (fires after jQuery/FunnelKit JS is loaded),
 			// not on the internal-CSS hook.
 			add_action( 'wfacp_footer_after_print_scripts', array( $this, 'internal_js' ) );
 			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
+		}
+
+		/**
+		 * Keep the VAT field out of the "WooCommerce custom fields" billing block.
+		 *
+		 * WFACP_Class_Register_Third_Party_Fields captures woocommerce_billing_fields at priority 99999 and
+		 * merges the capture back in on wfacp_before_form, which would bring the VAT field back if anything
+		 * else had added it to the billing fields.
+		 *
+		 * @since 3.16.1
+		 *
+		 * @param array $fields Billing fields merged into the custom fields block.
+		 *
+		 * @return array
+		 */
+		public function remove_third_party_vat_field( $fields ) {
+			unset( $fields['billing_eu_vat_number'] );
+
+			return $fields;
 		}
 
 		/**
@@ -104,7 +133,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_EU_UK_Vat_Manager_For_WC' ) ) {
 				}
 			}
 
-			echo '<div id="wfacp_eu_vat_wrapper"' . $wrapper_style . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<div id="wfacp_eu_vat_wrapper"' . $wrapper_style . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete style attribute built internally.
 			foreach ( $new_fields['billing'] as $key => $field ) {
 				// WPFactory returns internal/state fields alongside the input (e.g. the "VAT exempt"
 				// boolean); rendering those leaks raw "VAT exempt: false/true" text to the shopper.
@@ -121,7 +150,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_EU_UK_Vat_Manager_For_WC' ) ) {
 
 
 		private function get_show_in_countries() {
-			$countries = apply_filters( 'alg_wc_eu_vat_show_in_countries', '' );
+			$countries = apply_filters( 'alg_wc_eu_vat_show_in_countries', '' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 
 			if ( empty( $countries ) || ! is_string( $countries ) ) {
 				return array();
@@ -151,6 +180,28 @@ if ( ! class_exists( 'WFACP_Compatibility_With_EU_UK_Vat_Manager_For_WC' ) ) {
 			<script id="wfacp-eu-vat-compat">
 				(function ($) {
 					'use strict';
+
+					// WPFactory adds woocommerce-invalid to the VAT <input> on a failed check (wpfactory-wc-eu-vat.js:425 in 4.8.2)
+					// but never removes it, only the <p> row's classes. After a later VALID check the stale input class
+					// stays, and FunnelKit multistep Next (.woocommerce-invalid:visible) blocks a valid VAT. The plugin
+					// exposes no revalidate method or event, so we read its own validation response: jQuery's global
+					// ajaxSuccess fires right after the plugin's success handler has applied the verdict.
+					$( document ).ajaxSuccess( function ( event, xhr, settings ) {
+						if ( ! settings || 'string' !== typeof settings.data || -1 === settings.data.indexOf( 'action=wpfactory_wc_eu_vat_validate_action' ) ) {
+							return;
+						}
+						var resp = xhr.responseJSON;
+						if ( ! resp ) {
+							try {
+								resp = JSON.parse( xhr.responseText );
+							} catch ( e ) {
+								return;
+							}
+						}
+						if ( resp && resp.is_validate ) {
+							$( 'input[name="billing_eu_vat_number"]' ).removeClass( 'woocommerce-invalid woocommerce-invalid-required-field' );
+						}
+					} );
 					// Dedupe cache shared by the country toggle and the re-validation bind,
 					// declared at IIFE top so both reference the same map unambiguously.
 					var last = {};

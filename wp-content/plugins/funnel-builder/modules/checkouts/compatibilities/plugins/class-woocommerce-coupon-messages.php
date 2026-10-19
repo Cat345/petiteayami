@@ -42,7 +42,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Coupon_Messages' ) ) {
 
 			foreach ( WFACP_Common::get_coupons() as $code => $coupon ) {
 
-				$remove_link = sprintf( "<a href='javascript:void(0)' class='wfacp_remove_coupon' data-coupon='%s'>%s</a>", $code, __( 'Remove', 'woocommerce' ) );
+				$remove_link = sprintf( "<a href='javascript:void(0)' class='wfacp_remove_coupon' data-coupon='%s'>%s</a>", $code, __( 'Remove', 'woocommerce' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 				$messages   .= sprintf( '<div class="wfacp_single_coupon_msg">%s %s</div>', $success_message, $remove_link );
 
 				$remove_link       = sprintf(

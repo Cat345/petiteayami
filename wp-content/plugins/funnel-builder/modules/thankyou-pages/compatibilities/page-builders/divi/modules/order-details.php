@@ -200,7 +200,7 @@ if ( ! class_exists( 'WFTY_Order_Details' ) ) {
 			);
 			?>
 			<script>
-				let wftyDiviOrder = {<?php echo $data; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>};
+				let wftyDiviOrder = {<?php echo $data; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JS object body assembled from the internal builder field map. ?>};
 			</script>
 			<?php
 		}

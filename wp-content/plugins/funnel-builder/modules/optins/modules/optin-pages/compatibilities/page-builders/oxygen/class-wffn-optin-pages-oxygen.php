@@ -215,7 +215,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Oxygen' ) ) {
 		}
 
 		public function enable_self_page_css() {
-			if ( apply_filters( 'bwf_enable_oxygen_universal_css', true, $this ) ) {
+			if ( apply_filters( 'bwf_enable_oxygen_universal_css', true, $this ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				return;
 			}
 			add_filter( 'pre_option_oxygen_vsb_universal_css_cache', [ $this, 'disable_universal_css' ] );

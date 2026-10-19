@@ -18,7 +18,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Indeed_Ultimate_Affiliate_Pro' ) 
 
 		public function remove_script() {
 
-			if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'wfacp' ) {
+			if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'wfacp' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin request routing; WP core builds this URL without a nonce.
 				return;
 			}
 

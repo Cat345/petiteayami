@@ -101,7 +101,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 			$this->section_fields[] = $temp_fields;
 			foreach ( $temp_fields as $loop_key => $field ) {
 				if ( in_array( $loop_key, array( 'wfacp_start_divider_billing', 'wfacp_start_divider_shipping' ), true ) ) {
-					$address_key_group = ( $loop_key == 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' );
+					$address_key_group = ( $loop_key == 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 					$this->add_heading( $tab_id, $address_key_group, 'none' );
 				}
 				if ( ! isset( $field['id'] ) || ! isset( $field['label'] ) ) {
@@ -227,7 +227,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				);
 				$cartTitle          = __( 'Title', 'funnel-builder' );
 				$progresscartTitle  = __( 'Cart title', 'funnel-builder' );
-				$settingDescription = __( 'Note: Cart settings will work for Global Checkout when user navigates from Product > Cart > Checkout', 'funnel-builder' );
+				$settingDescription = __( 'Note: The cart step is added only on the Store Checkout, when the shopper reaches checkout from the cart page (Product > Cart > Checkout). It is not shown on funnel checkouts, on direct checkout links or in the builder preview.', 'funnel-builder' );
 				$cartText           = __( 'Cart', 'funnel-builder' );
 				$options            = array(
 					'yes' => __( 'Yes', 'funnel-builder' ),
@@ -235,8 +235,9 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				);
 				$this->add_heading( $tab_id, 'Cart', 'none', $bredcrumb_controls );
 				$this->add_select( $tab_id, 'step_cart_link_enable', __( 'Add to Breadcrumb', 'funnel-builder' ), $options, 'yes', $condtion_control );
-				$this->add_text( $tab_id, 'step_cart_progress_bar_link', $progresscartTitle, $cartText, $progress_controls, $settingDescription );
-				$this->add_text( $tab_id, 'step_cart_bredcrumb_link', $cartTitle, $cartText, $bredcrumb_controls, $settingDescription );
+				$this->modules_fields['step_cart_link_enable']['description'] = $settingDescription;
+				$this->add_text( $tab_id, 'step_cart_progress_bar_link', $progresscartTitle, $cartText, $progress_controls );
+				$this->add_text( $tab_id, 'step_cart_bredcrumb_link', $cartTitle, $cartText, $bredcrumb_controls );
 			}
 		}
 
@@ -276,7 +277,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 					$backCount = $i - 1;
 					/* translators: %d: Step number */
 					$backLinkArr[ 'payment_button_back_' . $i . '_text' ] = array(
-						'label' => sprintf( __( 'Return to Step %d', 'funnel-builder' ), $backCount ),
+						'label' => sprintf( /* translators: %d: step number. */ __( 'Return to Step %d', 'funnel-builder' ), $backCount ),
 					);
 				}
 			}
@@ -310,7 +311,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 			);
 			$this->add_switcher( $tab_id, 'collapse_enable_coupon', __( 'Enable Coupon', 'funnel-builder' ), 'on' );
 			$this->add_switcher( $tab_id, 'collapse_enable_coupon_collapsible', __( 'Collapsible Coupon Field', 'funnel-builder' ), 'off', $collapse_enable_coupon );
-			$this->add_text( $tab_id, 'collapse_coupon_button_text', __( 'Coupon Button Text', 'funnel-builder' ), __( 'Apply', 'woocommerce' ), $collapse_enable_coupon );
+			$this->add_text( $tab_id, 'collapse_coupon_button_text', __( 'Coupon Button Text', 'funnel-builder' ), __( 'Apply', 'woocommerce' ), $collapse_enable_coupon ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			$this->add_switcher( $tab_id, 'collapse_order_quantity_switcher', __( 'Quantity Switcher', 'funnel-builder' ), 'on' );
 			$this->add_switcher( $tab_id, 'collapse_order_delete_item', __( 'Allow Deletion', 'funnel-builder' ), 'on' );
 		}
@@ -747,7 +748,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 
 			$template      = wfacp_template();
 			$template_slug = $template->get_template_slug();
-			$this->add_heading( $tab_id, __( 'Button Icon', 'elementor' ) );
+			$this->add_heading( $tab_id, __( 'Button Icon', 'funnel-builder' ) );
 
 			$btn_icon_selector = array(
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-order-place-btn-wrap button:before',
@@ -755,7 +756,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 			);
 
 			$this->add_color( $tab_id, $template_slug . '_btn_icon_color', $btn_icon_selector, 'Icon Color', '#ffffff' );
-			$this->add_heading( $tab_id, __( 'Sub Text', 'elementor' ) );
+			$this->add_heading( $tab_id, __( 'Sub Text', 'funnel-builder' ) );
 			$button_sub_text_selector = array(
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-order-place-btn-wrap button:after',
 				'%%order_class%% #wfacp-e-form .wfacp-next-btn-wrap button:after',
@@ -1399,7 +1400,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 				'aero-e900' => __( 'Lock 2', 'funnel-builder' ),
 			);
 
-			$bwf_icon_list = apply_filters( 'bwf_icon_list', $icon_list );
+			$bwf_icon_list = apply_filters( 'bwf_icon_list', $icon_list ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			$this->add_switcher( $tab_id, 'enable_icon_with_place_order_' . $counter_step, __( 'Enable Icon', 'funnel-builder' ), '' );
 
@@ -1413,8 +1414,8 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 		/* ----------------Coupon field Under Content Section----------------------- */
 
 		private function coupon_fields() {
-			$coupon_id = $this->add_tab( __( 'Coupon', 'woocommerce' ), 5 );
-			$this->add_text( $coupon_id, 'form_coupon_button_text', __( 'Coupon Button Text', 'funnel-builder' ), __( 'Apply', 'woocommerce' ) );
+			$coupon_id = $this->add_tab( __( 'Coupon', 'woocommerce' ), 5 ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			$this->add_text( $coupon_id, 'form_coupon_button_text', __( 'Coupon Button Text', 'funnel-builder' ), __( 'Apply', 'woocommerce' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		}
 
 		/* -------------------------------End--------------------------------------- */

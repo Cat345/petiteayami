@@ -13,6 +13,7 @@ use MailPoetVendor\Doctrine\DBAL\Platforms\MariaDb1043Platform;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MariaDb1052Platform;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MariaDb1060Platform;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MariaDb110700Platform;
+use MailPoetVendor\Doctrine\DBAL\Platforms\MariaDb120300Platform;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MySQL57Platform;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MySQL80Platform;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MySQL84Platform;
@@ -31,6 +32,9 @@ abstract class AbstractMySQLDriver implements VersionAwarePlatformDriver
  $mariadb = stripos($version, 'mariadb') !== \false;
  if ($mariadb) {
  $mariaDbVersion = $this->getMariaDbMysqlVersionNumber($version);
+ if (version_compare($mariaDbVersion, '12.3.0', '>=')) {
+ return new MariaDb120300Platform();
+ }
  if (version_compare($mariaDbVersion, '11.7.0', '>=')) {
  return new MariaDb110700Platform();
  }

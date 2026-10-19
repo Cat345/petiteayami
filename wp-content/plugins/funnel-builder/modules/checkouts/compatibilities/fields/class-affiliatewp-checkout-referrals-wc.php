@@ -92,10 +92,9 @@ if ( ! class_exists( 'WFACP_AffiliateWP_Checkout_Referrals_WC' ) ) {
 			}
 			$px = $instance->get_template_type_px() . "px";
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#wfacp_affiliate_referrals_wc {padding-left:$px;padding-right:$px;}";
-			$cssHtml .= "</style>";
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 	}
 

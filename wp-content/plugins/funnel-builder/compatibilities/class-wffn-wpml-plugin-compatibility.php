@@ -70,7 +70,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 					'count_data'  => $funnel['count_data'] ?? null,
 				);
 				$active_languages = apply_filters(
-					'wpml_active_languages',
+					'wpml_active_languages', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 					null,
 					array(
 						'orderby' => 'name',
@@ -85,7 +85,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 					),
 					$active_languages
 				);
-				$default_language        = apply_filters( 'wpml_default_language', null );
+				$default_language        = apply_filters( 'wpml_default_language', null ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 				$formatted_steps = self::formatSteps( $funnel['steps'] );
 				$enable_value    = WFFN_Core()->get_dB()->get_meta( $funnel_id, 'enable_translation' );
@@ -191,23 +191,23 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 
 			$current_language = self::getSelectedLanguage( $post_id );
 
-			$default_language = apply_filters( 'wpml_default_language', null );
+			$default_language = apply_filters( 'wpml_default_language', null ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 			if ( $current_language !== $default_language ) {
-				$current_type     = apply_filters( 'wpml_element_type', get_post_type( $post_id ) );
-				$current_trid     = apply_filters( 'wpml_element_trid', false, $post_id, $current_type );
+				$current_type     = apply_filters( 'wpml_element_type', get_post_type( $post_id ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
+				$current_trid     = apply_filters( 'wpml_element_trid', false, $post_id, $current_type ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 				$current_trid     = $current_trid ? (int) $current_trid : null;
-				$all_translations = apply_filters( 'wpml_get_element_translations', array(), $current_trid, $current_type );
+				$all_translations = apply_filters( 'wpml_get_element_translations', array(), $current_trid, $current_type ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 				if ( isset( $all_translations[ $default_language ] ) && ! empty( $all_translations[ $default_language ]->element_id ) ) {
 					return $translations;
 				}
 			}
 
-			$current_type     = apply_filters( 'wpml_element_type', get_post_type( $post_id ) );
-			$current_trid     = apply_filters( 'wpml_element_trid', false, $post_id, $current_type );
+			$current_type     = apply_filters( 'wpml_element_type', get_post_type( $post_id ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
+			$current_trid     = apply_filters( 'wpml_element_trid', false, $post_id, $current_type ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 			$current_trid     = $current_trid ? (int) $current_trid : null;
-			$all_translations = apply_filters( 'wpml_get_element_translations', array(), $current_trid, $current_type );
+			$all_translations = apply_filters( 'wpml_get_element_translations', array(), $current_trid, $current_type ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 			foreach ( $all_translations as $lang => $translated_data ) {
 				if ( is_object( $translated_data ) && ! empty( $translated_data->element_id ) ) {
@@ -294,7 +294,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 		 * @return array Array with language options and selected language
 		 */
 		public static function getSelectedLanguage( $post_id ) {
-			$post_language_details = apply_filters( 'wpml_post_language_details', null, $post_id );
+			$post_language_details = apply_filters( 'wpml_post_language_details', null, $post_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 			return $post_language_details['language_code'] ?? '';
 		}
@@ -370,8 +370,8 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 
 					if ( $is_trid_type && ! empty( $group['steps'] ) ) {
 						$first_step_id = $group['steps'][0];
-						$post_type     = apply_filters( 'wpml_element_type', get_post_type( $first_step_id ) );
-						$existing_trid = apply_filters( 'wpml_element_trid', null, $first_step_id, $post_type );
+						$post_type     = apply_filters( 'wpml_element_type', get_post_type( $first_step_id ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
+						$existing_trid = apply_filters( 'wpml_element_trid', null, $first_step_id, $post_type ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 						$trid_mapping[ $group_id ] = $existing_trid ? (int) $existing_trid : (int) $first_step_id;
 					}
@@ -444,7 +444,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 				return;
 			}
 
-			$post_type       = apply_filters( 'wpml_element_type', get_post_type( $post_id ) );
+			$post_type       = apply_filters( 'wpml_element_type', get_post_type( $post_id ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 			$should_map_trid = in_array( $type, array( 'landing', 'optin', 'wc_checkout', 'optin_ty' ), true );
 
 			$source_language = null;
@@ -467,7 +467,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 			if ( $trid_value ) {
 				$trid_value = (int) $trid_value;
 				global $wpdb;
-				$wpdb->delete(
+				$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					$wpdb->prefix . 'icl_translations',
 					array(
 						'element_id'   => $post_id,
@@ -475,7 +475,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 					),
 					array( '%d', '%s' )
 				);
-				$wpdb->delete(
+				$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					$wpdb->prefix . 'icl_translations',
 					array(
 						'trid'          => $trid_value,
@@ -486,7 +486,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 				);
 			}
 			do_action(
-				'wpml_set_element_language_details',
+				'wpml_set_element_language_details', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 				array(
 					'element_id'           => $post_id,
 					'element_type'         => $post_type,
@@ -505,7 +505,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 						if ( $trans_trid_value ) {
 							$trans_trid_value = (int) $trans_trid_value;
 							global $wpdb;
-							$wpdb->delete(
+							$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 								$wpdb->prefix . 'icl_translations',
 								array(
 									'element_id'   => $translated_post_id,
@@ -513,7 +513,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 								),
 								array( '%d', '%s' )
 							);
-							$wpdb->delete(
+							$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 								$wpdb->prefix . 'icl_translations',
 								array(
 									'trid'          => $trans_trid_value,
@@ -524,7 +524,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 							);
 						}
 						do_action(
-							'wpml_set_element_language_details',
+							'wpml_set_element_language_details', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 							array(
 								'element_id'           => $translated_post_id,
 								'element_type'         => $post_type,
@@ -560,10 +560,10 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 					}
 
 					do_action(
-						'wpml_set_element_language_details',
+						'wpml_set_element_language_details', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 						array(
 							'element_id'    => $substep_id,
-							'element_type'  => apply_filters( 'wpml_element_type', get_post_type( $substep_id ) ),
+							'element_type'  => apply_filters( 'wpml_element_type', get_post_type( $substep_id ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 							'language_code' => $selected_language,
 						)
 					);
@@ -615,7 +615,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 		 */
 		private static function getCurrentLanguage( $current_step_id ) {
 
-			$current_lang_details = apply_filters( 'wpml_post_language_details', null, $current_step_id );
+			$current_lang_details = apply_filters( 'wpml_post_language_details', null, $current_step_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 			if ( $current_lang_details && isset( $current_lang_details['language_code'] ) ) {
 				return $current_lang_details['language_code'];
 			}
@@ -634,9 +634,9 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 		private static function getCurrentStepTranslations( $current_step_id ) {
 			$current_translation_ids = array();
 			if ( function_exists( 'apply_filters' ) ) {
-				$current_type         = apply_filters( 'wpml_element_type', get_post_type( $current_step_id ) );
-				$current_trid         = apply_filters( 'wpml_element_trid', false, $current_step_id, 'post_' . $current_type );
-				$current_translations = apply_filters( 'wpml_get_element_translations', array(), $current_trid, $current_type );
+				$current_type         = apply_filters( 'wpml_element_type', get_post_type( $current_step_id ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
+				$current_trid         = apply_filters( 'wpml_element_trid', false, $current_step_id, 'post_' . $current_type ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
+				$current_translations = apply_filters( 'wpml_get_element_translations', array(), $current_trid, $current_type ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 				foreach ( $current_translations as $translation ) {
 					if ( isset( $translation->element_id ) ) {
@@ -729,9 +729,9 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 		private static function getTranslationsForStep( $post_id ) {
 			$translations = array();
 			if ( function_exists( 'apply_filters' ) ) {
-				$type              = apply_filters( 'wpml_element_type', get_post_type( $post_id ) );
-				$trid              = apply_filters( 'wpml_element_trid', false, $post_id, 'post_' . $type );
-				$translations_data = apply_filters( 'wpml_get_element_translations', array(), $trid, $type );
+				$type              = apply_filters( 'wpml_element_type', get_post_type( $post_id ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
+				$trid              = apply_filters( 'wpml_element_trid', false, $post_id, 'post_' . $type ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
+				$translations_data = apply_filters( 'wpml_get_element_translations', array(), $trid, $type ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 				foreach ( $translations_data as $translation ) {
 					if ( isset( $translation->element_id ) ) {
@@ -753,7 +753,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 		 */
 		private static function getLanguageForStep( $post_id ) {
 			if ( function_exists( 'apply_filters' ) ) {
-				$lang_details = apply_filters( 'wpml_post_language_details', null, $post_id );
+				$lang_details = apply_filters( 'wpml_post_language_details', null, $post_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 				return isset( $lang_details['language_code'] ) ? $lang_details['language_code'] : null;
 			}
@@ -802,7 +802,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 				$target_language = null;
 				if ( ! empty( $current_step ) && isset( $current_step['id'] ) ) {
 					$checkout_id           = $current_step['id'];
-					$checkout_lang_details = apply_filters( 'wpml_post_language_details', null, $checkout_id );
+					$checkout_lang_details = apply_filters( 'wpml_post_language_details', null, $checkout_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 					if ( $checkout_lang_details && isset( $checkout_lang_details['language_code'] ) ) {
 						$target_language = $checkout_lang_details['language_code'];
 					}
@@ -810,9 +810,9 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 
 				// Fallback to current language, then default language if step language not available
 				if ( empty( $target_language ) ) {
-					$target_language = apply_filters( 'wpml_current_language', null );
+					$target_language = apply_filters( 'wpml_current_language', null ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 					if ( empty( $target_language ) ) {
-						$target_language = apply_filters( 'wpml_default_language', null );
+						$target_language = apply_filters( 'wpml_default_language', null ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 					}
 				}
 
@@ -823,7 +823,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 				$checkout_language     = $target_language;
 				$matching_thankyou_ids = array();
 				foreach ( $thankyou_page_ids as $ty_id ) {
-					$ty_lang_details = apply_filters( 'wpml_post_language_details', null, $ty_id );
+					$ty_lang_details = apply_filters( 'wpml_post_language_details', null, $ty_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 					if ( $ty_lang_details && isset( $ty_lang_details['language_code'] ) && $ty_lang_details['language_code'] === $checkout_language ) {
 						$matching_thankyou_ids[] = $ty_id;
 					}
@@ -847,14 +847,14 @@ if ( ! class_exists( 'WFFN_Compatibility_With_WPML_plugin' ) ) {
 
 			try {
 				$step_id           = $current_step['id'];
-				$step_lang_details = apply_filters( 'wpml_post_language_details', null, $step_id );
+				$step_lang_details = apply_filters( 'wpml_post_language_details', null, $step_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 				if ( $step_lang_details && isset( $step_lang_details['language_code'] ) ) {
 					$step_language             = $step_lang_details['language_code'];
 					$language_matching_upsells = array();
 
 					foreach ( $upsells as $upsell ) {
 						$upsell_id           = $upsell['id'];
-						$upsell_lang_details = apply_filters( 'wpml_post_language_details', null, $upsell_id );
+						$upsell_lang_details = apply_filters( 'wpml_post_language_details', null, $upsell_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 						if ( $upsell_lang_details && isset( $upsell_lang_details['language_code'] ) && $upsell_lang_details['language_code'] === $step_language ) {
 							$language_matching_upsells[] = $upsell;

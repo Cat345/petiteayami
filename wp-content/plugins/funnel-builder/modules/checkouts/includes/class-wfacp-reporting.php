@@ -267,7 +267,7 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 				}
 			}
 			global $wpdb;
-			$wpdb->delete( $wpdb->wfacp_stats, array( 'order_id' => $order_id ), array( '%d' ) );
+			$wpdb->delete( $wpdb->wfacp_stats, array( 'order_id' => $order_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 		}
 
 		/**
@@ -294,30 +294,21 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 		}
 
 		private function get_entry( $where ) {
-			if ( empty( $where ) || ! is_array( $where ) ) {
+			if ( empty( $where ) || ! is_array( $where ) || empty( $where['order_id'] ) ) {
 				return false;
 			}
 
 			global $wpdb;
-			// Build WHERE clause dynamically
-			$conditions = array();
-			$values     = array();
-			foreach ( $where as $key => $value ) {
-				$conditions[] = "{$key} = %s";
-				$values[]     = $value;
-			}
-			$where_sql = implode( ' AND ', $conditions );
 
 			// Query to check if entry exists
-			$query  = $wpdb->prepare( "SELECT * FROM {$wpdb->wfacp_stats} WHERE {$where_sql} LIMIT 1", ...$values );
-			$result = $wpdb->get_row( $query, ARRAY_A );
+			$result = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->wfacp_stats} WHERE order_id = %d LIMIT 1", absint( $where['order_id'] ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct read on the plugin's own custom stats table; WordPress provides no CRUD or object-cache API for it.
 
 			return ! empty( $result ) ? $result : false;
 		}
 
 		private function insert_data( $data ) {
 			global $wpdb;
-			$status = $wpdb->insert( $wpdb->wfacp_stats, $data, array( '%d', '%d', '%s', '%s', '%d', '%d' ) );
+			$status = $wpdb->insert( $wpdb->wfacp_stats, $data, array( '%d', '%d', '%s', '%s', '%d', '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			if ( false !== $status ) {
 				return $status;
 			}
@@ -327,7 +318,7 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 
 		private function update_data( $data, $where ) {
 			global $wpdb;
-			$status = $wpdb->update( $wpdb->wfacp_stats, $data, $where, array( '%s' ), array( '%d', '%d' ) );
+			$status = $wpdb->update( $wpdb->wfacp_stats, $data, $where, array( '%s' ), array( '%d', '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			if ( false !== $status ) {
 				return true;
 			}
@@ -350,7 +341,7 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 		 */
 		public function fully_refunded_process( $order_id ) {
 			global $wpdb;
-			$wpdb->update( $wpdb->prefix . 'wfacp_stats', array( 'total_revenue' => 0 ), array( 'order_id' => $order_id ) );
+			$wpdb->update( $wpdb->prefix . 'wfacp_stats', array( 'total_revenue' => 0 ), array( 'order_id' => $order_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 		}
 
 		/**
@@ -403,9 +394,9 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 			}
 
 			if ( $refund_amount > 0 ) {
-				$get_total     = $wpdb->get_var( 'SELECT total_revenue FROM ' . $wpdb->prefix . 'wfacp_stats WHERE order_id = ' . $order_id ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared*/
+				$get_total     = $wpdb->get_var( $wpdb->prepare( 'SELECT total_revenue FROM ' . esc_sql( $wpdb->prefix . 'wfacp_stats' ) . ' WHERE order_id = %d', absint( $order_id ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 				$refund_amount = ( $get_total <= $refund_amount ) ? 0 : $get_total - $refund_amount;
-				$wpdb->update( $wpdb->prefix . 'wfacp_stats', array( 'total_revenue' => $refund_amount ), array( 'order_id' => $order_id ) );
+				$wpdb->update( $wpdb->prefix . 'wfacp_stats', array( 'total_revenue' => $refund_amount ), array( 'order_id' => $order_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			}
 		}
 

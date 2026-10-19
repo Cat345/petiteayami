@@ -17,7 +17,7 @@ if ( ! class_exists( 'WFACP_Analytics_loader' ) ) {
 			$this->include_class();
 			$this->init_classes();
 
-			if ( wp_doing_ajax() && isset( $_REQUEST['wc-ajax'] ) ) {
+			if ( wp_doing_ajax() && isset( $_REQUEST['wc-ajax'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only wc-ajax endpoint detection.
 				$this->prepare_analytics_data();
 			} else {
 				add_action( 'wfacp_after_checkout_page_found', array( $this, 'prepare_analytics_data' ) );

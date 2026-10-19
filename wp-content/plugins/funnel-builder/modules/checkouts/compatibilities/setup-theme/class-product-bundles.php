@@ -90,7 +90,7 @@ if ( ! class_exists( 'WFACP_WooCommerce_Product_bundles' ) ) {
 		}
 
 		public function display_cart_item_price( $_product, $cart_item, $cart_item_key ) {
-			echo apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] ), $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] ), $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- price HTML filter; WooCommerce core echoes it raw (B5 register).
 		}
 
 		public function display_item_quantity( $cart_item ) {

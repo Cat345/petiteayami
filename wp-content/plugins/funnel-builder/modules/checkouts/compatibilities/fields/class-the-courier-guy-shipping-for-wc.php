@@ -8,7 +8,7 @@ if ( ! class_exists( 'The_Courier_Guy_Shipping_For_WC' ) ) {
 	 *
 	 */
 	#[AllowDynamicProperties]
-	class The_Courier_Guy_Shipping_For_WC {
+	class The_Courier_Guy_Shipping_For_WC { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- internal compat class named after the integrated plugin; referenced by the Pro module.
 
 		public function __construct() {
 			/* Register Add field */
@@ -130,14 +130,13 @@ if ( ! class_exists( 'The_Courier_Guy_Shipping_For_WC' ) ) {
 			}
 
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#billing_sg_checkout_location_picker{width:100%;}";
 			$cssHtml .= $bodyClass . "#billing_sg_checkout_location_picker input[type=text]{padding:12px 10px;}";
 			$cssHtml .= $bodyClass . "#shipping_sg_checkout_location_picker{width:100%;}";
 			$cssHtml .= $bodyClass . "#shipping_sg_checkout_location_picker input[type=text]{padding:12px 10px;}";
-			$cssHtml .= "</style>";
 
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 
 
 		}

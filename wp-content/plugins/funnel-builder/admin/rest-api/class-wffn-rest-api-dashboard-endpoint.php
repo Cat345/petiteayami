@@ -160,7 +160,7 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 
 			if ( isset( $request['overall'] ) ) {
 				global $wpdb;
-				$request['after']    = $wpdb->get_var( $wpdb->prepare( "SELECT timestamp as date FROM {$wpdb->prefix}bwf_conversion_tracking WHERE funnel_id != '' AND type = 2 ORDER BY ID ASC LIMIT %d", 1 ) );
+				$request['after']    = $wpdb->get_var( $wpdb->prepare( "SELECT timestamp as date FROM {$wpdb->prefix}bwf_conversion_tracking WHERE funnel_id != '' AND type = 2 ORDER BY ID ASC LIMIT %d", 1 ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 				$start_date          = ( isset( $request['after'] ) && '' !== $request['after'] ) ? $request['after'] : self::default_date( WEEK_IN_SECONDS )->format( self::$sql_datetime_format );
 				$end_date            = ( isset( $request['before'] ) && '' !== $request['before'] ) ? $request['before'] : self::default_date()->format( self::$sql_datetime_format );
 				$request['interval'] = $this->get_two_date_interval( $start_date, $end_date );
@@ -312,40 +312,97 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 				$offset           = intval( $limit ) * intval( $page_no - 1 );
 				$start_date       = ( isset( $request['after'] ) && '' !== $request['after'] ) ? $request['after'] : '';
 				$end_date         = ( isset( $request['before'] ) && '' !== $request['before'] ) ? $request['before'] : '';
-				if ( $type === 'dashboard' ) {
-					$args = array(
-						'post_type'      => array( WFOCU_Common::get_offer_post_type_slug(), WFOB_Common::get_bump_post_type_slug() ),
-						'post_status'    => 'any',
-						'posts_per_page' => - 1,
-					);
-				} else {
-					$args = array(
-						'post_type'      => array( WFOCU_Common::get_offer_post_type_slug(), WFOB_Common::get_bump_post_type_slug() ),
-						'post_status'    => 'any',
-						'posts_per_page' => - 1,
-					);
-				}
+				// Both branches were identical. Load only post IDs (not full WP_Post objects — offer/bump
+				// posts can carry very large page-builder post_content) and skip meta/term cache priming,
+				// which on stores with many offers/bumps pulled the whole postmeta table into memory and
+				// OOM'd this endpoint. Output is unchanged: title/type come from a single lightweight query.
+				$args         = array(
+					'post_type'              => array( WFOCU_Common::get_offer_post_type_slug(), WFOB_Common::get_bump_post_type_slug() ),
+					'post_status'            => 'any',
+					'posts_per_page'         => - 1,
+					'fields'                 => 'ids',
+					'no_found_rows'          => true,
+					'update_post_meta_cache' => false,
+					'update_post_term_cache' => false,
+				);
 				$query_result = new WP_Query( $args );
 				$posts        = array();
 
-				if ( $query_result->have_posts() ) {
+				if ( ! empty( $query_result->posts ) ) {
+					$all_ids = array_map( 'intval', $query_result->posts );
+
+					// Fetch only the columns we use, in one query — never post_content.
+					$placeholders = implode( ',', array_fill( 0, count( $all_ids ), '%d' ) );
+					$post_rows    = $wpdb->get_results( $wpdb->prepare( "SELECT ID, post_title, post_type FROM {$wpdb->posts} WHERE ID IN ($placeholders)", $all_ids ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholder list is built from array_fill() over integer IDs.
+					$post_map     = array();
+					foreach ( $post_rows as $post_row ) {
+						$post_map[ (int) $post_row->ID ] = $post_row;
+					}
+
 					$upsell_ids = array();
 					$bump_ids   = array();
 
-					foreach ( $query_result->posts as $p ) {
+					// The loop below used to call get_post_meta() per post. With meta-cache priming disabled
+					// above, every call primed the FULL meta of that post (page-builder payloads included)
+					// into the object cache: ~3 queries and tens of KB per offer/bump, which exhausted memory
+					// on stores with a few hundred of them. Load only the two keys we need, in bulk.
+					$meta_map  = array();
+					$meta_rows = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_key IN ( '_funnel_id', '_bwf_in_funnel' ) AND post_id IN ($placeholders)", $all_ids ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholder list is built from array_fill() over integer IDs.
+					foreach ( $meta_rows as $meta_row ) {
+						$meta_map[ (int) $meta_row->post_id ][ $meta_row->meta_key ] = $meta_row->meta_value;
+					}
+
+					// Offers point at their upsell step via _funnel_id; the step carries _bwf_in_funnel.
+					$step_ids = array();
+					foreach ( $meta_map as $post_meta ) {
+						if ( ! empty( $post_meta['_funnel_id'] ) ) {
+							$step_ids[] = absint( $post_meta['_funnel_id'] );
+						}
+					}
+					$step_ids = array_values( array_unique( array_filter( $step_ids ) ) );
+					if ( ! empty( $step_ids ) ) {
+						$step_placeholders = implode( ',', array_fill( 0, count( $step_ids ), '%d' ) );
+						$step_rows         = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_bwf_in_funnel' AND post_id IN ($step_placeholders)", $step_ids ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholder list is built from array_fill() over integer IDs.
+						foreach ( $step_rows as $step_row ) {
+							$meta_map[ (int) $step_row->post_id ]['_bwf_in_funnel'] = $step_row->meta_value;
+						}
+					}
+
+					$funnel_ids = array();
+					foreach ( $meta_map as $post_meta ) {
+						if ( ! empty( $post_meta['_bwf_in_funnel'] ) ) {
+							$funnel_ids[] = absint( $post_meta['_bwf_in_funnel'] );
+						}
+					}
+					$funnel_ids    = array_values( array_unique( array_filter( $funnel_ids ) ) );
+					$funnel_titles = array();
+					if ( ! empty( $funnel_ids ) ) {
+						$funnel_placeholders = implode( ',', array_fill( 0, count( $funnel_ids ), '%d' ) );
+						$funnel_rows         = $wpdb->get_results( $wpdb->prepare( "SELECT id, title FROM {$wpdb->prefix}bwf_funnels WHERE id IN ($funnel_placeholders)", $funnel_ids ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- placeholder list is built from array_fill() over integer IDs; direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
+						foreach ( $funnel_rows as $funnel_row ) {
+							$funnel_titles[ (int) $funnel_row->id ] = $funnel_row->title;
+						}
+					}
+
+					foreach ( $all_ids as $p_id ) {
+						if ( ! isset( $post_map[ $p_id ] ) ) {
+							continue;
+						}
+						$p = $post_map[ $p_id ];
+
 						if ( $p->post_type === 'wfocu_offer' ) {
-							$upsell_id    = get_post_meta( $p->ID, '_funnel_id', true );
-							$funnel_id    = get_post_meta( $upsell_id, '_bwf_in_funnel', true );
-							$upsell_ids[] = $p->ID;
+							$upsell_id    = $meta_map[ $p_id ]['_funnel_id'] ?? '';
+							$funnel_id    = $meta_map[ absint( $upsell_id ) ]['_bwf_in_funnel'] ?? '';
+							$upsell_ids[] = $p_id;
 						} else {
-							$funnel_id  = get_post_meta( $p->ID, '_bwf_in_funnel', true );
-							$bump_ids[] = $p->ID;
+							$funnel_id  = $meta_map[ $p_id ]['_bwf_in_funnel'] ?? '';
+							$bump_ids[] = $p_id;
 						}
 
-						$funnel_name = $wpdb->get_var( $wpdb->prepare( "SELECT title FROM {$wpdb->prefix}bwf_funnels WHERE id = %d", $funnel_id ) );
+						$funnel_name = $funnel_titles[ absint( $funnel_id ) ] ?? null;
 
 						$obj                  = new stdClass();
-						$obj->id              = $p->ID;
+						$obj->id              = $p_id;
 						$obj->title           = $p->post_title;
 						$obj->fid             = $funnel_id;
 						$obj->funnel_name     = $funnel_name;
@@ -354,7 +411,7 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 						$obj->revenue         = 0;
 						$obj->views           = 0;
 						$obj->conversion_rate = 0;
-						$posts[ $p->ID ]      = $obj;
+						$posts[ $p_id ]       = $obj;
 					}
 
 					if ( ! empty( $upsell_ids ) && class_exists( 'WFOCU_Contacts_Analytics' ) ) {
@@ -418,10 +475,16 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 					$posts = array_slice( $posts, $offset, $limit );
 				}
 
+				// Only the TOTAL count is needed here — do not load every post (and its large
+				// page-builder post_content) again. found_posts is populated via SQL_CALC_FOUND_ROWS
+				// regardless of posts_per_page, so fetch a single id with caches disabled.
 				$count_args = array(
-					'post_type'      => array( WFOCU_Common::get_offer_post_type_slug(), WFOB_Common::get_bump_post_type_slug() ),
-					'post_status'    => 'any',
-					'posts_per_page' => - 1,
+					'post_type'              => array( WFOCU_Common::get_offer_post_type_slug(), WFOB_Common::get_bump_post_type_slug() ),
+					'post_status'            => 'any',
+					'posts_per_page'         => 1,
+					'fields'                 => 'ids',
+					'update_post_meta_cache' => false,
+					'update_post_term_cache' => false,
 				);
 
 				$count_query = new WP_Query( $count_args );
@@ -468,7 +531,7 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 				// The LIKE pattern is a CONCAT over the cp.product_id column (no user input) and
 				// therefore cannot be parameterized; scope the two LIKE sniffs to this query only.
 				// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery, WordPress.DB.PreparedSQLPlaceholders.LikeWithoutWildcards
-				$results = $wpdb->get_results(
+				$results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					$wpdb->prepare(
 						"SELECT
                 cp.product_id,
@@ -497,7 +560,7 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 				);
 				// phpcs:enable WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery, WordPress.DB.PreparedSQLPlaceholders.LikeWithoutWildcards
 			} else {
-				$results = $wpdb->get_results(
+				$results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					"SELECT
                 cp.product_id,
                 p.post_title as product_name,
@@ -606,7 +669,7 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 				 * get all funnel conversion from conversion table order by top conversion table
 				 */
 				if ( '' !== $start_date && '' !== $end_date ) {
-					$get_funnels = $wpdb->get_results(
+					$get_funnels = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 						$wpdb->prepare(
 							'SELECT funnel.id as fid, funnel.title as title, SUM( COALESCE(conv.value, 0) ) as total, 0 as views, COUNT(conv.ID) as `conversion`, 0 as conversion_rate FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel
 				LEFT JOIN ' . $wpdb->prefix . 'bwf_conversion_tracking AS conv ON funnel.id = conv.funnel_id  AND conv.type = 2 AND conv.timestamp >= %s AND conv.timestamp < %s WHERE 1=1 AND funnel.steps LIKE %s GROUP BY funnel.id ORDER BY SUM( conv.value ) DESC LIMIT 0, %d',
@@ -618,7 +681,7 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 						ARRAY_A
 					);
 				} else {
-					$get_funnels = $wpdb->get_results(
+					$get_funnels = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 						$wpdb->prepare(
 							'SELECT funnel.id as fid, funnel.title as title, SUM( COALESCE(conv.value, 0) ) as total, 0 as views, COUNT(conv.ID) as `conversion`, 0 as conversion_rate FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel
 				LEFT JOIN ' . $wpdb->prefix . 'bwf_conversion_tracking AS conv ON funnel.id = conv.funnel_id  AND conv.type = 2 WHERE 1=1 AND funnel.steps LIKE %s GROUP BY funnel.id ORDER BY SUM( conv.value ) DESC LIMIT 0, %d',
@@ -661,7 +724,7 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 				 * get all funnel conversion from conversion table order by top conversion table
 				 */
 				if ( '' !== $start_date && '' !== $end_date ) {
-					$l_funnels = $wpdb->get_results(
+					$l_funnels = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 						$wpdb->prepare(
 							'SELECT funnel.id as fid, funnel.title as title, 0 as total, 0 as views, COUNT(conv.id) as `conversion`, 0 as conversion_rate FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel
 				LEFT JOIN ' . $wpdb->prefix . 'bwf_conversion_tracking AS conv ON funnel.id = conv.funnel_id AND conv.type = 1 AND conv.timestamp >= %s AND conv.timestamp < %s WHERE 1=1 AND funnel.steps NOT LIKE %s GROUP BY funnel.id ORDER BY COUNT(conv.id) DESC LIMIT 0, %d',
@@ -673,7 +736,7 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 						ARRAY_A
 					);
 				} else {
-					$l_funnels = $wpdb->get_results(
+					$l_funnels = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 						$wpdb->prepare(
 							'SELECT funnel.id as fid, funnel.title as title, 0 as total, 0 as views, COUNT(conv.id) as `conversion`, 0 as conversion_rate FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel
 				LEFT JOIN ' . $wpdb->prefix . 'bwf_conversion_tracking AS conv ON funnel.id = conv.funnel_id AND conv.type = 1 WHERE 1=1 AND funnel.steps NOT LIKE %s GROUP BY funnel.id ORDER BY COUNT(conv.id) DESC LIMIT 0, %d',
@@ -753,7 +816,7 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 
 		public function get_timeline_funnels() {
 			global $wpdb;
-			$get_results = $wpdb->get_results(
+			$get_results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 				$wpdb->prepare(
 					"SELECT conv.*, coalesce(contact.f_name, '') as f_name, coalesce(contact.l_name, '') as l_name
 					 FROM {$wpdb->prefix}bwf_conversion_tracking as conv
@@ -883,7 +946,7 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 			if ( ! class_exists( 'WFOCU_Core' ) ) {
 				return 0;
 			}
-			$get_revenue = $wpdb->get_var( $wpdb->prepare( "SELECT CONVERT( stats.value USING utf8) as 'value' FROM " . $wpdb->prefix . 'wfocu_session AS sess LEFT JOIN ' . $wpdb->prefix . 'wfocu_event AS stats ON stats.sess_id=sess.id where stats.object_id = %d AND stats.action_type_id = %d AND sess.order_id = %s', absint( $offer_id ), 4, $order_id ) );
+			$get_revenue = $wpdb->get_var( $wpdb->prepare( "SELECT CONVERT( stats.value USING utf8) as 'value' FROM " . $wpdb->prefix . 'wfocu_session AS sess LEFT JOIN ' . $wpdb->prefix . 'wfocu_event AS stats ON stats.sess_id=sess.id where stats.object_id = %d AND stats.action_type_id = %d AND sess.order_id = %s', absint( $offer_id ), 4, $order_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 			if ( ! empty( $get_revenue ) ) {
 				return $get_revenue;
@@ -898,7 +961,7 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 				return 0;
 			}
 
-			$get_revenue = $wpdb->get_var(
+			$get_revenue = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 				$wpdb->prepare(
 					"SELECT CAST(bump.total AS DECIMAL(10,2)) as 'value'
 				FROM " . $wpdb->prefix . 'wfob_stats AS bump
@@ -939,7 +1002,7 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 
 			$date = ( '' !== $start_date && '' !== $end_date ) ? $wpdb->prepare( ' AND tracking.timestamp >= %s AND tracking.timestamp < %s ', $start_date, $end_date ) : '';
 
-			$total_orders = $wpdb->get_results( 'SELECT count(DISTINCT tracking.source) as total_orders ' . $interval_query . '  FROM `' . $table . '` as tracking JOIN `' . $wpdb->prefix . 'bwf_contact` as cust ON cust.id=tracking.contact_id WHERE 1=1 AND tracking.type=2 ' . $date . $funnel_query . $group_by . ' ORDER BY tracking.id ASC ', ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $date and $funnel_query are $wpdb->prepare() fragments; $interval_query/$group_by are whitelisted (carry DATE_FORMAT %Y specifiers that must not pass through prepare); $table is $wpdb->prefix + literal.
+			$total_orders = $wpdb->get_results( 'SELECT count(DISTINCT tracking.source) as total_orders ' . $interval_query . '  FROM `' . $table . '` as tracking JOIN `' . $wpdb->prefix . 'bwf_contact` as cust ON cust.id=tracking.contact_id WHERE 1=1 AND tracking.type=2 ' . $date . $funnel_query . $group_by . ' ORDER BY tracking.id ASC ', ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- $date and $funnel_query are $wpdb->prepare() fragments; $interval_query/$group_by are whitelisted (carry DATE_FORMAT %Y specifiers that must not pass through prepare); $table is $wpdb->prefix + literal. whitelisted DATE_FORMAT interval fragments cannot pass through prepare(); other parts are prepare() fragments or esc_sql()d. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 				$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 				if ( true === $db_error['db_error'] ) {
@@ -992,10 +1055,10 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 
 			if ( class_exists( 'WFACP_Core' ) ) {
 				$query              = 'SELECT SUM(conv.value) as total, SUM(conv.checkout_total) as sum_aero ' . $interval_query . ' FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . $group_by . ' ORDER BY conv.id ASC';
-				$total_revenue_aero = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal.
+				$total_revenue_aero = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal. whitelisted DATE_FORMAT interval fragments cannot pass through prepare(); other parts are prepare() fragments or esc_sql()d. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 				$count_query     = 'SELECT COUNT(conv.id) AS checkout_orders ' . $interval_query . ' FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . ' AND conv.checkout_total != 0 ' . $group_by . ' ORDER BY conv.id ASC';
-				$checkout_orders = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal.
+				$checkout_orders = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal. whitelisted DATE_FORMAT interval fragments cannot pass through prepare(); other parts are prepare() fragments or esc_sql()d. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 				if ( ! empty( $total_revenue_aero ) && ! empty( $checkout_orders ) ) {
 					if ( 'interval' === $is_interval ) {
@@ -1020,10 +1083,10 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 
 			if ( class_exists( 'WFOB_Core' ) ) {
 				$query              = 'SELECT SUM(conv.bump_total) as sum_bump ' . $interval_query . ' FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . $group_by . ' ORDER BY conv.id ASC';
-				$total_revenue_bump = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal.
+				$total_revenue_bump = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal. whitelisted DATE_FORMAT interval fragments cannot pass through prepare(); other parts are prepare() fragments or esc_sql()d. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 				$count_query = 'SELECT COUNT(conv.id) AS bump_orders ' . $interval_query . ' FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . " AND conv.bump_accepted != '' " . $group_by . ' ORDER BY conv.id ASC';
-				$bump_orders = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal.
+				$bump_orders = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal. whitelisted DATE_FORMAT interval fragments cannot pass through prepare(); other parts are prepare() fragments or esc_sql()d. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 				if ( ! empty( $total_revenue_bump ) && ! empty( $bump_orders ) ) {
 					if ( 'interval' === $is_interval ) {
@@ -1048,10 +1111,10 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 
 			if ( class_exists( 'WFOCU_Core' ) ) {
 				$query                 = 'SELECT SUM(conv.offer_total) as sum_upsells ' . $interval_query . ' FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . $group_by . ' ORDER BY conv.id ASC';
-				$total_revenue_upsells = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal.
+				$total_revenue_upsells = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal. whitelisted DATE_FORMAT interval fragments cannot pass through prepare(); other parts are prepare() fragments or esc_sql()d. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 				$count_query   = 'SELECT COUNT(conv.id) AS upsell_orders ' . $interval_query . ' FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . " AND conv.offer_accepted != '' " . $group_by . ' ORDER BY conv.id ASC';
-				$upsell_orders = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal.
+				$upsell_orders = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- $date/$funnel_query are prepare() fragments; $interval_query/$group_by are whitelisted (DATE_FORMAT specifiers, not preparable); $table is prefix+literal. whitelisted DATE_FORMAT interval fragments cannot pass through prepare(); other parts are prepare() fragments or esc_sql()d. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 				if ( ! empty( $total_revenue_upsells ) && ! empty( $upsell_orders ) ) {
 					if ( 'interval' === $is_interval ) {
@@ -1110,7 +1173,7 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 			$date = ( '' !== $start_date && '' !== $end_date ) ? " AND `timestamp` >= '" . esc_sql( $start_date ) . "' AND `timestamp` < '" . esc_sql( $end_date ) . "' " : '';
 
 			$query        = 'SELECT COUNT( DISTINCT contact_id ) as contacts ' . $interval_query . ' FROM `' . $table . '` WHERE 1=1 ' . $date . ' ' . $funnel_query . ' ' . $group_by;
-			$get_contacts = $wpdb->get_results( $query, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$get_contacts = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			if ( is_array( $get_contacts ) && count( $get_contacts ) > 0 ) {
 				return $get_contacts;

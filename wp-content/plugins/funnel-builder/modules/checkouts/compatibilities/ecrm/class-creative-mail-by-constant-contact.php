@@ -59,7 +59,7 @@ if ( ! class_exists( 'WFACP_Creative_Mail_Constant_Contact' ) ) {
 
 			?>
             <div class="wfacp_creative_mail" id="wfacp_creative_mail">
-				<?php echo $this->instance->add_checkout_field( WC()->checkout() ); ?>
+				<?php echo $this->instance->add_checkout_field( WC()->checkout() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- third-party checkout field markup; wp_kses_post() strips <input>/<select> (B0 register). ?>
             </div>
 
 			<?php
@@ -104,11 +104,10 @@ if ( ! class_exists( 'WFACP_Creative_Mail_Constant_Contact' ) ) {
 				$bodyClass = "body #wfacp-e-form ";
 			}
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#wfacp_creative_mail {clear:both}";
-			$cssHtml .= "</style>";
 
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 
 
 		}

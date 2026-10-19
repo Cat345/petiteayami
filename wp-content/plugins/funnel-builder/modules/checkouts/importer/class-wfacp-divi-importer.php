@@ -198,7 +198,7 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 			 *
 			 * @since 3.0.99
 			 */
-			$paginate_images = apply_filters( 'et_core_portability_paginate_images', true );
+			$paginate_images = apply_filters( 'et_core_portability_paginate_images', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 			if ( $paginate_images && count( $images ) > $images_per_chunk ) {
 				$chunks       = ceil( count( $images ) / $images_per_chunk );

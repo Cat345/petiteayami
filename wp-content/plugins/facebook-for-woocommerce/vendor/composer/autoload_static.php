@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628
+class ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7
 {
     public static $prefixLengthsPsr4 = array (
         'W' =>
@@ -175,21 +175,40 @@ class ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628
         'Composer\\Installers\\YawikInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/YawikInstaller.php',
         'Composer\\Installers\\ZendInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/ZendInstaller.php',
         'Composer\\Installers\\ZikulaInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/ZikulaInstaller.php',
+        'FacebookAds\\AppendixProvider' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/util/AppendixProvider.php',
+        'FacebookAds\\CookieSettings' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/model/CookieSettings.php',
+        'FacebookAds\\DOBUtils' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/piiUtil/DOBUtils.php',
         'FacebookAds\\ETLDPlus1Resolver' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/ETLDPlus1Resolver.php',
+        'FacebookAds\\EmailUtils' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/piiUtil/EmailUtils.php',
+        'FacebookAds\\FbcParamConfig' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/model/FbcParamConfig.php',
+        'FacebookAds\\GenderUtils' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/piiUtil/GenderUtils.php',
+        'FacebookAds\\PIIUtils' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/piiUtil/PIIUtils.php',
+        'FacebookAds\\PII_DATA_TYPE' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/model/Constants.php',
         'FacebookAds\\ParamBuilder' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/ParamBuilder.php',
+        'FacebookAds\\PhoneUtils' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/piiUtil/PhoneUtils.php',
+        'FacebookAds\\PlainDataObject' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/model/PlainDataObject.php',
+        'FacebookAds\\RequestContextAdaptor' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/util/RequestContextAdaptor.php',
+        'FacebookAds\\SharedUtils' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/piiUtil/SharedUtils.php',
+        'FacebookAds\\StringUtils' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/piiUtil/StringUtils.php',
+        'FacebookAds\\VersionProvider' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/util/VersionProvider.php',
+        'FacebookAds\\ZipCodeUtils' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/piiUtil/ZipCodeUtils.php',
         'WooCommerce\\Facebook\\AJAX' => __DIR__ . '/../..' . '/includes/AJAX.php',
         'WooCommerce\\Facebook\\API' => __DIR__ . '/../..' . '/includes/API.php',
         'WooCommerce\\Facebook\\API\\Catalog\\Request' => __DIR__ . '/../..' . '/includes/API/Catalog/Request.php',
         'WooCommerce\\Facebook\\API\\Catalog\\Response' => __DIR__ . '/../..' . '/includes/API/Catalog/Response.php',
+        'WooCommerce\\Facebook\\API\\CommerceIntegration\\Client' => __DIR__ . '/../..' . '/includes/API/CommerceIntegration/Client.php',
+        'WooCommerce\\Facebook\\API\\CommerceIntegration\\CommerceExtensionToken\\Response' => __DIR__ . '/../..' . '/includes/API/CommerceIntegration/CommerceExtensionToken/Response.php',
         'WooCommerce\\Facebook\\API\\CommerceIntegration\\Configuration\\Request' => __DIR__ . '/../..' . '/includes/API/CommerceIntegration/Configuration/Request.php',
         'WooCommerce\\Facebook\\API\\CommerceIntegration\\Configuration\\Update\\Response' => __DIR__ . '/../..' . '/includes/API/CommerceIntegration/Configuration/Update/Response.php',
         'WooCommerce\\Facebook\\API\\CommerceIntegration\\Configuration\\Update\\UpdateRequest' => __DIR__ . '/../..' . '/includes/API/CommerceIntegration/Configuration/Update/UpdateRequest.php',
+        'WooCommerce\\Facebook\\API\\CommerceIntegration\\Exception' => __DIR__ . '/../..' . '/includes/API/CommerceIntegration/Exception.php',
+        'WooCommerce\\Facebook\\API\\CommerceIntegration\\Finalize\\Response' => __DIR__ . '/../..' . '/includes/API/CommerceIntegration/Finalize/Response.php',
+        'WooCommerce\\Facebook\\API\\CommerceIntegration\\Read\\Response' => __DIR__ . '/../..' . '/includes/API/CommerceIntegration/Read/Response.php',
         'WooCommerce\\Facebook\\API\\CommerceIntegration\\Repair\\RepairRequest' => __DIR__ . '/../..' . '/includes/API/CommerceIntegration/Repair/RepairRequest.php',
         'WooCommerce\\Facebook\\API\\CommerceIntegration\\Repair\\Request' => __DIR__ . '/../..' . '/includes/API/CommerceIntegration/Repair/Request.php',
         'WooCommerce\\Facebook\\API\\CommerceIntegration\\Repair\\Response' => __DIR__ . '/../..' . '/includes/API/CommerceIntegration/Repair/Response.php',
         'WooCommerce\\Facebook\\API\\CommonFeedUploads\\Create\\Request' => __DIR__ . '/../..' . '/includes/API/CommonFeedUploads/Create/Request.php',
         'WooCommerce\\Facebook\\API\\CommonFeedUploads\\Create\\Response' => __DIR__ . '/../..' . '/includes/API/CommonFeedUploads/Create/Response.php',
-        'WooCommerce\\Facebook\\API\\Exceptions\\ConnectApiException' => __DIR__ . '/../..' . '/includes/API/Exceptions/ConnectApiException.php',
         'WooCommerce\\Facebook\\API\\Exceptions\\Request_Limit_Reached' => __DIR__ . '/../..' . '/includes/API/Exceptions/Request_Limit_Reached.php',
         'WooCommerce\\Facebook\\API\\FBE\\Configuration\\Read\\Response' => __DIR__ . '/../..' . '/includes/API/FBE/Configuration/Read/Response.php',
         'WooCommerce\\Facebook\\API\\FBE\\Configuration\\Request' => __DIR__ . '/../..' . '/includes/API/FBE/Configuration/Request.php',
@@ -212,6 +231,7 @@ class ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628
         'WooCommerce\\Facebook\\API\\Plugin\\InitializeRestAPI' => __DIR__ . '/../..' . '/includes/API/Plugin/InitializeRestAPI.php',
         'WooCommerce\\Facebook\\API\\Plugin\\Request' => __DIR__ . '/../..' . '/includes/API/Plugin/Request.php',
         'WooCommerce\\Facebook\\API\\Plugin\\Response' => __DIR__ . '/../..' . '/includes/API/Plugin/Response.php',
+        'WooCommerce\\Facebook\\API\\Plugin\\Settings\\FinalizeInstall\\Request' => __DIR__ . '/../..' . '/includes/API/Plugin/Settings/FinalizeInstall/Request.php',
         'WooCommerce\\Facebook\\API\\Plugin\\Settings\\Handler' => __DIR__ . '/../..' . '/includes/API/Plugin/Settings/Handler.php',
         'WooCommerce\\Facebook\\API\\Plugin\\Settings\\Uninstall\\Request' => __DIR__ . '/../..' . '/includes/API/Plugin/Settings/Uninstall/Request.php',
         'WooCommerce\\Facebook\\API\\Plugin\\Settings\\Update\\Request' => __DIR__ . '/../..' . '/includes/API/Plugin/Settings/Update/Request.php',
@@ -274,9 +294,10 @@ class ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628
         'WooCommerce\\Facebook\\Admin\\Global_Attributes_Banner' => __DIR__ . '/../..' . '/includes/Admin/Global_Attributes_Banner.php',
         'WooCommerce\\Facebook\\Admin\\Google_Product_Category_Field' => __DIR__ . '/../..' . '/includes/Admin/Google_Product_Category_Field.php',
         'WooCommerce\\Facebook\\Admin\\Notes\\SettingsMoved' => __DIR__ . '/../..' . '/includes/Admin/Notes/SettingsMoved.php',
+        'WooCommerce\\Facebook\\Admin\\Offline_Events_Banner' => __DIR__ . '/../..' . '/includes/Admin/Offline_Events_Banner.php',
         'WooCommerce\\Facebook\\Admin\\Product_Categories' => __DIR__ . '/../..' . '/includes/Admin/Product_Categories.php',
         'WooCommerce\\Facebook\\Admin\\Products' => __DIR__ . '/../..' . '/includes/Admin/Products.php',
-        'WooCommerce\\Facebook\\Admin\\Settings' => __DIR__ . '/../..' . '/includes/Admin/Settings.php',
+        'WooCommerce\\Facebook\\Admin\\Settings_Screens\\Configuration' => __DIR__ . '/../..' . '/includes/Admin/Settings_Screens/Configuration.php',
         'WooCommerce\\Facebook\\Admin\\Settings_Screens\\Localization_Settings_Trait' => __DIR__ . '/../..' . '/includes/Admin/Settings_Screens/Localization_Settings_Trait.php',
         'WooCommerce\\Facebook\\Admin\\Settings_Screens\\Product_Attributes' => __DIR__ . '/../..' . '/includes/Admin/Settings_Screens/Product_Attributes.php',
         'WooCommerce\\Facebook\\Admin\\Settings_Screens\\Product_Sync' => __DIR__ . '/../..' . '/includes/Admin/Settings_Screens/Product_Sync.php',
@@ -292,6 +313,9 @@ class ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628
         'WooCommerce\\Facebook\\Events\\Event' => __DIR__ . '/../..' . '/includes/Events/Event.php',
         'WooCommerce\\Facebook\\Events\\FacebookSignalsState' => __DIR__ . '/../..' . '/includes/Events/FacebookSignalsState.php',
         'WooCommerce\\Facebook\\Events\\Normalizer' => __DIR__ . '/../..' . '/includes/Events/Normalizer.php',
+        'WooCommerce\\Facebook\\Events\\POS\\POS_Integration_Interface' => __DIR__ . '/../..' . '/includes/Events/POS/POS_Integration_Interface.php',
+        'WooCommerce\\Facebook\\Events\\POS\\POS_Integration_Registry' => __DIR__ . '/../..' . '/includes/Events/POS/POS_Integration_Registry.php',
+        'WooCommerce\\Facebook\\Events\\POS\\WCPOS_Integration' => __DIR__ . '/../..' . '/includes/Events/POS/WCPOS_Integration.php',
         'WooCommerce\\Facebook\\Events\\ReleaseSignalsAjax' => __DIR__ . '/../..' . '/includes/Events/ReleaseSignalsAjax.php',
         'WooCommerce\\Facebook\\ExternalVersionUpdate\\Update' => __DIR__ . '/../..' . '/includes/ExternalVersionUpdate/Update.php',
         'WooCommerce\\Facebook\\FBSignedData\\FBPublicKey' => __DIR__ . '/../..' . '/includes/FBSignedData/FBPublicKey.php',
@@ -333,6 +357,7 @@ class ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628
         'WooCommerce\\Facebook\\Framework\\Api\\JSONResponse' => __DIR__ . '/../..' . '/includes/Framework/Api/JSONResponse.php',
         'WooCommerce\\Facebook\\Framework\\Api\\Request' => __DIR__ . '/../..' . '/includes/Framework/Api/Request.php',
         'WooCommerce\\Facebook\\Framework\\Api\\Response' => __DIR__ . '/../..' . '/includes/Framework/Api/Response.php',
+        'WooCommerce\\Facebook\\Framework\\Api\\SensitiveData' => __DIR__ . '/../..' . '/includes/Framework/Api/SensitiveData.php',
         'WooCommerce\\Facebook\\Framework\\BatchLogHandler' => __DIR__ . '/../..' . '/includes/Framework/BatchLogHandler.php',
         'WooCommerce\\Facebook\\Framework\\ErrorLogHandler' => __DIR__ . '/../..' . '/includes/Framework/ErrorLogHandler.php',
         'WooCommerce\\Facebook\\Framework\\Helper' => __DIR__ . '/../..' . '/includes/Framework/Helper.php',
@@ -348,7 +373,6 @@ class ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628
         'WooCommerce\\Facebook\\Handlers\\Connection' => __DIR__ . '/../..' . '/includes/Handlers/Connection.php',
         'WooCommerce\\Facebook\\Handlers\\MetaExtension' => __DIR__ . '/../..' . '/includes/Handlers/MetaExtension.php',
         'WooCommerce\\Facebook\\Handlers\\PluginRender' => __DIR__ . '/../..' . '/includes/Handlers/PluginRender.php',
-        'WooCommerce\\Facebook\\Handlers\\WebHook' => __DIR__ . '/../..' . '/includes/Handlers/WebHook.php',
         'WooCommerce\\Facebook\\Handlers\\WhatsAppConnection' => __DIR__ . '/../..' . '/includes/Handlers/WhatsAppConnection.php',
         'WooCommerce\\Facebook\\Handlers\\WhatsAppExtension' => __DIR__ . '/../..' . '/includes/Handlers/WhatsAppExtension.php',
         'WooCommerce\\Facebook\\Integrations\\Abstract_Localization_Integration' => __DIR__ . '/../..' . '/includes/Integrations/Abstract_Localization_Integration.php',
@@ -403,9 +427,9 @@ class ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitd6ddaf33b94ee1665922c463d41d4628::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitaa9b2da4258d712dd432069ae117a1c7::$classMap;
 
         }, null, ClassLoader::class);
     }

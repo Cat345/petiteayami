@@ -122,7 +122,6 @@ class System_Command {
  protected function get_action_status_date( $status, $date_type = 'oldest' ) {
  $order = 'oldest' === $date_type ? 'ASC' : 'DESC';
  $args = array(
- 'claimed' => false,
  'status' => $status,
  'per_page' => 1,
  'order' => $order,

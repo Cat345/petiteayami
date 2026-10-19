@@ -1,4 +1,11 @@
 <?php
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
+ *
+ * This source code is licensed under the license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 declare( strict_types=1 );
 
 namespace WooCommerce\Facebook\API\FBE\Configuration\Read;
@@ -15,6 +22,8 @@ class Response extends API\Response {
 	/**
 	 * Is Instagram Shopping enabled?
 	 *
+	 * @deprecated No longer consumed; the hourly business-configuration refresh that read this flag was removed.
+	 *
 	 * @return boolean
 	 */
 	public function is_ig_shopping_enabled(): bool {
@@ -27,6 +36,8 @@ class Response extends API\Response {
 
 	/**
 	 * Is Instagram CTA enabled?
+	 *
+	 * @deprecated No longer consumed; the hourly business-configuration refresh that read this flag was removed.
 	 *
 	 * @return boolean
 	 */

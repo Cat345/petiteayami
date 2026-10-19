@@ -112,7 +112,10 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 				$style_url = 'https://fonts.googleapis.com/css?family=' . urlencode( $this->selected_font_family );
 
 				if ( $value = apply_filters( 'wfacp_enable_font_family', true, $template_type ) ) {
-					echo "<link href='" . $style_url . "' rel=stylesheet>";
+					// Printed here, not enqueued: this hook fires after wp_head, and a late
+					// enqueue would push the font to the footer and flash unstyled text.
+					wp_register_style( 'wfacp-pre-built-font', $style_url, array(), null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- version deliberately null: the Google Fonts URL carries its own cache semantics and an appended ver param corrupts the querystring.
+					wp_print_styles( 'wfacp-pre-built-font' );
 					$fonts_arr = array( 'body', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', '.select2-results__options', '#wfacp_qr_model_wrap *', '.select2-search--dropdown .select2-search__field' );
 
 					foreach ( $fonts_arr as $font_key => $font_value ) {
@@ -201,9 +204,9 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 
 			echo '<style>';
 
-			echo $deskotp_css_style;
-			echo $tablet_css_style;
-			echo $mobile_css_style;
+			echo wp_strip_all_tags( $deskotp_css_style ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
+			echo wp_strip_all_tags( $tablet_css_style ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
+			echo wp_strip_all_tags( $mobile_css_style ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 			echo '</style>';
 		}
 
@@ -213,7 +216,7 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 			if ( empty( $style_custom_css ) ) {
 				return;
 			}
-			echo '<style>' . $style_custom_css . '</style>';
+			echo '<style>' . wp_strip_all_tags( $style_custom_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 
 		public function mobile_layout_order() {
@@ -1399,7 +1402,7 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 
 				ob_start();
 				?>
-				<a href='javascript:void(0)' class="<?php echo esc_attr( $text_class_nner ); ?>"><?php echo $step_value_text; ?></a>
+				<a href='javascript:void(0)' class="<?php echo esc_attr( $text_class_nner ); ?>"><?php echo esc_html( $step_value_text ); ?></a>
 				<?php
 				$step_value_text_html = ob_get_clean();
 
@@ -1510,7 +1513,7 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 			$get_template_slug = $this->get_template_slug();
 			$get_template_type = $this->get_template_type();
 
-			if ( ! empty( $_GET['woo-paypal-return'] ) && ! empty( $_GET['token'] ) && ! empty( $_GET['PayerID'] ) ) {
+			if ( ! empty( $_GET['woo-paypal-return'] ) && ! empty( $_GET['token'] ) && ! empty( $_GET['PayerID'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 				return $btn_html;
 			}
 
@@ -1528,9 +1531,9 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 
 			ob_start();
 
-			printf( '<div class="wfacp-order-place-btn-wrap %s %s">', $alignmentclass, $width_cls );
+			printf( '<div class="wfacp-order-place-btn-wrap %s %s">', esc_attr( $alignmentclass ), esc_attr( $width_cls ) );
 
-			echo $btn_html;
+			echo $btn_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- order button HTML with its submit <input> (B5 register).
 
 			if ( $stepCount > 1 ) {
 				$last_step = 'single_step';
@@ -1564,7 +1567,7 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 				if ( ! isset( $back_btn_text ) || $back_btn_text == '' ) {
 					$back_btn_text = $back_text;
 				}
-				echo "<div class='place_order_back_btn wfacp_none_class '><a class='wfacp_back_page_button' data-next-step='" . $last_step . "' data-current-step='" . $this->current_step . "' href='javascript:void(0)'>" . esc_html( $back_btn_text ) . '</a> </div>';
+				echo "<div class='place_order_back_btn wfacp_none_class '><a class='wfacp_back_page_button' data-next-step='" . esc_attr( $last_step ) . "' data-current-step='" . esc_attr( $this->current_step ) . "' href='javascript:void(0)'>" . esc_html( $back_btn_text ) . '</a> </div>';
 			}
 
 			echo '</div>';
@@ -1605,14 +1608,13 @@ if ( ! class_exists( 'WFACP_Pre_Built' ) ) {
 
 				if ( isset( $before_link['enable_cart'] ) && $before_link['enable_cart'] == 1 ) {
 
-					$slug         = $this->get_template_slug();
-					$inline_width = '';
+					$slug = $this->get_template_slug();
 
 					$cartURL  = wc_get_cart_url();
 					$cartURL  = apply_filters( 'wfacp_return_to_cart_link', $cartURL );
 					$cartName = $before_link['enable_cart_text'];
 
-					echo "<li class='df_cart_link wfacp_bred_visited' $inline_width><a href='$cartURL'>$cartName</a></li>";
+					echo "<li class='df_cart_link wfacp_bred_visited'><a href='" . esc_url( $cartURL ) . "'>" . esc_html( $cartName ) . '</a></li>';
 				}
 			}
 		}

@@ -18,7 +18,7 @@ if ( is_array( $data ) && isset( $data['tiktok'] ) && ( true === $purchase ) ) {
 		unset( $data['tiktok']['advanced'] );
 	}
 	?>
-    var wffnTikTokPurchaseData = JSON.parse('<?php echo wp_json_encode( $data['tiktok'] ); ?>');
+    var wffnTikTokPurchaseData = <?php echo wp_json_encode( $data['tiktok'], JSON_HEX_TAG | JSON_HEX_AMP ); ?>;
 
     wffnTikTokPurchaseData = (typeof wffnAddTrafficParamsToEvent !== "undefined")?wffnAddTrafficParamsToEvent(wffnTikTokPurchaseData):wffnTikTokPurchaseData;
 	<?php if ( true === $purchase ) { ?>

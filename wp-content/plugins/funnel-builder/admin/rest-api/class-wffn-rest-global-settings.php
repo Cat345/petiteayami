@@ -216,7 +216,7 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 			}
 
 			$tab = ( 'funnelkit_first_party_tracking' === $tab || 'funnelkit_pixel_tracking' === $tab || 'funnelkit_advanced' === $tab ) ? 'woofunnels_general_settings' : $tab;
-			do_action( 'bwf_global_save_settings_' . $tab, $settings );
+			do_action( 'bwf_global_save_settings_' . $tab, $settings ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			$resp = array(
 				'success' => true,

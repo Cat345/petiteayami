@@ -25,6 +25,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				return;
 			}
 			add_action( 'plugins_loaded', array( __CLASS__, 'plugins_loaded' ), - 1 );
+			// Both places that apply a discount fire this, so the sale window is dropped from the
+			// cart item in one place rather than at each injection site.
+			add_action( 'wfacp_discount_added_to_item', array( __CLASS__, 'detach_sale_schedule' ) );
 			add_action( 'init', array( __CLASS__, 'register_post_type' ), 5 );
 			add_action( 'wc_ajax_get_refreshed_fragments', array( __CLASS__, 'wc_ajax_get_refreshed_fragments' ), - 1 );
 			add_action( 'woocommerce_checkout_update_order_review', array( __CLASS__, 'woocommerce_checkout_update_order_review' ), - 1 );
@@ -168,30 +171,30 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			if ( ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'wfacp' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for admin page detection
-				$section             = filter_input( INPUT_GET, 'section', FILTER_UNSAFE_RAW );
+				$section             = filter_input( INPUT_GET, 'section', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 				self::$wfacp_section = is_null( $section ) ? 'design' : $section;
 			}
 
 			if ( isset( $_REQUEST['wfacp_id'] ) && $_REQUEST['wfacp_id'] > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for ID parameter detection
-				$wfacp_id = filter_input( INPUT_GET, 'wfacp_id', FILTER_UNSAFE_RAW );
+				$wfacp_id = filter_input( INPUT_GET, 'wfacp_id', FILTER_SANITIZE_NUMBER_INT );
 				if ( is_null( $wfacp_id ) ) {
-					$wfacp_id = filter_input( INPUT_POST, 'wfacp_id', FILTER_UNSAFE_RAW );
+					$wfacp_id = filter_input( INPUT_POST, 'wfacp_id', FILTER_SANITIZE_NUMBER_INT );
 				}
 				self::set_id( absint( $wfacp_id ) );
 			} elseif ( isset( $_REQUEST['action'] ) && 'elementor' == $_REQUEST['action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for Elementor action detection
-				$post_id = filter_input( INPUT_GET, 'post', FILTER_UNSAFE_RAW );
+				$post_id = filter_input( INPUT_GET, 'post', FILTER_SANITIZE_NUMBER_INT );
 				$post    = get_post( $post_id );
 				if ( ! is_null( $post ) && $post->post_type == self::get_post_type_slug() ) {
 					self::set_id( absint( $post_id ) );
 				}
 			} elseif ( isset( $_REQUEST['elementor-preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for Elementor preview detection
-				$post_id = filter_input( INPUT_GET, 'elementor-preview', FILTER_UNSAFE_RAW );
+				$post_id = filter_input( INPUT_GET, 'elementor-preview', FILTER_SANITIZE_NUMBER_INT );
 				$post    = get_post( $post_id );
 				if ( ! is_null( $post ) && $post->post_type == self::get_post_type_slug() ) {
 					self::set_id( absint( $post_id ) );
 				}
 			} elseif ( isset( $_REQUEST['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for post parameter detection
-				$post_id = filter_input( INPUT_GET, 'post', FILTER_UNSAFE_RAW );
+				$post_id = filter_input( INPUT_GET, 'post', FILTER_SANITIZE_NUMBER_INT );
 				$post    = get_post( $post_id );
 				if ( ! is_null( $post ) && $post->post_type == self::get_post_type_slug() ) {
 					self::set_id( absint( $post_id ) );
@@ -237,7 +240,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 */
 		public static function wc_ajax_get_refreshed_fragments() {
 			if ( isset( $_REQUEST['wfacp_id'] ) && 0 < absint( $_REQUEST['wfacp_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for AJAX parameter detection
-				$wfacp_id = filter_input( INPUT_GET, 'wfacp_id', FILTER_UNSAFE_RAW );
+				$wfacp_id = filter_input( INPUT_GET, 'wfacp_id', FILTER_SANITIZE_NUMBER_INT );
 				$wfacp_id = absint( $wfacp_id );
 				self::initTemplateLoader( $wfacp_id );
 			}
@@ -287,7 +290,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 */
 		public static function woocommerce_before_checkout_process() {
 			if ( isset( $_REQUEST['_wfacp_post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for checkout process parameter detection
-				$post_id  = filter_input( INPUT_POST, '_wfacp_post_id', FILTER_UNSAFE_RAW );
+				$post_id  = filter_input( INPUT_POST, '_wfacp_post_id', FILTER_SANITIZE_NUMBER_INT );
 				$wfacp_id = absint( $post_id );
 				self::initTemplateLoader( $wfacp_id );
 			}
@@ -342,12 +345,12 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 							'singular_name' => __( 'Checkout', 'funnel-builder' ),
 							'add_new'       => __( 'Add Checkout page', 'funnel-builder' ),
 							'add_new_item'  => __( 'Add New Checkout page', 'funnel-builder' ),
-							'search_items'  => sprintf( esc_html__( 'Search %s', 'funnel-builder' ), 'Checkout Pages' ),
-							'all_items'     => sprintf( esc_html__( 'All %s', 'funnel-builder' ), 'Checkout Pages' ),
-							'edit_item'     => sprintf( esc_html__( 'Edit %s', 'funnel-builder' ), 'Checkout' ),
-							'view_item'     => sprintf( esc_html__( 'View %s', 'funnel-builder' ), 'Checkout' ),
-							'update_item'   => sprintf( esc_html__( 'Update %s', 'funnel-builder' ), 'Checkout' ),
-							'new_item_name' => sprintf( esc_html__( 'New %s', 'funnel-builder' ), 'Checkout' ),
+							'search_items'  => sprintf( /* translators: %s: post type label. */ esc_html__( 'Search %s', 'funnel-builder' ), 'Checkout Pages' ),
+							'all_items'     => sprintf( /* translators: %s: post type label. */ esc_html__( 'All %s', 'funnel-builder' ), 'Checkout Pages' ),
+							'edit_item'     => sprintf( /* translators: %s: post type label. */ esc_html__( 'Edit %s', 'funnel-builder' ), 'Checkout' ),
+							'view_item'     => sprintf( /* translators: %s: post type label. */ esc_html__( 'View %s', 'funnel-builder' ), 'Checkout' ),
+							'update_item'   => sprintf( /* translators: %s: post type label. */ esc_html__( 'Update %s', 'funnel-builder' ), 'Checkout' ),
+							'new_item_name' => sprintf( /* translators: %s: post type label. */ esc_html__( 'New %s', 'funnel-builder' ), 'Checkout' ),
 
 						),
 						'public'              => true,
@@ -469,7 +472,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				$like_term
 			);
 
-			$product_ids = $wpdb->get_col( $Sql_Query );
+			$product_ids = $wpdb->get_col( $Sql_Query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 			if ( is_numeric( $term ) ) {
 				$post_id       = absint( $term );
@@ -500,7 +503,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 		public static function is_load_admin_assets( $screen_type = 'single' ) {
 
-			if ( filter_input( INPUT_GET, 'page' ) == 'wfacp' && filter_input( INPUT_GET, 'wfacp_id' ) > 0 ) {
+			if ( filter_input( INPUT_GET, 'page', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) == 'wfacp' && filter_input( INPUT_GET, 'wfacp_id', FILTER_SANITIZE_NUMBER_INT ) > 0 ) {
 				return true;
 			}
 
@@ -551,8 +554,8 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		public static function get_discount_type_keys() {
 
 			$discounted = array(
-				'fixed_discount_reg'    => sprintf( __( '%s Fixed Amount on Regular Price', 'funnel-builder' ), get_woocommerce_currency_symbol() ),
-				'fixed_discount_sale'   => sprintf( __( '%s Fixed Amount on Sale Price', 'funnel-builder' ), get_woocommerce_currency_symbol() ),
+				'fixed_discount_reg'    => sprintf( /* translators: %s: currency symbol. */ __( '%s Fixed Amount on Regular Price', 'funnel-builder' ), get_woocommerce_currency_symbol() ),
+				'fixed_discount_sale'   => sprintf( /* translators: %s: currency symbol. */ __( '%s Fixed Amount on Sale Price', 'funnel-builder' ), get_woocommerce_currency_symbol() ),
 				'percent_discount_reg'  => __( '% on Regular Price', 'funnel-builder' ),
 				'percent_discount_sale' => __( '% on Sale Price', 'funnel-builder' ),
 			);
@@ -791,11 +794,11 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		public static function get_frontend_global_settings() {
 			$save_models                            = get_option( '_wfacp_global_settings', array() );
 			$models                                 = array();
-			$models['invalid_email_field']          = __( '%s is not a valid email address.', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			$models['invalid_email_field']          = /* translators: %s: field label. */ __( '%s is not a valid email address.', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			$models['inline_email_field']           = apply_filters( 'wfacp_inline_email_field_message', __( 'Please enter a valid email address', 'woocommerce' ) ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-			$models['error_required_msg']           = __( '%s is a required field.', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-			$models['field_required_msg']           = __( '%s is a required field.', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-			$models['phone_number_invalid']         = __( '%s Enter valid number', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			$models['error_required_msg']           = /* translators: %s: field label. */ __( '%s is a required field.', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			$models['field_required_msg']           = /* translators: %s: field label. */ __( '%s is a required field.', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			$models['phone_number_invalid']         = /* translators: %s: field label. */ __( '%s Enter valid number', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			$models['override_checkout_page_id']    = 0;
 			$models['wfacp_set_shipping_method']    = '';
 			$models['wfacp_google_address_key']     = '';
@@ -869,6 +872,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			} else {
 				$required = '&nbsp;<span class="optional">(' . esc_html__( 'optional', 'woocommerce' ) . ')</span>'; //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			}
+			$checked_key       = self::get_radio_checked_key( $value, $args['options'] ?? array() );
 			$sort              = $args['priority'] ? $args['priority'] : '';
 			$field_container   = '<p class="form-row %1$s" id="%2$s" data-priority="' . esc_attr( $sort ) . '">%3$s</p>';
 			$field             = '';
@@ -878,10 +882,11 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			unset( $args['label_class'][0] );
 			if ( ! empty( $args['options'] ) ) {
 				foreach ( $args['options'] as $option_key => $option_text ) {
-					$field .= "<span class='wfacp_radio_options_group'>";
-					$field .= '<input type="radio" class="input-radio ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" value="' . esc_attr( $option_key ) . '" name="' . esc_attr( $key ) . '" ' . implode( ' ', $custom_attributes ) . ' id="' . esc_attr( $args['id'] ) . '_' . esc_attr( $option_key ) . '"' . checked( $value, $option_key, false ) . ' />';
-					$field .= '<label for="' . esc_attr( $args['id'] ) . '_' . esc_attr( $option_key ) . '" class="radio ' . implode( ' ', $args['label_class'] ) . '">' . $option_text . '</label>';
-					$field .= '</span>';
+					$is_checked = ( null !== $checked_key && $checked_key === (string) $option_key ) ? ' checked="checked"' : '';
+					$field     .= "<span class='wfacp_radio_options_group'>";
+					$field     .= '<input type="radio" class="input-radio ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" value="' . esc_attr( $option_key ) . '" name="' . esc_attr( $key ) . '" ' . implode( ' ', $custom_attributes ) . ' id="' . esc_attr( $args['id'] ) . '_' . esc_attr( $option_key ) . '"' . $is_checked . ' />';
+					$field     .= '<label for="' . esc_attr( $args['id'] ) . '_' . esc_attr( $option_key ) . '" class="radio ' . implode( ' ', $args['label_class'] ) . '">' . $option_text . '</label>';
+					$field     .= '</span>';
 				}
 			}
 
@@ -903,6 +908,34 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$field           = sprintf( $field_container, $container_class, $container_id, $field_html );
 
 			return $field;
+		}
+
+		/**
+		 * Resolve a radio field's value to the one option key that should be checked.
+		 *
+		 * The field editor saves the default as the option label ("Filiaal") while each radio's value is
+		 * the option key ("filiaal"), and checked() compares with (string) ===, so a label never matches.
+		 * A key match wins; otherwise the first option whose label equals the value is used, so at most
+		 * one radio is ever checked even when a label equals another option's key.
+		 *
+		 * @since 3.16.1
+		 *
+		 * @param mixed $value   Saved or posted field value.
+		 * @param array $options Option key => label map.
+		 *
+		 * @return string|null Option key to check, or null when nothing matches.
+		 */
+		public static function get_radio_checked_key( $value, $options ) {
+			if ( ! is_scalar( $value ) || ! is_array( $options ) || empty( $options ) ) {
+				return null;
+			}
+			$value = (string) $value;
+			if ( array_key_exists( $value, $options ) ) {
+				return $value;
+			}
+			$label_key = array_search( $value, array_map( 'strval', $options ), true );
+
+			return false === $label_key ? null : (string) $label_key;
 		}
 
 
@@ -1131,6 +1164,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				'smart_button_position'                   => $buttons_positions[0],
 				'enable_google_autocomplete'              => 'false',
 				'enable_phone_flag'                       => 'true',
+				'enable_email_suggestion'                 => 'false',
+				/* translators: %s: the suggested email address */
+				'email_suggestion_prompt'                 => __( 'Did you mean %s?', 'funnel-builder' ),
 				'enable_phone_validation'                 => 'false',
 				'save_phone_number_type'                  => 'false',
 				'enable_live_validation'                  => 'false',
@@ -1604,7 +1640,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					include WFACP_TEMPLATE_COMMON . '/order-coupon.php';
 				}
 			} else {
-				do_action( 'process_wfacp_html', $field, $key, $args, $value );
+				do_action( 'process_wfacp_html', $field, $key, $args, $value ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 			}
 
 			return '';
@@ -1933,12 +1969,19 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			if ( false === $args['selected'] && $args['attribute'] && $args['product'] instanceof WC_Product ) {
 				$selected_key = 'attribute_' . sanitize_title( $args['attribute'] );
 
-				$selected_data = filter_input( INPUT_POST, $selected_key, FILTER_UNSAFE_RAW );
+				// Attribute values arrive URL-encoded, so decode before sanitizing (sanitize_text_field() strips %XX octets).
+				$selected_data = filter_input(
+					INPUT_POST,
+					$selected_key,
+					FILTER_CALLBACK,
+					array(
+						'options' => static function ( $value ) {
+							return bwf_clean( urldecode( wp_unslash( $value ) ) );
+						},
+					)
+				);
 
-				$args['selected'] = ! is_null( $selected_data ) ? bwf_clean( urldecode( wp_unslash( $selected_data ) ) ) : $args['product']->get_variation_default_attribute( $args['attribute'] );
-				$selected_data    = filter_input( INPUT_POST, $selected_key, FILTER_UNSAFE_RAW );
-
-				$args['selected'] = ! is_null( $selected_data ) ? bwf_clean( urldecode( wp_unslash( $selected_data ) ) ) : $args['product']->get_variation_default_attribute( $args['attribute'] );
+				$args['selected'] = ! is_null( $selected_data ) ? $selected_data : $args['product']->get_variation_default_attribute( $args['attribute'] );
 			}
 
 			$options               = $args['options'];
@@ -2114,7 +2157,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 			if ( isset( $_REQUEST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- AJAX fragment request parameter detection
 				$post_data = array();
-				$temp_data = filter_input( INPUT_POST, 'post_data', FILTER_UNSAFE_RAW );
+				$temp_data = filter_input( INPUT_POST, 'post_data', FILTER_SANITIZE_URL );
 				parse_str( $temp_data, $post_data );
 				self::$post_data = $post_data;
 				if ( isset( $post_data['wfacp_exchange_keys'] ) ) {
@@ -2314,24 +2357,27 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 
 		/**
-		 * Display proper subscription price
+		 * Price column of a subscription row in the Order Summary: what the whole line charges today.
 		 *
-		 * @param $_product WC_Product
-		 * @param $cart_item WC_Cart
-		 * @param $cart_item_key
+		 * Priced like every other row, from the line subtotal, so it carries the same tax label and
+		 * agrees with the order subtotal. For a sign-up fee that is recurring + fee, which Subscriptions
+		 * labels "due today" through woocommerce_cart_item_subtotal; for a free trial with no fee it is
+		 * 0. The recurring amount is stated beside it by the subscription price string.
+		 *
+		 * @param WC_Product $_product      Cart item product.
+		 * @param array      $cart_item     Cart item.
+		 * @param string     $cart_item_key Cart item key.
 		 *
 		 * @return string
 		 */
 		public static function display_subscription_price( $_product, $cart_item, $cart_item_key ) {
-			if ( ! wp_doing_ajax() && $cart_item['quantity'] > 1 ) {
-				$price = $_product->get_price();
-				$price = $price / $cart_item['quantity'];
-				if ( $price > 0 ) {
-					$_product->set_price( $price );
-				}
+			if ( isset( $cart_item['line_subtotal'] ) ) {
+				$subtotal = self::get_product_subtotal( $_product, $cart_item );
+			} else {
+				$subtotal = WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] );
 			}
 
-			return apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] ), $cart_item, $cart_item_key );
+			return apply_filters( 'woocommerce_cart_item_subtotal', $subtotal, $cart_item, $cart_item_key );
 		}
 
 		public static function get_signup_fee( $price ) {
@@ -2351,31 +2397,39 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 
 		/**
-		 * @param $pro WC_Product_Subscription
-		 * @param $product_data
-		 * @param $cart_item
-		 * @param $cart_item_key
+		 * Recurring price string of a product switcher or Order Summary row.
+		 *
+		 * @param WC_Product_Subscription $pro           Product the row displays.
+		 * @param array                   $product_data  Checkout product settings of the row.
+		 * @param array|null              $cart_item     Cart item, when the row is in the cart.
+		 * @param string                  $cart_item_key Cart item key, or ''.
 		 *
 		 * @return string
 		 */
 		public static function subscription_product_string( $pro, $product_data, $cart_item, $cart_item_key ) {
-			$temp_price = floatval( $pro->get_price() );
-
 			if ( isset( $product_data['quantity'] ) ) {
 				$qty = $product_data['quantity'];
 			} else {
 				$qty = $cart_item['quantity'];
 			}
 
-			$temp_price *= ( isset( $qty ) && $qty > 0 ) ? absint( $qty ) : 1;
-			$temp_data   = array(
+			// A row in the cart is priced from the cart's product, which carries the offer discount for
+			// one unit, times the units in the line, shown with or without tax like the cart's price column.
+			// Not from line_subtotal: for a sign-up fee or a free trial that holds what is due today, not what recurs.
+			if ( is_array( $cart_item ) && isset( $cart_item['data'] ) && $cart_item['data'] instanceof WC_Product ) {
+				$temp_price = wc_get_price_to_display( $cart_item['data'], array( 'qty' => ( isset( $cart_item['quantity'] ) && $cart_item['quantity'] > 0 ) ? wc_stock_amount( $cart_item['quantity'] ) : 1, 'display_context' => 'cart' ) );
+			} else {
+				$temp_price = wc_get_price_to_display( $pro, array( 'qty' => ( isset( $qty ) && $qty > 0 ) ? wc_stock_amount( $qty ) : 1, 'display_context' => 'cart' ) );
+			}
+
+			$temp_data = array(
 				'price' => wc_price( $temp_price ),
 			);
 			global $wfacp_product_switcher_quantity;
 			if ( '' !== $cart_item_key && ! isset( WC()->cart->removed_cart_contents[ $cart_item_key ] ) ) {
 				$wfacp_product_switcher_quantity = $cart_item['quantity'];
 			} elseif ( isset( $product_data['org_quantity'] ) ) {
-					$wfacp_product_switcher_quantity = $qty * $product_data['org_quantity'];
+				$wfacp_product_switcher_quantity = $qty * $product_data['org_quantity'];
 			} else {
 				$wfacp_product_switcher_quantity = $qty;
 			}
@@ -2665,6 +2719,16 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 				// Add CPT to the list of post types WP will include when it queries based on the post name.
 				$query->set( 'post_type', array( 'post', 'page', self::get_post_type_slug() ) );
+				/**
+				 * Pages are hierarchical, so WordPress only resolves a child page at its full
+				 * path. Adding 'page' above would otherwise let a child page's slug match at the
+				 * site root: /child/ returned the page instead of 404ing, and because there was no
+				 * 404 WordPress never ran redirect_canonical(), so the visitor was never sent on to
+				 * /parent/child/. The step post types this rule exists for are always top level, so
+				 * restricting to top level keeps them resolving at the root and leaves page
+				 * hierarchy, and its canonical redirect, to WordPress.
+				 */
+				$query->set( 'post_parent', 0 );
 			}
 		}
 
@@ -2750,7 +2814,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$exclude_meta_keys_to_copy = apply_filters( 'wfacp_do_not_duplicate_meta', $exclude_data );
 
 			global $wpdb;
-			$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d", absint( $old_post_id ) ) );
+			$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d", absint( $old_post_id ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 			if ( ! empty( $post_meta_all ) ) {
 				$sql_query_selects = array();
@@ -2770,7 +2834,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				}
 
 				$sql_query_meta_val = implode( ',', $sql_query_selects );
-				$wpdb->query( $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta ) );//phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared
+				$wpdb->query( $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta ) ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- values esc_sql()d in the assembly loop above and the table bound via placeholder; the loop-built VALUES string is invisible to taint tracking. direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 			}
 		}
@@ -2797,13 +2861,14 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			if ( ! $order instanceof WC_Order ) {
 				return;
 			}
-			$wfacp_id             = filter_input( INPUT_GET, 'wfacp_id', FILTER_UNSAFE_RAW );
-			$payment_request_type = filter_input( INPUT_POST, 'payment_request_type', FILTER_UNSAFE_RAW );
+			$wfacp_id             = filter_input( INPUT_GET, 'wfacp_id', FILTER_SANITIZE_NUMBER_INT );
+			$payment_request_type = filter_input( INPUT_POST, 'payment_request_type', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 
 			if ( ! is_null( $wfacp_id ) && ! is_null( $payment_request_type ) && ( 'payment_request_api' == $payment_request_type || 'apple_pay' == $payment_request_type || 'google_pay' == $payment_request_type ) ) {
+				$wfacp_id = absint( $wfacp_id );
 				$order->update_meta_data( '_wfacp_post_id', $wfacp_id );
 
-				$override = filter_input( INPUT_GET, 'wfacp_is_checkout_override', FILTER_UNSAFE_RAW );
+				$override = filter_input( INPUT_GET, 'wfacp_is_checkout_override', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 				if ( ! is_null( $override ) ) {
 					if ( 'yes' == $override ) {
 						$link = wc_get_checkout_url();
@@ -2956,7 +3021,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				}
 
 				if ( empty( $params['external_id'] ) && ! empty( $_COOKIE['wffn_flt'] ) ) {
-					$params['external_id'] = bwf_clean( wp_unslash( $_COOKIE['wffn_flt'] ) );
+					$params['external_id'] = bwf_clean( wp_unslash( $_COOKIE['wffn_flt'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 				}
 				if ( $fetch_contact ) {
 					// Custom: Fill missing fields from contact table using UID from _fk_contact_uid cookie
@@ -2978,8 +3043,8 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					}
 					if ( $need_contact && ! empty( $_COOKIE['_fk_contact_uid'] ) && $fetch_contact ) {
 						$uid     = sanitize_text_field( wp_unslash( $_COOKIE['_fk_contact_uid'] ) );
-						$table   = $wpdb->prefix . 'bwf_contact';
-						$contact = $wpdb->get_row( $wpdb->prepare( "SELECT email, f_name, l_name, contact_no, state, country FROM {$table} WHERE uid = %s LIMIT 1", $uid ) );
+						$table   = esc_sql( $wpdb->prefix . 'bwf_contact' );
+						$contact = $wpdb->get_row( $wpdb->prepare( "SELECT email, f_name, l_name, contact_no, state, country FROM {$table} WHERE uid = %s LIMIT 1", $uid ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 						if ( $contact ) {
 							foreach ( $fields_map as $param_key => $db_col ) {
 								if ( empty( $params[ $param_key ] ) && ! empty( $contact->$db_col ) ) {
@@ -3648,6 +3713,56 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			// If position doesn't exist, field is already at the end, no action needed
 
 			return $fields;
+		}
+
+
+
+
+
+
+
+
+		/**
+		 * Drop a scheduled-sale window from a product we have just discounted.
+		 *
+		 * WooCommerce 11.1.0 added Automattic\WooCommerce\Internal\ScheduledSalePriceReconciler
+		 * (woocommerce/woocommerce#65551). It filters `woocommerce_product_get_price` at priority 99
+		 * and, when "now" falls outside a product's scheduled sale window, returns the regular price
+		 * if the active price still equals the sale price:
+		 *
+		 *     if ( ! $within_window && (float) $stored_price === (float) $sale_price ) {
+		 *         return $regular_price;
+		 *     }
+		 *
+		 * We write the same value to `price` and `sale_price`, so that test matches every discounted
+		 * item and our price is discarded as a stale leftover - in 'view' context, which is what cart
+		 * totals use, so the regular price is displayed AND charged. Since WooCommerce 10.x a lapsed
+		 * sale keeps its sale price and dates forever, so this is not a short cron-lag window: every
+		 * product that ever ran a scheduled sale carries it.
+		 *
+		 * The cart item is a per-request snapshot whose prices we own; a catalog sale schedule on it
+		 * is meaningless once we have overridden the price, and clearing it makes the reconciler
+		 * return at its own "no sale dates" guard. Both dates go, not only a lapsed end date: a sale
+		 * scheduled to START later puts "now" outside the window just the same.
+		 *
+		 * Re-asserting the price on a later `woocommerce_product_get_price` priority was the
+		 * alternative, and it is not safe here - it discards transforms that legitimately ran before
+		 * it, notably CURCY's currency conversion at 99 and All Products for Subscriptions' scheme
+		 * price, and it would silence every later set_price() on the object, including our own.
+		 *
+		 * Nothing is saved: the stored schedule is untouched, and repeated calls are a no-op.
+		 *
+		 * @param WC_Product $product Product a discount has just been applied to.
+		 */
+		public static function detach_sale_schedule( $product ) {
+			if ( ! $product instanceof WC_Product ) {
+				return;
+			}
+
+			if ( $product->get_date_on_sale_from( 'edit' ) || $product->get_date_on_sale_to( 'edit' ) ) {
+				$product->set_date_on_sale_from( '' );
+				$product->set_date_on_sale_to( '' );
+			}
 		}
 	}
 }

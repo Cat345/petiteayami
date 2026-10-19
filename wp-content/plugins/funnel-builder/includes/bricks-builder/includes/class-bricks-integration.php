@@ -1,6 +1,6 @@
 <?php
 
-namespace FunnelKit;
+namespace FunnelKit; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound -- FunnelKit brand namespace, unique to this plugin family; Pro extends these elements.
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
@@ -142,9 +142,14 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 
 			add_action( 'wp', array( $this, 'wp_register_elements' ), 8 );
 
-			add_action( 'wp_ajax_bricks_save_post', array( $this, 'wp_register_elements' ), - 1 );
-			add_action( 'wp_ajax_bricks_regenerate_css_file', array( $this, 'register_elements_for_css_regeneration' ), - 1 );
-			add_action( 'bricks_regenerate_css_files', array( $this, 'register_all_elements' ), - 1 );
+			// These three hook names are Bricks' own, not ours: the Bricks theme registers
+			// wp_ajax_bricks_save_post (includes/ajax.php) and wp_ajax_bricks_regenerate_css_file
+			// (includes/assets/files.php) and fires bricks_regenerate_css_files itself. We listen at
+			// priority -1 so our elements exist before Bricks handles the request. They cannot be
+			// prefixed - renaming them would simply stop us receiving Bricks' request.
+			add_action( 'wp_ajax_bricks_save_post', array( $this, 'wp_register_elements' ), - 1 ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party (Bricks) hook name, see above.
+			add_action( 'wp_ajax_bricks_regenerate_css_file', array( $this, 'register_elements_for_css_regeneration' ), - 1 ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party (Bricks) hook name, see above.
+			add_action( 'bricks_regenerate_css_files', array( $this, 'register_all_elements' ), - 1 ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party (Bricks) hook name, see above.
 			add_action( 'rest_api_init', array( $this, 'rest_register_elements' ), 9 );
 			add_action( 'wffn_before_import_checkout_template', array( $this, 'rest_register_elements_on_import' ), 10, 2 );
 			add_action( 'wffn_import_template_background', array( $this, 'rest_register_elements' ), 9 );
@@ -504,7 +509,8 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 					if ( $filename === FUNNELKIT_BRICKS_INTEGRATION_ABSPATH . 'includes/elements/' . $type . '/class-optin-popup.php' && ! defined( 'WFFN_PRO_FILE' ) ) {
 						continue;
 					}
-					if ( $filename === FUNNELKIT_BRICKS_INTEGRATION_ABSPATH . 'includes/elements/' . $type . '/class-order-summary.php' && false === wfacp_pro_dependency() ) {
+
+					if ( $filename === FUNNELKIT_BRICKS_INTEGRATION_ABSPATH . 'includes/elements/' . $type . '/class-order-summary.php' && ! method_exists( 'WFACP_Common', 'sanitize_mini_cart_widget_id_for_selector' ) ) {
 						continue;
 					}
 					self::$load_elements[] = $filename;

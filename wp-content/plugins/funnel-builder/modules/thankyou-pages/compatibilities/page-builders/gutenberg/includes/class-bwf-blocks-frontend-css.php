@@ -81,7 +81,7 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 		 */
 		public function render_inline_css( $css, $style_id, $in_content = false ) {
 			if ( ! is_admin() ) {
-				wp_register_style( $style_id, false );
+				wp_register_style( $style_id, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- src-less handle registered only to attach inline block CSS; there is no file to version.
 				wp_enqueue_style( $style_id );
 				wp_add_inline_style( $style_id, $css );
 				if ( 1 === did_action( 'wp_head' ) && $in_content ) {
@@ -96,7 +96,7 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 		 * @param string $content string of page/post content.
 		 */
 		public function bwf_parse_blocks( $content ) {
-			$parser_class = apply_filters( 'block_parser_class', 'WP_Block_Parser' );
+			$parser_class = apply_filters( 'block_parser_class', 'WP_Block_Parser' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 			if ( class_exists( $parser_class ) ) {
 				$parser = new $parser_class();
 
@@ -130,7 +130,7 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 
 		public function compute_bwf_blocks( $blocks ) {
 			foreach ( $blocks as $block ) {
-				$block = apply_filters( 'bwf_blocks_frontend_build_css', $block );
+				$block = apply_filters( 'bwf_blocks_frontend_build_css', $block ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				if ( ! is_object( $block ) && is_array( $block ) && isset( $block['blockName'] ) ) {
 
 					if ( 'bwfblocks/customer-details' === $block['blockName'] ) {
@@ -211,8 +211,8 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 
 			$css                   = new BWF_Blocks_CSS();
 			$media_query           = array();
-			$media_query['mobile'] = apply_filters( 'bwf_blocks_mobile_media_query', '(max-width: 767px)' );
-			$media_query['tablet'] = apply_filters( 'bwf_blocks_tablet_media_query', '(max-width: 1024px)' );
+			$media_query['mobile'] = apply_filters( 'bwf_blocks_mobile_media_query', '(max-width: 767px)' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$media_query['tablet'] = apply_filters( 'bwf_blocks_tablet_media_query', '(max-width: 1024px)' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			$selector_wrapper = '.wfty-cust-details-block.wfty-' . $unique_id . ' .wfty_wrap';
 			$screens          = array( 'desktop', 'tablet', 'mobile' );
@@ -275,8 +275,8 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 
 			$css                   = new BWF_Blocks_CSS();
 			$media_query           = array();
-			$media_query['mobile'] = apply_filters( 'bwf_blocks_mobile_media_query', '(max-width: 767px)' );
-			$media_query['tablet'] = apply_filters( 'bwf_blocks_tablet_media_query', '(max-width: 1024px)' );
+			$media_query['mobile'] = apply_filters( 'bwf_blocks_mobile_media_query', '(max-width: 767px)' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
+			$media_query['tablet'] = apply_filters( 'bwf_blocks_tablet_media_query', '(max-width: 1024px)' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			$selector_wrapper = '.wfty-order-details-block.wfty-' . $unique_id . ' .wfty_wrap';
 			$screens          = array( 'desktop', 'tablet', 'mobile' );

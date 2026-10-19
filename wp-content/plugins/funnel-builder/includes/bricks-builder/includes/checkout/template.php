@@ -465,7 +465,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 				return;
 			}
 
-			if ( ! isset( $this->form_data['step_cart_link_enable'] ) || ! $this->form_data['step_cart_link_enable'] ) {
+			if ( ! isset( $this->form_data['step_cart_link_enable'] ) || 'no' === $this->form_data['step_cart_link_enable'] ) {
 				return;
 			}
 
@@ -485,7 +485,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 			$cart_page_id = wc_get_page_id( 'cart' );
 			$cartURL      = $cart_page_id ? get_permalink( $cart_page_id ) : '';
 			$cartURL      = apply_filters( 'wfacp_return_to_cart_link', $cartURL );
-			echo "<li class='df_cart_link wfacp_bred_visited'><a class='wfacp_cart_link wfacp_breadcrumb_link' href='$cartURL'>$cartName</a></li>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo "<li class='df_cart_link wfacp_bred_visited'><a class='wfacp_cart_link wfacp_breadcrumb_link' href='" . esc_url( $cartURL ) . "'>" . esc_html( $cartName ) . '</a></li>';
 		}
 
 		/**
@@ -505,7 +505,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 				return;
 			}
 
-			if ( ! isset( $this->form_data['step_cart_link_enable'] ) || ! $this->form_data['step_cart_link_enable'] ) {
+			if ( ! isset( $this->form_data['step_cart_link_enable'] ) || 'no' === $this->form_data['step_cart_link_enable'] ) {
 				return;
 			}
 
@@ -523,7 +523,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 			<div class="btm_btn_sec wfacp_back_cart_link">
 				<div class="wfacp-back-btn-wrap">
-					<a href="<?php echo esc_url( apply_filters( 'wfacp_return_to_cart_link', $cartURL ) ); ?>"><?php echo $this->form_data['return_to_cart_text']; ?></a> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<a href="<?php echo esc_url( apply_filters( 'wfacp_return_to_cart_link', $cartURL ) ); ?>"><?php echo esc_html( $this->form_data['return_to_cart_text'] ); ?></a>
 				</div>
 			</div>
 			<?php
@@ -569,7 +569,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 			$select_type = $this->form_data['select_type'];
 
-			echo "<div class='$deviceClass $select_type' >"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo "<div class='" . esc_attr( $deviceClass . ' ' . $select_type ) . "' >";
 
 			if ( isset( $this->form_data['select_type'] ) && 'bredcrumb' === $this->form_data['select_type'] ) {
 				if ( isset( $this->set_bredcrumb_data['progress_data'] ) && is_array( $this->set_bredcrumb_data['progress_data'] ) && $this->set_bredcrumb_data['progress_data'] > 0 ) {
@@ -595,9 +595,9 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 						$step       = ( isset( $steps_arr[ $key ] ) ) ? $steps_arr[ $key ] : '';
 						$text_class = ( ! empty( $value ) ) ? 'wfacp_step_text_have' : 'wfacp_step_text_nohave';
-						echo "<li class='wfacp_step_$key wfacp_bred $bread_visited $active $step' step='$step'>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo "<li class='" . esc_attr( "wfacp_step_$key wfacp_bred $bread_visited $active $step" ) . "' step='" . esc_attr( $step ) . "'>";
 						?>
-						<a href='javascript:void(0)' class="<?php echo esc_attr( $text_class ); ?> wfacp_breadcrumb_link" data-text="<?php echo esc_attr( sanitize_title( $value ) ); ?>"><?php echo esc_html( $value ); ?></a> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<a href='javascript:void(0)' class="<?php echo esc_attr( $text_class ); ?> wfacp_breadcrumb_link" data-text="<?php echo esc_attr( sanitize_title( $value ) ); ?>"><?php echo esc_html( $value ); ?></a> 						
 						<?php
 
 						echo '</li>';
@@ -622,7 +622,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 		public function display_progress_bar() {
 			if ( isset( $this->stepsData['progress_bar'] ) ) {
 				if ( isset( $this->form_data['select_type'] ) && 'progress_bar' === $this->form_data['select_type'] ) {
-					echo $this->stepsData['progress_bar']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo $this->stepsData['progress_bar']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- builder-generated progress-bar markup; parts escaped at build.
 				}
 			}
 		}
@@ -800,14 +800,14 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 					}
 
 					if ( $enable_callapse_order_summary ) {
-						echo "<div class='" . $deviceClass . "'>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo "<div class='" . esc_attr( $deviceClass ) . "'>";
 
 						$template->get_mobile_mini_cart( $this->form_data );
 						echo '</div>';
 					}
 				}
 
-				echo "<div class='" . implode( ' ', array( 'wfacp-form', $label_position ) ) . "'>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo "<div class='" . esc_attr( implode( ' ', array( 'wfacp-form', $label_position ) ) ) . "'>";
 			}
 		}
 
@@ -889,7 +889,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 			}
 
 			ob_start();
-			echo "<div class='$stepWrapClass'>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo "<div class='" . esc_attr( $stepWrapClass ) . "'>";
 
 			for ( $i = 0; $i < $number_of_steps; $i++ ) {
 				$tab_heading_key    = '';
@@ -966,8 +966,8 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 								$activeClass = apply_filters( 'wfacp_embed_active_progress_bar', $active, $count, $number_of_steps );
 								?>
-								<div class="wfacp-payment-tab-list <?php echo esc_attr( $activeClass . ' ' . $page_class . ' ' . $addfull_width . ' ' . $bread_visited ); ?>  wfacp-tab<?php echo $count; ?>" step="<?php echo esc_attr( $steps_count_here ); ?>"> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-									<div class="wfacp-order2StepNumber"><?php echo $count; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+								<div class="wfacp-payment-tab-list <?php echo esc_attr( $activeClass . ' ' . $page_class . ' ' . $addfull_width . ' ' . $bread_visited ); ?>  wfacp-tab<?php echo (int) $count; ?>" step="<?php echo esc_attr( $steps_count_here ); ?>">
+									<div class="wfacp-order2StepNumber"><?php echo (int) $count; ?></div>
 									<div class="wfacp-order2StepHeaderText">
 										<?php if ( ! empty( $value['heading'] ) ) : ?>
 											<div class="wfacp-order2StepTitle wfacp-order2StepTitleS1 wfacp_tcolor"><?php echo esc_html( $value['heading'] ); ?></div>
@@ -1009,7 +1009,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 						$active = apply_filters( 'wfacp_layout_9_active_progress_bar', $active, $step );
 
-						echo "<li class='wfacp_step_$key wfacp_bred $active $step' step='$step' ><a href='javascript:void(0)' class='wfacp_step_text_have' data-text='" . sanitize_title( $value ) . "'>$value</a> </li>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo "<li class='" . esc_attr( "wfacp_step_$key wfacp_bred $active $step" ) . "' step='" . esc_attr( $step ) . "' ><a href='javascript:void(0)' class='wfacp_step_text_have' data-text='" . esc_attr( sanitize_title( $value ) ) . "'>" . esc_html( $value ) . '</a> </li>';
 					}
 					do_action( 'wfacp_after_breadcrumb' );
 					echo '</ul></div></div></div>';
@@ -1021,7 +1021,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 			$this->stepsData[ $progress_bar_type ] = $result;
 
 			if ( 'progress_bar' !== $progress_bar_type ) {
-				echo $result; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo $result; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered checkout template; fields escaped at their sources; revisit in the ignore-audit phase.
 			}
 		}
 
@@ -1678,12 +1678,12 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 				if ( $form_step === 'place_order' ) {
 					echo '<style>';
 					// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
-					echo 'body #wfacp-e-form .' . sanitize_html_class( $current ) . ' #place_order:' . sanitize_key( $content ) . "{content:'" . wp_kses( str_replace( array( "'", '"' ), '', $icon ), array() ) . "';font-family: 'bwf-icons'; display: inline-block;margin-" . sanitize_key( $margin ) . ":8px;position: relative;text-transform: none;top:1px;}";
+					echo 'body #wfacp-e-form .' . sanitize_html_class( $current ) . ' #place_order:' . sanitize_key( $content ) . "{content:'" . wp_kses( str_replace( array( "'", '"' ), '', $icon ), array() ) . "';font-family: 'bwf-icons'; display: inline-block;margin-" . sanitize_key( $margin ) . ':8px;position: relative;text-transform: none;top:1px;}';
 					echo '</style>';
 				} else {
 					echo '<style>';
 					// Escaped inline below with core functions only: sanitize_html_class() for the selector fragment, sanitize_key() for the before/after, left/right and icon tokens, and wp_kses( ..., array() ) for the sub-heading text. esc_html()/esc_attr() are wrong here -- <style> is raw text, so the entities they emit are never decoded.
-					echo 'body #wfacp-e-form .' . sanitize_html_class( $current ) . ' .wfacp-next-btn-wrap button:' . sanitize_key( $content ) . "{content:'" . wp_kses( str_replace( array( "'", '"' ), '', $icon ), array() ) . "'; font-family: 'bwf-icons'; display: inline-block;margin-" . sanitize_key( $margin ) . ":8px;position: relative;text-transform: none;top:1px;}";
+					echo 'body #wfacp-e-form .' . sanitize_html_class( $current ) . ' .wfacp-next-btn-wrap button:' . sanitize_key( $content ) . "{content:'" . wp_kses( str_replace( array( "'", '"' ), '', $icon ), array() ) . "'; font-family: 'bwf-icons'; display: inline-block;margin-" . sanitize_key( $margin ) . ':8px;position: relative;text-transform: none;top:1px;}';
 					echo '</style>';
 				}
 			}
@@ -1804,9 +1804,9 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 				$key = str_replace( '{{WRAPPER}} ', 'body ', $key );
 
 				if ( false !== strpos( $value, '{{VALUE}}' ) ) {
-					echo $key . '{' . str_replace( '{{VALUE}}', esc_attr( $primary_color_value ), $value ) . '}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo wp_strip_all_tags( $key . '{' . str_replace( '{{VALUE}}', esc_attr( $primary_color_value ), $value ) . '}' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 				} else {
-					echo $key . '{' . $value . '}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo wp_strip_all_tags( $key . '{' . $value . '}' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 				}
 			}
 

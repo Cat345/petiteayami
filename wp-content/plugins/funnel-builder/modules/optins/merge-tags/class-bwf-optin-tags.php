@@ -124,7 +124,7 @@ if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
 		public function maybe_set_optin( $opid = '' ) {
 
 			if ( $opid === '' ) {
-				$opid = sanitize_text_field( filter_input( INPUT_GET, 'opid', FILTER_UNSAFE_RAW ) ); //phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
+				$opid = sanitize_text_field( filter_input( INPUT_GET, 'opid', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) );
 			}
 
 			if ( empty( $opid ) ) {

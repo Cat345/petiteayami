@@ -12,7 +12,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Happy_Elementor' ) ) {
 		}
 
 		public function do_not_execute() {
-			if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'wfacp' || ! class_exists( 'Happy_Addons\Elementor\Dashboard' ) ) {
+			if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'wfacp' || ! class_exists( 'Happy_Addons\Elementor\Dashboard' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin request routing; WP core builds this URL without a nonce.
 				return;
 			}
 

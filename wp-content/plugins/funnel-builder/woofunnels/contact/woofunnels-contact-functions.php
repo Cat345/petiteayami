@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return WooFunnels_Contact|WooFunnels_Customer
  */
 if ( ! function_exists( 'bwf_get_contact' ) ) {
-	function bwf_get_contact(  $wp_id, $email  ) {
+	function bwf_get_contact(  $wp_id, $email  ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Contact_Fns::bwf_get_contact( ...func_get_args() );
 	}
 }
@@ -31,7 +31,7 @@ if ( ! function_exists( 'bwf_create_update_contact' ) ) {
 	 *
 	 * @return int|void
 	 */
-	function bwf_create_update_contact(  $order_id, $products, $total, $force = false  ) {
+	function bwf_create_update_contact(  $order_id, $products, $total, $force = false  ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Contact_Fns::bwf_create_update_contact( ...func_get_args() );
 	}
 }
@@ -42,7 +42,7 @@ if ( ! function_exists( 'bwf_create_update_contact' ) ) {
  * @param WC_order $order
  */
 if ( ! function_exists( 'bwf_contact_maybe_update_creation_date' ) ) {
-	function bwf_contact_maybe_update_creation_date(  $bwf_contact, $order  ) {
+	function bwf_contact_maybe_update_creation_date(  $bwf_contact, $order  ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Contact_Fns::bwf_contact_maybe_update_creation_date( ...func_get_args() );
 	}
 }
@@ -58,7 +58,7 @@ if ( ! function_exists( 'bwf_create_update_contact_object' ) ) {
 	 *
 	 * @return mixed
 	 */
-	function bwf_create_update_contact_object(  $bwf_contact, $order  ) {
+	function bwf_create_update_contact_object(  $bwf_contact, $order  ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Contact_Fns::bwf_create_update_contact_object( ...func_get_args() );
 	}
 }
@@ -70,7 +70,7 @@ if ( ! function_exists( 'bwf_get_timezone_from_order' ) ) {
 	 *
 	 * @return array|mixed|string
 	 */
-	function bwf_get_timezone_from_order(  $order  ) {
+	function bwf_get_timezone_from_order(  $order  ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Contact_Fns::bwf_get_timezone_from_order( ...func_get_args() );
 	}
 }
@@ -82,7 +82,7 @@ if ( ! function_exists( 'bwf_if_valid_timezone' ) ) {
 	 *
 	 * @return bool
 	 */
-	function bwf_if_valid_timezone(  $timezone  ) {
+	function bwf_if_valid_timezone(  $timezone  ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Contact_Fns::bwf_if_valid_timezone( ...func_get_args() );
 	}
 }
@@ -91,7 +91,7 @@ if ( ! function_exists( 'bwf_get_countries_data' ) ) {
 	/** countries data
 	 * @return mixed|null
 	 */
-	function bwf_get_countries_data() {
+	function bwf_get_countries_data() { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Contact_Fns::bwf_get_countries_data( ...func_get_args() );
 	}
 }
@@ -102,7 +102,7 @@ if ( ! function_exists( 'bwf_get_country_timezone_list' ) ) {
 	 *
 	 * @return array
 	 */
-	function bwf_get_country_timezone_list() {
+	function bwf_get_country_timezone_list() { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Contact_Fns::bwf_get_country_timezone_list( ...func_get_args() );
 	}
 }
@@ -122,7 +122,7 @@ if ( ! function_exists( 'bwf_get_country_timezone_list' ) ) {
  * @return WooFunnels_Customer
  */
 if ( ! function_exists( 'bwf_get_customer' ) ) {
-	function bwf_get_customer( $contact ) {
+	function bwf_get_customer( $contact ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return new WooFunnels_Customer( $contact );
 	}
 }
@@ -136,7 +136,7 @@ if ( ! function_exists( 'bwf_get_customer' ) ) {
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
 if ( ! function_exists( 'bwf_create_update_customer' ) ) {
-	function bwf_create_update_customer(  $bwf_contact, $order, $order_id, $products, $total  ) {
+	function bwf_create_update_customer(  $bwf_contact, $order, $order_id, $products, $total  ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Customer_Fns::bwf_create_update_customer( ...func_get_args() );
 	}
 }
@@ -148,7 +148,7 @@ if ( ! function_exists( 'bwf_create_update_customer' ) ) {
  * @param $product_id
  */
 if ( ! function_exists( 'bwf_update_cats_and_tags' ) ) {
-	function bwf_update_cats_and_tags(  $product_id, $cat_ids, $tag_ids  ) {
+	function bwf_update_cats_and_tags(  $product_id, $cat_ids, $tag_ids  ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Customer_Fns::bwf_update_cats_and_tags( ...func_get_args() );
 	}
 }
@@ -160,7 +160,7 @@ if ( ! function_exists( 'bwf_update_cats_and_tags' ) ) {
  * @param $amount
  */
 if ( ! function_exists( 'bwf_update_customer_refunded' ) ) {
-	function bwf_update_customer_refunded(  $order_id, $refund_amount  ) {
+	function bwf_update_customer_refunded(  $order_id, $refund_amount  ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Customer_Fns::bwf_update_customer_refunded( ...func_get_args() );
 	}
 }
@@ -170,7 +170,7 @@ if ( ! function_exists( 'bwf_update_customer_refunded' ) ) {
  * @param $order_id
  */
 if ( ! function_exists( 'bwf_reduce_customer_total_on_cancel' ) ) {
-	function bwf_reduce_customer_total_on_cancel(  $order_id  ) {
+	function bwf_reduce_customer_total_on_cancel(  $order_id  ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Customer_Fns::bwf_reduce_customer_total_on_cancel( ...func_get_args() );
 	}
 }
@@ -183,7 +183,7 @@ if ( ! function_exists( 'bwf_reduce_customer_total_on_cancel' ) ) {
  * @return int
  */
 if ( ! function_exists( 'bwf_get_order_total' ) ) {
-	function bwf_get_order_total(  $order  ) {
+	function bwf_get_order_total(  $order  ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Customer_Fns::bwf_get_order_total( ...func_get_args() );
 	}
 }
@@ -195,7 +195,7 @@ if ( ! function_exists( 'bwf_get_order_total' ) ) {
  * @return array
  */
 if ( ! function_exists( 'bwf_get_order_product_ids' ) ) {
-	function bwf_get_order_product_ids(  $order  ) {
+	function bwf_get_order_product_ids(  $order  ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Customer_Fns::bwf_get_order_product_ids( ...func_get_args() );
 	}
 }
@@ -207,7 +207,7 @@ if ( ! function_exists( 'bwf_get_order_product_ids' ) ) {
  * @return array
  */
 if ( ! function_exists( 'bwf_get_order_product_terms' ) ) {
-	function bwf_get_order_product_terms(  $order  ) {
+	function bwf_get_order_product_terms(  $order  ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Customer_Fns::bwf_get_order_product_terms( ...func_get_args() );
 	}
 }
@@ -219,7 +219,7 @@ if ( ! function_exists( 'bwf_get_order_product_terms' ) ) {
  * @return mixed
  */
 if ( ! function_exists( 'bwf_get_array_unique_integers' ) ) {
-	function bwf_get_array_unique_integers(  $array1 = [], $array2 = []  ) {
+	function bwf_get_array_unique_integers(  $array1 = [], $array2 = []  ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_Customer_Fns::bwf_get_array_unique_integers( ...func_get_args() );
 	}
 }

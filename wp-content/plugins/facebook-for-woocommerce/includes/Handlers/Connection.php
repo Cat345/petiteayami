@@ -10,10 +10,10 @@
 
 namespace WooCommerce\Facebook\Handlers;
 
-use WooCommerce\Facebook\API;
-use WooCommerce\Facebook\API\Exceptions\ConnectApiException;
+use WooCommerce\Facebook\API\CommerceIntegration\Client as CommerceIntegrationClient;
+use WooCommerce\Facebook\API\CommerceIntegration\Exception as FinalizeException;
+use WooCommerce\Facebook\API\CommerceIntegration\Read\Response as IntegrationReadResponse;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
-use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Utilities\Heartbeat;
 
 defined( 'ABSPATH' ) || exit;
@@ -29,36 +29,14 @@ class Connection {
 	/** @var string Facebook client identifier */
 	const CLIENT_ID = '474166926521348';
 
-	/** @var string Facebook OAuth URL */
-	const OAUTH_URL = 'https://facebook.com/dialog/oauth';
-
-	/** @var string WooCommerce connection proxy URL */
-	const PROXY_URL = 'https://api.woocommerce.com/integrations/v2/auth/facebook/';
-
-	const PROXY_TOKEN_EXCHANGE_URL = 'https://api.woocommerce.com/integrations/v2/exchange/facebook/';
-
 	/** @var string WooCommerce connection for APP Store login URL */
 	const APP_STORE_LOGIN_URL = 'https://api.woocommerce.com/integrations/app-store-login/facebook/';
-
-	/** @var string WooCommerce connection authentication URL */
-	const CONNECTION_AUTHENTICATION_URL = 'https://api.woocommerce.com/integrations/auth/facebookcommerce/';
-
-	/** @var string the Standard Auth type */
-	const AUTH_TYPE_STANDARD = 'standard';
-
-	/** @var string the action callback for the connection */
-	const ACTION_CONNECT = 'wc_facebook_connect';
-
-	const ACTION_EXCHANGE = 'wc_facebook_exchange';
 
 	/** @var string the action callback for the disconnection */
 	const ACTION_DISCONNECT = 'wc_facebook_disconnect';
 
 	/** @var string the action callback for FBE redirection */
 	const ACTION_FBE_REDIRECT = 'wc_fbe_redirect';
-
-	/** @var string the action callback for the connection */
-	const ACTION_CONNECT_COMMERCE = 'wc_facebook_connect_commerce';
 
 	/** @var string the WordPress option name where the external business ID is stored */
 	const OPTION_EXTERNAL_BUSINESS_ID = 'wc_facebook_external_business_id';
@@ -69,26 +47,23 @@ class Connection {
 	/** @var string the ad account ID option name */
 	const OPTION_AD_ACCOUNT_ID = 'wc_facebook_ad_account_id';
 
-	/** @var string the system user ID option name */
+	/**
+	 * @var string the system user ID option name
+	 * @deprecated Legacy FBE 2 leftover. Internal connection flows no longer write this option,
+	 *             and nothing reads the stored ID.
+	 */
 	const OPTION_SYSTEM_USER_ID = 'wc_facebook_system_user_id';
 
 	/** @var string the system user access token option name */
 	const OPTION_ACCESS_TOKEN = 'wc_facebook_access_token';
 
-	/** @var string the merchant access token option name */
+	/**
+	 * @var string the merchant access token option name
+	 * @deprecated Legacy FBE 2 leftover. Internal connection flows no longer write this option,
+	 *             and nothing reads it to authenticate a request. Use self::OPTION_ACCESS_TOKEN
+	 *             instead.
+	 */
 	const OPTION_MERCHANT_ACCESS_TOKEN = 'wc_facebook_merchant_access_token';
-
-	/** @var string the page access token option name */
-	const OPTION_PAGE_ACCESS_TOKEN = 'wc_facebook_page_access_token';
-
-	/** @var string the Commerce manager ID option name */
-	const OPTION_COMMERCE_MANAGER_ID = 'wc_facebook_commerce_manager_id';
-
-	/** @var string webhook event subscribed object */
-	const WEBHOOK_SUBSCRIBED_OBJECT = 'user';
-
-	/** @var string webhook event subscribed field */
-	const WEBHOOK_SUBSCRIBED_FIELD = 'fbe_install';
 
 	/** @var string Instagram Business ID option name */
 	const OPTION_INSTAGRAM_BUSINESS_ID = 'wc_facebook_instagram_business_id';
@@ -105,9 +80,6 @@ class Connection {
 	/** @var \WC_Facebookcommerce */
 	private $plugin;
 
-	/** @var array */
-	protected $proxy_error_messages;
-
 	/**
 	 * Constructs a new Connection.
 	 *
@@ -119,52 +91,13 @@ class Connection {
 
 		$this->plugin = $plugin;
 
-		add_action( Heartbeat::HOURLY, array( $this, 'refresh_business_configuration' ) );
-
 		add_action( Heartbeat::DAILY, array( $this, 'refresh_installation_data' ) );
-
-		add_action( 'woocommerce_api_' . self::ACTION_CONNECT, array( $this, 'handle_connect' ) );
 
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, array( $this, 'handle_disconnect' ) );
 
 		add_action( 'woocommerce_api_' . self::ACTION_FBE_REDIRECT, array( $this, 'handle_fbe_redirect' ) );
 
-		add_action( 'fbe_webhook', array( $this, 'fbe_install_webhook' ) );
-
 		add_action( 'rest_api_init', array( $this, 'init_extras_endpoint' ) );
-	}
-
-
-	/**
-	 * Refreshes the local business configuration data with the latest from Facebook.
-	 *
-	 * @internal
-	 *
-	 * @since 2.0.0
-	 */
-	public function refresh_business_configuration() {
-
-		// bail if not connected
-		if ( ! $this->is_connected() ) {
-			return;
-		}
-
-		$flag_name = '_wc_facebook_for_woocommerce_refresh_business_configuration';
-		if ( 'yes' === get_transient( $flag_name ) ) {
-			return;
-		}
-		set_transient( $flag_name, 'yes', HOUR_IN_SECONDS );
-
-		try {
-			$response = $this->get_plugin()->get_api()->get_business_configuration( $this->get_external_business_id() );
-			facebook_for_woocommerce()->get_tracker()->track_facebook_business_config(
-				$response->is_ig_shopping_enabled(),
-				$response->is_ig_cta_enabled()
-			);
-
-		} catch ( ApiException $exception ) {
-			$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
-		}
 	}
 
 
@@ -186,12 +119,12 @@ class Connection {
 		}
 		set_transient( $flag_name, 'yes', DAY_IN_SECONDS );
 
-		try {
-			$this->update_installation_data();
-			$this->repair_or_update_commerce_integration_data();
-		} catch ( ApiException $exception ) {
-			$this->get_plugin()->log( 'Could not refresh installation data. ' . $exception->getMessage(), null, 'error' );
-		}
+		// Each phase logs and absorbs its own failures: the Commerce Partner
+		// Integration path must run even when legacy FBE endpoints fail, so a
+		// failing FBE endpoint can never disable the CPI path.
+		$mapping = $this->ensure_commerce_partner_integration_id();
+		$this->push_commerce_integration_config();
+		$this->refresh_asset_mapping( $mapping );
 	}
 
 	/**
@@ -210,14 +143,15 @@ class Connection {
 
 		$this->get_plugin()->log( 'Starting forced config sync on version update' );
 
-		try {
-			// Force refresh installation data without transient check
-			$this->update_installation_data();
-			$this->repair_or_update_commerce_integration_data();
-			$this->get_plugin()->log( 'Successfully completed forced config sync on version update' );
+		// Each phase logs and absorbs its own failures: the Commerce Partner
+		// Integration path must run even when legacy FBE endpoints fail, so a
+		// failing FBE endpoint can never disable the CPI path.
+		$mapping        = $this->ensure_commerce_partner_integration_id();
+		$config_pushed  = $this->push_commerce_integration_config();
+		$mapping_synced = $this->refresh_asset_mapping( $mapping );
 
-		} catch ( ApiException $exception ) {
-			$this->get_plugin()->log( 'Failed to complete forced config sync on update: ' . $exception->getMessage(), null, 'error' );
+		if ( $config_pushed && $mapping_synced ) {
+			$this->get_plugin()->log( 'Successfully completed forced config sync on version update' );
 		}
 	}
 
@@ -225,6 +159,9 @@ class Connection {
 	 * Refreshes the client side info and configuration.
 	 *
 	 * @since 3.4.8
+	 * @deprecated The repair and update steps are decoupled; see
+	 *             ensure_commerce_partner_integration_id() and
+	 *             push_commerce_integration_config().
 	 */
 	public function repair_or_update_commerce_integration_data() {
 		// bail if not connected
@@ -232,55 +169,183 @@ class Connection {
 			return;
 		}
 
+		$this->ensure_commerce_partner_integration_id();
+		$this->push_commerce_integration_config();
+	}
+
+	/**
+	 * Ensures a Commerce Partner Integration ID is stored.
+	 *
+	 * Looks the integration up by external business ID first, which works for
+	 * both FBE and FBL onboarded instances. The FBE-dependent repair runs only
+	 * when the lookup fails; it can only recapture integrations for stores
+	 * onboarded through the legacy FBE flow.
+	 *
+	 * @return IntegrationReadResponse|null The lookup response when it supplied the ID, null otherwise.
+	 */
+	private function ensure_commerce_partner_integration_id() {
+		$commerce_integration_id = $this->get_commerce_partner_integration_id();
+		if ( ! empty( $commerce_integration_id ) ) {
+			return null;
+		}
+
 		try {
-			$commerce_integration_id = $this->get_commerce_partner_integration_id();
+			$client   = new CommerceIntegrationClient();
+			$response = $client->get_integration_by_external_business_id(
+				$this->get_access_token(),
+				$this->get_external_business_id()
+			);
 
-			// If commerce integration ID doesn't exist, call repair endpoint
-			if ( empty( $commerce_integration_id ) ) {
-				$response = $this->get_plugin()->get_api()->repair_commerce_integration(
-					$this->get_external_business_id(),
-					$this->get_shop_domain(),
-					admin_url(),
-					$this->get_plugin()->get_version()
-				);
+			$this->update_commerce_partner_integration_id( $response->get_commerce_partner_integration_id() );
+			$this->get_plugin()->log( 'Successfully resolved commerce integration by external business ID.' );
 
-				if ( ! $response->is_successful() ) {
-					$this->get_plugin()->log( 'Failed to repair commerce integration.', null, 'error' );
-					return;
-				}
+			return $response;
+		} catch ( FinalizeException $exception ) {
+			$this->get_plugin()->log( 'Could not resolve commerce integration by external business ID. ' . $exception->getMessage(), null, 'error' );
 
-				// Store the new commerce integration ID
-				$new_commerce_integration_id = $response->get_commerce_partner_integration_id();
-				if ( empty( $new_commerce_integration_id ) ) {
-					$this->get_plugin()->log( 'Failed to get commerce partner integration ID from repair response.', null, 'error' );
-					return;
-				}
+			// Only a 404 establishes that this store has no Commerce Partner Integration.
+			// Every other failure -- unauthorized, rate limited, server error, transport --
+			// leaves the remote state unknown, and repair can mint an integration. Falling
+			// through on those would let a transient failure replace a healthy stored ID.
+			if ( 'not_found' !== $exception->get_failure_reason() ) {
+				return null;
+			}
+		}
 
-				$this->update_commerce_partner_integration_id( $new_commerce_integration_id );
-				$commerce_integration_id = $new_commerce_integration_id;
-				$this->get_plugin()->log( 'Successfully repaired commerce integration. New ID: ' . $commerce_integration_id );
+		try {
+			$response = $this->get_plugin()->get_api()->repair_commerce_integration(
+				$this->get_external_business_id(),
+				$this->get_shop_domain(),
+				admin_url(),
+				$this->get_plugin()->get_version()
+			);
+
+			if ( ! $response->is_successful() ) {
+				$this->get_plugin()->log( 'Failed to repair commerce integration.', null, 'error' );
+				return null;
 			}
 
-			// If we have a commerce integration ID, update the configuration
-			if ( ! empty( $commerce_integration_id ) ) {
-				$update_response = $this->get_plugin()->get_api()->update_commerce_integration(
-					$commerce_integration_id,
-					$this->get_plugin()->get_version(),  // extension_version
-					admin_url(),                         // admin_url
-					$this->get_country_code(),           // country_code
-					$this->get_currency(),               // currency
-					$this->get_platform_store_id(),      // platform_store_id
-				);
-
-				if ( ! $update_response->is_successful() ) {
-					$this->get_plugin()->log( 'Failed to update commerce integration configuration.', null, 'error' );
-					return;
-				}
-
-				$this->get_plugin()->log( 'Successfully updated commerce integration configuration.' );
+			// Store the new commerce integration ID
+			$new_commerce_integration_id = $response->get_commerce_partner_integration_id();
+			if ( empty( $new_commerce_integration_id ) ) {
+				$this->get_plugin()->log( 'Failed to get commerce partner integration ID from repair response.', null, 'error' );
+				return null;
 			}
+
+			$this->update_commerce_partner_integration_id( $new_commerce_integration_id );
+			$this->get_plugin()->log( 'Successfully repaired commerce integration. New ID: ' . $new_commerce_integration_id );
 		} catch ( ApiException $exception ) {
-			$this->get_plugin()->log( 'Could not repair or update commerce integration data. ' . $exception->getMessage(), null, 'error' );
+			$this->get_plugin()->log( 'Could not repair commerce integration. ' . $exception->getMessage(), null, 'error' );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Pushes client-side store metadata to the Commerce Partner Integration.
+	 *
+	 * @return bool Whether the configuration was updated.
+	 */
+	private function push_commerce_integration_config() {
+		$commerce_integration_id = $this->get_commerce_partner_integration_id();
+		if ( empty( $commerce_integration_id ) ) {
+			$this->get_plugin()->log( 'Skipping commerce integration configuration update: no integration ID.', null, 'error' );
+			return false;
+		}
+
+		try {
+			$update_response = $this->get_plugin()->get_api()->update_commerce_integration(
+				$commerce_integration_id,
+				$this->get_plugin()->get_version(),  // extension_version
+				admin_url(),                         // admin_url
+				$this->get_country_code(),           // country_code
+				$this->get_currency(),               // currency
+				$this->get_platform_store_id(),      // platform_store_id
+			);
+
+			if ( ! $update_response->is_successful() ) {
+				$this->get_plugin()->log( 'Failed to update commerce integration configuration.', null, 'error' );
+				return false;
+			}
+
+			$this->get_plugin()->log( 'Successfully updated commerce integration configuration.' );
+			return true;
+		} catch ( ApiException $exception ) {
+			$this->get_plugin()->log( 'Could not update commerce integration configuration. ' . $exception->getMessage(), null, 'error' );
+			return false;
+		}
+	}
+
+	/**
+	 * Refreshes the Meta-managed asset mapping with CPI preferred.
+	 *
+	 * Tries the STEFI integration read first, then the legacy FBE install read.
+	 * Each rung logs which source supplied the mapping so fallback usage stays
+	 * measurable while FBE is retired.
+	 *
+	 * @param IntegrationReadResponse|null $resolved_mapping Mapping already resolved while ensuring the ID.
+	 * @return bool Whether the mapping was refreshed from any source.
+	 */
+	private function refresh_asset_mapping( $resolved_mapping = null ) {
+		if ( $resolved_mapping instanceof IntegrationReadResponse ) {
+			$this->apply_asset_mapping(
+				$resolved_mapping->get_pixel_id(),
+				$resolved_mapping->get_catalog_id(),
+				$resolved_mapping->get_commerce_merchant_settings_id()
+			);
+			$this->get_plugin()->log( 'Refreshed asset mapping from the integration lookup.' );
+			return true;
+		}
+
+		$commerce_integration_id = $this->get_commerce_partner_integration_id();
+		if ( ! empty( $commerce_integration_id ) ) {
+			try {
+				$client   = new CommerceIntegrationClient();
+				$response = $client->get_integration_by_id(
+					$this->get_access_token(),
+					$commerce_integration_id
+				);
+
+				$this->apply_asset_mapping(
+					$response->get_pixel_id(),
+					$response->get_catalog_id(),
+					$response->get_commerce_merchant_settings_id()
+				);
+				$this->get_plugin()->log( 'Refreshed asset mapping from the integration read.' );
+				return true;
+			} catch ( FinalizeException $exception ) {
+				$this->get_plugin()->log( 'Could not read commerce integration. ' . $exception->getMessage(), null, 'error' );
+			}
+		}
+
+		try {
+			$this->update_installation_data();
+			$this->get_plugin()->log( 'Refreshed asset mapping from the legacy FBE install read.' );
+			return true;
+		} catch ( ApiException $exception ) {
+			$this->get_plugin()->log( 'Could not refresh installation data. ' . $exception->getMessage(), null, 'error' );
+			return false;
+		}
+	}
+
+	/**
+	 * Persists asset IDs, never blanking a stored value.
+	 *
+	 * @param string $pixel_id Pixel ID, possibly empty.
+	 * @param string $catalog_id Catalog ID, possibly empty.
+	 * @param string $commerce_merchant_settings_id Commerce Merchant Settings ID, possibly empty.
+	 */
+	private function apply_asset_mapping( $pixel_id, $catalog_id, $commerce_merchant_settings_id ) {
+		if ( ! empty( $pixel_id ) ) {
+			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, sanitize_text_field( $pixel_id ) );
+		}
+
+		if ( ! empty( $catalog_id ) ) {
+			update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, sanitize_text_field( $catalog_id ) );
+		}
+
+		if ( ! empty( $commerce_merchant_settings_id ) ) {
+			$this->update_commerce_merchant_settings_id( sanitize_text_field( $commerce_merchant_settings_id ) );
 		}
 	}
 
@@ -323,6 +388,9 @@ class Connection {
 	/**
 	 * Retrieves and stores the connected installation data.
 	 *
+	 * Last-resort rung of the asset-mapping ladder; the STEFI integration read
+	 * and the legacy Graph node are tried first.
+	 *
 	 * @since 2.0.0
 	 *
 	 * @throws ApiException If the installation data could not be retrieved.
@@ -330,18 +398,6 @@ class Connection {
 	private function update_installation_data() {
 
 		$response = $this->get_plugin()->get_api()->get_installation_ids( $this->get_external_business_id() );
-
-		$page_id = sanitize_text_field( $response->get_page_id() );
-
-		if ( $page_id ) {
-
-			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, $page_id );
-
-			// get and store a current access token for the configured page
-			$page_access_token = $this->retrieve_page_access_token( $page_id );
-
-			$this->update_page_access_token( $page_access_token );
-		}
 
 		if ( $response->get_pixel_id() ) {
 			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, sanitize_text_field( $response->get_pixel_id() ) );
@@ -351,168 +407,13 @@ class Connection {
 			update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, sanitize_text_field( $response->get_catalog_id() ) );
 		}
 
-		if ( $response->get_business_manager_id() ) {
-			$this->update_business_manager_id( sanitize_text_field( $response->get_business_manager_id() ) );
-		}
-
-		if ( $response->get_ad_account_id() ) {
-			$this->update_ad_account_id( sanitize_text_field( $response->get_ad_account_id() ) );
-		}
-
-		if ( $response->get_instagram_business_id() ) {
-			$this->update_instagram_business_id( sanitize_text_field( $response->get_instagram_business_id() ) );
-		}
-
 		if ( $response->get_commerce_merchant_settings_id() ) {
 			$this->update_commerce_merchant_settings_id( sanitize_text_field( $response->get_commerce_merchant_settings_id() ) );
 		}
 
-		if ( $response->get_commerce_partner_integration_id() ) {
-			$this->update_commerce_partner_integration_id( sanitize_text_field( $response->get_commerce_partner_integration_id() ) );
-		} else {
-			$this->update_commerce_partner_integration_id( '' );
-		}
-	}
-
-
-	/**
-	 * Processes the returned connection.
-	 *
-	 * @internal
-	 *
-	 * @since 2.0.0
-	 *
-	 * @throws ApiException If token exchange failed.
-	 * @throws ConnectApiException If the connect server returned an error.
-	 */
-	public function handle_connect() {
-		// don't handle anything unless the user can manage WooCommerce settings
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			return;
-		}
-		try {
-			if ( empty( $_GET['nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['nonce'] ) ), self::ACTION_CONNECT ) ) {
-				throw new ApiException( 'Invalid nonce' );
-			}
-
-			$is_error   = ! empty( $_GET['err'] );
-			$error_code = ! empty( $_GET['err_code'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_GET['err_code'] ) ) ) : '';
-			if ( $is_error && $error_code ) {
-				throw new ConnectApiException( $error_code );
-			}
-
-			// phpcs:disable WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-			// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$facebook_auth_code = $_GET['code'] ?? '';
-			if ( empty( $facebook_auth_code ) ) {
-				throw new ApiException( 'Facebook auth code is missing.' );
-			}
-
-			$state = $_GET['state'] ?? '';
-			if ( empty( $state ) ) {
-				throw new ApiException( 'Missing state query parameter.' );
-			}
-
-			$parameters_string = '?' . http_build_query(
-				array(
-					'nonce'                => wp_create_nonce( self::ACTION_EXCHANGE ),
-					'code'                 => $facebook_auth_code,
-					'external_business_id' => $this->get_external_business_id(),
-					'type'                 => self::AUTH_TYPE_STANDARD,
-					'state'                => $state,
-				)
-			);
-
-			$request_url = self::PROXY_TOKEN_EXCHANGE_URL . $parameters_string;
-			$response    = wp_safe_remote_get(
-				$request_url,
-				array(
-					'timeout' => 60,
-				)
-			);
-
-			if ( is_wp_error( $response ) ) {
-				throw new ApiException( 'WooCommerce Connect Server token exchange has failed.' );
-			}
-
-			$token_data = json_decode( wp_remote_retrieve_body( $response ), true );
-
-			if ( isset( $token_data['status'] ) && 500 === $token_data['status'] ) {
-				throw new ApiException( 'WooCommerce Connect Server token exchange has failed.' );
-			}
-
-			// Check that request was initiated from the server.
-			if ( ! wp_verify_nonce( $token_data['nonce'] ?? '', self::ACTION_EXCHANGE ) ) {
-				throw new ApiException( 'Exchange nonce is not valid.' );
-			}
-
-			$merchant_access_token    = wc_clean( wp_unslash( $token_data['merchant_access_token'] ?? '' ) );
-			$system_user_access_token = wc_clean( wp_unslash( $token_data['system_user_access_token'] ?? '' ) );
-			$system_user_id           = wc_clean( wp_unslash( $token_data['system_user_id'] ?? '' ) );
-
-			if ( ! $merchant_access_token ) {
-				throw new ApiException( 'Access token is missing' );
-			}
-			if ( ! $system_user_access_token ) {
-				throw new ApiException( 'System User access token is missing' );
-			}
-			if ( ! $system_user_id ) {
-				throw new ApiException( 'System User ID is missing' );
-			}
-			$this->update_access_token( $system_user_access_token );
-			$this->update_merchant_access_token( $merchant_access_token );
-			$this->update_system_user_id( $system_user_id );
-			$this->update_installation_data();
-			// Allow opt-out of full batch-API sync, for example if store has a large number of products.
-			if ( facebook_for_woocommerce()->get_integration()->allow_full_batch_api_sync() ) {
-				facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
-			} else {
-				facebook_for_woocommerce()->log( 'Initial full product sync disabled by filter hook `facebook_for_woocommerce_allow_full_batch_api_sync`', 'facebook_for_woocommerce_connect' );
-			}
-			facebook_for_woocommerce()->get_product_sets_sync_handler()->sync_all_product_sets();
-			update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
-			update_option( 'wc_facebook_has_authorized_pages_read_engagement', 'yes' );
-			// redirect to the Commerce onboarding if directed to do so
-			if ( ! empty( Helper::get_requested_value( 'connect_commerce' ) ) ) {
-				wp_safe_redirect( $this->get_commerce_connect_url() );
-				exit;
-			}
-			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection successful!', 'facebook-for-woocommerce' ) );
-			wp_safe_redirect( facebook_for_woocommerce()->get_advertise_tab_url() );
-			exit;
-		} catch ( ApiException $exception ) {
-			facebook_for_woocommerce()->log( sprintf( 'Connection failed: %s', $exception->getMessage() ) );
-			set_transient( 'wc_facebook_connection_failed', time(), 30 );
-		} catch ( ConnectApiException $exception ) {
-			$message = $this->prepare_connect_server_message_for_user_display( $exception->getMessage() );
-			facebook_for_woocommerce()->log( sprintf( 'Failed to connect to Facebook. Reason: %s', $message ), 'facebook_for_woocommerce_connect' );
-			set_transient( 'wc_facebook_connection_failed', time(), 30 );
-		}
-
-		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
-		exit;
-	}
-
-	/**
-	 * Prepares the error message from the connect server for the logs.
-	 *
-	 * @since 2.6.8
-	 * @param string $message Message string that needs formatting.
-	 * @return string Formatted message string ready for logging.
-	 */
-	public function prepare_connect_server_message_for_user_display( $message ) {
-			/*
-			 * In some scenarios the connect server message is a JSON encoded object.
-			 * This happens when we have detailed information from Facebook API endpoint about the error.
-			 * We want to print it pretty for the customers.
-			 */
-			$decoded_message = json_decode( $message );
-		if ( json_last_error() === JSON_ERROR_NONE ) {
-			// If error is the first key we want to use just the body to simplify the message.
-			$decoded_message = isset( $decoded_message->error ) ? $decoded_message->error : $decoded_message;
-			$message         = wp_json_encode( $decoded_message, JSON_PRETTY_PRINT );
-		}
-			return $message;
+		// The CPI ID is owned by ensure_commerce_partner_integration_id() and is
+		// deliberately never written here, so a legacy read can neither mint nor
+		// clear it.
 	}
 
 
@@ -573,68 +474,23 @@ class Connection {
 	 */
 	public function disconnect() {
 		$this->update_access_token( '' );
-		$this->update_page_access_token( '' );
-		$this->update_merchant_access_token( '' );
-		$this->update_system_user_id( '' );
-		$this->update_business_manager_id( '' );
-		$this->update_ad_account_id( '' );
-		$this->update_instagram_business_id( '' );
 		$this->update_commerce_merchant_settings_id( '' );
 		$this->update_external_business_id( '' );
 		$this->update_commerce_partner_integration_id( '' );
-		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
 		facebook_for_woocommerce()->get_integration()->update_product_catalog_id( '' );
+		delete_option( \WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN );
+
+		// The plugin no longer writes these, but stores connected before they were retired still
+		// hold values — including a stale credential — so disconnecting must still clear them.
+		foreach ( \WC_Facebookcommerce_Integration::DEPRECATED_OPTIONS as $deprecated_option ) {
+			delete_option( $deprecated_option );
+		}
 
 		// Clear facebook_config option to stop pixel tracking and prevent stale data
 		if ( class_exists( 'WC_Facebookcommerce_Pixel' ) ) {
 			delete_option( \WC_Facebookcommerce_Pixel::SETTINGS_KEY );
 		}
-	}
-
-
-	/**
-	 * Retrieves the configured page access token remotely.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @param string $page_id desired Facebook page ID
-	 * @return string
-	 * @throws ApiException If the page access token could not be retrieved.
-	 */
-	private function retrieve_page_access_token( $page_id ) {
-		facebook_for_woocommerce()->log( 'Retrieving page access token' );
-		$api_url  = Api::GRAPH_API_URL . Api::API_VERSION;
-		$response = wp_remote_get( $api_url . '/me/accounts?access_token=' . $this->get_access_token() );
-		$body     = wp_remote_retrieve_body( $response );
-		$body     = json_decode( $body, true );
-		if ( ! is_array( $body ) || empty( $body['data'] ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			facebook_for_woocommerce()->log( print_r( $body, true ) );
-			throw new ApiException(
-				esc_html(
-					sprintf(
-						/* translators: Placeholders: %s - API error message */
-						__( 'Could not retrieve page access data. %s', 'facebook-for-woocommerce' ),
-						wp_remote_retrieve_response_message( $response )
-					)
-				)
-			);
-		}
-		$page_access_tokens = wp_list_pluck( $body['data'], 'access_token', 'id' );
-		// bail if the user isn't authorized to manage the page
-		if ( empty( $page_access_tokens[ $page_id ] ) ) {
-			throw new ApiException(
-				esc_html(
-					sprintf(
-					/* translators: Placeholders: %s - Facebook page ID */
-						__( 'Page %s not authorized.', 'facebook-for-woocommerce' ),
-						$page_id
-					)
-				)
-			);
-		}
-		return $page_access_tokens[ $page_id ];
 	}
 
 
@@ -656,154 +512,6 @@ class Connection {
 		 * @param Connection $connection connection handler instance
 		 */
 		return apply_filters( 'wc_facebook_connection_access_token', $access_token, $this );
-	}
-
-
-	/**
-	 * Gets the merchant access token.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return string
-	 */
-	public function get_merchant_access_token() {
-		$access_token = get_option( self::OPTION_MERCHANT_ACCESS_TOKEN, '' );
-		/**
-		 * Filters the merchant access token.
-		 *
-		 * @since 2.0.0
-		 *
-		 * @param string $access_token access token
-		 * @param Connection $connection connection handler instance
-		 */
-		return apply_filters( 'wc_facebook_connection_merchant_access_token', $access_token, $this );
-	}
-
-
-	/**
-	 * Gets the page access token.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @return string
-	 */
-	public function get_page_access_token() {
-		$access_token = get_option( self::OPTION_PAGE_ACCESS_TOKEN, '' );
-		/**
-		 * Filters the page access token.
-		 *
-		 * @since 2.1.0
-		 *
-		 * @param string $access_token page access token
-		 * @param Connection $connection connection handler instance
-		 */
-		return (string) apply_filters( 'wc_facebook_connection_page_access_token', $access_token, $this );
-	}
-
-
-	/**
-	 * Gets the URL to start the connection flow.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param bool $connect_commerce whether to connect to Commerce after successful FBE connection
-	 * @return string
-	 */
-	public function get_connect_url( $connect_commerce = false ) {
-		// nosemgrep: audit.php.wp.security.xss.query-arg
-		return add_query_arg( rawurlencode_deep( $this->get_connect_parameters( $connect_commerce ) ), self::OAUTH_URL );
-	}
-
-
-	/**
-	 * Builds the Commerce connect URL.
-	 *
-	 * The base URL is https://www.facebook.com/commerce_manager/onboarding with two query variables:
-	 * - app_id - the developer app ID
-	 * - redirect_url - the URL where the user will land after onboarding is complete
-	 *
-	 * The redirect URL must be an approved domain, so it must be the connect.woocommerce.com proxy app. In that URL, we
-	 * include the final site URL, which is where the merchant will redirect to with the data that needs to be stored.
-	 * So the final URL looks like this without encoding:
-	 *
-	 * https://www.facebook.com/commerce_manager/onboarding/?app_id={id}&redirect_url=https://connect.woocommerce.com/auth/facebook/?site_url=https://example.com/?wc-api=wc_facebook_connect_commerce&nonce=1234
-	 *
-	 * If testing only, &is_test_mode=true can be appended to the URL using the wc_facebook_commerce_connect_url filter
-	 * to trigger the test account flow, where fake US-based business details can be used.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @return string
-	 */
-	public function get_commerce_connect_url() {
-		// build the site URL to which the user will ultimately return
-		$site_url = add_query_arg(
-			array(
-				'wc-api' => self::ACTION_CONNECT_COMMERCE,
-				'nonce'  => wp_create_nonce( self::ACTION_CONNECT_COMMERCE ),
-			),
-			home_url( '/' )
-		);
-		// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
-		$redirect_url = add_query_arg( 'site_url', rawurlencode( $site_url ), $this->get_connection_authentication_url() );
-		// build the final connect URL, direct to Facebook
-		$connect_url = add_query_arg(
-			array(
-				'app_id'       => $this->get_client_id(), // this endpoint calls the client ID "app ID"
-				'redirect_url' => rawurlencode( $redirect_url ),
-			),
-			'https://www.facebook.com/commerce_manager/onboarding/'
-		);
-		/**
-		 * Filters the URL used to connect to Facebook Commerce.
-		 *
-		 * @since 2.1.0
-		 *
-		 * @param string $connect_url connect URL
-		 */
-		return apply_filters( 'wc_facebook_commerce_connect_url', $connect_url );
-	}
-
-
-	/**
-	 * Gets the URL for disconnecting.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return string
-	 */
-	public function get_disconnect_url() {
-		return wp_nonce_url( add_query_arg( 'action', self::ACTION_DISCONNECT, admin_url( 'admin.php' ) ), self::ACTION_DISCONNECT );
-	}
-
-
-	/**
-	 * Gets the scopes that will be requested during the connection flow.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @link https://developers.facebook.com/docs/marketing-api/access/#access_token
-	 *
-	 * @return string[]
-	 */
-	public function get_scopes() {
-		$scopes = array(
-			'manage_business_extension',
-			'catalog_management',
-			'ads_management',
-			'ads_read',
-			'pages_read_engagement', // this scope is needed to enable order management if using the Commerce feature
-			'instagram_basic',
-		);
-		/**
-		 * Filters the scopes that will be requested during the connection flow.
-		 *
-		 * @since 2.0.0
-		 *
-		 * @param string[] $scopes connection scopes
-		 * @param Connection $connection connection handler instance
-		 */
-		return (array) apply_filters( 'wc_facebook_connection_scopes', $scopes, $this );
 	}
 
 
@@ -883,8 +591,13 @@ class Connection {
 	 * @since 2.0.0
 	 *
 	 * @return string
+	 *
+	 * @deprecated Legacy FBE asset data. Internal flows no longer read or write this option,
+	 *             and the Commerce Partner Integration that replaces the legacy installation
+	 *             read does not supply it. Retained for backwards compatibility.
 	 */
 	public function get_business_manager_id() {
+		wc_deprecated_function( __METHOD__, '3.7.7' );
 		$business_manager_id = get_option( self::OPTION_BUSINESS_MANAGER_ID, '' );
 		/**
 		 * Filters the Business Manager ID.
@@ -904,33 +617,14 @@ class Connection {
 	 * @since 2.0.0
 	 *
 	 * @return string
+	 *
+	 * @deprecated Legacy FBE asset data. Internal flows no longer read or write this option,
+	 *             and the Commerce Partner Integration that replaces the legacy installation
+	 *             read does not supply it. Retained for backwards compatibility.
 	 */
 	public function get_ad_account_id() {
+		wc_deprecated_function( __METHOD__, '3.7.7' );
 		return get_option( self::OPTION_AD_ACCOUNT_ID, '' );
-	}
-
-
-	/**
-	 * Gets the System User ID value.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return string
-	 */
-	public function get_system_user_id() {
-		return get_option( self::OPTION_SYSTEM_USER_ID, '' );
-	}
-
-
-	/**
-	 * Gets the Commerce manager ID value.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @return string
-	 */
-	public function get_commerce_manager_id() {
-		return get_option( self::OPTION_COMMERCE_MANAGER_ID, '' );
 	}
 
 
@@ -940,8 +634,13 @@ class Connection {
 	 * @since 2.3.0
 	 *
 	 * @return string
+	 *
+	 * @deprecated Legacy FBE asset data. Internal flows no longer read or write this option,
+	 *             and the Commerce Partner Integration that replaces the legacy installation
+	 *             read does not supply it. Retained for backwards compatibility.
 	 */
 	public function get_instagram_business_id() {
+		wc_deprecated_function( __METHOD__, '3.7.7' );
 		return get_option( self::OPTION_INSTAGRAM_BUSINESS_ID, '' );
 	}
 
@@ -971,25 +670,6 @@ class Connection {
 
 
 	/**
-	 * Gets the proxy URL.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return string URL
-	 */
-	public function get_proxy_url() {
-		/**
-		 * Filters the proxy URL.
-		 *
-		 * @since 2.0.0
-		 *
-		 * @param string $proxy_url the connection proxy URL
-		 */
-		return (string) apply_filters( 'wc_facebook_connection_proxy_url', self::PROXY_URL );
-	}
-
-
-	/**
 	 * Gets APP Store Login URL.
 	 *
 	 * @since 2.3.0
@@ -1008,94 +688,7 @@ class Connection {
 	}
 
 	/**
-	 * Gets connect server authentication url.
-	 *
-	 * @since 2.6.8
-	 *
-	 * @return string URL
-	 */
-	public function get_connection_authentication_url() {
-		/**
-		 * Filters App Store login URL.
-		 *
-		 * @since 2.6.8
-		 *
-		 * @param string $connection_authentication_url the connection App Store login URL
-		 */
-		return (string) apply_filters( 'wc_facebook_connection_authentication_url', self::CONNECTION_AUTHENTICATION_URL );
-	}
-
-	/**
-	 * Gets the full redirect URL where the user will return to after OAuth.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return string
-	 */
-	public function get_redirect_url() {
-		$redirect_url = add_query_arg(
-			array(
-				'wc-api'               => self::ACTION_CONNECT,
-				'external_business_id' => $this->get_external_business_id(),
-				'nonce'                => wp_create_nonce( self::ACTION_CONNECT ),
-				'type'                 => self::AUTH_TYPE_STANDARD,
-			),
-			home_url( '/' )
-		);
-		/**
-		 * Filters the redirect URL where the user will return to after OAuth.
-		 *
-		 * @since 2.0.0
-		 *
-		 * @param string $redirect_url redirect URL
-		 * @param Connection $connection connection handler instance
-		 */
-		return (string) apply_filters( 'wc_facebook_connection_redirect_url', $redirect_url, $this );
-	}
-
-
-	/**
-	 * Gets the full set of connection parameters for starting OAuth.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param bool $connect_commerce whether to connect to Commerce after successful FBE connection
-	 * @return array
-	 */
-	public function get_connect_parameters( $connect_commerce = false ) {
-		$state = $this->get_redirect_url();
-		if ( $connect_commerce ) {
-			$state = add_query_arg( 'connect_commerce', true, $state );
-		}
-
-		/**
-		 * Filters the connection parameters.
-		 *
-		 * @since 2.0.0
-		 *
-		 * @param array $parameters connection parameters
-		 *
-		 * nosemgrep: audit.php.wp.security.xss.query-arg
-		 */
-		return apply_filters(
-			'wc_facebook_connection_parameters',
-			array(
-				'client_id'     => $this->get_client_id(),
-				'redirect_uri'  => $this->get_proxy_url(),
-				'state'         => $state,
-				'display'       => 'page',
-				'response_type' => 'code',
-				'scope'         => implode( ',', $this->get_scopes() ),
-				'extras'        => wp_json_encode( $this->get_connect_parameters_extras() ),
-			)
-		);
-	}
-
-
-	/**
 	 * Gets connection parameters extras.
-	 *
-	 * @see Connection::get_connect_parameters()
 	 *
 	 * @since 2.0.0
 	 *
@@ -1151,8 +744,13 @@ class Connection {
 	 * @since 2.0.0
 	 *
 	 * @param string $value the business manager ID
+	 *
+	 * @deprecated Legacy FBE asset data. Internal flows no longer read or write this option,
+	 *             and the Commerce Partner Integration that replaces the legacy installation
+	 *             read does not supply it. Retained for backwards compatibility.
 	 */
 	public function update_business_manager_id( $value ) {
+		wc_deprecated_function( __METHOD__, '3.7.7' );
 		update_option( self::OPTION_BUSINESS_MANAGER_ID, $value );
 	}
 
@@ -1163,8 +761,13 @@ class Connection {
 	 * @since 2.0.0
 	 *
 	 * @param string $value the ad account ID
+	 *
+	 * @deprecated Legacy FBE asset data. Internal flows no longer read or write this option,
+	 *             and the Commerce Partner Integration that replaces the legacy installation
+	 *             read does not supply it. Retained for backwards compatibility.
 	 */
 	public function update_ad_account_id( $value ) {
+		wc_deprecated_function( __METHOD__, '3.7.7' );
 		update_option( self::OPTION_AD_ACCOUNT_ID, $value );
 	}
 
@@ -1173,23 +776,14 @@ class Connection {
 	 * Stores the given system user ID.
 	 *
 	 * @since 2.0.0
+	 * @deprecated Legacy FBE 2 leftover. Internal connection flows no longer call this method.
+	 *             The write remains temporarily for backwards compatibility.
 	 *
 	 * @param string $value the ID
 	 */
 	public function update_system_user_id( $value ) {
+		wc_deprecated_function( __METHOD__, '3.7.7' );
 		update_option( self::OPTION_SYSTEM_USER_ID, $value );
-	}
-
-
-	/**
-	 * Stores the given Commerce manager ID.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @param string $id the ID
-	 */
-	public function update_commerce_manager_id( $id ) {
-		update_option( self::OPTION_COMMERCE_MANAGER_ID, $id );
 	}
 
 
@@ -1199,8 +793,13 @@ class Connection {
 	 * @since 2.3.0
 	 *
 	 * @param string $id the ID
+	 *
+	 * @deprecated Legacy FBE asset data. Internal flows no longer read or write this option,
+	 *             and the Commerce Partner Integration that replaces the legacy installation
+	 *             read does not supply it. Retained for backwards compatibility.
 	 */
 	public function update_instagram_business_id( $id ) {
+		wc_deprecated_function( __METHOD__, '3.7.7' );
 		update_option( self::OPTION_INSTAGRAM_BUSINESS_ID, $id );
 	}
 
@@ -1233,24 +832,17 @@ class Connection {
 	 * Stores the given merchant access token.
 	 *
 	 * @since 2.0.0
+	 * @deprecated Legacy FBE 2 leftover. Internal connection flows no longer call this method.
+	 *             The write remains temporarily for backwards compatibility; use
+	 *             update_access_token() instead.
 	 *
 	 * @param string $value the access token
 	 */
 	public function update_merchant_access_token( $value ) {
+		wc_deprecated_function( __METHOD__, '3.7.7', 'WooCommerce\Facebook\Handlers\Connection::update_access_token()' );
 		update_option( self::OPTION_MERCHANT_ACCESS_TOKEN, $value );
 	}
 
-
-	/**
-	 * Stores the given page access token.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @param string $value the access token
-	 */
-	public function update_page_access_token( $value ) {
-		update_option( self::OPTION_PAGE_ACCESS_TOKEN, is_string( $value ) ? $value : '' );
-	}
 
 	/**
 	 * Stores the given external business id.
@@ -1275,18 +867,6 @@ class Connection {
 	 */
 	public function is_connected() {
 		return (bool) $this->get_access_token();
-	}
-
-
-	/**
-	 * Determines whether the site has previously connected to FBE 2.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return bool
-	 */
-	public function has_previously_connected_fbe_2() {
-		return 'yes' === get_option( 'wc_facebook_has_connected_fbe_2' );
 	}
 
 
@@ -1331,130 +911,6 @@ class Connection {
 	 */
 	public function get_plugin() {
 		return $this->plugin;
-	}
-
-
-	/**
-	 * Process WebHook User object, install field
-	 *
-	 * @since 2.3.0
-	 * @link https://developers.facebook.com/docs/marketing-api/fbe/fbe2/guides/get-features#webhook
-	 *
-	 * @param object $data WebHook event data.
-	 */
-	public function fbe_install_webhook( $data ) {
-		// Reject other objects other than subscribed object
-		if ( empty( $data ) || ! isset( $data->object ) || self::WEBHOOK_SUBSCRIBED_OBJECT !== $data->object ) {
-			$this->get_plugin()->log( 'Wrong (or empty) WebHook Event received' );
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			$this->get_plugin()->log( print_r( $data, true ) );
-			return;
-		}
-		$log_data = array();
-		$this->get_plugin()->log( 'WebHook User Event received' );
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-		$this->get_plugin()->log( print_r( $data, true ) );
-		$entry = (array) $data->entry[0];
-		if ( empty( $entry ) ) {
-			return;
-		}
-		// Filter event by subscribed field
-		$event  = array_filter(
-			$entry['changes'],
-			function ( $change ) {
-				return self::WEBHOOK_SUBSCRIBED_FIELD === $change->field;
-			}
-		);
-		$values = ! empty( $event[0] ) ? $event[0]->value : '';
-		if ( empty( $values ) ) {
-			return;
-		}
-		/**
-		 * If profiles, pages and instagram_profiles fields are not included in the Webhook payload, this means the business has uninstalled FBE.
-		 * In this case also the field access_token will not be included.
-		 *
-		 * @link https://developers.facebook.com/docs/marketing-api/fbe/fbe2/guides/get-features#what-s-included-with-webhooks-
-		 */
-		if ( empty( $values->access_token ) ) {
-
-			delete_option( 'wc_facebook_has_connected_fbe_2' );
-			delete_option( 'wc_facebook_has_authorized_pages_read_engagement' );
-
-			$this->disconnect();
-
-			return;
-		}
-		update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
-		update_option( 'wc_facebook_has_authorized_pages_read_engagement', 'yes' );
-		$system_user_access_token = ! empty( $values->access_token ) ? sanitize_text_field( $values->access_token ) : '';
-		$this->update_access_token( $system_user_access_token );
-		$log_data[ self::OPTION_ACCESS_TOKEN ] = 'Token was saved';
-		if ( ! empty( $entry['uid'] ) ) {
-			$this->update_system_user_id( sanitize_text_field( $entry['uid'] ) );
-			$log_data[ self::OPTION_SYSTEM_USER_ID ] = sanitize_text_field( $entry['uid'] );
-		}
-		$merchant_access_token = ! empty( $values->merchant_access_token ) ? sanitize_text_field( $values->merchant_access_token ) : '';
-		$this->update_merchant_access_token( $merchant_access_token );
-		$log_data[ self::OPTION_MERCHANT_ACCESS_TOKEN ] = 'Token was saved';
-
-		if ( ! empty( $values->install_time ) ) {
-			update_option( \WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME, sanitize_text_field( $values->install_time ) );
-			$log_data[ \WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME ] = sanitize_text_field( $values->install_time );
-		}
-
-		if ( ! empty( $values->business_id ) ) {
-			$this->update_external_business_id( sanitize_text_field( $values->business_id ) );
-			$log_data[ self::OPTION_EXTERNAL_BUSINESS_ID ] = sanitize_text_field( $values->business_id );
-		}
-
-		if ( ! empty( $values->pixel_id ) ) {
-			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, sanitize_text_field( $values->pixel_id ) );
-			$log_data[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID ] = sanitize_text_field( $values->pixel_id );
-		}
-
-		if ( ! empty( $values->catalog_id ) ) {
-			update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, sanitize_text_field( $values->catalog_id ) );
-			$log_data[ \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID ] = sanitize_text_field( $values->catalog_id );
-		}
-
-		if ( ! empty( $values->business_manager_id ) ) {
-			$this->update_business_manager_id( sanitize_text_field( $values->business_manager_id ) );
-			$log_data[ self::OPTION_BUSINESS_MANAGER_ID ] = sanitize_text_field( $values->business_manager_id );
-		}
-
-		if ( ! empty( $values->ad_account_id ) ) {
-			$this->update_ad_account_id( sanitize_text_field( $values->ad_account_id ) );
-			$log_data[ self::OPTION_AD_ACCOUNT_ID ] = sanitize_text_field( $values->ad_account_id );
-		}
-
-		if ( ! empty( $values->instagram_profiles ) ) {
-			$instagram_business_id = current( $values->instagram_profiles );
-			$this->update_instagram_business_id( sanitize_text_field( $instagram_business_id ) );
-			$log_data[ self::OPTION_INSTAGRAM_BUSINESS_ID ] = sanitize_text_field( $instagram_business_id );
-		}
-
-		if ( ! empty( $values->commerce_merchant_settings_id ) ) {
-			$this->update_commerce_merchant_settings_id( sanitize_text_field( $values->commerce_merchant_settings_id ) );
-			$log_data[ self::OPTION_COMMERCE_MERCHANT_SETTINGS_ID ] = sanitize_text_field( $values->commerce_merchant_settings_id );
-		}
-
-		if ( ! empty( $values->pages ) ) {
-			$page_id = current( $values->pages );
-			try {
-				update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, sanitize_text_field( $page_id ) );
-				$log_data[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID ] = sanitize_text_field( $page_id );
-				// get and store a current access token for the configured page
-				$page_access_token = $this->retrieve_page_access_token( $page_id );
-				$this->update_page_access_token( $page_access_token );
-				$log_data[ self::OPTION_PAGE_ACCESS_TOKEN ] = sanitize_text_field( $page_access_token );
-			} catch ( \Exception $e ) {
-				$this->get_plugin()->log( 'Could not request Page Token: ' . $e->getMessage() );
-			}
-		}//end if
-
-		$this->get_plugin()->log( 'WebHook User event saved data' );
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-		$this->get_plugin()->log( print_r( $log_data, true ) );
 	}
 
 

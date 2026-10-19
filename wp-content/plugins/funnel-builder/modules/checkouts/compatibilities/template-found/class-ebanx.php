@@ -7,13 +7,13 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Ebanx' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_Ebanx {
 
-		public $user_id = 0;
+		public $user_id       = 0;
 		private $fields_added = false;
-		private $configs = [];
+		private $configs      = array();
 
 		public function __construct() {
-			add_filter( 'wfacp_form_section', [ $this, 'sections' ] );
-			add_action( 'wfacp_internal_css', [ $this, 'css' ] );
+			add_filter( 'wfacp_form_section', array( $this, 'sections' ) );
+			add_action( 'wfacp_internal_css', array( $this, 'css' ) );
 		}
 
 		public function sections( $sections ) {
@@ -50,7 +50,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Ebanx' ) ) {
 
 						$end_adress_found      = false;
 						$end_adress_closser    = $sections['fields']['wfacp_end_divider_billing'];
-						$after_address_element = [];
+						$after_address_element = array();
 						$is_hidedable          = false;
 						foreach ( $sections['fields'] as $index => $field ) {
 							if ( $end_adress_found ) {
@@ -85,27 +85,27 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Ebanx' ) ) {
 
 						$ebanx_billing_brazil_person_type = array(
 							'type'    => 'select',
-							'label'   => __( 'Select an option', 'woocommerce-gateway-ebanx' ),
+							'label'   => __( 'Select an option', 'woocommerce-gateway-ebanx' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 							'default' => 'cpf',
 							'id'      => 'ebanx_billing_brazil_person_type',
 							'class'   => array( 'ebanx_billing_brazil_selector', 'ebanx-select-field', 'wfacp_ebanx_field' ),
 							'options' => array(
-								'cpf'  => __( 'CPF - Individuals', 'woocommerce-gateway-ebanx' ),
-								'cnpj' => __( 'CNPJ - Companies', 'woocommerce-gateway-ebanx' ),
+								'cpf'  => __( 'CPF - Individuals', 'woocommerce-gateway-ebanx' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+								'cnpj' => __( 'CNPJ - Companies', 'woocommerce-gateway-ebanx' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 							),
 						);
 
 						$ebanx_billing_argentina_document_type = array(
 							'type'    => 'select',
-							'label'   => __( 'Select a document type', 'woocommerce-gateway-ebanx' ),
+							'label'   => __( 'Select a document type', 'woocommerce-gateway-ebanx' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 							'default' => 'ARG_CUIT',
 							'id'      => 'ebanx_billing_argentina_document_type',
 							'class'   => array( 'ebanx_billing_argentina_selector', 'ebanx-select-field', 'address-field', 'wfacp_ebanx_field' ),
 							'options' => array(
-								'ARG_CUIT' => __( 'CUIT', 'woocommerce-gateway-ebanx' ),
-								'ARG_CUIL' => __( 'CUIL', 'woocommerce-gateway-ebanx' ),
-								'ARG_CDI'  => __( 'CDI', 'woocommerce-gateway-ebanx' ),
-								'ARG_DNI'  => __( 'DNI', 'woocommerce-gateway-ebanx' ),
+								'ARG_CUIT' => __( 'CUIT', 'woocommerce-gateway-ebanx' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+								'ARG_CUIL' => __( 'CUIL', 'woocommerce-gateway-ebanx' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+								'ARG_CDI'  => __( 'CDI', 'woocommerce-gateway-ebanx' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+								'ARG_DNI'  => __( 'DNI', 'woocommerce-gateway-ebanx' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 							),
 						);
 						$ebanx_billing_brazil_document         = array(
@@ -139,13 +139,13 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Ebanx' ) ) {
 						$ebanx_billing_colombia_document_type  = array(
 							'type'    => 'select',
 							'id'      => 'ebanx_billing_colombia_document_type',
-							'label'   => __( 'Select a document type', 'woocommerce-gateway-ebanx' ),
+							'label'   => __( 'Select a document type', 'woocommerce-gateway-ebanx' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 							'default' => 'COL_CDI',
 							'class'   => array( 'ebanx_billing_colombia_selector', 'ebanx-select-field', 'address-field', 'wfacp_ebanx_field' ),
 							'options' => array(
-								'COL_CDI' => __( 'Cédula de Ciudadania', 'woocommerce-gateway-ebanx' ),
-								'COL_NIT' => __( 'NIT', 'woocommerce-gateway-ebanx' ),
-								'COL_CEX' => __( 'Cédula de Extranjeria', 'woocommerce-gateway-ebanx' ),
+								'COL_CDI' => __( 'Cédula de Ciudadania', 'woocommerce-gateway-ebanx' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+								'COL_NIT' => __( 'NIT', 'woocommerce-gateway-ebanx' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+								'COL_CEX' => __( 'Cédula de Extranjeria', 'woocommerce-gateway-ebanx' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 							),
 						);
 						$ebanx_billing_colombia_document       = array(
@@ -165,7 +165,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Ebanx' ) ) {
 						$ebanx_billing_argentina_document      = array(
 							'type'    => 'text',
 							'id'      => 'ebanx_billing_argentina_document',
-							'label'   => __( 'Document', 'woocommerce-gateway-ebanx' ) . WC_EBANX_Gateway::REQUIRED_MARK,
+							'label'   => __( 'Document', 'woocommerce-gateway-ebanx' ) . WC_EBANX_Gateway::REQUIRED_MARK, // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 							'class'   => array( 'ebanx_billing_argentina_document', 'address-field', 'wfacp_ebanx_field' ),
 							'default' => isset( $cdi ) ? $cdi : '',
 						);
@@ -232,13 +232,12 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Ebanx' ) ) {
 		public function css() {
 			if ( class_exists( 'WC_EBANX_Gateway' ) && class_exists( 'WC_EBANX_Global_Gateway' ) ) {
 				?>
-                <style>.wfacp_ebanx_field {
-                        clear: both;
-                    }</style>
+				<style>.wfacp_ebanx_field {
+						clear: both;
+					}</style>
 				<?php
 			}
 		}
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_With_Ebanx(), 'ebanx_gateway' );

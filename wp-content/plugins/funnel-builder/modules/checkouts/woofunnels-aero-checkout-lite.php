@@ -143,7 +143,6 @@ if ( ! class_exists( 'WFACP_Core' ) ) :
 			/**
 			 * Initialize Localization
 			 */
-			add_action( 'init', array( $this, 'localization' ) );
 			add_action( 'plugins_loaded', array( $this, 'load_classes' ), 1 );
 			add_action( 'plugins_loaded', array( $this, 'register_classes' ), 2 );
 			add_action( 'activated_plugin', array( $this, 'maybe_flush_permalink' ) );
@@ -168,9 +167,7 @@ if ( ! class_exists( 'WFACP_Core' ) ) :
 			}
 		}
 
-		public function localization() {
-			load_plugin_textdomain( 'woofunnels-aero-checkout', false, plugin_basename( __DIR__ ) . '/languages' ); // phpcs:ignore FunnelBuilder.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound
-		}
+
 
 		public function load_classes() {
 

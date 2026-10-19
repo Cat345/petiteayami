@@ -39,9 +39,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Paypal_Express' ) ) {
 
 		public function active_progress_bar( $active, $step ) {
 			if ( $step != '' && $step != null ) {
-				if ( ! empty( $_GET['woo-paypal-return'] ) && ! empty( $_GET['token'] ) && ! empty( $_GET['PayerID'] ) ) {
+				if ( ! empty( $_GET['woo-paypal-return'] ) && ! empty( $_GET['token'] ) && ! empty( $_GET['PayerID'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 					$paypalsession = (array) WC()->session->get( 'paypal' );
-					if ( in_array( $_GET['woo-paypal-return'], $paypalsession ) && in_array( $_GET['token'], $paypalsession ) && in_array( $_GET['PayerID'], $paypalsession ) ) {
+					if ( in_array( $_GET['woo-paypal-return'], $paypalsession ) && in_array( $_GET['token'], $paypalsession ) && in_array( $_GET['PayerID'], $paypalsession ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 						$active = 'wfacp_bred_active wfacp_bred_visited ppec_express_checkout_m express_paypal_wrap';
 					}
 				}
@@ -206,7 +206,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Paypal_Express' ) ) {
 
 		public function replace_form_template( $template ) {
 
-			if ( ! isset( $_REQUEST['woo-paypal-return'] ) || ! isset( $_REQUEST['token'] ) || ! isset( $_REQUEST['PayerID'] ) ) {
+			if ( ! isset( $_REQUEST['woo-paypal-return'] ) || ! isset( $_REQUEST['token'] ) || ! isset( $_REQUEST['PayerID'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 				return $template;
 			}
 
@@ -263,7 +263,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Paypal_Express' ) ) {
 		}
 
 		public function copy_change_in_checkout_details() {
-			if ( ! isset( $_POST['payment_method'] ) || ( 'ppec_paypal' !== $_POST['payment_method'] ) ) {
+			if ( ! isset( $_POST['payment_method'] ) || ( 'ppec_paypal' !== $_POST['payment_method'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Payment-method comparison inside WC checkout processing; WooCommerce core has already verified its checkout nonce before this hook/filter runs.
 				return;
 			}
 			if ( function_exists( 'wc_gateway_ppec' ) && WFACP_Common::get_id() > 0 && wc_gateway_ppec()->checkout->has_active_session() ) {
@@ -274,7 +274,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Paypal_Express' ) ) {
 					}
 
 					foreach ( $posted_data as $key => $value ) {
-						if ( isset( $_POST[ $key ] ) ) {
+						if ( isset( $_POST[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Presence check while restoring session-held posted data during WC checkout; WooCommerce core has already verified its checkout nonce before this hook/filter runs.
 							$_POST[ $key ] = $value;
 						}
 					}
@@ -284,7 +284,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Paypal_Express' ) ) {
 
 		public function woocommerce_checkout_fields( $field ) {
 
-			if ( ! isset( $_POST['payment_method'] ) || ( 'ppec_paypal' !== $_POST['payment_method'] ) ) {
+			if ( ! isset( $_POST['payment_method'] ) || ( 'ppec_paypal' !== $_POST['payment_method'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Payment-method comparison inside WC checkout processing; WooCommerce core has already verified its checkout nonce before this hook/filter runs.
 				return $field;
 			}
 			$available_fields = [ 'country', 'city', 'state', 'postcode', 'address_1', 'address_2' ];

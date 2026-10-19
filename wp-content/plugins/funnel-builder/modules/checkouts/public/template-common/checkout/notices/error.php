@@ -26,8 +26,8 @@ if ( ! $notices ) {
 ?>
 <ul class="woocommerce-error" role="alert">
 	<?php foreach ( $notices as $notice ) : ?>
-		<li<?php echo wc_get_notice_data_attr( $notice ); ?>>
-			<?php echo wc_kses_notice( $notice['notice'] ); ?>
+		<li<?php echo wc_get_notice_data_attr( $notice ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- matches WooCommerce core notices template. ?>>
+			<?php echo wc_kses_notice( $notice['notice'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wc_kses_notice() escapes; matches WooCommerce core. ?>
 		</li>
 	<?php endforeach; ?>
 </ul>

@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 if ( ! class_exists( 'BWF_Facebook_Sdk_Factory' ) ) {
 	#[AllowDynamicProperties]
-	class BWF_Facebook_Sdk_Factory {
+	class BWF_Facebook_Sdk_Factory { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 
 
 		private static $pixel_id        = null;

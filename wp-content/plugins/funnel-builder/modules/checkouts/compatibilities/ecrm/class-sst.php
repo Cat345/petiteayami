@@ -16,11 +16,11 @@ if ( ! class_exists( 'WFACP_Compatibility_With_SST' ) ) {
 		private $sst_obj = null;
 
 		public function __construct() {
-			add_action( 'wfacp_template_load', [ $this, 'remove_sst_hook' ] );
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_sst_field' ] );
+			add_action( 'wfacp_template_load', array( $this, 'remove_sst_hook' ) );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_sst_field' ) );
 			add_filter( 'wfacp_html_fields_sst_tax', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'call_sst_hook' ], 10, 3 );
-			add_action( 'wfacp_internal_css', [ $this, 'add_css' ] );
+			add_action( 'process_wfacp_html', array( $this, 'call_sst_hook' ), 10, 3 );
+			add_action( 'wfacp_internal_css', array( $this, 'add_css' ) );
 
 			/* prevent third party fields and wrapper*/
 
@@ -42,13 +42,13 @@ if ( ! class_exists( 'WFACP_Compatibility_With_SST' ) ) {
 		}
 
 		public function add_sst_field( $field ) {
-			$field['sst_tax'] = [
+			$field['sst_tax'] = array(
 				'type'       => 'wfacp_html',
-				'class'      => [ 'sst_tax' ],
+				'class'      => array( 'sst_tax' ),
 				'id'         => 'sst_tax',
 				'field_type' => 'advanced',
-				'label'      => __( 'Simple Sales Tax', 'woocommerce' ),
-			];
+				'label'      => __( 'Simple Sales Tax', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			);
 
 			return $field;
 		}
@@ -64,36 +64,36 @@ if ( ! class_exists( 'WFACP_Compatibility_With_SST' ) ) {
 
 		public function add_css() {
 			?>
-            <style>
-                .form-row-wide {
-                    clear: none;
-                }
+			<style>
+				.form-row-wide {
+					clear: none;
+				}
 
-                body .wfacp_main_form.woocommerce .wfacp_sst_field h3 input[type=checkbox] {
-                    position: relative;
-                }
+				body .wfacp_main_form.woocommerce .wfacp_sst_field h3 input[type=checkbox] {
+					position: relative;
+				}
 
-                body .wfacp_main_form.woocommerce .wfacp_sst_field {
-                    padding-left: 15px !important;
-                    clear: both;
-                }
+				body .wfacp_main_form.woocommerce .wfacp_sst_field {
+					padding-left: 15px !important;
+					clear: both;
+				}
 
-                #sst-certificates {
-                    width: 100%;
-                }
+				#sst-certificates {
+					width: 100%;
+				}
 
-                .sst-certificate-modal-content p.form-row.sst-input.validate-required.woocommerce-invalid-required-field.woocommerce-invalid input {
-                    border: 1px solid red;
-                }
+				.sst-certificate-modal-content p.form-row.sst-input.validate-required.woocommerce-invalid-required-field.woocommerce-invalid input {
+					border: 1px solid red;
+				}
 
-                .sst-certificate-modal-content p.form-row.sst-input.validate-required.woocommerce-invalid-required-field.woocommerce-invalid select {
-                    border: 1px solid red;
-                }
+				.sst-certificate-modal-content p.form-row.sst-input.validate-required.woocommerce-invalid-required-field.woocommerce-invalid select {
+					border: 1px solid red;
+				}
 
-                span.screen-reader-text {
-                    display: none;
-                }
-            </style>
+				span.screen-reader-text {
+					display: none;
+				}
+			</style>
 			<?php
 		}
 	}

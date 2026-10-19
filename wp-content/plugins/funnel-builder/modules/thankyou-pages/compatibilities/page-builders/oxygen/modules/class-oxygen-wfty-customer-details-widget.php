@@ -10,7 +10,7 @@ if ( ! class_exists( 'Oxygen_WFTY_Customer_Details_Widget' ) ) {
 
 	#[AllowDynamicProperties]
 
-  class Oxygen_WFTY_Customer_Details_Widget extends WFFN_ThankYou_WC_HTML_Block_Oxy {
+  class Oxygen_WFTY_Customer_Details_Widget extends WFFN_ThankYou_WC_HTML_Block_Oxy { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- vendor-convention widget class carrying the WF module prefix; referenced by the Pro plugin.
 		public $slug = 'wffn_thankyou_customer_details';
 		protected $id = 'wffn_thankyou_customer_details';
 

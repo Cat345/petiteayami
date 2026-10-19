@@ -125,7 +125,7 @@ if ( ! class_exists( 'WFFN_Template_Importer' ) ) {
 
 			if ( $builder === 'elementor' ) {
 				if ( ( ! version_compare( get_bloginfo( 'version' ), '5.0', '>=' ) && ( version_compare( ELEMENTOR_VERSION, '2.8.0', '>=' ) ) ) ) {
-					$message = sprintf( esc_html__( 'Elementor requires WordPress version %s+. please update the WordPress version to import the template.', 'funnel-builder' ), '5.0' );
+					$message = sprintf( /* translators: %s: required WordPress version number. */ esc_html__( 'Elementor requires WordPress version %s+. please update the WordPress version to import the template.', 'funnel-builder' ), '5.0' );
 
 					return array( 'error' => $message );
 				}

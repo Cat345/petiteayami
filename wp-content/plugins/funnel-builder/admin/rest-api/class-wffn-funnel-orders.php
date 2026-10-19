@@ -335,7 +335,36 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 				'is_pro'        => true,
 			);
 
-			return $filters;
+			$filters[0]['rules'][] = array(
+				'slug'            => 'journey_pages',
+				'title'           => __( 'Pages Visited', 'funnel-builder' ),
+				'type'            => 'search',
+				'multiple'        => true,
+				'operators'       => array(
+					'any' => __( 'Visited any of', 'funnel-builder' ),
+					'all' => __( 'Visited all of', 'funnel-builder' ),
+				),
+				'api'             => '/funnel-journey-pages/?s={{search}}',
+				'op_label'        => __( 'Pages', 'funnel-builder' ),
+				'required'        => array( 'rule', 'data' ),
+				'readable_text'   => '{{rule /}} - {{value /}}',
+				'default_options' => ( class_exists( 'WFFN_Journey' ) ) ? WFFN_Journey::default_page_options( $args['funnel_id'] ?? 0 ) : array(),
+				'is_pro'          => true,
+			);
+
+			/**
+			 * Filters the Conversion Tracking filter-rule list before it is returned to the app.
+			 *
+			 * Neutral seam so add-ons (e.g. PowerPack) can inject their own filter rules
+			 * without Lite knowing about them. Default returns the list unchanged.
+			 *
+			 * @since 3.16.1
+			 *
+			 * @param array $filters Assembled filter-rule groups.
+			 * @param array $args    Request args (carries `funnel_id`).
+			 * @param bool  $optin   Whether the list is for the Optins tab (`true`) or Orders (`false`).
+			 */
+			return apply_filters( 'wffn_conversion_filters_list', $filters, $args, $optin );
 		}
 
 		public function get_single_funnel_order( $request ) {
@@ -392,12 +421,12 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 				$response['items']  = $output;
 				$remaining_amount   = $order_total - ( $subtotal - $total_discount );
 				if ( $remaining_amount > 0 ) {
-					$response['other_cost_html'] = sprintf( __( 'including shipping and taxes ,other costs: %s', 'funnel-builder' ), wc_price( $remaining_amount, array( 'currency' => $currency ) ) );
+					$response['other_cost_html'] = sprintf( /* translators: %s: formatted amount of shipping, taxes and other costs. */ __( 'including shipping and taxes ,other costs: %s', 'funnel-builder' ), wc_price( $remaining_amount, array( 'currency' => $currency ) ) );
 					$response['other_cost']      = $remaining_amount;
 				}
 				if ( $total_discount > 0 ) {
 					$response['order_discount']      = $total_discount;
-					$response['order_discount_html'] = sprintf( __( 'Discount : <span>-</sapn> %s', 'funnel-builder' ), wc_price( $total_discount, array( 'currency' => $currency ) ) );
+					$response['order_discount_html'] = sprintf( /* translators: %s: formatted discount amount. */ __( 'Discount : <span>-</sapn> %s', 'funnel-builder' ), wc_price( $total_discount, array( 'currency' => $currency ) ) );
 				}
 				$response['order_total']      = $order_total;
 				$response['order_total_html'] = wc_price( $order_total, array( 'currency' => $currency ) );
@@ -484,13 +513,13 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			if ( $args['total_count'] ) {
 				$count_query = "SELECT count( DISTINCT aero_stats.order_id ) as total_count FROM  `{$wpdb->prefix}wfacp_stats` as aero_stats JOIN `{$wpdb->prefix}wc_order_stats` as orders ON aero_stats.order_id = orders.order_id JOIN {$wpdb->prefix}bwf_contact as cust ON cust.id = aero_stats.cid " . $conv_join . " WHERE {$where_query}";
 				// $count_query assembled from $wpdb->prepare() fragments (funnel IN-list, period, search) + whitelisted operator + absint LIMIT; remaining raw parts are trusted hook SQL. PHPCS cannot verify the assembled string.
-				$count_results              = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$count_results              = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 				$output_data['total_count'] = $count_results[0]['total_count'] ?? 0;
 			}
 
 			$order_stats_query = 'SELECT aero_stats.order_id,aero_stats.wfacp_id,aero_stats.fid,aero_stats.cid,cust.f_name,cust.l_name, cust.email, cust.contact_no as phone,orders.total_sales, aero_stats.date ' . $case_string . " FROM  `{$wpdb->prefix}wfacp_stats` as aero_stats JOIN `{$wpdb->prefix}wc_order_stats` as orders ON aero_stats.order_id = orders.order_id JOIN {$wpdb->prefix}bwf_contact as cust ON cust.id = aero_stats.cid " . $conv_join . " WHERE {$where_query} ORDER BY aero_stats.date DESC {$limit_str}";
 			// $order_stats_query assembled from $wpdb->prepare() fragments (funnel IN-list, period, search) + whitelisted operator + absint LIMIT; $case_string/$conv_join are trusted hook SQL. PHPCS cannot verify the assembled string.
-			$results = $wpdb->get_results( $order_stats_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$results = $wpdb->get_results( $order_stats_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			$output_data['data'] = $this->add_funnel_title( $results );
 
@@ -569,7 +598,7 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 				$count_query = "SELECT count( DISTINCT tracking.source) as total_count FROM `{$wpdb->prefix}bwf_conversion_tracking` as tracking JOIN {$wpdb->prefix}bwf_contact as cust ON cust.id = tracking.contact_id " . $conv_join . " WHERE {$where_query}";
 
 				// $count_query assembled from $wpdb->prepare() fragments (funnel IN-list, period, search) + whitelisted operator + absint LIMIT; remaining raw parts are trusted hook SQL. PHPCS cannot verify the assembled string.
-				$count_results              = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$count_results              = $wpdb->get_results( $count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 				$output_data['total_count'] = $count_results[0]['total_count'] ?? 0;
 			}
 
@@ -577,9 +606,7 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			$order_stats_query  = "SELECT (CASE WHEN TIMESTAMPDIFF( SECOND, tracking.first_click, tracking.timestamp ) != 0 THEN TIMESTAMPDIFF( SECOND, tracking.first_click, tracking.timestamp ) ELSE 0 END ) as 'convert_time', tracking.source as 'order_id', {$order_number_field} tracking.step_id as 'wfacp_id', tracking.funnel_id as 'fid', tracking.contact_id as 'cid', cust.f_name as 'f_name', cust.l_name as 'l_name', cust.email as 'email', cust.contact_no as 'phone', tracking.value as 'total_sales', tracking.timestamp as 'date' " . $case_string . " FROM  `{$wpdb->prefix}bwf_conversion_tracking` as tracking JOIN {$wpdb->prefix}bwf_contact as cust ON cust.id = tracking.contact_id " . $conv_join . " WHERE {$where_query} GROUP BY tracking.source ORDER BY tracking.timestamp DESC {$limit_str}";
 
 			// $order_stats_query assembled from $wpdb->prepare() fragments (funnel IN-list, period, search) + whitelisted operator + absint LIMIT; $case_string/$conv_join are trusted hook SQL. PHPCS cannot verify the assembled string.
-			$results = $wpdb->get_results( $order_stats_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			// $order_stats_query assembled from $wpdb->prepare() fragments (funnel IN-list, period, search) + whitelisted operator + absint LIMIT; $case_string/$conv_join are trusted hook SQL. PHPCS cannot verify the assembled string.
-			$results = $wpdb->get_results( $order_stats_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$results = $wpdb->get_results( $order_stats_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			foreach ( $results as &$result ) {
 				if ( isset( $result['referrers'] ) && $result['referrers'] === 'Direct' ) {
 					$result['referrers'] = __( 'Direct', 'funnel-builder' );
@@ -646,7 +673,7 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 
 		public function add_funnel_title( $args ) {
 			global $wpdb;
-			$results     = $wpdb->get_results( $wpdb->prepare( "select id as 'fid', title from {$wpdb->prefix}bwf_funnels WHERE 1 = %d", 1 ), ARRAY_A );
+			$results     = $wpdb->get_results( $wpdb->prepare( "select id as 'fid', title from {$wpdb->prefix}bwf_funnels WHERE 1 = %d", 1 ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			$funnel_data = array();
 			if ( is_array( $results ) && count( $results ) > 0 ) {
 				foreach ( $results as $item ) {
@@ -765,25 +792,25 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 				$conversion_tracking_table->delete_conversion_row( $entry_id );
 				$checkout_table->delete_report_for_order( $entry_id );
 
-				if ( WFFN_Common::wffn_is_funnel_pro_active() ) {
-					$order_bump_table = WFOB_Reporting::get_instance();
-					$upsell_tables    = WFOCU_Admin::get_instance();
+				if ( class_exists( 'WFOB_Reporting' ) ) {
+					WFOB_Reporting::get_instance()->delete_report_for_order( $entry_id );
+				}
 
-					$order_bump_table->delete_report_for_order( $entry_id );
-					$upsell_tables->clear_session_record_on_shop_order_delete( $entry_id );
+				if ( class_exists( 'WFOCU_Admin' ) ) {
+					WFOCU_Admin::get_instance()->clear_session_record_on_shop_order_delete( $entry_id );
 				}
 			}
 		}
 
 		public function prepare_order_data( $final_orders, $return_data = false ) {
 			return array_map(
-				function ( $result ) use ( $return_data ) {
+				function ( $result ) use ( $return_data, $final_orders ) {
 					$data = array(
 						'order_id'     => $result['order_id'],
 						'order_number' => $result['order_number'] ?? '',
 						'order_url'    => $result['order_url'] ?? '',
 						'email'        => $result['email'] ?? '',
-						'name'         => $result['f_name'] ?? '' . ' ' . $result['l_name'] ?? '',
+						'name'         => trim( ( $result['f_name'] ?? '' ) . ' ' . ( $result['l_name'] ?? '' ) ),
 						'phone'        => $result['phone'] ?? '',
 						'date'         => $result['date'] ?? '',
 						'referrers'    => $result['referrers'] ?? '',
@@ -814,7 +841,20 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 						$data['offer_rejected'] = ! empty( $result['offer_rejected'] ) ? $result['offer_rejected'] : '';
 					}
 
-					return $data;
+					/**
+					 * Filters an assembled Conversion Tracking order row before it is returned.
+					 *
+					 * Neutral seam so add-ons (e.g. PowerPack) can attach extra per-row data
+					 * (such as the resolved customer journey) without Lite knowing about it.
+					 * Default returns the row unchanged.
+					 *
+					 * @since 3.16.1
+					 *
+					 * @param array $data        Assembled row array.
+					 * @param array $result      Raw DB row for this order.
+					 * @param bool  $return_data Whether the row is being built for export.
+					 */
+					return apply_filters( 'wffn_conversion_order_row', $data, $result, $return_data, $final_orders );
 				},
 				$final_orders
 			);
@@ -827,7 +867,7 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 		 */
 		private function order_number_column_exists() {
 			global $wpdb;
-			$result = $wpdb->get_results( $wpdb->prepare( "SHOW COLUMNS FROM {$wpdb->prefix}bwf_conversion_tracking LIKE %s", 'order_number' ) );
+			$result = $wpdb->get_results( $wpdb->prepare( "SHOW COLUMNS FROM {$wpdb->prefix}bwf_conversion_tracking LIKE %s", 'order_number' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			return ! empty( $result );
 		}
 
@@ -953,7 +993,7 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			if ( 'yes' === $args['total_count'] ) {
 				$total_count_query = "select count( DISTINCT tracking.source) as total_count from {$wpdb->prefix}bwf_conversion_tracking as tracking JOIN {$wpdb->prefix}bwf_optin_entries as optin ON tracking.source = optin.id where {$where_query}";
 				// $total_count_query assembled from $wpdb->prepare() fragments (search, funnel IN-list, period); $case_string is trusted hook SQL. PHPCS cannot verify the assembled string.
-				$total_count_result = $wpdb->get_results( $total_count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$total_count_result = $wpdb->get_results( $total_count_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 				if ( ! empty( $total_count_result ) ) {
 					$response['total_count'] = absint( $total_count_result[0]['total_count'] );
 				}
@@ -962,7 +1002,7 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			$sql_query = "{$select_type} from {$wpdb->prefix}bwf_conversion_tracking as tracking JOIN {$wpdb->prefix}bwf_optin_entries as optin ON tracking.source = optin.id where {$where_query} ORDER BY tracking.source DESC {$limit_str}";
 
 			// $sql_query assembled from $wpdb->prepare() fragments (search, funnel IN-list, period) + absint LIMIT; $case_string is trusted hook SQL. PHPCS cannot verify the assembled string.
-			$results  = $wpdb->get_results( $sql_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$results  = $wpdb->get_results( $sql_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( is_array( $db_error ) && isset( $db_error['db_error'] ) && true === $db_error['db_error'] ) {
 				return rest_ensure_response( $response );
@@ -983,11 +1023,11 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 			$results = $this->add_funnel_title( $results );
 
 			foreach ( $results as $result ) {
-				$entry_id       = $result['id'];
-				$optin_data     = json_decode( $result['data'], true );
-				$full_name      = ( $optin_data['optin_first_name'] ?? '' ) . ' ' . ( $optin_data['optin_last_name'] ?? '' );
-				$phone          = ! empty( $result['phone'] ) ? $result['phone'] : ( ! empty( $optin_data['optin_phone'] ) ? $optin_data['optin_phone'] : '' );
-				$final_result[] = array(
+				$entry_id   = $result['id'];
+				$optin_data = json_decode( $result['data'], true );
+				$full_name  = trim( ( $optin_data['optin_first_name'] ?? '' ) . ' ' . ( $optin_data['optin_last_name'] ?? '' ) );
+				$phone      = ! empty( $result['phone'] ) ? $result['phone'] : ( ! empty( $optin_data['optin_phone'] ) ? $optin_data['optin_phone'] : '' );
+				$optin_row  = array(
 					'entry_id'     => $entry_id,
 					'email'        => $result['email'] ?? '',
 					'name'         => $full_name,
@@ -1000,12 +1040,27 @@ if ( ! class_exists( 'WFFN_Funnel_Orders' ) ) {
 					'utm_source'   => $result['utm_source'] ?? '',
 					'utm_medium'   => $result['utm_medium'] ?? '',
 					'utm_term'     => $result['utm_term'] ?? '',
+					'utm_content'  => $result['utm_content'] ?? '',
 					'customer_id'  => $result['cid'],
 					'funnel_title' => $result['funnel_title'] ?? '',
 					'fid'          => $result['fid'] ?? '',
 					'convert_time' => ( isset( $result['convert_time'] ) ) ? human_time_diff( current_time( 'timestamp' ), current_time( 'timestamp' ) + absint( $result['convert_time'] ) ) ?? '' : '',
 
 				);
+
+				/**
+				 * Filter a single assembled optin row before it is returned.
+				 *
+				 * Mirrors wffn_conversion_order_row for the optins list.
+				 * Default returns the row unchanged.
+				 *
+				 * @since 3.16.1
+				 *
+				 * @param array $data        Assembled row array.
+				 * @param array $result      Raw DB row for this optin.
+				 * @param bool  $return_data Whether the row is being built for export.
+				 */
+				$final_result[] = apply_filters( 'wffn_conversion_optin_row', $optin_row, $result, $return_data, $results );
 			}
 
 			$funnel_data             = ( isset( $args['funnel_id'] ) && ! empty( $args['funnel_id'] ) ) ? WFFN_REST_Funnels::get_instance()->get_funnel_data( $args['funnel_id'] ) : array();

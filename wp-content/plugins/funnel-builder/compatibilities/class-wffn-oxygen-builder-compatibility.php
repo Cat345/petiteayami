@@ -56,7 +56,7 @@ if ( ! class_exists( 'WFFN_OXYGEN' ) ) {
 			if ( did_action( 'oxygen_add_plus_woofunnels_woofunnels' ) > 0 ) {
 				return;
 			}
-			do_action( 'oxygen_add_plus_woofunnels_woofunnels' );
+			do_action( 'oxygen_add_plus_woofunnels_woofunnels' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 		}
 
 		public static function disable_signature_checking() {

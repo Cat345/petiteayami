@@ -658,9 +658,11 @@ class SqlWalker implements TreeWalker
  public function walkOrderByClause($orderByClause)
  {
  $orderByItems = array_map([$this, 'walkOrderByItem'], $orderByClause->orderByItems);
+ if ($orderByClause->includeCollectionOrderByItems) {
  $collectionOrderByItems = $this->generateOrderedCollectionOrderByItems();
  if ($collectionOrderByItems !== '') {
  $orderByItems = array_merge($orderByItems, (array) $collectionOrderByItems);
+ }
  }
  return ' ORDER BY ' . implode(', ', $orderByItems);
  }

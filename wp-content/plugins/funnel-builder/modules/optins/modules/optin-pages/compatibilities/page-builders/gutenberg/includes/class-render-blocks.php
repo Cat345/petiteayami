@@ -182,7 +182,7 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 						<?php } ?>
 						<div class="bwf_pp_opt_head"><?php echo esc_html( $settings['heading'] ); ?></div>
 						<div class="bwf_pp_opt_sub_head"><?php echo wp_kses_post( $settings['subHeading'] ); ?></div>
-						<?php echo $content; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<?php echo $content; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core parity: the_content()/block output, raw like WP core. ?>
 						<div class="bwf_pp_footer"><?php echo esc_html( $settings['textAfter'] ); ?></div>
 					</div>
 				</div>
@@ -363,27 +363,154 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 			$output .= '<div class="bwfop-secondary">';
 			// Button Icon Left Side
 			if ( isset( $button['icon'] ) && ! empty( $button['icon'] ) && 'left' === $button['iconPos'] ) {
-				$output .= '<span class="bwf-icon-inner-svg">' . $button['icon'] . '</span>';
+				$output .= '<span class="bwf-icon-inner-svg">' . wp_kses( $button['icon'], $this->get_allowed_icon_svg_tags() ) . '</span>';
 			}
 
 			// Button content
-			$output .= isset( $settings['content'] ) ? '<span class="bwf-btn-inner-text">' . $settings['content'] . '</span>' : '';
+			$output .= isset( $settings['content'] ) ? '<span class="bwf-btn-inner-text">' . wp_kses_post( $settings['content'] ) . '</span>' : '';
 
 			// Button Icon Right Side
 			if ( isset( $button['icon'] ) && ! empty( $button['icon'] ) && 'right' === $button['iconPos'] ) {
-				$output .= '<span class="bwf-icon-inner-svg">' . $button['icon'] . '</span>';
+				$output .= '<span class="bwf-icon-inner-svg">' . wp_kses( $button['icon'], $this->get_allowed_icon_svg_tags() ) . '</span>';
 			}
 			$output .= '</div>';
 			// Button Secondary Text (Sub heading)
 			if ( isset( $settings['secondaryContentEnable'] ) && ! empty( $settings['secondaryContentEnable'] ) ) {
 				$content2 = isset( $settings['secondaryContent'] ) ? $settings['secondaryContent'] : '';
-				$output  .= '<span class="bwf-btn-sub-text">' . $content2 . '</span>';
+				$output  .= '<span class="bwf-btn-sub-text">' . wp_kses_post( $content2 ) . '</span>';
 			}
 
 			$output .= '</button>';
 			$output .= '</div>';
 
 			return $output;
+		}
+
+		/**
+		 * Minimal allow-list of SVG tags/attributes for icon markup stored on the block.
+		 * wp_kses_post() strips <svg>/<path> entirely, so icon output needs its own list.
+		 * No href/xlink:href anywhere in this list, so a javascript: URI can never survive.
+		 *
+		 * @return array
+		 */
+		private function get_allowed_icon_svg_tags() {
+			return array(
+				'svg'      => array(
+					'stroke'          => true,
+					'stroke-width'    => true,
+					'stroke-linecap'  => true,
+					'stroke-linejoin' => true,
+					'fill-rule'       => true,
+					'clip-rule'       => true,
+					'opacity'         => true,
+					'class'           => true,
+					'aria-hidden'     => true,
+					'role'            => true,
+					'xmlns'           => true,
+					'width'           => true,
+					'height'          => true,
+					'viewbox'         => true,
+					'fill'            => true,
+				),
+				'g'        => array(
+					'stroke'          => true,
+					'stroke-width'    => true,
+					'stroke-linecap'  => true,
+					'stroke-linejoin' => true,
+					'fill-rule'       => true,
+					'clip-rule'       => true,
+					'opacity'         => true,
+					'fill'            => true,
+				),
+				'path'     => array(
+					'stroke'          => true,
+					'stroke-width'    => true,
+					'stroke-linecap'  => true,
+					'stroke-linejoin' => true,
+					'fill-rule'       => true,
+					'clip-rule'       => true,
+					'opacity'         => true,
+					'd'               => true,
+					'fill'            => true,
+				),
+				'circle'   => array(
+					'stroke'          => true,
+					'stroke-width'    => true,
+					'stroke-linecap'  => true,
+					'stroke-linejoin' => true,
+					'fill-rule'       => true,
+					'clip-rule'       => true,
+					'opacity'         => true,
+					'cx'              => true,
+					'cy'              => true,
+					'r'               => true,
+					'fill'            => true,
+				),
+				'rect'     => array(
+					'stroke'          => true,
+					'stroke-width'    => true,
+					'stroke-linecap'  => true,
+					'stroke-linejoin' => true,
+					'fill-rule'       => true,
+					'clip-rule'       => true,
+					'opacity'         => true,
+					'x'               => true,
+					'y'               => true,
+					'width'           => true,
+					'height'          => true,
+					'rx'              => true,
+					'fill'            => true,
+				),
+				'line'     => array(
+					'stroke'          => true,
+					'stroke-width'    => true,
+					'stroke-linecap'  => true,
+					'stroke-linejoin' => true,
+					'fill-rule'       => true,
+					'clip-rule'       => true,
+					'opacity'         => true,
+					'x1'              => true,
+					'y1'              => true,
+					'x2'              => true,
+					'y2'              => true,
+				),
+				'polyline' => array(
+					'stroke'          => true,
+					'stroke-width'    => true,
+					'stroke-linecap'  => true,
+					'stroke-linejoin' => true,
+					'fill-rule'       => true,
+					'clip-rule'       => true,
+					'opacity'         => true,
+					'points'          => true,
+					'fill'            => true,
+				),
+				'polygon'  => array(
+					'stroke'          => true,
+					'stroke-width'    => true,
+					'stroke-linecap'  => true,
+					'stroke-linejoin' => true,
+					'fill-rule'       => true,
+					'clip-rule'       => true,
+					'opacity'         => true,
+					'points'          => true,
+					'fill'            => true,
+				),
+				'ellipse'  => array(
+					'stroke'          => true,
+					'stroke-width'    => true,
+					'stroke-linecap'  => true,
+					'stroke-linejoin' => true,
+					'fill-rule'       => true,
+					'clip-rule'       => true,
+					'opacity'         => true,
+					'cx'              => true,
+					'cy'              => true,
+					'rx'              => true,
+					'ry'              => true,
+					'fill'            => true,
+				),
+			);
 		}
 	}
 

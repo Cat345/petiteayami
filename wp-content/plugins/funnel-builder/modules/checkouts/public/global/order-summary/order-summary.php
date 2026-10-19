@@ -6,8 +6,8 @@ if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 /**
  * @var $_product WC_Product_Variation
  */
-$instance     = wfacp_template();
-$data         = $instance->get_checkout_fields();
+$wfacp_instance     = wfacp_template();
+$data         = $wfacp_instance->get_checkout_fields();
 $field        = isset( $data['advanced'] ) ? ( isset( $data['advanced']['order_summary'] ) ? $data['advanced']['order_summary'] : '' ) : array();
 $colspan_attr = '';
 unset( $data );
@@ -30,10 +30,10 @@ if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
 $wc_version = WC()->version;
 ?>
 	<div class="wfacp_order_summary wfacp_wrapper_start wfacp_order_sec <?php echo esc_attr( $classes . ' ' . $tax_enabled ); ?>" id="order_summary_field" data-time="<?php echo esc_attr( WFACP_Common::get_fragments_time() ); ?>">
-		<?php do_action( 'wfacp_before_order_summary', $field, $instance ); ?>
-		<label class="wfacp-order-summary-label"><?php echo esc_html( isset( $field['label'] ) ? $field['label'] : WFACP_Common::translation_string_to_check( __( 'Order Summary', 'woocommerce' ) ) ); ?></label>
+		<?php do_action( 'wfacp_before_order_summary', $field, $wfacp_instance ); ?>
+		<label class="wfacp-order-summary-label"><?php echo esc_html( isset( $field['label'] ) ? $field['label'] : WFACP_Common::translation_string_to_check( __( 'Order Summary', 'woocommerce' ) ) ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?></label>
 		<div class="wfacp_anim wfacp_order_summary_container">
-			<table class="shop_table woocommerce-checkout-review-order-table <?php echo esc_attr( $instance->get_template_slug() ); ?>">
+			<table class="shop_table woocommerce-checkout-review-order-table <?php echo esc_attr( $wfacp_instance->get_template_slug() ); ?>">
 				<?php
 				if ( false === $hide_item_content ) {
 					?>
@@ -50,16 +50,16 @@ $wc_version = WC()->version;
 							}
 							?>
 							<div class="product-name <?php echo esc_attr( $hideImageCls ); ?>">
-								<?php echo apply_filters( 'wfacp_order_summary_column_item_heading', __( 'Product', 'woocommerce' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch ?>
+								<?php echo apply_filters( 'wfacp_order_summary_column_item_heading', __( 'Product', 'woocommerce' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch -- public heading filter, consumers may return markup; revisit in the ignore-audit phase. ?>
 							</div>
 						</th>
-						<th class="product-total"><?php echo apply_filters( 'wfacp_order_summary_column_total_heading', __( 'Total', 'woocommerce' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch ?></th>
+						<th class="product-total"><?php echo apply_filters( 'wfacp_order_summary_column_total_heading', __( 'Total', 'woocommerce' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch -- public heading filter, consumers may return markup; revisit in the ignore-audit phase. ?></th>
 					</tr>
 					</thead>
 					<tbody>
 					<?php
 					do_action( 'woocommerce_review_order_before_cart_contents' );
-					foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
+					foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
 						$_product = apply_filters( 'woocommerce_cart_item_product1', $cart_item['data'], $cart_item, $cart_item_key );
 						if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_checkout_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
 							?>
@@ -70,14 +70,14 @@ $wc_version = WC()->version;
 									if ( apply_filters( 'wfacp_cart_show_product_thumbnail', false ) ) {
 										$hideImageCls = 'wfacp_summary_img_true';
 										$thumbnail    = WFACP_Common::get_product_image( $_product, array( 100, 100 ), $cart_item, $cart_item_key );
-										$thumbnail    = apply_filters( 'wfacp_cart_image', $thumbnail, $_product );
+										$thumbnail    = apply_filters( 'wfacp_cart_image', $thumbnail, $_product, $cart_item, $cart_item_key );
 										?>
 										<div class="product-image">
 											<div class="wfacp-pro-thumb">
 												<div class="wfacp-qty-ball">
-													<div class="wfacp-qty-count"><span class="wfacp-pro-count"><?php echo $cart_item['quantity'];  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></div>
+													<div class="wfacp-qty-count"><span class="wfacp-pro-count"><?php echo esc_html( $cart_item['quantity'] ); ?></span></div>
 												</div>
-												<?php echo $thumbnail;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+												<?php echo $thumbnail;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- product image HTML from the cart-item-thumbnail filter; core echoes it raw. ?>
 											</div>
 										</div>
 									<?php } ?>
@@ -86,7 +86,7 @@ $wc_version = WC()->version;
 										<?php
 										do_action( 'wfacp_order_summary_field_after_product_name', $cart_item, $cart_item_key );
 
-										echo apply_filters( 'woocommerce_checkout_cart_item_quantity', ' <strong class="product-quantity">' . sprintf( '&times; %s', $cart_item['quantity'] ) . '</strong>', $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+										echo apply_filters( 'woocommerce_checkout_cart_item_quantity', ' <strong class="product-quantity">' . sprintf( '&times; %s', $cart_item['quantity'] ) . '</strong>', $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- B0 register: quantity filter may return an <input>; WooCommerce core echoes it raw.
 										if ( apply_filters( 'wfacp_allow_woocommerce_after_cart_item_name_order_summary', false, $cart_item, $cart_item_key ) ) {
 											/**
 											 * added in 2.0.0
@@ -94,9 +94,9 @@ $wc_version = WC()->version;
 											do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key );
 										}
 										if ( version_compare( $wc_version, '3.3.0', '>=' ) ) {
-											echo wc_get_formatted_cart_item_data( $cart_item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+											echo wc_get_formatted_cart_item_data( $cart_item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce core echoes this raw in its own templates.
 										} else {
-											echo WC()->cart->get_item_data( $cart_item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+											echo WC()->cart->get_item_data( $cart_item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce core echoes this raw in its own templates.
 										}
 
 										/**
@@ -131,12 +131,12 @@ $wc_version = WC()->version;
 													$cart_item_key
 												);
 											}
-											echo $price_show; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+											echo $price_show; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wc_price()-built HTML; matches core.
 										} elseif ( apply_filters( 'wfacp_woocommerce_cart_item_subtotal_except_subscription', true, $_product, $cart_item, $cart_item_key ) ) {
 
 
 
-												echo apply_filters( 'woocommerce_cart_item_subtotal', WFACP_Common::get_product_subtotal( $_product, $cart_item, false, $order_summary_strike ), $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+												echo apply_filters( 'woocommerce_cart_item_subtotal', WFACP_Common::get_product_subtotal( $_product, $cart_item, false, $order_summary_strike ), $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- price HTML filter; WooCommerce core echoes it raw (B5 register).
 										} else {
 											do_action( 'wfacp_woocommerce_cart_item_subtotal_except_subscription_placeholder', $_product, $cart_item, $cart_item_key );
 										}
@@ -158,12 +158,12 @@ $wc_version = WC()->version;
 				?>
 				<tfoot>
 				<tr class="cart-subtotal">
-					<th <?php echo $colspan_attr; ?>><span><?php esc_html_e( 'Subtotal', 'woocommerce' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></span></th>
+					<th <?php echo $colspan_attr; ?>><span><?php esc_html_e( 'Subtotal', 'woocommerce' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch,WordPress.Security.EscapeOutput.OutputNotEscaped -- complete attribute from the wfacp_order_summary_cols_span filter; revisit in the ignore-audit phase. ?></span></th>
 					<td><?php wc_cart_totals_subtotal_html(); ?></td>
 				</tr>
 				<?php foreach ( WC()->cart->get_coupons() as $code => $coupon ) : ?>
 					<tr class="cart-discount coupon-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
-						<th <?php echo $colspan_attr; ?>><span><?php $instance->wc_cart_totals_coupon_label( $coupon );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></th>
+						<th <?php echo $colspan_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete attribute from the wfacp_order_summary_cols_span filter; revisit in the ignore-audit phase. ?>><span><?php $wfacp_instance->wc_cart_totals_coupon_label( $coupon );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></th>
 						<td>
 						<?php
 						wc_cart_totals_coupon_html( $coupon );
@@ -174,7 +174,7 @@ $wc_version = WC()->version;
 				<?php endforeach; ?>
 				<?php foreach ( WC()->cart->get_fees() as $fee ) : ?>
 					<tr class="fee">
-						<th <?php echo $colspan_attr; ?>><?php echo esc_html( $fee->name );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
+						<th <?php echo $colspan_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete attribute from the wfacp_order_summary_cols_span filter; revisit in the ignore-audit phase. ?>><?php echo esc_html( $fee->name );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
 						<td><?php wc_cart_totals_fee_html( $fee ); ?></td>
 					</tr>
 				<?php endforeach; ?>
@@ -183,8 +183,8 @@ $wc_version = WC()->version;
 				if ( WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) {
 
 					// if Shipping method field not exist in form
-					$instance = wfacp_template();
-					$method   = $instance->have_shipping_method();
+					$wfacp_instance = wfacp_template();
+					$method   = $wfacp_instance->have_shipping_method();
 					if ( false === $method ) {
 						do_action( 'woocommerce_review_order_before_shipping' );
 					}
@@ -205,20 +205,20 @@ $wc_version = WC()->version;
 					<?php if ( 'itemized' === get_option( 'woocommerce_tax_total_display' ) ) : ?>
 						<?php foreach ( WC()->cart->get_tax_totals() as $code => $tax ) : ?>
 							<tr class="tax-rate tax-rate-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
-								<th <?php echo $colspan_attr; ?>><?php echo esc_html( $tax->label );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
+								<th <?php echo $colspan_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete attribute from the wfacp_order_summary_cols_span filter; revisit in the ignore-audit phase. ?>><?php echo esc_html( $tax->label );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
 								<td><?php echo wp_kses_post( $tax->formatted_amount ); ?></td>
 							</tr>
 						<?php endforeach; ?>
 					<?php else : ?>
 						<tr class="tax-total">
-							<th <?php echo $colspan_attr; ?>><span><?php echo esc_html( WC()->countries->tax_or_vat() );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></th>
+							<th <?php echo $colspan_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete attribute from the wfacp_order_summary_cols_span filter; revisit in the ignore-audit phase. ?>><span><?php echo esc_html( WC()->countries->tax_or_vat() );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></th>
 							<td><?php wc_cart_totals_taxes_total_html(); ?></td>
 						</tr>
 					<?php endif; ?>
 				<?php endif; ?>
 				<?php do_action( 'woocommerce_review_order_before_order_total' ); ?>
 				<tr class="order-total">
-					<th <?php echo $colspan_attr; ?>><span><?php esc_html_e( 'Total', 'woocommerce' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></span></th>
+					<th <?php echo $colspan_attr; ?>><span><?php esc_html_e( 'Total', 'woocommerce' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch,WordPress.Security.EscapeOutput.OutputNotEscaped -- complete attribute from the wfacp_order_summary_cols_span filter; revisit in the ignore-audit phase. ?></span></th>
 					<td><?php wc_cart_totals_order_total_html(); ?></td>
 				</tr>
 				<?php
@@ -231,7 +231,7 @@ $wc_version = WC()->version;
 				</tfoot>
 			</table>
 		</div>
-		<?php do_action( 'wfacp_after_order_summary', $field, $instance ); ?>
+		<?php do_action( 'wfacp_after_order_summary', $field, $wfacp_instance ); ?>
 	</div>
 <?php
 remove_filter( 'wp_get_attachment_image_attributes', 'WFACP_Common::remove_src_set' );

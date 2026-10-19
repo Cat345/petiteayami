@@ -465,7 +465,7 @@ class Configuration extends \MailPoetVendor\Doctrine\DBAL\Configuration
  {
  // @phpstan-ignore classConstant.deprecatedTrait (Because we support Symfony < 7.3)
  if ($flag && !trait_exists(LazyGhostTrait::class)) {
- throw new LogicException('Lazy ghost objects cannot be enabled because the "symfony/var-exporter" library' . ' version 6.2 or higher is not installed. Please run "composer require symfony/var-exporter:^6.2".');
+ throw new LogicException('Lazy ghost objects cannot be enabled because the "symfony/var-exporter" library' . ' version 6.2 or 7 is not installed. Please run "composer require symfony/var-exporter:^6.4".');
  }
  if ($flag && !class_exists(RuntimeReflectionProperty::class)) {
  throw new LogicException('Lazy ghost objects cannot be enabled because the "doctrine/persistence" library' . ' version 3.1 or higher is not installed. Please run "composer update doctrine/persistence".');

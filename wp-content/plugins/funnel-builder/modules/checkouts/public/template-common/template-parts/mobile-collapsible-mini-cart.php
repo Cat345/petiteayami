@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
-$checkout            = WC()->checkout();
+$checkout            = WC()->checkout(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
 $template            = wfacp_template();
 $cart_collapse_title = $template->get_mobile_mini_cart_collapsible_title();
 $cart_expanded_title = $template->get_mobile_mini_cart_expand_title();

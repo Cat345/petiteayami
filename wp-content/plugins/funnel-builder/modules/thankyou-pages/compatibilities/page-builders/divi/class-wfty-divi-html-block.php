@@ -97,7 +97,7 @@ if ( ! class_exists( 'WFTY_Divi_HTML_BLOCK' ) ) {
 			}
 			?>
             <script>
-                function <?php echo $this->get_slug(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>_fields(utils, props) {
+                function <?php echo esc_js( $this->get_slug() ); ?>_fields(utils, props) {
                     let data = {};
                     data.typography =<?php echo count( $this->typography ) > 0 ? wp_json_encode( $this->typography ) : '{}'?>;
                     data.margin_padding =<?php echo count( $margin_padding_data ) > 0 ? wp_json_encode( $margin_padding_data ) : '{}'?>;

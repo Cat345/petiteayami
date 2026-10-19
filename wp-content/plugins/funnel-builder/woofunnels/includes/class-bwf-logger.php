@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 if ( ! class_exists( 'BWF_Logger' ) ) {
 	#[AllowDynamicProperties]
-	class BWF_Logger {
+	class BWF_Logger { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- BWF_ is the established WooFunnels framework prefix (3 chars, below PCP's 4-char detection floor); shared across the plugin family.
 
 		private static $ins = null;
 		public $wc_logger = null;
@@ -23,7 +23,7 @@ if ( ! class_exists( 'BWF_Logger' ) ) {
 
 		public function log( $message, $file_name = '', $folder_prefix = 'fk-temp', $force = false ) {
 
-			if ( ! $force && false === apply_filters( 'bwf_logs_allowed', false, $file_name ) ) {
+			if ( ! $force && false === apply_filters( 'bwf_logs_allowed', false, $file_name ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				return;
 			}
 			$plugin_short_name = $folder_prefix . '-logs';

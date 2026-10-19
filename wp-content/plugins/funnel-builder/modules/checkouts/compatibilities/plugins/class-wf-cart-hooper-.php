@@ -9,7 +9,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WF_Cart_Hooper' ) ) {
 
 		public function action() {
 
-			if ( ! isset( $_GET['page'] ) || ! defined( 'WFCH_SLUG' ) || $_GET['page'] != WFCH_SLUG ) {
+			if ( ! isset( $_GET['page'] ) || ! defined( 'WFCH_SLUG' ) || $_GET['page'] != WFCH_SLUG ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin request routing; WP core builds this URL without a nonce.
 				return;
 			}
 			$this->save_publish_checkout_pages_in_transient( true );

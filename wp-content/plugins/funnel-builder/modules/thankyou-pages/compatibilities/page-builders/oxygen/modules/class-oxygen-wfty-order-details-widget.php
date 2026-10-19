@@ -10,7 +10,7 @@ if ( ! class_exists( 'Oxygen_WFTY_Order_Details_Widget' ) ) {
 
 	#[AllowDynamicProperties]
 
-	class Oxygen_WFTY_Order_Details_Widget extends WFFN_ThankYou_WC_HTML_Block_Oxy {
+	class Oxygen_WFTY_Order_Details_Widget extends WFFN_ThankYou_WC_HTML_Block_Oxy { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- vendor-convention widget class carrying the WF module prefix; referenced by the Pro plugin.
 		public $slug  = 'wffn_thankyou_order_details';
 		protected $id = 'wffn_thankyou_order_details';
 
@@ -220,28 +220,28 @@ if ( ! class_exists( 'Oxygen_WFTY_Order_Details_Widget' ) ) {
 					?>
 					<style>
 						#
-						<?php echo $settings['selector'];//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<?php echo esc_attr( $settings['selector'] ); ?>
 						.wffn_order_details_table table {
-							border-color: <?php echo $divider_color;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+							border-color: <?php echo esc_attr( $divider_color ); ?>;
 						}
 
 						#
-						<?php echo $settings['selector'];//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<?php echo esc_attr( $settings['selector'] ); ?>
 						.wfty_pro_list_cont .wfty_pro_list .wfty-hr {
-							color: <?php echo $divider_color;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
-							background-color: <?php echo $divider_color;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+							color: <?php echo esc_attr( $divider_color ); ?>;
+							background-color: <?php echo esc_attr( $divider_color ); ?>;
 							opacity: 1;
 							border: none;
 						}
 
 						#
-						<?php echo $settings['selector'];//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<?php echo esc_attr( $settings['selector'] ); ?>
 						.wfty_order_details table tfoot tr:last-child th,
 
 						#
-						<?php echo $settings['selector'];//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<?php echo esc_attr( $settings['selector'] ); ?>
 						.wfty_order_details table tfoot tr:last-child td {
-							border-top-color: <?php echo $divider_color;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+							border-top-color: <?php echo esc_attr( $divider_color ); ?>
 						}
 					</style>
 					<?php

@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
-$instance    = wfacp_template();
+$wfacp_instance    = wfacp_template();
 $next_action = 'two_step';
 $data_text   = 'step-2';
 if ( $current_action === 'two_step' ) {

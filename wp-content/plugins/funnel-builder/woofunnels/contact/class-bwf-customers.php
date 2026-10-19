@@ -10,7 +10,7 @@ if ( ! class_exists( 'BWF_Customers' ) ) {
 	 * Class BWF_Customers
 	 */
 	#[AllowDynamicProperties]
-	class BWF_Customers {
+	class BWF_Customers { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		/**
 		 * public db_operations $db_operations
 		 */

@@ -76,13 +76,13 @@ if ( ! class_exists( 'WFFN_Steps' ) ) {
 		 */
 		public function register( $step ) {
 			if ( ! is_subclass_of( $step, 'WFFN_Step' ) ) {
-				throw new Exception( __( 'Must be a subclass of WFFN_Step', 'funnel-builder' ) );
+				throw new Exception( esc_html__( 'Must be a subclass of WFFN_Step', 'funnel-builder' ) );
 			}
 			if ( empty( $step->slug ) ) {
-				throw new Exception( __( 'The type must be set', 'funnel-builder' ) );
+				throw new Exception( esc_html__( 'The type must be set', 'funnel-builder' ) );
 			}
 			if ( isset( $this->steps[ $step->slug ] ) ) {
-				throw new Exception( sprintf( __( 'Step type already registered: %s', 'funnel-builder' ), $step->slug ) );
+				throw new Exception( esc_html( sprintf( /* translators: %s: step type slug. */ __( 'Step type already registered: %s', 'funnel-builder' ), $step->slug ) ) );
 			}
 
 			if ( false === $step->should_register() ) {

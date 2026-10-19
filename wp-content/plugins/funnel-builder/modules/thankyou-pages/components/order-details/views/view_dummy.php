@@ -2,11 +2,11 @@
 defined( 'ABSPATH' ) || exit;
 $order_show_images          = isset( $this->data['order_details_img'] ) ? $this->data['order_details_img'] : true; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 $order_show_images          = wffn_string_to_bool( $order_show_images );
-$order_details_heading      = isset( $this->data['order_details_heading'] ) ? $this->data['order_details_heading'] : __( 'Order Details', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+$order_details_heading      = isset( $this->data['order_details_heading'] ) ? $this->data['order_details_heading'] : __( 'Order Details', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable,WordPress.WP.I18n.TextDomainMismatch
 $show_images_class          = ( $order_show_images ) ? 'wfty_show_images' : 'wfty_hide_images';
 $price                      = 12;
 $subscription_price         = 7.50;
-$order_subscription_heading = ( isset( $this->data['order_subscription_heading'] ) && ! empty( $this->data['order_subscription_heading'] ) ) ? $this->data['order_subscription_heading'] : esc_html__( 'Subscription', 'woocommerce-subscription' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+$order_subscription_heading = ( isset( $this->data['order_subscription_heading'] ) && ! empty( $this->data['order_subscription_heading'] ) ) ? $this->data['order_subscription_heading'] : esc_html__( 'Subscription', 'funnel-builder' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 
 $section_order = apply_filters(
 	'wffn_thank_you_order_details_section_order',
@@ -60,7 +60,7 @@ foreach ( $section_order as $item ) {
 					<table>
 						<tfoot>
 						<tr>
-							<th scope="row"><?php esc_html_e( 'Subtotal', 'woocommerce' ); ?></th>
+							<th scope="row"><?php esc_html_e( 'Subtotal', 'woocommerce' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?></th>
 							<td><?php echo wp_kses_post( wc_price( $price ) ); ?></td>
 						</tr>
 
@@ -70,18 +70,18 @@ foreach ( $section_order as $item ) {
 							$price += 3;
 							?>
 							<tr>
-								<th scope="row"><?php esc_html_e( 'Shipping', 'woocommerce' ); ?></th>
+								<th scope="row"><?php esc_html_e( 'Shipping', 'woocommerce' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?></th>
 								<td>
 									<span class="woocommerce-Price-amount amount"><?php echo wp_kses_post( wc_price( 3 ) ); ?>
 								</td>
 							</tr>
 						<?php } ?>
 						<tr>
-							<th scope="row"><?php esc_html_e( 'Payment method', 'woocommerce' ); ?></th>
-							<td><?php esc_html_e( 'Credit card', 'woocommerce' ); ?></td>
+							<th scope="row"><?php esc_html_e( 'Payment method', 'woocommerce' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?></th>
+							<td><?php esc_html_e( 'Credit card', 'woocommerce' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?></td>
 						</tr>
 						<tr>
-							<th scope="row"><?php esc_html_e( 'Total', 'woocommerce' ); ?></th>
+							<th scope="row"><?php esc_html_e( 'Total', 'woocommerce' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?></th>
 							<td><?php echo wp_kses_post( wc_price( $price ) ); ?></td>
 						</tr>
 						</tfoot>
@@ -100,9 +100,9 @@ foreach ( $section_order as $item ) {
 				<table class="shop_table shop_table_responsive my_account_orders">
 					<thead>
 					<tr>
-						<th class="order-number wfty_left"><span class="nobr"><?php esc_html_e( 'Subscription', 'woocommerce-subscriptions' ); ?></span></th>
-						<th class="order-status wfty_center "><span class="nobr"><?php echo esc_html_x( 'Next Payment', 'table heading', 'woocommerce-subscriptions' ); ?></span></th>
-						<th class="order-total wfty_center "><span class="nobr"><?php echo esc_html_x( 'Total', 'table heading', 'woocommerce-subscriptions' ); ?></span></th>
+						<th class="order-number wfty_left"><span class="nobr"><?php esc_html_e( 'Subscription', 'woocommerce-subscriptions' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation. */ ?></span></th>
+						<th class="order-status wfty_center "><span class="nobr"><?php echo esc_html_x( 'Next Payment', 'table heading', 'woocommerce-subscriptions' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation. */ ?></span></th>
+						<th class="order-total wfty_center "><span class="nobr"><?php echo esc_html_x( 'Total', 'table heading', 'woocommerce-subscriptions' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation. */ ?></span></th>
 						<th class="order-total wfty_center "><span class="nobr"></span></th>
 					</tr>
 					</thead>
@@ -110,14 +110,14 @@ foreach ( $section_order as $item ) {
 					<tr class="order">
 						<td data-title="Subscription" class="subscription-id order-number wfty_left">
 							<a href="javascript:void(0);"><strong>#1234</strong></a>
-							<small>(<?php esc_html_e( 'Active', 'woocommerce' ); ?>)</small>
+							<small>(<?php esc_html_e( 'Active', 'woocommerce' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?>)</small>
 						</td>
-						<td data-title="Next Payment" class="subscription-next-payment order-date wfty_center "> <?php echo esc_html( sprintf( __( 'In %s days', 'woocommerce-subscriptions' ), 30 ) ); ?></td>
+						<td data-title="Next Payment" class="subscription-next-payment order-date wfty_center "> <?php echo esc_html( sprintf( /* translators: %s: number of days until the next payment. */ __( 'In %s days', 'woocommerce-subscriptions' ), 30 ) ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation. */ ?></td>
 						<td data-title="Total" class="subscription-total order-total wfty_center "> <?php echo wp_kses_post( wc_price( $subscription_price ) ); ?>
-							/ <?php echo esc_html_e( 'month', 'woocommerce-subscriptions' ); ?>
+							/ <?php echo esc_html_e( 'month', 'woocommerce-subscriptions' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation. */ ?>
 						</td>
 						<td data-title="Action" class="subscription-actions order-actions wfty_center">
-							<a href="javascript:void(0);" class="button view"><?php echo esc_html_x( 'View', 'view a subscription', 'woocommerce-subscriptions' ); ?></a>
+							<a href="javascript:void(0);" class="button view"><?php echo esc_html_x( 'View', 'view a subscription', 'woocommerce-subscriptions' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation. */ ?></a>
 						</td>
 					</tr>
 					</tbody>
@@ -168,8 +168,8 @@ foreach ( $section_order as $item ) {
 
 		case 'downloads':
 			$data_settings            = $this->data; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
-			$order_downloads_btn_text = ( isset( $this->data['order_downloads_btn_text'] ) && ! empty( $this->data['order_downloads_btn_text'] ) ) ? $this->data['order_downloads_btn_text'] : esc_html__( 'Download', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
-			$order_download_heading   = ( isset( $this->data['order_download_heading'] ) && ! empty( $this->data['order_download_heading'] ) ) ? $this->data['order_download_heading'] : esc_html__( 'Downloads', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+			$order_downloads_btn_text = ( isset( $this->data['order_downloads_btn_text'] ) && ! empty( $this->data['order_downloads_btn_text'] ) ) ? $this->data['order_downloads_btn_text'] : esc_html__( 'Download', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable,WordPress.WP.I18n.TextDomainMismatch
+			$order_download_heading   = ( isset( $this->data['order_download_heading'] ) && ! empty( $this->data['order_download_heading'] ) ) ? $this->data['order_download_heading'] : esc_html__( 'Downloads', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable,WordPress.WP.I18n.TextDomainMismatch
 			add_filter(
 				'woocommerce_account_downloads_columns',
 				function ( $array ) use ( $data_settings ) {
@@ -189,7 +189,7 @@ foreach ( $section_order as $item ) {
 				'woocommerce_account_downloads_columns',
 				function ( $array ) {
 					if ( isset( $array['download-product'] ) ) {
-						$array['download-product'] = __( 'File', 'woocommerce' );
+						$array['download-product'] = __( 'File', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 					}
 					if ( isset( $array['download-file'] ) ) {
 						$array['download-file'] = '';
@@ -206,7 +206,7 @@ foreach ( $section_order as $item ) {
 					<thead>
 					<tr>
 						<?php
-						foreach ( wc_get_account_downloads_columns() as $column_id => $column_name ) :
+						foreach ( wc_get_account_downloads_columns() as $column_id => $column_name ) : // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
 							?>
 							<th class="<?php echo esc_attr( $column_id ); ?>"><span class="nobr"><?php echo esc_html( $column_name ); ?></span></th>
 						<?php endforeach; ?>
@@ -214,7 +214,7 @@ foreach ( $section_order as $item ) {
 					</thead>
 
 					<?php
-					$downloads = array(
+					$downloads = array( // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
 						array(
 							'access_expires'      => gmdate( 'Y-m-d H:i:s', strtotime( '+10 days' ) ),
 							'download_id'         => 'c86887de-03b4-44a5-b073-1c5463ebd7d7',
@@ -223,10 +223,10 @@ foreach ( $section_order as $item ) {
 							'downloads_remaining' => '10',
 						),
 					);
-					foreach ( $downloads as $download ) :
+					foreach ( $downloads as $download ) : // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
 						?>
 						<tr>
-							<?php foreach ( wc_get_account_downloads_columns() as $column_id => $column_name ) : ?>
+							<?php foreach ( wc_get_account_downloads_columns() as $column_id => $column_name ) : // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability. ?>
 								<td class="<?php echo esc_attr( $column_id ); ?>" data-title="<?php echo esc_attr( $column_name ); ?>">
 									<?php
 									if ( has_action( 'woocommerce_account_downloads_column_' . $column_id ) ) {
@@ -240,13 +240,13 @@ foreach ( $section_order as $item ) {
 												echo '<a href="javascript:void(0);">' . esc_html( $order_downloads_btn_text ) . '</a>';
 												break;
 											case 'download-remaining':
-												echo is_numeric( $download['downloads_remaining'] ) ? esc_html( $download['downloads_remaining'] ) : esc_html__( '&infin;', 'woocommerce' );
+												echo is_numeric( $download['downloads_remaining'] ) ? esc_html( $download['downloads_remaining'] ) : esc_html__( '&infin;', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 												break;
 											case 'download-expires':
 												if ( ! empty( $download['access_expires'] ) ) {
 													echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $download['access_expires'] ) ) );
 												} else {
-													esc_html_e( 'Never', 'woocommerce' );
+													esc_html_e( 'Never', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 												}
 												break;
 										}

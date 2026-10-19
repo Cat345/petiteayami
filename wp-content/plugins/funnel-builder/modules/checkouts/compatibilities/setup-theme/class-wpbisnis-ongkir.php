@@ -11,84 +11,94 @@ if ( ! class_exists( 'WFACP_Compatibility_WPbisnis_ONGKIR' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_WPbisnis_ONGKIR {
 
-		private $billing_new_fields = [
+		private $billing_new_fields  = array(
 			'billing_indo_ongkir_kota',
 			'billing_indo_ongkir_kecamatan',
-		];
-		private $shipping_new_fields = [
+		);
+		private $shipping_new_fields = array(
 			'shipping_indo_ongkir_kota',
 			'shipping_indo_ongkir_kecamatan',
-		];
+		);
 
 		public function __construct() {
 			if ( WFACP_Common::is_funnel_builder_3() ) {
-				add_action( 'wffn_rest_checkout_form_actions', [ $this, 'setup_field' ] );
-				add_action( 'wffn_rest_checkout_form_actions', [ $this, 'setup_fields_shipping' ] );
+				add_action( 'wffn_rest_checkout_form_actions', array( $this, 'setup_field' ) );
+				add_action( 'wffn_rest_checkout_form_actions', array( $this, 'setup_fields_shipping' ) );
 			} else {
 				$this->setup_field();
 			}
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'remove_action' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'remove_action' ) );
 
 			/* prevent third party fields and wrapper*/
 
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
 
-			add_filter( 'wfacp_third_party_billing_fields', [ $this, 'disabled_third_party_billing_fields' ] );
-			add_filter( 'wfacp_third_party_shipping_fields', [ $this, 'disabled_third_party_shipping_fields' ] );
-
-
+			add_filter( 'wfacp_third_party_billing_fields', array( $this, 'disabled_third_party_billing_fields' ) );
+			add_filter( 'wfacp_third_party_shipping_fields', array( $this, 'disabled_third_party_shipping_fields' ) );
 		}
 
 		public function setup_field() {
-
 
 			if ( ! class_exists( 'WPBisnis_WC_Indo_Ongkir_Init' ) || ! class_exists( 'WFACP_Add_Address_Field' ) ) {
 				return;
 			}
 
-
-			new WFACP_Add_Address_Field( 'indo_ongkir_kota', [
-				'type'        => 'select',
-				'options'     => array( '' => '' ),
-				'label'       => esc_attr__( 'Kota / Kabupaten', 'wpbisnis-wc-indo-ongkir' ),
-				'placeholder' => esc_attr__( 'Pilih Kota / Kabupaten...', 'wpbisnis-wc-indo-ongkir' ),
-				'class'       => [ 'form-row-wide' ],
-				'cssready'    => [ 'wfacp-col-full' ],
+			new WFACP_Add_Address_Field(
+				'indo_ongkir_kota',
+				array(
+					'type'    => 'select',
+					'options' => array( '' => '' ),
+					'label'   => esc_attr__( 'Kota / Kabupaten', 'wpbisnis-wc-indo-ongkir' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				'placeholder' => esc_attr__( 'Pilih Kota / Kabupaten...', 'wpbisnis-wc-indo-ongkir' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				'class'       => array( 'form-row-wide' ),
+				'cssready'    => array( 'wfacp-col-full' ),
 				'required'    => false,
-			] );
+				)
+			);
 
-			new WFACP_Add_Address_Field( 'indo_ongkir_kecamatan', [
-				'type'        => 'select',
-				'options'     => array( '' => '' ),
-				'label'       => esc_attr__( 'Kecamatan', 'wpbisnis-wc-indo-ongkir' ),
-				'placeholder' => esc_attr__( 'Pilih Kecamatan...', 'wpbisnis-wc-indo-ongkir' ),
-				'class'       => [ 'form-row-wide' ],
-				'cssready'    => [ 'wfacp-col-full' ],
+			new WFACP_Add_Address_Field(
+				'indo_ongkir_kecamatan',
+				array(
+					'type'    => 'select',
+					'options' => array( '' => '' ),
+					'label'   => esc_attr__( 'Kecamatan', 'wpbisnis-wc-indo-ongkir' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				'placeholder' => esc_attr__( 'Pilih Kecamatan...', 'wpbisnis-wc-indo-ongkir' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				'class'       => array( 'form-row-wide' ),
+				'cssready'    => array( 'wfacp-col-full' ),
 				'required'    => false,
 				'priority'    => 22,
-			] );
+				)
+			);
 
 			// For Shipping
-			new WFACP_Add_Address_Field( 'indo_ongkir_kota', [
-				'type'        => 'select',
-				'options'     => array( '' => '' ),
-				'label'       => esc_attr__( 'Kota / Kabupaten', 'wpbisnis-wc-indo-ongkir' ),
-				'placeholder' => esc_attr__( 'Pilih Kota / Kabupaten...', 'wpbisnis-wc-indo-ongkir' ),
-				'class'       => [ 'form-row-wide' ],
-				'cssready'    => [ 'wfacp-col-full' ],
+			new WFACP_Add_Address_Field(
+				'indo_ongkir_kota',
+				array(
+					'type'    => 'select',
+					'options' => array( '' => '' ),
+					'label'   => esc_attr__( 'Kota / Kabupaten', 'wpbisnis-wc-indo-ongkir' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				'placeholder' => esc_attr__( 'Pilih Kota / Kabupaten...', 'wpbisnis-wc-indo-ongkir' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				'class'       => array( 'form-row-wide' ),
+				'cssready'    => array( 'wfacp-col-full' ),
 				'required'    => false,
-			], 'shipping' );
+				),
+				'shipping'
+			);
 
-			new WFACP_Add_Address_Field( 'indo_ongkir_kecamatan', [
-				'type'        => 'select',
-				'options'     => array( '' => '' ),
-				'label'       => esc_attr__( 'Kecamatan', 'wpbisnis-wc-indo-ongkir' ),
-				'placeholder' => esc_attr__( 'Pilih Kecamatan...', 'wpbisnis-wc-indo-ongkir' ),
-				'class'       => [ 'form-row-wide' ],
-				'cssready'    => [ 'wfacp-col-full' ],
+			new WFACP_Add_Address_Field(
+				'indo_ongkir_kecamatan',
+				array(
+					'type'    => 'select',
+					'options' => array( '' => '' ),
+					'label'   => esc_attr__( 'Kecamatan', 'wpbisnis-wc-indo-ongkir' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				'placeholder' => esc_attr__( 'Pilih Kecamatan...', 'wpbisnis-wc-indo-ongkir' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				'class'       => array( 'form-row-wide' ),
+				'cssready'    => array( 'wfacp-col-full' ),
 				'required'    => false,
 				'priority'    => 22,
-			], 'shipping' );
+				),
+				'shipping'
+			);
 		}
 
 		public function remove_action() {

@@ -37,7 +37,7 @@ if ( ! class_exists( 'WFACP_Order_pay' ) ) {
 			if ( $this->is_pay_page ) {
 				global $wp;
 				$this->order_id  = absint( $wp->query_vars['order-pay'] );
-				$this->order_key = isset( $_GET['key'] ) ? bwf_clean( wp_unslash( $_GET['key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$this->order_key = isset( $_GET['key'] ) ? bwf_clean( wp_unslash( $_GET['key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 				$this->order     = wc_get_order( $this->order_id );
 
 				if ( ! $this->order instanceof WC_Order ) {

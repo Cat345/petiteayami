@@ -59,7 +59,8 @@ if ( ! class_exists( 'WooFunnels_OptIn_Manager' ) ) {
 		}
 
 		public static function maybe_clear_optin() {
-			if ( wp_verify_nonce( filter_input( INPUT_GET, '_nonce', FILTER_UNSAFE_RAW ), 'bwf_tools_action' ) && isset( $_GET['woofunnels_tracking'] ) && ( 'reset' === sanitize_text_field( wp_unslash( $_GET['woofunnels_tracking'] ) ) ) ) {
+			$optin_nonce = sanitize_text_field( wp_unslash( (string) filter_input( INPUT_GET, '_nonce', FILTER_UNSAFE_RAW ) ) );
+			if ( wp_verify_nonce( $optin_nonce, 'bwf_tools_action' ) && isset( $_GET['woofunnels_tracking'] ) && ( 'reset' === sanitize_text_field( wp_unslash( $_GET['woofunnels_tracking'] ) ) ) ) {
 				self::reset_optin();
 				wp_safe_redirect( admin_url( 'admin.php?page=woofunnels&tab=tools' ) );
 				exit;
@@ -312,7 +313,7 @@ if ( ! class_exists( 'WooFunnels_OptIn_Manager' ) ) {
 		 */
 		public static function maybe_push_optin_notice() {
 			if ( self::get_optIn_state() === false && apply_filters( 'woofunnels_optin_notif_show', self::$should_show_optin ) ) {
-				do_action( 'bwf_maybe_push_optin_notice_state_action' );
+				do_action( 'bwf_maybe_push_optin_notice_state_action' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 			}
 		}
 
@@ -601,7 +602,7 @@ if ( ! class_exists( 'WooFunnels_OptIn_Manager' ) ) {
 					$midnight_time = self::get_midnight_store_time();
 
 					if ( $scheduled_time && abs( $scheduled_time - $midnight_time ) > 3600 ) {
-						do_action( 'fk_fb_every_day' );
+						do_action( 'fk_fb_every_day' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 						wp_clear_scheduled_hook( 'fk_fb_every_day' );
 					}
 				}
@@ -654,7 +655,7 @@ if ( ! class_exists( 'WooFunnels_OptIn_Manager' ) ) {
 		}
 
 		public static function is_optin_allowed() {
-			return apply_filters( 'buildwoofunnels_optin_allowed', true );
+			return apply_filters( 'buildwoofunnels_optin_allowed', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 		}
 
 		public static function woofunnelso_optin_call() {
@@ -697,7 +698,7 @@ if ( ! class_exists( 'WooFunnels_OptIn_Manager' ) ) {
 		public static function register_weekly_schedule( $schedules ) {
 			$schedules['weekly_bwf'] = array(
 				'interval' => WEEK_IN_SECONDS,
-				'display'  => __( 'Weekly BWF', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'display'  => __( 'Weekly BWF', 'funnel-builder' ),
 			);
 
 			return $schedules;

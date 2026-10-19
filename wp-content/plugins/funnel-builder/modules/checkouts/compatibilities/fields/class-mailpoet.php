@@ -167,14 +167,13 @@ if ( ! class_exists( 'WFACP_MailPoet' ) ) {
 				$px        = '7px';
 			}
 
-			$cssHtml  = '<style>';
+			$cssHtml  = '';
 			$cssHtml .= $bodyClass . "#wfacp_mail_poet {padding-left:$px;padding-right:$px;margin-bottom: 16px;}";
 			$cssHtml .= 'body #wfacp-sec-wrapper #wfacp_mail_poet input {position: relative;left: auto;right: auto;bottom: auto;top: auto; margin-top: -2px;}';
 			$cssHtml .= 'body #wfacp-sec-wrapper .wfacp_main_form.woocommerce #wfacp_mail_poet  > label {padding-left: 0 !important;font-weight: normal;}';
 			$cssHtml .= 'body #wfacp-sec-wrapper .wfacp_main_form.woocommerce #wfacp_mail_poet  > label span {font-weight: normal;    margin-left: 8px;}';
-			$cssHtml .= '</style>';
 
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 	}
 

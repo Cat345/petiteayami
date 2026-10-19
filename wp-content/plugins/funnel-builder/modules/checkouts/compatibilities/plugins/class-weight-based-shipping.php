@@ -43,14 +43,14 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Weight_Based_Shipping' ) ) {
 			}
 
 			// WC skips the shipping fieldset when ship_to_different_address is absent.
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 			$wc_skips_shipping = empty( $_POST['ship_to_different_address'] );
 
 			// WC's field definitions with all filters applied (includes FunnelKit's required=false overrides).
 			$wc_fields = function_exists( 'WC' ) && WC()->checkout() ? WC()->checkout()->get_checkout_fields() : array();
 
 			// intl-tel-input hidden-state JSON for phone fields.
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- intl-tel-input state JSON, json_decode()d; fields validated per-key below.
 			$intl = isset( $_POST['wfacp_input_phone_field'] ) ? json_decode( stripslashes_deep( wp_unslash( $_POST['wfacp_input_phone_field'] ) ), true ) : array();
 
 			foreach ( $all_fields as $fieldset_key => $fields ) {
@@ -58,17 +58,24 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Weight_Based_Shipping' ) ) {
 					continue;
 				}
 
-				$fieldset_skipped_by_wc = ( 'shipping' === $fieldset_key && $wc_skips_shipping );
+				// Mirror WooCommerce: when the shopper hasn't opted into a separate shipping
+				// address, WC copies billing into shipping and skips shipping validation
+				// entirely. Enforcing shipping fields here raises false "required" errors for
+				// shipping fields the single-address checkout never rendered (e.g. plugin-added
+				// shipping-section duplicates). Skip the shipping fieldset to match WC.
+				if ( 'shipping' === $fieldset_key && $wc_skips_shipping ) {
+					continue;
+				}
 
 				foreach ( $fields as $field_key => $field ) {
 					if ( empty( $field['required'] ) || ! wc_string_to_bool( $field['required'] ) ) {
 						continue;
 					}
 
-					// If WC marks this field required AND its fieldset isn't skipped, WC will
-					// enforce it — skip here to avoid a duplicate notice.
+					// If WC marks this field required it will enforce it — skip here to avoid a
+					// duplicate notice. (Shipping fields WC skips are handled above.)
 					$wc_field_required = ! empty( $wc_fields[ $fieldset_key ][ $field_key ]['required'] );
-					if ( $wc_field_required && ! $fieldset_skipped_by_wc ) {
+					if ( $wc_field_required ) {
 						continue;
 					}
 
@@ -81,18 +88,18 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Weight_Based_Shipping' ) ) {
 					}
 
 					// Skip fields not present in the submitted form data.
-					// phpcs:ignore WordPress.Security.NonceVerification.Missing
+					// phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 					if ( ! isset( $_POST[ $field_key ] ) ) {
 						continue;
 					}
 
-					// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- URL-encoded checkout post_data parsed like WooCommerce core; values sanitized where used.
 					if ( '' !== trim( wc_clean( wp_unslash( $_POST[ $field_key ] ) ) ) ) {
 						continue;
 					}
 
 					$label   = isset( $field['label'] ) ? $field['label'] : $field_key;
-					$message = sprintf( __( '%s is a required field.', 'woocommerce' ), '<strong>' . esc_html( $label ) . '</strong>' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					$message = sprintf( /* translators: %s: field label. */ __( '%s is a required field.', 'woocommerce' ), '<strong>' . esc_html( $label ) . '</strong>' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 					if ( ! ( function_exists( 'wc_has_notice' ) && wc_has_notice( $message, 'error' ) ) ) {
 						wc_add_notice( $message, 'error' );

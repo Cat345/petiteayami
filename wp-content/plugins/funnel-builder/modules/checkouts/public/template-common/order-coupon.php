@@ -13,13 +13,13 @@ $is_disable_coupon = ( isset( $settings['disable_coupon'] ) && 'true' == $settin
 if ( $is_disable_coupon ) {
 	return;
 }
-$instance       = wfacp_template();
-$checkout_field = $instance->get_checkout_fields();
+$wfacp_instance = wfacp_template();
+$checkout_field = $wfacp_instance->get_checkout_fields();
 if ( ! isset( $checkout_field['advanced']['order_coupon'] ) ) {
 	return '';
 }
 $coupon_cls = 'wfacp-col-left-half';
-if ( $instance->get_template_type() == 'embed_form' ) {
+if ( $wfacp_instance->get_template_type() == 'embed_form' ) {
 	$coupon_cls = 'wfacp-col-full';
 }
 $is_collapsible = $checkout_field['advanced']['order_coupon']['coupon_style'];
@@ -29,7 +29,7 @@ if ( ! empty( $field ) ) {
 
 $classes = isset( $args['cssready'] ) ? implode( ' ', $args['cssready'] ) : '';
 
-$apply_coupon_button_text = apply_filters( 'wfacp_form_apply_coupon_button_text', __( 'Apply', 'woocommerce' ) );
+$apply_coupon_button_text = apply_filters( 'wfacp_form_apply_coupon_button_text', __( 'Apply', 'woocommerce' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 
 ?>
 
@@ -40,7 +40,7 @@ $apply_coupon_button_text = apply_filters( 'wfacp_form_apply_coupon_button_text'
 			if ( wc_string_to_bool( $is_collapsible ) ) {
 				?>
 				<div class="woocommerce-form-coupon-toggle">
-					<?php wc_print_notice( apply_filters( 'woocommerce_checkout_coupon_message', ' <a  class="wfacp_showcoupon">' . __( 'Have a coupon?', 'woocommerce' ) . ' ' . __( 'Click here to enter your code', 'woocommerce' ) . '</a>' ), 'notice' ); ?>
+					<?php wc_print_notice( apply_filters( 'woocommerce_checkout_coupon_message', ' <a  class="wfacp_showcoupon">' . __( 'Have a coupon?', 'woocommerce' ) . ' ' . __( 'Click here to enter your code', 'woocommerce' ) . '</a>' ), 'notice' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?>
 				</div>
 				<?php
 			}
@@ -53,7 +53,7 @@ $apply_coupon_button_text = apply_filters( 'wfacp_form_apply_coupon_button_text'
 				</p>
 				<p class="form-row form-row-last <?php echo esc_attr( $coupon_cls ); ?> wfacp_coupon_btn_wrap">
 					<label class="wfacp-form-control-label"></label>
-					<button type="button" class="button wfacp-coupon-field-btn" name="apply_coupon" value="<?php echo esc_attr( $apply_coupon_button_text ); ?>" disabled="disabled"><?php echo $apply_coupon_button_text; ?></button>
+					<button type="button" class="button wfacp-coupon-field-btn" name="apply_coupon" value="<?php echo esc_attr( $apply_coupon_button_text ); ?>" disabled="disabled"><?php echo esc_html( $apply_coupon_button_text ); ?></button>
 				</p>
 				<div class="clear"></div>
 			</div>
@@ -64,11 +64,11 @@ $apply_coupon_button_text = apply_filters( 'wfacp_form_apply_coupon_button_text'
 					foreach ( WC()->cart->get_coupons() as $code => $coupon ) {
 
 						$parse_message = WFACP_Product_Switcher_Merge_Tags::parse_coupon_merge_tag( $success_message, $coupon );
-						$remove_link   = sprintf( "<a href='javascript:void(0)' class='wfacp_remove_coupon' data-coupon='%s'>%s</a>", $code, __( 'Remove', 'woocommerce' ) );
+						$remove_link   = sprintf( "<a href='javascript:void(0)' class='wfacp_remove_coupon' data-coupon='%s'>%s</a>", $code, __( 'Remove', 'woocommerce' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 
 						$parse_message = sprintf( '<div class="wfacp_single_coupon_msg">%s %s</div>', $parse_message, $remove_link );
 
-						printf( '<div class="wfacp_single_coupon_msg">%s</div>', $parse_message );
+						printf( '<div class="wfacp_single_coupon_msg">%s</div>', wp_kses_post( $parse_message ) );
 					}
 					?>
 				</div>

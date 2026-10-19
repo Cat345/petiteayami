@@ -121,7 +121,7 @@ trait RestApiTrait {
 
 		// Fallback: Try to get from referer URL
 		if ( empty( $optin_page_id ) && ! empty( $_SERVER['HTTP_REFERER'] ) ) {
-			$referer = esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
+			$referer = sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
 
 			// Try to extract post ID from referer
 			if ( preg_match( '#[?&]post=(\d+)#', $referer, $matches ) ) {

@@ -14,11 +14,11 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_QuickPay' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_WC_QuickPay {
 		public function __construct() {
-			add_action( 'wfacp_before_process_checkout_template_loader', [ $this, 'remove_hooks' ] );
+			add_action( 'wfacp_before_process_checkout_template_loader', array( $this, 'remove_hooks' ) );
 		}
 
 		public function remove_hooks() {
-			if ( 'mobilepay_checkout' !== filter_input( INPUT_POST, "payment_method", FILTER_UNSAFE_RAW ) ) {
+			if ( 'mobilepay_checkout' !== filter_input( INPUT_POST, 'payment_method', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) ) {
 				return;
 			}
 			$template = wfacp_template();
@@ -26,7 +26,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_QuickPay' ) ) {
 				return;
 			}
 
-			remove_action( 'woocommerce_checkout_fields', [ $template, 'woocommerce_checkout_fields' ], 0 );
+			remove_action( 'woocommerce_checkout_fields', array( $template, 'woocommerce_checkout_fields' ), 0 );
 		}
 	}
 

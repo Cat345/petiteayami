@@ -112,7 +112,7 @@ if ( ! class_exists( 'WFACP_Sg_Checkout_Location_Picker_For_WC' ) ) {
 			}
 
 
-			echo '<div class="' . implode( ' ', $args['class'] ) . '" id="' . $args['id'] . '">';
+			echo '<div class="' . esc_attr( implode( ' ', $args['class'] ) ) . '" id="' . esc_attr( $args['id'] ) . '">';
 			if ( 'billing_sg_checkout_location_picker' === $key ) {
 				$this->instance->sgitsclp_billingmap_display();
 			} else if ( 'shipping_sg_checkout_location_picker' === $key ) {
@@ -152,14 +152,13 @@ if ( ! class_exists( 'WFACP_Sg_Checkout_Location_Picker_For_WC' ) ) {
 			}
 
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#billing_sg_checkout_location_picker{width:100%;}";
 			$cssHtml .= $bodyClass . "#billing_sg_checkout_location_picker input[type=text]{padding:12px 10px;}";
 			$cssHtml .= $bodyClass . "#shipping_sg_checkout_location_picker{width:100%;}";
 			$cssHtml .= $bodyClass . "#shipping_sg_checkout_location_picker input[type=text]{padding:12px 10px;}";
 
-			$cssHtml .= "</style>";
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 
 

@@ -223,7 +223,7 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 			 */
 			$wffn_front_api = false;
 			if ( ! empty( $_SERVER['REQUEST_URI'] ) ) {
-				$wffn_front_api = strpos( wp_unslash( $_SERVER['REQUEST_URI'] ), 'wffn/front' ) !== false; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$wffn_front_api = strpos( wp_unslash( $_SERVER['REQUEST_URI'] ), 'wffn/front' ) !== false; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- raw URI used only for path matching; never stored or output.
 			}
 
 			if ( ! $wffn_front_api && ( self::is_cli() || self::is_cron() || self::is_rest() ) ) {
@@ -280,9 +280,9 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 
 		public function load_transient_from_cookie() {
 			$cookie_value  = '';
-			$session_index = filter_input( INPUT_GET, 'wffn-si', FILTER_UNSAFE_RAW );
+			$session_index = filter_input( INPUT_GET, 'wffn-si', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 			if ( ! $session_index ) {
-				$session_index = filter_input( INPUT_POST, 'wffn-si', FILTER_UNSAFE_RAW );
+				$session_index = filter_input( INPUT_POST, 'wffn-si', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 			}
 			if ( $session_index ) {
 				$cookie_value = wffn_clean( $session_index );
@@ -304,7 +304,7 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 
 			if ( empty( $cookie_value ) ) {
 
-				$cookie_value = filter_input( INPUT_COOKIE, 'wffn_si', FILTER_UNSAFE_RAW );
+				$cookie_value = filter_input( INPUT_COOKIE, 'wffn_si', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 			}
 			if ( $cookie_value && $cookie_value !== false && '' !== $cookie_value ) {
 				$this->transient_key = $cookie_value;

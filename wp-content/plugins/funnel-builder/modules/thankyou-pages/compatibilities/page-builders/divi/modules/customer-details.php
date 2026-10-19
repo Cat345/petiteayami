@@ -21,8 +21,8 @@ if ( ! class_exists( 'WFTY_Customer_Details' ) ) {
 				'customer_layout',
 				__( 'Layout', 'funnel-builder' ),
 				array(
-					'2c' => __( 'Two Columns', 'divi' ),
-					'1c' => __( 'Full Width', 'divi' ),
+					'2c' => __( 'Two Columns', 'funnel-builder' ),
+					'1c' => __( 'Full Width', 'funnel-builder' ),
 				),
 				'2c'
 			);
@@ -95,7 +95,7 @@ if ( ! class_exists( 'WFTY_Customer_Details' ) ) {
 
 			?>
 			<script>
-				let wftyDiviCustomer = {<?php echo $data; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>};
+				let wftyDiviCustomer = {<?php echo $data; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JS object body assembled from the internal builder field map. ?>};
 			</script>
 			<?php
 		}

@@ -56,7 +56,7 @@ if ( ! class_exists( 'WFACP_Woocommerce_Checkout_Field_Editor' ) ) {
 				if ( '' !== (string) $order->get_meta( $name ) ) {
 					continue;
 				}
-				$value = wc_clean( wp_unslash( $_POST[ $name ] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+				$value = wc_clean( wp_unslash( $_POST[ $name ] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 				if ( '' === $value || array() === $value ) {
 					continue;
 				}

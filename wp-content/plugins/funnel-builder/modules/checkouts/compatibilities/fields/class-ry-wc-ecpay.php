@@ -95,10 +95,9 @@ if ( ! class_exists( 'WFACP_RY_WC_Ecpay' ) ) {
 			if ( 'pre_built' !== $instance->get_template_type() ) {
 				$bodyClass = "body #wfacp-e-form ";
 			}
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#wfacp_rc_wc_ecpay {clear:both;}";
-			$cssHtml .= "</style>";
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 
 		public function print_third_party( $field, $key ) {

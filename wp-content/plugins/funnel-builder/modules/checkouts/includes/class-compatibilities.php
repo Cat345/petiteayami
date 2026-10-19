@@ -57,6 +57,7 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				'plugins/class-complianz-gdpr-ccpa-cookie-consent.php' => class_exists( 'COMPLIANZ' ),
 				'plugins/class-woocommerce-dpdfrance.php'  => class_exists( 'OS_dpdfrance_shipping_wrapper' ),
 				'plugins/class-cornerstone.php'            => defined( 'CS_VERSION' ),
+				'plugins/class-envia-shipping.php'         => class_exists( 'Enviacom' ),
 				'plugins/class-conditional-discounts-for-wc-by-orion.php' => function_exists( 'run_wad' ),
 				'plugins/class-customer-reviews-woocommerce.php' => ( class_exists( 'CR_Reviews' ) || defined( 'IVOLE_CONTENT_DIR' ) ) && defined( 'ELEMENTOR_VERSION' ),
 				'plugins/class-ddpro.php'                  => function_exists( 'ddp_check_ddpdm' ),
@@ -138,6 +139,7 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				'gateways/class-borica-payments.php'       => defined( 'BORICA_PLUGIN_DIR' ),
 				'gateways/class-publicsquare-payments.php' => defined( 'PUBLICSQUARE_VERSION' ),
 				'plugins/class-cookie-law-info.php'        => defined( 'CLI_VERSION' ),
+				'plugins/class-fibofilters.php'            => class_exists( 'FiboFilters\\Config\\Initializer' ),
 			);
 			self::add_files( $files );
 		}
@@ -315,6 +317,7 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				'template-found/class-autonami.php'        => class_exists( 'BWFAN_Core' ),
 				'template-found/class-checkout-manager-for-wc.php' => function_exists( 'WOOCCM' ),
 				'template-found/class-checkout-user-switch.php' => class_exists( 'user_switching' ),
+				'template-found/class-departamentos-ciudades-colombia.php' => class_exists( 'WC_States_Places_Colombia' ),
 				'template-found/class-checkout-wc.php'     => class_exists( 'Objectiv\Plugins\Checkout\Main' ),
 				'template-found/class-wp-content-copy-protector.php' => function_exists( 'wccp_main_settings' ),
 				'template-found/class-currency-per-product.php' => class_exists( 'Alg_WC_CPP' ),
@@ -410,6 +413,7 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				'template-found/class-yaycurrency.php'     => defined( 'YAY_CURRENCY_FILE' ),
 				'template-found/class-storeapps-coupons.php' => class_exists( 'WC_SC_Coupon_Actions' ),
 				'template-found/class-shipping-pickup-point-order-review.php' => class_exists( 'WC_Ps' ) || class_exists( 'Speedy' ),
+				'template-found/class-sdek-edostavka-pickup-point.php' => function_exists( 'wc_edostavka_shipping' ) && class_exists( 'WC_Edostavka_Checkout' ),
 			);
 			self::add_files( $files );
 		}
@@ -425,7 +429,7 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				}
 			} catch ( Exception | Error $e ) {
 				if ( defined( 'BWF_DEV' ) && true === BWF_DEV ) {
-					trigger_error( esc_html( $e->getMessage() ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ,WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+					trigger_error( esc_html( $e->getMessage() ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error -- compat-load failure surfaced to error log; message escaped.
 				}
 			}
 		}

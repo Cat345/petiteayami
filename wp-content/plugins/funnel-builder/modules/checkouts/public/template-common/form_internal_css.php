@@ -3,17 +3,17 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
-$instance     = wfacp_template();
-$current_open = $instance->get_current_open_step();
-$count        = $instance->get_step_count();
+$wfacp_instance     = wfacp_template();
+$current_open = $wfacp_instance->get_current_open_step();
+$count        = $wfacp_instance->get_step_count();
 if ( ! isset( $template_type ) ) {
-	$template_type = $instance->get_template_type();
+	$template_type = $wfacp_instance->get_template_type();
 }
 if ( ! isset( $current_step ) ) {
-	$current_step = $instance->get_current_step();
+	$current_step = $wfacp_instance->get_current_step();
 }
 if ( ! isset( $selected_template_slug ) ) {
-	$selected_template_slug = $instance->get_template_slug();
+	$selected_template_slug = $wfacp_instance->get_template_slug();
 }
 
 echo '<style>';
@@ -28,7 +28,7 @@ if ( $template_type == 'elementor' && $template_type != 'elementor-minimalist-st
 }
 if ( $count > 1 ) {
 	?>
-	.wfacp_page.<?php echo $template_type; ?> {
+	.wfacp_page.<?php echo esc_attr( $template_type ); ?> {
 	display: none;
 	}
 	<?php
@@ -87,11 +87,11 @@ left: -200%;
 visibility: visible;
 }
 
-.wfacp_page.<?php echo $current_step; ?> .wfacp_payment {
+.wfacp_page.<?php echo esc_attr( $current_step ); ?> .wfacp_payment {
 display: block;
 }
 
-.wfacp_page.<?php echo $current_step; ?> .wfacp_next_page_button {
+.wfacp_page.<?php echo esc_attr( $current_step ); ?> .wfacp_next_page_button {
 display: none;
 }
 
@@ -143,7 +143,7 @@ border-top: none;
 
 <?php
 if ( WFACP_Common::is_cart_is_virtual() ) {
-	if ( 'pre_built' == $instance->get_template_type() ) {
+	if ( 'pre_built' == $wfacp_instance->get_template_type() ) {
 
 		?>
 		#shipping_same_as_billing_field {

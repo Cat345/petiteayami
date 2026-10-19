@@ -380,8 +380,8 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 		 * @return void
 		 */
 		function suppress_warnings() {
-			$path        = sanitize_text_field( wp_unslash( filter_input( INPUT_GET, 'path' ) ?? '' ) );
-			$request_uri = sanitize_text_field( wp_unslash( filter_input( INPUT_SERVER, 'REQUEST_URI' ) ?? '' ) );
+			$path        = sanitize_text_field( wp_unslash( filter_input( INPUT_GET, 'path', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) ?? '' ) );
+			$request_uri = sanitize_text_field( wp_unslash( filter_input( INPUT_SERVER, 'REQUEST_URI', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) ?? '' ) );
 
 			// Decode before matching so every wizard route is caught on both permalink
 			// styles: pretty URLs carry it plainly (/wp-json/funnelkit-app/wizard/…), while

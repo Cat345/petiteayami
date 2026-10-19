@@ -24,7 +24,7 @@ trait Mixin
  if ($method->isConstructor() || $method->isDestructor()) {
  continue;
  }
- $method->setAccessible(\true);
+ if (PHP_VERSION_ID < 80100) { $method->setAccessible( \true ); }
  static::macro($method->name, $method->invoke($mixin));
  }
  }

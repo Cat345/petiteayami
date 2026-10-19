@@ -47,7 +47,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Point_Rewards_For_WC' ) ) {
 			}
 
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#wfacp_custom_point_checkout_wrap .custom_point_checkout { width: 100%;background: transparent;}";
 			$cssHtml .= $bodyClass . "#wfacp_custom_point_checkout_wrap {margin: 20px 0;}";
 
@@ -57,9 +57,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Point_Rewards_For_WC' ) ) {
 			$cssHtml .= $bodyClass . "#wfacp_custom_point_checkout_wrap #mwb_cart_points_apply ~ p,#wfacp_custom_point_checkout_wrap .custom_point_checkout button ~ p {margin-top: 5px;color: #737373;float: none;clear: both;}";
 
 
-			$cssHtml .= "</style>";
 
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 			?>
             <style>
                 @media (max-width: 767px) {

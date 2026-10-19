@@ -26,7 +26,7 @@ if ( ! $notices ) {
 ?>
 
 <?php foreach ( $notices as $notice ) : ?>
-	<div class="woocommerce-message"<?php echo wc_get_notice_data_attr( $notice ); ?> role="alert">
-		<?php echo wc_kses_notice( $notice['notice'] ); ?>
+	<div class="woocommerce-message"<?php echo wc_get_notice_data_attr( $notice ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- matches WooCommerce core notices template. ?> role="alert">
+		<?php echo wc_kses_notice( $notice['notice'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wc_kses_notice() escapes; matches WooCommerce core. ?>
 	</div>
 <?php endforeach; ?>

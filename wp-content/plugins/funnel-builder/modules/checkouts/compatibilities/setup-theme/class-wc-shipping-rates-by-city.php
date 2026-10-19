@@ -44,7 +44,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_shipping_by_city' ) ) {
 			if ( ! class_exists( 'ShipRate_Public' ) ) {
 				return $posted_data;
 			}
-			if ( ! isset( $_REQUEST['_wfacp_post_id'] ) ) {
+			if ( ! isset( $_REQUEST['_wfacp_post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs during WooCommerce checkout processing; WC core has already verified its own checkout nonce upstream.
 				return $posted_data;
 			}
 			if ( ! isset( $posted_data['shipping_city'] ) && isset( $posted_data['billing_city'] ) ) {

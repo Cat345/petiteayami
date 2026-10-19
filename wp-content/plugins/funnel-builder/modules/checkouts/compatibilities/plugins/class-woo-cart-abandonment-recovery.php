@@ -54,13 +54,12 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_Cart_Abandonment_Recovery' ) 
 			}
 
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . ".wfacp_woo_cart_abandonment_recovery:not(.wfacp-anim-wrap) label{bottom: auto;top: 18px;margin-top:0;}";
 			$cssHtml .= $bodyClass . ".wfacp_woo_cart_abandonment_recovery:not(.wfacp-anim-wrap) input.wfacp-form-control{padding-top: 10px;padding-bottom: 10px;}";
 
-			$cssHtml .= "</style>";
 
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 
 		}
 

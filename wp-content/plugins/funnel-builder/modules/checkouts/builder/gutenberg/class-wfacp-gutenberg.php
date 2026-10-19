@@ -445,7 +445,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 					}
 					if ( ! $is_system ) {
 						$font_url = 'https://fonts.googleapis.com/css?family=' . rawurlencode( $default_font ) . ':100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic';
-						wp_enqueue_style( 'bwfblock-editor-default-google-font', $font_url, array(), null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- Google Fonts URL manages its own versioning
+						wp_enqueue_style( 'bwfblock-editor-default-google-font', $font_url, array(), null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- version deliberately null: the Google Fonts URL carries its own cache semantics and an appended ver param corrupts the querystring.
 					}
 					wp_add_inline_style( 'wfacp-block-editor', '#editor .editor-styles-wrapper { font-family: ' . esc_attr( $default_font ) . '; }' );
 				}
@@ -454,7 +454,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 
 		public static function mini_cart_default_attrs() {
 			return array(
-				'mini_cart_heading'            => __( 'Order Summary', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Intentional reuse of WooCommerce core translations
+				'mini_cart_heading'            => __( 'Order Summary', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 				'enable_product_image'         => true,
 				'enable_quantity_box'          => true,
 				'enable_delete_item'           => false,
@@ -476,7 +476,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 				'\e900' => __( 'Lock 2', 'funnel-builder' ),
 			);
 
-			return apply_filters( 'bwf_checkout_button_icon_list', $icon_list );
+			return apply_filters( 'bwf_checkout_button_icon_list', $icon_list ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 		}
 
 		public static function form_attributes() {
@@ -485,7 +485,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			$attributes = array();
 			$labels     = array(
 				array(
-					'heading'     => __( 'Shipping', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Intentional reuse of WooCommerce core translations
+					'heading'     => __( 'Shipping', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 					'sub-heading' => __( 'Where to ship it?', 'funnel-builder' ),
 				),
 				array(
@@ -493,7 +493,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 					'sub-heading' => __( 'Select your product', 'funnel-builder' ),
 				),
 				array(
-					'heading'     => __( 'Payment', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Intentional reuse of WooCommerce core translations
+					'heading'     => __( 'Payment', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 					'sub-heading' => __( 'Confirm your order', 'funnel-builder' ),
 				),
 
@@ -560,8 +560,8 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			$attributes['collapse_enable_coupon_collapsible']           = false;
 			$attributes['collapse_order_quantity_switcher']             = true;
 			$attributes['collapse_order_delete_item']                   = true;
-			$attributes['collapse_coupon_button_text']                  = __( 'Apply', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Intentional reuse of WooCommerce core translations
-			$attributes['form_coupon_button_text']                      = __( 'Apply', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Intentional reuse of WooCommerce core translations
+			$attributes['collapse_coupon_button_text']                  = __( 'Apply', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			$attributes['form_coupon_button_text']                      = __( 'Apply', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 
 			$attributes['order_summary_enable_product_image'] = true;
 
@@ -660,7 +660,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			foreach ( $temp_fields as $loop_key => $field ) {
 
 				if ( in_array( $loop_key, array( 'wfacp_start_divider_billing', 'wfacp_start_divider_shipping' ), true ) ) {
-					$address_key_group      = ( $loop_key === 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Intentional reuse of WooCommerce core translations
+					$address_key_group      = ( $loop_key === 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 					$field_data['fields'][] = array( 'heading' => $address_key_group );
 				}
 
@@ -751,7 +751,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			foreach ( $sections as $val ) {
 				foreach ( $val as $loop_key => $field ) {
 					if ( in_array( $loop_key, array( 'wfacp_start_divider_billing', 'wfacp_start_divider_shipping' ), true ) ) {
-						$address_key_group                      = ( $loop_key === 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Intentional reuse of WooCommerce core translations
+						$address_key_group                      = ( $loop_key === 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						$section_data['section'][0]['fields'][] = array( 'heading' => $address_key_group );
 					}
 

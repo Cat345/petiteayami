@@ -164,10 +164,44 @@ describe('ParamBuilder _getClientIp', () => {
         });
 
         test('should handle V2 format language token (8 characters)', () => {
-            const v2Token = 'ABCDEFGH';
+            const v2Token = DUMMY_APPENDIX_NO_CHANGE;
             const cookies = { [Constants.FBI_NAME_STRING]: `${IPV4_PUBLIC}.${v2Token}` };
             const result = paramBuilder._getClientIp(cookies, null, null);
             expect(result).toBe(`${IPV4_PUBLIC}.${v2Token}`);
+        });
+
+        test('should collapse repeated V2 appendices from ClientJS cookies', () => {
+            const cookies = {
+                [Constants.FBI_NAME_STRING]: `${IPV6_PUBLIC}.${DUMMY_APPENDIX_NET_NEW}.${DUMMY_APPENDIX_NET_NEW}.${DUMMY_APPENDIX_NET_NEW}`,
+            };
+
+            expect(paramBuilder._getClientIpFromCookie(cookies)).toBe(IPV6_PUBLIC);
+            expect(paramBuilder._getClientIp(cookies, null, null)).toBe(
+                `${IPV6_PUBLIC}.${DUMMY_APPENDIX_NET_NEW}`
+            );
+        });
+
+        test('should collapse repeated legacy language tokens', () => {
+            const langToken = Constants.SUPPORTED_PARAM_BUILDER_LANGUAGES_TOKEN[0];
+            const cookies = {
+                [Constants.FBI_NAME_STRING]: `${IPV4_PUBLIC}.${langToken}.${langToken}`,
+            };
+
+            expect(paramBuilder._getClientIp(cookies, null, null)).toBe(
+                `${IPV4_PUBLIC}.${langToken}`
+            );
+        });
+
+        test('should reject repeated malformed V2 appendices', () => {
+            const malformedAppendix = 'abcdefgh';
+            const cookieIp = '1.1.1.1';
+            const cookies = {
+                [Constants.FBI_NAME_STRING]: `${cookieIp}.${malformedAppendix}.${malformedAppendix}`,
+            };
+
+            expect(paramBuilder._getClientIp(cookies, IPV4_PUBLIC, null)).toBe(
+                `${IPV4_PUBLIC}.${DUMMY_APPENDIX_NO_CHANGE}`
+            );
         });
 
         test('should handle multiple language tokens in supported list', () => {

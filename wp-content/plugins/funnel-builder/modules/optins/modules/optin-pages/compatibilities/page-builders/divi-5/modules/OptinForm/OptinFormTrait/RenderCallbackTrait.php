@@ -196,8 +196,8 @@ trait RenderCallbackTrait {
 					$post_type    = WFOPP_Core()->optin_pages->get_post_type_slug();
 					$request_keys = array( 'post_id', 'et_post_id', 'postId' );
 					foreach ( $request_keys as $rk ) {
-						if ( ! empty( $_REQUEST[ $rk ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-							$rid = absint( $_REQUEST[ $rk ] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						if ( ! empty( $_REQUEST[ $rk ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- read-only optin-page id resolution for the Divi 5 Visual Builder render callback; absint() cast, post type verified, nothing is written.
+							$rid = absint( $_REQUEST[ $rk ] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- read-only optin-page id resolution for the Divi 5 Visual Builder render callback; absint() cast, post type verified, nothing is written.
 							if ( $rid > 0 && get_post_type( $rid ) === $post_type ) {
 								$optinPageId = $rid;
 								break;
@@ -209,7 +209,7 @@ trait RenderCallbackTrait {
 				// Fallback: HTTP_REFERER (VB REST calls).
 				if ( $optinPageId <= 0 && ! empty( $_SERVER['HTTP_REFERER'] ) ) {
 					$post_type = WFOPP_Core()->optin_pages->get_post_type_slug();
-					$referer   = esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
+					$referer   = sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
 					if ( preg_match( '#[?&]post=(\d+)#', $referer, $m ) ) {
 						$rid = absint( $m[1] );
 						if ( $rid > 0 && get_post_type( $rid ) === $post_type ) {
@@ -341,7 +341,7 @@ trait RenderCallbackTrait {
 			}
 			$inline_css .= ' .wffn-custom-optin-from .wffn-optin-input { background-color: ' . esc_attr( $field_bg ) . '; }';
 
-			echo '<style>' . $inline_css . '</style>';
+			echo '<style>' . wp_strip_all_tags( $inline_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 
 			$form_content = ob_get_clean();
 

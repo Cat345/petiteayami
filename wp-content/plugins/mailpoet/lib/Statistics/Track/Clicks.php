@@ -11,12 +11,11 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\Statistics\GATracking;
 use MailPoet\Statistics\StatisticsClicksRepository;
-use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Util\Cookies;
@@ -27,6 +26,16 @@ class Clicks {
 
   /** The link whose whole purpose is to switch tracking off. Its own click is never recorded. */
   const TRACKING_OPT_OUT_SHORTCODE = '[link:subscription_tracking_opt_out_url]';
+
+  /**
+   * Matches the start of a link whose destination is already fixed:
+   * - "https://example.com/", "//example.com#", "whatsapp://send?": an optional URI scheme (RFC 3986),
+   *   "//", a host, and the "/", "?" or "#" that ends it;
+   * - "mailto:", "tel:", "sms:": schemes handed to an app, never to a web host;
+   * - "geo:0,0", "skype:echo": any other scheme except http(s) followed by anything but "/", so the
+   *   link has no host part.
+   */
+  private const FIXED_DESTINATION_PATTERN = '~^(?:(?:[a-z][a-z0-9+.-]*:)?//[^/?#\\\\]+[/?#]|(?:mailto|tel|sms):|(?!https?:)[a-z][a-z0-9+.-]*:[^/])~i';
 
   const REVENUE_TRACKING_COOKIE_NAME = 'mailpoet_revenue_tracking';
   const REVENUE_TRACKING_COOKIE_EXPIRY = 60 * 60 * 24 * 14;
@@ -49,9 +58,6 @@ class Clicks {
   /** @var StatisticsClicksRepository */
   private $statisticsClicksRepository;
 
-  /** @var UserAgentsRepository */
-  private $userAgentsRepository;
-
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
@@ -66,19 +72,21 @@ class Clicks {
 
   private PersonalizationTagLinkResolver $linkResolver;
 
+  private GATracking $gaTracking;
+
   public function __construct(
     Cookies $cookies,
     SubscriberCookie $subscriberCookie,
     Shortcodes $shortcodes,
     Opens $opens,
     StatisticsClicksRepository $statisticsClicksRepository,
-    UserAgentsRepository $userAgentsRepository,
     LinkShortcodeCategory $linkShortcodeCategory,
     SubscribersRepository $subscribersRepository,
     TrackingConfig $trackingConfig,
     Request $request,
     TrackingConsentController $trackingConsentController,
-    PersonalizationTagLinkResolver $linkResolver
+    PersonalizationTagLinkResolver $linkResolver,
+    GATracking $gaTracking
   ) {
     $this->cookies = $cookies;
     $this->subscriberCookie = $subscriberCookie;
@@ -86,12 +94,12 @@ class Clicks {
     $this->linkShortcodeCategory = $linkShortcodeCategory;
     $this->opens = $opens;
     $this->statisticsClicksRepository = $statisticsClicksRepository;
-    $this->userAgentsRepository = $userAgentsRepository;
     $this->subscribersRepository = $subscribersRepository;
     $this->trackingConfig = $trackingConfig;
     $this->request = $request;
     $this->trackingConsentController = $trackingConsentController;
     $this->linkResolver = $linkResolver;
+    $this->gaTracking = $gaTracking;
   }
 
   /**
@@ -120,22 +128,13 @@ class Clicks {
     // No tracking consent (CNIL/Garante): skip all recording (stats, cookies,
     // engagement) but keep the redirect below.
     if (!$wpUserPreview && $trackingAllowed && !$isTrackingOptOutLink) {
-      $userAgent = !empty($data->userAgent) ? $this->userAgentsRepository->findOrCreate($data->userAgent) : null;
       $statisticsClicks = $this->statisticsClicksRepository->createOrUpdateClickCount(
         $link,
         $subscriber,
         $newsletter,
         $queue,
-        $userAgent
+        !empty($data->userAgent) ? (string)$data->userAgent : null
       );
-      if (
-        $userAgent instanceof UserAgentEntity &&
-        ($userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_HUMAN
-        || $statisticsClicks->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_MACHINE)
-      ) {
-        $statisticsClicks->setUserAgent($userAgent);
-        $statisticsClicks->setUserAgentType($userAgent->getUserAgentType());
-      }
       $this->statisticsClicksRepository->flush();
       $this->sendRevenueCookie($statisticsClicks);
 
@@ -182,13 +181,15 @@ class Clicks {
     bool $wpUserPreview
   ) {
     if ($this->linkResolver->isTokenUrl($url)) {
-      // A link stored as a personalization tag token; its destination only exists per recipient.
+      // A link stored as a personalization tag token; its destination only exists per recipient,
+      // so it gets the GA params ordinary links have baked in at send time only now. The tag sets
+      // the whole URL, so it may only lead to the site's own host or allowed redirect hosts.
       $resolvedUrl = $this->linkResolver->resolve($url, $newsletter, $subscriber, $queue, $wpUserPreview);
       if ($resolvedUrl === null) {
         $this->abort();
         return $url;
       }
-      return $this->appendRequestMethod($resolvedUrl);
+      return $this->appendRequestMethod($this->validateRedirect($this->gaTracking->addParamsToUrl($resolvedUrl, $newsletter)));
     }
     if (preg_match('/\[link:(?P<action>.*?)\]/', $url, $shortcode)) {
       if (empty($shortcode['action'])) $this->abort();
@@ -209,9 +210,27 @@ class Clicks {
       $this->shortcodes->setNewsletter($newsletter);
       $this->shortcodes->setSubscriber($subscriber);
       $this->shortcodes->setWpUserPreview($wpUserPreview);
-      $url = $this->shortcodes->replace($url);
+      $processedUrl = $this->shortcodes->replace($url);
+      if ($processedUrl !== $url && !$this->isDestinationFixedBeforeShortcodes($url)) {
+        return $this->validateRedirect($processedUrl);
+      }
+      $url = $processedUrl;
     }
     return $url;
+  }
+
+  private function validateRedirect(string $url): string {
+    $wp = WPFunctions::get();
+    return $wp->wpValidateRedirect($url, $wp->homeUrl());
+  }
+
+  /**
+   * Shortcode values (e.g. subscriber fields) may fill in the path or query of a link, but the
+   * destination host may only come from them when it is the site's own.
+   */
+  private function isDestinationFixedBeforeShortcodes(string $url): bool {
+    $textBeforeShortcodes = (string)strstr($url, '[', true);
+    return preg_match(self::FIXED_DESTINATION_PATTERN, $textBeforeShortcodes) === 1;
   }
 
   /**

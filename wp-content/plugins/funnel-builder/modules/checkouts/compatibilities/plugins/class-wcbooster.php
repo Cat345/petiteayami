@@ -14,8 +14,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_WCJ' ) ) {
 		}
 
 		public function add_invoice_field( $order_id ) {
-			if ( isset( $_REQUEST['create_invoice_for_order_id'] ) && $_REQUEST['create_invoice_for_order_id'] > 0 ) {
-				$order_id = absint( $_REQUEST['create_invoice_for_order_id'] );
+			if ( isset( $_REQUEST['create_invoice_for_order_id'] ) && $_REQUEST['create_invoice_for_order_id'] > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Order id supplied by the WC Booster invoice flow; absint()'d and used read-only to resolve the invoice field.
+				$order_id = absint( $_REQUEST['create_invoice_for_order_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Order id supplied by the WC Booster invoice flow; absint()'d and used read-only to resolve the invoice field.
 			}
 
 			return $order_id;

@@ -65,7 +65,6 @@ if ( ! class_exists( 'WFOP_Divi_Extension' ) ) {
 			if ( ! WFOPP_Core()->optin_pages->is_wfop_page() ) {
 				return;
 			}
-			wp_enqueue_script( 'flickity', WFFN_PLUGIN_URL . '/assets/flickity/flickity.pkgd.js', array(), true );
 			wp_enqueue_style( "{$this->name}-wfop-divi", "{$this->plugin_dir_url}css/divi.css", array(), $this->version );
 			if ( et_core_is_fb_enabled() ) {
 				wp_enqueue_script( "{$this->name}-builder-bundle", "{$this->plugin_dir_url}scripts/loader.min.js", array( 'react-dom' ), $this->version, true );

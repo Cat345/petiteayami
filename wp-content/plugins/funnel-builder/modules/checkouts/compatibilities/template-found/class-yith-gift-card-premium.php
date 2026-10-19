@@ -8,12 +8,11 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Yith_Gift' ) ) {
 	 *
 	 * class WFACP_Compatibility_With_Yith_Gift
 	 */
-	class  WFACP_Compatibility_With_Yith_Gift {
+	class WFACP_Compatibility_With_Yith_Gift {
 
 		public function __construct() {
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'action' ] );
-			add_filter( 'wfacp_product_image_thumbnail_html', [ $this, 'call_thumbnail' ], 10, 2 );
-
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'action' ) );
+			add_filter( 'wfacp_product_image_thumbnail_html', array( $this, 'call_thumbnail' ), 10, 2 );
 		}
 
 		public function action() {
@@ -23,8 +22,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Yith_Gift' ) ) {
 
 		public function yith_ywgc_rename_coupon_label( $text ) {
 			if ( get_option( 'ywgc_apply_gift_card_on_coupon_form', 'no' ) == 'yes' ) {
-				$text_option = get_option( 'ywgc_apply_coupon_label_text', esc_html__( 'Have a coupon?', 'yith-woocommerce-gift-cards' ) );
-				$text        = $text_option . ' <a href="#" class="showcoupon wfacp_showcoupon">' . esc_html__( 'Click here to enter your code', 'woocommerce' ) . '</a>';
+				$text_option = get_option( 'ywgc_apply_coupon_label_text', esc_html__( 'Have a coupon?', 'yith-woocommerce-gift-cards' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				$text        = $text_option . ' <a href="#" class="showcoupon wfacp_showcoupon">' . esc_html__( 'Click here to enter your code', 'woocommerce' ) . '</a>'; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			}
 
 			return $text;
@@ -35,7 +34,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Yith_Gift' ) ) {
 			if ( isset( $cart_item['ywgc_product_id'] ) ) {
 				return apply_filters( 'woocommerce_cart_item_thumbnail', $cart_item['data']->get_image(), $cart_item, $cart_item_key );
 			}
-
 
 			return $image;
 		}

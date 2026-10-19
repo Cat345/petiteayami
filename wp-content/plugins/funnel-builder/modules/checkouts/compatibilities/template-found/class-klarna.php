@@ -38,24 +38,24 @@ if ( ! class_exists( 'WFACP_Klarna' ) ) {
 			if ( ! isset( $_REQUEST['payment_method'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway callback, nonce verification handled by payment gateway
 				return $url;
 			}
-			$payment_method = sanitize_text_field( wp_unslash( $_REQUEST['payment_method'] ) );
+			$payment_method = sanitize_text_field( wp_unslash( $_REQUEST['payment_method'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 			if ( ! in_array( $payment_method, array( 'klarna_payments', 'klarna_payments_pay_later', 'klarna_payments_pay_over_time', 'stripe_klarna' ), true ) ) {
 				return $url;
 			}
-			if ( ! isset( $_REQUEST['_wfacp_post_id'] ) || empty( $_REQUEST['_wfacp_post_id'] ) ) {
+			if ( ! isset( $_REQUEST['_wfacp_post_id'] ) || empty( $_REQUEST['_wfacp_post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 				return $url;
 			}
 
-			$aero_id   = absint( wp_unslash( $_REQUEST['_wfacp_post_id'] ) );
-			$is_global = isset( $_REQUEST['wfacp_is_checkout_override'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wfacp_is_checkout_override'] ) ) : 'no';
+			$aero_id   = absint( wp_unslash( $_REQUEST['_wfacp_post_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
+			$is_global = isset( $_REQUEST['wfacp_is_checkout_override'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wfacp_is_checkout_override'] ) ) : 'no'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 			$global_id = WFACP_Common::get_checkout_page_id();
 			if ( 'yes' === $is_global ) {
 				$global_post = get_post( $global_id );
 				if ( ! is_null( $global_post ) && $global_post->post_type !== WFACP_Common::get_post_type_slug() ) {
 					$url = get_the_permalink( $global_id );
 				}
-			} elseif ( isset( $_REQUEST['wfacp_embed_form_page_id'] ) ) {
-					$url = get_the_permalink( absint( wp_unslash( $_REQUEST['wfacp_embed_form_page_id'] ) ) );
+			} elseif ( isset( $_REQUEST['wfacp_embed_form_page_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
+					$url = get_the_permalink( absint( wp_unslash( $_REQUEST['wfacp_embed_form_page_id'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 			} else {
 				$url = get_the_permalink( $aero_id );
 			}

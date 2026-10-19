@@ -1,0 +1,51 @@
+/*
+ * bricks checkout styles.
+ *
+ * Loaded only on a bricks checkout, by WFACP_Template::enqueue_builder_style().
+ * Edit here, not in the shared stylesheets.
+ */
+
+/* These were written in the shared sheets as :not(.wfacp_oxygen_template) / :not(.oxy),
+   meaning "every builder except Oxygen". Rather than naming a builder in a shared file in
+   order to exclude it, each builder that wants the rule now simply carries it, and Oxygen
+   has no file because it supplies its own. */
+body p.woocommerce-invalid-required-field .wfacp-form-control,
+body .wfacp_main_form p.woocommerce-invalid-required-field:not(.wfacp_select2_country_state) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered {
+    border-bottom-color: #E15334;
+}
+/* -----------------------------------------------BRICKS THEME FOR REMEMBER ME CHECKBOX---------------------------------------- */
+/* Bricks forces display:inline !important from inside @layer bricks, which outranks our unlayered
+   !important, so this input is rendered natively (see wfacp-form.css). The native widget draws its
+   own check, so both of our check decorations have to go or they stack on top of it. */
+body.wfacp_bricks_template .wfacp_main_form.woocommerce input#rememberme:before,
+body.wfacp_bricks_template .wfacp_main_form.woocommerce input#rememberme:after {
+    content: none !important;
+    display: none !important;
+}
+body:not(.wfacpef_page) #wfacp-e-form .wfacp_main_form .wfacp-order-place-btn-wrap,
+body:not(.wfacpef_page) #wfacp-e-form .wfacp_main_form .wfacp-next-btn-wrap button {
+    color: #ffffff;
+    font-weight: bold;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 100%;
+}
+body #wfacp-e-form p.woocommerce-invalid-required-field .wfacp-form-control {
+    border-color: #E15334;
+}
+body:not(.wfacpef_page) #wfacp-e-form .woocommerce #place_order,
+body:not(.wfacpef_page) #wfacp-e-form .woocommerce .wfacp-next-btn-wrap button {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    padding-right: 24px;
+    padding-left: 24px;
+}
+/*--------------------------------------------Theme Bricks--------------------------------------------*/
+/* Scoped to the Bricks checkout template body class so other builders keep the themed checkbox. */
+body.wfacp_bricks_template #wfacp-e-form input#rememberme {
+    display: inline-block !important;
+    appearance: checkbox !important;
+    -webkit-appearance: checkbox !important;
+    -moz-appearance: checkbox !important;
+    -ms-appearance: checkbox !important;
+}

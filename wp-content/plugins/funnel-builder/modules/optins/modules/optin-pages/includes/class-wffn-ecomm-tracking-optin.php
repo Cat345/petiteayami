@@ -194,7 +194,11 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 					'fb'   => array(
 						'enable'    => BWF_Admin_General_Settings::get_instance()->get_option( 'is_fb_lead_op' ),
 						'fb_pixels' => $this->is_fb_pixel(),
-						'event_ID'  => 'Lead' . '_' . time(),
+						// A bare timestamp collides across visitors loading the page within the same second,
+						// and Meta dedupes by event name + event_id — colliding IDs silently drop real Leads.
+						// The browser reuses this exact value for the pixel and passes it back as
+						// lead_event_id for the CAPI copy, so uniqueness cannot break the pairing.
+						'event_ID'  => 'Lead' . '_' . time() . '_' . wp_rand( 100000, 999999 ),
 						'currency'  => ( function_exists( 'get_woocommerce_currency' ) ) ? get_woocommerce_currency() : 'USD',
 					),
 					'ga'   => array(
@@ -254,7 +258,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 						return null;
 					}
 
-					$instance->set_event_id( filter_input( INPUT_GET, 'lead_event_id' ) );
+					$instance->set_event_id( filter_input( INPUT_GET, 'lead_event_id', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) );
 					$instance->set_user_data( $this->get_user_data( 'Lead', true ) );
 					$instance->set_event_source_url( $this->getRequestUri( true ) );
 					$instance->set_event_data( 'Lead', array() );
@@ -302,7 +306,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 				}
 			}
 
-			$get_gad_conversion_label = apply_filters( 'bwf_get_conversion_label', $key );
+			$get_gad_conversion_label = apply_filters( 'bwf_get_conversion_label', $key ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			return empty( $get_gad_conversion_label ) ? false : $get_gad_conversion_label;
 		}

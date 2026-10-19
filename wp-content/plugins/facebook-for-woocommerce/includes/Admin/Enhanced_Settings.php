@@ -10,9 +10,9 @@
 
 namespace WooCommerce\Facebook\Admin;
 
-use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
 use WooCommerce\Facebook\Admin\Settings_Screens;
 use WooCommerce\Facebook\Framework\Helper;
+use WooCommerce\Facebook\Framework\Plugin\Compatibility;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\RolloutSwitches;
 use WooCommerce\Facebook\Framework\Logger;
@@ -48,7 +48,7 @@ class Enhanced_Settings {
 
 		$this->screens = $this->build_menu_item_array();
 
-		add_action( 'admin_init', array( $this, 'add_extra_screens' ) );
+		add_action( 'admin_init', array( $this, 'normalize_requested_tab' ), 100 );
 		add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
 		add_action( 'wp_loaded', array( $this, 'save' ) );
 		add_action( 'admin_notices', array( $this, 'display_fb_product_sets_removed_banner' ) );
@@ -63,24 +63,26 @@ class Enhanced_Settings {
 	 */
 	public function build_menu_item_array(): array {
 		$is_connected                     = $this->plugin->get_connection_handler()->is_connected();
-		$is_woo_all_products_sync_enbaled = $this->plugin->get_rollout_switches()->is_switch_enabled(
+		$is_woo_all_products_sync_enabled = $this->plugin->get_rollout_switches()->is_switch_enabled(
 			RolloutSwitches::SWITCH_WOO_ALL_PRODUCTS_SYNC_ENABLED
 		);
 
 		if ( $is_connected ) {
-			if ( $is_woo_all_products_sync_enbaled ) {
+			if ( $is_woo_all_products_sync_enabled ) {
 				$screens = array(
-					Settings_Screens\Shops::ID => new Settings_Screens\Shops(),
+					Settings_Screens\Shops::ID         => new Settings_Screens\Shops(),
 					Settings_Screens\Product_Attributes::ID => new Settings_Screens\Product_Attributes(),
+					Settings_Screens\Configuration::ID => new Settings_Screens\Configuration(),
 				);
 			} else {
 				/**
 				 * If not enabled then the product sync tab should show itself
 				 */
 				$screens = array(
-					Settings_Screens\Shops::ID        => new Settings_Screens\Shops(),
-					Settings_Screens\Product_Sync::ID => new Settings_Screens\Product_Sync(),
+					Settings_Screens\Shops::ID         => new Settings_Screens\Shops(),
+					Settings_Screens\Product_Sync::ID  => new Settings_Screens\Product_Sync(),
 					Settings_Screens\Product_Attributes::ID => new Settings_Screens\Product_Attributes(),
+					Settings_Screens\Configuration::ID => new Settings_Screens\Configuration(),
 				);
 			}
 		} else {
@@ -91,15 +93,25 @@ class Enhanced_Settings {
 	}
 
 	/**
-	 * Add extra screens to $this->screens - basic settings_screens
+	 * Normalizes removed or otherwise unavailable settings tabs to the default screen.
 	 *
-	 * @since 3.5.0
-	 *
-	 * @return void
+	 * This runs before admin assets are enqueued so the default screen receives its
+	 * styles and scripts when a merchant follows an obsolete bookmarked URL.
 	 */
-	public function add_extra_screens(): void {
-		$rollout_switches = $this->plugin->get_rollout_switches();
-		$is_connected     = $this->plugin->get_connection_handler()->is_connected();
+	public function normalize_requested_tab(): void {
+		if ( self::PAGE_ID !== Helper::get_requested_value( 'page' ) ) {
+			return;
+		}
+
+		$requested_tab = Helper::get_requested_value( 'tab' );
+		$current_tab   = $this->get_current_tab();
+
+		if ( ! $requested_tab || $requested_tab === $current_tab || ! $current_tab ) {
+			return;
+		}
+
+		$_GET['tab']     = $current_tab;
+		$_REQUEST['tab'] = $current_tab;
 	}
 
 	/**
@@ -146,12 +158,7 @@ class Enhanced_Settings {
 	 * @return bool
 	 */
 	public function is_marketing_enabled() {
-		if ( class_exists( WooAdminFeatures::class ) ) {
-			return WooAdminFeatures::is_enabled( 'marketing' );
-		}
-
-		return is_callable( '\Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
-				&& \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
+		return Compatibility::is_marketing_enabled();
 	}
 
 	/**
@@ -196,8 +203,10 @@ class Enhanced_Settings {
 			)
 		);
 
+		// The id is a stable marker that the settings page itself rendered, whichever
+		// tab is showing; the end-to-end tests rely on it.
 		?>
-		<div class="wrap woocommerce">
+		<div class="wrap woocommerce" id="wc-facebook-settings-page">
 			<?php $this->render_tabs( $current_tab ); ?>
 			<?php facebook_for_woocommerce()->get_message_handler()->show_messages(); ?>
 			<?php if ( $screen ) : ?>
@@ -247,11 +256,11 @@ class Enhanced_Settings {
 	 * @return string
 	 */
 	protected function get_current_tab() {
-		$tabs        = $this->get_tabs();
+		$screens     = $this->get_screens();
 		$current_tab = Helper::get_requested_value( 'tab' );
 
-		if ( ! $current_tab ) {
-			$current_tab = current( array_keys( $tabs ) );
+		if ( ! $current_tab || ! isset( $screens[ $current_tab ] ) ) {
+			$current_tab = current( array_keys( $screens ) );
 		}
 
 		return $current_tab;

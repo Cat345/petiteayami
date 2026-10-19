@@ -9,25 +9,25 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 	 */
 	#[AllowDynamicProperties]
 	final class WFACP_Embed_Form_loader {
-		private static $ins = null;
-		private $current_template = false;
+		private static $ins           = null;
+		private $current_template     = false;
 		private $is_divi_builder_page = false;
-		private $wfacp_id = 0;
-		private $rest_api_run = false;
-		private $page_is_editable = false;
-		private $is_received_page = false;
+		private $wfacp_id             = 0;
+		private $rest_api_run         = false;
+		private $page_is_editable     = false;
+		private $is_received_page     = false;
 		public static $pop_up_trigger = false;
-		public $current_page_id = 0;
+		public $current_page_id       = 0;
 
 		protected function __construct() {
-			add_action( 'rest_jsonp_enabled', [ $this, 'enable_rest_jsonp' ] );
-			add_action( 'wfacp_none_checkout_pages', [ $this, 'detect_shortcode' ], 1 );
-			add_action( 'wfacp_none_checkout_pages', [ $this, 'active_woo_compatibility' ] );
-			add_shortcode( 'wfacp_forms', [ $this, 'shortcode' ] );
-			add_filter( 'wfacp_do_not_execute_shortcode', [ $this, 'do_not_execute_shortcode' ] );
+			add_action( 'rest_jsonp_enabled', array( $this, 'enable_rest_jsonp' ) );
+			add_action( 'wfacp_none_checkout_pages', array( $this, 'detect_shortcode' ), 1 );
+			add_action( 'wfacp_none_checkout_pages', array( $this, 'active_woo_compatibility' ) );
+			add_shortcode( 'wfacp_forms', array( $this, 'shortcode' ) );
+			add_filter( 'wfacp_do_not_execute_shortcode', array( $this, 'do_not_execute_shortcode' ) );
 
-			add_filter( 'wfacp_do_not_allow_shortcode_printing', [ $this, 'do_not_allow_shortcode_printing' ] );
-			add_filter( 'wfacp_embed_form_allow_header', [ $this, 'do_not_allow_header_in_ajx' ] );
+			add_filter( 'wfacp_do_not_allow_shortcode_printing', array( $this, 'do_not_allow_shortcode_printing' ) );
+			add_filter( 'wfacp_embed_form_allow_header', array( $this, 'do_not_allow_header_in_ajx' ) );
 		}
 
 		public function is_divi_builder_page() {
@@ -86,17 +86,17 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 			/** Shortcode exist on a page */
 
 			if ( ! is_null( $post ) ) {
-				remove_action( 'wp', [ WFACP_Core()->template_loader, 'maybe_setup_page' ], 7 );
+				remove_action( 'wp', array( WFACP_Core()->template_loader, 'maybe_setup_page' ), 7 );
 				do_shortcode( $shortcode_content );
 			}
 		}
 
 		public function do_not_allow_shortcode_printing( $status ) {
-			if ( isset( $_REQUEST['elementor-preview'] ) ) {
+			if ( isset( $_REQUEST['elementor-preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
 				$status = true;
 			}
-			if ( is_admin() && ( true == $this->rest_api_run || ( isset( $_GET['post'] ) && $_GET['post'] > 0 && isset( $_REQUEST['action'] ) ) ) ) {
-				//return;
+			if ( is_admin() && ( true == $this->rest_api_run || ( isset( $_GET['post'] ) && $_GET['post'] > 0 && isset( $_REQUEST['action'] ) ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
+				// return;
 				$status = true;
 			}
 
@@ -106,18 +106,17 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 				$status = false;
 			}
 
-
 			return $status;
 		}
 
 		public function do_not_allow_header_in_ajx( $status ) {
 			$wfacp_id = 0;
 
-			if ( isset( $_REQUEST['elementor-preview'] ) ) {
-				$aero_id  = filter_input( INPUT_GET, 'elementor-preview', FILTER_UNSAFE_RAW );
+			if ( isset( $_REQUEST['elementor-preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
+				$aero_id  = filter_input( INPUT_GET, 'elementor-preview', FILTER_SANITIZE_NUMBER_INT );
 				$wfacp_id = absint( $aero_id );
-			} else if ( isset( $_REQUEST['action'] ) && 'elementor_ajax' == $_REQUEST['action'] ) {
-				$aero_id  = filter_input( INPUT_POST, 'editor_post_id', FILTER_UNSAFE_RAW );
+			} elseif ( isset( $_REQUEST['action'] ) && 'elementor_ajax' == $_REQUEST['action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
+				$aero_id  = filter_input( INPUT_POST, 'editor_post_id', FILTER_SANITIZE_NUMBER_INT );
 				$wfacp_id = absint( $aero_id );
 			}
 			if ( $wfacp_id > 0 ) {
@@ -153,15 +152,17 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 				}
 			}
 
-
-			$attributes = shortcode_atts( [
-				'id'           => 0,
-				'lightbox'     => 'no',
-				'width'        => 500,
-				'mode'         => 'all',
-				'product_ids'  => '',
-				'product_qtys' => '',
-			], $attributes );
+			$attributes = shortcode_atts(
+				array(
+					'id'           => 0,
+					'lightbox'     => 'no',
+					'width'        => 500,
+					'mode'         => 'all',
+					'product_ids'  => '',
+					'product_qtys' => '',
+				),
+				$attributes
+			);
 			$wfacp_id   = $attributes['id'];
 			$lightbox   = $attributes['lightbox'];
 			if ( '' !== $attributes['product_ids'] ) {
@@ -197,23 +198,22 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 
 				// Normal checkout page (Woocommerce setting checkout page)
 				if ( ( is_checkout() || ( $this->current_page_id > 0 && $this->current_page_id == WFACP_Common::get_checkout_page_id() ) ) && false == $this->page_is_editable ) {
-					remove_action( 'wfacp_after_checkout_page_found', [ WFACP_Core()->public, 'add_to_cart' ], 2 );
+					remove_action( 'wfacp_after_checkout_page_found', array( WFACP_Core()->public, 'add_to_cart' ), 2 );
 					do_action( 'wfacp_changed_default_woocommerce_page' );
 				}
 
-				add_filter( 'wfacp_skip_add_to_cart', [ $this, 'skip_add_to_cart' ] );
+				add_filter( 'wfacp_skip_add_to_cart', array( $this, 'skip_add_to_cart' ) );
 
 				$this->remove_hooks();
 
 				add_filter( 'wfacp_enqueue_global_script', '__return_true' );
-				add_filter( 'wfacp_cancel_url_arguments', [ $this, 'add_embed_page_id' ] );
+				add_filter( 'wfacp_cancel_url_arguments', array( $this, 'add_embed_page_id' ) );
 				add_filter( 'woocommerce_is_checkout', '__return_true' );
 				add_filter( 'wfacp_remove_woocommerce_style_dependency', '__return_true' );
 				add_filter( 'wfacp_skip_form_printing', '__return_true', 10 );
 
-
 				if ( 'yes' == $lightbox ) {
-					add_action( 'wp_enqueue_scripts', [ $this, 'remove_select2_wc' ], 100 );
+					add_action( 'wp_enqueue_scripts', array( $this, 'remove_select2_wc' ), 100 );
 					self::$pop_up_trigger = true;
 				}
 				WFACP_Common::set_id( $this->wfacp_id );
@@ -229,7 +229,7 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 						remove_filter( 'template_include', array( $get_template_loader, 'assign_template' ), 95 );
 					}
 
-					add_action( 'wfacp_after_payment_section', [ $this, 'create_hidden_input_for_saving_current_page_id' ] );
+					add_action( 'wfacp_after_payment_section', array( $this, 'create_hidden_input_for_saving_current_page_id' ) );
 					$this->current_template->get_customizer_data();
 					WFACP_Core()->public->add_to_cart_action( $this->wfacp_id );
 					do_action( 'wfacp_after_checkout_page_found', $this->wfacp_id );
@@ -258,7 +258,7 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 				if ( 'yes' == $lightbox ) {
 					$this->wrap_in_light_box();
 				} else {
-					include $this->current_template->get_template_url();
+					include $this->current_template->template_dir . '/views/view.php';
 				}
 
 				return ob_get_clean();
@@ -275,7 +275,7 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 
 
 		public function create_hidden_input_for_saving_current_page_id() {
-			echo '<input type="hidden" name="wfacp_embed_form_page_id" id="wfacp_embed_form_page_id" value="' . $this->current_page_id . '">';
+			echo '<input type="hidden" name="wfacp_embed_form_page_id" id="wfacp_embed_form_page_id" value="' . (int) $this->current_page_id . '">';
 		}
 
 		public function add_embed_page_id( $params ) {
@@ -287,21 +287,21 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 		private function wrap_in_light_box() {
 
 			?>
-            <div class="wfacp_pop_up_wrap" id="wfacp_pop_up_wrap">
-                <div class="wfacp_modal_overlay wfacp_display_none"></div>
-                <div class="wfacp_modal_outerwrap wfacp_display_none">
-                    <div class="wfacp_modal_innerwrap">
-                        <div class="wfacp_modal_content" id="wfacp_modal_content">
-                            <div class="wfacp_pop_sec">
-                                <div class="wfacp_modal_container">
-									<?php include $this->current_template->get_template_url(); ?>
-                                </div>
-                            </div><!-- product-container -->
-                            <button title="Close (Esc)" type="button" class="wfacp_modal_close">x</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+			<div class="wfacp_pop_up_wrap" id="wfacp_pop_up_wrap">
+				<div class="wfacp_modal_overlay wfacp_display_none"></div>
+				<div class="wfacp_modal_outerwrap wfacp_display_none">
+					<div class="wfacp_modal_innerwrap">
+						<div class="wfacp_modal_content" id="wfacp_modal_content">
+							<div class="wfacp_pop_sec">
+								<div class="wfacp_modal_container">
+									<?php include $this->current_template->template_dir . '/views/view.php'; ?>
+								</div>
+							</div><!-- product-container -->
+							<button title="Close (Esc)" type="button" class="wfacp_modal_close">x</button>
+						</div>
+					</div>
+				</div>
+			</div>
 			<?php
 		}
 
@@ -317,10 +317,13 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 
 				global $activewoo;
 				remove_action( 'woocommerce_before_checkout_form', array( $activewoo->recover_cart, 'print_subscribe_form' ) );
-				add_action( 'woocommerce_before_checkout_form', function () {
-					wp_enqueue_script( 'aw_rc_cart_js' );
-					wp_enqueue_script( 'wfacp_active_woo', WFACP_PLUGIN_URL . '/compatibilities/js/activewoo.min.js', [ 'wfacp_checkout_js' ], WFACP_VERSION, true );
-				} );
+				add_action(
+					'woocommerce_before_checkout_form',
+					function () {
+						wp_enqueue_script( 'aw_rc_cart_js' );
+						wp_enqueue_script( 'wfacp_active_woo', WFACP_PLUGIN_URL . '/compatibilities/js/activewoo.min.js', array( 'wfacp_checkout_js' ), WFACP_VERSION, true );
+					}
+				);
 			}
 		}
 
@@ -328,7 +331,6 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 		public function remove_select2_wc() {
 			wp_dequeue_style( 'select2' );
 			wp_dequeue_script( 'select2' );
-
 		}
 
 		public function skip_add_to_cart( $status ) {
@@ -348,9 +350,9 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 
 			if ( class_exists( 'Astra_Woocommerce' ) ) {
 				$astra = Astra_Woocommerce::get_instance();
-				remove_filter( 'astra_get_sidebar', [ $astra, 'replace_store_sidebar' ] );
-				remove_filter( 'astra_page_layout', [ $astra, 'store_sidebar_layout' ] );
-				remove_filter( 'astra_get_content_layout', [ $astra, 'store_content_layout' ] );
+				remove_filter( 'astra_get_sidebar', array( $astra, 'replace_store_sidebar' ) );
+				remove_filter( 'astra_page_layout', array( $astra, 'store_sidebar_layout' ) );
+				remove_filter( 'astra_get_content_layout', array( $astra, 'store_content_layout' ) );
 
 			}
 			if ( function_exists( 'flatsome_woocommerce_add_notice' ) ) {
@@ -361,17 +363,16 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 
 		public function do_not_execute_shortcode( $status ) {
 
-			if ( is_admin() && isset( $_REQUEST['action'] ) && 'elementor' == $_REQUEST['action'] ) {
+			if ( is_admin() && isset( $_REQUEST['action'] ) && 'elementor' == $_REQUEST['action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
 				return true;
 			}
 
-			if ( isset( $_REQUEST['elementor-preview'] ) && $_REQUEST['elementor-preview'] > 0 ) {
+			if ( isset( $_REQUEST['elementor-preview'] ) && $_REQUEST['elementor-preview'] > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
 
 				return true;
 			}
 
 			return $status;
-
 		}
 
 		public function page_is_editable() {
@@ -398,8 +399,6 @@ if ( ! class_exists( 'WFACP_Embed_Form_loader' ) ) {
 		public function __sleep() {
 			throw new ErrorException( 'WFACPEF_Core can`t converted to string' );
 		}
-
-
 	}
 
 	if ( class_exists( 'WFACP_Core' ) && ! WFACP_Common::is_disabled() ) {

@@ -23,11 +23,6 @@
 }
 
 
-@media (min-width: 992px) {
-    .wfacp-col-md-1, .wfacp-col-md-2, .wfacp-col-md-3, .wfacp-col-md-4, .wfacp-col-md-5, .wfacp-col-md-6, .wfacp-col-md-7, .wfacp-col-md-8, .wfacp-col-md-9, .wfacp-col-md-10, .wfacp-col-md-11, .wfacp-col-md-12 {
-        float: left;
-    }
-}
 
 .wfacp-row {
     margin-right: -15px;

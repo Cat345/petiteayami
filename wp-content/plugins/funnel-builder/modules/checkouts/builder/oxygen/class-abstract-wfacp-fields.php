@@ -948,7 +948,7 @@ if ( ! class_exists( 'WFACP_OXY_Field' ) ) {
 
 			$run_setup = true;
 
-			if ( isset( $_GET['ct_builder'] ) && isset( $_GET['oxy_wfacp_id'] ) && ! isset( $_GET['oxygen_iframe'] ) ) {
+			if ( isset( $_GET['ct_builder'] ) && isset( $_GET['oxy_wfacp_id'] ) && ! isset( $_GET['oxygen_iframe'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
 				$run_setup = false;
 			}
 

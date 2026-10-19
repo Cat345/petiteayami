@@ -51,7 +51,7 @@
 
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
-/*! js-cookie v3.0.7 | MIT */
+/*! js-cookie v3.0.8 | MIT */
 
 /*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 

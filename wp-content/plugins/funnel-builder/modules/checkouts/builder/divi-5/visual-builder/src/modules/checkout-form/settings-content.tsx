@@ -388,6 +388,7 @@ export const SettingsContent = ({
           { yes: { label: 'Yes' }, no: { label: 'No' } },
           'yes',
         );
+        stepFields.step_cart_link_enable.description = 'Note: The cart step is added only on the Store Checkout, when the shopper reaches checkout from the cart page (Product > Cart > Checkout). It is not shown on funnel checkouts, on direct checkout links or in the builder preview.';
         addStepTextField('step_cart_bredcrumb_link', 'Title', 'Cart');
       } else if (selectedType === 'progress_bar') {
         for (let i = 0; i < numSteps; i++) {
@@ -401,6 +402,7 @@ export const SettingsContent = ({
           { yes: { label: 'Yes' }, no: { label: 'No' } },
           'yes',
         );
+        stepFields.step_cart_link_enable.description = 'Note: The cart step is added only on the Store Checkout, when the shopper reaches checkout from the cart page (Product > Cart > Checkout). It is not shown on funnel checkouts, on direct checkout links or in the builder preview.';
         addStepTextField('step_cart_progress_bar_link', 'Cart Title', 'Cart');
       }
     }

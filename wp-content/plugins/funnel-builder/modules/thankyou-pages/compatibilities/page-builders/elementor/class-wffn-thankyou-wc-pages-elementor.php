@@ -368,7 +368,7 @@ if ( ! class_exists( 'WFFN_ThankYou_WC_Pages_Elementor' ) ) {
 		}
 
 		public function get_merge_tags_supported_widgets() {
-			return apply_filters( 'merge_tags_supported_widgets', array( 'heading', 'text-editor', 'shortcode', 'wfty-customer-detail', 'wfty-order-detail', 'wfty-order-download' ) );
+			return apply_filters( 'merge_tags_supported_widgets', array( 'heading', 'text-editor', 'shortcode', 'wfty-customer-detail', 'wfty-order-detail', 'wfty-order-download' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 		}
 
 		public function maybe_print_shortcodes_helpbox() {

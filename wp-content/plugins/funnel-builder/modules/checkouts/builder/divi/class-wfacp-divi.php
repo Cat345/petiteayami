@@ -471,8 +471,8 @@ if ( ! class_exists( 'WFACP_DIVI' ) ) {
 			$post_type = WFACP_Common::get_post_type_slug();
 
 			// 0. REST API requests for wfacp routes.
-			if ( ! empty( $_SERVER['REQUEST_URI'] ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				$uri = wp_unslash( $_SERVER['REQUEST_URI'] ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			if ( ! empty( $_SERVER['REQUEST_URI'] ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- raw URI used only for path matching / url_to_postid; never stored or output.
+				$uri = wp_unslash( $_SERVER['REQUEST_URI'] ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- raw URI used only for path matching / url_to_postid; never stored or output.
 				if ( false !== strpos( $uri, '/wp-json/wfacp/' ) ) {
 					return true;
 				}
@@ -497,7 +497,7 @@ if ( ! class_exists( 'WFACP_DIVI' ) ) {
 
 			// 3. Divi VB frontend URLs (/slug/?et_fb=1).
 			if ( $post_id < 1 && ! empty( $_SERVER['REQUEST_URI'] ) ) {
-				$post_id = url_to_postid( home_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$post_id = url_to_postid( home_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- raw URI used only for path matching / url_to_postid; never stored or output.
 			}
 
 			if ( $post_id > 0 ) {
@@ -514,8 +514,8 @@ if ( ! class_exists( 'WFACP_DIVI' ) ) {
 			}
 
 			// 4. Fallback: match checkout rewrite slug in URL path.
-			if ( ! empty( $_SERVER['REQUEST_URI'] ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				$uri          = wp_unslash( $_SERVER['REQUEST_URI'] ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			if ( ! empty( $_SERVER['REQUEST_URI'] ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- raw URI used only for path matching / url_to_postid; never stored or output.
+				$uri          = wp_unslash( $_SERVER['REQUEST_URI'] ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- raw URI used only for path matching / url_to_postid; never stored or output.
 				$rewrite_slug = WFACP_Common::get_url_rewrite_slug();
 				if ( ! empty( $rewrite_slug ) && false !== strpos( $uri, '/' . $rewrite_slug . '/' ) ) {
 					return true;
@@ -531,10 +531,10 @@ if ( ! class_exists( 'WFACP_DIVI' ) ) {
 			// (/subdir/slug/, /en/slug/). get_page_by_path() is a direct DB lookup that works
 			// before the CPT is registered. Gated to the base-less config so normal sites
 			// never run the extra query.
-			if ( ! empty( $_SERVER['REQUEST_URI'] ) && class_exists( 'BWF_Admin_General_Settings' ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			if ( ! empty( $_SERVER['REQUEST_URI'] ) && class_exists( 'BWF_Admin_General_Settings' ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- raw URI used only for path matching / url_to_postid; never stored or output.
 				$checkout_base = trim( (string) BWF_Admin_General_Settings::get_instance()->get_option( 'checkout_page_base' ) );
 				if ( '' === $checkout_base ) {
-					$path = wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ), PHP_URL_PATH ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$path = wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ), PHP_URL_PATH ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- raw URI used only for path matching / url_to_postid; never stored or output.
 					$slug = is_string( $path ) ? basename( untrailingslashit( $path ) ) : '';
 					if ( '' !== $slug ) {
 						$maybe_post = get_page_by_path( $slug, OBJECT, $post_type );

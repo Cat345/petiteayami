@@ -342,8 +342,8 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 			$plugin = WFFN_Plugin_Compatibilities::get_language_compatible_plugin();
 
 			return '<div class="bwf-notifications-message current">
-        <h3 class="bwf-notifications-title">' . sprintf( __( 'New Feature: Deep Compatibility with %s Plugin', 'funnel-builder' ), $plugin ) . '</h3>
-        <p class="bwf-notifications-content">' . sprintf( __( 'We’ve detected that your site is using %s. You can now configure languages for each funnel step directly within the Languages tab. For optimal performance, we recommend disabling any custom snippets you’ve configured. ', 'funnel-builder' ), $plugin ) . '</p>
+        <h3 class="bwf-notifications-title">' . sprintf( /* translators: %s: plugin name. */ __( 'New Feature: Deep Compatibility with %s Plugin', 'funnel-builder' ), $plugin ) . '</h3>
+        <p class="bwf-notifications-content">' . sprintf( /* translators: %s: plugin name. */ __( 'We’ve detected that your site is using %s. You can now configure languages for each funnel step directly within the Languages tab. For optimal performance, we recommend disabling any custom snippets you’ve configured. ', 'funnel-builder' ), $plugin ) . '</p>
     </div>';
 		}
 
@@ -497,10 +497,6 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 				return null;
 			}
 
-			// Generate dismiss URL with secondary key
-			$current_admin_url = isset( $_SERVER['REQUEST_URI'] ) ? basename( wffn_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$dismiss_url       = admin_url( 'admin-ajax.php?action=wffn_dismiss_notice&nkey=' . $secondary_key . '&nonce=' . wp_create_nonce( 'wp_wffn_dismiss_notice' ) . '&redirect=' . $current_admin_url );
-
 			// Generate CTA URL with UTM parameters
 			$cta_url = add_query_arg(
 				array(
@@ -599,7 +595,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 			}
 
 			// Generate dismiss URL
-			$current_admin_url = isset( $_SERVER['REQUEST_URI'] ) ? basename( wffn_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$current_admin_url = isset( $_SERVER['REQUEST_URI'] ) ? basename( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) : '';
 			$dismiss_url       = admin_url( 'admin-ajax.php?action=wffn_dismiss_notice&nkey=' . $banner_data['key'] . '&nonce=' . wp_create_nonce( 'wp_wffn_dismiss_notice' ) . '&redirect=' . $current_admin_url );
 
 			// Generate CTA URL with UTM parameters
@@ -735,7 +731,10 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 				);
 			}
 			if ( WFFN_Core()->admin->is_update_available() ) {
-				$version        = WFFN_Core()->admin->is_update_available();
+				$version      = WFFN_Core()->admin->is_update_available();
+				$jump_type    = $this->get_version_jump_type( $this->get_updating_plugin_version(), $version );
+				$version_slug = $this->get_announce_version_slug( $version, 'fb', $jump_type );
+
 				$this->notifs[] = array(
 					'key'           => 'fb_update_' . str_replace( '.', '_', $version ),
 					'content'       => $this->update_available( $version ),
@@ -747,9 +746,15 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 							'target'    => '__blank',
 						),
 						array(
-							'label'  => __( 'Learn more', 'funnel-builder' ),
-							'href'   => 'https://funnelkit.com/whats-new/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Update+Notice+Bar',
-							'target' => '__blank',
+							'label'        => 'features' === $jump_type
+								? __( 'Explore Features', 'funnel-builder' )
+								: __( 'View Changelog', 'funnel-builder' ),
+							'action'       => 'open_announcements',
+							'className'    => 'is-secondary',
+							'tab'          => $jump_type,
+							'version_slug' => $version_slug,
+							'href'         => 'https://funnelkit.com/whats-new/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Update+Notice+Bar',
+							'target'       => '__blank',
 						),
 					),
 					'index'         => 10,
@@ -890,7 +895,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 
 		public function promo_pre_bfcm( $html = true ) {
 			$title   = __( '🔥 Pre Black Friday Deal: Get FunnelKit Pro for up to 55% OFF 🔥', 'funnel-builder' );
-			$content = sprintf( __( 'Get started using FunnelKit to grow your revenue today for up to 55%% OFF! Get access to money-making solutions like Conversion Optimized Checkout, One Click Upsells, Order Bumps, Analytics, A/B Testing and much more! Expires Sunday, %s, at midnight ET.', 'funnel-builder' ), $this->get_bf_day_data( 'pre' ) );
+			$content = sprintf( /* translators: %s: offer expiry date. */ __( 'Get started using FunnelKit to grow your revenue today for up to 55%% OFF! Get access to money-making solutions like Conversion Optimized Checkout, One Click Upsells, Order Bumps, Analytics, A/B Testing and much more! Expires Sunday, %s, at midnight ET.', 'funnel-builder' ), $this->get_bf_day_data( 'pre' ) );
 
 			if ( $html === false ) {
 				return array(
@@ -908,7 +913,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 
 		public function promo_bfcm( $html = true ) {
 			$title   = __( '🔥 Black Friday Deal: Get FunnelKit Pro for up to 55% OFF 🔥', 'funnel-builder' );
-			$content = sprintf( __( 'Get started using FunnelKit to grow your revenue today for up to 55%% OFF! Get access to money-making solutions like Conversion Optimized Checkout, One Click Upsells, Order Bumps, Analytics, A/B Testing and much more! Expires Friday, %s, at midnight ET.', 'funnel-builder' ), $this->get_bf_day_data( 'bf' ) );
+			$content = sprintf( /* translators: %s: offer expiry date. */ __( 'Get started using FunnelKit to grow your revenue today for up to 55%% OFF! Get access to money-making solutions like Conversion Optimized Checkout, One Click Upsells, Order Bumps, Analytics, A/B Testing and much more! Expires Friday, %s, at midnight ET.', 'funnel-builder' ), $this->get_bf_day_data( 'bf' ) );
 
 			if ( $html === false ) {
 				return array(
@@ -926,7 +931,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 
 		public function promo_small_business_saturday( $html = true ) {
 			$title   = __( '🔥 Small Business Saturday Deal: Get FunnelKit Pro for up to 55% OFF 🔥', 'funnel-builder' );
-			$content = sprintf( __( 'Get started using FunnelKit to grow your revenue today for up to 55%% OFF! Get access to money-making solutions like Conversion Optimized Checkout, One Click Upsells, Order Bumps, Analytics, A/B Testing and much more! Expires Saturday, %s, at midnight ET.', 'funnel-builder' ), $this->get_bf_day_data( 'sbs' ) );
+			$content = sprintf( /* translators: %s: offer expiry date. */ __( 'Get started using FunnelKit to grow your revenue today for up to 55%% OFF! Get access to money-making solutions like Conversion Optimized Checkout, One Click Upsells, Order Bumps, Analytics, A/B Testing and much more! Expires Saturday, %s, at midnight ET.', 'funnel-builder' ), $this->get_bf_day_data( 'sbs' ) );
 
 			if ( $html === false ) {
 				return array(
@@ -944,7 +949,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 
 		public function promo_ext_bfcm( $html = true ) {
 			$title   = __( '🔥 Black Friday Extended Deal: Get FunnelKit Pro for up to 55% OFF 🔥', 'funnel-builder' );
-			$content = sprintf( __( 'Get started using FunnelKit to grow your revenue today for up to 55%% OFF! Get access to money-making solutions like Conversion Optimized Checkout, One Click Upsells, Order Bumps, Analytics, A/B Testing and much more! Expires Sunday, %s, at midnight ET.', 'funnel-builder' ), $this->get_bf_day_data( 'bfext' ) );
+			$content = sprintf( /* translators: %s: offer expiry date. */ __( 'Get started using FunnelKit to grow your revenue today for up to 55%% OFF! Get access to money-making solutions like Conversion Optimized Checkout, One Click Upsells, Order Bumps, Analytics, A/B Testing and much more! Expires Sunday, %s, at midnight ET.', 'funnel-builder' ), $this->get_bf_day_data( 'bfext' ) );
 
 			if ( $html === false ) {
 				return array(
@@ -962,7 +967,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 
 		public function promo_cmonly( $html = true ) {
 			$title   = __( '🔥 Cyber Monday Deal: Get FunnelKit Pro for up to 55% OFF 🔥', 'funnel-builder' );
-			$content = sprintf( __( 'Get started using FunnelKit to grow your revenue today for up to 55%% OFF! Get access to money-making solutions like Conversion Optimized Checkout, One Click Upsells, Order Bumps, Analytics, A/B Testing and much more! Expires Monday, %s, at midnight ET.', 'funnel-builder' ), $this->get_bf_day_data( 'cm' ) );
+			$content = sprintf( /* translators: %s: offer expiry date. */ __( 'Get started using FunnelKit to grow your revenue today for up to 55%% OFF! Get access to money-making solutions like Conversion Optimized Checkout, One Click Upsells, Order Bumps, Analytics, A/B Testing and much more! Expires Monday, %s, at midnight ET.', 'funnel-builder' ), $this->get_bf_day_data( 'cm' ) );
 
 			if ( $html === false ) {
 				return array(
@@ -980,7 +985,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 
 		public function promo_ext_cmonly( $html = true ) {
 			$title   = __( '🔥 Cyber Monday Extended Deal: Get FunnelKit Pro for up to 55% OFF 🔥', 'funnel-builder' );
-			$content = sprintf( __( 'Get started using FunnelKit to grow your revenue today for up to 55%% OFF! Get access to money-making solutions like Conversion Optimized Checkout, One Click Upsells, Order Bumps, Analytics, A/B Testing and much more! Expires Friday, %s, at midnight ET.', 'funnel-builder' ), $this->get_bf_day_data( 'cmext' ) );
+			$content = sprintf( /* translators: %s: offer expiry date. */ __( 'Get started using FunnelKit to grow your revenue today for up to 55%% OFF! Get access to money-making solutions like Conversion Optimized Checkout, One Click Upsells, Order Bumps, Analytics, A/B Testing and much more! Expires Friday, %s, at midnight ET.', 'funnel-builder' ), $this->get_bf_day_data( 'cmext' ) );
 
 			if ( $html === false ) {
 				return array(
@@ -998,7 +1003,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 
 		public function promo_gm( $html = true ) {
 			$title   = __( '🔥 Green Monday Deal: Get FunnelKit Pro for up to 55% OFF 🔥', 'funnel-builder' );
-			$content = sprintf( __( 'Get started using FunnelKit to grow your revenue today for up to 55%% OFF! Get access to money-making solutions like Conversion Optimized Checkout, One Click Upsells, Order Bumps, Analytics, A/B Testing and much more! Expires Monday, %s, at midnight ET.', 'funnel-builder' ), $this->get_second_dec_monday_day_diff( false ) );
+			$content = sprintf( /* translators: %s: offer expiry date. */ __( 'Get started using FunnelKit to grow your revenue today for up to 55%% OFF! Get access to money-making solutions like Conversion Optimized Checkout, One Click Upsells, Order Bumps, Analytics, A/B Testing and much more! Expires Monday, %s, at midnight ET.', 'funnel-builder' ), $this->get_second_dec_monday_day_diff( false ) );
 
 			if ( $html === false ) {
 				return array(
@@ -1020,6 +1025,59 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 					<h3 class="bwf-notifications-title">' . sprintf( 'Alert! New version %s is available for update', $version ) . '</h3>
 					<p class="bwf-notifications-content">' . __( "Don't miss out on the latest features, bug fixes & security enhancements! Upgrade to the latest version and do not let an outdated version hold you back.", 'funnel-builder' ) . '</p>
 				</div>';
+		}
+
+		private function get_updating_plugin_version() {
+			$plugins = get_site_transient( 'update_plugins' );
+
+			if ( defined( 'WFFN_PRO_VERSION' ) && defined( 'WFFN_PRO_PLUGIN_BASENAME' ) && isset( $plugins->response ) && is_array( $plugins->response ) && ! isset( $plugins->response[ WFFN_PLUGIN_BASENAME ] ) && isset( $plugins->response[ WFFN_PRO_PLUGIN_BASENAME ] ) ) {
+				return WFFN_PRO_VERSION;
+			}
+
+			return WFFN_VERSION;
+		}
+
+		/**
+		 * Returns 'features' when the A.B.C segment changes (major/minor jump),
+		 * 'changelog' when only the D (hotfix) segment changes (patch-to-patch).
+		 *
+		 * @param string $old_version Currently installed version (e.g. 3.15.0.12).
+		 * @param string $new_version Available version (e.g. 3.16.0.7).
+		 *
+		 * @return string 'features'|'changelog'
+		 */
+		private function get_version_jump_type( $old_version, $new_version ) {
+			$old = array_pad( explode( '.', (string) $old_version ), 4, '0' );
+			$new = array_pad( explode( '.', (string) $new_version ), 4, '0' );
+
+			if ( $old[0] !== $new[0] || $old[1] !== $new[1] || $old[2] !== $new[2] ) {
+				return 'features';
+			}
+
+			return 'changelog';
+		}
+
+		/**
+		 * Builds the announcement version slug the drawer should scroll to.
+		 *
+		 * For a major/minor jump we target the A.B.C.0 base entry (the release
+		 * announcement), not a specific patch.  For a patch jump we target the
+		 * exact version entry.
+		 *
+		 * @param string $version   New version string (e.g. 3.16.0.7).
+		 * @param string $prefix    Product prefix (e.g. 'fb').
+		 * @param string $jump_type 'features'|'changelog'.
+		 *
+		 * @return string e.g. 'fb_3_16_0_0' or 'fb_3_16_0_7'
+		 */
+		private function get_announce_version_slug( $version, $prefix, $jump_type ) {
+			$parts = array_pad( explode( '.', (string) $version ), 4, '0' );
+
+			if ( 'features' === $jump_type ) {
+				$parts = array( $parts[0], $parts[1], $parts[2], '0' );
+			}
+
+			return sanitize_key( $prefix . '_' . implode( '_', $parts ) );
 		}
 
 		public function conversion_migration_content( $state ) {
@@ -1106,7 +1164,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 				return;
 			}
 			$plugin_update_url = admin_url( 'plugins.php?s=funnelkit-stripe-woo-payment-gateway' );
-			$current_admin_url = basename( wffn_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$current_admin_url = isset( $_SERVER['REQUEST_URI'] ) ? basename( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) : '';
 			$dismiss_url       = admin_url( 'admin-ajax.php?action=wffn_dismiss_notice&nkey=stripe_update_1_14_0&nonce=' . wp_create_nonce( 'wp_wffn_dismiss_notice' ) . '&redirect=' . $current_admin_url );
 
 			if ( true ) { ?>
@@ -1164,7 +1222,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 			if ( ! in_array( $screen_id, $allowed_screens, true ) ) {
 				return;
 			}
-			$current_admin_url = basename( wffn_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$current_admin_url = isset( $_SERVER['REQUEST_URI'] ) ? basename( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) : '';
 			$dismiss_url       = admin_url( 'admin-ajax.php?action=wffn_dismiss_notice&nkey=onboarding_wizard&nonce=' . wp_create_nonce( 'wp_wffn_dismiss_notice' ) . '&redirect=' . $current_admin_url );
 
 			if ( WFFN_Core()->admin->is_wizard_available() ) {
@@ -1217,7 +1275,7 @@ if ( ! class_exists( 'WFFN_Admin_Notifications' ) ) {
 					$upgrade_state = 4;
 				} else {
 					global $wpdb;
-					$count_wc_orders = $wpdb->get_var( "SELECT COUNT(`order_id`) FROM {$wpdb->prefix}wc_order_stats" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					$count_wc_orders = $wpdb->get_var( "SELECT COUNT(`order_id`) FROM {$wpdb->prefix}wc_order_stats" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 					if ( empty( $count_wc_orders ) ) {
 						WFFN_Conversion_Tracking_Migrator::get_instance()->set_upgrade_state( 4 );

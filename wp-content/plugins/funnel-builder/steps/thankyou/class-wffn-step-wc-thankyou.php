@@ -50,7 +50,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 			return array(
 				'type'        => $this->slug,
 				'title'       => $this->get_title(),
-				'popup_title' => sprintf( __( 'Add %s', 'funnel-builder' ), $this->get_title() ),
+				'popup_title' => sprintf( /* translators: %s: step title (e.g. Thank You). */ __( 'Add %s', 'funnel-builder' ), $this->get_title() ),
 				'dashicons'   => 'dashicons-yes-alt',
 				'icon'        => 'for-you',
 				'label_class' => 'bwf-st-c-badge-red',
@@ -496,7 +496,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 		 * @return mixed
 		 */
 		public function maybe_funnel_breadcrumb( $get_ref ) {
-			$step_id = filter_input( INPUT_GET, 'edit' );
+			$step_id = filter_input( INPUT_GET, 'edit', FILTER_SANITIZE_NUMBER_INT );
 			if ( empty( $get_ref ) && ! empty( $step_id ) ) {
 				$funnel_id = get_post_meta( $step_id, '_bwf_in_funnel', true );
 				if ( ! empty( $funnel_id ) && abs( $funnel_id ) > 0 ) {

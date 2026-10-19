@@ -57,7 +57,7 @@ if ( ! class_exists( 'WooFunnels_Create_DB_Tables' ) ) {
 		 */
 		public function create() {
 			$current_table_list = get_option( '_bwf_db_table_list', array( 'tables' => array(), 'version' => '0.0.0' ) );
-			$tables             = apply_filters( 'bwf_add_db_table_schema', array(), $current_table_list );
+			$tables             = apply_filters( 'bwf_add_db_table_schema', array(), $current_table_list ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			global $wpdb;
 

@@ -43,7 +43,7 @@ if ( ! class_exists( 'WFACP_Contacts_Analytics' ) ) {
 			$item_data  = array();
 			$funnel_id  = ! empty( $funnel_id ) ? absint( $funnel_id ) : $funnel_id;
 			$cid        = ! empty( $cid ) ? absint( $cid ) : $cid;
-			$order_data = $wpdb->get_results(
+			$order_data = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 				$wpdb->prepare(
 					"SELECT aero.order_id as 'order_id', aero.wfacp_id as 'object_id', p.post_title as 'object_name', aero.total_revenue as 'total_revenue', DATE_FORMAT(aero.date, '%%Y-%%m-%%dT%%TZ') as 'date', 'checkout' as 'type' FROM {$wpdb->prefix}wfacp_stats AS aero LEFT JOIN {$wpdb->prefix}posts as p ON aero.wfacp_id = p.id WHERE aero.fid=%d AND aero.cid=%d order by aero.date asc",
 					$funnel_id,
@@ -67,7 +67,7 @@ if ( ! class_exists( 'WFACP_Contacts_Analytics' ) ) {
 				 * get order all items meta by order id for showing name and quantity
 				 */
 				$order_item_ids = array_map( 'absint', $get_order_ids );
-				$item_data      = $wpdb->get_results(
+				$item_data      = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					$wpdb->prepare(
 						"SELECT oi.order_id as 'order_id', oi.order_item_name as 'product_name', oi.order_item_id as 'item_id', oim2.meta_key as 'item_meta', oim2.meta_value as 'meta_value' FROM {$wpdb->prefix}woocommerce_order_items as oi
 						LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta as oim ON oi.order_item_id = oim.order_item_id
@@ -148,7 +148,7 @@ if ( ! class_exists( 'WFACP_Contacts_Analytics' ) ) {
 			}
 
 			$query_args = array_merge( $order_ids_array, array( $cid ) );
-			$data       = $wpdb->get_results(
+			$data       = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 				$wpdb->prepare(
 					"SELECT aero.fid as fid, aero.order_id as 'order_id', aero.wfacp_id as 'object_id', p.post_title as 'object_name', aero.total_revenue as 'total_revenue', DATE_FORMAT(aero.date, '%%Y-%%m-%%d %%T') as 'date', 'checkout' as 'type' FROM {$wpdb->prefix}wfacp_stats AS aero LEFT JOIN {$wpdb->prefix}posts as p ON aero.wfacp_id = p.id WHERE aero.order_id IN ( " . implode( ', ', array_fill( 0, count( $order_ids_array ), '%d' ) ) . ' ) AND aero.cid=%d order by aero.date asc',
 					...$query_args
@@ -170,7 +170,7 @@ if ( ! class_exists( 'WFACP_Contacts_Analytics' ) ) {
 		public function get_all_contact_record_by_cid( $cid ) {
 			global $wpdb;
 			$cid      = ! empty( $cid ) ? absint( $cid ) : $cid;
-			$data     = $wpdb->get_results(
+			$data     = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 				$wpdb->prepare(
 					"SELECT aero.order_id as 'order_id', aero.wfacp_id as 'object_id', p.post_title as 'object_name', aero.total_revenue as 'total_revenue', DATE_FORMAT(aero.date, '%%Y-%%m-%%dT%%TZ') as 'date', 'checkout' as 'type' FROM {$wpdb->prefix}wfacp_stats AS aero LEFT JOIN {$wpdb->prefix}posts as p ON aero.wfacp_id = p.id WHERE aero.cid=%d order by aero.date asc",
 					$cid
@@ -204,7 +204,7 @@ if ( ! class_exists( 'WFACP_Contacts_Analytics' ) ) {
 			global $wpdb;
 
 			$order_id = ! empty( $order_id ) ? absint( $order_id ) : $order_id;
-			$data     = $wpdb->get_results(
+			$data     = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 				$wpdb->prepare(
 					"SELECT aero.wfacp_id as 'id', p.post_title as 'checkout_name', '' as 'checkout_products', '' as 'checkout_coupon', aero.order_id as 'checkout_order_id', aero.total_revenue as 'checkout_total' FROM {$wpdb->prefix}wfacp_stats AS aero LEFT JOIN {$wpdb->prefix}posts as p ON aero.wfacp_id = p.id WHERE  aero.order_id=%d order by aero.id asc",
 					$order_id
@@ -230,7 +230,8 @@ if ( ! class_exists( 'WFACP_Contacts_Analytics' ) ) {
 		public function get_contacts_by_funnel_id( $funnel_id, $start_date, $end_date, $is_interval = '' ) {
 			global $wpdb;
 			$date           = ( '' !== $start_date && '' !== $end_date ) ? " AND `date` >= '" . esc_sql( $start_date ) . "' AND `date` < '" . esc_sql( $end_date ) . "' " : '';
-			$funnel_query   = ( 0 === intval( $funnel_id ) ) ? ' AND fid != ' . esc_sql( $funnel_id ) . ' ' : ' AND fid = ' . esc_sql( $funnel_id ) . ' ';
+			$funnel_id      = absint( $funnel_id );
+			$funnel_query   = ( 0 === $funnel_id ) ? ' AND fid != ' . $funnel_id . ' ' : ' AND fid = ' . $funnel_id . ' ';
 			$interval_param = ! empty( $is_interval ) ? ', date as p_date ' : '';
 
 			return 'SELECT DISTINCT cid as contacts ' . $interval_param . ' FROM `' . $wpdb->prefix . 'wfacp_stats` WHERE 1=1 ' . $date . ' ' . $funnel_query;
@@ -247,8 +248,8 @@ if ( ! class_exists( 'WFACP_Contacts_Analytics' ) ) {
 		 */
 		public function get_total_orders( $funnel_id, $start_date, $end_date, $is_interval = '', $int_request = '' ) {
 			global $wpdb;
-			$funnel_id = ( $funnel_id !== '' ) ? ' AND fid = ' . esc_sql( $funnel_id ) . ' ' : ' AND fid != 0 ';
-			$date      = ( '' !== $start_date && '' !== $end_date ) ? " AND `date` >= '" . esc_sql( $start_date ) . "' AND `date` < '" . esc_sql( $end_date ) . "' " : '';
+			$funnel_id = ( $funnel_id !== '' ) ? $wpdb->prepare( ' AND fid = %d ', absint( $funnel_id ) ) : ' AND fid != 0 ';
+			$date      = ( '' !== $start_date && '' !== $end_date ) ? $wpdb->prepare( ' AND `date` >= %s AND `date` < %s ', $start_date, $end_date ) : '';
 
 			$interval_query = '';
 			$group_by       = '';
@@ -263,8 +264,9 @@ if ( ! class_exists( 'WFACP_Contacts_Analytics' ) ) {
 				}
 			}
 
-			$query    = 'SELECT  COUNT(ID) as total_orders ' . $interval_query . ' FROM `' . $wpdb->prefix . 'wfacp_stats` WHERE 1=1 ' . $date . $funnel_id . $group_by . ' ORDER BY id ASC';
-			$data     = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$query = 'SELECT  COUNT(ID) as total_orders ' . $interval_query . ' FROM `' . $wpdb->prefix . 'wfacp_stats` WHERE 1=1 ' . $date . $funnel_id . $group_by . ' ORDER BY id ASC';
+			// $date and $funnel_id are $wpdb->prepare() fragments; $interval_query/$group_by are built from whitelisted interval formats. PHPCS cannot verify the assembled string.
+			$data     = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
 				return $db_error;
@@ -283,9 +285,13 @@ if ( ! class_exists( 'WFACP_Contacts_Analytics' ) ) {
 		 */
 		public function get_timeline_data_query( $limit, $order = 'DESC', $order_by = 'date' ) {
 			global $wpdb;
-			$limit = ( $limit !== '' ) ? ' LIMIT ' . esc_sql( $limit ) : '';
+			// ORDER BY column/direction are identifiers (cannot be parameterised) and LIMIT is numeric; this method is invoked by Pro with request-supplied params, so whitelist/cast them here.
+			$allowed_order_by = array( 'date', 'id', 'fid', 'cid', 'order_id', 'total_revenue' );
+			$order_by         = in_array( $order_by, $allowed_order_by, true ) ? $order_by : 'date';
+			$order            = in_array( strtoupper( $order ), array( 'ASC', 'DESC' ), true ) ? strtoupper( $order ) : 'DESC';
+			$limit_clause     = ( '' !== $limit && is_numeric( $limit ) ) ? ' LIMIT ' . absint( $limit ) : '';
 
-			return "SELECT stats.wfacp_id as id, stats.fid as 'fid', stats.cid as 'cid', stats.order_id as 'order_id', CONVERT( stats.total_revenue USING utf8) as 'total_revenue', 'aero' as 'type', posts.post_title as 'post_title', stats.date as date FROM " . $wpdb->prefix . 'wfacp_stats as stats LEFT JOIN ' . $wpdb->prefix . 'posts as posts ON stats.wfacp_id = posts.ID ORDER BY ' . esc_sql( $order_by ) . ' ' . esc_sql( $order ) . ' ' . $limit;
+			return "SELECT stats.wfacp_id as id, stats.fid as 'fid', stats.cid as 'cid', stats.order_id as 'order_id', CONVERT( stats.total_revenue USING utf8) as 'total_revenue', 'aero' as 'type', posts.post_title as 'post_title', stats.date as date FROM " . $wpdb->prefix . 'wfacp_stats as stats LEFT JOIN ' . $wpdb->prefix . 'posts as posts ON stats.wfacp_id = posts.ID ORDER BY ' . $order_by . ' ' . $order . $limit_clause;
 		}
 
 		/**
@@ -296,13 +302,21 @@ if ( ! class_exists( 'WFACP_Contacts_Analytics' ) ) {
 		 */
 		public function get_top_funnels( $limit = '', $date_query = '' ) {
 			global $wpdb;
-			$limit      = ( $limit !== '' ) ? ' LIMIT ' . esc_sql( $limit ) : '';
-			$date_query = str_replace( '{{COLUMN}}', 'stats.date', $date_query );
-			$query      = 'SELECT funnel.id as fid, funnel.title as title, stats.total as total FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel
-			JOIN ( SELECT fid, SUM( total_revenue ) as total FROM ' . $wpdb->prefix . 'wfacp_stats as stats
-			WHERE fid != 0 AND ' . esc_sql( $date_query ) . ' group by fid ) as stats ON funnel.id = stats.fid WHERE 1 = 1 GROUP BY funnel.id ORDER BY total DESC ' . $limit;
+			$limit = ( $limit !== '' ) ? ' LIMIT ' . absint( $limit ) : '';
 
-			$data     = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// Security: only allow a safe date-range fragment. Expected: "{{COLUMN}} >= 'YYYY-MM-DD' AND {{COLUMN}} < 'YYYY-MM-DD'".
+			// esc_sql() is useless here (the fragment is unquoted SQL), so whitelist the shape and fall back to 1=1.
+			$date_query = str_replace( '{{COLUMN}}', 'stats.date', $date_query );
+			if ( ! empty( $date_query ) && ! preg_match( '/^stats\.date\s*[<>=]+\s*\'[\d\-\s:]+\'(\s+AND\s+stats\.date\s*[<>=]+\s*\'[\d\-\s:]+\')*$/i', $date_query ) ) {
+				$date_query = '1=1';
+			}
+			$date_condition = ! empty( $date_query ) ? $date_query : '1=1';
+
+			$query = 'SELECT funnel.id as fid, funnel.title as title, stats.total as total FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel
+			JOIN ( SELECT fid, SUM( total_revenue ) as total FROM ' . $wpdb->prefix . 'wfacp_stats as stats
+			WHERE fid != 0 AND ' . $date_condition . ' group by fid ) as stats ON funnel.id = stats.fid WHERE 1 = 1 GROUP BY funnel.id ORDER BY total DESC ' . $limit; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- date_condition validated via regex whitelist above, limit sanitized with absint.
+
+			$data     = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Query uses regex-validated date_condition and absint-sanitized limit. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
 				return $db_error;
@@ -329,9 +343,9 @@ if ( ! class_exists( 'WFACP_Contacts_Analytics' ) ) {
 				$query_args[] = absint( $funnel_id );
 			}
 
-			$query = 'DELETE FROM ' . $wpdb->prefix . 'wfacp_stats WHERE cid IN( ' . $placeholdersForFavFruits . ' ) ' . $funnel_query;
+			$query = 'DELETE FROM ' . esc_sql( $wpdb->prefix . 'wfacp_stats' ) . ' WHERE cid IN( ' . $placeholdersForFavFruits . ' ) ' . $funnel_query;
 
-			$wpdb->query( $wpdb->prepare( $query, $query_args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- all values ($cids, $funnel_id) bound through prepare(); IN/fid placeholders built via array_fill()/%d.
+			$wpdb->query( $wpdb->prepare( $query, $query_args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- all values ($cids, $funnel_id) bound through prepare(); IN/fid placeholders built via array_fill()/%d. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
 				return $db_error;
@@ -346,7 +360,7 @@ if ( ! class_exists( 'WFACP_Contacts_Analytics' ) ) {
 		public function reset_analytics( $funnel_id ) {
 			global $wpdb;
 			$query = $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'wfacp_stats WHERE fid = %d', $funnel_id );
-			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $query built with $wpdb->prepare() above.
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- $query built with $wpdb->prepare() above. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 		}
 	}
 }

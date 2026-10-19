@@ -12,7 +12,7 @@ if ( ! class_exists( 'BWF_Lazy_Logger' ) ) {
 	 * This proxy forwards every call to the real singleton, which autoloads on first use, so the
 	 * 3.2KB BWF_Logger class is not parsed on requests that never log (e.g. plain frontend views).
 	 */
-	class BWF_Lazy_Logger {
+	class BWF_Lazy_Logger { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		public function __call( $method, $args ) {
 			return BWF_Logger::get_instance()->{$method}( ...$args );
 		}
@@ -31,7 +31,7 @@ if ( ! class_exists( 'BWF_Lazy_Logger' ) ) {
  */
 if ( ! class_exists( 'BWF_Kernel' ) ) {
 
-	class BWF_Kernel {
+	class BWF_Kernel { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 
 		/**
 		 * Class => file map for O(1) autoloading. Paths relative to WooFunnel_Loader::$ultimate_path.
@@ -194,7 +194,7 @@ if ( ! class_exists( 'BWF_Kernel' ) ) {
 			 * its dismantled core is the copy that loaded). The shared core names nothing
 			 * plugin-specific here.
 			 */
-			return apply_filters( 'bwf_kernel_eager_classes', $classes );
+			return apply_filters( 'bwf_kernel_eager_classes', $classes ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 		}
 
 		/**
@@ -240,7 +240,7 @@ if ( ! class_exists( 'BWF_Kernel' ) ) {
 			 * own survey copy re-adds itself from FB's bootstrap. The shared core names
 			 * nothing plugin-specific here.
 			 */
-			return apply_filters( 'bwf_kernel_static_init_classes', $classes );
+			return apply_filters( 'bwf_kernel_static_init_classes', $classes ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 		}
 	}
 

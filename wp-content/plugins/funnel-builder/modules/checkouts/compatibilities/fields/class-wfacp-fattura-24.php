@@ -124,12 +124,11 @@ if ( ! class_exists( 'WFACP_Compatibility_Fattura_24' ) ) {
 			}
 
 			$bodyClass = "body #wfacp-sec-wrapper ";
-			$cssHtml   = "<style>";
+			$cssHtml   = '';
 			$cssHtml   .= $bodyClass . " .wfacp-form:not(.wfacp-top) p.wfacp-form-control-wrapper.wfacp-anim-wrap label.wfacp-form-control-label {top: 6px!important;font-size: 12px!important;background: 0 0!important;bottom: auto;right: 8px;margin-top: 0;line-height: 1.3;}";
 			$cssHtml   .= "";
 
-			$cssHtml .= "</style>";
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 
 		}
 

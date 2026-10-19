@@ -12,6 +12,7 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 		public $gtag_rendered   = false;
 		private static $ins     = null;
 		private $pending_events = array();
+		private $url_variations = array();
 
 		public function __construct() {
 			$this->admin_general_settings = BWF_Admin_General_Settings::get_instance();
@@ -362,29 +363,34 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 
 			);
 
-			if ( true === wffn_string_to_bool( $pixel_view ) && is_array( $this->get_add_to_product_data() ) && count( $this->get_add_to_product_data() ) > 0 ) {
+			$content_data = true === wffn_string_to_bool( $pixel_view ) ? $this->get_add_to_product_data() : array();
+			if ( ! empty( $content_data ) ) {
 				$data['pixel']['settings']['view_content'] = $pixel_view;
-				$data['pixel']['content_data']             = $this->get_add_to_product_data();
+				$data['pixel']['content_data']             = $content_data;
 			}
 
-			if ( true === wffn_string_to_bool( $tiktok_view ) && is_array( $this->get_add_to_product_data() ) && count( $this->get_add_to_product_data() ) > 0 ) {
+			$content_data = true === wffn_string_to_bool( $tiktok_view ) ? $this->get_add_to_product_data( 'tiktok' ) : array();
+			if ( ! empty( $content_data ) ) {
 				$data['tiktok']['settings']['view_content'] = $tiktok_view;
-				$data['tiktok']['content_data']             = $this->get_add_to_product_data();
+				$data['tiktok']['content_data']             = $content_data;
 			}
 
-			if ( true === wffn_string_to_bool( $pint_visit ) && is_array( $this->get_add_to_product_data() ) && count( $this->get_add_to_product_data() ) > 0 ) {
+			$content_data = true === wffn_string_to_bool( $pint_visit ) ? $this->pint_content_data() : array();
+			if ( ! empty( $content_data ) ) {
 				$data['pint']['settings']['view_content'] = $pint_visit;
-				$data['pint']['content_data']             = $this->pint_content_data();
+				$data['pint']['content_data']             = $content_data;
 			}
 
-			if ( true === wffn_string_to_bool( $gad_view_item ) && is_array( $this->get_view_items_data( 'gad' ) ) && count( $this->get_view_items_data( 'gad' ) ) > 0 ) {
+			$content_data = true === wffn_string_to_bool( $gad_view_item ) ? $this->get_view_items_data( 'gad' ) : array();
+			if ( ! empty( $content_data ) ) {
 				$data['gad']['settings']['view_content']  = $gad_view_item;
-				$data['gad']['content_data']['view_item'] = $this->get_view_items_data( 'gad' );
+				$data['gad']['content_data']['view_item'] = $content_data;
 			}
 
-			if ( true === wffn_string_to_bool( $ga_view_item ) && is_array( $this->get_view_items_data( 'ga' ) ) && count( $this->get_view_items_data( 'ga' ) ) > 0 ) {
+			$content_data = true === wffn_string_to_bool( $ga_view_item ) ? $this->get_view_items_data( 'ga' ) : array();
+			if ( ! empty( $content_data ) ) {
 				$data['ga']['settings']['view_content']  = $ga_view_item;
-				$data['ga']['content_data']['view_item'] = $this->get_view_items_data( 'ga' );
+				$data['ga']['content_data']['view_item'] = $content_data;
 			}
 
 			return apply_filters( 'wffn_load_sitewide_events_data', $data, $this->admin_general_settings );
@@ -488,7 +494,120 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 			return true;
 		}
 
-		public function get_add_to_product_data() {
+		/**
+		 * Resolve the URL-preselected variation for a variable product.
+		 *
+		 * Reads the request's attribute_* / attribute_pa_* query args, matches them
+		 * against the product's variation attributes and returns the matching
+		 * variation ID only when every variation attribute is uniquely determined.
+		 * Returns 0 (fall back to parent) when the product is not variable, the URL
+		 * does not fully preselect a variation, or no single variation can be matched.
+		 *
+		 * @param WC_Product $product Parent product.
+		 *
+		 * @return int Resolved variation ID, or 0 when none can be uniquely determined.
+		 */
+		public function resolve_url_variation( $product ) {
+			if ( ! $product instanceof WC_Product || ! $product->is_type( 'variable' ) ) {
+				return 0;
+			}
+
+			$variation_attributes = $product->get_variation_attributes();
+			if ( empty( $variation_attributes ) ) {
+				return 0;
+			}
+
+			$match_attributes = array();
+			foreach ( array_keys( $variation_attributes ) as $attribute_name ) {
+				$query_key = 'attribute_' . sanitize_title( $attribute_name );
+				$value     = filter_input( INPUT_GET, $query_key, FILTER_UNSAFE_RAW );
+
+				if ( null === $value || '' === $value ) {
+					// Partial preselection — cannot uniquely resolve a single variation.
+					return 0;
+				}
+
+				$value = bwf_clean( wp_unslash( $value ) );
+
+				/**
+				 * Match the way WooCommerce's own variation dropdown reads these parameters.
+				 *
+				 * wc_dropdown_variation_attribute_options() compares a slug-looking value
+				 * against sanitize_title() of each option, so ?attribute_color=red selects the
+				 * "Red" option on the page. find_matching_product_variation() compares the raw
+				 * stored meta with !==, so the same URL matched nothing and the event silently
+				 * fell back to the parent while the page showed the variation selected.
+				 *
+				 * Custom product attributes are stored by label ("Red"), global pa_ taxonomies
+				 * by slug ("red"), which is why only custom attributes were affected. Resolve
+				 * the value to the option the product actually stores before matching.
+				 *
+				 * A value that is none of the product's options selects nothing in the dropdown,
+				 * but would still match an "Any …" variation, so it falls back to the parent.
+				 */
+				$options = isset( $variation_attributes[ $attribute_name ] ) ? (array) $variation_attributes[ $attribute_name ] : array();
+				$matched = null;
+
+				foreach ( $options as $option ) {
+					if ( (string) $option === $value || sanitize_title( $option ) === sanitize_title( $value ) ) {
+						$matched = (string) $option;
+						break;
+					}
+				}
+
+				if ( null === $matched ) {
+					return 0;
+				}
+
+				$match_attributes[ $query_key ] = $matched;
+			}
+
+			try {
+				$data_store   = WC_Data_Store::load( 'product' );
+				$variation_id = $data_store->find_matching_product_variation( $product, $match_attributes );
+			} catch ( Throwable $e ) {
+				return 0;
+			}
+
+			return absint( $variation_id );
+		}
+
+		/**
+		 * The product a view event reports for a platform: the URL-preselected variation,
+		 * unless that platform treats variable products as simple, in which case the parent,
+		 * matching what its AddToCart event sends.
+		 *
+		 * The lookup runs once per product per request, after the setting check. A variation
+		 * the shopper could not pick (not published, or no price) is never reported.
+		 *
+		 * @param WC_Product $product Product being viewed.
+		 * @param string     $mode    Settings prefix of the platform, e.g. pixel, google_ua, google_ads, pint, tiktok.
+		 *
+		 * @return WC_Product
+		 */
+		public function get_view_product( $product, $mode ) {
+			if ( ! $product->is_type( 'variable' ) || true === $this->do_treat_variable_as_simple( $mode ) ) {
+				return $product;
+			}
+
+			$product_id = $product->get_id();
+
+			if ( ! array_key_exists( $product_id, $this->url_variations ) ) {
+				$variation_id = $this->resolve_url_variation( $product );
+				$variation    = $variation_id > 0 ? wc_get_product( $variation_id ) : null;
+
+				$this->url_variations[ $product_id ] = ( $variation instanceof WC_Product_Variation && $variation->variation_is_visible() ) ? $variation : null;
+			}
+
+			return null !== $this->url_variations[ $product_id ] ? $this->url_variations[ $product_id ] : $product;
+		}
+
+		/**
+		 * @param string $mode Settings prefix of the platform the payload is for: pixel or tiktok.
+		 *
+		 * @return array
+		 */
+		public function get_add_to_product_data( $mode = 'pixel' ) {
 			global $post;
 			$event_data = array();
 
@@ -502,28 +621,36 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 				return $event_data;
 			}
 
+			$view_product = $this->get_view_product( $product, $mode );
+			$content_id   = $this->get_woo_product_content_id( $view_product->get_id(), $mode );
+
 			$event_data = array(
-				'content_type'   => $product->get_type(),
+				// Meta accepts only 'product' or 'product_group'; a variable parent is a group.
+				'content_type'   => $view_product->is_type( 'variable' ) ? 'product_group' : 'product',
 				'user_role'      => $this->get_current_user_role(),
 				'event_url'      => $this->getRequestUri(),
 				'category_name'  => '',
 				'currency'       => get_woocommerce_currency(),
-				'value'          => $product->get_price(),
-				'content_name'   => $product->get_title(),
-				'content_ids'    => array( $this->get_woo_product_content_id( $product->get_id(), 'pixel' ) ),
-				'product_price'  => $product->get_price(),
+				'value'          => $view_product->get_price(),
+				'content_name'   => $view_product->get_name(),
+				'content_ids'    => array( $content_id ),
+				'product_price'  => $view_product->get_price(),
 				'post_id'        => $post->ID,
 				'contents'       => array(
 					array(
-						'id'       => $this->get_woo_product_content_id( $product->get_id(), 'pixel' ),
-						'quantity' => ( null !== $product->get_stock_quantity() ) ? $product->get_stock_quantity() : 1,
+						'id'       => $content_id,
+						'quantity' => ( null !== $view_product->get_stock_quantity() ) ? $view_product->get_stock_quantity() : 1,
 					),
 				),
 				'traffic_source' => $this->get_traffic_source( 'source' ),
 			);
 
+			if ( 'tiktok' === $mode ) {
+				$event_data['content_id'] = $content_id;
+			}
+
 			$landing_page = $this->get_traffic_source( 'referrer' );
-			$referrer     = filter_input( INPUT_COOKIE, 'wffn_referrer', FILTER_UNSAFE_RAW );
+			$referrer     = filter_input( INPUT_COOKIE, 'wffn_referrer', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 			if ( $referrer ) {
 				$landing_page = wffn_clean( $referrer );
 			}
@@ -567,20 +694,21 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 				return $event_data;
 			}
 
-			$mode       = 'pint';
-			$product_id = $product->get_id();
+			$mode         = 'pint';
+			$view_product = $this->get_view_product( $product, $mode );
+			$product_id   = $view_product->get_id();
 
 			// Get category names for the product
 			$cat_id         = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
 			$cat_list       = $this->get_product_tags( 'product_cat', $cat_id );
 			$category_names = ! empty( $cat_list ) ? implode( ', ', $cat_list ) : '';
 
-			$price = $product->get_price();
+			$price = $view_product->get_price();
 
 			// Prepare line item details including category information
 			$line_item = array(
 				'product_id'       => $this->get_woo_product_content_id( $product_id, $mode ), // Ensure product ID is treated as a string
-				'product_name'     => $product->get_name(),
+				'product_name'     => $view_product->get_name(),
 				'product_price'    => floatval( $price ),
 				'product_quantity' => 1,
 				'product_category' => $category_names,
@@ -597,7 +725,8 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 				'value'          => floatval( $price ),
 				'order_quantity' => 1,
 				'currency'       => get_woocommerce_currency(),
-				'content_type'   => 'product',
+				// Meta accepts only 'product' or 'product_group'; a variable parent is a group.
+				'content_type'   => $view_product->is_type( 'variable' ) ? 'product_group' : 'product',
 				'line_items'     => array( $line_item ), // Include line item in an array
 				'traffic_source' => $this->get_traffic_source( 'source' ),
 				'user_role'      => $this->get_current_user_role(),
@@ -605,7 +734,7 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 			);
 
 			$landing_page = $this->get_traffic_source( 'referrer' );
-			$referrer     = filter_input( INPUT_COOKIE, 'wffn_referrer', FILTER_UNSAFE_RAW );
+			$referrer     = filter_input( INPUT_COOKIE, 'wffn_referrer', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 			if ( $referrer ) {
 				$landing_page = wffn_clean( $referrer );
 			}
@@ -658,34 +787,40 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 				$categories = implode( '/', $cat_list );
 			}
 
-			$price        = $product->get_price();
-			$product_id   = $product->get_id();
-			$product_name = $product->get_name();
+			// The settings are stored under the AddToCart mode names, not the 'ga'/'gad' payload keys.
+			$settings_mode = ( 'ga' === $mode ) ? 'google_ua' : ( ( 'gad' === $mode ) ? 'google_ads' : $mode );
+			$view_product  = $this->get_view_product( $product, $settings_mode );
+
+			$price        = $view_product->get_price();
+			$product_id   = $view_product->get_id();
+			$product_name = $view_product->get_name();
 			$currency     = get_woocommerce_currency();
+			$content_id   = $this->get_woo_product_content_id( $product_id, $settings_mode );
 
 			$event_data = array(
 				'event_category'   => 'ecommerce',
-				'ecomm_prodid'     => $this->get_woo_product_content_id( $product_id, $mode ),
+				'ecomm_prodid'     => $content_id,
 				'ecomm_pagetype'   => 'product',
 				'ecomm_totalvalue' => $price,
 				'items'            => array(
 					array(
-						'id' => $this->get_woo_product_content_id( $product_id, $mode ),
+						'id' => $content_id,
 					),
 				),
 			);
 
 			if ( 'gad' === $mode ) {
 				$event_data['page_title'] = $product_name;
-				$event_data['post_id']    = $product_id;
-				$event_data['post_type']  = 'product';
-				$event_data['value']      = $price;
+				/** The page being viewed, which stays the parent: a variation has no URL of its own. */
+				$event_data['post_id']   = $post->ID;
+				$event_data['post_type'] = 'product';
+				$event_data['value']     = $price;
 			}
 
 			if ( 'ga' === $mode ) {
 				$event_data['currency']             = $currency;
 				$event_data['items'][0]['id']       = $product_id;
-				$event_data['items'][0]['name']     = $product->get_name();
+				$event_data['items'][0]['name']     = $product_name;
 				$event_data['items'][0]['category'] = $categories;
 				$event_data['items'][0]['quantity'] = 1;
 				$event_data['items'][0]['price']    = floatval( $price );
@@ -774,7 +909,7 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 
 			$output = number_format( floatval( $value ), wc_get_price_decimals(), '.', '' );
 
-			return apply_filters( 'bwf_analytics_number_format', $output, $value, $format_count, $this );
+			return apply_filters( 'bwf_analytics_number_format', $output, $value, $format_count, $this ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 		}
 	}
 

@@ -73,7 +73,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Divi_Theme' ) ) {
 
 			// Skip if this is a Divi VB REST sync request.
 			if ( ! empty( $_SERVER['REQUEST_URI'] ) ) {
-				$uri = wp_unslash( $_SERVER['REQUEST_URI'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$uri = wp_unslash( $_SERVER['REQUEST_URI'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- raw URI used only for path matching / url_to_postid; never stored or output.
 				if ( false !== strpos( $uri, '/wp-json/divi/v1/' ) ) {
 					return $data;
 				}

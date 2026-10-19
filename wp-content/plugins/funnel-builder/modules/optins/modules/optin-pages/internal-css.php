@@ -74,7 +74,7 @@ foreach ( $css as $selector => $rules ) {
 if ( ! empty( $print_css ) ) {
 	?>
 	<style type="text/css" id="wfop_custom_css">
-		<?php echo $print_css; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<?php echo wp_strip_all_tags( $print_css ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS rules inside a literal <style> block; wp_strip_all_tags() prevents breakout. ?>
 	</style>
 	<?php
 }

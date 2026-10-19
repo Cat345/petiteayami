@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 if ( ! class_exists( 'BWF_JSON_Cache' ) ) {
 	#[\AllowDynamicProperties]
-	class BWF_JSON_Cache {
+	class BWF_JSON_Cache { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 
 		public static function run_json_endpoints_cache_handling() {
 			/** Litespeed cache */

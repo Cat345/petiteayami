@@ -1,5 +1,12 @@
 <?php
 /**
+ * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
+ *
+ * This source code is licensed under the license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/**
  * Meta for WooCommerce.
  */
 
@@ -68,7 +75,7 @@ abstract class JSONResponse implements Response, ArrayAccess {
 	 * @see   Response::to_string_safe()
 	 */
 	public function to_string_safe() {
-		return $this->to_string();
+		return SensitiveData::redact_json( $this->to_string() );
 	}
 
 	/**

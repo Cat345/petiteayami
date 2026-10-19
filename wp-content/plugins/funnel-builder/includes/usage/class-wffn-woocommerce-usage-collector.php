@@ -235,12 +235,12 @@ if ( ! class_exists( 'WFFN_WooCommerce_Usage_Collector' ) && class_exists( 'WooF
 				);
 			}
 
-			$orders_table    = \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::get_orders_table_name();
+			$orders_table    = esc_sql( \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::get_orders_table_name() );
 			$is_hpos_enabled = \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
 
 			if ( $is_hpos_enabled ) {
 				// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$min_max = $wpdb->get_row(
+				$min_max = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 					"
 					SELECT
 						MIN( date_created_gmt ) as 'first', MAX( date_created_gmt ) as 'last'
@@ -251,7 +251,7 @@ if ( ! class_exists( 'WFFN_WooCommerce_Usage_Collector' ) && class_exists( 'WooF
 				);
 				// phpcs:enable
 			} else {
-				$min_max = $wpdb->get_row(
+				$min_max = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					"
 						SELECT
 							MIN( post_date_gmt ) as 'first', MAX( post_date_gmt ) as 'last'
@@ -282,7 +282,7 @@ if ( ! class_exists( 'WFFN_WooCommerce_Usage_Collector' ) && class_exists( 'WooF
 
 			if ( $is_hpos_enabled ) {
 				// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$processing_min_max = $wpdb->get_row(
+				$processing_min_max = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					"
 					SELECT
 						MIN( date_created_gmt ) as 'processing_first', MAX( date_created_gmt ) as 'processing_last'
@@ -293,7 +293,7 @@ if ( ! class_exists( 'WFFN_WooCommerce_Usage_Collector' ) && class_exists( 'WooF
 				);
 				// phpcs:enable
 			} else {
-				$processing_min_max = $wpdb->get_row(
+				$processing_min_max = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					"
 						SELECT
 							MIN( post_date_gmt ) as 'processing_first', MAX( post_date_gmt ) as 'processing_last'
@@ -341,10 +341,10 @@ if ( ! class_exists( 'WFFN_WooCommerce_Usage_Collector' ) && class_exists( 'WooF
 			$is_hpos_enabled = \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
 
 			if ( $is_hpos_enabled ) {
-				$orders_table               = \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::get_orders_table_name();
-				$orders_and_gateway_details = $wpdb->get_results( "SELECT IFNULL(payment_method, '') AS gateway, currency AS currency, count( id ) AS counts FROM $orders_table WHERE status IN ( 'wc-completed', 'wc-processing', 'wc-refunded' ) GROUP BY gateway, currency;" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $orders_table is a trusted WooCommerce table name (OrdersTableDataStore::get_orders_table_name()); all query values are hardcoded literals.
+				$orders_table               = esc_sql( \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::get_orders_table_name() );
+				$orders_and_gateway_details = $wpdb->get_results( "SELECT IFNULL(payment_method, '') AS gateway, currency AS currency, count( id ) AS counts FROM $orders_table WHERE status IN ( 'wc-completed', 'wc-processing', 'wc-refunded' ) GROUP BY gateway, currency;" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- $orders_table is a trusted WooCommerce table name (OrdersTableDataStore::get_orders_table_name()); all query values are hardcoded literals. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			} else {
-				$orders_and_gateway_details = $wpdb->get_results(
+				$orders_and_gateway_details = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 					"
 					SELECT
 						gateway, currency, COUNT(order_id) AS counts
@@ -428,9 +428,9 @@ if ( ! class_exists( 'WFFN_WooCommerce_Usage_Collector' ) && class_exists( 'WooF
 			$is_hpos_enabled = \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
 
 			if ( $is_hpos_enabled ) {
-				$op_table_name = \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::get_operational_data_table_name();
+				$op_table_name = esc_sql( \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::get_operational_data_table_name() );
 				// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$orders_origin = $wpdb->get_results(
+				$orders_origin = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 					"
 					SELECT IFNULL(created_via, '') as origin, COUNT( order_id ) as count
 					FROM $op_table_name
@@ -439,7 +439,7 @@ if ( ! class_exists( 'WFFN_WooCommerce_Usage_Collector' ) && class_exists( 'WooF
 				);
 				// phpcs:enable
 			} else {
-				$orders_origin = $wpdb->get_results(
+				$orders_origin = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					"
 					SELECT
 						IFNULL(meta_value, '') as origin, COUNT( DISTINCT ( orders.id ) ) as count

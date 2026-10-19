@@ -130,7 +130,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 
 			$query = 'SELECT MIN(' . $table_col . ') AS start_date, MAX(' . $table_col . ') as end_date, ' . ltrim( $interval_query, ',' ) . '  FROM `' . $table . '` WHERE 1=1 ' . $date_condition . ' GROUP BY ' . $interval_group . ' ASC';
 
-			$intervals = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- identifiers sanitised above, dates bound in $date_condition, interval fragment built from the sanitised column; PHPCS cannot verify the assembled string.
+			$intervals = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- identifiers sanitised above, dates bound in $date_condition, interval fragment built from the sanitised column; PHPCS cannot verify the assembled string. direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 			return ( is_array( $intervals ) && count( $intervals ) > 0 ) ? $intervals : array();
 		}
@@ -1224,7 +1224,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 			if ( 3 === $state ) {
 				$text = __( 'Indexing of orders is underway. This setting will work once the process completes.', 'funnel-builder' );
 			} else {
-				$text = sprintf( __( 'This rule needs indexing of past orders. Go to <a target="_blank" href="%s">Tools > Index Orders</a> and click \'Start\' to index orders', 'funnel-builder' ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings/tools' ) ) );
+				$text = sprintf( /* translators: %s: URL of the Index Orders tools page. */ __( 'This rule needs indexing of past orders. Go to <a target="_blank" href="%s">Tools > Index Orders</a> and click \'Start\' to index orders', 'funnel-builder' ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings/tools' ) ) );
 			}
 
 			return $text;

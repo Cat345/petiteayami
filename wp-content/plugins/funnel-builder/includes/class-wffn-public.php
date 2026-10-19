@@ -75,7 +75,7 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 				$custom_js     = isset( $custom_script['custom_js'] ) ? $custom_script['custom_js'] : '';
 
 				if ( ! empty( $custom_js ) ) {
-					echo html_entity_decode( $custom_js, ENT_QUOTES | ENT_HTML401 ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo html_entity_decode( $custom_js, ENT_QUOTES | ENT_HTML401 ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- merchant-supplied tracking-script feature; intentionally raw after sanitize_global_script().
 				}
 			}
 		}
@@ -281,12 +281,12 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 
 
 		public function setup_funnel_ajax() {
-			$get_data = isset( $_POST['data'] ) ? wffn_clean( wp_unslash( $_POST['data'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint; nonce not applicable on cacheable pages
+			$get_data = isset( $_POST['data'] ) && is_string( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Public AJAX endpoint; nonce not applicable on cacheable pages. JSON string, cleaned field by field with wffn_clean_tracking_data() once decoded.
 			$result   = ( array( 'success' => false ) );
 			if ( ! empty( $get_data ) ) {
 				try {
 
-					$get_data = json_decode( stripslashes( $get_data ), true );
+					$get_data = wffn_clean_tracking_data( json_decode( stripslashes( $get_data ), true ) );
 					if ( is_array( $get_data ) ) {
 						$validation = $this->validate_funnel_setup_data( $get_data );
 						if ( is_wp_error( $validation ) ) {
@@ -308,7 +308,7 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 		 * This function allows individual step classes to take care of their specific step viewed
 		 */
 		public function frontend_analytics() {
-			$get_data = isset( $_POST['data'] ) ? wffn_clean( wp_unslash( $_POST['data'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint; nonce not applicable on cacheable pages
+			$get_data = isset( $_POST['data'] ) && is_string( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Public AJAX endpoint; nonce not applicable on cacheable pages. JSON string, cleaned field by field in send_frontend_analytics() once decoded.
 			$result   = $this->send_frontend_analytics( $get_data );
 			if ( is_array( $result ) ) {
 				$result['funnel_setup'] = false;
@@ -332,9 +332,10 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 				/**
 				 * Start Marking Impressions
 				 */
-				$get_data = isset( $args ) ? wffn_clean( $args ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+				$get_data = isset( $args ) ? $args : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 				if ( ! empty( $get_data ) ) {
-					$get_data = json_decode( wp_kses_stripslashes( $get_data ), true );
+					$get_data = is_string( $get_data ) ? json_decode( wp_kses_stripslashes( $get_data ), true ) : $get_data;
+					$get_data = wffn_clean_tracking_data( $get_data );
 					$get_data = $this->maybe_setup_step_in_cache( $get_data, $current_step );
 					/**
 					 * maybe change current step after cache environment check
@@ -374,7 +375,7 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 		 * This function allows individual step classes to take care of their specific step viewed
 		 */
 		public function tracking_events() {
-			$get_data = isset( $_POST ) ? wffn_clean( wp_unslash( $_POST ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint; nonce not applicable on cacheable pages
+			$get_data = isset( $_POST ) ? wp_unslash( $_POST ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Public AJAX endpoint; nonce not applicable on cacheable pages. Cleaned field by field in send_tracking_events() once decoded.
 			$this->send_tracking_events( $get_data );
 		}
 
@@ -387,15 +388,16 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 			}
 			$is_sitewide = isset( $args['is_sitewide'] ) ? true : false;
 			if ( true === $is_sitewide ) {
-				$get_data = isset( $args['events'] ) ? wffn_clean( $args['events'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$get_data = isset( $args['events'] ) ? wffn_clean_tracking_data( $args['events'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				if ( ! empty( $get_data ) ) {
 					WFFN_Tracking_SiteWide::get_instance()->maybe_ecomm_events( $get_data );
 				}
 				return;
 			}
 
-			$post_data = isset( $args['data'] ) ? wffn_clean( $args['data'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$post_data = isset( $args['data'] ) ? $args['data'] : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$post_data = ! is_array( $post_data ) ? json_decode( wp_kses_stripslashes( $post_data ), true ) : $post_data;
+			$post_data = wffn_clean_tracking_data( $post_data );
 
 			$current_step = WFFN_Core()->data->get_current_step();
 			if ( empty( $current_step ) && isset( $post_data['step_data'] ) && isset( $post_data['step_data']['post_type'] ) ) {

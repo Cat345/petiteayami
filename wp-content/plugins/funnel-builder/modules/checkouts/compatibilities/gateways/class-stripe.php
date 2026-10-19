@@ -57,7 +57,7 @@ if ( ! class_exists( 'WFACP_Stripe_GPAY_AND_APAY' ) ) {
 
 			$buttons['stripe_gpay_apay'] = array(
 				'iframe' => true,
-				'name'   => __( 'Stripe Payment Reques', 'woocommerce-gateway-amazon-payments-advanced' ),
+				'name'   => __( 'Stripe Payment Reques', 'woocommerce-gateway-amazon-payments-advanced' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 			);
 
 			return $buttons;
@@ -75,15 +75,24 @@ if ( ! class_exists( 'WFACP_Stripe_GPAY_AND_APAY' ) ) {
 			return $data;
 		}
 
+		/**
+		 * Resolves the FunnelKit checkout post ID for Stripe's payment-request (Apple/Google Pay)
+		 * conversion tracking filter.
+		 *
+		 * No nonce on the wfacp_id / payment_request_type / wfacp_is_checkout_override reads below:
+		 * this runs on a read-only page-load request (never a state-changing action) and
+		 * payment_request_type / wfacp_is_checkout_override are only ever compared against fixed
+		 * literal strings, never used as-is.
+		 */
 		public function update_conversion_post_id( $post_id ) {
 
 			if ( ! class_exists( 'WC_Stripe_Payment_Request' ) ) {
 				return $post_id;
 			}
-			$wfacp_id             = filter_input( INPUT_GET, 'wfacp_id', FILTER_UNSAFE_RAW );
-			$payment_request_type = filter_input( INPUT_POST, 'payment_request_type', FILTER_UNSAFE_RAW );
+			$wfacp_id             = isset( $_GET['wfacp_id'] ) ? absint( $_GET['wfacp_id'] ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- see method docblock above
+			$payment_request_type = isset( $_POST['payment_request_type'] ) ? sanitize_text_field( wp_unslash( $_POST['payment_request_type'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- see method docblock above
 			if ( ! is_null( $wfacp_id ) && ! is_null( $payment_request_type ) && ( 'payment_request_api' == $payment_request_type || 'google_pay' == $payment_request_type || 'apple_pay' == $payment_request_type ) ) {
-				$override = filter_input( INPUT_GET, 'wfacp_is_checkout_override', FILTER_UNSAFE_RAW );
+				$override = isset( $_GET['wfacp_is_checkout_override'] ) ? sanitize_text_field( wp_unslash( $_GET['wfacp_is_checkout_override'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- see method docblock above
 				if ( ! is_null( $override ) ) {
 					if ( 'yes' == $override ) {
 						$link = wc_get_checkout_url();

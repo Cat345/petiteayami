@@ -13,7 +13,7 @@ if ( ! function_exists( 'bwf_create_update_contact_customer' ) ) {
 	 *
 	 * @return bool|string
 	 */
-	function bwf_create_update_contact_customer() {
+	function bwf_create_update_contact_customer() { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_DB_Updater_Fns::bwf_create_update_contact_customer( ...func_get_args() );
 	}
 }
@@ -23,7 +23,7 @@ if ( ! function_exists( 'bwf_create_update_contact_customer' ) ) {
  * CONTACTS DATABASE STARTS
  */
 if ( ! function_exists( 'bwf_contacts_v1_0_init_db_setup' ) ) {
-	function bwf_contacts_v1_0_init_db_setup() {
+	function bwf_contacts_v1_0_init_db_setup() { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return BWF_DB_Updater_Fns::bwf_contacts_v1_0_init_db_setup( ...func_get_args() );
 	}
 }

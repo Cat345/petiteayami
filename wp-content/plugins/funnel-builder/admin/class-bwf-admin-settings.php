@@ -22,7 +22,7 @@ if ( ! class_exists( 'BWF_Admin_Settings' ) ) {
 						array(
 							'title'    => __( 'Tools', 'funnel-builder' ),
 							'slug'     => 'tools',
-							'link'     => apply_filters( 'tools', 'javascript:void(0)' ),
+							'link'     => apply_filters( 'tools', 'javascript:void(0)' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 							'priority' => 70,
 						)
 					);
@@ -40,7 +40,7 @@ if ( ! class_exists( 'BWF_Admin_Settings' ) ) {
 							array(
 								'title'          => __( 'Stripe', 'funnel-builder' ),
 								'slug'           => 'stripe',
-								'link'           => apply_filters( 'stripe', 'javascript:void(0)' ),
+								'link'           => apply_filters( 'stripe', 'javascript:void(0)' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 								'is_recommended' => true,
 								'priority'       => 6,
 							)
@@ -60,7 +60,7 @@ if ( ! class_exists( 'BWF_Admin_Settings' ) ) {
 							array(
 								'title'          => __( 'Square', 'funnel-builder' ),
 								'slug'           => 'square',
-								'link'           => apply_filters( 'square', 'javascript:void(0)' ),
+								'link'           => apply_filters( 'square', 'javascript:void(0)' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 								'is_recommended' => true,
 								'priority'       => 7,
 							)

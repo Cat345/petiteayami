@@ -64,7 +64,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Aelia_CS' ) ) {
 			// Aelia Currency Switcher is not installed, the filter call will return the original
 			// amount, without any conversion being performed. Your plugin won't even need to know if
 			// the multi-currency plugin is installed or active
-			return apply_filters( 'wc_aelia_cs_convert', $price, $from_currency, $to_currency );
+			return apply_filters( 'wc_aelia_cs_convert', $price, $from_currency, $to_currency ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 		}
 
 		public function wfacp_discount_regular_price_data( $price ) {

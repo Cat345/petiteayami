@@ -1,24 +1,22 @@
 <?php //phpcs:ignore WordPress.WP.TimezoneChange.DeprecatedSniff
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class WFLP_Admin
  */
 if ( ! class_exists( 'WFLP_Admin' ) ) {
 	#[AllowDynamicProperties]
-	class WFLP_Admin {
+	class WFLP_Admin { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- WFLP is this plugin's landing-pages module prefix.
 
 		private static $ins = null;
-		public $edit_id = 0;
+		public $edit_id     = 0;
 
 		public function __construct() {
 			$this->process_url();
 
-			add_action( 'edit_form_after_title', [ $this, 'add_back_button' ] );
+			add_action( 'edit_form_after_title', array( $this, 'add_back_button' ) );
 
 			add_filter( 'bwf_enable_ecommerce_integration_landing', '__return_true' );
-
-
 		}
 
 		/**
@@ -26,7 +24,7 @@ if ( ! class_exists( 'WFLP_Admin' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -53,12 +51,12 @@ if ( ! class_exists( 'WFLP_Admin' ) ) {
 				$title = esc_html( trim( $data['title'] ) );
 				if ( ! isset( $this->template_type[ $slug ] ) ) {
 					$this->template_type[ $slug ]        = trim( $title );
-					$this->design_template_data[ $slug ] = [
+					$this->design_template_data[ $slug ] = array(
 						'edit_url'    => $data['edit_url'],
 						'button_text' => $data['button_text'],
 						'title'       => $data['title'],
 						'description' => isset( $data['description'] ) ? $data['description'] : '',
-					];
+					);
 				}
 			}
 		}
@@ -82,34 +80,40 @@ if ( ! class_exists( 'WFLP_Admin' ) ) {
 				if ( ! empty( $funnel_id ) && abs( $funnel_id ) > 0 ) {
 					BWF_Admin_Breadcrumbs::register_ref( 'funnel_id', $funnel_id );
 				}
-				$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
-					'page'      => 'bwf',
-					'path'      => "/funnel-landing/" . $lp_id . "/design",
-					'funnel_id' => $funnel_id,
-				], admin_url( 'admin.php' ) ) );
+				$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs(
+					add_query_arg(
+						array(
+							'page'      => 'bwf',
+							'path'      => '/funnel-landing/' . $lp_id . '/design',
+							'funnel_id' => $funnel_id,
+						),
+						admin_url( 'admin.php' )
+					)
+				);
 
 				if ( use_block_editor_for_post_type( $lp_type ) ) {
 					add_action( 'admin_footer', array( $this, 'render_back_to_funnel_script_for_block_editor' ) );
 				} else { ?>
-                    <div id="wf_funnel-switch-mode">
-                        <a id="wf_funnel-back-button" class="button button-default button-large" href="<?php echo esc_url( $edit_link ); ?>">
+					<div id="wf_funnel-switch-mode">
+						<a id="wf_funnel-back-button" class="button button-default button-large" href="<?php echo esc_url( $edit_link ); ?>">
 							<?php esc_html_e( '&#8592; Back to Sales Page', 'funnel-builder' ); ?>
-                        </a>
-                    </div>
-                    <script>
-                        window.addEventListener('load', function () {
-                            (function (window, wp) {
-                                var link = document.querySelector('a.components-button.edit-post-fullscreen-mode-close');
-                                if (link) {
+						</a>
+					</div>
+					<script>
+						window.addEventListener('load', function () {
+							(function (window, wp) {
+								var link = document.querySelector('a.components-button.edit-post-fullscreen-mode-close');
+								if (link) {
                                     link.setAttribute('href', "<?php echo htmlspecialchars_decode( esc_url( $edit_link ) );//phpcs:ignore ?>")
-                                }
+								}
 
-                            })(window, wp)
-                        });
-                    </script>
+							})(window, wp)
+						});
+					</script>
 					<?php
 				}
-			} ?>
+			}
+			?>
 			<?php
 		}
 
@@ -122,78 +126,85 @@ if ( ! class_exists( 'WFLP_Admin' ) ) {
 				if ( ! empty( $funnel_id ) && abs( $funnel_id ) > 0 ) {
 					BWF_Admin_Breadcrumbs::register_ref( 'funnel_id', $funnel_id );
 				}
-				$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
-					'page'      => 'bwf',
-					'path'      => "/funnel-landing/" . $lp_id . "/design",
-					'funnel_id' => $funnel_id,
-				], admin_url( 'admin.php' ) ) ); ?>
-                <script id="wf_funnel-back-button-template" type="text/html">
-                    <div id="wf_funnel-switch-mode" style="margin-right: 15px;margin-left: -5px;">
-                        <a id="wf_funnel-back-button" class="button button-default button-large" href="<?php echo esc_url( $edit_link ); ?>">
+				$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs(
+					add_query_arg(
+						array(
+							'page'      => 'bwf',
+							'path'      => '/funnel-landing/' . $lp_id . '/design',
+							'funnel_id' => $funnel_id,
+						),
+						admin_url( 'admin.php' )
+					)
+				);
+				?>
+				<script id="wf_funnel-back-button-template" type="text/html">
+					<div id="wf_funnel-switch-mode" style="margin-right: 15px;margin-left: -5px;">
+						<a id="wf_funnel-back-button" class="button button-default button-large" href="<?php echo esc_url( $edit_link ); ?>">
 							<?php esc_html_e( '&#8592; Back to Sales Page', 'funnel-builder' ); ?>
-                        </a>
-                    </div>
-                </script>
+						</a>
+					</div>
+				</script>
 
-                <script>
-                    window.addEventListener('load', function () {
-                        (function (window, wp) {
+				<script>
+					window.addEventListener('load', function () {
+						(function (window, wp) {
 
-                            const {Toolbar, ToolbarButton} = wp.components;
+							const {Toolbar, ToolbarButton} = wp.components;
 
-                            var link_button = wp.element.createElement(
-                                ToolbarButton,
-                                {
-                                    variant: 'secondary',
+							var link_button = wp.element.createElement(
+								ToolbarButton,
+								{
+									variant: 'secondary',
                                     href: "<?php echo htmlspecialchars_decode( esc_url( $edit_link ) );//phpcs:ignore ?>",
-                                    id: 'wf_funnel-back-button',
-                                    className: 'button is-secondary',
-                                    style: {
-                                        display: 'flex',
-                                        height: '33px'
-                                    },
-                                    text: "<?php esc_html_e( '← Back to Sales Page', 'funnel-builder' ); ?>",
-                                    label: "<?php esc_html_e( 'Back to Sales Page', 'funnel-builder' ); ?>"
-                                }
-                            );
-                            var linkWrapper = '<div id="wf_funnel-switch-mode"></div>';
+									id: 'wf_funnel-back-button',
+									className: 'button is-secondary',
+									style: {
+										display: 'flex',
+										height: '33px'
+									},
+									text: "<?php esc_html_e( '← Back to Sales Page', 'funnel-builder' ); ?>",
+									label: "<?php esc_html_e( 'Back to Sales Page', 'funnel-builder' ); ?>"
+								}
+							);
+							var linkWrapper = '<div id="wf_funnel-switch-mode"></div>';
 
-                            // check if gutenberg's editor root element is present.
-                            var editorEl = document.getElementById('editor');
-                            if (!editorEl) { // do nothing if there's no gutenberg root element on page.
-                                return;
-                            }
+							// check if gutenberg's editor root element is present.
+							var editorEl = document.getElementById('editor');
+							if (!editorEl) { // do nothing if there's no gutenberg root element on page.
+								return;
+							}
 
-                            var unsubscribe = wp.data.subscribe(function () {
-                                setTimeout(function () {
-                                    if (!document.getElementById('wf_funnel-switch-mode')) {
-                                        var toolbalEl = editorEl.querySelector('.editor-header__toolbar .edit-post-header-toolbar') ?? editorEl.querySelector('.edit-post-header__toolbar .edit-post-header-toolbar');
-                                        if (toolbalEl instanceof HTMLElement) {
-                                            toolbalEl.insertAdjacentHTML('beforeend', linkWrapper);
-                                            setTimeout(() => {
-                                                wp.element.render(link_button, document.getElementById('wf_funnel-switch-mode'));
-                                            }, 1);
-                                        }
-                                    }
-                                }, 1)
-                            });
+							var unsubscribe = wp.data.subscribe(function () {
+								setTimeout(function () {
+									if (!document.getElementById('wf_funnel-switch-mode')) {
+										var toolbalEl = editorEl.querySelector('.editor-header__toolbar .edit-post-header-toolbar') ?? editorEl.querySelector('.edit-post-header__toolbar .edit-post-header-toolbar');
+										if (toolbalEl instanceof HTMLElement) {
+											toolbalEl.insertAdjacentHTML('beforeend', linkWrapper);
+											setTimeout(() => {
+												wp.element.render(link_button, document.getElementById('wf_funnel-switch-mode'));
+											}, 1);
+										}
+									}
+								}, 1)
+							});
 
-                            var link = document.querySelector('a.components-button.edit-post-fullscreen-mode-close');
-                            if (link) {
+							var link = document.querySelector('a.components-button.edit-post-fullscreen-mode-close');
+							if (link) {
                                 link.setAttribute('href', "<?php echo htmlspecialchars_decode( esc_url( $edit_link ) );//phpcs:ignore ?>")
-                            }
+							}
 
-                        })(window, wp)
+						})(window, wp)
 
-                    });
-                </script>
-			<?php }
+					});
+				</script>
+				<?php
+			}
 		}
 
 
 		public function localize_data() {
-			$data                          = [];
-			$design                        = [];
+			$data                          = array();
+			$design                        = array();
 			$data['nonce_save_design']     = wp_create_nonce( 'wffn_lp_save_design' );
 			$data['nonce_remove_design']   = wp_create_nonce( 'wffn_lp_remove_design' );
 			$data['nonce_import_design']   = wp_create_nonce( 'wffn_lp_import_design' );
@@ -209,7 +220,7 @@ if ( ! class_exists( 'WFLP_Admin' ) ) {
 				'shortcode_copy_success' => __( 'Shortcode Copied!', 'funnel-builder' ),
 			);
 
-			$data['update_popups']         = array(
+			$data['update_popups'] = array(
 
 				'label_texts' => array(
 					'title' => array(
@@ -217,7 +228,7 @@ if ( ! class_exists( 'WFLP_Admin' ) ) {
 						'placeholder' => __( 'Enter Name', 'funnel-builder' ),
 					),
 					'slug'  => array(
-						'label'       => sprintf( __( '%s URL Slug', 'funnel-builder' ), WFFN_Core()->landing_pages->get_module_title() ),
+						'label'       => sprintf( /* translators: %s: module title (e.g. Landing Page). */ __( '%s URL Slug', 'funnel-builder' ), WFFN_Core()->landing_pages->get_module_title() ),
 						'placeholder' => __( 'Enter Slug', 'funnel-builder' ),
 					),
 				),
@@ -257,15 +268,17 @@ if ( ! class_exists( 'WFLP_Admin' ) ) {
 				);
 			}
 
-			$design = array_merge( [
-				'designs'         => $this->templates,
-				'design_types'    => $this->template_type,
-				'template_active' => "yes"
-			], $design, $data );
+			$design = array_merge(
+				array(
+					'designs'         => $this->templates,
+					'design_types'    => $this->template_type,
+					'template_active' => 'yes',
+				),
+				$design,
+				$data
+			);
 
 			return $design;
 		}
-
-
 	}
 }

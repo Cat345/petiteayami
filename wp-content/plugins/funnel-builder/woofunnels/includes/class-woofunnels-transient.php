@@ -77,7 +77,7 @@ if ( ! class_exists( 'WooFunnels_Transient' ) ) {
 		 * @return bool|mixed
 		 */
 		public function get_transient( $key, $plugin_short_name = 'bwf' ) {
-			if ( true === apply_filters( 'bwf_disable_woofunnels_transient', false, $plugin_short_name ) ) {
+			if ( true === apply_filters( 'bwf_disable_woofunnels_transient', false, $plugin_short_name ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				return false;
 			}
 
@@ -159,8 +159,7 @@ if ( ! class_exists( 'WooFunnels_Transient' ) ) {
 
 			/** removing db transient */
 			$like  = '%_woofunnels_transient_' . $wpdb->esc_like( $plugin_short_name ) . '%';
-			$query = $wpdb->prepare( "DELETE FROM `$wpdb->options` WHERE `option_name` LIKE %s", $like ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->query( $wpdb->prepare( "DELETE FROM `$wpdb->options` WHERE `option_name` LIKE %s", $like ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			/** removing files if file api exist */
 			$file_writing = $this->is_file_saving_enabled();
@@ -194,7 +193,7 @@ if ( ! class_exists( 'WooFunnels_Transient' ) ) {
 		 * @return bool
 		 */
 		protected function is_file_saving_enabled() {
-			return apply_filters( '_bwf_transient_file_saving', true );
+			return apply_filters( '_bwf_transient_file_saving', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 		}
 	}
 }

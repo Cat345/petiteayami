@@ -54,7 +54,7 @@ if ( ! class_exists( 'WFFN_Page_Builder_Manager' ) ) {
 
 			foreach ( $get_all_opted_page_builders as $builder ) {
 				$page_builder    = $this->get_dependent_plugins_for_page_builder( $builder );
-				$plugin_string   = sprintf( __( 'This template needs <strong>%s plugin</strong> activated.', 'funnel-builder' ), esc_html( $page_builder['title'] ) );
+				$plugin_string   = sprintf( /* translators: %s: page builder plugin name. */ __( 'This template needs <strong>%s plugin</strong> activated.', 'funnel-builder' ), esc_html( $page_builder['title'] ) );
 				$button_text     = __( 'Activate', 'funnel-builder' );
 				$cancel_btn      = __( 'Cancel', 'funnel-builder' );
 				$no_install      = 'no';
@@ -64,8 +64,8 @@ if ( ! class_exists( 'WFFN_Page_Builder_Manager' ) ) {
 				$show_cancel_btn = 'yes';
 				$plugin_status   = isset( $page_builder['plugin-status'] ) ? $page_builder['plugin-status'] : '';
 				$theme_status    = isset( $page_builder['theme-status'] ) ? $page_builder['theme-status'] : '';
-				$string          = sprintf( __( ' Click the button to install and activate %s.', 'funnel-builder' ), esc_html( $page_builder['title'] ) );
-				$install         = sprintf( __( ' Install and activate %s.', 'funnel-builder' ), esc_html( $page_builder['title'] ) );
+				$string          = sprintf( /* translators: %s: page builder plugin name. */ __( ' Click the button to install and activate %s.', 'funnel-builder' ), esc_html( $page_builder['title'] ) );
+				$install         = sprintf( /* translators: %s: page builder plugin name. */ __( ' Install and activate %s.', 'funnel-builder' ), esc_html( $page_builder['title'] ) );
 				$builder_link    = '';
 
 				/**

@@ -1,0 +1,16 @@
+/*
+ * elementor-rtl checkout styles.
+ *
+ * Loaded only on a elementor-rtl checkout, by WFACP_Template::enqueue_builder_style().
+ * Edit here, not in the shared stylesheets.
+ */
+.elementor-editor-active body .wfacp_main_form.woocommerce .wfacp_main_form.woocommerce .wfacp_custom_field_multiselect select option {
+    float: right;
+    margin-right: 0;
+    margin-left: 5px;
+}
+.elementor-editor-active #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_custom_field_multiselect select option {
+    float: right;
+    margin-right: 0;
+    margin-left: 5px;
+}

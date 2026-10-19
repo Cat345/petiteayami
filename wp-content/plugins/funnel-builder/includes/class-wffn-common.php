@@ -24,6 +24,76 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 		/**
 		 * @param $arr
 		 */
+		/**
+		 * Whether the Purchase event must be withheld for this order because it is a subscription
+		 * renewal and the merchant asked for renewals to be excluded.
+		 *
+		 * A renewal is a recurring charge, not a new ad-driven conversion, so counting it inflates
+		 * campaign attribution. Owned here rather than in the tracking classes because the decision
+		 * is identical for every tracker and every tier: the free plugin's thank-you tracking, and
+		 * One Click Upsells' tracking in the premium plugin, which takes over completely whenever it
+		 * is active (see the wffn_do_not_run_ecomm_purchase_on_thankyou default). Premium callers
+		 * reach it through a method_exists() guard so an older free plugin degrades to tracking as
+		 * before rather than fataling.
+		 *
+		 * @param WC_Order|null $order Order being tracked.
+		 *
+		 * @return bool True when the Purchase event must not be sent for this order.
+		 */
+		public static function is_renewal_purchase_excluded( $order = null ) {
+			if ( ! $order instanceof WC_Order && class_exists( 'WFFN_Ecomm_Tracking' ) ) {
+				/**
+				 * Callers that track off a session - One Click Upsells - hold no order when the
+				 * renewal was paid through the order-pay link, which never opens an upsell session.
+				 * Resolve it from the request instead; that resolver validates the order key.
+				 */
+				$order = WFFN_Ecomm_Tracking::get_instance()->get_current_order();
+			}
+
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
+
+			$exclude_renewals = BWF_Admin_General_Settings::get_instance()->get_option( 'exclude_renewal_purchase_event' );
+			if ( ! is_array( $exclude_renewals ) || 0 === count( $exclude_renewals ) || 'yes' !== $exclude_renewals[0] ) {
+				return false;
+			}
+
+			/** Opt back in, for stores that do want renewals counted. */
+			if ( true === apply_filters( 'wffn_track_purchase_on_renewal', false, $order ) ) {
+				return false;
+			}
+
+			if ( function_exists( 'wcs_order_contains_renewal' ) ) {
+				$is_renewal = (bool) wcs_order_contains_renewal( $order );
+			} else {
+				/** Subscriptions stores the parent subscription id against the renewal order. */
+				$is_renewal = '' !== (string) $order->get_meta( '_subscription_renewal' );
+			}
+
+			/**
+			 * Payments completed on the native Order Pay page (manual/early subscription
+			 * renewals, "pay for order" links, retried failed orders) are repeat charges, not
+			 * new ad-driven conversions, so exclude them too while the setting is on. Automatic
+			 * renewals are handled by $is_renewal above and never reach a front-end page anyway,
+			 * so they never fired Purchase to begin with. Stores that do want a specific order
+			 * counted can opt back in through the wffn_is_excluded_renewal_order filter below.
+			 *
+			 * The '_wffn_paid_via_order_pay' flag is stamped at pay time
+			 * (WFFN_Ecomm_Tracking::flag_order_pay_payment) so the exclusion survives the redirect
+			 * into an upsell funnel or thank-you page, where is_checkout_pay_page() is no longer
+			 * true; the live is_checkout_pay_page() check still covers the pay page itself.
+			 */
+			$is_order_pay_purchase = (
+				'yes' === (string) $order->get_meta( '_wffn_paid_via_order_pay' )
+				|| ( function_exists( 'is_checkout_pay_page' ) && is_checkout_pay_page() )
+			);
+
+			$exclude = ( $is_renewal || $is_order_pay_purchase );
+
+			return (bool) apply_filters( 'wffn_is_excluded_renewal_order', $exclude, $order );
+		}
+
 		public static function pr( $arr ) {
 			echo '<pre>';
 			print_r( $arr );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
@@ -103,7 +173,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 
 
 		public static function is_admin_action() {
-			if ( is_admin() && ( 'bwf_funnels' === filter_input( INPUT_GET, 'page' ) || ( defined( 'DOING_AJAX' ) && DOING_AJAX && 1 === filter_input( INPUT_POST, 'is_funnel_action' ) ) ) ) {
+			if ( is_admin() && ( 'bwf_funnels' === filter_input( INPUT_GET, 'page', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) || ( defined( 'DOING_AJAX' ) && DOING_AJAX && 1 === filter_input( INPUT_POST, 'is_funnel_action', FILTER_SANITIZE_NUMBER_INT ) ) ) ) {
 				return true;
 			}
 
@@ -254,12 +324,12 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 		public static function get_discount_type_keys() {
 
 			$discounted = array(
-				'fixed_on_reg'          => sprintf( __( '%s Fixed Amount on Regular Price', 'funnel-builder' ), get_woocommerce_currency_symbol() ),
-				'fixed_on_sale'         => sprintf( __( '%s Fixed Amount on Sale Price', 'funnel-builder' ), get_woocommerce_currency_symbol() ),
+				'fixed_on_reg'          => sprintf( /* translators: %s: currency symbol. */ __( '%s Fixed Amount on Regular Price', 'funnel-builder' ), get_woocommerce_currency_symbol() ),
+				'fixed_on_sale'         => sprintf( /* translators: %s: currency symbol. */ __( '%s Fixed Amount on Sale Price', 'funnel-builder' ), get_woocommerce_currency_symbol() ),
 				'percentage_on_reg'     => __( '% on Regular Price', 'funnel-builder' ),
 				'percentage_on_sale'    => __( '% on Sale Price', 'funnel-builder' ),
-				'fixed_discount_reg'    => sprintf( __( '%s Fixed Amount on Regular Price', 'funnel-builder' ), get_woocommerce_currency_symbol() ),
-				'fixed_discount_sale'   => sprintf( __( '%s Fixed Amount on Sale Price', 'funnel-builder' ), get_woocommerce_currency_symbol() ),
+				'fixed_discount_reg'    => sprintf( /* translators: %s: currency symbol. */ __( '%s Fixed Amount on Regular Price', 'funnel-builder' ), get_woocommerce_currency_symbol() ),
+				'fixed_discount_sale'   => sprintf( /* translators: %s: currency symbol. */ __( '%s Fixed Amount on Sale Price', 'funnel-builder' ), get_woocommerce_currency_symbol() ),
 				'percent_discount_reg'  => __( '% on Regular Price', 'funnel-builder' ),
 				'percent_discount_sale' => __( '% on Sale Price', 'funnel-builder' ),
 			);
@@ -617,7 +687,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 		 */
 		public static function is_divi_builder_preview() {
 
-			if ( '1' === filter_input( INPUT_GET, 'et_fb' ) ) {
+			if ( '1' === filter_input( INPUT_GET, 'et_fb', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) ) {
 				return true;
 			}
 
@@ -629,7 +699,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 		 */
 		public static function is_oxy_builder_preview() {
 
-			if ( '1' === filter_input( INPUT_GET, 'ct_builder' ) ) {
+			if ( '1' === filter_input( INPUT_GET, 'ct_builder', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) ) {
 				return true;
 			}
 
@@ -657,7 +727,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			}
 
 			// Presence check — catches both `ct_builder=1` and `ct_builder=true`.
-			if ( null !== filter_input( INPUT_GET, 'ct_builder' ) ) {
+			if ( null !== filter_input( INPUT_GET, 'ct_builder', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) ) {
 				return true;
 			}
 
@@ -772,7 +842,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 					if ( ! version_compare( $oxy_builder_version, $supported_version, '>=' ) ) {
 						$response['is_old_version'] = 'yes';
 						$response['version']        = $oxy_builder_version;
-						$response['error']          = sprintf( __( 'Site has an older version of Oxygen Classic Builder. Templates are supported for v%s or greater.<br /> Please update.', 'funnel-builder' ), $supported_version );
+						$response['error']          = sprintf( /* translators: %s: minimum supported Oxygen builder version. */ __( 'Site has an older version of Oxygen Classic Builder. Templates are supported for v%s or greater.<br /> Please update.', 'funnel-builder' ), $supported_version );
 					}
 				}
 			} elseif ( 'divi' === $builder ) {
@@ -809,7 +879,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 					$response['version'] = $divi_builder_version;
 					if ( ! version_compare( $divi_builder_version, $supported_version, '>=' ) ) {
 						$response['is_old_version'] = 'yes';
-						$response['error']          = sprintf( __( 'Site has an older version of Divi Builder. Templates are supported for v%s or greater.<br /> Please update.', 'funnel-builder' ), $supported_version );
+						$response['error']          = sprintf( /* translators: %s: minimum supported Divi builder version. */ __( 'Site has an older version of Divi Builder. Templates are supported for v%s or greater.<br /> Please update.', 'funnel-builder' ), $supported_version );
 					}
 				}
 			} elseif ( 'elementor' ) {
@@ -1346,7 +1416,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 				}
 
 				if ( empty( $params['external_id'] ) && ! empty( $_COOKIE['wffn_flt'] ) ) {
-					$params['external_id'] = bwf_clean( wp_unslash( $_COOKIE['wffn_flt'] ) );
+					$params['external_id'] = bwf_clean( wp_unslash( $_COOKIE['wffn_flt'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 				}
 				// Custom: Fill missing fields from wp_bwf_contact table using UID from _fk_contact_uid cookie
 				if ( $fetch_contact ) {
@@ -1369,8 +1439,8 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 					}
 					if ( $need_contact && ! empty( $_COOKIE['_fk_contact_uid'] ) ) {
 						$uid     = sanitize_text_field( wp_unslash( $_COOKIE['_fk_contact_uid'] ) );
-						$table   = $wpdb->prefix . 'bwf_contact';
-						$contact = $wpdb->get_row(
+						$table   = esc_sql( $wpdb->prefix . 'bwf_contact' );
+						$contact = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 							$wpdb->prepare(
 								"SELECT email, f_name, l_name, contact_no, state, country FROM {$table} WHERE uid = %s LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 								$uid

@@ -572,7 +572,7 @@ trait RenderCallbackTrait {
 			// Check if we're actually in a REST API request, not just if elements is null
 			$is_rest_api = (
 				( defined( 'REST_REQUEST' ) && REST_REQUEST ) ||
-				( isset( $_SERVER['REQUEST_URI'] ) && strpos( wp_unslash( $_SERVER['REQUEST_URI'] ), '/wp-json/' ) !== false ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				( isset( $_SERVER['REQUEST_URI'] ) && strpos( wp_unslash( $_SERVER['REQUEST_URI'] ), '/wp-json/' ) !== false ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- raw URI used only for path matching; never stored or output.
 			);
 
 			// Only skip Module::render() if we're DEFINITELY in REST API

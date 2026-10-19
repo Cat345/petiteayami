@@ -135,7 +135,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Smart_Coupons' ) ) {
 			}
 
 			echo '<div class="wc_coupon_message_wrap" style="padding: 10px 0 10px;">';
-			echo $this->instance->print_coupon_message();
+			echo $this->instance->print_coupon_message(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- third-party checkout field markup; wp_kses_post() strips <input>/<select> (B0 register).
 			echo '</div>';
 
 
@@ -155,14 +155,13 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Smart_Coupons' ) ) {
 				$px        = "7px";
 			}
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#wfacp_smart_coupon_gift {clear: both;padding: 0 $px;}";
 			$cssHtml .= $bodyClass . "#wfacp_smart_coupon_gift ul.show_hide_list {padding: 0;margin: 0;}";
 			$cssHtml .= $bodyClass . "#wfacp_smart_coupon_gift input[type='text'] {padding: 12px 10px;margin: 0 0 15px;}";
 			$cssHtml .= $bodyClass . "#wfacp_smart_coupon_gift .form_table {margin: 15px 0 0;width: 100%;padding: 15px 0 0;}";
-			$cssHtml .= "</style>";
 
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 
 
 			?>

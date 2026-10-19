@@ -21,6 +21,26 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 
 			add_action( 'wp_enqueue_scripts', array( $this, 'tracking_log_js' ) );
 			add_filter( 'wfocu_print_tracking_script', array( $this, 'maybe_print_tracking_code' ) );
+			add_action( 'woocommerce_before_pay_action', array( $this, 'flag_order_pay_payment' ) );
+		}
+
+		/**
+		 * Mark an order as paid through the native Order Pay page.
+		 *
+		 * Fires on the pay-form submit (woocommerce_before_pay_action). The flag is read later by
+		 * WFFN_Common::is_renewal_purchase_excluded() so the Purchase event stays suppressed on
+		 * whatever page ends up firing it - the order-pay page itself, an upsell offer the payment
+		 * routes into, or the thank-you page - not only while is_checkout_pay_page() is true.
+		 *
+		 * @param WC_Order $order Order being paid.
+		 *
+		 * @return void
+		 */
+		public function flag_order_pay_payment( $order ) {
+			if ( $order instanceof WC_Order && 'yes' !== (string) $order->get_meta( '_wffn_paid_via_order_pay' ) ) {
+				$order->update_meta_data( '_wffn_paid_via_order_pay', 'yes' );
+				$order->save();
+			}
 		}
 
 		public static function get_instance() {
@@ -208,7 +228,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 				$general_data = $this->general_data;
 				if ( is_array( $general_data ) && count( $general_data ) > 0 ) { ?>
 					<script type="text/javascript">
-						let wffn_tracking_data = JSON.parse('<?php echo wp_json_encode( $general_data ); ?>');
+						let wffn_tracking_data = <?php echo wp_json_encode( $general_data, JSON_HEX_TAG | JSON_HEX_AMP ); ?>;
 					</script>
 					<?php
 					do_action( 'wffn_custom_purchase_tracking', $general_data );
@@ -242,7 +262,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 				return false;
 			}
 
-			$posted_key = bwf_clean( wp_unslash( $_GET['key'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$posted_key = bwf_clean( wp_unslash( $_GET['key'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 			if ( ! hash_equals( (string) $order->get_order_key(), (string) $posted_key ) ) {
 				return false;
 			}
@@ -280,6 +300,10 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			}
 
 			if ( true === apply_filters( 'wffn_allow_native_thankyou_tracking', is_order_received_page(), $check_session ) ) {
+				if ( true === $this->is_renewal_purchase_tracking_disabled() ) {
+					return false;
+				}
+
 				return true;
 
 			}
@@ -289,12 +313,50 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 				if ( isset( $wp->query_vars['order-pay'] ) && $this->is_valid_order_pay_request( $wp->query_vars['order-pay'] ) ) {
 					$order = wc_get_order( absint( $wp->query_vars['order-pay'] ) );
 					if ( $order && $order->is_paid() ) {
+						if ( true === $this->is_renewal_purchase_tracking_disabled() ) {
+							return false;
+						}
+
 						return true;
 					}
 				}
 			}
 
 			return false;
+		}
+
+		/**
+		 * Suppress the Meta Purchase event (browser pixel + Conversions API) for
+		 * WooCommerce Subscriptions renewal orders that land on the native
+		 * order-received / order-pay page.
+		 *
+		 * Manual/early renewals bypass FunnelKit Store Checkout and reach the native
+		 * WooCommerce pages, where should_render() would otherwise fire a Purchase for
+		 * what is really a recurring charge. Renewals are detected through Subscriptions'
+		 * own wcs_order_contains_renewal(), falling back to the _subscription_renewal meta,
+		 * which covers manual, early and automatic renewals. The same suppression also
+		 * applies to any payment completed on the native Order Pay page (manual renewals,
+		 * "pay for order" links, retried failed orders), which are repeat charges rather than
+		 * new conversions. Initial subscription orders and one-time purchases carry no such
+		 * meta and are not on the Order Pay page, so they remain tracked.
+		 *
+		 * Gated by the "Exclude Subscription Renewal Orders" pixel setting, which ships off so
+		 * existing stores keep their current tracking. Stores that enable it but want renewal
+		 * Purchase events for specific orders can opt back in through the
+		 * wffn_track_purchase_on_renewal filter.
+		 *
+		 * @return bool True when Purchase tracking must be suppressed for a renewal order.
+		 */
+		public function is_renewal_purchase_tracking_disabled() {
+			$order    = $this->get_current_order();
+			$excluded = WFFN_Common::is_renewal_purchase_excluded( $order );
+
+			if ( true === $excluded ) {
+				$order_id = ( $order instanceof WC_Order ) ? $order->get_id() : 0;
+				WFFN_Core()->logger->log( 'Order #' . $order_id . ': Meta Purchase event skipped - "Exclude Manual Renewals & Order Pay Page Purchases" setting is enabled (manual/renewal charge or Order Pay page payment, not counted as a new conversion).', 'wffn', true );
+			}
+
+			return $excluded;
 		}
 
 		public function get_advanced_pixel_data( $type ) {
@@ -336,17 +398,19 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 				$params['post_type']    = $post->post_type;
 				$params['content_name'] = get_the_title( $thank_you_id );
 				$params['post_id']      = $thank_you_id;
+				// Single generation so the browser eventID and the CAPI event_id always carry the same value.
+				$event_id = $this->get_event_id( 'trackCustom' );
 				?>
 				var wffnGeneralData = <?php echo wp_json_encode( $params ); ?>;
 
 				wffnGeneralData = (typeof wffnAddTrafficParamsToEvent !== "undefined")?wffnAddTrafficParamsToEvent(wffnGeneralData ):wffnGeneralData;
-				fbq('trackCustom', '<?php echo esc_js( $getEventName ); ?>', wffnGeneralData,{'eventID': '<?php echo esc_attr( $this->get_event_id( 'trackCustom' ) ); ?>'});
+				fbq('trackCustom', '<?php echo esc_js( $getEventName ); ?>', wffnGeneralData,{'eventID': '<?php echo esc_attr( $event_id ); ?>'});
 				<?php
 				if ( $this->is_conversion_api() ) {
 
 					$this->api_events[] = array(
 						'event'    => 'trackCustom',
-						'event_id' => $this->get_event_id( 'trackCustom' ),
+						'event_id' => $event_id,
 					);
 
 				}
@@ -1206,7 +1270,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			$utms          = array();
 			foreach ( $wffnUtm_terms as $term ) {
 				if ( isset( $_COOKIE[ 'wffn_fb_pixel_' . $term ] ) && ! empty( $_COOKIE[ 'wffn_fb_pixel_' . $term ] ) ) {
-					$utms[ $term ] = bwf_clean( wp_unslash( $_COOKIE[ 'wffn_fb_pixel_' . $term ] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+					$utms[ $term ] = bwf_clean( wp_unslash( $_COOKIE[ 'wffn_fb_pixel_' . $term ] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 				}
 			}
 			return $utms;
@@ -1236,7 +1300,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 				$external = false;
 			}
 			if ( isset( $_COOKIE['wffn_fb_pixel_traffic_source'] ) && ! empty( $_COOKIE['wffn_fb_pixel_traffic_source'] ) ) {
-				$cookie = bwf_clean( wp_unslash( $_COOKIE['wffn_fb_pixel_traffic_source'] ) ); // phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE,WordPress.Security.NonceVerification.Recommended -- Reading cookie data for tracking, nonce verification not required
+				$cookie = bwf_clean( wp_unslash( $_COOKIE['wffn_fb_pixel_traffic_source'] ) ); // phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE,WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Reading cookie data for tracking, nonce verification not required Also: input sanitized via a recursive sanitize_text_field() wrapper on this line.
 			} else {
 				$cookie = false;
 			}

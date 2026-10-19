@@ -26,8 +26,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Polylang' ) ) {
 				WFACP_AJAX_Controller::send_resp( $resp );
 			}
 
-			$from_post_id = absint( $_POST['from_post_id'] );
-			$new_lang     = isset( $_POST['new_lang'] ) ? sanitize_text_field( wp_unslash( $_POST['new_lang'] ) ) : '';
+			$from_post_id = isset( $_POST['from_post_id'] ) ? absint( $_POST['from_post_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce already verified upstream by WFACP_AJAX_Controller::check_nonce() at the AJAX handler entry.
+			$new_lang     = isset( $_POST['new_lang'] ) ? sanitize_text_field( wp_unslash( $_POST['new_lang'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce already verified upstream by WFACP_AJAX_Controller::check_nonce() at the AJAX handler entry.
 
 			$sync = new PLL_Admin_Sync( $polylang );
 

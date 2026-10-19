@@ -8,16 +8,14 @@ if ( ! class_exists( 'WFACP_WC_Payments_GPAY_AND_APAY' ) ) {
 		private $instance = null;
 
 		public function __construct() {
-			add_filter( 'wfacp_smart_buttons', [ $this, 'add_buttons' ] );
-			add_action( 'wfacp_smart_button_container_wc_payment_gpay_apay', [ $this, 'add_wc_payment_gpay_apay_buttons' ] );
-			add_action( 'wfacp_smart_button_container_wc_payment_woo_pay', [ $this, 'add_wc_payment_woo_pay_buttons' ] );
-			add_action( 'wfacp_internal_css', [ $this, 'add_internal_css' ], 11, 2 );
-
+			add_filter( 'wfacp_smart_buttons', array( $this, 'add_buttons' ) );
+			add_action( 'wfacp_smart_button_container_wc_payment_gpay_apay', array( $this, 'add_wc_payment_gpay_apay_buttons' ) );
+			add_action( 'wfacp_smart_button_container_wc_payment_woo_pay', array( $this, 'add_wc_payment_woo_pay_buttons' ) );
+			add_action( 'wfacp_internal_css', array( $this, 'add_internal_css' ), 11, 2 );
 		}
 
 		public function add_buttons( $buttons ) {
 			try {
-
 
 				if ( true == apply_filters( 'wfacp_disabled_google_apple_pay_button_on_desktop', false, $buttons ) ) {
 					if ( ! class_exists( 'WFACP_Mobile_Detect' ) ) {
@@ -27,7 +25,7 @@ if ( ! class_exists( 'WFACP_WC_Payments_GPAY_AND_APAY' ) ) {
 					if ( ! $detect->isMobile() || empty( $detect ) ) {
 						return $buttons;
 					}
-					add_filter( 'wfacp_template_localize_data', [ $this, 'set_local_data' ] );
+					add_filter( 'wfacp_template_localize_data', array( $this, 'set_local_data' ) );
 				}
 				if ( class_exists( 'WC_Payments_Express_Checkout_Button_Display_Handler' ) && method_exists( 'WC_Payments_Express_Checkout_Button_Display_Handler', 'display_express_checkout_buttons' ) ) {
 					$this->instance = WFACP_Common::remove_actions( 'woocommerce_checkout_before_customer_details', 'WC_Payments_Express_Checkout_Button_Display_Handler', 'display_express_checkout_buttons' );
@@ -39,16 +37,16 @@ if ( ! class_exists( 'WFACP_WC_Payments_GPAY_AND_APAY' ) ) {
 					}
 				}
 
-				$buttons['wc_payment_gpay_apay'] = [
+				$buttons['wc_payment_gpay_apay'] = array(
 					'iframe' => true,
-					'name'   => __( 'Woocommerce Payment Request', 'woocommerce-payments' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				];
-				$buttons['wc_payment_woo_pay']   = [
+					'name'   => __( 'Woocommerce Payment Request', 'woocommerce-payments' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				);
+				$buttons['wc_payment_woo_pay']   = array(
 					'iframe' => true,
-					'name'   => __( 'Woocommerce Payment Request Woo Pay', 'woocommerce-payments' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				];
-			} catch ( Exception|Error $e ) {
-				wc_get_logger()->error( $e->getMessage(), [ 'source' => 'funnelkit-checkout-render-error' ] );
+					'name'   => __( 'Woocommerce Payment Request Woo Pay', 'woocommerce-payments' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				);
+			} catch ( Exception | Error $e ) {
+				wc_get_logger()->error( $e->getMessage(), array( 'source' => 'funnelkit-checkout-render-error' ) );
 			}
 
 			return $buttons;
@@ -59,12 +57,11 @@ if ( ! class_exists( 'WFACP_WC_Payments_GPAY_AND_APAY' ) ) {
 				$instance = WFACP_Common::remove_actions( 'template_redirect', 'WC_Payments_Express_Checkout_Button_Handler', 'set_session' );
 				if ( $instance instanceof WC_Payments_Express_Checkout_Button_Handler && method_exists( 'WC_Payments_Express_Checkout_Button_Handler', 'display_express_checkout_button_html' ) ) {
 					$instance->display_express_checkout_button_html();
-				} else if ( $this->instance instanceof WC_Payments_Payment_Request_Button_Handler ) {
+				} elseif ( $this->instance instanceof WC_Payments_Payment_Request_Button_Handler ) {
 					$this->instance->display_payment_request_button_html();
 				}
-
-			} catch ( Exception|Error $e ) {
-				wc_get_logger()->error( $e->getMessage(), [ 'source' => 'funnelkit-checkout-render-error' ] );
+			} catch ( Exception | Error $e ) {
+				wc_get_logger()->error( $e->getMessage(), array( 'source' => 'funnelkit-checkout-render-error' ) );
 			}
 		}
 
@@ -75,8 +72,8 @@ if ( ! class_exists( 'WFACP_WC_Payments_GPAY_AND_APAY' ) ) {
 				if ( $instance instanceof WC_Payments_WooPay_Button_Handler && method_exists( 'WC_Payments_WooPay_Button_Handler', 'display_woopay_button_html' ) ) {
 					$instance->display_woopay_button_html();
 				}
-			} catch ( Exception|Error $e ) {
-				wc_get_logger()->error( $e->getMessage(), [ 'source' => 'funnelkit-checkout-render-error' ] );
+			} catch ( Exception | Error $e ) {
+				wc_get_logger()->error( $e->getMessage(), array( 'source' => 'funnelkit-checkout-render-error' ) );
 			}
 		}
 
@@ -88,14 +85,14 @@ if ( ! class_exists( 'WFACP_WC_Payments_GPAY_AND_APAY' ) ) {
 
 		public function add_internal_css() {
 			?>
-            <style>
-                #wfacp_smart_button_wc_payment_gpay_apay #wcpay-payment-request-wrapper {
-                    padding: 0 !important;
-                }
+			<style>
+				#wfacp_smart_button_wc_payment_gpay_apay #wcpay-payment-request-wrapper {
+					padding: 0 !important;
+				}
 
-                #wfacp_smart_button_wc_payment_gpay_apay #wcpay-payment-request-button-separator {
-                    display: none !important;
-                }
+				#wfacp_smart_button_wc_payment_gpay_apay #wcpay-payment-request-button-separator {
+					display: none !important;
+				}
 
                 #wfacp_smart_button_wc_payment_gpay_apay #wcpay-express-checkout-button-separator {
                     display: none !important;

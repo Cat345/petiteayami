@@ -43,7 +43,7 @@ if ( ! class_exists( 'WFFN_Optin_Contacts_Analytics' ) ) {
 			}
 
 			$query_args = array_merge( $entry_ids_array, array( $cid ) );
-			$data       = $wpdb->get_results(
+			$data       = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 				$wpdb->prepare(
 					"SELECT optin.id, optin.funnel_id as fid, optin.email as email, optin.step_id as 'object_id', optin.data as 'data', DATE_FORMAT(optin.date, '%%Y-%%m-%%d %%T') as 'date', COALESCE( p.post_title, '' ) as 'object_name', 'optin' as 'type' FROM {$wpdb->prefix}bwf_optin_entries as optin LEFT JOIN {$wpdb->prefix}posts as p ON optin.step_id = p.id WHERE optin.id IN ( " . implode( ', ', array_fill( 0, count( $entry_ids_array ), '%d' ) ) . ' ) AND optin.cid=%d order by optin.date asc',
 					...$query_args
@@ -75,8 +75,8 @@ if ( ! class_exists( 'WFFN_Optin_Contacts_Analytics' ) ) {
 				$query_args[] = absint( $funnel_id );
 			}
 
-			$e_query = 'DELETE FROM ' . $wpdb->prefix . 'bwf_optin_entries WHERE cid IN (' . $placeholdersForFavFruits . ') ' . $funnel_query;
-			$wpdb->query( $wpdb->prepare( $e_query, $query_args ) ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- all values ($cids, $funnel_id) bound through prepare(); IN/fid placeholders built via array_fill()/%d.
+			$e_query = 'DELETE FROM ' . esc_sql( $wpdb->prefix . 'bwf_optin_entries' ) . ' WHERE cid IN (' . $placeholdersForFavFruits . ') ' . $funnel_query;
+			$wpdb->query( $wpdb->prepare( $e_query, $query_args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- all values ($cids, $funnel_id) bound through prepare(); IN/fid placeholders built via array_fill()/%d. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
@@ -92,7 +92,7 @@ if ( ! class_exists( 'WFFN_Optin_Contacts_Analytics' ) ) {
 		public function reset_analytics( $funnel_id ) {
 			global $wpdb;
 			$query = $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'bwf_optin_entries WHERE funnel_id=%d', $funnel_id );
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $query prepared above.
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- $query prepared above. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 		}
 
 		/**
@@ -109,7 +109,7 @@ if ( ! class_exists( 'WFFN_Optin_Contacts_Analytics' ) ) {
 			}
 			$placeholders = implode( ',', array_fill( 0, count( $entry_ids ), '%d' ) );
 			$e_query      = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}bwf_optin_entries WHERE id IN ($placeholders)", $entry_ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $placeholders is a list of %d built via array_fill(); ids bound through prepare().
-			$wpdb->query( $e_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->query( $e_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {

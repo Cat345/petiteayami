@@ -3,104 +3,104 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 $product_field  = WFACP_Common::get_product_field();
 $advanced_field = WFACP_Common::get_advanced_fields();
 
-$steps = [
-	'single_step' => [
+$steps = array(
+	'single_step' => array(
 		'name'          => __( 'Step 1', 'funnel-builder' ),
 		'slug'          => 'single_step',
 		'friendly_name' => __( 'Single Step Checkout', 'funnel-builder' ),
 		'active'        => 'yes',
-	],
-	'two_step'    => [
+	),
+	'two_step'    => array(
 		'name'          => __( 'Step 2', 'funnel-builder' ),
 		'slug'          => 'two_step',
 		'friendly_name' => __( 'Two Step Checkout', 'funnel-builder' ),
 		'active'        => 'no',
-	],
-	'third_step'  => [
+	),
+	'third_step'  => array(
 		'name'          => __( 'Step 3', 'funnel-builder' ),
 		'slug'          => 'third_step',
 		'friendly_name' => __( 'Three Step Checkout', 'funnel-builder' ),
 		'active'        => 'no',
-	],
-];
+	),
+);
 
-$pageLayout = [
+$pageLayout = array(
 	'steps'                       => $steps,
-	'fieldsets'                   => [
-		'single_step' => [
-			[
-				'name'        => WFACP_Common::translation_string_to_check('Customer Information'),
+	'fieldsets'                   => array(
+		'single_step' => array(
+			array(
+				'name'        => WFACP_Common::translation_string_to_check( 'Customer Information' ),
 				'class'       => '',
 				'sub_heading' => '',
-				'fields'      => [
-					[
-						'label'        => __( 'Email', 'woocommerce' ),
+				'fields'      => array(
+					array(
+						'label'        => __( 'Email', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'required'     => 'true',
 						'type'         => 'email',
-						'class'        => [ 0 => 'form-row-wide', ],
-						'validate'     => [ 0 => 'email', ],
+						'class'        => array( 0 => 'form-row-wide' ),
+						'validate'     => array( 0 => 'email' ),
 						'autocomplete' => 'email username',
 						'priority'     => '110',
 						'id'           => 'billing_email',
 						'field_type'   => 'billing',
 						'placeholder'  => '',
-					],
-					[
-						'label'        => __( 'First name', 'woocommerce' ),
+					),
+					array(
+						'label'        => __( 'First name', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'required'     => 'true',
-						'class'        => [ 0 => 'form-row-first', ],
+						'class'        => array( 0 => 'form-row-first' ),
 						'autocomplete' => 'given-name',
 						'priority'     => '10',
 						'type'         => 'text',
 						'id'           => 'billing_first_name',
 						'field_type'   => 'billing',
 						'placeholder'  => '',
-					],
-					[
-						'label'        => __( 'Last name', 'woocommerce' ),
+					),
+					array(
+						'label'        => __( 'Last name', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'required'     => 'true',
-						'class'        => [ 0 => 'form-row-last', ],
+						'class'        => array( 0 => 'form-row-last' ),
 						'autocomplete' => 'family-name',
 						'priority'     => '20',
 						'type'         => 'text',
 						'id'           => 'billing_last_name',
 						'field_type'   => 'billing',
 						'placeholder'  => '',
-					],
+					),
 					WFACP_Common::get_single_address_fields( 'shipping' ),
 					WFACP_Common::get_single_address_fields(),
 
-					[
-						'label'        => __( 'Phone', 'woocommerce' ),
+					array(
+						'label'        => __( 'Phone', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						'type'         => 'tel',
-						'class'        => [ 'form-row-wide' ],
+						'class'        => array( 'form-row-wide' ),
 						'id'           => 'billing_phone',
 						'field_type'   => 'billing',
-						'validate'     => [ 'phone' ],
+						'validate'     => array( 'phone' ),
 						'placeholder'  => '',
 						'autocomplete' => 'tel',
 						'priority'     => 100,
-					],
-				],
-			],
+					),
+				),
+			),
 
-			[
-				'name'        => WFACP_Common::translation_string_to_check(__( 'Order Summary', 'woocommerce' )),
+			array(
+				'name'        => WFACP_Common::translation_string_to_check( __( 'Order Summary', 'woocommerce' ) ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 				'class'       => '',
 				'sub_heading' => '',
-				'html_fields' => [
+				'html_fields' => array(
 					'order_coupon'  => 'true',
 					'order_summary' => 'true',
-				],
-				'fields'      => [
+				),
+				'fields'      => array(
 
 					$advanced_field['order_summary'],
-				],
-			],
-		],
+				),
+			),
+		),
 
-	],
-	'product_settings'            => [],
+	),
+	'product_settings'            => array(),
 	'have_coupon_field'           => 'true',
 	'have_billing_address'        => 'true',
 	'have_shipping_address'       => 'true',
@@ -108,10 +108,10 @@ $pageLayout = [
 	'have_shipping_method'        => 'false',
 	'have_shipping_address_index' => '7',
 	'current_step'                => 'single_step',
-];
+);
 
 
-return [
+return array(
 	'page_layout'   => $pageLayout,
 	'page_settings' => $settings,
-];
+);

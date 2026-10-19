@@ -50,11 +50,11 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 			// Handling Optin
 			if ( isset( $_GET['woofunnels-optin-choice'] ) && isset( $_GET['_woofunnels_optin_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_woofunnels_optin_nonce'] ) ), 'woofunnels_optin_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) );
 				}
 
 				if ( ! current_user_can( 'manage_options' ) ) {
-					wp_die( esc_html__( 'Cheating huh?', 'funnel-builder' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Cheating huh?', 'funnel-builder' ) );
 				}
 
 				$optin_choice = sanitize_text_field( wp_unslash( $_GET['woofunnels-optin-choice'] ) );
@@ -102,14 +102,13 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 						?>
 						<div class="woofunnel-notice-message notice notice-warning">
 							<a class="woofunnel-message-close notice-dismiss" href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'woofunnel-update-notice', 'hide' ), 'woofunnel_update_notice_nonce', '_woofunnel_update_notice_nonce' ) ); ?>">
-								<?php esc_html_e( 'Dismiss', 'funnel-builder' );  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
+								<?php esc_html_e( 'Dismiss', 'funnel-builder' ); ?>
 							</a>
 							<p>
 								<?php
 								printf(
-									/* translators: 1: comma-separated list of plugin names, 2: URL of the WordPress updates screen. */
 									wp_kses(
-										__( 'Attention: There is an update available of <strong>%1$s</strong> plugin. &nbsp;<a href="%2$s" class="">Go to updates</a>', 'funnel-builder' ),
+										/* translators: 1: comma-separated list of plugin names, 2: URL of the WordPress updates screen. */ __( 'Attention: There is an update available of <strong>%1$s</strong> plugin. &nbsp;<a href="%2$s" class="">Go to updates</a>', 'funnel-builder' ),
 										array(
 											'strong' => array(),
 											'a'      => array(
@@ -159,7 +158,7 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 
 			if ( isset( $_GET['woofunnel-update-notice'] ) && isset( $_GET['_woofunnel_update_notice_nonce'] ) ) {
 				if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_woofunnel_update_notice_nonce'] ) ), 'woofunnel_update_notice_nonce' ) ) {
-					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'funnel-builder' ) );
 				}
 				update_option( 'woofunnel_hide_update_notice', 'yes' );
 				wp_safe_redirect( admin_url( 'index.php' ) );
@@ -290,8 +289,8 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 			/**
 			 * Update session table with the data
 			 */
-			$query = $wpdb->prepare( 'UPDATE `' . $wpdb->prefix . "options` SET `autoload` = %s WHERE (`option_name` LIKE '%wfocu_c_%' OR `option_name` LIKE '%wfacp_c_%') AND `autoload` LIKE 'yes' AND `option_name` NOT LIKE 'wfacp_css_migrated'", 'no' );
-			$wpdb->query( $query );  //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query = $wpdb->prepare( "UPDATE `{$wpdb->prefix}options` SET `autoload` = %s WHERE ( `option_name` LIKE %s OR `option_name` LIKE %s ) AND `autoload` = 'yes' AND `option_name` != %s", 'no', '%' . $wpdb->esc_like( 'wfocu_c_' ) . '%', '%' . $wpdb->esc_like( 'wfacp_c_' ) . '%', 'wfacp_css_migrated' );
+			$wpdb->query( $query );  //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- prepared above with esc_like()d placeholders.
 			update_option( '_bwf_upgrade_1_9_14', 'yes' );
 		}
 
@@ -578,7 +577,7 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 					}
 				</style>
 				<?php
-				echo ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- buffered internal admin view; fields escaped at their sources.
 			}
 		}
 
@@ -676,7 +675,7 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 					}
 				</style>
 				<?php
-				echo ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- buffered internal admin view; fields escaped at their sources.
 			}
 		}
 

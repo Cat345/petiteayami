@@ -76,7 +76,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 			return array(
 				'type'        => $this->slug,
 				'title'       => $this->get_title(),
-				'popup_title' => sprintf( __( 'Add %s', 'funnel-builder' ), $this->get_title() ),
+				'popup_title' => sprintf( /* translators: %s: step title (e.g. Checkout). */ __( 'Add %s', 'funnel-builder' ), $this->get_title() ),
 				'dashicons'   => 'dashicons-cart',
 				'icon'        => 'cart',
 				'label'       => __( 'No Products', 'funnel-builder' ),
@@ -304,7 +304,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 
 						global $wpdb;
 
-						$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=%s", $checkout_page_id ) );
+						$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=%s", $checkout_page_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 						if ( ! empty( $post_meta_all ) ) {
 							$sql_query_selects = array();
@@ -352,7 +352,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 							}
 
 							$sql_query_meta_val = implode( ',', $sql_query_selects );
-							$wpdb->query( $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta ) );//phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared
+							$wpdb->query( $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta ) ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- values esc_sql()d in the assembly loop above and the table bound via placeholder; the loop-built VALUES string is invisible to taint tracking. direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 							if ( in_array( $checkout_page->post_type, $this->get_inherit_supported_post_type(), true ) ) {
 								$template = WFFN_Core()->admin->get_selected_template( $checkout_page_id, $post_meta_all );
@@ -654,7 +654,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 		 * @return mixed
 		 */
 		public function maybe_funnel_breadcrumb( $get_ref ) {
-			$step_id = filter_input( INPUT_GET, 'wfacp_id' );
+			$step_id = isset( $_GET['wfacp_id'] ) ? absint( $_GET['wfacp_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only GET param used only to compute a breadcrumb link, no state change
 			if ( empty( $get_ref ) && ! empty( $step_id ) ) {
 				$funnel_id = get_post_meta( $step_id, '_bwf_in_funnel', true );
 				if ( ! empty( $funnel_id ) && abs( $funnel_id ) > 0 ) {

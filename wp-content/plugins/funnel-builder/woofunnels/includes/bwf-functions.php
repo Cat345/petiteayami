@@ -9,7 +9,7 @@ if ( ! function_exists( 'bwf_safe_unserialize' ) ) {
 	 * Safely unserialize data, disallowing object instantiation to prevent
 	 * PHP Object Injection via POP chains.
 	 */
-	function bwf_safe_unserialize( $data ) {
+	function bwf_safe_unserialize( $data ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		if ( ! is_serialized( $data ) ) {
 			return $data;
 		}
@@ -25,8 +25,8 @@ if ( ! function_exists( 'bwf_get_remote_rest_args' ) ) {
 	 *
 	 * @return mixed|void
 	 */
-	function bwf_get_remote_rest_args( $data = '', $method = 'POST' ) {
-		return apply_filters( 'bwf_get_remote_rest_args', [
+	function bwf_get_remote_rest_args( $data = '', $method = 'POST' ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
+		return apply_filters( 'bwf_get_remote_rest_args', [ // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 			'method'    => $method,
 			'body'      => $data,
 			'timeout'   => 1,
@@ -44,7 +44,7 @@ if ( ! function_exists( 'bwf_clean' ) ) {
 	 *
 	 * @return array|mixed|string
 	 */
-	function bwf_clean( $var ) {
+	function bwf_clean( $var ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		if ( is_array( $var ) ) {
 			return array_map( 'bwf_clean', $var );
 		}
@@ -62,12 +62,12 @@ if ( ! function_exists( 'bwf_get_states' ) ) {
 	 *
 	 * @return mixed|string
 	 */
-	function bwf_get_states( $country = '', $state = '' ) {
+	function bwf_get_states( $country = '', $state = '' ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		static $states_data = null;
 		if ( null === $states_data ) {
 			$states_data = include WooFunnel_Loader::$ultimate_path . 'includes/states.php'; // 1,700-line data array — parse once per request
 		}
-		$country_states = apply_filters( 'bwf_get_states', $states_data );
+		$country_states = apply_filters( 'bwf_get_states', $states_data ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 		if ( empty( $state ) ) {
 			return '';
@@ -95,7 +95,7 @@ if ( ! function_exists( 'bwf_get_fonts_list' ) ) {
 	 *
 	 * @return array|int[]|mixed|string[]
 	 */
-	function bwf_get_fonts_list( $mode = 'standard' ) {
+	function bwf_get_fonts_list( $mode = 'standard' ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		static $google_fonts = null;
 		$fonts = [];
 		if ( null === $google_fonts ) {
@@ -126,7 +126,7 @@ if ( ! function_exists( 'bwf_get_fonts_list' ) ) {
 		 */
 		$fonts[] = array(
 			'id'   => 'default',
-			'name' => __( 'Default', 'funnel-builder' ) // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			'name' => __( 'Default', 'funnel-builder' )
 		);
 		foreach ( $web_fonts as $web_font_family ) {
 			if ( $web_font_family !== 'Open Sans' ) {
@@ -149,7 +149,7 @@ if ( ! function_exists( 'bwf_get_fonts_list' ) ) {
  * @return bool
  */
 if ( ! function_exists( 'bwf_string_to_bool' ) ) {
-	function bwf_string_to_bool( $string ) {
+	function bwf_string_to_bool( $string ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return is_bool( $string ) ? $string : ( 'yes' === strtolower( $string ) || 1 === $string || 'true' === strtolower( $string ) || '1' === $string );
 	}
 }
@@ -160,7 +160,7 @@ if ( ! function_exists( 'bwf_clear_queries' ) ) {
 	 * Make WPDB queries empty
 	 * @return void
 	 */
-	function bwf_clear_queries() {
+	function bwf_clear_queries() { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		global $wpdb;
 		$wpdb->queries = [];
 	}
@@ -177,7 +177,7 @@ if ( ! function_exists( 'bwf_save_queries' ) ) {
 	 *
 	 * @return void
 	 */
-	function bwf_save_queries( $file_name = 'general', $folder_name = 'funnelkit', $reference = 'DB Call' ) {
+	function bwf_save_queries( $file_name = 'general', $folder_name = 'funnelkit', $reference = 'DB Call' ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		global $wpdb;
 
 		if ( empty( $wpdb->queries ) || ! is_array( $wpdb->queries ) ) {
@@ -207,7 +207,7 @@ if ( ! function_exists( 'bwf_return_true' ) ) {
 	/**
 	 * @return bool
 	 */
-	function bwf_return_true() {
+	function bwf_return_true() { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return true;
 	}
 }
@@ -220,7 +220,7 @@ if ( ! function_exists( 'bwf_generate_random_bytes' ) ) {
 	 *
 	 * @return string
 	 */
-	function bwf_generate_random_bytes( $count ) {
+	function bwf_generate_random_bytes( $count ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 		return random_bytes( absint( $count ) );
 	}
 }

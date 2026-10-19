@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 $order_show_images     = isset( $this->data['order_details_img'] ) ? $this->data['order_details_img'] : true; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 $order_show_images     = wffn_string_to_bool( $order_show_images ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
-$order_details_heading = isset( $this->data['order_details_heading'] ) ? $this->data['order_details_heading'] : __( 'Order Details', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+$order_details_heading = isset( $this->data['order_details_heading'] ) ? $this->data['order_details_heading'] : __( 'Order Details', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable,WordPress.WP.I18n.TextDomainMismatch
 
 $section_order = apply_filters(
 	'wffn_thank_you_order_details_section_order',
@@ -28,11 +28,11 @@ foreach ( $section_order as $item_section ) {
 				if ( $order_status ) {
 					?>
 					<div class="wfty-order-notice">
-						<p class="wfty-notice-text"><?php esc_html_e( 'Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction. Please attempt your purchase again.', 'woocommerce' ); ?></p>
+						<p class="wfty-notice-text"><?php esc_html_e( 'Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction. Please attempt your purchase again.', 'woocommerce' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?></p>
 						<p class="wfty-notice-actions">
-							<a href="<?php echo esc_url( $pay_url ); ?>" class="wfty_n_btn"><?php esc_html_e( 'Pay', 'woocommerce' ); ?></a>
+							<a href="<?php echo esc_url( $pay_url ); ?>" class="wfty_n_btn"><?php esc_html_e( 'Pay', 'woocommerce' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?></a>
 							<?php if ( is_user_logged_in() ) : ?>
-								<a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" class="wfty_n_btn"><?php esc_html_e( 'My account', 'woocommerce' ); ?></a>
+								<a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" class="wfty_n_btn"><?php esc_html_e( 'My account', 'woocommerce' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?></a>
 							<?php endif; ?>
 						</p>
 						<?php do_action( 'wfty_subscription_notice', $this->order ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable ?>
@@ -68,7 +68,7 @@ foreach ( $section_order as $item_section ) {
 								if ( ! apply_filters( 'woocommerce_order_item_visible', true, $item ) ) {
 									continue;
 								}
-								$product = apply_filters( 'woocommerce_order_item_product', $item->get_product(), $item );
+								$product = apply_filters( 'woocommerce_order_item_product', $item->get_product(), $item ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
 								if ( ! $product instanceof WC_Product ) {
 									continue;
 								}
@@ -82,6 +82,17 @@ foreach ( $section_order as $item_section ) {
 											<div class="wfty_p_img">
 												<?php
 												$thumbnail = ( $product ) ? $product->get_image( 'shop_thumbnail' ) : '';
+												/**
+												 * Filters the Thank You page order-item thumbnail.
+												 *
+												 * @since 3.16.1
+												 *
+												 * @param string        $thumbnail Thumbnail HTML.
+												 * @param WC_Order_Item $item      The order line item (read item meta from here).
+												 * @param WC_Order      $order_obj The order object.
+												 * @param WC_Product    $product   The resolved product.
+												 */
+												$thumbnail = apply_filters( 'wffn_thankyou_order_item_thumbnail', $thumbnail, $item, $order_obj, $product );
 												if ( ! $product_permalink ) {
 													echo wp_kses_post( $thumbnail );
 												} else {
@@ -178,12 +189,12 @@ foreach ( $section_order as $item_section ) {
 		case 'downloads':
 			$show_downloads = false;
 			if ( $this->order instanceof WC_Order ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
-				$downloads      = $this->order->get_downloadable_items(); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+				$downloads      = $this->order->get_downloadable_items(); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable,WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
 				$show_downloads = $this->order->has_downloadable_item() && $this->order->is_download_permitted(); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 			}
 			if ( $show_downloads ) {
-				$order_downloads_btn_text = ( isset( $this->data['order_downloads_btn_text'] ) && ! empty( $this->data['order_downloads_btn_text'] ) ) ? $this->data['order_downloads_btn_text'] : esc_html__( 'Download', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
-				$order_download_heading   = ( isset( $this->data['order_download_heading'] ) && ! empty( $this->data['order_download_heading'] ) ) ? $this->data['order_download_heading'] : esc_html__( 'Downloads', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+				$order_downloads_btn_text = ( isset( $this->data['order_downloads_btn_text'] ) && ! empty( $this->data['order_downloads_btn_text'] ) ) ? $this->data['order_downloads_btn_text'] : esc_html__( 'Download', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable,WordPress.WP.I18n.TextDomainMismatch
+				$order_download_heading   = ( isset( $this->data['order_download_heading'] ) && ! empty( $this->data['order_download_heading'] ) ) ? $this->data['order_download_heading'] : esc_html__( 'Downloads', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable,WordPress.WP.I18n.TextDomainMismatch
 
 				echo '<div class="wfty_box wfty_order_download" >';
 				echo '<div class="wfty_title">' . esc_html( $order_download_heading ) . '</div>';
@@ -208,7 +219,7 @@ foreach ( $section_order as $item_section ) {
 					'woocommerce_account_downloads_columns',
 					function ( $array ) {
 						if ( isset( $array['download-product'] ) ) {
-							$array['download-product'] = __( 'File', 'woocommerce' );
+							$array['download-product'] = __( 'File', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						}
 						if ( isset( $array['download-file'] ) ) {
 							$array['download-file'] = '';
@@ -224,7 +235,7 @@ foreach ( $section_order as $item_section ) {
 					<thead>
 					<tr>
 						<?php
-						foreach ( wc_get_account_downloads_columns() as $column_id => $column_name ) :
+						foreach ( wc_get_account_downloads_columns() as $column_id => $column_name ) : // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
 							?>
 							<th class="<?php echo esc_attr( $column_id ); ?>"><span class="nobr"><?php echo esc_html( $column_name ); ?></span></th>
 						<?php endforeach; ?>
@@ -244,8 +255,8 @@ foreach ( $section_order as $item_section ) {
 
 					foreach ( $order_ids as $orderId ) {
 						$order_obj = apply_filters( 'wfty_maybe_update_order', wc_get_order( $orderId ) );
-						$downloads = $order_obj->get_downloadable_items();
-						$downloads = array_map(
+						$downloads = $order_obj->get_downloadable_items(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
+						$downloads = array_map( // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
 							function ( $d_item ) use ( $order_downloads_btn_text ) {
 								$d_item['btn_text'] = $order_downloads_btn_text;
 
@@ -254,12 +265,12 @@ foreach ( $section_order as $item_section ) {
 							$downloads
 						);
 
-						$downloads = apply_filters( 'wfty_maybe_update_download_data', $downloads, $order_obj );
+						$downloads = apply_filters( 'wfty_maybe_update_download_data', $downloads, $order_obj ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
 
-						foreach ( $downloads as $download ) :
+						foreach ( $downloads as $download ) : // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
 							?>
 							<tr>
-								<?php foreach ( wc_get_account_downloads_columns() as $column_id => $column_name ) : ?>
+								<?php foreach ( wc_get_account_downloads_columns() as $column_id => $column_name ) : // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability. ?>
 									<td class="<?php echo esc_attr( $column_id ); ?>" data-title="<?php echo esc_attr( $column_name ); ?>">
 										<?php
 										if ( has_action( 'woocommerce_account_downloads_column_' . $column_id ) ) {
@@ -273,13 +284,13 @@ foreach ( $section_order as $item_section ) {
 													echo '<a href="' . esc_url( $download['download_url'] ) . '" class="button">' . esc_html( $download['btn_text'] ) . '</a>';
 													break;
 												case 'download-remaining':
-													echo is_numeric( $download['downloads_remaining'] ) ? esc_html( $download['downloads_remaining'] ) : esc_html__( '&infin;', 'woocommerce' );
+													echo is_numeric( $download['downloads_remaining'] ) ? esc_html( $download['downloads_remaining'] ) : esc_html__( '&infin;', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 													break;
 												case 'download-expires':
 													if ( ! empty( $download['access_expires'] ) ) {
 														echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $download['access_expires'] ) ) );
 													} else {
-														esc_html_e( 'Never', 'woocommerce' );
+														esc_html_e( 'Never', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 													}
 													break;
 											}

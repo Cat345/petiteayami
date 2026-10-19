@@ -75,12 +75,32 @@
         }
 
         attachEvents() {
+            /**
+             * Align with the jQuery build WooCommerce is using.
+             *
+             * This file captures the jQuery that exists when it executes. If a theme or plugin loads a
+             * second jQuery build later (a raw code.jquery.com tag is the usual case), WooCommerce's
+             * footer scripts capture that later build instead. jQuery keeps event handlers per build,
+             * so updated_checkout, checkout_place_order_* and our own submit triggers would never cross
+             * between the two. By DOM ready every synchronous script has run, so the global is the build
+             * WooCommerce has. Adopt it, but only when blockUI is attached to that build: WooCommerce's
+             * frontend scripts cannot run without it, so its presence proves WooCommerce lives there. If
+             * a rogue build loads after WooCommerce's scripts instead, blockUI is missing on it and we
+             * stay put. On a normal page the condition is false and nothing changes.
+             */
+            if (window.jQuery && window.jQuery !== $ && window.jQuery.fn && typeof window.jQuery.fn.on === 'function' && typeof window.jQuery.fn.block === 'function') {
+                $ = window.jQuery;
+            }
 
             $('body').on('updated_wc_div', () => {
                 this.cartPage();
             });
             $('body').on('fkwcs_express_button_init', () => {
 
+                this.fkcartMiniCart();
+            });
+            // Dedicated hook so the FunnelKit slide cart can refresh ONLY the drawer BNPL messaging
+            $('body').on('fkcart_paylater_refresh', () => {
                 this.fkcartMiniCart();
             });
             this.singleProduct();
@@ -90,6 +110,10 @@
 
         createMessage(amount, methods, selector) {
             try {
+                if (!Array.isArray(methods) || methods.length === 0) {
+                    $(selector).hide();
+                    return;
+                }
                 let supported_currency = ["USD", "GBP", "EUR", "DKK", "NOK", "SEK", "CAD", "AUD"];
                 let supported_countries = ["US", "CA", "AU", "NZ", "GB", "IE", "FR", "ES", "DE", "AT", "BE", "DK", "FI", "IT", "NL", "NO", "SE", "GR"];
 
@@ -183,6 +207,27 @@
 
     }
 
+
+    /**
+     * One Stripe instance per publishable key, shared by every FunnelKit script on the page.
+     *
+     * stripe-elements.js, express-checkout.js and paylater.js each used to call Stripe()
+     * separately, so a checkout page could carry three instances. Each opens its own
+     * connection and iframes, refetches shared.js, and keeps its own Link/wallet state.
+     * Keyed by publishable key, since paylater does not pass it through the
+     * fkwcs_api_client_public_key filter and could in theory differ. Defined defensively so
+     * whichever script loads first creates it.
+     */
+    window.fkwcsGetStripe = window.fkwcsGetStripe || function (pubKey, options) {
+        window.fkwcsStripeInstances = window.fkwcsStripeInstances || {};
+
+        if (!window.fkwcsStripeInstances[pubKey]) {
+            window.fkwcsStripeInstances[pubKey] = Stripe(pubKey, options);
+        }
+
+        return window.fkwcsStripeInstances[pubKey];
+    };
+
     function init_bnpl_messages() {
         const pubKey = fkwcs_paylater.pub_key;
         const mode = fkwcs_paylater.mode;
@@ -191,7 +236,7 @@
             return;
         }
         try {
-            const stripe = Stripe(pubKey, {locale: fkwcs_paylater.locale});
+            const stripe = window.fkwcsGetStripe(pubKey, {locale: fkwcs_paylater.locale});
             new PayLaterMessages(stripe);
 
         } catch (e) {

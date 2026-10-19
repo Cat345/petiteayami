@@ -145,14 +145,14 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 						'labels'              => array(
 							'name'          => $this->get_module_title( true ),
 							'singular_name' => $this->get_module_title(),
-							'add_new'       => sprintf( __( 'Add %s', 'funnel-builder' ), $this->get_module_title() ),
-							'add_new_item'  => sprintf( __( 'Add New %s', 'funnel-builder' ), $this->get_module_title() ),
-							'search_items'  => sprintf( esc_html__( 'Search %s', 'funnel-builder' ), $this->get_module_title( true ) ),
-							'all_items'     => sprintf( esc_html__( 'All %s', 'funnel-builder' ), $this->get_module_title( true ) ),
-							'edit_item'     => sprintf( esc_html__( 'Edit %s', 'funnel-builder' ), $this->get_module_title() ),
-							'view_item'     => sprintf( esc_html__( 'View %s', 'funnel-builder' ), $this->get_module_title() ),
-							'update_item'   => sprintf( esc_html__( 'Update %s', 'funnel-builder' ), $this->get_module_title() ),
-							'new_item_name' => sprintf( esc_html__( 'New %s', 'funnel-builder' ), $this->get_module_title() ),
+							'add_new'       => sprintf( /* translators: %s: module title (e.g. Optin Page). */ __( 'Add %s', 'funnel-builder' ), $this->get_module_title() ),
+							'add_new_item'  => sprintf( /* translators: %s: module title (e.g. Optin Page). */ __( 'Add New %s', 'funnel-builder' ), $this->get_module_title() ),
+							'search_items'  => sprintf( /* translators: %s: module title (e.g. Optin Page). */ esc_html__( 'Search %s', 'funnel-builder' ), $this->get_module_title( true ) ),
+							'all_items'     => sprintf( /* translators: %s: module title (e.g. Optin Page). */ esc_html__( 'All %s', 'funnel-builder' ), $this->get_module_title( true ) ),
+							'edit_item'     => sprintf( /* translators: %s: module title (e.g. Optin Page). */ esc_html__( 'Edit %s', 'funnel-builder' ), $this->get_module_title() ),
+							'view_item'     => sprintf( /* translators: %s: module title (e.g. Optin Page). */ esc_html__( 'View %s', 'funnel-builder' ), $this->get_module_title() ),
+							'update_item'   => sprintf( /* translators: %s: module title (e.g. Optin Page). */ esc_html__( 'Update %s', 'funnel-builder' ), $this->get_module_title() ),
+							'new_item_name' => sprintf( /* translators: %s: module title (e.g. Optin Page). */ esc_html__( 'New %s', 'funnel-builder' ), $this->get_module_title() ),
 						),
 						'public'              => true,
 						'show_ui'             => true,
@@ -224,7 +224,16 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 					$suffix = '';
 				}
 				wp_enqueue_style( 'wffn-optin-frontend-style' );
-				wp_register_script( 'wffn-optin-public', $this->url . 'assets/js/public' . $suffix . '.js', 'jquery', WFFN_VERSION_DEV, true );
+				wp_register_script(
+					'wffn-optin-public',
+					$this->url . 'assets/js/public' . $suffix . '.js',
+					array( 'jquery' ),
+					WFFN_VERSION_DEV,
+					array(
+						'strategy'  => 'defer',
+						'in_footer' => true,
+					)
+				);
 				wp_enqueue_script( 'wffn-optin-public' );
 
 				wp_localize_script( 'wffn-optin-public', 'wfffOptinVars', $this->maybe_add_js_localized() );
@@ -486,7 +495,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 						global $wpdb;
 
-						$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d", $optin_page_id ) );
+						$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d", $optin_page_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 						if ( ! empty( $post_meta_all ) ) {
 
@@ -534,7 +543,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 							}
 
 							$sql_query_meta_val = implode( ',', $sql_query_selects );
-							$wpdb->query( $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta ) );//phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared
+							$wpdb->query( $wpdb->prepare( 'INSERT INTO %1$s (post_id, meta_key, meta_value) VALUES ' . $sql_query_meta_val, $wpdb->postmeta ) ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- values esc_sql()d in the assembly loop above and the table bound via placeholder; the loop-built VALUES string is invisible to taint tracking. direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 							if ( in_array( $optin_page->post_type, $this->get_inherit_supported_post_type(), true ) ) {
 								$template = WFFN_Core()->admin->get_selected_template( $optin_page_id, $post_meta_all );
@@ -630,7 +639,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 						'placeholder' => __( 'Enter Name', 'funnel-builder' ),
 					),
 					'slug'  => array(
-						'label'       => sprintf( __( '%s URL Slug', 'funnel-builder' ), $this->get_module_title() ),
+						'label'       => sprintf( /* translators: %s: module title (e.g. Optin Page). */ __( '%s URL Slug', 'funnel-builder' ), $this->get_module_title() ),
 						'placeholder' => __( 'Enter Slug', 'funnel-builder' ),
 					),
 				),
@@ -904,7 +913,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 		public function get_template_url( $main_template ) {
 			global $post;
 			$wfop_id       = $post->ID;
-			$page_template = apply_filters( 'bwf_page_template', get_post_meta( $wfop_id, '_wp_page_template', true ), $wfop_id );
+			$page_template = apply_filters( 'bwf_page_template', get_post_meta( $wfop_id, '_wp_page_template', true ), $wfop_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			$file         = '';
 			$body_classes = array();
@@ -956,7 +965,6 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			include_once $this->get_module_path() . 'compatibilities/page-builders/elementor/class-wffn-optin-pages-elementor.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 			include_once $this->get_module_path() . 'compatibilities/page-builders/divi/class-wffn-optin-pages-divi.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 			include_once $this->get_module_path() . 'compatibilities/page-builders/oxygen/class-wffn-optin-pages-oxygen.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-
 		}
 
 		public function get_edit_id() {
@@ -1111,6 +1119,16 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 				// Add CPT to the list of post types WP will include when it queries based on the post name.
 				$query->set( 'post_type', array( 'post', 'page', $this->get_post_type_slug() ) );
+				/**
+				 * Pages are hierarchical, so WordPress only resolves a child page at its full
+				 * path. Adding 'page' above would otherwise let a child page's slug match at the
+				 * site root: /child/ returned the page instead of 404ing, and because there was no
+				 * 404 WordPress never ran redirect_canonical(), so the visitor was never sent on to
+				 * /parent/child/. The step post types this rule exists for are always top level, so
+				 * restricting to top level keeps them resolving at the root and leaves page
+				 * hierarchy, and its canonical redirect, to WordPress.
+				 */
+				$query->set( 'post_parent', 0 );
 			}
 		}
 
@@ -1187,7 +1205,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 		public function get_embed_mode() {
 
 			if ( true === $this->form_builder->is_preview ) {
-				return wffn_clean( filter_input( INPUT_POST, 'wffn_embed_mode', FILTER_UNSAFE_RAW ) ); //phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
+				return wffn_clean( filter_input( INPUT_POST, 'wffn_embed_mode', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) );
 			}
 
 			return 'inline';
@@ -1669,7 +1687,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 			<div class="wffn-tab-title wffn-tab-desktop-title " data-tab="
 			<?php
-			echo $tab_order;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo (int) $tab_order;
 			?>
 			" role="tab">
 				<?php esc_html_e( 'Webhook', 'funnel-builder' ); ?>
@@ -1677,14 +1695,14 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 			<div class="wffn-tab-title wffn-tab-desktop-title <?php echo esc_attr( $hide_class_lifterlms ); ?>" data-tab="
 			<?php
-			echo( $tab_order + 1 );//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo (int) ( $tab_order + 1 );
 			?>
 			" role="tab"><?php esc_html_e( 'LifterLMS', 'funnel-builder' ); ?>
 			</div>
 
 			<div class="wffn-tab-title wffn-tab-desktop-title <?php echo esc_attr( $hide_class_affiliatewp ); ?>" data-tab="
 			<?php
-			echo( $tab_order + 2 );//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo (int) ( $tab_order + 2 );
 			?>
 			" role="tab"><?php esc_html_e( 'AffiliateWP', 'funnel-builder' ); ?>
 			</div>

@@ -110,6 +110,7 @@ class Logger implements LoggerInterface, ResettableInterface
  }
  if ($this->detectCycles) {
  if (\PHP_VERSION_ID >= 80100 && ($fiber = \Fiber::getCurrent())) {
+ // @phpstan-ignore offsetAssign.dimType
  $this->fiberLogDepth[$fiber] = $this->fiberLogDepth[$fiber] ?? 0;
  $logDepth = ++$this->fiberLogDepth[$fiber];
  } else {

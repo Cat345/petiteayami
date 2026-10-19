@@ -24,8 +24,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Simple_Product_options_For_WC' ) 
 		}
 
 		public function enqueue_frontend_scripts() {
-			wp_enqueue_script( 'pofw_product_options', $this->pluginUrl . 'view/frontend/web/product/main.js', array( 'jquery', 'jquery-ui-widget' ) );
-			wp_enqueue_style( 'pofw_product_options', $this->pluginUrl . 'view/frontend/web/product/main.css' );
+			wp_enqueue_script( 'pofw_product_options', $this->pluginUrl . 'view/frontend/web/product/main.js', array( 'jquery', 'jquery-ui-widget' ) ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter,WordPress.WP.EnqueuedResourceParameters.MissingVersion -- re-enqueue mirroring the third-party Product Options plugin's own registration shape so its inline bootstrapping keeps working. mirrors the third-party Product Options plugin's own unversioned registration.
+			wp_enqueue_style( 'pofw_product_options', $this->pluginUrl . 'view/frontend/web/product/main.css' ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- mirrors the third-party Product Options plugin's own unversioned registration.
 		}
 
 	}

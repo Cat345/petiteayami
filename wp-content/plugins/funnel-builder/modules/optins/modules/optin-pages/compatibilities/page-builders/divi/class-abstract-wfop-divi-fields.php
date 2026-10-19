@@ -96,8 +96,8 @@ if ( ! class_exists( 'WFOP_Divi_Field' ) ) {
 				'default'         => $default,
 				'option_category' => 'configuration',
 				'options'         => array(
-					'on'  => esc_html__( 'Yes', 'et_builder' ),
-					'off' => esc_html__( 'No', 'et_builder' ),
+					'on'  => esc_html__( 'Yes', 'funnel-builder' ),
+					'off' => esc_html__( 'No', 'funnel-builder' ),
 				),
 			);
 
@@ -192,7 +192,7 @@ if ( ! class_exists( 'WFOP_Divi_Field' ) ) {
 
 		protected function add_text_alignments( $tab_id, $key, $selectors = '', $label = '', $default = 'left', $conditions = array() ) {
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Alignment', 'et_builder' );
+				$label = esc_html__( 'Alignment', 'funnel-builder' );
 			}
 			$options = et_builder_get_text_orientation_options();
 
@@ -221,7 +221,7 @@ if ( ! class_exists( 'WFOP_Divi_Field' ) ) {
 		protected function add_font_size( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array(), $font_side_default = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Font Size', 'et_builder' );
+				$label = esc_html__( 'Font Size', 'funnel-builder' );
 			}
 			if ( empty( $default ) ) {
 				$default = array(
@@ -270,7 +270,7 @@ if ( ! class_exists( 'WFOP_Divi_Field' ) ) {
 		protected function add_letter_spacing( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Letter Spacing', 'et_builder' );
+				$label = esc_html__( 'Letter Spacing', 'funnel-builder' );
 			}
 			if ( empty( $default ) ) {
 				$default = array(
@@ -313,7 +313,7 @@ if ( ! class_exists( 'WFOP_Divi_Field' ) ) {
 
 		protected function add_font( $tab_id, $key, $selectors = '', $label = '', $default = '#000000', $conditions = array() ) {
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Select Font', 'et_builder' );
+				$label = esc_html__( 'Select Font', 'funnel-builder' );
 			}
 			$key = $key . '_typograhy';
 
@@ -354,7 +354,7 @@ if ( ! class_exists( 'WFOP_Divi_Field' ) ) {
 		public function add_background_color( $tab_id, $key, $selectors = array(), $default = '#000000', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_attr__( 'Background', 'elementor' );
+				$label = esc_attr__( 'Background', 'funnel-builder' );
 			}
 
 			$this->modules_fields[ $key ] = array(
@@ -377,7 +377,7 @@ if ( ! class_exists( 'WFOP_Divi_Field' ) ) {
 		public function add_border_color( $tab_id, $key, $selectors = array(), $default = '#000000', $label = '', $box_shadow = false, $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_attr__( 'Color', 'elementor' );
+				$label = esc_attr__( 'Color', 'funnel-builder' );
 			}
 			$color_selectors = array();
 			if ( is_array( $selectors ) && count( $selectors ) > 0 ) {
@@ -404,7 +404,7 @@ if ( ! class_exists( 'WFOP_Divi_Field' ) ) {
 
 		protected function add_border_radius( $tab_id, $key, $selector, $conditions = array(), $default = array(), $custom_label = '' ) {
 
-			$label = __( 'Border Radius', 'elementor' );
+			$label = __( 'Border Radius', 'funnel-builder' );
 
 			if ( ! empty( $custom_label ) ) {
 				$label = $custom_label;
@@ -442,7 +442,7 @@ if ( ! class_exists( 'WFOP_Divi_Field' ) ) {
 		protected function add_padding( $tab_id, $key, $selector, $default = '', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Padding', 'et_builder' );
+				$label = esc_html__( 'Padding', 'funnel-builder' );
 			}
 
 			$this->modules_fields[ $key ] = array(
@@ -467,7 +467,7 @@ if ( ! class_exists( 'WFOP_Divi_Field' ) ) {
 		protected function add_margin( $tab_id, $key, $selector, $default = '', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Margin', 'et_builder' );
+				$label = esc_html__( 'Margin', 'funnel-builder' );
 			}
 			$this->modules_fields[ $key ] = array(
 				'label'           => $label,
@@ -596,7 +596,7 @@ if ( ! class_exists( 'WFOP_Divi_Field' ) ) {
 			);
 
 			if ( empty( $label ) ) {
-				$label = esc_html__( 'Box Shadow', 'et_builder' );
+				$label = esc_html__( 'Box Shadow', 'funnel-builder' );
 			}
 
 			$fields_keys[] = $this->add_heading( $tab_id, $label, '', $conditions );
@@ -632,7 +632,7 @@ if ( ! class_exists( 'WFOP_Divi_Field' ) ) {
 		protected function add_line_height( $tab_id, $key, $selectors = '', $label = '', $default = '1px', $conditions = array() ) {
 			$key                         .= '_line_height';
 			$this->modules_fields[ $key ] = array(
-				'label'           => esc_html__( 'Line Height', 'et_builder' ),
+				'label'           => esc_html__( 'Line Height', 'funnel-builder' ),
 				'type'            => 'range',
 				'c_type'          => 'line_height',
 				'mobile_options'  => true,

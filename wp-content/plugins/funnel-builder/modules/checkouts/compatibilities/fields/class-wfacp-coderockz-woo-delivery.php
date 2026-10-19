@@ -133,7 +133,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Coderockz_Delivery' ) ) {
 
 			echo "<style>";
 			if ( $px != '' ) {
-				echo "#wfacp-sec-wrapper .wfacp_coderockz_woo_delivery{padding:0 $px" . 'px' . "}";
+				echo '#wfacp-sec-wrapper .wfacp_coderockz_woo_delivery{padding:0 ' . (int) $px . 'px}';
 			}
 			echo "</style>";
 

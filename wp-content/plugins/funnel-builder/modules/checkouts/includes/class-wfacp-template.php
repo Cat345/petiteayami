@@ -62,7 +62,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 		);
 		protected $data                     = null;
 		protected $fields                   = array();
-		protected $template_dir             = __DIR__;
+		public $template_dir                = __DIR__;
 		protected $template_type            = 'pre_built';
 		protected $template_slug            = 'layout_4';
 		protected $template_name            = 'layout_4';
@@ -207,8 +207,10 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 		public function css_js_hooks() {
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_script' ), 100 );
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_builder_style' ), 1000 );
 			add_action( 'wfacp_header_print_in_head', array( $this, 'global_css' ) );
 			add_action( 'wp_head', array( $this, 'add_viewport_meta' ), - 1 );
+			add_action( 'wp_head', array( $this, 'print_viewport_meta' ), PHP_INT_MAX );
 			add_action( 'wp_head', array( $this, 'no_follow_no_index' ), - 1 );
 			add_action( 'wp_head', array( $this, 'add_header_script' ), 99 );
 			add_action( 'wp_print_styles', array( $this, 'remove_woocommerce_js_css' ), 99 );
@@ -410,6 +412,56 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 		}
 
 
+		/**
+		 * Load the styles that belong to one page builder only.
+		 *
+		 * These rules used to sit in the shared stylesheets, so an Elementor checkout also
+		 * downloaded the Divi, Bricks and Gutenberg rules it could never match. They now live in
+		 * assets/css/builders/<builder>.css and this enqueues the one that applies.
+		 *
+		 * The same files carry the rules that used to be written as :not(.wfacp_oxygen_template)
+		 * and :not(.oxy) - "every builder except Oxygen". Rather than naming a builder in a shared
+		 * sheet in order to exclude it, each builder that wants the rule now simply has it, and
+		 * Oxygen has no file because it supplies its own.
+		 *
+		 * Hooked at 1000 so it lands after the builder templates enqueue wfacp-form.min.css at 999.
+		 * These rules used to sit inside that stylesheet, and loading them ahead of it would hand
+		 * every equal-specificity tie to the shared rule instead. The -rtl file follows the same
+		 * rule for the right-to-left sheets and is only loaded when is_rtl().
+		 */
+		public function enqueue_builder_style() {
+			$template_type = $this->get_template_type();
+			// Template types whose name differs from the stylesheet's.
+			$aliases = array(
+				'oxy'        => 'oxygen',
+				'embed_form' => 'customizer',
+				'pre_built'  => 'prebuilt',
+			);
+
+			$builder = isset( $aliases[ $template_type ] ) ? $aliases[ $template_type ] : $template_type;
+			$builder = preg_replace( '/[^a-z0-9_-]/', '', strtolower( (string) $builder ) );
+
+			if ( '' === $builder ) {
+				return;
+			}
+
+			$handles = array( $builder );
+
+			if ( is_rtl() ) {
+				$handles[] = $builder . '-rtl';
+			}
+
+			foreach ( $handles as $handle ) {
+				$relative = 'assets/css/builders/' . $handle . '.min.css';
+
+				if ( ! file_exists( dirname( WFACP_PLUGIN_FILE ) . '/' . $relative ) ) {
+					continue;
+				}
+
+				wp_enqueue_style( 'wfacp-builder-' . $handle, plugin_dir_url( WFACP_PLUGIN_FILE ) . $relative, false, WFACP_VERSION_DEV );
+			}
+		}
+
 		public function enqueue_script() {
 
 			$tempType      = $this->get_template_type();
@@ -502,6 +554,17 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			}
 			unset( $page_settings['header_script'], $page_settings['footer_script'] );
 
+			/**
+			 * Filters the extra mailbox domains the email typo suggestion matches a mistyped address against.
+			 *
+			 * @param string[]              $domains  Domains such as 'example.com' or 'example.co.uk', added to the built-in provider list.
+			 * @param WFACP_Template_Common $template The checkout template being rendered.
+			 */
+			$email_suggestion_domains = apply_filters( 'wfacp_email_suggestion_domains', array(), $this );
+
+			/* translators: %s: the suggested email address */
+			$email_suggestion_prompt = ! empty( $page_settings['email_suggestion_prompt'] ) ? $page_settings['email_suggestion_prompt'] : __( 'Did you mean %s?', 'funnel-builder' );
+
 			$data = array(
 				'id'                              => WFACP_Common::get_id(),
 				'title'                           => get_the_title( WFACP_Common::get_id() ),
@@ -525,6 +588,9 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				),
 				'applied_coupons'                 => new stdClass(),
 				'enable_phone_flag'               => wc_string_to_bool( $page_settings['enable_phone_flag'] ) ? 'yes' : 'no',
+				'enable_email_suggestion'         => isset( $page_settings['enable_email_suggestion'] ) && wc_string_to_bool( $page_settings['enable_email_suggestion'] ) ? 'yes' : 'no',
+				'email_suggestion_prompt'         => $email_suggestion_prompt,
+				'email_suggestion_domains'        => array_values( array_filter( array_map( 'sanitize_text_field', (array) $email_suggestion_domains ) ) ),
 				'enable_phone_validation'         => wc_string_to_bool( $page_settings['enable_phone_validation'] ) ? 'yes' : 'no',
 				'enable_smart_buttons'            => $page_settings['enable_smart_buttons'],
 				'intl_util_scripts'               => plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/js/utils.js',
@@ -578,7 +644,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			$params = apply_filters( 'wfacp_cancel_url_arguments', $params, $this );
 			$url    = add_query_arg( $params, $current_page_url );
 
-			return apply_filters( 'cancel_page_url', $url, $params, $this );
+			return apply_filters( 'cancel_page_url', $url, $params, $this ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 		}
 
 
@@ -735,7 +801,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			if ( isset( $settings['header_script'] ) && '' != $settings['header_script'] ) {
 				$sanitized = WFFN_Common::sanitize_global_script( $settings['header_script'] );
 				if ( trim( $sanitized ) === trim( $settings['header_script'] ) ) {
-					printf( "\n \n %s \n \n", $sanitized ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					printf( "\n \n %s \n \n", $sanitized ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- merchant-supplied header/footer script feature; sanitized via WFFN_Common::sanitize_global_script().
 				}
 			}
 		}
@@ -748,7 +814,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				$this->footer_js_printed = true;
 				$sanitized_footer        = WFFN_Common::sanitize_global_script( $settings['footer_script'] );
 				if ( trim( $sanitized_footer ) === trim( $settings['footer_script'] ) ) {
-					printf( "\n \n %s \n\n", $sanitized_footer ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					printf( "\n \n %s \n\n", $sanitized_footer ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- merchant-supplied header/footer script feature; sanitized via WFFN_Common::sanitize_global_script().
 				}
 			}
 
@@ -1017,8 +1083,16 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 							unset( $template_fields['billing'][ $b_key ]['required'] );
 						}
 
-						$s_key_data = filter_input( INPUT_POST, $s_key, FILTER_UNSAFE_RAW );
-						$s_key_data = bwf_clean( wp_unslash( $s_key_data ) );
+						$s_key_data = filter_input(
+							INPUT_POST,
+							$s_key,
+							FILTER_CALLBACK,
+							array(
+								'options' => static function ( $value ) {
+									return bwf_clean( wp_unslash( $value ) );
+								},
+							)
+						);
 						// phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
 						$_POST[ $b_key ] = $s_key_data;
 						// phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
@@ -1034,8 +1108,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 					}
 					// phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
 					if ( isset( $_POST['billing_first_name'] ) ) {
-						// phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck,WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Public checkout form processing
-						$billing_first_name_value = bwf_clean( wp_unslash( $_POST['billing_first_name'] ) );
+						$billing_first_name_value = bwf_clean( wp_unslash( $_POST['billing_first_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- public checkout form processing (WC core verifies its checkout nonce upstream); input sanitized via a recursive sanitize_text_field() wrapper.
 						// phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
 						$_POST['shipping_first_name'] = $billing_first_name_value;
 						// phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
@@ -1051,8 +1124,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 					$template_fields['shipping']['shipping_last_name']['id'] = 'shipping_last_name';
 					// phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
 					if ( isset( $_POST['billing_last_name'] ) ) {
-						// phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck,WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Public checkout form processing
-						$billing_last_name_value = bwf_clean( wp_unslash( $_POST['billing_last_name'] ) );
+						$billing_last_name_value = bwf_clean( wp_unslash( $_POST['billing_last_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- public checkout form processing (WC core verifies its checkout nonce upstream); input sanitized via a recursive sanitize_text_field() wrapper.
 						// phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
 						$_POST['shipping_last_name'] = $billing_last_name_value;
 						// phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
@@ -1113,7 +1185,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 						}
 						?>
 						<div class="<?php echo esc_attr( $class ); ?> wfacp-notice-wrap <?php echo esc_attr( $type_class_mapping[ $type ] ); ?>">
-							<div class="wfacp-message wfacp-<?php echo esc_attr( $type ); ?>"><?php echo $message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+							<div class="wfacp-message wfacp-<?php echo esc_attr( $type ); ?>"><?php echo wc_kses_notice( $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wc_kses_notice() escapes; matches WooCommerce core notice handling. ?></div>
 						</div>
 						<?php
 					endforeach;
@@ -1152,15 +1224,14 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
 			if ( isset( $_REQUEST['wfacp_source'] ) ) {
 				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- wp_unslash handled by bwf_clean
-				$wfacp_source = bwf_clean( wp_unslash( $_REQUEST['wfacp_source'] ) );//phpcs:ignore WordPress.Security.NonceVerification.Recommended , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+				$wfacp_source = bwf_clean( wp_unslash( $_REQUEST['wfacp_source'] ) );//phpcs:ignore WordPress.Security.NonceVerification.Recommended , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 				if ( filter_var( $wfacp_source, FILTER_VALIDATE_URL ) ) {
 					$posted_data['wfacp_source'] = $wfacp_source;
 				}
 			}
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
-			if ( isset( $_REQUEST['_wfacp_post_id'] ) ) {//phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck ,WordPress.Security.NonceVerification.Recommended
-				// phpcs:ignore WordPress.Security.NonceVerification.Recommended , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
-				$posted_data['wfacp_post_id'] = bwf_clean( wp_unslash( $_REQUEST['_wfacp_post_id'] ) );
+			if ( isset( $_REQUEST['_wfacp_post_id'] ) ) {//phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck ,WordPress.Security.NonceVerification.Recommended -- value is read and bwf_clean()d immediately below; this line only checks/derives it.
+				$posted_data['wfacp_post_id'] = bwf_clean( wp_unslash( $_REQUEST['_wfacp_post_id'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- public checkout form processing (WC core verifies its checkout nonce upstream); input sanitized via a recursive sanitize_text_field() wrapper.
 			}
 
 			$this->address_keys = apply_filters( 'wfacp_update_posted_data_vice_versa_keys', $this->address_keys, $posted_data, $this );
@@ -1192,8 +1263,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 				if ( $this->have_billing_address() && $this->have_shipping_address() ) {
 					// Billing is optional address and Client click on Different Billing Address then all billing data from array
 					$fields           = $this->get_checkout_fields();
-					$same_as_billing  = filter_input( INPUT_POST, 'shipping_same_as_billing', FILTER_UNSAFE_RAW );
-					$same_as_shipping = filter_input( INPUT_POST, 'billing_same_as_shipping', FILTER_UNSAFE_RAW );
+					$same_as_billing  = filter_input( INPUT_POST, 'shipping_same_as_billing', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
+					$same_as_shipping = filter_input( INPUT_POST, 'billing_same_as_shipping', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 
 					if ( ! is_null( $same_as_billing ) || ! is_null( $same_as_shipping ) || ( is_null( $same_as_billing ) && is_null( $same_as_shipping ) ) ) {
 						// Both Address Present in page but not using as a optional field then we make array empty
@@ -1246,8 +1317,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 							// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck,WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Public checkout form processing
 							$input = $_REQUEST[ $second_key ];
 						} else {
-							// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
-							$input = bwf_clean( wp_unslash( $_REQUEST[ $second_key ] ) );
+							$input = bwf_clean( wp_unslash( $_REQUEST[ $second_key ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- public checkout form processing (WC core verifies its checkout nonce upstream); input sanitized via a recursive sanitize_text_field() wrapper.
 						}
 						// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
 					} elseif ( isset( $_REQUEST[ $first_key ] ) && empty( $_REQUEST[ $first_key ] ) && ( isset( $_REQUEST[ $second_key ] ) && ! empty( $_REQUEST[ $second_key ] ) ) ) {
@@ -1256,8 +1326,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 							// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck,WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Public checkout form processing
 							$input = $_REQUEST[ $second_key ];
 						} else {
-							// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
-							$input = bwf_clean( wp_unslash( $_REQUEST[ $second_key ] ) );
+							$input = bwf_clean( wp_unslash( $_REQUEST[ $second_key ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- public checkout form processing (WC core verifies its checkout nonce upstream); input sanitized via a recursive sanitize_text_field() wrapper.
 						}
 						// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
 					} elseif ( isset( $_REQUEST[ $first_key ] ) && ! empty( $_REQUEST[ $first_key ] ) ) {
@@ -1266,8 +1335,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 							// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck,WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Public checkout form processing
 							$input = $_REQUEST[ $first_key ];
 						} else {
-							// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
-							$input = bwf_clean( wp_unslash( $_REQUEST[ $first_key ] ) );
+							$input = bwf_clean( wp_unslash( $_REQUEST[ $first_key ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- public checkout form processing (WC core verifies its checkout nonce upstream); input sanitized via a recursive sanitize_text_field() wrapper.
 						}
 					}
 					if ( ! empty( $input ) ) {
@@ -1359,11 +1427,11 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			if ( wc_string_to_bool( $page_settings['enable_phone_validation'] ) ) {
 				// phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
 				if ( isset( $_POST['billing_phone'] ) && ! empty( $_POST['billing_phone'] ) && isset( $phone_data['billing']['number'] ) && empty( $phone_data['billing']['number'] ) && 'no' == $phone_data['billing']['hidden'] ) {
-					wc_add_notice( sprintf( __( '%s is not a valid phone number.', 'woocommerce' ), $this->checkout_fields['billing']['billing_phone']['label'] ), 'error' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wc_add_notice( sprintf( /* translators: %s: phone field label. */ __( '%s is not a valid phone number.', 'woocommerce' ), $this->checkout_fields['billing']['billing_phone']['label'] ), 'error' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 				// phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public checkout form processing
 				if ( isset( $_POST['shipping_phone'] ) && ! empty( $_POST['shipping_phone'] ) && isset( $phone_data['shipping']['number'] ) && empty( $phone_data['shipping']['number'] ) && 'no' == $phone_data['shipping']['hidden'] ) {
-					wc_add_notice( sprintf( __( '%s is not a valid phone number.', 'woocommerce' ), $this->checkout_fields['shipping']['shipping_phone']['label'] ), 'error' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					wc_add_notice( sprintf( /* translators: %s: phone field label. */ __( '%s is not a valid phone number.', 'woocommerce' ), $this->checkout_fields['shipping']['shipping_phone']['label'] ), 'error' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 			}
 
@@ -1521,13 +1589,9 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 		public function get_view( $template ) {
 			extract( array( 'data' => $this->get_data() ) );
 			do_action( 'wfacp_before_template_load' );
-			include $this->get_template_url( $template );
+			include $this->template_dir . '/views/view.php';
 			do_action( 'wfacp_after_template_load' );
 			exit;
-		}
-
-		public function get_template_url( $template = '' ) {
-			return $this->template_dir . '/views/view.php';
 		}
 
 
@@ -1629,14 +1693,14 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 			if ( isset( $_REQUEST[ $key ] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 				if ( in_array( $key, array( 'billing_email', 'shipping_email' ), true ) ) {
-					$query_string = isset( $_SERVER['QUERY_STRING'] ) ? $_SERVER['QUERY_STRING'] : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+					$query_string = isset( $_SERVER['QUERY_STRING'] ) ? $_SERVER['QUERY_STRING'] : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- raw QUERY_STRING needed to preserve '+' in e-mail params; the extracted value is sanitized after decoding.
 					if ( ! empty( $query_string ) && preg_match( '/' . preg_quote( $key, '/' ) . '=([^&]+)/', $query_string, $matches ) ) {
-						$new_value = rawurldecode( $matches[1] );
+						$new_value = sanitize_text_field( rawurldecode( $matches[1] ) );
 					} else {
-						$new_value = wp_unslash( $_REQUEST[ $key ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+						$new_value = sanitize_text_field( wp_unslash( $_REQUEST[ $key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- URL-prefill of a checkout field.
 					}
 				} else {
-					$new_value = urldecode( $_REQUEST[ $key ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+					$new_value = sanitize_text_field( urldecode( $_REQUEST[ $key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decoded THEN sanitize_text_field()d (reversing would undo the sanitization); WPCS only sees the inner urldecode.
 				}
 			} elseif ( isset( $field['default'] ) && '' !== $field['default'] ) {
 				$new_value = $field['default'];
@@ -1742,6 +1806,39 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 		public function add_viewport_meta() {
 			include WFACP_TEMPLATE_COMMON . '/meta.php';
+		}
+
+		/**
+		 * Viewport meta content for the checkout.
+		 *
+		 * The scale clamp is what stops iOS Safari zooming in when a field takes focus. Filter it to
+		 * loosen the clamp, or return an empty string to leave the viewport tag to the theme.
+		 *
+		 * @return string
+		 */
+		private function get_viewport_meta_content() {
+			return trim( (string) apply_filters( 'wfacp_viewport_meta_content', 'width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no' ) );
+		}
+
+		/**
+		 * Print the checkout viewport meta after every theme and plugin tag.
+		 *
+		 * Browsers merge duplicate viewport tags last-one-wins per property, so ours does not have
+		 * to be the only tag on the page -- it only has to be the last one. Other tags are left
+		 * alone: block themes keep the one core prints via _block_template_viewport_meta_tag on
+		 * wp_head at priority 0, and classic themes keep the one in header.php.
+		 *
+		 * PHP_INT_MAX is the highest wp_head priority there is, and classic themes print theirs
+		 * before wp_head() even runs, so ours lands last either way.
+		 */
+		public function print_viewport_meta() {
+			$content = $this->get_viewport_meta_content();
+
+			if ( '' === $content ) {
+				return;
+			}
+
+			printf( '<meta name="viewport" id="wfacp_viewport" content="%s"/>' . "\n", esc_attr( $content ) );
 		}
 
 		public function reattach_necessary_hooks() {
@@ -1980,7 +2077,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 </svg>';
 
 			$coupon_text = __( 'Coupon', 'woocommerce' ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-			$label       = apply_filters( 'woocommerce_cart_totals_coupon_label', $coupon_text . sprintf( esc_html__( '%1$s %2$s', 'woocommerce' ), $svg, "<span class='wfacp_coupon_code'>" . esc_html( $coupon->get_code() ) . '</span>' ), $coupon ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			$label       = apply_filters( 'woocommerce_cart_totals_coupon_label', $coupon_text . sprintf( /* translators: 1: coupon icon markup, 2: coupon code. */ esc_html__( '%1$s %2$s', 'woocommerce' ), $svg, "<span class='wfacp_coupon_code'>" . esc_html( $coupon->get_code() ) . '</span>' ), $coupon ); //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			if ( $echo ) {
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Filter output may contain HTML
 				echo $label;
@@ -2427,7 +2524,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			if ( ! $public instanceof WFACP_Public ) {
 				return;
 			}
-			$payment_method = filter_input( INPUT_POST, 'payment_method', FILTER_UNSAFE_RAW );
+			$payment_method = filter_input( INPUT_POST, 'payment_method', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 			if ( 'paypal' !== $payment_method ) {
 				return;
 			}
@@ -2636,7 +2733,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 						$svg_icon = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
 <path d="M9.16665 4.16665H5.83335V0.833345C5.83335 0.373344 5.46084 -1.90735e-06 5 -1.90735e-06C4.53916 -1.90735e-06 4.16665 0.373344 4.16665 0.833345V4.16665H0.833348C0.372506 4.16665 0 4.54 0 5C0 5.46 0.372506 5.83335 0.833348 5.83335H4.16665V9.16665C4.16665 9.62665 4.53916 10 5 10C5.46084 10 5.83335 9.62665 5.83335 9.16665V5.83335H9.16665C9.6275 5.83335 10 5.46 10 5C10 4.54 9.6275 4.16665 9.16665 4.16665Z" fill="currentColor"/>
 </svg>';
-						echo "<p class='$default_class' id='$id'><a href='#' class='wfacp_collapsible' data-field='$field_key' >$svg_icon $label </a></p>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo "<p class='$default_class' id='$id'><a href='#' class='wfacp_collapsible' data-field='$field_key' >$svg_icon $label </a></p>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- internal SVG icon literal; other values escaped.
 					},
 					10,
 					3
@@ -2888,7 +2985,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 						$(document.body).trigger('wfacp_intl_setup');
 					})
-					$(document.body).trigger('wfacp_editor_init', {'position_label': '<?php echo $this->get_field_label_position(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>'});
+					$(document.body).trigger('wfacp_editor_init', {'position_label': '<?php echo esc_js( $this->get_field_label_position() ); ?>'});
 				})(jQuery);
 			</script>
 			<?php

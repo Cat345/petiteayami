@@ -31,9 +31,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_CheckoutFields' ) ) {
 				remove_filter( 'woocommerce_get_country_locale_base', 'thwcfd_prepare_country_locale' );
 
 				remove_filter( 'woocommerce_get_country_locale', 'thwcfd_woo_get_country_locale' );
-				remove_filter( 'woocommerce_billing_fields', 'thwcfd_billing_fields_lite', apply_filters( 'thwcfd_billing_fields_priority', 1000 ) );
-				remove_filter( 'woocommerce_shipping_fields', 'thwcfd_shipping_fields_lite', apply_filters( 'thwcfd_shipping_fields_priority', 1000 ) );
-				remove_filter( 'woocommerce_checkout_fields', 'thwcfd_checkout_fields_lite', apply_filters( 'thwcfd_checkout_fields_priority', 1000 ) );
+				remove_filter( 'woocommerce_billing_fields', 'thwcfd_billing_fields_lite', apply_filters( 'thwcfd_billing_fields_priority', 1000 ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
+				remove_filter( 'woocommerce_shipping_fields', 'thwcfd_shipping_fields_lite', apply_filters( 'thwcfd_shipping_fields_priority', 1000 ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
+				remove_filter( 'woocommerce_checkout_fields', 'thwcfd_checkout_fields_lite', apply_filters( 'thwcfd_checkout_fields_priority', 1000 ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 			}
 			// Woocommerce checkout manager
 			if ( defined( 'WOOCCM_PATH' ) ) {

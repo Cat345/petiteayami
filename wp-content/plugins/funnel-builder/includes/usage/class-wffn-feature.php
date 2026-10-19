@@ -55,7 +55,7 @@ if ( ! class_exists( 'WFFN_Feature' ) ) {
 			$post_ids  = array_values( $post_ids );
 			$meta_keys = array_values( $meta_keys );
 
-			$results = $wpdb->get_results(
+			$results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 				$wpdb->prepare(
 					"SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id IN ( " . implode( ', ', array_fill( 0, count( $post_ids ), '%d' ) ) . ' ) AND meta_key IN ( ' . implode( ', ', array_fill( 0, count( $meta_keys ), '%s' ) ) . ' ) ORDER BY post_id, meta_id ASC',
 					array_merge( $post_ids, $meta_keys )
@@ -130,7 +130,7 @@ if ( ! class_exists( 'WFFN_Feature' ) ) {
 			);
 			// phpcs:enable
 
-			$result = $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$result = $wpdb->get_row( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 			$total         = isset( $result['total'] ) ? (int) $result['total'] : 0;
 			$published_ids = array();
@@ -187,7 +187,7 @@ if ( ! class_exists( 'WFFN_Feature' ) ) {
 		private function get_funnels_data() {
 			global $wpdb;
 
-			$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}bwf_funnels" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}bwf_funnels" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			return array(
 				'funnels/total' => $total,
@@ -301,7 +301,7 @@ if ( ! class_exists( 'WFFN_Feature' ) ) {
 
 			// OPTIMIZATION: Use direct SQL query to get post status (avoids loading full post object)
 			global $wpdb;
-			$status = $wpdb->get_var( $wpdb->prepare( "SELECT post_status FROM {$wpdb->posts} WHERE ID = %d", $store_checkout_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$status = $wpdb->get_var( $wpdb->prepare( "SELECT post_status FROM {$wpdb->posts} WHERE ID = %d", $store_checkout_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 			return 'publish' === $status ? 'enabled' : 'disabled';
 		}
@@ -823,7 +823,7 @@ if ( ! class_exists( 'WFFN_Feature' ) ) {
 			$remaining_ids = array_diff( $page_ids, $pages_with_builder );
 			if ( ! empty( $remaining_ids ) ) {
 				global $wpdb;
-				$results = $wpdb->get_results(
+				$results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					$wpdb->prepare(
 						"SELECT ID, post_content FROM {$wpdb->posts} WHERE ID IN ( " . implode( ', ', array_fill( 0, count( $remaining_ids ), '%d' ) ) . " ) AND post_content IS NOT NULL AND post_content != ''",
 						$remaining_ids
@@ -988,7 +988,7 @@ if ( ! class_exists( 'WFFN_Feature' ) ) {
 			global $wpdb;
 
 			// Get all funnels
-			$funnels = $wpdb->get_results( "SELECT id, steps FROM {$wpdb->prefix}bwf_funnels", ARRAY_A );
+			$funnels = $wpdb->get_results( "SELECT id, steps FROM {$wpdb->prefix}bwf_funnels", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			if ( empty( $funnels ) ) {
 				return 0;

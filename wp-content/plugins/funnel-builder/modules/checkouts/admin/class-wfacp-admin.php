@@ -70,7 +70,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 					__( 'Your store has <a href="%s">shipping location</a> enabled. Depending upon shipping method configuration, checkout may need  "Order Summary" field. Please drag "Order Summary" field to place in form. ', 'funnel-builder' ),
 					esc_url( $shipping_location )
 				);
-				$aero_messages[]   = array(
+				$aero_messages[] = array(
 					'message'     => $msg,
 					'ids'         => array(
 						'shipping_calculator',
@@ -86,7 +86,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 				if ( wc_ship_to_billing_address_only() ) {
 
-					$msg = sprintf( __( "<a href='%s'>Shipping destination</a> is set to 'Force shipping to customer billing address'. Please remove Shipping Address field from the checkout form.", 'funnel-builder' ), $shipping_methods );
+					$msg = sprintf( /* translators: %s: URL of the WooCommerce shipping settings page. */ __( "<a href='%s'>Shipping destination</a> is set to 'Force shipping to customer billing address'. Please remove Shipping Address field from the checkout form.", 'funnel-builder' ), $shipping_methods );
 
 					$aero_messages[] = array(
 						'message'       => $msg,
@@ -101,7 +101,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			}
 
 			if ( get_option( 'woocommerce_ship_to_countries' ) == 'disabled' ) {
-				$msg             = sprintf( __( "<a href='%s' target='_blank'>Shipping Location</a> is disabled. Please replace Shipping Address with Billing Address field or enable Shipping Location.", 'funnel-builder' ), admin_url( 'admin.php?page=wc-settings' ) );
+				$msg             = sprintf( /* translators: %s: URL of the WooCommerce shipping settings page. */ __( "<a href='%s' target='_blank'>Shipping Location</a> is disabled. Please replace Shipping Address with Billing Address field or enable Shipping Location.", 'funnel-builder' ), admin_url( 'admin.php?page=wc-settings' ) );
 				$aero_messages[] = array(
 					'message'       => $msg,
 					'id'            => 'shipping_address',
@@ -320,7 +320,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 					if ( 'select' === $field['type'] ) {
 						// use array addition instead of array merge because array merge remove index if associative + numeric array combined
-						$field['options'] = array( '' => __( 'Select options', 'woocommerce' ) ) + $field['options'];
+						$field['options'] = array( '' => __( 'Select options', 'woocommerce' ) ) + $field['options']; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 						if ( empty( $has_data ) && isset( $advancedFields[ $tmp_key ]['placeholder'] ) ) {
 							$field['placeholder'] = $advancedFields[ $tmp_key ]['placeholder'];
 						}
@@ -415,7 +415,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 					<div class="wfacp_shortcode_inner">
 						<div class="wfacp_description">
 							<label for='wfacp_shortcode_normal'><?php esc_html_e( 'Form Shortcode', 'funnel-builder' ); ?></label>
-							<input type="text" readonly="readonly" id='wfacp_shorcode_normal' style="width: 100%;" value="<?php echo $normal; ?>">
+							<input type="text" readonly="readonly" id='wfacp_shorcode_normal' style="width: 100%;" value="<?php echo esc_attr( $normal ); ?>">
 						</div>
 						<a href="javascript:void(0)" class="wfacp_copy_text">
 							<svg fill="#0073aa" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20">
@@ -446,7 +446,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 			if ( empty( $this->checkout_post_list ) ) {
 				global $wpdb;
-				$page_data                = $wpdb->get_results( "SELECT posts.ID as post_id FROM `{$wpdb->prefix}postmeta` as meta INNER JOIN  `{$wpdb->prefix}posts` as posts on meta.post_id=posts.ID WHERE meta.meta_key = '_is_aero_checkout_page' and posts.post_status='publish' ORDER BY posts.post_title ASC", ARRAY_A );
+				$page_data                = $wpdb->get_results( "SELECT posts.ID as post_id FROM `{$wpdb->prefix}postmeta` as meta INNER JOIN  `{$wpdb->prefix}posts` as posts on meta.post_id=posts.ID WHERE meta.meta_key = '_is_aero_checkout_page' and posts.post_status='publish' ORDER BY posts.post_title ASC", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 				$this->checkout_post_list = $page_data;
 			}
 			if ( is_array( $this->checkout_post_list ) && count( $this->checkout_post_list ) > 0 ) {
@@ -465,10 +465,10 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 		public function arrange_billing_fields( $options ) {
 
-			if ( ! isset( $_POST['address_order'] ) || empty( $_POST['address_order']['address'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- AJAX handler
+			if ( ! isset( $_POST['address_order'] ) || empty( $_POST['address_order']['address'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- AJAX handler
 				return $options;
 			}
-			$addressOrder = isset( $_POST['address_order'] ) ? map_deep( wp_unslash( $_POST['address_order'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Filter callback for address field arrangement, nonce verification handled by WooCommerce checkout process
+			$addressOrder = isset( $_POST['address_order'] ) ? map_deep( wp_unslash( $_POST['address_order'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Filter callback for address field arrangement, nonce verification handled by WooCommerce checkout process
 
 			$options = $this->arrange_order_of_address_fields( $options, $addressOrder );
 
@@ -476,11 +476,11 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 		}
 
 		public function arrange_shipping_fields( $options ) {
-			if ( ! isset( $_POST['address_order'] ) || empty( $_POST['address_order']['shipping-address'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- AJAX handler
+			if ( ! isset( $_POST['address_order'] ) || empty( $_POST['address_order']['shipping-address'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- AJAX handler
 				return $options;
 			}
 
-			$addressOrder = isset( $_POST['address_order'] ) ? map_deep( wp_unslash( $_POST['address_order'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Filter callback for address field arrangement, nonce verification handled by WooCommerce checkout process
+			$addressOrder = isset( $_POST['address_order'] ) ? map_deep( wp_unslash( $_POST['address_order'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Filter callback for address field arrangement, nonce verification handled by WooCommerce checkout process
 			$options      = $this->arrange_order_of_address_fields( $options, $addressOrder, 'shipping' );
 
 			return $options;
@@ -545,7 +545,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 			}
 
-			return apply_filters( 'arrange_order_of_address_fields', $options );
+			return apply_filters( 'arrange_order_of_address_fields', $options ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 		}
 
 		public function add_back_button() {
@@ -595,7 +595,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 						(function (window, wp) {
 							var link = document.querySelector('a.components-button.edit-post-fullscreen-mode-close');
 							if (link) {
-                                link.setAttribute('href', "<?php echo htmlspecialchars_decode( esc_url( $edit_link ) );//phpcs:ignore ?>")
+								link.setAttribute('href', <?php echo wp_json_encode( sanitize_url( $edit_link ) ); // phpcs:ignore FunnelBuilder.Security.OutputEscapingFunctions.SanitiserUsedAsEscaper -- JSON-encoded into a JS string literal: wp_json_encode() is the output escaper here; esc_url() would entity-encode & to &#038; inside <script>. ?>)
 							}
 
 						})(window, wp)
@@ -663,7 +663,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 								ToolbarButton,
 								{
 									variant: 'secondary',
-                                    href: "<?php echo htmlspecialchars_decode( esc_url( $edit_link ) );//phpcs:ignore ?>",
+									href: <?php echo wp_json_encode( sanitize_url( $edit_link ) ); // phpcs:ignore FunnelBuilder.Security.OutputEscapingFunctions.SanitiserUsedAsEscaper -- JSON-encoded into a JS string literal: wp_json_encode() is the output escaper here; esc_url() would entity-encode & to &#038; inside <script>. ?>,
 									id: 'wfacp-back-button',
 									className: 'button is-secondary',
 									style: {
@@ -684,7 +684,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 							wp.domReady(function () {
 								var link = document.querySelector('body a.components-button.edit-post-fullscreen-mode-close');
 								if (link) {
-                                    link.setAttribute('href', "<?php echo htmlspecialchars_decode( esc_url( $edit_link ) );//phpcs:ignore ?>")
+									link.setAttribute('href', <?php echo wp_json_encode( sanitize_url( $edit_link ) ); // phpcs:ignore FunnelBuilder.Security.OutputEscapingFunctions.SanitiserUsedAsEscaper -- JSON-encoded into a JS string literal: wp_json_encode() is the output escaper here; esc_url() would entity-encode & to &#038; inside <script>. ?>)
 								}
 							})
 
@@ -710,8 +710,8 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 		}
 
 		function get_advanced_field() {
-			if ( isset( $_REQUEST['post'] ) && absint( wp_unslash( $_REQUEST['post'] ) ) > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
-				$post_id = absint( wp_unslash( $_REQUEST['post'] ) );
+			if ( isset( $_REQUEST['post'] ) && absint( wp_unslash( $_REQUEST['post'] ) ) > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for admin page identification
+				$post_id = absint( wp_unslash( $_REQUEST['post'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Read-only admin request routing; WP core builds this URL without a nonce.
 				$order   = wc_get_order( $post_id );
 				if ( ! $order instanceof WC_Order ) {
 					return;

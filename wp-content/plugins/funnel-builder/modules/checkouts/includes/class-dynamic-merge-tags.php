@@ -9,10 +9,10 @@ if ( ! class_exists( 'WFACP_Product_Switcher_Merge_Tags' ) ) {
 		protected static $pro;
 		protected static $price_data;
 		protected static $_data_shortcode = array();
-		protected static $coupon = '';
-		protected static $cart_item = [];
-		protected static $product_data = [];
-		protected static $cart_item_key = '';
+		protected static $coupon          = '';
+		protected static $cart_item       = array();
+		protected static $product_data    = array();
+		protected static $cart_item_key   = '';
 
 		/**
 		 * Maybe try and parse content to found the wfacp merge tags
@@ -23,7 +23,7 @@ if ( ! class_exists( 'WFACP_Product_Switcher_Merge_Tags' ) ) {
 		 *
 		 * @return mixed|string
 		 */
-		public static function maybe_parse_merge_tags( $content, $price_data, $pro = false, $product_data = [], $cart_item = [], $cart_item_key = '' ) {
+		public static function maybe_parse_merge_tags( $content, $price_data, $pro = false, $product_data = array(), $cart_item = array(), $cart_item_key = '' ) {
 
 			$matched_tags = self::get_matched_tags( $content );
 
@@ -54,7 +54,6 @@ if ( ! class_exists( 'WFACP_Product_Switcher_Merge_Tags' ) ) {
 			$content = self::parse_merge_tags( $content, $matched_tags );
 
 			return $content;
-
 		}
 
 		private static function saving_percentage() {
@@ -98,11 +97,11 @@ if ( ! class_exists( 'WFACP_Product_Switcher_Merge_Tags' ) ) {
 
 		private static function parse_merge_tags( $content, $tags ) {
 
-			//if match found
+			// if match found
 			if ( $tags && is_array( $tags ) && count( $tags ) > 0 ) {
-				//iterate over the found matches
+				// iterate over the found matches
 				foreach ( $tags as $exact_match ) {
-					//preserve old match
+					// preserve old match
 					$old_match = $exact_match;
 					$single    = str_replace( '{{', '', $old_match );
 					$single    = str_replace( '}}', '', $single );
@@ -119,13 +118,13 @@ if ( ! class_exists( 'WFACP_Product_Switcher_Merge_Tags' ) ) {
 		private static function get_matched_tags( $content ) {
 			$get_all      = self::get_all_tags();
 			$get_all_tags = wp_list_pluck( $get_all, 'tag' );
-			//iterating over all the merge tags
+			// iterating over all the merge tags
 			$matches = array();
 			if ( $get_all_tags && is_array( $get_all_tags ) && count( $get_all_tags ) > 0 ) {
 				foreach ( $get_all_tags as $tag ) {
 					$re         = sprintf( '/\{{%s(.*?)\}}/', $tag );
 					$str        = $content;
-					$temp_match = [];
+					$temp_match = array();
 					preg_match_all( $re, $str, $temp_match );
 					if ( is_array( $temp_match[0] ) && count( $temp_match[0] ) > 0 ) {
 						$matches = array_merge( $matches, $temp_match[0] );
@@ -134,7 +133,6 @@ if ( ! class_exists( 'WFACP_Product_Switcher_Merge_Tags' ) ) {
 			}
 
 			return $matches;
-
 		}
 
 
@@ -154,15 +152,15 @@ if ( ! class_exists( 'WFACP_Product_Switcher_Merge_Tags' ) ) {
 					'tag'  => 'saving_percentage',
 				),
 				array(
-					'name' => __( 'Quantity', 'woocommerce' ),
+					'name' => __( 'Quantity', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 					'tag'  => 'quantity',
 				),
 				array(
-					'name' => __( 'Coupon code', 'woocommerce' ),
+					'name' => __( 'Coupon code', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 					'tag'  => 'coupon_code',
 				),
 				array(
-					'name' => __( 'Coupon_value', 'woocommerce' ),
+					'name' => __( 'Coupon_value', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 					'tag'  => 'coupon_value',
 				),
 
@@ -181,7 +179,6 @@ if ( ! class_exists( 'WFACP_Product_Switcher_Merge_Tags' ) ) {
 			$matched_tags = self::get_matched_tags( $content );
 
 			return self::parse_merge_tags( $content, $matched_tags );
-
 		}
 
 		private static function saving_value() {
@@ -204,7 +201,6 @@ if ( ! class_exists( 'WFACP_Product_Switcher_Merge_Tags' ) ) {
 			} else {
 				return '';
 			}
-
 		}
 
 		private static function coupon_code() {
@@ -216,7 +212,7 @@ if ( ! class_exists( 'WFACP_Product_Switcher_Merge_Tags' ) ) {
 		}
 
 		private static function check_saving_tags_present( $matched_tags ) {
-			$status = array_intersect( [ '{{saving_value}}', '{{saving_percentage}}' ], $matched_tags );
+			$status = array_intersect( array( '{{saving_value}}', '{{saving_percentage}}' ), $matched_tags );
 			if ( is_null( $status ) ) {
 				return false;
 			}

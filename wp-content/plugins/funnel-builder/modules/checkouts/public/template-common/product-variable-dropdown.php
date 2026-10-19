@@ -19,38 +19,40 @@ $attribute_keys       = array_keys( $attributes ); ?>
 	<?php do_action( 'woocommerce_before_single_product_summary' ); ?>
 </div>
 <div class='wfacp_variable_product_options' style="float: left;width:48%">
-    <form class="variations_form cart" action="<?php echo esc_url( apply_filters( 'woocommerce_add_to_cart_form_action', $product->get_permalink() ) ); ?>" method="post" enctype='multipart/form-data' data-product_id="<?php echo absint( $product->get_id() ); ?>" data-product_variations="<?php echo esc_attr( wp_json_encode( $available_variations ) ); ?>">
+	<form class="variations_form cart" action="<?php echo esc_url( apply_filters( 'woocommerce_add_to_cart_form_action', $product->get_permalink() ) ); ?>" method="post" enctype='multipart/form-data' data-product_id="<?php echo absint( $product->get_id() ); ?>" data-product_variations="<?php echo esc_attr( wp_json_encode( $available_variations ) ); ?>">
 		<?php do_action( 'woocommerce_before_variations_form' ); ?>
 
 		<?php if ( empty( $available_variations ) && false !== $available_variations ) : ?>
-            <p class="stock out-of-stock"><?php esc_html_e( 'This product is currently out of stock and unavailable.', 'woocommerce' ); ?></p>
+			<p class="stock out-of-stock"><?php esc_html_e( 'This product is currently out of stock and unavailable.', 'woocommerce' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?></p>
 		<?php else : ?>
-            <table class="variations" cellspacing="0">
-                <tbody>
+			<table class="variations" cellspacing="0">
+				<tbody>
 				<?php foreach ( $attributes as $attribute_name => $options ) : ?>
-                    <tr>
-                        <td class="label"><label for="<?php echo esc_attr( sanitize_title( $attribute_name ) ); ?>"><?php echo wc_attribute_label( $attribute_name ); // WPCS: XSS ok. ?></label>
-                        </td>
-                        <td class="value">
+					<tr>
+						<td class="label"><label for="<?php echo esc_attr( sanitize_title( $attribute_name ) ); ?>"><?php echo wc_attribute_label( $attribute_name ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- matches WooCommerce core variable.php. ?></label>
+						</td>
+						<td class="value">
 							<?php
-							WFACP_Common::wc_dropdown_variation_attribute_options( array(
-								'options'   => $options,
-								'attribute' => $attribute_name,
-								'product'   => $product,
-							) );
-							echo end( $attribute_keys ) === $attribute_name ? wp_kses_post( apply_filters( 'woocommerce_reset_variations_link', '<a class="reset_variations" href="#">' . esc_html__( 'Clear', 'woocommerce' ) . '</a>' ) ) : '';
+							WFACP_Common::wc_dropdown_variation_attribute_options(
+								array(
+									'options'   => $options,
+									'attribute' => $attribute_name,
+									'product'   => $product,
+								)
+							);
+							echo end( $attribute_keys ) === $attribute_name ? wp_kses_post( apply_filters( 'woocommerce_reset_variations_link', '<a class="reset_variations" href="#">' . esc_html__( 'Clear', 'woocommerce' ) . '</a>' ) ) : ''; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 							?>
-                        </td>
-                    </tr>
+						</td>
+					</tr>
 				<?php endforeach; ?>
-                </tbody>
-            </table>
+				</tbody>
+			</table>
 
 		<?php endif; ?>
-        <div class="single_variation_wrap">
-            <div class="woocommerce-variation single_variation"></div>
-        </div>
-    </form>
+		<div class="single_variation_wrap">
+			<div class="woocommerce-variation single_variation"></div>
+		</div>
+	</form>
 </div>
 <?php
 unset( $get_variations, $available_variations, $attributes, $selected_attributes );

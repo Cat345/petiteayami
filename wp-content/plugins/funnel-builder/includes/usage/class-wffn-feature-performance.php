@@ -101,7 +101,7 @@ if ( ! class_exists( 'WFFN_Feature_Performance' ) ) {
 
 			// Total: Conversions (orders through funnels) - type = 2 means wc_order (purchase)
 			$query             = "SELECT COUNT(*) FROM {$table} WHERE {$where_query} AND type = 2"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$total_conversions = (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$total_conversions = (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			/** Funnel sessions. Zero unless something records views. */
 			$total_views = (int) apply_filters(
@@ -117,7 +117,7 @@ if ( ! class_exists( 'WFFN_Feature_Performance' ) ) {
 
 			// Checkout: Conversions - Orders from checkout pages (type = 2 and step is checkout page)
 			$query                = "SELECT COUNT(*) FROM {$table} ct INNER JOIN {$wpdb->prefix}posts p ON ct.step_id = p.ID WHERE {$where_query} AND ct.type = 2 AND p.post_type = 'wfacp_checkout'"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$checkout_conversions = (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$checkout_conversions = (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 			/** Checkout page views. Zero unless something records views. */
 			$checkout_views = (int) apply_filters(
@@ -134,7 +134,7 @@ if ( ! class_exists( 'WFFN_Feature_Performance' ) ) {
 
 			// Optin: Conversions - Opt-in submissions (type = 1 means optin)
 			$query             = "SELECT COUNT(*) FROM {$table} WHERE {$where_query} AND type = 1"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$optin_conversions = (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$optin_conversions = (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 			/** Optin page views. Zero unless something records views. */
 			$optin_views = (int) apply_filters(

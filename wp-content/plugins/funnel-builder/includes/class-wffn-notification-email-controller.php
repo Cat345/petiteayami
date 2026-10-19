@@ -37,9 +37,8 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 		 * @return array|null Campaign content with subtitle and theme, or null if no campaign active
 		 */
 		private function get_campaign_content() {
-			// Only show for non-PRO users
-			if ( WFFN_Common::wffn_is_funnel_pro_active() ) {
-				return null;
+			if ( false === apply_filters( 'wffn_email_add_campaigns', true ) ) {
+				return;
 			}
 
 			$campaign_data = null;
@@ -92,7 +91,7 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 			$highlight_theme       = 'light';
 			$upgrade_link          = 'https://funnelkit.com/exclusive-offer/';
 
-			if ( ! WFFN_Common::wffn_is_funnel_pro_active() ) {
+			if ( true === apply_filters( 'wffn_email_add_campaigns', true ) ) {
 				$highlight_subtitle    = __( 'Unlock more insights.', 'funnel-builder' );
 				$highlight_button_text = __( 'Upgrade To PRO', 'funnel-builder' );
 				$highlight_button_url  = add_query_arg(
@@ -137,18 +136,14 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 					),
 				),
 				array(
-					'type'     => 'dynamic',
-					'callback' => array( $this, 'get_dynamic_content_1' ),
-				),
-				array(
 					'type' => 'bwf_status_section',
-					'data' => apply_filters( 'bwf_weekly_mail_status_section', array() ),
+					'data' => apply_filters( 'bwf_weekly_mail_status_section', array() ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				),
 				array(
 					'type' => 'section_header',
 					'data' => array(
 						'title'    => __( 'Key Performance Metrics', 'funnel-builder' ),
-						'subtitle' => sprintf( __( 'Change compared to previous %s', 'funnel-builder' ), $this->get_frequency_string( $this->frequency ) ),
+						'subtitle' => sprintf( /* translators: %s: report frequency period (e.g. week). */ __( 'Change compared to previous %s', 'funnel-builder' ), $this->get_frequency_string( $this->frequency ) ),
 					),
 				),
 			);
@@ -170,10 +165,10 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 			}
 
 			if ( $total_revenue > 10 ) {
-				$cta_content = sprintf( __( 'Since installing %1$s you have captured additional revenue of %2$s.', 'funnel-builder' ), '<strong>' . __( 'FunnelKit', 'funnel-builder' ) . '</strong>', '<strong>' . wc_price( $total_revenue ) . '</strong>' );
+				$cta_content = sprintf( /* translators: 1: FunnelKit plugin name, 2: formatted revenue amount. */ __( 'Since installing %1$s you have captured additional revenue of %2$s.', 'funnel-builder' ), '<strong>' . __( 'FunnelKit', 'funnel-builder' ) . '</strong>', '<strong>' . wc_price( $total_revenue ) . '</strong>' );
 
-				if ( ! WFFN_Common::wffn_is_funnel_pro_active() ) {
-					$cta_content = sprintf( __( 'Since installing %1$s you have captured additional revenue of %2$s. Upgrade to Pro for even more revenue.', 'funnel-builder' ), '<strong>' . __( 'FunnelKit', 'funnel-builder' ) . '</strong>', '<strong>' . wc_price( $total_revenue ) . '</strong>' );
+				if ( true === apply_filters( 'wffn_email_add_campaigns', true ) ) {
+					$cta_content = sprintf( /* translators: 1: FunnelKit plugin name, 2: formatted revenue amount. */ __( 'Since installing %1$s you have captured additional revenue of %2$s. Upgrade to Pro for even more revenue.', 'funnel-builder' ), '<strong>' . __( 'FunnelKit', 'funnel-builder' ) . '</strong>', '<strong>' . wc_price( $total_revenue ) . '</strong>' );
 
 					$cta_link = add_query_arg(
 						array(
@@ -239,10 +234,6 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 				$email_sections,
 				array(
 					array(
-						'type'     => 'dynamic',
-						'callback' => array( $this, 'get_dynamic_content_2' ),
-					),
-					array(
 						'type' => 'email_footer',
 						'data' => array(
 							'date'          => $date_range,
@@ -252,7 +243,7 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 				)
 			);
 
-			return apply_filters( 'bwf_weekly_notification_email_section', $email_sections );
+			return apply_filters( 'bwf_weekly_notification_email_section', $email_sections ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 		}
 
 		/**
@@ -271,43 +262,38 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 
 				switch ( $section['type'] ) {
 					case 'email_header':
-						echo WFFN_Email_Notification::get_template_html( 'emails/email-header.php' ); // @codingStandardsIgnoreLine
+						WFFN_Email_Notification::render_template( 'emails/email-header.php' );
 						break;
 					case 'highlight':
-						echo WFFN_Email_Notification::get_template_html( 'emails/admin-email-report-highlight.php', $section['data'] ); // @codingStandardsIgnoreLine
+						WFFN_Email_Notification::render_template( 'emails/admin-email-report-highlight.php', $section['data'] );
 						break;
 					case 'metrics':
-						echo WFFN_Email_Notification::get_template_html( 'emails/admin-email-report-metrics.php', $section['data'] ); // @codingStandardsIgnoreLine
+						WFFN_Email_Notification::render_template( 'emails/admin-email-report-metrics.php', $section['data'] );
 						break;
 					case 'section_header':
-						echo WFFN_Email_Notification::get_template_html( 'emails/email-section-header.php', $section['data'] ); // @codingStandardsIgnoreLine
+						WFFN_Email_Notification::render_template( 'emails/email-section-header.php', $section['data'] );
 						break;
 					case 'todo_status':
-						echo WFFN_Email_Notification::get_template_html( 'emails/admin-email-report-todo-status.php', $section['data'] ); // @codingStandardsIgnoreLine
+						WFFN_Email_Notification::render_template( 'emails/admin-email-report-todo-status.php', $section['data'] );
 						break;
 					case 'divider':
-						echo WFFN_Email_Notification::get_template_html( 'emails/email-divider.php' );// @codingStandardsIgnoreLine
+						WFFN_Email_Notification::render_template( 'emails/email-divider.php' );
 						break;
 					case 'email_footer':
-						echo WFFN_Email_Notification::get_template_html( 'emails/email-footer.php', $section['data'] ); // @codingStandardsIgnoreLine
-						break;
-					case 'dynamic':
-						if ( isset( $section['callback'] ) && is_callable( $section['callback'] ) ) {
-							call_user_func( $section['callback'], $section['data'] ?? array() );
-						}
+						WFFN_Email_Notification::render_template( 'emails/email-footer.php', $section['data'] );
 						break;
 					case 'bwf_status_section':
 						if ( ! empty( $section['data'] ) ) {
-							echo WFFN_Email_Notification::get_template_html( 'emails/email-bwf-status-section.php', $section['data'] );// @codingStandardsIgnoreLine
+							WFFN_Email_Notification::render_template( 'emails/email-bwf-status-section.php', $section['data'] );
 						}
 						break;
 					case 'bwf_status_w_cta_section':
 						if ( ! empty( $section['data'] ) ) {
-							echo WFFN_Email_Notification::get_template_html( 'emails/email-bwf-status-w-btn-section.php', $section['data'] );// @codingStandardsIgnoreLine
+							WFFN_Email_Notification::render_template( 'emails/email-bwf-status-w-btn-section.php', $section['data'] );
 						}
 						break;
 					default:
-						do_action( 'bwf_email_section_' . $section['type'], $section['data'] ?? array() );
+						do_action( 'bwf_email_section_' . $section['type'], $section['data'] ?? array() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 						break;
 				}
 			}
@@ -391,7 +377,7 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 		 * Metric function to check if order bump exists.
 		 */
 		protected function metric_is_orderbump() {
-			if ( ! WFFN_Common::wffn_is_funnel_pro_active() ) {
+			if ( true === apply_filters( 'wffn_email_add_campaigns', true ) ) {
 				return 'pro';
 			}
 			$order_bump_count = $this->count_funnels_with_step( 'wc_order_bump' );
@@ -403,7 +389,7 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 		 * Metric function to check if upsells exist.
 		 */
 		protected function metric_is_upsells() {
-			if ( ! WFFN_Common::wffn_is_funnel_pro_active() ) {
+			if ( true === apply_filters( 'wffn_email_add_campaigns', true ) ) {
 				return 'pro';
 			}
 			$upsells_count = $this->count_funnels_with_step( 'wc_upsells' );
@@ -456,20 +442,6 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 			return isset( $result[0]['count'] ) ? absint( $result[0]['count'] ) : 0;
 		}
 
-
-		/**
-		 * Dynamic content sections
-		 */
-		public function get_dynamic_content_1() {
-			do_action( 'bwf_email_dynamic_content_1', $this->id, $this->data, $this->dates );
-		}
-
-		/**
-		 * Dynamic content section 2.
-		 */
-		public function get_dynamic_content_2() {
-			do_action( 'bwf_email_dynamic_content_2', $this->id, $this->data, $this->dates );
-		}
 
 		/**
 		 * Returns the frequency string based on the given frequency.

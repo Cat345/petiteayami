@@ -151,11 +151,10 @@ if ( ! class_exists( 'WFACP_Yth_Wc_Eu_Vat' ) ) {
 			}
 
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . ".wfacp_main_form .ywev-country-confirmation input[type='checkbox'] {position: relative;margin: 0 10px 0 0;}";
 
-			$cssHtml .= "</style>";
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 
 		public function disabled_third_party_billing_fields( $fields ) {

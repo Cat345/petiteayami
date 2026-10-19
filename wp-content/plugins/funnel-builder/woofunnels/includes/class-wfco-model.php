@@ -4,14 +4,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 if ( ! class_exists( 'WFCO_Model' ) ) {
 	#[AllowDynamicProperties]
-	abstract class WFCO_Model {
+	abstract class WFCO_Model { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- WFTP_/WFCO_ is an established FunnelKit family prefix; PCP's frequency-based prefix detection is distribution-dependent and misses small families.
 		static $primary_key = 'id';
 		static $count = 20;
 
 		static function get( $value ) {
 			global $wpdb;
 
-			return $wpdb->get_row( self::_fetch_sql( $value ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			return $wpdb->get_row( self::_fetch_sql( $value ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL,PluginCheck.Security.DirectDB.UnescapedDBParameter -- pre-assembled query-builder execution; audited in bin/SECURITY-SQLI-QUERY-BUILDER-AUDIT.md, invisible to taint tracking.
 		}
 
 		private static function _fetch_sql( $value ) {
@@ -42,9 +42,9 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 
 		static function delete( $value ) {
 			global $wpdb;
-			$sql = sprintf( 'DELETE FROM %s WHERE %s = %%s', self::_table(), static::$primary_key );
+			$sql = sprintf( 'DELETE FROM %s WHERE %s = %%s', esc_sql( self::_table() ), esc_sql( static::$primary_key ) );
 
-			return $wpdb->query( $wpdb->prepare( $sql, $value ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			return $wpdb->query( $wpdb->prepare( $sql, $value ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL,PluginCheck.Security.DirectDB.UnescapedDBParameter -- pre-assembled query-builder execution; audited in bin/SECURITY-SQLI-QUERY-BUILDER-AUDIT.md, invisible to taint tracking.
 		}
 
 		static function insert_id() {
@@ -88,7 +88,7 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 				}
 			}
 
-			return $wpdb->get_var( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			return $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL,PluginCheck.Security.DirectDB.UnescapedDBParameter -- pre-assembled query-builder execution; audited in bin/SECURITY-SQLI-QUERY-BUILDER-AUDIT.md, invisible to taint tracking.
 		}
 
 		static function get_specific_rows( $where_key, $where_value ) {
@@ -101,7 +101,7 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 				return array();
 			}
 
-			$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE `{$where_key}` = %s", $where_value ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table_name from self::_table() (trusted); $where_key whitelisted above; $where_value bound via %s.
+			$results = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM ' . esc_sql( $table_name ) . ' WHERE `' . esc_sql( $where_key ) . '` = %s', $where_value ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- $table_name from self::_table() (trusted); $where_key whitelisted above; $where_value bound via %s. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			return $results;
 		}
@@ -112,7 +112,7 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 			if ( ! empty( $params ) ) {
 				$query = $wpdb->prepare( $query, ...$params ); //phpcs:ignore WordPress.DB.PreparedSQL
 			}
-			$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$results = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL,PluginCheck.Security.DirectDB.UnescapedDBParameter -- pre-assembled query-builder execution; audited in bin/SECURITY-SQLI-QUERY-BUILDER-AUDIT.md, invisible to taint tracking.
 
 			return $results;
 		}
@@ -120,13 +120,13 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 		static function delete_multiple( $query ) {
 			global $wpdb;
 			$query = str_replace( '{table_name}', self::_table(), $query );
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL,PluginCheck.Security.DirectDB.UnescapedDBParameter -- pre-assembled query-builder execution; audited in bin/SECURITY-SQLI-QUERY-BUILDER-AUDIT.md, invisible to taint tracking.
 		}
 
 		static function update_multiple( $query ) {
 			global $wpdb;
 			$query = str_replace( '{table_name}', self::_table(), $query );
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$wpdb->query( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL,PluginCheck.Security.DirectDB.UnescapedDBParameter -- pre-assembled query-builder execution; audited in bin/SECURITY-SQLI-QUERY-BUILDER-AUDIT.md, invisible to taint tracking.
 		}
 	}
 }

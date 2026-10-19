@@ -273,7 +273,7 @@ class NewsletterStatisticsRepository extends Repository {
     } elseif ($from && $to === null) {
       $query->andWhere('q.createdAt >= :from')
         ->setParameter('from', $from);
-    } elseif ($from === null && $to) {
+    } elseif ($to) {
       $query->andWhere('q.createdAt <= :to')
         ->setParameter('to', $to);
     }
@@ -316,7 +316,7 @@ class NewsletterStatisticsRepository extends Repository {
     } elseif ($from && $to === null) {
       $query->andWhere('stats.sentAt >= :from')
         ->setParameter('from', $from);
-    } elseif ($from === null && $to) {
+    } elseif ($to) {
       $query->andWhere('stats.sentAt <= :to')
         ->setParameter('to', $to);
     }
@@ -495,7 +495,7 @@ class NewsletterStatisticsRepository extends Repository {
     } elseif ($from && $to === null) {
       $qb->andWhere('stats.createdAt >= :from')
         ->setParameter('from', $from);
-    } elseif ($from === null && $to) {
+    } elseif ($to) {
       $qb->andWhere('stats.createdAt <= :to')
         ->setParameter('to', $to);
     }
@@ -563,7 +563,7 @@ class NewsletterStatisticsRepository extends Repository {
     } elseif ($from && $to === null) {
       $query->andWhere('stats.createdAt >= :from')
         ->setParameter('from', $from);
-    } elseif ($from === null && $to) {
+    } elseif ($to) {
       $query->andWhere('stats.createdAt <= :to')
         ->setParameter('to', $to);
     }

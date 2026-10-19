@@ -9,40 +9,45 @@ if ( apply_filters( 'wfacp_cart_show_product_thumbnail', false ) ) {
 	$colspan_attr     = apply_filters( 'wfacp_order_summary_cols_span', $colspan_attr1 );
 	$cellpadding_attr = ' cellpadding="20"';
 }
-do_action( 'wfacp_mini_cart_before_order_total', $this, [] );
+do_action( 'wfacp_mini_cart_before_order_total', $this, array() );
 
-$tax_enabled = "";
+$tax_enabled = '';
 if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
-	$tax_enabled = "wfacp_tax_enabled";
+	$tax_enabled = 'wfacp_tax_enabled';
 }
-$instance = wfacp_template();
+$wfacp_instance = wfacp_template();
 ?>
 <table class="wfacp_mini_cart_reviews shop_table woocommerce-checkout-review-order-table_layout_9 wfacp_template_9_cart_total_details layout_9_order_summary <?php echo esc_attr( $tax_enabled ); ?>" data-time="<?php echo esc_attr( WFACP_Common::get_fragments_time() ); ?>" >
-    <tfoot>
-    <tr class="cart-subtotal">
-        <th <?php echo $colspan_attr; ?>><span><?php esc_html_e( 'Subtotal', 'woocommerce' ); ?></span></th>
-        <td><?php wc_cart_totals_subtotal_html(); ?></td>
-    </tr>
+	<tfoot>
+	<tr class="cart-subtotal">
+		<th <?php echo $colspan_attr; ?>><span><?php esc_html_e( 'Subtotal', 'woocommerce' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch,WordPress.Security.EscapeOutput.OutputNotEscaped -- deliberate: reuse WooCommerce core translation. */ ?></span></th>
+		<td><?php wc_cart_totals_subtotal_html(); ?></td>
+	</tr>
 
 	<?php foreach ( WC()->cart->get_coupons() as $code => $coupon ) : ?>
-        <tr class="cart-discount sidebar_coupon coupon-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
-            <th <?php echo $colspan_attr; ?>><span><?php $instance->wc_cart_totals_coupon_label( $coupon ); ?></span></th>
-            <td><?php wc_cart_totals_coupon_html( $coupon );	do_action( 'wfacp_after_coupon_html', $coupon ); ?></td>
-        </tr>
+		<tr class="cart-discount sidebar_coupon coupon-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
+			<th <?php echo $colspan_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete attribute from the wfacp_order_summary_cols_span filter; revisit in the ignore-audit phase. ?>><span><?php $wfacp_instance->wc_cart_totals_coupon_label( $coupon ); ?></span></th>
+			<td>
+			<?php
+			wc_cart_totals_coupon_html( $coupon );
+			do_action( 'wfacp_after_coupon_html', $coupon );
+			?>
+			</td>
+		</tr>
 	<?php endforeach; ?>
 
 	<?php foreach ( WC()->cart->get_fees() as $fee ) : ?>
-        <tr class="fee">
-            <th <?php echo $colspan_attr; ?>><span><?php echo esc_html( $fee->name ); ?></span></th>
-            <td><?php wc_cart_totals_fee_html( $fee ); ?></td>
-        </tr>
+		<tr class="fee">
+			<th <?php echo $colspan_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete attribute from the wfacp_order_summary_cols_span filter; revisit in the ignore-audit phase. ?>><span><?php echo esc_html( $fee->name ); ?></span></th>
+			<td><?php wc_cart_totals_fee_html( $fee ); ?></td>
+		</tr>
 	<?php endforeach; ?>
 
 	<?php
 	do_action( 'wfacp_mini_cart_before_shipping' );
 	if ( WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) {
 
-		$method = $instance->have_shipping_method();
+		$method = $wfacp_instance->have_shipping_method();
 		if ( false === $method ) {
 			do_action( 'woocommerce_review_order_before_shipping' );
 		}
@@ -60,16 +65,16 @@ $instance = wfacp_template();
 	<?php if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) : ?>
 		<?php if ( 'itemized' === get_option( 'woocommerce_tax_total_display' ) ) : ?>
 			<?php foreach ( WC()->cart->get_tax_totals() as $code => $tax ) : ?>
-                <tr class="tax-rate tax-rate-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
-                    <th <?php echo $colspan_attr; ?>><span><?php echo esc_html( $tax->label ); ?></span></th>
-                    <td><?php echo wp_kses_post( $tax->formatted_amount ); ?></td>
-                </tr>
+				<tr class="tax-rate tax-rate-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
+					<th <?php echo $colspan_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete attribute from the wfacp_order_summary_cols_span filter; revisit in the ignore-audit phase. ?>><span><?php echo esc_html( $tax->label ); ?></span></th>
+					<td><?php echo wp_kses_post( $tax->formatted_amount ); ?></td>
+				</tr>
 			<?php endforeach; ?>
 		<?php else : ?>
-            <tr class="tax-total">
-                <th <?php echo $colspan_attr; ?>><span><?php echo esc_html( WC()->countries->tax_or_vat() ); ?></span></th>
-                <td><?php wc_cart_totals_taxes_total_html(); ?></td>
-            </tr>
+			<tr class="tax-total">
+				<th <?php echo $colspan_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete attribute from the wfacp_order_summary_cols_span filter; revisit in the ignore-audit phase. ?>><span><?php echo esc_html( WC()->countries->tax_or_vat() ); ?></span></th>
+				<td><?php wc_cart_totals_taxes_total_html(); ?></td>
+			</tr>
 		<?php endif; ?>
 	<?php endif; ?>
 
@@ -84,16 +89,17 @@ $instance = wfacp_template();
 
 	?>
 
-    <tr class="order-total">
-        <th <?php echo $colspan_attr; ?>><span><?php esc_html_e( 'Total', 'woocommerce' ); ?></span></th>
-        <td><?php wc_cart_totals_order_total_html(); ?></td>
-    </tr>
-	<?php do_action( 'woocommerce_review_order_after_order_total' );
+	<tr class="order-total">
+		<th <?php echo $colspan_attr; ?>><span><?php esc_html_e( 'Total', 'woocommerce' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch,WordPress.Security.EscapeOutput.OutputNotEscaped -- deliberate: reuse WooCommerce core translation. */ ?></span></th>
+		<td><?php wc_cart_totals_order_total_html(); ?></td>
+	</tr>
+	<?php
+	do_action( 'woocommerce_review_order_after_order_total' );
 
 	do_action( 'wfacp_collapsible_mini_cart_woocommerce_review_order_after_order_total' );
-    ?>
-    </tfoot>
+	?>
+	</tfoot>
 </table>
 <?php
-do_action( 'wfacp_mini_cart_after_order_total', $this, [] );
+do_action( 'wfacp_mini_cart_after_order_total', $this, array() );
 ?>

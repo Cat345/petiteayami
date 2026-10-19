@@ -187,7 +187,7 @@ if ( ! class_exists( 'WFFN_REST_Tools' ) ) {
 
 				}
 
-				$query_results = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$query_results = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 				$get_threshold_order = $query_results;
 
@@ -206,7 +206,7 @@ if ( ! class_exists( 'WFFN_REST_Tools' ) ) {
 				$description .= ' <a target="_blank" href="https://funnelkit.com/support/?utm_source=WordPress&utm_medium=Indexing+Failed+Support&utm_campaign=FB+Lite+Plugin">Contact support to get the issue resolved.</a>';
 
 			}
-			if ( true === apply_filters( 'bwf_needs_order_indexing', false ) ) {
+			if ( true === apply_filters( 'bwf_needs_order_indexing', false ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				$index_orders = array(
 					'title' => __( 'Index Past Orders', 'funnel-builder' ),
 					'desc'  => $description,
@@ -457,7 +457,7 @@ if ( ! class_exists( 'WFFN_REST_Tools' ) ) {
 				}
 
 				$resp['status'] = true;
-				$resp['msg']    = sprintf( __( 'Usage tracking successfully %s.', 'funnel-builder' ), true === $tracking ? 'enabled' : 'disabled' );
+				$resp['msg']    = sprintf( /* translators: %s: "enabled" or "disabled". */ __( 'Usage tracking successfully %s.', 'funnel-builder' ), true === $tracking ? 'enabled' : 'disabled' );
 
 				return rest_ensure_response( $resp );
 			}
@@ -650,7 +650,7 @@ if ( ! class_exists( 'WFFN_REST_Tools' ) ) {
 			}
 
 			// Check if the plugin file is active
-			return in_array( 'cart-for-woocommerce/plugin.php', (array) apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true );
+			return in_array( 'cart-for-woocommerce/plugin.php', (array) apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 		}
 
 		/**

@@ -1,255 +1,246 @@
-=== FunnelKit - Funnel Builder for WooCommerce Checkout ===
+=== FunnelKit - Funnel Builder Plugin for WooCommerce Checkout ===
 Contributors: teamfunnelkit, xlplugins
-Tags: Funnel Builder, WooCommerce Checkout, Sales Funnels, One Click Upsells
+Tags: woocommerce checkout, checkout, funnel builder, order bump, upsell
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.16.0.5
+Stable tag: 3.17.0
 License: GPLv3
-License URI: http://www.gnu.org/licenses/gpl-3.0.html
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Create high-converting WooCommerce checkout pages, WooCommerce thank you pages & sales funnels with the highest-rated WordPress funnel builder.
+Create high-converting WooCommerce checkout pages, thank you pages & sales funnels with the highest-rated WordPress funnel builder.
 
 == Description ==
 
-Create high-converting WooCommerce checkout pages, WooCommerce thank you pages & sales funnels with the highest-rated WordPress funnel builder.
+= WooCommerce Checkout Plugin & WordPress Funnel Builder =
 
-== Funnel Builder for WordPress ==
-
-Hate the idea of paying high monthly costs for expensive and rigid funnel builders?
+Tired of paying high monthly fees for rigid checkout plugins and funnel builders?
 
 You don't need to anymore.
 
-Meet [FunnelKit (formerly WooFunnels)](https://funnelkit.com/?utm_source=fb-lite&utm_campaign=wp-repo&utm_medium=readme&utm_term=funnelkit): The most intuitive and affordable Funnel Builder for WordPress. It makes the process of creating conversion-optimized WooCommerce checkout, beautiful opt-in pages, landing pages, one-click upsells and even thank you pages a breeze.
+Meet [FunnelKit (formerly WooFunnels)](https://funnelkit.com/?utm_source=fb-lite&utm_campaign=wp-repo&utm_medium=readme&utm_term=funnelkit): the most intuitive and affordable Funnel Builder for WordPress. It makes the process of creating conversion-optimized WooCommerce checkouts, beautiful opt-in pages, landing pages, one-click upsells and even thank you pages a breeze.
 
 FunnelKit Funnel Builder helps store owners by enhancing WooCommerce checkout conversions with pre-designed templates for every use case. You can create unlimited sales funnels to attract visitors and guide them toward becoming loyal customers.
 
-https://youtu.be/yN2F9o2hUSw?si=5-QRMJ6747lk4OhQ
+https://www.youtube.com/watch?v=yN2F9o2hUSw
 
-FunnelKit provides you with pre-built templates that are 100% mobile-responsive and look great on all devices. You can find templates for designing custom WooCommerce checkouts, sales pages, lead generation pages, order bumps, one-click upsells, and thank you pages. You can even customize these templates with the page builder of your choice.
+FunnelKit provides you with pre-built templates that are 100% mobile-responsive and look great on all devices. You can find templates for designing custom WooCommerce checkouts, sales pages, lead generation pages, order bumps, one-click upsells, and thank you pages.
+
+And you can even customize these templates with any of the popular page builders.
 
 Use FunnelKit's Funnel Builder to create:
 
-- Optimized WooCommerce checkout pages (global & one page checkouts)
-- Beautiful sales/ landing and opt-in pages
-- Highly targeted order bumps
-- Rule-based one-click upsell offers
-- Custom thank you or order confirmation pages
+* Optimized WooCommerce checkout pages, including one-page checkouts
+* Multi-step checkouts (Pro)
+* Beautiful sales/landing pages
+* Highly targeted order bumps (Pro)
+* Rule-based one-click upsell offers (Pro)
+* Custom thank you or order confirmation pages
+* Lead generation and opt-in confirmation pages
 
 Get ready to attract more paying customers to your business!
 
+= The WooCommerce Checkout Plugin Built for Conversions =
 
-== WHY DO YOU NEED A SALES FUNNEL? ==
+FunnelKit Funnel Builder is also a complete WooCommerce checkout plugin. The default WooCommerce checkout is a single rigid form, on a page you can't design, with fields you can't reorder and no way to offer anything extra before the customer pays. Every unnecessary field is another reason to abandon.
 
-A sales funnel takes the users from downloading a lead magnet to buying your product or service. Not only that, it boosts your average order value through order bumps and one-click upsells.
+**Customize your WooCommerce checkout page**
+
+Import a conversion-optimized checkout template and edit the whole page visually in Elementor, Divi, Bricks, Oxygen or Gutenberg. Every template includes trust seals, product guarantees and customer reviews. No code, and no editing your theme's template files.
+
+**Edit your checkout fields by dragging them**
+
+Reorder and rearrange the existing checkout fields and sections, and reposition fields like email and phone that WooCommerce places poorly by default, so you capture them earlier in the form. Remove the fields you don't need. Fewer fields means fewer abandoned checkouts.
+
+**Faster checkout for every shopper**
+
+Express pay buttons let mobile shoppers pay with Apple Pay or Google Pay without typing card details. Inline validation catches errors as the customer types, an enhanced international phone field reduces mistakes, and smart login speeds up returning customers.
+
+Live cart capturing saves the shopper's email the moment it's typed, so abandoned checkouts can be followed up automatically.
+
+**Works with every native payment gateway**
+
+Stripe, PayPal, WooPayments, Authorize.net, Braintree, Square and Mollie all work on the FunnelKit checkout, so it fits the payment setup you already have.
+
+**Replace your checkout storewide and raise order value**
+
+With FunnelKit, you can override the default WooCommerce checkout across your entire store. Funnel Builder Pro lets you build one-page or multi-step layouts, add custom and conditional fields, and place rule-based order bumps on the checkout page with one-click upsells straight after it.
+
+= WHY DO YOU NEED A SALES FUNNEL? =
+
+A sales funnel takes users from downloading a lead magnet to buying your product or service. Not only that, it boosts your average order value through order bumps and one-click upsells.
 
 Here are some major benefits of a sales funnel:
 
-- **Lesser Distractions:** Users go from one step to the next without any exit points along the way.
-- **Higher Returns on Ad Spends:** Creating optimized user journeys allows you to maximize returns on ad spends.
-- **Greater Order Value:** Showing customers relevant pre and post-purchase offers, they can accept with one click, hence increasing the order value.
-- **Higher Conversion Rates:** With marketing automation added to your sales funnel, you can bring abandoned users back to complete their purchase.
+* **Fewer Distractions:** Users go from one step to the next without any exit points along the way.
+* **Higher Return on Ad Spend:** Creating optimized user journeys allows you to maximize returns on ad spends.
+* **Greater Order Value:** Show customers relevant pre- and post-purchase offers they can accept with one click.
+* **Higher Conversion Rates:** With marketing automation added to your sales funnel, you can bring abandoned users back to complete their purchase.
 
-Let's explore the essential features of FunnelKit.
+Let's explore the essential features of FunnelKit Funnel Builder.
 
+= FUNNEL BUILDER LITE FEATURES =
 
-=== FUNNEL BUILDER LITE FEATURES ===
+**Customized WooCommerce Checkout Page Storewide**
 
-**Optin & Sales Pages**
+Design beautiful, conversion-optimized WooCommerce checkout pages for your store. Every FunnelKit checkout template includes trust seals, product guarantees, customer reviews and more. Customize your WooCommerce checkout page for more conversions with these proven techniques.
 
-Create lead capture or squeeze pages using our conversion-optimized templates. Our templates offer a clean and minimalist design to help you generate leads.
-Use our pre-built templates, widgets and shortcodes to customize your Opt-in Pages and sales pages.
+https://www.youtube.com/watch?v=brVUsOAblKw
 
-**Customized WooCommerce Checkout Page**
+**Truly Flexible WooCommerce Checkout Field Editor**
 
-Design beautiful and optimized WooCommerce checkout pages for your store. FunnelKit's every WooCommerce checkout page template includes trust seals, product guarantees, customer reviews, and more. Customize your WooCommerce checkout page for more conversions with these proven techniques.
+Take control of your WooCommerce checkout form. Edit, reorder and rearrange the existing checkout fields and sections by dragging them, and reposition fields like email and phone that WooCommerce places poorly by default, so you capture them earlier in the form. Remove the fields you don't need.
 
-https://youtu.be/brVUsOAblKw?si=TlE9YnezwiEjsyhS
+**Opt-in & Sales Pages**
 
-= TRULY FLEXIBLE WOOCOMMERCE CHECKOUT FIELD EDITOR =
-
-While most checkout field editors let you simply rearrange fields in rigid sections, our field editor is built to give you extreme flexibility. It's the most advanced WooCommerce checkout solution, engineered from the ground up that lets you:
-
-- Create your own sections
-- Drag and drop fields within sections
-- Re-order and remove fields you don't need
-
-You can of course create a store checkout in WooCommerce or add products to make it product-specific.
-
+Send paid traffic to a dedicated landing page instead of your storefront. Build sales pages that make the case before the checkout, and squeeze pages that capture leads who aren't ready to buy yet. Embed opt-in forms directly on the page, or open them in a lightbox (Pro).
 
 **Customizable WooCommerce Thank You Pages**
 
 The default thank you page looks bland and isn't optimized to carry the conversation forward. With our highly customizable templates and widgets, you can create beautiful order confirmation pages.
 
+**High-Converting Templates for Every Step**
 
-**Templates for Every Step**
-
-With FunnelKit Funnel Builder, you get highly customizable templates for each step of the funnel. Every template is thoughtfully built and highly optimized for mobile, tablet, and desktop.
-
+Every template is thoughtfully built, imports with one click, and is optimized for mobile, tablet, and desktop.
 
 **Contacts Activity**
 
-In-depth Customer Insights to get insights into every customer – total spend, offers accepted, spend at each step & more.
+Get in-depth insight into every customer, including what they bought, which offers they accepted or rejected, total spend, spend at each step and more.
 
-You can see the contacts entering your funnel and see detailed analytics in real-time.
+You can see the contacts entering your funnel and see detailed analytics in real time.
 
-What's more? You can choose to send the contacts over to your CRM or nurture them using FunnelKit Automations - one of the most popular marketing automation and broadcast **CRM for WordPress**.
-
+What's more? You can choose to send the contacts over to your CRM or nurture them using FunnelKit Automations – one of the most popular marketing automation and broadcast **CRM for WordPress**.
 
 **Performance Dashboard**
 
-The Performance Dashboard gives you a bird's eye view of the whole funnel builder.
+The Performance Dashboard gives you a bird’s-eye view of all your funnels.
 
 Here's what you can see right inside your WordPress dashboard:
 
-- The total number of contacts, orders, and revenue
-- Revenue generated per contact
-- Best performing funnel and pages – See the leaderboard to know what's working and what's not
-- Recent activities – A log to track the users' actions in real-time
+* The total number of contacts, orders, and revenue
+* Revenue generated per contact
+* Best-performing funnels and pages to See the leaderboard to know what's working and what's not
+* Recent activities to see a log to track the users' actions in real time
 
-
-== FUNNEL BUILDER PRO FEATURES ==
-
-**Opt-in pop-ups/Lightbox**
-
-When a user clicks on the CTA button placed on the Opt-in page, the form pop-ups are on their screen. It allows you to capture leads in two steps, hence helping maximize conversions.
-
-https://www.youtube.com/watch?v=EZ1tZ2EWY0A
-
+= FUNNEL BUILDER PRO FEATURES =
 
 **Conversion Optimized WooCommerce Checkout Pages**
 
-Your checkout doesn't necessarily need to be just a single product-focused. You can add multiple products, allowing users to accept one or more out of the list.
+Split a long checkout form into one-, two- or three-step layouts, including a Shopify-style layout, or build a streamlined one-page checkout and dedicated order forms to sell one or several products. Apply discounts, let customers choose the exact product or variant with checkboxes or radio buttons, and build deals like buy two get one free directly at checkout.
 
-Furthermore, use all these [WooCommerce Checkout Optimizations](https://funnelkit.com/woocommerce-checkout-page-optimization/) to minimize cart abandonment.
+Add entirely new fields to the checkout, choosing from 14+ field types such as text, checkbox, radio, HTML and file upload. Make fields conditional so they appear only when relevant, like a company name field for business buyers or a gift message when a gift option is chosen. Edit the order summary and mini cart shown at checkout.
 
-You can even create offers such as buy two get one free or buy three get two free, allowing users to make a choice and pick a deal they love.
+Optimize your checkout with smart features like Google Address Autocomplete, auto-apply coupons, smart login, multistep field preview, and more.
 
+Enable [WooCommerce checkout optimization](https://funnelkit.com/woocommerce-checkout-page-optimization/) to reduce cart abandonment in your store.
 
 **AOV-Boosting Order Bumps**
 
-Order Bumps are the offers made to the user on the WooCommerce checkout page. One can add them to the cart with one click.
+Order bumps are offers shown on the WooCommerce checkout page. Customers add them to the cart with one click.
 
-- **Rule-based order bumps** to show or skip a bump based on the cart items, cart total, coupons used, & more.
-- Different order bump skin options to make the bump match brand colors
-- Different display positions for the order bump
-- Compatible with WooCommerce Subscriptions & Membership-based products.
+* Rule-based order bumps to show or skip a bump based on cart items, product category, cart total, coupons used, & more.
+* Multiple order bumps on one checkout, shown in a slider skin. The order total updates with each bump added.
+* Different skins and display positions to match your brand.
+* Compatible with WooCommerce Subscriptions and Sublium (including variable subscriptions), plus membership products.
 
-
-**One-Click Upsells**
+**Post-Purchase One-Click Upsells**
 
 With post-purchase upsells, secure the immediate order before pitching other offers. Users can accept them with a single click, which boosts the store's average order value. The friction-free purchases enhance user experience after the WooCommerce checkout page.
 
 https://www.youtube.com/watch?v=VyK9jCP6qng
 
-- Rule-based upsells to present offers based on item(s) bought, payment gateway used, order total & more.
-- Mobile-responsive, pre-built one-click upsell offer page templates for Elementor.
-- Dynamic Offers Paths to link one offer with another and display offers based on the previous offer's acceptance.
-- Multiple upsells on a single page.
-- Ability to separately charge a shipping fee on the upsell product.
-
-
-**In-Depth Analysis**
-
-Get deep insights into your funnels and the revenue they generate for your store. View the number of visits, total revenue, revenue per visit, and more for each funnel separately. You can select the date range and view the user's activity during that period. What's more? You can view the conversion rate and revenue for every step in the funnel.
-
-When you're equipped with data, you can make meaningful decisions and connect the dots.
-
-
-**All Premium Templates**
-
-With Funnel Builder Pro, you get access to our entire library of stylish-looking, conversion-optimized templates for all pages, from Opt-in to WooCommerce checkouts to the Thank you pages.
-
-Due to our deep integration with the page builder, you can customize all the funnel pages in Elementor. But if you wish to use any other page builder of your choice, FunnelKit gives you the liberty to do that too. Use the personalized codes and design the page you want.
-
+* Rule-based upsells and downsells based on item(s) bought, payment gateway used, order total & more.
+* Dynamic Offer Paths to link offers together and show the next one based on whether the previous offer was accepted.
+* Smart Skip to avoid offering products the customer already bought or has in the current order.
+* Multiple upsells on a single page.
+* Mobile-responsive, pre-built one-click upsell templates for Elementor, Bricks, Gutenberg, and other page builders.
+* Ability to separately charge a shipping fee on the upsell product.
 
 **A/B Testing**
 
-With FunnelKit, you can split test any page in the funnel. Want to know a single WooCommerce checkout converts better or a multi-step checkout page? Or offering one order bump work in favor or multiple bumps? A/B testing is the answer.
+Split test any page in the funnel, or the complete funnel. Does a one-page WooCommerce checkout convert better than a multi-step one? Does a single order bump beat three? A/B testing answers both.
 
-Divide the traffic and send them over to different pages to study which path gives out better conversions.
+Divide the traffic and send it to different variations of your page to see which path converts best.
 
-- Split test products offered
-- A/B test product prices – analyze which price converts better
-- See which page design leads to more sales.
-- Try out varying headings and sales copy to promote the one that converts best.
+* Split test products and offers
+* A/B test prices
+* Compare page designs and checkout layouts
+* Test order bumps and one-click upsells
+* Try different headlines and sales copy
 
-These would help you nail the products and sales page copy that resonates the most with your customers.
+**In-Depth Analytics**
 
+Visits, total revenue, revenue per visit, revenue per step and conversion rate for every funnel and every step, over any date range. See revenue generated from order bumps, one-click upsells and cart upsells.
 
-== Full Feature List ==
+**All Premium Templates**
 
-- **Unlimited Funnels:** There is no limit on the number of funnels you can create in FunnelKit. Go ahead and design to your heart's content.
-- **Ready to Use Templates:** FunnelKit offers you conversion-optimized attractive pre-built templates that can be imported with one click and save you a whole lot of time.
-- **In-line forms & Pop-Ups:** You can choose to have the Opt-in form embed on the page or open in a separate pop-up window.
-- **One-step, two-step & three-step WooCommerce checkouts:** You can choose to design a one-step or multi-step checkout form for your sales funnel.
-- **Flexible Checkout Fields Editor:** Rearrange sections, drag & drop fields to re-order them, add new fields – HTML, radio box, checkbox, text, and many more on your checkout page.
-- **Checkout Discounting:** With Funnel Builder Pro, you would be able to apply discounts to your products displayed on the WooCommerce checkout page, and who doesn't love discounts!?
-- **Offering Product Choice:** Give your customers the option to choose the exact product variant they wish to buy from multiple options right on the checkout page. It can be in the form of a checkbox or radio buttons; however, you want to display them.
-- **WooCommerce Checkout Page Optimization:** We have a range of optimization options available such as Google Address Autocomplete, Express pay options, multi-step field preview feature, auto-apply coupon codes and more.
-- **Live Cart Capturing:** Save your users' email addresses as soon as they enter them in the field. This helps in sending automated emails, especially in the case of an abandoned cart.
-- **Cart Abandonment Tracking:** Track cart abandonment rate, recovery rate, lost carts, recovered revenue, and more. Tweak email body, subject line, discount amount, and delay for better recovery results.
-- **Rule-based Order Bumps:** Conditions such as cart total, cart items, category, coupon(s) used to define what bump offer would be made to the customer. These are compatible with variable subscriptions, and membership-based products.
-- **Multiple Bumps on Checkout:** More than one Order Bump offers can also be made on one WooCommerce checkout page. The customer can add one or more bumps to their cart. With each click to add the bump, the order total gets updated.
-- **One-Click Upsell & Downsells:** Decide if you want to make an Upsell or Downsell offer to your customers based on the item purchased, cart total, and more. You can even link multiple offers together depending on such conditions.
-- **Multiple upsells on a page:** Having more than one upsell product on a page offers more options to the user to choose from, and in turn, increases the conversion rate.
-- **Smart Skip Option:** You can skip showing some offers to our customers if they had already bought it before or if it's a part of their current cart. Just set the rules to avoid making overlapping offers.
-- **A/B Testing:** A/B test your complete funnel. Split test prices, offers, products, copy, page design, of your order bump, WooCommerce checkout page, one-click upsells.
-- **Contacts Reporting:** Track which user bought what product and rejected which offer at a glance. Also, analyze how much money you made through that one contact's purchase.
-- **In-depth Analytics:** Analyse each funnel based on the total number of visits, total revenue, revenue per visit, revenue per step, and so on.
+The entire library of conversion-optimized templates, from opt-in pages to WooCommerce checkouts to thank you pages.
 
-**Integrations**
+**FunnelKit Cart Included**
 
-- **Elementor:** FunnelKit deeply integrates with Elementor to provide you with templates for all funnel pages from Opt-in to WooCommerce Checkout, and Thank you pages. Elementor also has special widgets for building any page from scratch.
-- **Divi:** We integrate with Divi and have pre-built checkout page templates for you to try. You can customize a Shopify style checkout or our most popular Minimalist template in Divi.
-- **Oxygen:** FunnelKit has a range of templates that you can customize and build with the help of Oxygen page builder.
-- **Gutenberg:** FunnelKit deeply integrates with Gutenberg to give you a nice feeling of editing your funnel pages in WordPress Gutenberg builder.
-- **Bricks:**  FunnelKit’s deep integration with Bricks page builder enables you to design beautiful, high-converting funnels. Use drag-and-drop elements to customize pre-designed templates or create one from scratch using Bricks.
-- **Other Page Builders:** You can use any other page builder of your choice, like Beaver, Thrive, or others, to customize the funnel pages. Use the custom shortcodes to create and personalize any page on the builder.
-- **LearnDash:** FunnelKit integrates via WooCommerce with the popular LMS plugin, LearnDash, allowing you to auto-enroll leads into your free course with a single click.
+The Pro side cart comes free with your FunnelKit Plus license, with no separate purchase or license key. It includes in-cart upsells and cross-sells, free-shipping progress bars, milestone rewards and cart analytics.
 
+= Works With Your Stack =
 
-== Go Beyond Funnels With Marketing Automations ==
+**Themes**
+Works with all themes including Astra, Divi, Flatsome, WoodMart, Woostify, Shoptimizer, Enfold, Rey, and any WooCommerce-compatible theme available in WordPress.
 
-Why stop at the sales funnel when you can go beyond marketing automation? Use email marketing to recover abandoned carts and bring customers back to the funnel.
+**Page Builders**
+Elementor, Divi, Bricks, Oxygen, Gutenberg, and Beaver Builder. Other builders like Spectra, Avada Fusion, Cornerstone, Brizy, Thrive Architect, and Greenshift work via shortcodes.
 
-Offer time-bound coupon codes to your customers to make them complete their purchase sooner rather than later.
+**Payment Gateways**
+Stripe, PayPal Payments, WooPayments, Mollie, Authorize.net, Mercado Pago, and more. Apple Pay, Google Pay, and Amazon Pay are supported as express checkout options.
 
-With the free version of [FunnelKit Automations](https://wordpress.org/plugins/wp-marketing-automations/), you get the following features:
+**Plugins**
+WooCommerce Subscriptions, WooCommerce Product Bundles, Advanced Coupons, EU/UK VAT Manager, WPML, Polylang, TranslatePress, LearnDash, Lifter LMS, hCaptcha, Cloudflare Turnstile, and many more.
 
-- Create an abandoned cart recovery sequence.
-- Live capture the carts to keep track of abandonment and recovery.
-- Design a post-purchase follow-up sequence to help you build better bonds with your customers.
-- Set a time delay to your mails to send them at a strategically pre-defined time.
-- Personalized discount coupon codes and set expiry on them.
-- Define rules based on which the automated emails and coupon codes would be sent to the users.
-- Track abandoned carts, recovered carts, and revenue- all in real-time.
+**Tracking**
+Meta Pixel & Conversions API, Google Analytics 4, Google Ads, TikTok, Pinterest, and Snapchat.
 
+= Go Beyond Funnels With Marketing Automations =
 
-== Funnel Builder plugin is best for? ==
+Why stop at the sale? [FunnelKit Automations](https://wordpress.org/plugins/wp-marketing-automations/) is free and adds:
 
-* eCommerce Store Owners
-* Course Creators
-* Coaches / Trainers
+* Abandoned cart recovery sequences
+* Live cart capture for accurate abandonment tracking
+* Post-purchase follow-up sequences
+* Time-delayed sends scheduled around buyer behavior
+* Real-time reporting on abandoned carts, recovered carts, and recovered revenue
+
+It's one of the most popular marketing automation and broadcast CRM plugins for WordPress, and it integrates directly with your FunnelKit checkout.
+
+= ✅ Who Is FunnelKit Funnel Builder For? =
+
+FunnelKit Funnel Builder is the ideal WordPress funnel builder and WooCommerce checkout plugin for any store or business, including:
+
+* WooCommerce store owners
+* Course creators and coaches
+* Membership and subscription businesses
+* Software companies
+* Fashion and apparel brands
 * Dropshippers
-* Businesses
-* Artists & Photographers
-* Bloggers
-* Everyone ...
+* Fitness coaches
+* Authors and publishers
+* Personal brands and bloggers
+* Real estate professionals
+* Educational institutions
+* Digital product sellers
 
+= 🔗 Works Great With =
 
-== Why us? ==
+[**FunnelKit Cart**](https://wordpress.org/plugins/cart-for-woocommerce/) - A WooCommerce side cart that sends shoppers straight to your checkout, with free-shipping progress bars, milestone rewards and in-cart upsells.
 
-As an agency back in the day, serving one-on-one clients and building solutions on top of WordPress and WooCommerce, we realized that there weren't many smart solutions available to build sales funnels in WordPress, and so we decided to build one. A solution with a seamless user experience that does not bind the user into paying hundreds of dollars every month.
+[**FunnelKit Automations**](https://wordpress.org/plugins/wp-marketing-automations/) - Marketing automation and CRM for WordPress. Recover abandoned checkouts, send post-purchase follow-ups and run email/SMS broadcasts.
 
-All of this led us to create *– FunnelKit –* an interface that is designed keeping the users in mind.
+[**Sublium Subscriptions**](https://wordpress.org/plugins/sublium-subscriptions-for-woocommerce/) - Recurring payments, subscribe-and-save, memberships and installment billing, with failed-payment recovery plus MRR and churn analytics. Built by the FunnelKit team to work smoothly with your checkout.
 
-And now you can enjoy a very intuitive and guided user experience to create your sales funnel within minutes without hiring a developer or a designer.
+[**FunnelKit Payment Gateway for Stripe WooCommerce**](https://wordpress.org/plugins/funnelkit-stripe-woo-payment-gateway/) - Accept cards, Apple Pay, Google Pay and buy now, pay later options through Stripe. It's built for FunnelKit checkouts and supports one-click upsells.
 
-It's the ultimate all-in-one Funnel Builder for WordPress, WooCommerce checkout manager and the complete funnel building solution.
+[**FunnelKit Payment Gateway with PayPal for WooCommerce**](https://wordpress.org/plugins/funnelkit-payment-gateway-paypal-for-woocommerce/) - Accept PayPal, Pay Later, Venmo and card payments using PayPal's latest APIs, with support for subscriptions.
 
+[**FunnelKit Payment Gateway for Square WooCommerce**](https://wordpress.org/plugins/funnelkit-payment-gateway-square-for-woocommerce/) - Accept Square payments in your WooCommerce store, with a secure account connection in a few clicks.
 
-== External services ==
+= External Services =
 
 FunnelKit may connect to the following external services, only when the related feature is used:
 
@@ -263,50 +254,97 @@ FunnelKit may connect to the following external services, only when the related 
 * **Snapchat** may receive pixel events when a tag is added. [Terms](https://snap.com/en-US/terms) and [Privacy Policy](https://snap.com/en-US/privacy/privacy-policy)
 * **TikTok** may receive pixel events when a tag is added. [Terms](https://www.tiktok.com/legal/page/global/terms-of-service/en) and [Privacy Policy](https://www.tiktok.com/legal/page/global/privacy-policy/en)
 
-
-== Source code ==
+== Source Code ==
 
 Unminified source for the plugin's compiled JavaScript and CSS, along with the build configuration and build steps, is available here: https://drive.google.com/drive/folders/1Z-R0_Nbb0BOCyqauxvCftjhS9Ve--IHH
-
 
 == Frequently Asked Questions ==
 
 = What is a sales funnel? =
-A sales funnel leads prospects on a journey. The idea is to first turn a prospect into a lead and then into a customer.
+A sales funnel guides a prospect from first contact to purchase. It starts with many potential customers at the top and narrows to the ones who buy. A simple funnel is a landing page, a checkout page and a thank you page, but you can add opt-ins, order bumps and upsells to turn it into a real revenue engine.
 
-It always starts with a high volume of potential customers at the top of the funnel. At the bottom of it, a small number of customers complete the purchase.
+= How can sales funnels enhance my WooCommerce store? =
+Sales funnels allow you to offer a guided path to your visitors. Instead of only having a storefront with a catalog of products, create dedicated paths for select items.
 
-A simple sales funnel has three main steps:
-
-* Landing page
-* Checkout page
-* Thank you page
-
-But you can add more steps to make it a robust, revenue-boosting sales funnel for your business.
-
-= How sales funnels can enhance my WooCommerce store? =
-Sales funnels allow you to offer a guided path to your visitors.
-Instead of only having a storefront with a catalog of products, create dedicated paths for select items.
-
-Create beautiful store checkout with our optimized templates. Plus, add order bumps and one-click upsells to boost your average order value. You can also set up rules for your offers and target customers with offers relevant to them.
-
-So a sales funnel guides users throughout their shopping journey and add more revenue to your WooCommerce store.
+Create a beautiful store checkout with our optimized templates. Plus, add order bumps and one-click upsells to boost your average order value. You can also set up rules for your offers and target customers with offers relevant to them.
 
 = Why do I need a sales funnel builder? =
+
 Sales funnels boost sales and increase conversions for online businesses.
-But, creating beautiful pages requires you to spend loads of money on web developers. And most SaaS Funnel Builders are complicated or too expensive.
+But creating beautiful pages requires you to spend loads of money on web developers. And most SaaS funnel builders are complicated or too expensive.
 
 The main purpose of a sales funnel builder is to help you create a high-converting sales funnel fast. It should also be affordable and easy to use.
 
-FunnelKit's Funnel Builder offers you a promising solution that is also robust.
+FunnelKit’s Funnel Builder offers an affordable, robust solution.
 
-Use FunnelKit's Funnel Builder to create profitable sales funnels without learning code.
+Use FunnelKit’s Funnel Builder to create profitable sales funnels without learning code.
 
-= What makes FunnelKit unique as compared to other funnel builders?=
+= How do I choose a WooCommerce checkout plugin? =
+
+It depends on what you need. If you only want to hide or rename a few fields, a simple checkout field editor is enough.
+
+If you want to replace the checkout page entirely, redesign it, restructure the fields, speed it up with Express Pay and address autocomplete, and raise order value with order bumps and upsells, you need a full checkout solution.
+
+FunnelKit is the second kind. It's active on 30,000+ WooCommerce stores and has [1,000+ five-star reviews](https://wordpress.org/support/plugin/funnel-builder/reviews/?filter=5) on WordPress.org, many of them about our support team.
+
+= How do I customize the WooCommerce checkout page? =
+
+1. Install and activate FunnelKit Funnel Builder.
+2. Go to FunnelKit > Store Checkout and create a checkout.
+3. Import a checkout template.
+4. Add, remove or reorder fields in the drag-and-drop field editor.
+5. Choose a one-step or multi-step layout (multi-step is Pro).
+6. Style the page in Elementor, Divi, Bricks, Oxygen or Gutenberg, then save.
+
+No code is required, and you don't need to edit your theme's template files.
+
+= Can I add, remove, or reorder WooCommerce checkout fields? =
+
+Yes. FunnelKit's checkout field editor lets you add custom fields, delete fields you don't need, reorder them by dragging, and create your own sections to group them. You can add text, radio, checkbox, select, and HTML fields, and set each one as required or optional.
+
+= Does FunnelKit Funnel Builder replace the default WooCommerce checkout page? =
+
+Yes. Store Checkout overrides the default WooCommerce checkout across your whole store. You can also build product-specific checkouts that apply only to certain products, while everything else uses the default flow.
+
+= Will this checkout plugin work with my payment gateway? =
+
+FunnelKit Funnel Builder works with every major WooCommerce payment gateway, including Stripe, PayPal Payments, WooPayments, Amazon Pay, Authorize.net and Mercado Pago. Express pay methods like Apple Pay and Google Pay are supported directly on the checkout page.
+
+= Is FunnelKit Funnel Builder a one-page checkout plugin? =
+
+Yes. The free version includes a one-page checkout with free templates. With Pro, you can also split the form into two- or three-step layouts and A/B test them to see which converts better for your store.
+
+= How is this different from a WooCommerce checkout field editor plugin? =
+
+A checkout field editor changes the fields. FunnelKit changes the entire checkout experience, including the page design, field structure, payment options, speed, and what you can offer the customer before and after they pay. The field editor is one feature inside it.
+
+= Will FunnelKit Funnel Builder slow down my checkout page? =
+
+No. Recent releases specifically optimized checkout performance: redundant total recalculations were removed, field rendering was made lighter, and database queries at checkout were consolidated. FunnelKit is also compatible with caching plugins.
+
+= Is there a free version of the checkout plugin? =
+
+Yes. FunnelKit Lite includes lead gen, sales funnels, customizable WooCommerce store checkout pages, the checkout field editor, thank you page templates, opt-in and sales pages, and the performance dashboard. Order bumps, one-click upsells, A/B testing, and detailed analytics are Pro features.
+
+= Do I need the Pro version? =
+
+It depends on what you're doing. Lite is enough to customize your checkout page and build funnel pages. If you want to replace your store checkout sitewide, add order bumps or one-click upsells, or run A/B tests, you'll need Pro. See current pricing at [funnelkit.com](https://funnelkit.com/?utm_source=fb-lite&utm_campaign=wp-repo&utm_medium=readme&utm_term=pricing).
+
+= Can I add a side cart or mini cart to my WooCommerce store? =
+
+Yes, with the free [FunnelKit Cart](https://wordpress.org/plugins/cart-for-woocommerce/) plugin. It replaces the static WooCommerce cart page with a slide-out drawer that opens without a page reload, so shoppers can edit quantities and apply coupons in place, then go straight to your FunnelKit checkout. Both plugins are built by the same team and work together with no setup.
+
+= Will FunnelKit Funnel Builder be compatible with my WordPress theme? =
+
+Yes. FunnelKit Funnel Builder works with any WooCommerce-compatible theme, and we ship theme-specific compatibility fixes in most releases include compatibility fixes for popular themes like Astra, Divi, Flatsome, Woodmart, Woostify, Shoptimizer, Enfold, Rey, and many more.
+
+= What makes FunnelKit Funnel Builder unique as compared to other funnel builders? =
+
 FunnelKit is the most powerful WordPress sales funnel builder that gives you complete control over your funnels.
 
 You don't have to rely on other tools or plugins to create or track your funnels.
-Here's why FunnelKit is one of its kind when compared to other funnel builders:
+
+Here's why FunnelKit Funnel Builder is one of a kind when compared to other funnel builders:
 
 * Professionally designed templates that are customizable
 * Works with all the page builders
@@ -320,76 +358,45 @@ Here's why FunnelKit is one of its kind when compared to other funnel builders:
 * In-depth analytics and reporting
 * Supports all the major payment processing gateways, and a lot more.
 
-= How many sales funnels can I create with FunnelKit? =
-You can create unlimited sales funnels with FunnelKit. There is no limit to how many WordPress sales funnels you can build with FunnelKit.
+= Will FunnelKit Funnel Builder work with the page builder I use? =
 
-= What type of pages can I create in a sales funnel with FunnelKit? =
-You can use FunnelKit to create different types of pages in your WordPress sales funnel.
-These include:
+Yes. FunnelKit integrates deeply with Elementor, Divi, Bricks, Oxygen and Gutenberg, with dedicated templates and widgets for each. Other builders like Beaver Builder, Thrive Architect and Brizy work through shortcodes.
 
-* Opt-in page
-* Opt-in confirmation page
-* Sales or landing page
-* Checkout page
-* Order bump
-* One-click Upsell and downsell
-* Thank you page
+= Does FunnelKit work with WooCommerce Subscriptions? =
 
-You can individually add any number of steps to your sales funnels and make it work like a charm.
+Yes. Checkout, order bumps and one-click upsells all support subscription and membership products. For advanced subscription management, FunnelKit also works alongside [Sublium](https://sublium.com).
 
-= Do I need any coding or special designing skills to set up funnels with FunnelKit? =
-No, you don't need any coding and special designing skills to set up your sales funnels with FunnelKit.
+= Does FunnelKit works with Facebook Pixel? =
+
+Yes, FunnelKit work with Facebook Pixel including the Conversions API for server-side tracking. FunnelKit also supports Google Analytics 4, Google Ads, TikTok, Snapchat, and Pinterest.
+
+= What types of funnels can I build? =
+
+Lead generation, course, membership, subscription, ebook, webinar, tripwire, affiliate, masterclass, product launch, physical product, squeeze page, quiz and challenge funnels, among others. There's no limit on how many you create.
+
+= Do I need any coding or design skills to set up funnels with FunnelKit? =
+
+No, you don't need any coding or design skills to set up your sales funnels with FunnelKit.
 
 With a library of templates, you can start customizing and creating your funnels fast. Create your funnels from scratch with drag-and-drop widgets using different page builders.
 
-= Will FunnelKit work with the page builder I use? =
-Yes, FunnelKit works with all the page builders. It integrates with Elementor, Divi, Gutenberg, and Oxygen.
-
-If you use another page builder, such as Beaver Builder, Thrive, Brizzy, etc., then create funnels with shortcodes.
-
-= What type of sales funnels can I create with FunnelKit? =
-FunnelKit is evolving to match your business requirements. You can set up unlimited sales funnels and bring sales to the table.
-
-Here are the types of funnels you can create with FunnelKit:
-* Lead generation funnel
-* Course funnels
-* Membership funnels
-* Subscription funnels
-* Ebook funnels
-* Webinar funnels
-* Tripwire funnels
-* Affiliate sales funnels
-* Masterclass funnels
-* Lead funnels
-* Product launch funnels
-* Sales funnels for physical products
-* Squeeze page funnels
-* Quiz funnels
-* Challenge funnels, and so many more.
-
-= Does FunnelKit work with Facebook Pixel? =
-Yes, FunnelKit works with Facebook Pixel to help you track user behavior and the ROI of your ad spending. FunnelKit lets you integrate Facebook Pixel with WooCommerce. It further lets you track new purchases, abandoned carts, leads, and more.
-
-FunnelKit also integrates with TikTok pixel, Snapchat pixel, Pinterest tag, Google Ads, & more.
-
-= Will FunnelKit be compatible with my WordPress theme? =
-Yes, FunnelKit is compatible with all the themes available in WordPress. You don't have to worry about compatibility issues with FunnelKit. It's a result of continuous research and works well with any WordPress theme.
-
-= Can I integrate FunnelKit with Google Analytics to analyze performance? =
-Certainly! Integrate FunnelKit with Google Analytics and measure the performance of your WordPress sales funnels. FunnelKit is compatible with both the Universal and Google Analytics 4 iterations. All you have to do is enter your Analytics ID and you're good to go!
-
-= Do I need FunnelKit Pro version? =
-It depends on your requirements. FunnelKit has both free and premium templates to create high-converting sales funnels.
-
-But if you want to create a store checkout, set up A/B testing, optimize the checkout page, add order bumps or upsells, etc.- get the Pro version. The Pro version is quite affordable and starts at $99.5 annually.
-
-=  I'm new to FunnelKit. Where can I find its documentation? =
+= I'm new to FunnelKit. Where can I find its documentation? =
 Congratulations on starting your journey with FunnelKit. [Click here](https://funnelkit.com/documentation/) to explore our official FunnelKit documentation.
 
-= I'm not able to find an option to design my funnel. Who should I contact? =
-If you face any difficulties with FunnelKit, feel free to contact our [Support Team](https://funnelkit.com/support/). Our dedicated team of experts works round the clock to ensure everything is functioning well at your end.
+= I'm stuck. Who do I contact? =
 
+Reach our [Support Team](https://funnelkit.com/support/). We answer questions on the free version too.
 
+== Screenshots ==
+
+1. FunnelKit funnel canvas
+2. Checkout page template
+3. Order bump settings
+4. Upsell offer settings
+5. Funnel analytics
+6. Contacts activity
+7. Performance dashboard
+8. Template library
 
 == Installation ==
 1. Install 'Funnel Builder' Plugin.
@@ -399,6 +406,44 @@ If you face any difficulties with FunnelKit, feel free to contact our [Support T
 
 == Change log ==
 
+
+= 3.17.0 =
+* Added: Checkout: Added an Email typo suggestion option under Checkout Optimisation to catch common email domain mistakes. (#9605)
+* Added: Funnel: Added Customer Journey to Conversion Tracking with a Conversions column, details modal, Pages Visited filter and export. (#9504)
+* Added: Funnel: Added attributed revenue reporting for landing page steps, including order bump and upsell revenue. (#9536)
+* Added: Funnel: Added a setting to skip Meta Purchase events for subscription renewal orders. (#9336)
+* Added: Checkout: Added new filters for order item thumbnails on checkout and Thank You pages, with cart item context. (#9443)
+* Improved: Checkout: Checkout CSS loading optimised on a per-builder basis. (#9549)
+* Improved: Checkout: Improved checkout accessibility with named mini-cart controls and labelled quantity inputs (WCAG 2.2 AA). (#9608)
+* Improved: Checkout: Phone fields now render as telephone inputs with valid autocomplete for better mobile keypads and autofill. (#9625)
+* Improved: Checkout: Added the Unbounded Google Font to the embed form font selector. (#9638)
+* Improved: Checkout: Improved compatibility with Weight Based Shipping. (#9451)
+* Improved: Checkout: Improved compatibility with WooCommerce EU VAT Number. (#9454)
+* Improved: Checkout: Improved compatibility with Envia Shipping. (#9486)
+* Improved: Checkout: Improved compatibility with Colombian Departments and Cities. (#9538)
+* Improved: Checkout: Improved compatibility with Spectra. (#9540)
+* Improved: Checkout: Improved compatibility with FiboFilters. (#9554)
+* Improved: Checkout: Improved compatibility with MailerLite for WooCommerce. (#9568)
+* Improved: Checkout: Improved compatibility with SDEK and eDostavka. (#9571)
+* Improved: Checkout: Improved compatibility with Germanized for WooCommerce. (#9584)
+* Improved: Checkout: Improved compatibility with WPLoyalty. (#9596)
+* Improved: Funnel: Optimised the dashboard upsell and order bump listing for stores with many offers. (#9420)
+* Improved: Funnel: Updated the Google Fonts list in block editor controls with newer families such as Lexend Deca. (#9602)
+* Improved: Funnel: Improved conversion analytics now cover the UTM content column too. (#8592)
+* Fixed: Checkout: Collapsible order summary now shows coupon success and error messages correctly. (#9345)
+* Fixed: Funnel: Improved deduplication for duplicate Add to Cart tracking events. (#9483)
+* Fixed: Checkout: Resolved unexpected zooming on iPhone Safari for block-supported themes. (#9479)
+* Fixed: Checkout: Order summary now shows the correct line total for subscription products with quantity above one. (#9543)
+* Fixed: Checkout: Checkout discounts now apply to products with a scheduled sale on WooCommerce 11.1.0. (#9544)
+* Fixed: Checkout: The Bricks checkout breadcrumb setting is now honoured. (#9620)
+* Fixed: Funnel: Meta Pixel and Conversions API events now report the actual page URL. (#9268)
+* Fixed: Funnel: Meta ViewContent events now send the standard product content type. (#9576)
+* Fixed: Funnel: View events for variable products now use the URL-selected variation and its price. (#9591)
+* Fixed: Funnel: Child pages now redirect to their canonical URL with the parent slug. (#9603)
+* Fixed: Optin: Opt-in forms now redirect to the next step correctly when the Kit (ConvertKit) integration is enabled. (#9352)
+
+= 3.16.0.6 =
+* Improved: Thank You Page: Hardened output with inline scripts on the order received page. (#9581)
 
 = 3.16.0.5 =
 * Improved: Funnel: Admin App styling improved with WordPress version 7.1. (#9442)
@@ -2111,4 +2156,4 @@ If you face any difficulties with FunnelKit, feel free to contact our [Support T
 * Fixed: Checkout- Savoy and Boagiotti Theme compatibility updated
 
 = 1.0.0 (Nov 26, 2020) =
-* Public Release Launch Date
+* Public Release Launch Date 

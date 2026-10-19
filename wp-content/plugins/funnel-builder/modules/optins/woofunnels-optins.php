@@ -89,7 +89,6 @@ if ( ! class_exists( 'WFOPP_Core' ) ) {
 			/**
 			 * Initialize Localization
 			 */
-			add_action( 'init', array( $this, 'localization' ) );
 			add_action( 'plugins_loaded', array( $this, 'load_classes' ), 1 );
 			add_action( 'plugins_loaded', array( $this, 'register_classes' ), 1 );
 			add_action( 'plugins_loaded', array( $this, 'load_optin_core_classes' ), 2 );
@@ -97,9 +96,6 @@ if ( ! class_exists( 'WFOPP_Core' ) ) {
 			add_action( 'wffn_loaded', array( $this, 'load_steps' ) );
 		}
 
-		public function localization() {
-			load_plugin_textdomain( 'funnel-builder', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
-		}
 
 		/**
 		 *

@@ -11,7 +11,7 @@ try {
 	$show_package_name       = true;
 	$chosen_shipping_methods = WC()->session->get( 'chosen_shipping_methods', array() );
 
-// Create new subscriptions for each subscription product in the cart (that is not a renewal)
+	// Create new subscriptions for each subscription product in the cart (that is not a renewal)
 	foreach ( WC()->cart->recurring_carts as $recurring_cart_key => $recurring_cart ) {
 
 		// This ensures we get the correct package IDs (these are filtered by WC_Subscriptions_Cart).
@@ -24,14 +24,14 @@ try {
 		// Create shipping packages for each subscription item
 		if ( $cart_has_next_shipment && WC_Subscriptions_Cart::cart_contains_subscriptions_needing_shipping( $recurring_cart ) ) {
 
-			foreach ( $recurring_cart->get_shipping_packages() as $recurring_cart_package_key => $base_package ) {
+			foreach ( $recurring_cart->get_shipping_packages() as $recurring_cart_package_key => $base_package ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce Subscriptions core template port; upstream variable names kept deliberately so the file stays diffable against the WCS original.
 				$product_names                      = array();
 				$package_index                      = isset( $recurring_cart_package['package_index'] ) ? $recurring_cart_package['package_index'] : 0;
 				$base_package['recurring_cart_key'] = $recurring_cart_key;
 
-				$package = WC()->shipping->calculate_shipping_for_package( $base_package );
+				$package = WC()->shipping->calculate_shipping_for_package( $base_package ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce Subscriptions core template port; upstream variable names kept deliberately so the file stays diffable against the WCS original.
 				if ( $show_package_details ) {
-					foreach ( $package['contents'] as $item_id => $values ) {
+					foreach ( $package['contents'] as $item_id => $values ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce Subscriptions core template port; upstream variable names kept deliberately so the file stays diffable against the WCS original.
 						$product_names[] = $values['data']->get_title() . ' &times;' . $values['quantity'];
 					}
 					$package_details = implode( ', ', $product_names );
@@ -41,7 +41,7 @@ try {
 
 				$chosen_initial_method = isset( $chosen_shipping_methods[ $package_index ] ) ? $chosen_shipping_methods[ $package_index ] : '';
 				if ( count( $package['rates'] ) > 1 ) {
-					$package['rates'] = WFACP_Common::sort_shipping( $package['rates'] );
+					$package['rates'] = WFACP_Common::sort_shipping( $package['rates'] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce Subscriptions core template port; upstream variable names kept deliberately so the file stays diffable against the WCS original.
 				}
 				if ( isset( $chosen_shipping_methods[ $recurring_cart_package_key ] ) ) {
 					$chosen_recurring_method = $chosen_shipping_methods[ $recurring_cart_package_key ];
@@ -54,71 +54,74 @@ try {
 
 				$shipping_selection_displayed = false;
 				$only_one_shipping_option     = count( $package['rates'] ) === 1;
-				if ( $only_one_shipping_option || ( isset( $package['rates'][ $chosen_initial_method ] ) && isset( $initial_packages[ $package_index ] ) && ( $package['rates'] == $initial_packages[ $package_index ]['rates'] ) && apply_filters( 'wcs_cart_totals_shipping_html_price_only', true, $package, $recurring_cart ) ) ) {
-					$shipping_method          = $only_one_shipping_option ? current( $package['rates'] ) : $package['rates'][ $chosen_initial_method ];
+				if ( $only_one_shipping_option || ( isset( $package['rates'][ $chosen_initial_method ] ) && isset( $initial_packages[ $package_index ] ) && ( $package['rates'] == $initial_packages[ $package_index ]['rates'] ) && apply_filters( 'wcs_cart_totals_shipping_html_price_only', true, $package, $recurring_cart ) ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
+					$shipping_method          = $only_one_shipping_option ? current( $package['rates'] ) : $package['rates'][ $chosen_initial_method ]; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce Subscriptions core template port; upstream variable names kept deliberately so the file stays diffable against the WCS original.
 					$recurring_shipping_count = $only_one_shipping_option ? 'wfacp_recuring_shiping_count_one' : '';
 					?>
-                    <tr class="shipping recurring-total <?php echo esc_attr( $recurring_cart_key ) . ' ' . esc_attr( $recurring_shipping_count ); ?>" style="display:none">
-                        <td colspan="">
+					<tr class="shipping recurring-total <?php echo esc_attr( $recurring_cart_key ) . ' ' . esc_attr( $recurring_shipping_count ); ?>" style="display:none">
+						<td colspan="">
 							<?php
 							if ( ! empty( $show_package_details ) ) :
 								echo '<p class="woocommerce-shipping-contents"><small>' . esc_html( $package_details ) . '</small></p>';
 							endif;
 							?>
-                            <style>.wfacp_recurring_shipping_label {
-                                    display: none !important;
-                                }</style>
-                            <ul id="shipping_method_<?php echo esc_attr( md5( $show_package_details ) ); ?>" class="woocommerce-shipping-methods">
-                                <li class="wfacp_single_shipping_method">
-                                    <div class="wfacp_single_shipping">
-                                        <div class="wfacp_shipping_radio">
+							<style>.wfacp_recurring_shipping_label {
+									display: none !important;
+								}</style>
+							<ul id="shipping_method_<?php echo esc_attr( md5( $show_package_details ) ); ?>" class="woocommerce-shipping-methods">
+								<li class="wfacp_single_shipping_method">
+									<div class="wfacp_single_shipping">
+										<div class="wfacp_shipping_radio">
 											<?php
 											wcs_cart_print_shipping_input( $recurring_cart_package_key, $shipping_method, $shipping_method->id, 'radio' );
 											printf( '<label for="shipping_method_%1$s_%2$s">%3$s</label>', esc_attr( $recurring_cart_package_key ), esc_attr( sanitize_title( $shipping_method->id ) ), wp_kses_post( WFACP_Common::shipping_method_label( $shipping_method ) ) );
 											?>
-                                        </div>
-                                        <div class="wfacp_shipping_price">
+										</div>
+										<div class="wfacp_shipping_price">
 											<?php
 											echo wp_kses_post( wcs_cart_totals_shipping_method_price_label( $shipping_method, $recurring_cart ) );
 											?>
-                                        </div>
-                                    </div>
-                                    <div class="wfacp_single_shipping">
+										</div>
+									</div>
+									<div class="wfacp_single_shipping">
 										<?php
 										do_action( 'woocommerce_after_shipping_rate', $shipping_method, $recurring_cart_package_key );
 										?>
-                                    </div>
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
+									</div>
+								</li>
+							</ul>
+						</td>
+					</tr>
 					<?php
 				} else {
 					$shipping_selection_displayed = true;
 					$package_name                 = '';
 					if ( $show_package_name ) {
-						/*
-						 * Mirrors WooCommerce Subscriptions' own cart template string verbatim so the
-						 * package label resolves against their translation catalogue. The singular
-						 * deliberately carries no placeholder ("Shipping", then "Shipping 2"...);
-						 * WPCS flags that, but rewriting the pair would change the rendered label and
-						 * lose the borrowed translation, since gettext keys plural entries by the
-						 * singular/plural msgid pair. Left as-is on purpose.
-						 */
-						$package_name = apply_filters( 'woocommerce_shipping_package_name', sprintf( _n( 'Shipping', 'Shipping %d', ( $package_index + 1 ), 'woocommerce-subscriptions' ), ( $package_index + 1 ) ), $package_index, $package );
+						$package_name = apply_filters(
+							'woocommerce_shipping_package_name',
+							( $package_index > 0 )
+								/* translators: %d: shipping package number. */
+								? sprintf( __( 'Shipping %d', 'funnel-builder' ), $package_index + 1 )
+								: __( 'Shipping', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+							$package_index,
+							$package
+						);
 					}
 
-					wc_get_template( 'wfacp/checkout/cart-recurring-shipping-calculate.php', array(
-						'package'              => $package,
-						'available_methods'    => $package['rates'],
-						'show_package_details' => $show_package_details,
-						'package_details'      => $package_details,
-						'package_name'         => $package_name,
-						'index'                => $recurring_cart_package_key,
-						'chosen_method'        => $chosen_recurring_method,
-						'recurring_cart_key'   => $recurring_cart_key,
-						'recurring_cart'       => $recurring_cart,
-					) );
+					wc_get_template(
+						'wfacp/checkout/cart-recurring-shipping-calculate.php',
+						array(
+							'package'              => $package,
+							'available_methods'    => $package['rates'],
+							'show_package_details' => $show_package_details,
+							'package_details'      => $package_details,
+							'package_name'         => $package_name,
+							'index'                => $recurring_cart_package_key,
+							'chosen_method'        => $chosen_recurring_method,
+							'recurring_cart_key'   => $recurring_cart_key,
+							'recurring_cart'       => $recurring_cart,
+						)
+					);
 					$show_package_name = false;
 				}
 				do_action( 'woocommerce_subscriptions_after_recurring_shipping_rates', $recurring_cart_package_key, $base_package, $recurring_cart, $chosen_recurring_method, $shipping_selection_displayed );
@@ -127,7 +130,7 @@ try {
 		WC_Subscriptions_Cart::set_calculation_type( 'none' );
 		WC_Subscriptions_Cart::set_recurring_cart_key( 'none' );
 	}
-} catch ( Exception|Error $e ) {
+} catch ( Exception | Error $e ) {
 	if ( function_exists( 'wcs_cart_totals_shipping_html' ) ) {
 		wcs_cart_totals_shipping_html();
 	}

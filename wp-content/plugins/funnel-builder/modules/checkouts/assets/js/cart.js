@@ -225,6 +225,42 @@
         }
     };
     let checkout_form = $('form.checkout');
+    // Empty a coupon message container without forcing it visible. jQuery .show() writes an
+    // inline display:block that beats the `.woocommerce-message:empty { display: none }` rule,
+    // which leaves an empty coloured message box on screen while the request is in flight.
+    let wfacp_clear_coupon_msg = (ele) => ele.html('').css('display', '');
+    // Every message container of every coupon block on the page: order summary coupon form
+    // (.wfacp_coupon_msg / .wfacp_coupon_notices) and coupon field (.wfacp_coupon_field_msg /
+    // _error_msg / _remove_msg). A page can carry more than one block, e.g. the collapsible
+    // order summary plus the coupon field.
+    let wfacp_coupon_msg_selector = '.wfacp_coupon_msg .woocommerce-message, .wfacp_coupon_notices, .wfacp_coupon_field_msg, .wfacp_coupon_error_msg, .wfacp_coupon_remove_msg';
+    // The page shows the outcome of the LAST coupon action only. Every action starts by wiping
+    // what the previous one left in every block, otherwise a block keeps displaying another
+    // block's stale success/error line. The nodes are emptied, never removed, so the order
+    // review fragments still have their targets, and the applied coupon itself stays listed in
+    // the order totals with its own remove link.
+    let wfacp_reset_coupon_messages = () => wfacp_clear_coupon_msg($(wfacp_coupon_msg_selector));
+    // The coupon block a link/form belongs to, so an outcome is shown where the user acted.
+    // Falls back to the whole document for controls outside a block, e.g. the totals remove link.
+    let wfacp_coupon_block = (ele) => {
+        let block = ele.closest('.wfacp_woocommerce_form_coupon, .wfacp-coupon-page');
+
+        return block.length > 0 ? block : $(document);
+    };
+    // A coupon action reports its outcome in .wfacp_coupon_notices, then triggers update_checkout,
+    // whose fragment refills .wfacp_coupon_msg .woocommerce-message with an "applied" line for every
+    // coupon still in the cart. Both would show, e.g. "Coupon has been removed." next to "Coupon code
+    // applied successfully." for the other coupon. Where a block carries an outcome, its applied line
+    // is dropped again after the fragments land; the next coupon action empties the notices and the
+    // applied line comes back with the following update.
+    $(document.body).on('updated_checkout', function () {
+        $('.wfacp_coupon_notices').each(function () {
+            let notices = $(this);
+            if ('' !== notices.text().trim()) {
+                wfacp_clear_coupon_msg(wfacp_coupon_block(notices).find('.wfacp_coupon_msg .woocommerce-message'));
+            }
+        });
+    });
     let wc_checkout_coupons_main = {
         coupon: '',
         init: function () {
@@ -235,9 +271,9 @@
         },
 
         response: function (rsp) {
-            let wfacp_coupon_msg = $('.wfacp_coupon_notices');
-            wfacp_coupon_msg.html('').show();
             let $form = $('form.checkout_coupon');
+            let wfacp_coupon_msg = wfacp_coupon_block($form).find('.wfacp_coupon_notices');
+            wfacp_clear_coupon_msg(wfacp_coupon_msg);
 
             if ($form.hasClass('wfacp_layout_shopcheckout')) {
                 $form.removeClass('processing').children(".wfacp_coupon_row").aero_unblock();
@@ -257,6 +293,10 @@
                     let error = message.error;
                     if (error.length > 0) {
                         $form.addClass('wfacp_invalid_coupon');
+                        /* The order review fragments re-rendered the applied coupon message while
+                           this request was in flight. Drop it again so the failed code is not
+                           reported next to a success line belonging to another coupon. */
+                        wfacp_reset_coupon_messages();
 
                         for (let i = 0; i < error.length > 0; i++) {
                             let message = error[i];
@@ -322,9 +362,7 @@
             $form.find('button[name="apply_coupon"]').addClass('wfacp_btn_clicked');
 
 
-            let wfacp_coupon_msg = $('.wfacp_coupon_msg .woocommerce-message');
-            wfacp_coupon_msg.html('').show();
-            $('.wfacp_coupon_notices').html('').show();
+            wfacp_reset_coupon_messages();
             wc_checkout_coupons_main.coupon = coupon_code;
             set_aero_data({
                 'action': 'apply_coupon_main',
@@ -369,21 +407,30 @@
                 security: wc_checkout_params.remove_coupon_nonce,
                 coupon: coupon
             };
-            let wfacp_coupon_msg = $('.wfacp_coupon_msg');
+            /* The block the user removed from, so the notice is shown there and not in every
+               coupon block on the page. Remove links in the order totals belong to no block, they
+               fall back to all of them. */
+            let block = wfacp_coupon_block($(this));
+            let wfacp_coupon_msg = block.find('.wfacp_coupon_msg');
+            let wfacp_coupon_notices = block.find('.wfacp_coupon_notices');
+            wfacp_reset_coupon_messages();
             $.ajax({
                 type: 'POST',
                 url: wc_checkout_params.wc_ajax_url.toString().replace('%%endpoint%%', 'remove_coupon'),
                 data: data,
                 success: function (code) {
-                    $('.wfacp_coupon_notices').html('').show();
-                    //$('.woocommerce-error, .woocommerce-message').remove();
                     container.removeClass('processing');
                     show_unblocked_mini_cart();
                     if (code) {
 
 
                         remove_coupon_div(coupon);
-                        if (wfacp_coupon_msg.length > 0) {
+                        /* Empty the applied coupon message rather than replacing the whole
+                           .wfacp_coupon_msg, so its fragment keeps a target for the next update. */
+                        wfacp_reset_coupon_messages();
+                        if (wfacp_coupon_notices.length > 0) {
+                            wfacp_coupon_notices.html(code);
+                        } else if (wfacp_coupon_msg.length > 0) {
                             wfacp_coupon_msg.html(code);
 
                         } else {
@@ -465,6 +512,7 @@
             }
             field.removeClass('wfacp_coupon_success');
             field.removeClass('wfacp_coupon_failed');
+            wfacp_reset_coupon_messages();
             field.addClass('processing').find(".wfacp_coupon_field_box").aero_block();
 
             wc_checkout_coupon_field.coupon_code = coupon;
@@ -495,6 +543,7 @@
 
 
             wc_checkout_coupon_field.coupon_code = coupon;
+            wfacp_reset_coupon_messages();
             if (wfacp_frontend.applied_coupons.hasOwnProperty(coupon)) {
                 delete wfacp_frontend.applied_coupons[coupon];
             }
@@ -508,9 +557,12 @@
             });
         },
         apply_coupon_response: function (rsp) {
-            $('.woocommerce-error, .woocommerce-message').remove();
             let $this = $('.wfacp-coupon-field-btn');
             let field = $this.parents('.wfacp_woocommerce_form_coupon');
+            /* Scoped to this coupon block: a page wide remove() also deletes the order summary
+               coupon block's .woocommerce-message node, which its fragment then has no target for. */
+            field.find('.woocommerce-error, .woocommerce-message').not('.wfacp_coupon_msg .woocommerce-message').remove();
+            $('.woocommerce-notices-wrapper .woocommerce-error, .woocommerce-notices-wrapper .woocommerce-message').remove();
             let wfacp_coupon_error_msg = field.find('.wfacp_coupon_error_msg');
             field.removeClass('processing').find(".wfacp_coupon_field_box").aero_unblock();
             //field.find('.wfacp-anim-wrap').removeClass('wfacp-anim-wrap');
@@ -525,6 +577,10 @@
                 if (message.hasOwnProperty('error')) {
                     let error = message.error;
                     if (error.length > 0) {
+                        /* The order review fragments have already re-rendered the applied coupon
+                           message above us. Drop it, so a failed code is not reported next to a
+                           success line that belongs to a different, already applied coupon. */
+                        wfacp_reset_coupon_messages();
                         for (let i = 0; i < error.length > 0; i++) {
                             let message = error[i];
                             let error_message = error[i];
@@ -550,7 +606,10 @@
         remove_coupon_field: function (rsp) {
 
             let field = wc_checkout_coupon_field.remove_field_el;
-            $('.woocommerce-error, .woocommerce-message').remove();
+            /* Scoped, see apply_coupon_response */
+            field.find('.woocommerce-error, .woocommerce-message').not('.wfacp_coupon_msg .woocommerce-message').remove();
+            $('.woocommerce-notices-wrapper .woocommerce-error, .woocommerce-notices-wrapper .woocommerce-message').remove();
+            wfacp_reset_coupon_messages();
             field.removeClass('processing').find(".wfacp_coupon_field_box").aero_unblock();
 
             if (field.find('#wfacp_coupon_code_field').length > 0) {
@@ -1083,6 +1142,14 @@
                     'wfacp_id': $("._wfacp_post_id").val()
                 }
             }, cb);
+        });
+        // The remove links carry role="button"; a link only activates on Enter, so Space is mapped to click here.
+        $(document.body).on('keydown', '.wfacp_delete_item_wrap a[role="button"]', function (e) {
+            if (' ' !== e.key && 'Spacebar' !== e.key) {
+                return;
+            }
+            e.preventDefault();
+            $(this).trigger('click');
         });
         $(document.body).on('click', '.wfacp_mini_cart_remove_item_from_cart', function (e) {
             e.preventDefault();

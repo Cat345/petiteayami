@@ -141,7 +141,7 @@ function disable_photoswipe_in_divi5_vb( $enable ) {
 	}
 	// Method 4: Check HTTP referrer for Visual Builder parameters (for REST/AJAX requests)
 	elseif ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
-		$referer        = esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
+		$referer        = sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
 		$parsed_referer = wp_parse_url( $referer );
 		if ( ! empty( $parsed_referer['query'] ) ) {
 			parse_str( $parsed_referer['query'], $referer_params );

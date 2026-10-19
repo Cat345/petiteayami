@@ -165,18 +165,6 @@ body .wfacp_delete_item_wrap a:hover:before {
     display: flex !important;
     padding: 14px 10px !important;
 }
-
-#wfacp_checkout_form #payment input[type=radio] + label.wc-stripe-label-payment-type,
-#wfacp_checkout_form #payment label.wc-stripe-label-klarna-category,
-#wfacp_checkout_form #payment label.wc-stripe-label-payment-type {
-    margin-bottom: 1em !important;
-}
-
-#wfacp_checkout_form #payment li[class*=payment_method_stripe] .select2-container .select2-selection--single {
-    height: auto;
-}
-
-
 body .wfacp_main_form .woocommerce-checkout #payment ul.payment_methods li.payment_method_paypal_advanced img {
     max-width: 100%;
 }
@@ -445,11 +433,6 @@ span.wfacp_input_error_msg {
     color: #E15334;
 }
 
-body:not(.wfacp_oxygen_template) p.woocommerce-invalid-required-field .wfacp-form-control,
-body:not(.wfacp_oxygen_template) .wfacp_main_form p.woocommerce-invalid-required-field:not(.wfacp_select2_country_state) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered {
-    border-bottom-color: #E15334;
-}
-
 .wfacp_main_form .wfacp-comm-title:not(.wfacp_internal_form_wrap).wfacp_none {
     padding: 0;
 }
@@ -646,11 +629,6 @@ body .wfacp-form .wc-social-login.form-row-wide a:hover {
 body .wfacp-form .wc-social-login.form-row-wide a {
     color: #fff;
 }
-
-body .wfacp-form .woocommerce-info.info.wc-amazon-payments-advanced-info {
-    margin: 0 0 15px;
-}
-
 body .wfacp_text_center {
     text-align: center;
 }
@@ -867,11 +845,6 @@ body a.tm-cart-edit-options {
 body .wfacp_main_form .wfacp_custom_field_radio_wrap span.wfacp_radio_options_group {
     position: relative;
 }
-
-body .wfacp_main_form.woocommerce .woocommerce-account-fields label.woocommerce-form__label.woocommerce-form__label-for-checkbox.checkbox.wfacp-form-control-label span {
-    margin-top: 0;
-}
-
 body .wfacp_main_form.woocommerce form.woocommerce-form.woocommerce-form-login.login label.woocommerce-form__label.woocommerce-form__label-for-checkbox.inline span {
     cursor: pointer;
 }
@@ -1285,11 +1258,6 @@ body #wfacp-e-form .wfacp_main_form.woocommerce #wfacp_smart_buttons.wfacp_smart
 #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_buttons {
     min-height: 70px;
 }
-
-#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container {
-    display: inline-block;
-}
-
 #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container:last-child {
     margin-bottom: 0;
 }
@@ -1302,50 +1270,9 @@ body #wfacp-e-form .wfacp_main_form.woocommerce #wfacp_smart_buttons.wfacp_smart
 #wfacp_smart_buttons.wfacp_smart_buttons div#checkout_paypal_message {
     margin-bottom: 0;
 }
-
-#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_inner > fieldset {
-    border: 1px solid #e6e6e6;
-    margin: 0;
-    border-radius: 5px;
-    padding: 15px 25px 15px;
-    font-size: 14px;
-    color: #333;
-    position: relative;
-    min-height: 99px;
-    width: 100%;
-}
-
-#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_inner > fieldset > legend {
-    padding: 0 1em;
-    margin: 0 auto;
-    display: block;
-    border: none;
-}
-
-
 .wfacp_smart_button_wrap_st div#paypal_box_button {
     margin-bottom: 0;
-}
-
-#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_inner fieldset legend {
-    padding: 0 1em;
-    margin: 0 auto;
-    display: block;
-    background: transparent;
-    font-weight: normal;
-    text-transform: inherit;
-    width: auto;
-    border: none;
-    float: none;
-
-}
-
-#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_inner .angelleye_ppcp legend.express-title,
-#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_inner .angelleye_ppcp span.express-divider {
-    display: none;
-}
-
-#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_inner.wfacp_smart_button_or_text_placeholder:before {
+}#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_inner.wfacp_smart_button_or_text_placeholder:before {
     content: '';
     position: absolute;
     left: 0;
@@ -2562,12 +2489,6 @@ body .wfacp_main_form .wfacp-section fieldset#wc-stripe-cc-form,
 body .wfacp_main_form .woocommerce-checkout #payment div.payment_box .form-row.woocommerce-validated {
     position: relative;
 }
-
-body .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li .form-row.form-row-wide {
-    float: none;
-    clear: both;
-}
-
 /************************************gerencianet and  pagseguro Payment Gateway Styling******************************/
 
 body .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li.wc_payment_method.payment_method_gerencianet_oficial #gerencianet-container input,
@@ -2882,19 +2803,9 @@ body .wfacp_main_form .woocommerce-checkout .place_order_back_btn a span,
 body .wfacp_main_form .btm_btn_sec .wfacp-back-btn-wrap button.button.button-primary.wfacp_back_page_button > span {
     text-transform: lowercase;
 }
-
-body .wfacp_main_form .woocommerce-checkout .btm_btn_sec.wfacp_back_cart_link + button.button.button-primary.wfacp_next_page_button {
-    margin-bottom: 40px;
-}
-
 body .wfacp_main_form .woocommerce-checkout .button.button#place_order {
     display: inline-block;
 }
-
-body .wfacp_main_form .woocommerce-checkout .btm_btn_sec.wfacp_back_cart_link + button.button.button-primary.wfacp_next_page_button {
-    margin-bottom: 40px;
-}
-
 body .wfacp_main_form .woocommerce-checkout .btm_btn_sec.wfacp_back_cart_link + button.button.button-primary.wfacp_next_page_button {
     margin-bottom: 40px;
 }
@@ -3246,11 +3157,6 @@ body .wfacp_main_form.woocommerce .wfacp_order_summary_container ul li input[typ
     display: block;
     font-size: inherit;
 }
-
-body .wfacp_main_form.woocommerce .wfacp_order_summary_container ul li {
-    padding-left: 0 !important;
-}
-
 body .wfacp_main_form.woocommerce .wfacp_order_summary_container ul li input[type=radio] {
     position: relative;
     max-width: 16px;
@@ -4046,13 +3952,6 @@ body .wfacp_main_form .ywcmas_manage_addresses_tables_container table.shop_table
     vertical-align: middle;
     display: table-cell;
 }
-
-body .wfacp_main_form span.ywcmas_addresses_manager_table_img {
-    float: none;
-    display: inline-block;
-    vertical-align: middle;
-}
-
 body .wfacp_main_form span.ywcmas_addresses_manager_table_img {
     float: none;
     display: inline-block;
@@ -4146,11 +4045,6 @@ body .wfacp_main_form.woocommerce #wfacp_checkout_form p.form-row {
 span.variation-row p {
     display: inline-block;
     margin: 0;
-}
-
-body.wfacp_checkout-template-wfacp-canvas-php div#page-container,
-body.wfacp_checkout-template-wfacp-full-width-php div#page-container {
-    padding-top: 0 !important;
 }
 
 /*---------------------------------------------Notices---------------------------------------------------*/
@@ -4714,13 +4608,6 @@ body #wfacp_checkout_form #payment ul li ul li {
     padding: 0;
     border: none;
 
-}
-
-/*---------------------------------------Gutenberg Editor Style---------------------------------------------*/
-
-.editor-styles-wrapper .wp-block {
-    margin-left: auto;
-    margin-right: auto;
 }
 
 #wfacp-e-form table.shop_table tr.cart-subtotal,
@@ -5962,15 +5849,6 @@ body #wfacp-sec-wrapper table.shop_table:not(#product_switching_field) {
     background-color: transparent;
     margin: 0;
 }
-/* -----------------------------------------------BRICKS THEME FOR REMEMBER ME CHECKBOX---------------------------------------- */
-/* Bricks forces display:inline !important from inside @layer bricks, which outranks our unlayered
-   !important, so this input is rendered natively (see wfacp-form.css). The native widget draws its
-   own check, so both of our check decorations have to go or they stack on top of it. */
-body.wfacp_bricks_template .wfacp_main_form.woocommerce input#rememberme:before,
-body.wfacp_bricks_template .wfacp_main_form.woocommerce input#rememberme:after {
-    content: none !important;
-    display: none !important;
-}
 
 /* -----------------------------------------------MEDIA QUERY---------------------------------------- */
 @media (min-width: 993px) {
@@ -6700,4 +6578,45 @@ body.wfacp_bricks_template .wfacp_main_form.woocommerce input#rememberme:after {
         display: flex;
         flex-direction: column-reverse;
     }
+}
+
+/* Email typo suggestion below the checkout email field. The field id beats theme and #wfacp-e-form button rules without !important. */
+body #billing_email_field .wfacp-email-suggestion {
+	display: none;
+	margin: 6px 0 0;
+	font-size: 13px;
+	line-height: 1.45;
+	color: #8a5a00;
+}
+
+body #billing_email_field .wfacp-email-suggestion--visible {
+	display: block;
+}
+
+body #wfacp-e-form #billing_email_field .wfacp-email-suggestion__value,
+body #billing_email_field .wfacp-email-suggestion__value {
+	display: inline;
+	width: auto;
+	min-width: 0;
+	height: auto;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+	font: inherit;
+	line-height: inherit;
+	letter-spacing: normal;
+	text-transform: none;
+	text-decoration: underline;
+	color: #0b57d0;
+	cursor: pointer;
+}
+
+body #wfacp-e-form #billing_email_field .wfacp-email-suggestion__value:hover,
+body #billing_email_field .wfacp-email-suggestion__value:hover {
+	background: none;
+	text-decoration: none;
 }

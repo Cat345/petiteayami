@@ -202,7 +202,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 		 */
 		public function update_optin_tracking_data( $optin_id, $posted_data ) {
 			/** Server-side base row; the Pro plugin merges its visitor-collected fields through the filter */
-			$get_data = apply_filters( 'bwf_tracking_visitor_data', array(), 'optin', $posted_data );
+			$get_data = apply_filters( 'bwf_tracking_visitor_data', array(), 'optin', $posted_data ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 			$get_data = is_array( $get_data ) ? $get_data : array();
 
 			$funnel_id = get_post_meta( $optin_id, '_bwf_in_funnel', true );
@@ -237,7 +237,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 		 * @return void
 		 */
 		public function add_tracking_data_in_order_meta( $order ) {
-			$order = apply_filters( 'bwf_tracking_insert_order', $order );
+			$order = apply_filters( 'bwf_tracking_insert_order', $order ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			if ( ! $order instanceof WC_Order ) {
 				return;
@@ -249,7 +249,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			 * fields through the filter.
 			 */
 			$source_id = class_exists( 'WFFN_Core' ) ? WFFN_Core()->data->get( 'source_id', 0 ) : 0;
-			$get_data  = apply_filters( 'bwf_tracking_visitor_data', array(), 'order', $order );
+			$get_data  = apply_filters( 'bwf_tracking_visitor_data', array(), 'order', $order ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 			$get_data  = array_merge( is_array( $get_data ) ? $get_data : array(), array( 'source_id' => $source_id ) );
 
 			$order->update_meta_data( '_wffn_tracking_data', $get_data );
@@ -269,7 +269,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			// Handle case if primary order already processed
 			if ( in_array( $parent_order->get_status(), wc_get_is_paid_statuses(), true ) ) {
 				global $wpdb;
-				$get_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}{$this->conv_table} WHERE type = %d AND source = %d", 2, $parent_order->get_id() ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$get_data = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . esc_sql( $wpdb->prefix . $this->conv_table ) . ' WHERE type = %d AND source = %d', 2, $parent_order->get_id() ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 				if ( $get_data ) {
 
@@ -305,7 +305,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 						/**
 						 * Copy data form parent row and modify and insert offer data
 						 */
-						$wpdb->update(
+						$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 							"{$wpdb->prefix}{$this->conv_table}",
 							$get_data,
 							array(
@@ -331,7 +331,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			 * In both case upsell create new row in conversion table
 			 */
 			if ( in_array( $parent_order->get_status(), wc_get_is_paid_statuses(), true ) && empty( $tracking_data ) ) {
-				$tracking_data = apply_filters( 'bwf_tracking_visitor_data', array(), 'order', $parent_order );
+				$tracking_data = apply_filters( 'bwf_tracking_visitor_data', array(), 'order', $parent_order ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 			}
 
 			if ( empty( $tracking_data ) || ! is_array( $tracking_data ) ) {
@@ -396,7 +396,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 		 * @return false|void
 		 */
 		public function insert_tracking_data_from_order_meta( $order_id ) {
-			$order = apply_filters( 'bwf_tracking_insert_order', wc_get_order( $order_id ) );
+			$order = apply_filters( 'bwf_tracking_insert_order', wc_get_order( $order_id ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			if ( ! $order instanceof WC_Order || $this->is_order_renewal( $order ) ) {
 				return;
@@ -646,13 +646,13 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			}
 
 			/** Allow enrichment of the row right before persisting (Pro hooks here). */
-			$tracking_data = apply_filters( 'bwf_tracking_data_before_insert', $tracking_data, $order );
+			$tracking_data = apply_filters( 'bwf_tracking_data_before_insert', $tracking_data, $order ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			/** Insert data */
 			$lastId = $this->insert_tracking_data( $tracking_data );
 
 			if ( intval( $lastId ) > 0 ) {
-				do_action( 'bwf_tracking_order_inserted', $order, $tracking_data, $lastId );
+				do_action( 'bwf_tracking_order_inserted', $order, $tracking_data, $lastId ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				$order->delete_meta_data( '_wffn_tracking_data' );
 				$order->save();
 			}
@@ -669,7 +669,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			global $wpdb;
 
 			try {
-				$args = apply_filters( 'bwf_insert_conversion_tracking_data', $args );
+				$args = apply_filters( 'bwf_insert_conversion_tracking_data', $args ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 				// Ensure the necessary keys exist
 				if ( isset( $args['checkout_total'], $args['bump_total'], $args['offer_total'], $args['value'] ) ) {
@@ -760,7 +760,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				$order_id
 			);
 
-			$offer_data = $wpdb->get_results( $offer_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$offer_data = $wpdb->get_results( $offer_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query built with $wpdb->prepare() above.
 
 			if ( is_array( $offer_data ) && count( $offer_data ) > 0 ) {
 				foreach ( $offer_data as $o_item ) {
@@ -844,7 +844,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 			global $wpdb;
-			$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . $this->conv_table . ' WHERE type= 2 AND source = %1s ', $order_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
+			$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . esc_sql( $wpdb->prefix . $this->conv_table ) . ' WHERE type= 2 AND source = %1s ', $order_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
 		}
 
 		public function partially_refunded_process( $order_id, $refund_id ) {
@@ -913,7 +913,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			}
 
 			if ( $total_refund > 0 ) {
-				$get_totals = $wpdb->get_row( $wpdb->prepare( "SELECT value, checkout_total, bump_total, offer_total FROM {$wpdb->prefix}{$this->conv_table} WHERE type = 2 AND source = %d", absint( $order_id ) ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$get_totals = $wpdb->get_row( $wpdb->prepare( 'SELECT value, checkout_total, bump_total, offer_total FROM ' . esc_sql( $wpdb->prefix . $this->conv_table ) . ' WHERE type = 2 AND source = %d', absint( $order_id ) ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 				if ( is_array( $get_totals ) && count( $get_totals ) > 0 ) {
 					/**
@@ -936,7 +936,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 						$update_args['checkout_total'] = $update_args['value'];
 					}
 
-					$wpdb->update(
+					$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 						$wpdb->prefix . $this->conv_table,
 						$update_args,
 						array(
@@ -978,15 +978,13 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 			// Get paid statuses for WooCommerce orders
 			$status_to_query = wc_get_is_paid_statuses();
-			$status_in       = implode(
-				',',
-				array_map(
-					function ( $a ) {
-						return "'wc-{$a}'";
-					},
-					$status_to_query
-				)
+			$paid_statuses   = array_map(
+				function ( $a ) {
+					return 'wc-' . $a;
+				},
+				$status_to_query
 			);
+			$status_in       = implode( ',', array_fill( 0, count( $paid_statuses ), '%s' ) );
 
 			// Set the start time for the batch process
 			WFOCU_Common::$start_time = time();
@@ -999,31 +997,24 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			 * common steady state), causing multi-second full scans that pile up under load.
 			 */
 			if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-				$order_table      = $wpdb->prefix . 'wc_orders';
-				$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
-				$query            = $wpdb->prepare(
-					"SELECT ord.id as ID FROM {$order_table} ord
+				$order_table      = esc_sql( $wpdb->prefix . 'wc_orders' );
+				$order_meta_table = esc_sql( $wpdb->prefix . 'wc_orders_meta' );
+				$sql_template     = "SELECT ord.id as ID FROM {$order_table} ord
                                 INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_wffn_tracking_data')
                                 WHERE ord.type = %s
                                 AND ord.status IN ({$status_in})
                                 AND ord.date_created_gmt > ( UTC_TIMESTAMP() - INTERVAL 30 DAY )
-                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 10",
-					'shop_order'
-				);
-
+                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 10";
 			} else {
-				$query = $wpdb->prepare(
-					"SELECT p.ID FROM {$wpdb->posts} p
+				$sql_template = "SELECT p.ID FROM {$wpdb->posts} p
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_wffn_tracking_data')
                                 WHERE p.post_type = %s
                                 AND p.post_status IN ({$status_in})
                                 AND p.post_date > ( NOW() - INTERVAL 30 DAY )
-                                ORDER BY p.post_date DESC LIMIT 0, 10",
-					'shop_order'
-				);
+                                ORDER BY p.post_date DESC LIMIT 0, 10";
 			}
 
-			$query_results = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query_results = $wpdb->get_results( $wpdb->prepare( $sql_template, array_merge( array( 'shop_order' ), $paid_statuses ) ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- placeholder template assembled above from esc_sql()d table names and %s placeholders; values bound here.
 
 			if ( ! empty( $query_results ) && is_array( $query_results ) ) {
 
@@ -1081,12 +1072,14 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 
-			$this->maybe_pending_report_data( $status_in );
+			$this->maybe_pending_report_data( $paid_statuses );
 		}
 
-		public function maybe_pending_report_data( $status_in ) {
+		public function maybe_pending_report_data( $paid_statuses ) {
 			try {
 				global $wpdb;
+				$paid_statuses = (array) $paid_statuses;
+				$status_in     = implode( ',', array_fill( 0, count( $paid_statuses ), '%s' ) );
 
 				// run this snippet for recover checkout data
 				if ( class_exists( 'WFACP_Reporting' ) ) {
@@ -1099,31 +1092,24 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 					 * steady state), causing multi-second full scans that pile up under load.
 					 */
 					if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-						$order_table      = $wpdb->prefix . 'wc_orders';
-						$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
-						$wfacp_query      = $wpdb->prepare(
-							"SELECT ord.id as ID FROM {$order_table} ord
+						$order_table      = esc_sql( $wpdb->prefix . 'wc_orders' );
+						$order_meta_table = esc_sql( $wpdb->prefix . 'wc_orders_meta' );
+						$wfacp_template   = "SELECT ord.id as ID FROM {$order_table} ord
                                 INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_wfacp_report_data')
                                 WHERE ord.type = %s
                                 AND ord.status IN ({$status_in})
                                 AND ord.date_created_gmt > ( UTC_TIMESTAMP() - INTERVAL 30 DAY )
-                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 10",
-							'shop_order'
-						);
-
+                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 10";
 					} else {
-						$wfacp_query = $wpdb->prepare(
-							"SELECT p.ID FROM {$wpdb->posts} p
+						$wfacp_template = "SELECT p.ID FROM {$wpdb->posts} p
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_wfacp_report_data')
                                 WHERE p.post_type = %s
                                 AND p.post_status IN ({$status_in})
                                 AND p.post_date > ( NOW() - INTERVAL 30 DAY )
-                                ORDER BY p.post_date DESC LIMIT 0, 10",
-							'shop_order'
-						);
+                                ORDER BY p.post_date DESC LIMIT 0, 10";
 					}
 
-					$wfacp_results = $wpdb->get_results( $wfacp_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wfacp_results = $wpdb->get_results( $wpdb->prepare( $wfacp_template, array_merge( array( 'shop_order' ), $paid_statuses ) ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- placeholder template assembled above from esc_sql()d table names and %s placeholders; values bound here.
 
 					if ( is_array( $wfacp_results ) && count( $wfacp_results ) > 0 ) {
 						$wfacp_report = WFACP_Reporting::get_instance();
@@ -1156,31 +1142,24 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				 */
 				if ( class_exists( 'WFOB_Reporting' ) ) {
 					if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-						$order_table      = $wpdb->prefix . 'wc_orders';
-						$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
-						$ob_query         = $wpdb->prepare(
-							"SELECT ord.id as ID FROM {$order_table} ord
+						$order_table      = esc_sql( $wpdb->prefix . 'wc_orders' );
+						$order_meta_table = esc_sql( $wpdb->prefix . 'wc_orders_meta' );
+						$ob_template      = "SELECT ord.id as ID FROM {$order_table} ord
                                 INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_wfob_report_data')
                                 WHERE ord.type = %s
                                 AND ord.status IN ({$status_in})
                                 AND ord.date_created_gmt > ( UTC_TIMESTAMP() - INTERVAL 30 DAY )
-                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 10",
-							'shop_order'
-						);
-
+                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 10";
 					} else {
-						$ob_query = $wpdb->prepare(
-							"SELECT p.ID FROM {$wpdb->posts} p
+						$ob_template = "SELECT p.ID FROM {$wpdb->posts} p
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_wfob_report_data')
                                 WHERE p.post_type = %s
                                 AND p.post_status IN ({$status_in})
                                 AND p.post_date > ( NOW() - INTERVAL 30 DAY )
-                                ORDER BY p.post_date DESC LIMIT 0, 10",
-							'shop_order'
-						);
+                                ORDER BY p.post_date DESC LIMIT 0, 10";
 					}
 
-					$ob_results = $wpdb->get_results( $ob_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$ob_results = $wpdb->get_results( $wpdb->prepare( $ob_template, array_merge( array( 'shop_order' ), $paid_statuses ) ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- placeholder template assembled above from esc_sql()d table names and %s placeholders; values bound here.
 
 					if ( is_array( $ob_results ) && count( $ob_results ) > 0 ) {
 						$ob_report = WFOB_Reporting::get_instance();

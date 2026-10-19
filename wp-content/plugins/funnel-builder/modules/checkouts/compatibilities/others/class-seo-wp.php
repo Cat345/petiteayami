@@ -17,7 +17,7 @@ if ( ! class_exists( 'WFACP_Checkout_Seo_WP' ) ) {
 		}
 
 		public function save_post() {
-			if ( class_exists( 'Yoast\WP\SEO\Integrations\Watchers\Indexable_Post_Watcher' ) && isset( $_POST['action'] ) && 'wfacp_import_template' === $_POST['action'] ) {
+			if ( class_exists( 'Yoast\WP\SEO\Integrations\Watchers\Indexable_Post_Watcher' ) && isset( $_POST['action'] ) && 'wfacp_import_template' === $_POST['action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Read-only action comparison; the wfacp_import_template AJAX handler nonce-verifies via check_nonce() before any post is inserted.
 				WFACP_Common::remove_actions( 'wp_insert_post', 'Yoast\WP\SEO\Integrations\Watchers\Indexable_Post_Watcher', 'build_indexable' );
 			}
 		}
@@ -30,7 +30,7 @@ if ( ! class_exists( 'WFACP_Checkout_Seo_WP' ) ) {
 			if ( WFACP_Core()->public->is_checkout_override() ) {
 				WFACP_Common::remove_actions( 'wp_head', 'Yoast\WP\SEO\Integrations\Front_End_Integration', 'call_wpseo_head' );
 				add_action( 'wp_head', function () {
-					\do_action( 'wpseo_head' );
+					\do_action( 'wpseo_head' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 				}, 15 );
 
 			}

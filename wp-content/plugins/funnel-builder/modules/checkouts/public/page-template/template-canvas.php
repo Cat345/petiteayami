@@ -38,7 +38,7 @@ add_filter( 'wfacp_skip_form_printing', '__return_true' );
 	$atts_string = WFACP_Common::get_template_container_atts();
 
 	?>
-    <div class="wfacp-template-container" <?php echo trim( $atts_string ); ?>>
+    <div class="wfacp-template-container" <?php echo trim( $atts_string ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- extension slot: WFACP_Common::get_template_container_atts() returns '' in Lite; overrides supply complete attributes. ?>>
 		<?php
 		do_action( 'wfacp_template_container_top' );
 		if ( WFACP_Core()->public->is_checkout_override() && 'embed_forms' !== $template_type ) {

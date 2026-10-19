@@ -251,7 +251,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				/* Add the wc Notice */
 				$current_session_order_id = isset( WC()->session->order_awaiting_payment ) ? absint( WC()->session->order_awaiting_payment ) : 0;
 				$held_stock               = wc_get_held_stock_quantity( $product_obj, $current_session_order_id );
-				$resp['error']            = sprintf( __( 'Sorry, we do not have enough "%1$s" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused.', 'woocommerce' ), $product_obj->get_name(), wc_format_stock_quantity_for_display( $product_obj->get_stock_quantity() - $held_stock, $product_obj ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- intentionally using WooCommerce translations for this stock message
+				$resp['error']            = sprintf( /* translators: 1: product name, 2: available stock quantity. */ __( 'Sorry, we do not have enough "%1$s" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused.', 'woocommerce' ), $product_obj->get_name(), wc_format_stock_quantity_for_display( $product_obj->get_stock_quantity() - $held_stock, $product_obj ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- intentionally using WooCommerce translations for this stock message
 
 				$resp['qty']      = $cart_item['quantity'];
 				$resp['status']   = false;
@@ -594,10 +594,13 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				}
 			}
 
-			$json = file_get_contents( 'php://input' );
+			$json = WP_REST_Server::get_raw_data();
 			if ( '' !== $json ) {
 				$json = json_decode( $json, true );
 			} else {
+				$json = array();
+			}
+			if ( ! is_array( $json ) ) {
 				$json = array();
 			}
 
@@ -624,7 +627,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 		public static function analytics() {
 			self::check_nonce();
 			$resp = array( 'status' => false );
-			$data = isset( $_POST['data'] ) ? map_deep( wp_unslash( $_POST['data'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce already verified in check_nonce()
+			$data = isset( $_POST['data'] ) ? self::clean_event_payload( wp_unslash( $_POST['data'] ) ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce already verified in check_nonce(); sanitised by clean_event_payload()
 			/*
 			 * Events the checkout page is allowed to forward to the Conversions API.
 			 *
@@ -652,7 +655,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			$source         = isset( $data['source'] ) ? $data['source'] : '';
 
 			if ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
-				$source = esc_url_raw( $_SERVER['HTTP_REFERER'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- HTTP_REFERER is URL, slashes are intentional; sanitized with esc_url_raw()
+				$source = sanitize_url( $_SERVER['HTTP_REFERER'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- HTTP_REFERER is URL, slashes are intentional; sanitized with sanitize_url()
 			}
 
 			$pixel = WFACP_Analytics_Pixel::get_instance();
@@ -668,10 +671,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			$user_data['client_ip_address'] = ! empty( WC_Geolocation::get_ip_address() ) ? WC_Geolocation::get_ip_address() : '127.0.0.1';
 			$user_data['client_user_agent'] = wc_get_user_agent();
 			if ( isset( $_COOKIE['_fbp'] ) && ! empty( $_COOKIE['_fbp'] ) ) { // phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE,WordPress.Security.NonceVerification.Recommended -- Reading cookie data for tracking, nonce verification not required
-				$user_data['_fbp'] = wc_clean( wp_unslash( $_COOKIE['_fbp'] ) );
+				$user_data['_fbp'] = wc_clean( wp_unslash( $_COOKIE['_fbp'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 			}
 			if ( isset( $_COOKIE['_fbc'] ) && ! empty( $_COOKIE['_fbc'] ) ) { // phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE,WordPress.Security.NonceVerification.Recommended -- Reading cookie data for tracking, nonce verification not required
-				$user_data['_fbc'] = wc_clean( wp_unslash( $_COOKIE['_fbc'] ) );
+				$user_data['_fbc'] = wc_clean( wp_unslash( $_COOKIE['_fbc'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 			} elseif ( isset( $_COOKIE['wffn_fbclid'] ) && isset( $_COOKIE['wffn_flt'] ) && ! empty( $_COOKIE['wffn_fbclid'] ) ) { // phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE,WordPress.Security.NonceVerification.Recommended -- Reading cookie data for tracking, nonce verification not required
 				$user_data['_fbc'] = 'fb.1.' . strtotime( sanitize_text_field( wp_unslash( $_COOKIE['wffn_flt'] ) ) ) . '.' . sanitize_text_field( wp_unslash( $_COOKIE['wffn_fbclid'] ) );
 			}
@@ -710,7 +713,17 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 						}
 						$instance->set_event_id( $single_item['event_id'] );
 						$instance->set_user_data( $user_data );
-						$instance->set_event_source_url( $source );
+						// The page URL captured with the event beats HTTP_REFERER, which a Referrer-Policy collapses to the homepage.
+						$event_source_url = ! empty( $single_item['data']['event_url'] ) && is_string( $single_item['data']['event_url'] ) ? $single_item['data']['event_url'] : $source;
+
+						/**
+						 * Filters the event_source_url sent to the Meta Conversions API for a checkout event.
+						 *
+						 * @param string $event_source_url Page URL captured with the event, else HTTP_REFERER.
+						 * @param string $event            Event name (PageView, InitiateCheckout, ...).
+						 * @param array  $single_item      Full event payload.
+						 */
+						$instance->set_event_source_url( apply_filters( 'wfacp_conversion_api_event_source_url', $event_source_url, $single_item['event'], $single_item ) );
 
 						$fb_single_data = isset( $single_item['data'] ) ? $single_item['data'] : array();
 						if ( isset( $fb_single_data['contents'] ) ) {
@@ -728,6 +741,31 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			}
 
 			self::send_resp( $resp );
+		}
+
+		/**
+		 * map_deep( 'sanitize_text_field' ), except that every `event_url` is sanitised as a URL:
+		 * sanitize_text_field() deletes every %XX octet, so a non-ASCII permalink or an encoded
+		 * query value would reach Meta as a URL that does not exist.
+		 *
+		 * @param mixed      $value Unslashed request data.
+		 * @param string|int $key   Key $value sits under in its parent array.
+		 *
+		 * @return mixed
+		 */
+		private static function clean_event_payload( $value, $key = '' ) {
+			if ( is_array( $value ) ) {
+				foreach ( $value as $k => $v ) {
+					$value[ $k ] = self::clean_event_payload( $v, $k );
+				}
+
+				return $value;
+			}
+			if ( 'event_url' === $key ) {
+				return is_string( $value ) ? sanitize_url( $value ) : '';
+			}
+
+			return sanitize_text_field( $value );
 		}
 	}
 

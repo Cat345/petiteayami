@@ -163,7 +163,7 @@ if ( ! class_exists( 'WFFN_ThankYou_WC_Pages_Divi' ) ) {
 			}
 
 			if ( $post_id < 1 && ! empty( $_SERVER['REQUEST_URI'] ) ) {
-				$post_id = url_to_postid( home_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$post_id = url_to_postid( home_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- raw URI used only for path matching / url_to_postid; never stored or output.
 			}
 
 			if ( $post_id > 0 ) {

@@ -37,7 +37,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WPML_WCML' ) ) {
 
 			$product_id = $product->get_id();
 			global $wpdb;
-			$result = $wpdb->get_results(
+			$result = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 				$wpdb->prepare(
 					"select element_id from {$wpdb->prefix}icl_translations where trid=(select trid from {$wpdb->prefix}icl_translations where element_id=%d and element_type='post_product' and source_language_code IS NOT NULL) and source_language_code IS NULL",
 					$product_id

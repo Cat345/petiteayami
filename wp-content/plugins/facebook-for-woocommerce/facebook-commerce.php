@@ -33,10 +33,12 @@ require_once 'facebook-commerce-admin-notice.php';
 class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/**
-	 * The WordPress option name where the page access token is stored.
+	 * The WordPress option name where the legacy page access token is stored.
 	 *
-	 * @var string option name.
+	 * Retained for compatibility until the stored data is removed in T283387818.
+	 *
 	 * @deprecated 2.1.0
+	 * @var string option name
 	 */
 	const OPTION_PAGE_ACCESS_TOKEN = 'wc_facebook_page_access_token';
 
@@ -106,6 +108,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string enable facebook managed coupons setting ID */
 	const SETTING_ENABLE_FACEBOOK_MANAGED_COUPONS = 'wc_facebook_enable_facebook_managed_coupons';
 
+	/** @var string the "enable offline purchase events" setting ID */
+	const SETTING_ENABLE_OFFLINE_PURCHASE_EVENTS = 'wc_facebook_enable_offline_purchase_events';
+
+	/** @var string when the merchant last opted in to offline purchase events, as a Unix timestamp */
+	const OPTION_OFFLINE_PURCHASE_EVENTS_OPTED_IN_AT = 'wc_facebook_offline_purchase_events_opted_in_at';
+
+	/** @var string whether the merchant has ever opted in to offline purchase events; kept after opting out */
+	const OPTION_OFFLINE_PURCHASE_EVENTS_EVER_OPTED_IN = 'wc_facebook_offline_purchase_events_ever_opted_in';
+
 	/** @var string request headers in the debug log */
 	const SETTING_REQUEST_HEADERS_IN_DEBUG_MODE = 'wc_facebook_request_headers_in_debug_log';
 
@@ -136,7 +147,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the WordPress option name where the access token is stored */
 	const OPTION_ACCESS_TOKEN = 'wc_facebook_access_token';
 
-	/** @var string the WordPress option name where the merchant access token is stored */
+	/**
+	 * @var string the WordPress option name where the merchant access token is stored
+	 * @deprecated Legacy FBE 2 leftover. The Commerce Extension flow issues a single system user
+	 *             access token, so internal connection flows no longer write this option and it
+	 *             was never used to authenticate a request. Use self::OPTION_ACCESS_TOKEN instead.
+	 */
 	const OPTION_MERCHANT_ACCESS_TOKEN = 'wc_facebook_merchant_access_token';
 
 	/** @var string the WordPress option name where the business manager ID is stored */
@@ -145,7 +161,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the WordPress option name where the ad account ID is stored */
 	const OPTION_AD_ACCOUNT_ID = 'wc_facebook_ad_account_id';
 
-	/** @var string the WordPress option name where the system user ID is stored */
+	/**
+	 * @var string the WordPress option name where the system user ID is stored
+	 * @deprecated Legacy FBE 2 leftover. Internal connection flows no longer write this option,
+	 *             and nothing reads the stored ID.
+	 */
 	const OPTION_SYSTEM_USER_ID = 'wc_facebook_system_user_id';
 
 	/** @var string the WordPress option name where the commerce merchant settings ID is stored */
@@ -160,20 +180,53 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the WordPress option name where the installed features are stored */
 	const OPTION_INSTALLED_FEATURES = 'wc_facebook_installed_features';
 
-	/** @var string the WordPress option name where the FBE 2 connection status is stored */
+	/**
+	 * @var string the WordPress option name where the FBE 2 connection status is stored
+	 * @deprecated Legacy FBE 2 leftover, no longer written. It was the FBE 1 vs FBE 2 discriminator
+	 *             set by the 2.0.0 upgrade; nothing ever read it. Connection state is decided by
+	 *             Connection::is_connected(), which checks the access token.
+	 */
 	const OPTION_HAS_CONNECTED_FBE_2 = 'wc_facebook_has_connected_fbe_2';
 
-	/** @var string the WordPress option name where the pages read engagement authorization status is stored */
+	/**
+	 * @var string the WordPress option name where the pages read engagement authorization status is stored
+	 * @deprecated Legacy FBE 2 leftover, no longer written. Nothing reads it.
+	 */
 	const OPTION_HAS_AUTHORIZED_PAGES_READ_ENGAGEMENT = 'wc_facebook_has_authorized_pages_read_engagement';
 
-	/** @var string the WordPress option name where the messenger chat status is stored */
+	/**
+	 * @var string the WordPress option name where the messenger chat status is stored
+	 * @deprecated Leftover from the removed Messenger chat feature, no longer written. Nothing reads it.
+	 */
 	const OPTION_ENABLE_MESSENGER = 'wc_facebook_enable_messenger';
+
+	/**
+	 * Options retired from connection state. Their names are retained so legacy callers remain
+	 * compatible and stored rows can be deleted. This is the canonical list: when one of these
+	 * is finally removed, delete its constant and its entry here together.
+	 *
+	 * Disconnecting clears them via clear_integration_options(). Rows on still-connected sites
+	 * are removed by a version-gated upgrade step in the next major release.
+	 *
+	 * @var string[]
+	 */
+	const DEPRECATED_OPTIONS = array(
+		self::OPTION_MERCHANT_ACCESS_TOKEN,
+		self::OPTION_SYSTEM_USER_ID,
+		self::OPTION_HAS_CONNECTED_FBE_2,
+		self::OPTION_HAS_AUTHORIZED_PAGES_READ_ENGAGEMENT,
+		self::OPTION_ENABLE_MESSENGER,
+		self::SETTING_FACEBOOK_PAGE_ID,
+		self::OPTION_BUSINESS_MANAGER_ID,
+		self::OPTION_AD_ACCOUNT_ID,
+		self::OPTION_PROFILES,
+		self::OPTION_INSTALLED_FEATURES,
+		'wc_facebook_instagram_business_id',
+		'wc_facebook_last_attribute_sync',
+	);
 
 	/** @var string default value for facebook_managed_coupons_setting */
 	const SETTING_ENABLE_FACEBOOK_MANAGED_COUPONS_DEFAULT_VALUE = 'yes';
-
-	/** @var string|null the configured product catalog ID */
-	public $product_catalog_id;
 
 	/** @var string|null the configured external merchant settings ID */
 	public $external_merchant_settings_id;
@@ -312,6 +365,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// Register the WordPress cron hook for async processing
 		add_action( 'wc_facebook_async_sync', array( $this, 'handle_async_product_save' ) );
 
+		// Record when the merchant opts in to offline purchase events, whichever way the
+		// setting is changed (settings screen, AJAX, WP-CLI).
+		add_action( 'add_option_' . self::SETTING_ENABLE_OFFLINE_PURCHASE_EVENTS, array( $this, 'handle_offline_purchase_events_option_added' ), 10, 2 );
+		add_action( 'update_option_' . self::SETTING_ENABLE_OFFLINE_PURCHASE_EVENTS, array( $this, 'handle_offline_purchase_events_option_updated' ), 10, 2 );
+
 		if ( is_admin() ) {
 
 			$this->init_pixel();
@@ -397,6 +455,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $aam_settings );
 			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info, $aam_settings );
 		}
+
+		// Sync products created or updated outside the admin product editor, such as through the
+		// WooCommerce REST API. Those requests do not fire the admin-only woocommerce_process_product_meta
+		// hook used above, so without this the Meta catalog would miss REST API and programmatic changes.
+		add_action( 'woocommerce_update_product', array( $this, 'on_product_save_via_api' ), 40 );
+		add_action( 'woocommerce_new_product', array( $this, 'on_product_save_via_api' ), 40 );
 
 		// Update products on change of status.
 		add_action(
@@ -1018,6 +1082,81 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					break;
 			}
 		}
+	}
+
+	/**
+	 * Syncs a product to Facebook when it is created or updated through the WooCommerce REST API.
+	 *
+	 * The admin product editor schedules a sync via the woocommerce_process_product_meta hook, which
+	 * WooCommerce only fires for the admin product form. REST API (and other programmatic) saves do
+	 * not trigger that hook, so those changes never reached the Meta catalog. This handler runs on the
+	 * woocommerce_update_product / woocommerce_new_product actions, which do fire for REST API saves,
+	 * and queues the product for the background sync, honoring its existing sync settings.
+	 *
+	 * The woocommerce_update_product / woocommerce_new_product actions are low-level data-store hooks
+	 * fired by WC_Product::save() for *any* product save, including ones made in unprivileged contexts
+	 * such as a stock decrement during a Store API checkout. Two guards keep this handler scoped to a
+	 * genuine product edit made over the REST API:
+	 *
+	 * - is_rest_api_request() excludes the admin editor and other request types, which are already
+	 *   handled through their own hooks (and avoids double-processing admin saves).
+	 * - current_user_can( 'edit_product' ) mirrors the capability the WooCommerce REST products
+	 *   controller checks before a write, so guest/customer contexts (e.g. checkout stock changes over
+	 *   the Store API) do not trigger a sync.
+	 *
+	 * @since 3.7.7
+	 *
+	 * @internal
+	 *
+	 * @param int $product_id the product ID
+	 */
+	public function on_product_save_via_api( $product_id ) {
+		// The admin product editor and other request types are handled through their own hooks.
+		if ( ! Helper::is_rest_api_request() ) {
+			return;
+		}
+
+		// Only sync for actors allowed to edit the product; skip unprivileged contexts such as
+		// stock changes made during a Store API checkout.
+		if ( ! current_user_can( 'edit_product', $product_id ) ) {
+			return;
+		}
+
+		// bail if the plugin is not configured properly
+		if ( ! $this->is_configured() || ! $this->get_product_catalog_id() ) {
+			return;
+		}
+
+		$product = wc_get_product( $product_id );
+
+		if ( ! $product instanceof WC_Product ) {
+			return;
+		}
+
+		$product_ids = array();
+
+		if ( $product->is_type( 'variable' ) ) {
+			// Variations carry the catalog items for a variable product; the parent is represented by
+			// a product group, which the items batch derives from each variation's item_group_id.
+			foreach ( $product->get_children() as $variation_id ) {
+				$variation = wc_get_product( $variation_id );
+				if ( $variation instanceof WC_Product && $this->product_should_be_synced( $variation ) ) {
+					$product_ids[] = $variation_id;
+				}
+			}
+		} elseif ( $this->product_should_be_synced( $product ) ) {
+			$product_ids[] = $product->get_id();
+		}
+
+		if ( empty( $product_ids ) ) {
+			return;
+		}
+
+		// Queue rather than sync inline. The sync handler collects everything queued during the request
+		// and dispatches a single background job on shutdown, so a batch REST update costs one job
+		// instead of a Graph call per product inside the request — matching the admin, quick edit and
+		// stock paths.
+		$this->facebook_for_woocommerce->get_products_sync_handler()->create_or_update_products( $product_ids );
 	}
 
 	/**
@@ -2441,10 +2580,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @since 1.10.0
 	 */
 	public function get_product_catalog_id() {
-		if ( ! is_string( $this->product_catalog_id ) ) {
-			$value                    = get_option( self::OPTION_PRODUCT_CATALOG_ID, '' );
-			$this->product_catalog_id = is_string( $value ) ? $value : '';
-		}
+		$value = get_option( self::OPTION_PRODUCT_CATALOG_ID, '' );
 
 		/**
 		 * Filters the Facebook product catalog ID.
@@ -2454,7 +2590,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 *
 		 * @since 1.10.0
 		 */
-		return apply_filters( 'wc_facebook_product_catalog_id', $this->product_catalog_id, $this );
+		return apply_filters( 'wc_facebook_product_catalog_id', is_string( $value ) ? $value : '', $this );
 	}
 
 	/**
@@ -2578,8 +2714,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @return string
 	 * @since 1.10.0
+	 * @deprecated The Page ID is no longer collected or used. Nothing in the plugin reads it,
+	 *             and the Commerce Partner Integration that replaces the legacy installation
+	 *             read does not supply one. The read remains temporarily for backwards
+	 *             compatibility and returns whatever a previously connected store stored.
 	 */
 	public function get_facebook_page_id() {
+		wc_deprecated_function( __METHOD__, '3.7.7' );
 		/**
 		 * Filters the configured Facebook page ID.
 		 *
@@ -2663,9 +2804,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @since 1.10.0
 	 */
 	public function update_product_catalog_id( $value ) {
-		$this->product_catalog_id = $this->sanitize_facebook_credential( $value );
-
-		update_option( self::OPTION_PRODUCT_CATALOG_ID, $this->product_catalog_id );
+		update_option( self::OPTION_PRODUCT_CATALOG_ID, $this->sanitize_facebook_credential( $value ) );
 	}
 
 	/**
@@ -2751,11 +2890,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines whether Meta for WooCommerce is configured.
 	 *
+	 * This used to also require a Facebook Page ID. The Page is not used to reach any
+	 * Meta endpoint and is optional during onboarding, so a shop connected through an
+	 * Instagram-only asset selection had product sync silently disabled even with a
+	 * healthy connection and catalog. Callers that need a catalog check for it
+	 * alongside this method.
+	 *
 	 * @return bool
 	 * @since 1.10.0
 	 */
 	public function is_configured() {
-		return $this->get_facebook_page_id() && $this->facebook_for_woocommerce->get_connection_handler()->is_connected();
+		return $this->facebook_for_woocommerce->get_connection_handler()->is_connected();
 	}
 
 	/**
@@ -2871,6 +3016,126 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function is_facebook_managed_coupons_enabled(): bool {
 		return ( 'yes' === get_option( self::SETTING_ENABLE_FACEBOOK_MANAGED_COUPONS, self::SETTING_ENABLE_FACEBOOK_MANAGED_COUPONS_DEFAULT_VALUE ) );
+	}
+
+	/**
+	 * Determines whether offline (physical store) purchase events are enabled.
+	 *
+	 * Purchase events for orders taken at a point of sale are opt-in: they are
+	 * reported to Meta with an `action_source` of `physical_store`, so a merchant
+	 * has to knowingly turn them on before anything is sent.
+	 *
+	 * @return bool
+	 */
+	public function is_offline_purchase_events_enabled(): bool {
+		/**
+		 * Filters whether offline (physical store) purchase events are enabled.
+		 *
+		 * @param bool                             $is_enabled  whether offline purchase events are enabled
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (bool) apply_filters(
+			'wc_facebook_is_offline_purchase_events_enabled',
+			'yes' === get_option( self::SETTING_ENABLE_OFFLINE_PURCHASE_EVENTS, 'no' ),
+			$this
+		);
+	}
+
+	/**
+	 * Determines whether offline purchase events can be switched on right now.
+	 *
+	 * They need an active point-of-sale plugin to come from. This is the single rule
+	 * both the settings screen and the AJAX actions apply, so the two ways of
+	 * enabling the feature cannot disagree. It governs switching on only: an
+	 * existing opt-in is kept while no POS plugin is active, and switching off is
+	 * always allowed.
+	 *
+	 * @return bool
+	 */
+	public function can_enable_offline_purchase_events(): bool {
+		return ! empty( ( new \WooCommerce\Facebook\Events\POS\POS_Integration_Registry() )->get_supported_integrations() );
+	}
+
+	/**
+	 * Determines whether the merchant has ever opted in to offline purchase events.
+	 *
+	 * Stays true after opting out, so a merchant who tried the feature and switched it
+	 * off is not pitched it again as new. A store that is enabled now counts too, in
+	 * case it was enabled before this was recorded.
+	 *
+	 * @return bool
+	 */
+	public function has_ever_opted_in_to_offline_purchase_events(): bool {
+		return 'yes' === get_option( self::OPTION_OFFLINE_PURCHASE_EVENTS_EVER_OPTED_IN, 'no' )
+			|| 'yes' === get_option( self::SETTING_ENABLE_OFFLINE_PURCHASE_EVENTS, 'no' );
+	}
+
+	/**
+	 * Gets when the merchant opted in to offline purchase events.
+	 *
+	 * Sales paid before this moment are never reported, so turning the feature on
+	 * does not backfill history. The time is recorded whenever the setting is
+	 * switched on. If it is missing while the feature is enabled — for example when
+	 * the feature was enabled through the wc_facebook_is_offline_purchase_events_enabled
+	 * filter — it is recorded now, which errs towards reporting nothing old.
+	 *
+	 * @return int Unix timestamp.
+	 */
+	public function get_offline_purchase_events_opted_in_at(): int {
+		$opted_in_at = (int) get_option( self::OPTION_OFFLINE_PURCHASE_EVENTS_OPTED_IN_AT, 0 );
+
+		if ( 0 === $opted_in_at ) {
+			$opted_in_at = time();
+			update_option( self::OPTION_OFFLINE_PURCHASE_EVENTS_OPTED_IN_AT, $opted_in_at, false );
+		}
+
+		return $opted_in_at;
+	}
+
+	/**
+	 * Records the opt-in time when the offline purchase events option is first created.
+	 *
+	 * @internal
+	 *
+	 * @param string $option the option name.
+	 * @param mixed  $value  the new value.
+	 */
+	public function handle_offline_purchase_events_option_added( $option, $value ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundBeforeLastUsed -- signature fixed by the add_option_{$option} hook.
+		$this->record_offline_purchase_events_opt_in( 'no', $value );
+	}
+
+	/**
+	 * Records the opt-in time when the offline purchase events option changes.
+	 *
+	 * @internal
+	 *
+	 * @param mixed $old_value the previous value.
+	 * @param mixed $value     the new value.
+	 */
+	public function handle_offline_purchase_events_option_updated( $old_value, $value ) {
+		$this->record_offline_purchase_events_opt_in( $old_value, $value );
+	}
+
+	/**
+	 * Stamps the opt-in time on a switch to enabled, and clears it on a switch to disabled.
+	 *
+	 * Clearing it means re-enabling later starts a fresh window, so sales paid while
+	 * the feature was off are not reported after it is turned back on.
+	 *
+	 * @param mixed $old_value the previous value.
+	 * @param mixed $value     the new value.
+	 */
+	private function record_offline_purchase_events_opt_in( $old_value, $value ) {
+		$was_enabled = 'yes' === $old_value;
+		$is_enabled  = 'yes' === $value;
+
+		if ( $is_enabled && ! $was_enabled ) {
+			update_option( self::OPTION_OFFLINE_PURCHASE_EVENTS_OPTED_IN_AT, time(), false );
+			// Unlike the opt-in time, this survives opting out.
+			update_option( self::OPTION_OFFLINE_PURCHASE_EVENTS_EVER_OPTED_IN, 'yes', false );
+		} elseif ( ! $is_enabled && $was_enabled ) {
+			delete_option( self::OPTION_OFFLINE_PURCHASE_EVENTS_OPTED_IN_AT );
+		}
 	}
 
 	/**

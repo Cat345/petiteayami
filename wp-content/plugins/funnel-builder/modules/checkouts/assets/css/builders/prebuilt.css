@@ -1,0 +1,15 @@
+/*
+ * prebuilt checkout styles.
+ *
+ * Loaded only on a prebuilt checkout, by WFACP_Template::enqueue_builder_style().
+ * Edit here, not in the shared stylesheets.
+ */
+
+/* These were written in the shared sheets as :not(.wfacp_oxygen_template) / :not(.oxy),
+   meaning "every builder except Oxygen". Rather than naming a builder in a shared file in
+   order to exclude it, each builder that wants the rule now simply carries it, and Oxygen
+   has no file because it supplies its own. */
+body p.woocommerce-invalid-required-field .wfacp-form-control,
+body .wfacp_main_form p.woocommerce-invalid-required-field:not(.wfacp_select2_country_state) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered {
+    border-bottom-color: #E15334;
+}

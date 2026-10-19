@@ -266,19 +266,90 @@
                     }).always(function (resp) {
                         /* Remove overlay Class after succuss  */
                         $this.parents('.wffn-custom-optin-from').addClass("wffn-form-overlay");
-                        /* When there is no action for the form we reload the page manually so we won't mess up the redirects from WP */
-                        if (Object.prototype.hasOwnProperty.call(resp, 'mapped')) {
-                            for (var k in resp.mapped) {
-                                jQuery(".wfop_integration_form input[name='" + k + "']").val(resp.mapped[k]);
+                        /*
+                         * Advance to the next configured funnel step (checkout, etc.).
+                         * next_url falls back to the home URL when the opt-in has no next step or custom
+                         * redirect; has_next_step tells the two apart.
+                         */
+                        var hasNextUrl    = Object.prototype.hasOwnProperty.call(resp, 'next_url') && '' !== resp.next_url;
+                        var hasNextStep   = hasNextUrl && false !== resp.has_next_step;
+                        var wfopGoToNextStep = function () {
+                            if (hasNextUrl) {
+                                window.location.href = resp.next_url;
                             }
-                            jQuery(".wfop_integration_form").trigger('submit');
-                            return;
+                        };
+
+                        /*
+                         * CRM direct-post integrations (e.g. ConvertKit) return mapped fields that must be
+                         * POSTed to the CRM's own form endpoint (the integration form's action) from the
+                         * browser.
+                         *
+                         * - Funnel (next step present): send the subscription as a background request that
+                         *   SURVIVES the page navigation (fetch keepalive), then redirect to the next step
+                         *   IMMEDIATELY — no perceptible delay and no dropped leads. Falls back to a hidden
+                         *   iframe submit when fetch/keepalive is unavailable.
+                         * - Standalone (no next step): let the CRM/native form's own action drive the redirect
+                         *   by submitting it in the top window, preserving pre-funnel behavior.
+                         */
+                        if (Object.prototype.hasOwnProperty.call(resp, 'mapped')) {
+                            var $integrationForm = jQuery(".wfop_integration_form");
+                            Object.keys(resp.mapped).forEach(function (k) {
+                                $integrationForm.find("input[name='" + k + "']").val(resp.mapped[k]);
+                            });
+                            if ($integrationForm.length) {
+                                if (!hasNextStep) {
+                                    /* No funnel step to advance to — the CRM form owns the redirect. */
+                                    $integrationForm.removeAttr('target').trigger('submit');
+                                    return;
+                                }
+
+                                var crmAction = $integrationForm.attr('action');
+                                var crmMethod = ($integrationForm.attr('method') || 'post').toUpperCase();
+
+                                /* Nothing to POST to (form has no action) — just advance the funnel. */
+                                if (crmAction) {
+                                    var crmSent = false;
+                                    if (typeof window.fetch === 'function') {
+                                        try {
+                                            var crmBody = $integrationForm.serialize();
+                                            var crmReq  = ('GET' === crmMethod)
+                                                ? window.fetch(crmAction + (crmAction.indexOf('?') > -1 ? '&' : '?') + crmBody, {
+                                                    method: 'GET', mode: 'no-cors', keepalive: true
+                                                })
+                                                : window.fetch(crmAction, {
+                                                    method: 'POST', mode: 'no-cors', keepalive: true,
+                                                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                                    body: crmBody
+                                                });
+                                            /* Swallow async rejection: we redirect right after, and an
+                                             * unhandled keepalive rejection would otherwise noise the console. */
+                                            if (crmReq && typeof crmReq.catch === 'function') {
+                                                crmReq.catch(function () {});
+                                            }
+                                            crmSent = true;
+                                        } catch (e) {
+                                            crmSent = false;
+                                        }
+                                    }
+
+                                    /* Fallback: fire the form into a hidden iframe (fire-and-forget, no wait). */
+                                    if (!crmSent) {
+                                        var integrationTarget = 'wfop_integration_target';
+                                        if (0 === jQuery("iframe[name='" + integrationTarget + "']").length) {
+                                            jQuery('<iframe>', {
+                                                name: integrationTarget,
+                                                'aria-hidden': 'true',
+                                                css: {display: 'none'}
+                                            }).appendTo('body');
+                                        }
+                                        $integrationForm.attr('target', integrationTarget);
+                                        $integrationForm.trigger('submit');
+                                    }
+                                }
+                            }
                         }
 
-                        if (Object.prototype.hasOwnProperty.call(resp, 'next_url') && '' !== resp.next_url) {
-                            window.location.href = resp.next_url;
-                            return;
-                        }
+                        wfopGoToNextStep();
                     });
                 } else {
                     console.log('form validation failed');

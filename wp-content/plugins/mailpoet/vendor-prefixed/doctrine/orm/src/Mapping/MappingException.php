@@ -107,7 +107,7 @@ class MappingException extends ORMException
  }
  public static function joinTableRequired($fieldName)
  {
- return new self(sprintf("The mapping of field '%s' requires an the 'joinTable' attribute.", $fieldName));
+ return new self(sprintf("The mapping of field '%s' requires the 'joinTable' attribute.", $fieldName));
  }
  public static function missingRequiredOption($field, $expectedOption, $hint = '')
  {

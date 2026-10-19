@@ -123,7 +123,7 @@ if ( ! class_exists( 'WFTYBlocks_Render_Block' ) ) {
 					$settings
 				)
 			);
-			$heading = isset( $settings['content'] ) ? $settings['content'] : __( 'Customer Details', 'funnel-builder' );
+			$heading = esc_attr( isset( $settings['content'] ) ? $settings['content'] : __( 'Customer Details', 'funnel-builder' ) );
 
 			$customer_layout  = ( isset( $settings['layout'] ) && isset( $settings['layout']['desktop'] ) && '2c' !== $settings['layout']['desktop'] ) ? ' wfty_full_width' : '2c'; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 			$customer_layout .= ( isset( $settings['layout'] ) && isset( $settings['layout']['tablet'] ) && '2c' === $settings['layout']['tablet'] ) ? ' wfty_2c_tab_width' : ''; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
@@ -191,10 +191,10 @@ if ( ! class_exists( 'WFTYBlocks_Render_Block' ) ) {
 			if ( isset( $settings['orderProductImage'] ) && false === $settings['orderProductImage'] ) {
 				$order_details_img = false;
 			}
-			$order_heading_text         = isset( $settings['orderHeading'] ) ? $settings['orderHeading'] : __( 'Order Details', 'funnel-builder' );
-			$order_subscription_heading = isset( $settings['subscriptionHeading'] ) ? $settings['subscriptionHeading'] : __( 'Subscription', 'funnel-builder' );
-			$order_download_heading     = isset( $settings['downloadHeading'] ) ? $settings['downloadHeading'] : __( 'Downloads', 'funnel-builder' );
-			$download_btn_text          = isset( $settings['downloadBtnText'] ) ? $settings['downloadBtnText'] : __( 'Download', 'funnel-builder' );
+			$order_heading_text         = esc_attr( isset( $settings['orderHeading'] ) ? $settings['orderHeading'] : __( 'Order Details', 'funnel-builder' ) );
+			$order_subscription_heading = esc_attr( isset( $settings['subscriptionHeading'] ) ? $settings['subscriptionHeading'] : __( 'Subscription', 'funnel-builder' ) );
+			$order_download_heading     = esc_attr( isset( $settings['downloadHeading'] ) ? $settings['downloadHeading'] : __( 'Downloads', 'funnel-builder' ) );
+			$download_btn_text          = esc_attr( isset( $settings['downloadBtnText'] ) ? $settings['downloadBtnText'] : __( 'Download', 'funnel-builder' ) );
 			$show_column_download       = isset( $settings['downloadFileCount'] ) ? $settings['downloadFileCount'] : false;
 			$show_column_file_expiry    = isset( $settings['downloadFileExpiry'] ) ? $settings['downloadFileExpiry'] : false;
 

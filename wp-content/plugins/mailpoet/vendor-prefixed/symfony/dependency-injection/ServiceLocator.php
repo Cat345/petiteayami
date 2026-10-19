@@ -30,7 +30,7 @@ class ServiceLocator implements ServiceProviderInterface
  $message = \sprintf('Cannot resolve %s: %s', $what, $message);
  }
  $r = new \ReflectionProperty($e, 'message');
- $r->setAccessible(\true);
+ if (PHP_VERSION_ID < 80100) { $r->setAccessible( \true ); }
  $r->setValue($e, $message);
  throw $e;
  }

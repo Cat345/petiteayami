@@ -4,7 +4,6 @@ if (!defined('ABSPATH')) exit;
 $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 return array(
- 'Webmozart\\Assert\\' => array($vendorDir . '/webmozart/assert/src'),
  'Cron\\' => array($vendorDir . '/dragonmantank/cron-expression/src/Cron'),
  'Automattic\\Jetpack\\Autoloader\\' => array($vendorDir . '/automattic/jetpack-autoloader/src'),
 );

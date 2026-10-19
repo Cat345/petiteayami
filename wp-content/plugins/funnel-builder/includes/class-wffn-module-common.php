@@ -89,7 +89,7 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 				wp_dequeue_style( 'fl-automator-skin' );
 			}
 			if ( 'oceanwp' === strtolower( get_template() ) ) {
-				$enqu_fa = apply_filters( 'wfocu_enqueue_fa_style', true );
+				$enqu_fa = apply_filters( 'wfocu_enqueue_fa_style', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established FunnelKit family hook prefix, below PCP's frequency-detection threshold in this plugin; renaming breaks cross-plugin integrations.
 				if ( $enqu_fa ) {
 					wp_enqueue_style( 'wfocu-font-awesome', OCEANWP_CSS_DIR_URI . 'third/font-awesome.min.css', false ); //phpcs:ignore(WordPress.WP.EnqueuedResourceParameters.MissingVersion
 				}
@@ -163,14 +163,14 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 				if ( ! empty( $custom_js ) ) {
 					$sanitized_custom_js = WFFN_Common::sanitize_global_script( $custom_js );
 					if ( $sanitized_custom_js === $custom_js ) {
-						echo $custom_js; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo $custom_js; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- merchant-supplied tracking-script feature; intentionally raw after sanitize_global_script().
 					}
 				}
 				$global_script = $this->get_option( 'script' );
 				if ( ! empty( $global_script ) ) {
 					$sanitized_script = WFFN_Common::sanitize_global_script( $global_script );
 					if ( $sanitized_script === $global_script ) {
-						echo html_entity_decode( $global_script, ENT_QUOTES | ENT_HTML401 ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo html_entity_decode( $global_script, ENT_QUOTES | ENT_HTML401 ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- merchant-supplied tracking-script feature; intentionally raw after sanitize_global_script().
 					}
 				}
 			}
@@ -295,7 +295,7 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 			 */
 			$allowed_themes = apply_filters( 'wffn_allowed_themes', array( 'flatsome', 'Extra', 'divi', 'Divi', 'astra', 'jupiterx', 'kadence' ) );
 
-			$allowed_for_upsells_themes = apply_filters( 'wfocu_allowed_themes', array( 'flatsome', 'Extra', 'divi', 'Divi', 'jupiterx', 'kadence' ) );
+			$allowed_for_upsells_themes = apply_filters( 'wfocu_allowed_themes', array( 'flatsome', 'Extra', 'divi', 'Divi', 'jupiterx', 'kadence' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established FunnelKit family hook prefix, below PCP's frequency-detection threshold in this plugin; renaming breaks cross-plugin integrations.
 
 			$general_settings = BWF_Admin_General_Settings::get_instance();
 

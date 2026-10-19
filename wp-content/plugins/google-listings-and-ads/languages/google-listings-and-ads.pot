@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Google for WooCommerce 3.9.5\n"
+"Project-Id-Version: Google for WooCommerce 3.9.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/google-listings-and-ads\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-29T16:31:20+00:00\n"
+"POT-Creation-Date: 2026-10-12T15:39:40+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: google-listings-and-ads\n"
@@ -50,23 +50,23 @@ msgstr ""
 msgid "No action matching %s was found."
 msgstr ""
 
-#: src/Admin/Admin.php:358
+#: src/Admin/Admin.php:357
 #: src/Menu/Settings.php:25
 #: js/build/commons.js:11
 #: js/build/index.js:19
 msgid "Settings"
 msgstr ""
 
-#: src/Admin/Admin.php:364
+#: src/Admin/Admin.php:363
 msgid "Get Started"
 msgstr ""
 
-#: src/Admin/Admin.php:371
+#: src/Admin/Admin.php:370
 msgid "Documentation"
 msgstr ""
 
 #. translators: 1) HTML anchor open tag 2) HTML anchor closing tag
-#: src/Admin/Admin.php:432
+#: src/Admin/Admin.php:431
 #, php-format
 msgid "By using this extension, you may be storing personal data or sharing data with an external service. %1$sLearn more about what data is collected by Google and what you may want to include in your privacy policy%2$s."
 msgstr ""
@@ -2272,7 +2272,7 @@ msgstr ""
 msgid "Nonces mismatch, skip updating auth status."
 msgstr ""
 
-#: src/MerchantCenter/MarketService.php:475
+#: src/MerchantCenter/MarketService.php:519
 msgid "Primary Market"
 msgstr ""
 
@@ -2781,6 +2781,57 @@ msgstr ""
 msgid "Create campaign"
 msgstr ""
 
+#: js/build/analytics-overview-promo.js:1
+msgid "Sales a bit slow? Give your products a boost with Google."
+msgstr ""
+
+#: js/build/analytics-overview-promo.js:1
+msgid "Launch a Google Ads campaign and grow back your sales by reaching shoppers who are ready to buy."
+msgstr ""
+
+#: js/build/analytics-overview-promo.js:1
+msgid "Selling fewer items than usual? Give your products a boost with Google."
+msgstr ""
+
+#: js/build/analytics-overview-promo.js:1
+msgid "Launch a Google Ads campaign and sell more of your products by reaching shoppers who are ready to buy."
+msgstr ""
+
+#: js/build/analytics-overview-promo.js:1
+msgid "Sales a bit slow? Reach more shoppers with Google."
+msgstr ""
+
+#: js/build/analytics-overview-promo.js:1
+msgid "Sync your catalog with Google and grow back your sales by reaching new shoppers right when they are searching to buy."
+msgstr ""
+
+#: js/build/analytics-overview-promo.js:1
+msgid "Selling fewer items than usual? Reach more shoppers with Google."
+msgstr ""
+
+#: js/build/analytics-overview-promo.js:1
+msgid "Sync your catalog with Google and sell more of your products by reaching new shoppers right when they are searching to buy."
+msgstr ""
+
+#: js/build/analytics-overview-promo.js:1
+msgid "Launch a campaign"
+msgstr ""
+
+#: js/build/analytics-overview-promo.js:1
+#: js/build/channel-visibility-google-ads-promo.js:1
+#: js/build/google-ads-promo.js:1
+#: js/build/notifications-system.js:19
+msgid "Get started"
+msgstr ""
+
+#: js/build/analytics-overview-promo.js:1
+#: js/build/channel-visibility-google-ads-promo.js:1
+#: js/build/dashboard.js:10
+#: js/build/dashboard.js:13
+#: js/build/price-benchmark.js:1
+msgid "Dismiss"
+msgstr ""
+
 #: js/build/attribute-mapping.js:1
 msgid "Create attribute rules to control what product data gets sent to Google and to manage product attributes in bulk."
 msgstr ""
@@ -3006,19 +3057,6 @@ msgid "Manage attributes"
 msgstr ""
 
 #: js/build/channel-visibility-google-ads-promo.js:1
-#: js/build/google-ads-promo.js:1
-#: js/build/notifications-system.js:19
-msgid "Get started"
-msgstr ""
-
-#: js/build/channel-visibility-google-ads-promo.js:1
-#: js/build/dashboard.js:10
-#: js/build/dashboard.js:13
-#: js/build/price-benchmark.js:1
-msgid "Dismiss"
-msgstr ""
-
-#: js/build/channel-visibility-google-ads-promo.js:1
 #: js/build/commons.js:1
 #: js/build/commons.js:66
 #: js/build/dashboard.js:13
@@ -3031,6 +3069,10 @@ msgstr ""
 #: js/build/channel-visibility-google-ads-promo.js:1
 #: js/build/commons.js:1
 msgid "Google"
+msgstr ""
+
+#: js/build/channel-visibility-google-ads-promo.js:1
+msgid "Show product on Google"
 msgstr ""
 
 #: js/build/channel-visibility-google-ads-promo.js:1
@@ -5065,6 +5107,13 @@ msgstr ""
 #: js/build/index.js:19
 #: js/build/notifications-system.js:19
 #: js/build/woo-marketing-notifications-slot.js:19
+msgid "There was an error loading report statistics."
+msgstr ""
+
+#: js/build/commons.js:72
+#: js/build/index.js:19
+#: js/build/notifications-system.js:19
+#: js/build/woo-marketing-notifications-slot.js:19
 msgid "There was an error loading the mapping attributes."
 msgstr ""
 
@@ -5924,6 +5973,10 @@ msgid "Sync your products to reach customers when they're searching for products
 msgstr ""
 
 #: js/build/index.js:19
+msgid "Analytics Overview Promo"
+msgstr ""
+
+#: js/build/index.js:19
 msgid "Marketing"
 msgstr ""
 
@@ -6221,6 +6274,18 @@ msgstr ""
 
 #: js/build/notifications-system.js:19
 msgid "View Product Issues"
+msgstr ""
+
+#: js/build/notifications-system.js:19
+msgid "Update product images to stay visible on Google"
+msgstr ""
+
+#: js/build/notifications-system.js:19
+msgid "Starting January 31, 2027, Google requires main product images to be at least 500 × 500 pixels. Some of your synced products don't meet this requirement and may stop appearing in ads and free listings. Update them with higher-resolution images to avoid interruptions."
+msgstr ""
+
+#: js/build/notifications-system.js:19
+msgid "Learn how to update product images"
 msgstr ""
 
 #: js/build/notifications-system.js:19

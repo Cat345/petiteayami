@@ -47,7 +47,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Force_Sells' ) ) {
 		public function display_item_quantity( $cart_item ) {
 			if ( isset( $cart_item['forced_by'] ) ) {
 				?>
-                <span><?php echo $cart_item['quantity']; ?></span>
+                <span><?php echo esc_html( $cart_item['quantity'] ); ?></span>
 				<?php
 			}
 		}

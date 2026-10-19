@@ -37,7 +37,7 @@ Verify the SDK name and version.
 2. Install the capi_param_builder library, from above #Quick Start. Also install
    optional 3rd party library(sinatra, public_suffix) to run the demo.
 
-2.1 sinatra. Install by running `gem install sinatra`. An easy web framwork.
+2.1 sinatra. Install by running `gem install sinatra`. An easy web framework.
 
 2.2 (optional) public_suffix. Install by running `gem install public_suffix`. It
 will help resolve etld+1, if you'd prefer to use this option to get your etld+1
@@ -106,7 +106,21 @@ builder = ParamBuilder.new()
 
 ```
 
-4. Call `process_request` function to process fbc and fbp
+4. [Recommended] Call `process_request_from_context` to process fbc, fbp,
+   event_source_url and referrer_url. Pass your framework's request object (or
+   Rack `env` hash) directly — the SDK extracts host / cookies / query / referer
+   (and the request URL for `event_source_url`) for you, and returns the
+   recommended cookies to set. See the [Framework support](#framework-support)
+   section for exactly what to pass for your framework.
+
+```
+
+cookies_to_be_updated = builder.process_request_from_context(request)
+
+```
+
+**Deprecated:** `process_request` is still supported but deprecated. It does not
+construct `event_source_url`. Prefer `process_request_from_context` above.
 
 ```
 
@@ -123,14 +137,14 @@ cookies_to_be_updated = builder.process_request(
    framework, the save cookie API may vary. Feel free to choose the best fit for
    your use case. Below uses the example from demo application.
 
-Option 1: Save the `cookies_to_be_updated` cookies from `process_request` to
-your response.
+Option 1: Save the `cookies_to_be_updated` cookies from
+`process_request_from_context` to your response.
 
 ```
 
-# Get the recoomended saved cookie from step 4 above
+# Get the recommended saved cookie from step 4 above
 
-cookies_to_be_updated = builder.process_request(...)
+cookies_to_be_updated = builder.process_request_from_context(request)
 
 for cookie in cookies_to_be_updated do response.set_cookie(
     cookie.name,
@@ -148,9 +162,9 @@ response.
 
 ```
 
-# Get the recoomended saved cookie from step 4 above
+# Get the recommended saved cookie from step 4 above
 
-builder.process_request(...)
+builder.process_request_from_context(request)
 
 # `cookies_to_be_updated` from get_cookies_to_set()
 
@@ -167,7 +181,7 @@ end
 
 ```
 
-6. get correct fbc and fbp.
+6. get correct fbc, fbp, event_source_url, and referrer_url.
 
 ```
 
@@ -181,16 +195,32 @@ fbp = builder.get_fbp()
 
 ```
 
-7. Send fbc and fbp back with the Conversions API.
+```
+
+event_source_url = builder.get_event_source_url()
+
+```
+
+```
+
+referrer_url = builder.get_referrer_url()
+
+```
+
+7. Send the parameters back to the Conversions API. `event_source_url` and
+   `referrer_url` are sent at the event level; `fbc` and `fbp` are sent inside
+   `user_data`.
 
 ```
 
 data=[
-   'event_name: '...',
-   'event_tme': <your_time>,
+   'event_name': '...',
+   'event_time': <your_time>,
+   'event_source_url': event_source_url, # The value provided in step 6
+   'referrer_url': referrer_url, # The value provided in step 6
    'user_data': {
-      'fbc': fbc, // The value provided in step 5
-      'fbp': fbp, // The value provided in step 5 ...
+      'fbc': fbc, # The value provided in step 6
+      'fbp': fbp, # The value provided in step 6 ...
    }
 ...
 ]
@@ -210,6 +240,53 @@ of the box any Rack-based framework:
 For any other framework, you can build a `PlainDataObject` directly and pass it
 in, or fall back to the original `process_request(host, queries, cookies, referer)`
 call.
+
+## URL support
+
+The SDK can extract `event_source_url` and `referrer_url` from the incoming
+HTTP request. These values help improve Conversions API event matching and
+attribution quality.
+
+**Using `process_request_from_context` (recommended):**
+
+```ruby
+builder.process_request_from_context(request)
+
+event_source_url = builder.get_event_source_url()
+referrer_url = builder.get_referrer_url()
+```
+
+**Using `process_request` (deprecated):**
+
+`process_request` does not construct `event_source_url` — only `referrer_url`
+is available via the referer parameter. Use `process_request_from_context` if
+you need `event_source_url`.
+
+<details>
+<summary>How it works</summary>
+
+- `event_source_url` is constructed from the scheme, host, and request URI
+  of the incoming HTTP request.
+- `referrer_url` is captured from the `Referer` header before any fbclid
+  extraction, with an SDK version appendix added.
+- Both return `nil` when the required information is not available.
+
+</details>
+
+**Send them with your Conversions API payload:**
+
+```ruby
+data = {
+  event_name: '...',
+  event_time: Time.now.to_i,
+  event_source_url: builder.get_event_source_url(),
+  referrer_url: builder.get_referrer_url(),
+  user_data: {
+    fbc: builder.get_fbc(),
+    fbp: builder.get_fbp(),
+  },
+}
+```
 
 ## License
 

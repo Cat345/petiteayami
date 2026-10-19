@@ -13,28 +13,31 @@ if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
 if ( 1 < count( $available_methods ) ) { ?>
-	<?php foreach ( $available_methods as $method ) {
+	<?php
+	foreach ( $available_methods as $method ) {
 		$checked = checked( $method->id, $chosen_method, false );
 		if ( '' !== $checked ) {
 			?>
-            <tr class="shipping recurring-total <?php echo esc_attr( $recurring_cart_key ); ?>">
-                <th><?php
-					echo "<span>" . wp_kses_post( $package_name ) . "</span>";
-					echo '<small>&nbsp;' . wp_kses_post( sprintf( __( 'via %s', 'funnel-builder' ), WFACP_Common::shipping_method_label( $method ) ) ) . '</small>';
-					?>
-                </th>
-                <td data-title="<?php echo esc_attr( $package_name ); ?>">
-					<?php if ( $method->get_cost() == 0 ) {
+			<tr class="shipping recurring-total <?php echo esc_attr( $recurring_cart_key ); ?>">
+				<th>
+				<?php
+					echo '<span>' . wp_kses_post( $package_name ) . '</span>';
+					echo '<small>&nbsp;' . wp_kses_post( sprintf( /* translators: %s: shipping method label. */ __( 'via %s', 'funnel-builder' ), WFACP_Common::shipping_method_label( $method ) ) ) . '</small>';
+				?>
+				</th>
+				<td data-title="<?php echo esc_attr( $package_name ); ?>">
+					<?php
+					if ( $method->get_cost() == 0 ) {
 						echo '<span>' . esc_html__( 'Free', 'woocommerce' ) . '</span>'; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					} else {
-						echo wc_price( $method->get_cost() );
+						echo wc_price( $method->get_cost() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wc_price() returns formatted price HTML; matches core.
 					}
 					if ( $show_package_details ) {
-						echo '<p class="woocommerce-shipping-contents"><small>' . $package_details . '</small></p>';
+						echo '<p class="woocommerce-shipping-contents"><small>' . esc_html( $package_details ) . '</small></p>';
 					}
 					?>
-                </td>
-            </tr>
+				</td>
+			</tr>
 			<?php
 		}
 	}

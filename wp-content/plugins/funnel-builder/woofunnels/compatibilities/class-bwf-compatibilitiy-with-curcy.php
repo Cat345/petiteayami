@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'BWF_Compatibility_With_CURCY' ) ) {
 	#[AllowDynamicProperties]
-	class BWF_Compatibility_With_CURCY {
+	class BWF_Compatibility_With_CURCY { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 
 		public function __construct() {
 		}

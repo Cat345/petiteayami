@@ -1,32 +1,37 @@
 <?php //phpcs:ignore WordPress.WP.TimezoneChange.DeprecatedSniff
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class WFOTY_Admin
+ *
+ * WFOTY_ (WooFunnels Optin Thank-You) is one of the plugin's established prefix families,
+ * alongside WFFN_, WFACP_, WFTY_, WFOP_ and BWF_ - five characters, unique to this plugin,
+ * and consistent across the optin-ty-pages module. Not a generic/unprefixed name.
  */
 if ( ! class_exists( 'WFOTY_Admin' ) ) {
 	#[AllowDynamicProperties]
-
-  class WFOTY_Admin {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- WFOTY_ is an established plugin prefix family, see docblock above.
+	class WFOTY_Admin {
 
 		private static $ins = null;
 
 		public function __construct() {
 
+			add_action( 'edit_form_after_title', array( $this, 'add_back_button' ) );
+			add_filter( 'et_builder_enabled_builder_post_type_options', array( $this, 'wffn_add_oty_type_to_divi' ), 999 );
 
-			add_action( 'edit_form_after_title', [ $this, 'add_back_button' ] );
-			add_filter( 'et_builder_enabled_builder_post_type_options', [ $this, 'wffn_add_oty_type_to_divi' ], 999 );
-
-			/**general settings**/
+			/**general settings*/
 			add_filter( 'bwf_general_settings_fields', array( $this, 'add_permalink_settings' ) );
-			add_filter( 'bwf_general_settings_default_config', function ( $fields ) {
-				$fields['optin_ty_page_base'] = 'op-confirmed';
+			add_filter(
+				'bwf_general_settings_default_config',
+				function ( $fields ) {
+					$fields['optin_ty_page_base'] = 'op-confirmed';
 
-				return $fields;
-			} );
+					return $fields;
+				}
+			);
 
 			add_filter( 'bwf_enable_ecommerce_integration_optin', '__return_true' );
-
 		}
 
 		/**
@@ -34,7 +39,7 @@ if ( ! class_exists( 'WFOTY_Admin' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -55,11 +60,16 @@ if ( ! class_exists( 'WFOTY_Admin' ) ) {
 				if ( ! empty( $funnel_id ) && abs( $funnel_id ) > 0 ) {
 					BWF_Admin_Breadcrumbs::register_ref( 'funnel_id', $funnel_id );
 				}
-				$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
-					'page'      => 'bwf',
-					'path'      => "/funnel-optin-confirmation/" . $oty_id . "/design",
-					'funnel_id' => $funnel_id,
-				], admin_url( 'admin.php' ) ) );
+				$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs(
+					add_query_arg(
+						array(
+							'page'      => 'bwf',
+							'path'      => '/funnel-optin-confirmation/' . $oty_id . '/design',
+							'funnel_id' => $funnel_id,
+						),
+						admin_url( 'admin.php' )
+					)
+				);
 
 				if ( use_block_editor_for_post_type( $oty_type ) ) {
 					add_action( 'admin_footer', array( $this, 'render_back_to_funnel_script_for_block_editor' ) );
@@ -82,7 +92,8 @@ if ( ! class_exists( 'WFOTY_Admin' ) ) {
 					</script>
 					<?php
 				}
-			} ?>
+			}
+			?>
 			<?php
 		}
 
@@ -95,11 +106,17 @@ if ( ! class_exists( 'WFOTY_Admin' ) ) {
 				if ( ! empty( $funnel_id ) && abs( $funnel_id ) > 0 ) {
 					BWF_Admin_Breadcrumbs::register_ref( 'funnel_id', $funnel_id );
 				}
-				$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
-					'page'      => 'bwf',
-					'path'      => "/funnel-optin-confirmation/" . $oty_id . "/design",
-					'funnel_id' => $funnel_id,
-				], admin_url( 'admin.php' ) ) ); ?>
+				$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs(
+					add_query_arg(
+						array(
+							'page'      => 'bwf',
+							'path'      => '/funnel-optin-confirmation/' . $oty_id . '/design',
+							'funnel_id' => $funnel_id,
+						),
+						admin_url( 'admin.php' )
+					)
+				);
+				?>
 				<script id="wf_funnel-back-button-template" type="text/html">
 					<div id="wf_funnel-switch-mode">
 						<a id="wf_funnel-back-button" class="button button-default button-large" href="<?php echo esc_url( $edit_link ); ?>">
@@ -159,7 +176,8 @@ if ( ! class_exists( 'WFOTY_Admin' ) ) {
 						} )( window, wp )
 					});
 				</script>
-			<?php }
+				<?php
+			}
 		}
 
 		/**
@@ -169,7 +187,7 @@ if ( ! class_exists( 'WFOTY_Admin' ) ) {
 		 */
 		public function wffn_add_oty_type_to_divi( $options ) {
 			if ( ! is_array( $options ) ) {
-				$options = [];
+				$options = array();
 			}
 			$oty_type             = WFOPP_Core()->optin_ty_pages->get_post_type_slug();
 			$options[ $oty_type ] = 'on';
@@ -182,15 +200,12 @@ if ( ! class_exists( 'WFOTY_Admin' ) ) {
 
 			$fields['optin_ty_page_base'] = array(
 				'label'     => __( 'Optin Confirmation Page', 'funnel-builder' ),
-				'hint'      => __( '', 'funnel-builder' ),
+				'hint'      => '',
 				'type'      => 'input',
 				'inputType' => 'text',
 			);
 
 			return $fields;
-
 		}
-
-
 	}
 }

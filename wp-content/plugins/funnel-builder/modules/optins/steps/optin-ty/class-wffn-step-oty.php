@@ -357,7 +357,7 @@ if ( ! class_exists( 'WFFN_Step_Oty' ) ) {
 		 * @return mixed
 		 */
 		public function maybe_funnel_breadcrumb( $get_ref ) {
-			$step_id = filter_input( INPUT_GET, 'edit' );
+			$step_id = filter_input( INPUT_GET, 'edit', FILTER_SANITIZE_NUMBER_INT );
 			if ( empty( $get_ref ) && ! empty( $step_id ) ) {
 				$funnel_id = get_post_meta( $step_id, '_bwf_in_funnel', true );
 				if ( ! empty( $funnel_id ) && abs( $funnel_id ) > 0 ) {

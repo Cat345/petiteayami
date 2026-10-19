@@ -24,7 +24,10 @@ use WooCommerce\Facebook\Handlers\WhatsAppExtension;
  */
 class Lifecycle extends Framework\Lifecycle {
 
-	/** @var string the "enable messenger" setting ID */
+	/**
+	 * @var string the "enable messenger" setting ID
+	 * @deprecated Leftover from the removed Messenger chat feature, no longer written. Nothing reads it.
+	 */
 	const SETTING_ENABLE_MESSENGER = 'wc_facebook_enable_messenger';
 
 	/** @var string the messenger locale setting ID */
@@ -75,7 +78,7 @@ class Lifecycle extends Framework\Lifecycle {
 		 * Versions prior to 1.10.0 did not set a version option, so the upgrade method needs to be called manually.
 		 * We do this by checking first if an old option exists, but a new one doesn't.
 		 */
-		if ( get_option( 'woocommerce_facebookcommerce_settings' ) && ! get_option( 'wc_facebook_page_access_token' ) ) {
+		if ( get_option( 'woocommerce_facebookcommerce_settings' ) && ! get_option( \WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN ) ) {
 			$this->upgrade( '1.9.15' );
 		}
 	}
@@ -107,7 +110,6 @@ class Lifecycle extends Framework\Lifecycle {
 		}
 		// migrate options from woocommerce_facebookcommerce_settings
 		$options = array(
-			'fb_api_key'                       => \WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN,
 			'fb_product_catalog_id'            => \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID,
 			'fb_external_merchant_settings_id' => \WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID,
 			'fb_feed_id'                       => \WC_Facebookcommerce_Integration::OPTION_FEED_ID,
@@ -216,7 +218,6 @@ class Lifecycle extends Framework\Lifecycle {
 			$handler->create_job( array( 'created_at' => current_time( 'mysql' ) ) );
 			$handler->dispatch();
 		}
-		update_option( 'wc_facebook_has_connected_fbe_2', 'no' );
 		$settings = get_option( 'woocommerce_facebookcommerce_settings' );
 		if ( is_array( $settings ) ) {
 			$settings_map = array(
@@ -352,12 +353,15 @@ class Lifecycle extends Framework\Lifecycle {
 	}
 
 	/**
-	 * Trigger sync of all WooCommerce categories
+	 * Queue a sync of all WooCommerce categories.
+	 *
+	 * Queued rather than run here: the sync makes Graph calls for every product category, and
+	 * upgrade routines run inside an ordinary admin request.
 	 *
 	 * @since 3.4.9
 	 */
 	protected function upgrade_to_3_4_9() {
-		facebook_for_woocommerce()->get_product_sets_sync_handler()->sync_all_product_sets();
+		facebook_for_woocommerce()->get_product_sets_sync_handler()->schedule_sync_all_product_sets();
 	}
 
 	/**

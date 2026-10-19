@@ -65,7 +65,6 @@ if ( ! class_exists( 'WFTY_Divi_Extension' ) ) {
 			if ( ! WFFN_Core()->thank_you_pages->is_wfty_page() ) {
 				return;
 			}
-			wp_enqueue_script( 'flickity', WFFN_PLUGIN_URL . '/assets/flickity/flickity.pkgd.js', array(), true );
 			// divi.css is enqueued by WFFN_ThankYou_WC_Pages_Divi::enqueue_divi_css() for both Divi 4 and 5.
 			if ( et_core_is_fb_enabled() ) {
 				wp_enqueue_script( "{$this->name}-builder-bundle", "{$this->plugin_dir_url}scripts/loader.js", array( 'react-dom' ), $this->version, true );

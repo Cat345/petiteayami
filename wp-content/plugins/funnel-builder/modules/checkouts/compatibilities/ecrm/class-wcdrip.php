@@ -10,16 +10,16 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Drip' ) ) {
 		 * @var WC_Drip_Subscriptions
 		 */
 		private $wc_drip_obj = null;
-		private $field_arg = null;
-		private $actives = [];
+		private $field_arg   = null;
+		private $actives     = array();
 
 		public function __construct() {
-			add_action( 'init', [ $this, 'init_class' ], 4 );
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_drip_field' ] );
+			add_action( 'init', array( $this, 'init_class' ), 4 );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_drip_field' ) );
 			add_filter( 'wfacp_html_fields_wcdrip_subscribe_1', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'call_wc_drip_hook' ], 10, 3 );
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 10, 2 );
-			add_action( 'wfacp_internal_css', [ $this, 'drip_css_func' ] );
+			add_action( 'process_wfacp_html', array( $this, 'call_wc_drip_hook' ), 10, 3 );
+			add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 10, 2 );
+			add_action( 'wfacp_internal_css', array( $this, 'drip_css_func' ) );
 
 			/* prevent third party fields and wrapper*/
 
@@ -29,7 +29,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Drip' ) ) {
 
 		public function init_class() {
 
-			$wrapper = [];
+			$wrapper = array();
 			if ( function_exists( 'wcdrip_get_settings' ) ) {
 				$wrapper = wcdrip_get_settings();
 			}
@@ -41,21 +41,20 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Drip' ) ) {
 					$this->actives['WC_Drip_Subscriptions'] = WC_Drip_Subscriptions::get_instance();
 				}
 			}
-
 		}
 
 
 		public function add_drip_field( $field ) {
 
 			if ( $this->is_enable( 'WC_Drip_Subscriptions' ) ) {
-				$field['wcdrip_subscribe_1'] = [
+				$field['wcdrip_subscribe_1'] = array(
 					'type'       => 'wfacp_html',
-					'class'      => [ 'drip_subscribe' ],
+					'class'      => array( 'drip_subscribe' ),
 					'id'         => 'wcdrip_subscribe_1',
 					'field_type' => 'advanced',
-					'label'      => __( 'Drip', 'woocommerce' ),
+					'label'      => __( 'Drip', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 
-				];
+				);
 			}
 
 			return $field;
@@ -81,7 +80,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Drip' ) ) {
 					$this->wc_drip_obj->subscribe_field( WC()->checkout() );
 				}
 			}
-
 		}
 
 		public function add_default_wfacp_styling( $args, $key ) {
@@ -89,7 +87,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Drip' ) ) {
 			if ( $key == 'wcdrip_subscribe' && $this->is_enable( 'WC_Drip_Subscriptions' ) ) {
 
 				if ( ! is_null( $this->field_arg ) ) {
-					$all_cls = array_merge( [ 'wfacp-form-control-wrapper wfacp_custom_field_cls wfacp_drip_wrap' ], $args['class'] );
+					$all_cls = array_merge( array( 'wfacp-form-control-wrapper wfacp_custom_field_cls wfacp_drip_wrap' ), $args['class'] );
 					if ( isset( $this->field_arg['cssready'] ) && is_array( $this->field_arg['cssready'] ) ) {
 						$all_cls = array_merge( $all_cls, $this->field_arg['cssready'] );
 					}
@@ -103,30 +101,30 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Drip' ) ) {
 
 
 		public function drip_css_func( $selected_template_slug ) {
-			$array_class = [
+			$array_class = array(
 				'layout_1' => 15,
 				'layout_2' => 15,
 				'layout_4' => 15,
 				'layout_9' => 7,
-			];
+			);
 
 			if ( isset( $array_class[ $selected_template_slug ] ) ) {
 
 				?>
-                <style>
-                    body #wcdrip_subscribe_field span.optional {
-                        display: inline-block !important;
-                    }
+				<style>
+					body #wcdrip_subscribe_field span.optional {
+						display: inline-block !important;
+					}
 
-                    body #wcdrip_subscribe_field label {
-                        font-weight: normal;
-                    }
+					body #wcdrip_subscribe_field label {
+						font-weight: normal;
+					}
 
-                    body .wfacp_main_form #wcdrip_subscribe_field {
+					body .wfacp_main_form #wcdrip_subscribe_field {
 
-                        padding: 0 <?php echo $array_class[ $selected_template_slug ]; ?>px;
-                    }
-                </style>
+						padding: 0 <?php echo (int) $array_class[ $selected_template_slug ]; ?>px;
+					}
+				</style>
 				<?php
 			}
 		}

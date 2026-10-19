@@ -8,7 +8,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_Woo' ) ) {
 	class WFACP_Compatibility_With_Active_Woo {
 		public function __construct() {
 
-			add_action( 'wfacp_outside_header', [ $this, 'actions' ] );
+			add_action( 'wfacp_outside_header', array( $this, 'actions' ) );
 			$this->dequeue_js();
 			$this->remove_actions();
 
@@ -21,20 +21,22 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_Woo' ) ) {
 				return;
 			}
 
-			global $activewoo;
-			add_action( 'woocommerce_before_checkout_form', function () {
-				$status = true;
-				if ( class_exists( 'WC_Integration_Active_Woo_Advanced_Recover' ) ) {
-					$aw_rc       = new WC_Integration_Active_Woo_Advanced_Recover();
-					$rc_settings = $aw_rc->settings;
-					$status      = isset( $rc_settings['cart_recover'] ) && ( $rc_settings['cart_recover'] == 'yes' ) ? true : false;
+			global $activewoo; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- $activewoo is the ActiveWoo plugin's own global; required to reach its instance. The name is theirs and cannot be prefixed.
+			add_action(
+				'woocommerce_before_checkout_form',
+				function () {
+					$status = true;
+					if ( class_exists( 'WC_Integration_Active_Woo_Advanced_Recover' ) ) {
+						$aw_rc       = new WC_Integration_Active_Woo_Advanced_Recover();
+						$rc_settings = $aw_rc->settings;
+						$status      = isset( $rc_settings['cart_recover'] ) && ( $rc_settings['cart_recover'] == 'yes' ) ? true : false;
+					}
+					if ( $status ) {
+						wp_enqueue_script( 'aw_rc_cart_js' );
+						wp_enqueue_script( 'wfacp_active_woo', WFACP_PLUGIN_URL . '/compatibilities/js/activewoo.min.js', array( 'wfacp_checkout_js' ), WFACP_VERSION, true );
+					}
 				}
-				if ( $status ) {
-					wp_enqueue_script( 'aw_rc_cart_js' );
-					wp_enqueue_script( 'wfacp_active_woo', WFACP_PLUGIN_URL . '/compatibilities/js/activewoo.min.js', [ 'wfacp_checkout_js' ], WFACP_VERSION, true );
-				}
-			} );
-
+			);
 		}
 
 		public function is_enable() {
@@ -48,12 +50,10 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_Woo' ) ) {
 		}
 
 		public function actions() {
-			global $activewoo;
+			global $activewoo; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- same third-party global as above.
 			remove_action( 'woocommerce_before_checkout_form', array( $activewoo->recover_cart, 'print_subscribe_form' ) );
 		}
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_With_Active_Woo(), 'activewoo' );
 }
-

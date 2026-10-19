@@ -62,7 +62,7 @@ if ( ! class_exists( 'WFFN_Optin_Action_User_Email' ) ) {
 			}
 
 			$optin_email = $this->get_optin_data( WFFN_Optin_Pages::WFOP_EMAIL_FIELD_SLUG );
-			$content     = apply_filters( 'the_content', $option['lead_notification_body'] );
+			$content     = apply_filters( 'the_content', $option['lead_notification_body'] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 			$modified_content = WFFN_Common::modify_content_emogrifier( $content );
 			if ( ! empty( $modified_content ) ) {
@@ -78,7 +78,7 @@ if ( ! class_exists( 'WFFN_Optin_Action_User_Email' ) ) {
 		public function test_email( $option ) {
 			$db_options  = WFOPP_Core()->optin_pages->get_option();
 			$optin_email = $option['test_email'];
-			$content     = apply_filters( 'the_content', $option['lead_notification_body'] );
+			$content     = apply_filters( 'the_content', $option['lead_notification_body'] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 			$modified_content = WFFN_Common::modify_content_emogrifier( $content );
 			if ( ! empty( $modified_content ) ) {

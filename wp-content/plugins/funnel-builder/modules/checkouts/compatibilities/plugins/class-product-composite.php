@@ -89,7 +89,7 @@ if ( ! class_exists( 'WFACP_WooCommerce_Product_Composite' ) ) {
 
 			if ( isset( $cart_item['composite_parent'] ) ) {
 				?>
-                <span><?php echo $cart_item['quantity']; ?></span>
+                <span><?php echo esc_html( $cart_item['quantity'] ); ?></span>
 				<?php
 			}
 		}

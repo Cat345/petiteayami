@@ -67,11 +67,11 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 				}
 			</style>
 			<?php
-			echo '<div class=wfacp_amazon_logout_msg>' . $this->logout_msg . '</div>';
+			echo '<div class=wfacp_amazon_logout_msg>' . wp_kses_post( $this->logout_msg ) . '</div>';
 		}
 
 		public function skip_common_loading( $status ) {
-			if ( isset( $_REQUEST['wfacp_id'] ) && $_REQUEST['wfacp_id'] > 0 && isset( $_REQUEST['amazon_payments_advanced'] ) && wp_doing_ajax() ) {
+			if ( isset( $_REQUEST['wfacp_id'] ) && $_REQUEST['wfacp_id'] > 0 && isset( $_REQUEST['amazon_payments_advanced'] ) && wp_doing_ajax() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 				return true;
 			}
 
@@ -119,7 +119,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 			$reference_id = ! empty( $_REQUEST['amazon_reference_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['amazon_reference_id'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway callback, nonce verification handled by payment gateway
 
 			if ( isset( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce checkout handles nonce verification
-				parse_str( wp_unslash( $_POST['post_data'] ), $post_data ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- post_data is URL-encoded string parsed into array, individual values sanitized as used
+				parse_str( wp_unslash( $_POST['post_data'] ), $post_data ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Missing -- post_data is URL-encoded string parsed into array, individual values sanitized as used Posted by WC's own checkout JS; WC core verifies its update-order-review/checkout nonce before this runs.
 
 				if ( isset( $post_data['amazon_reference_id'] ) ) {
 					$reference_id = $post_data['amazon_reference_id'];
@@ -151,7 +151,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 			if ( ! empty( $value ) ) {
 				// Set access token or reference ID in session after redirected
 				// from Amazon Pay window.
-				if ( ! empty( $_GET['amazon_payments_advanced'] ) ) {
+				if ( ! empty( $_GET['amazon_payments_advanced'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 					WC()->session->{$key} = $value;
 				}
 			} else {
@@ -228,7 +228,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 			add_action(
 				'woocommerce_before_checkout_form',
 				function () {
-					wp_enqueue_script( 'wfacp_amazone_pay_js', WFACP_PLUGIN_URL . '/compatibilities/js/amazone-pay.min.js', array( 'wfacp_checkout_js' ), WFACP_VERSION );
+					wp_enqueue_script( 'wfacp_amazone_pay_js', WFACP_PLUGIN_URL . '/compatibilities/js/amazone-pay.min.js', array( 'wfacp_checkout_js' ), WFACP_VERSION ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter -- header placement is deliberate: the script must be present when the gateway's own header-loaded widget code runs; moving it to the footer changes the integration's load order.
 				}
 			);
 			$billing_details = array(
@@ -334,7 +334,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 			$buttons['amazon_pay'] = array(
 				'iframe'       => true,
 				'show_default' => true,
-				'name'         => __( 'Amazon Pay', 'woocommerce-gateway-amazon-payments-advanced' ),
+				'name'         => __( 'Amazon Pay', 'woocommerce-gateway-amazon-payments-advanced' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 			);
 			add_filter( 'wfacp_show_smart_button_shimmer', '__return_false' );
 			add_filter( 'woocommerce_amazon_pa_checkout_message', '__return_empty_string' );

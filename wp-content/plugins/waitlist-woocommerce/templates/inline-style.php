@@ -15,13 +15,6 @@ $popup_heightType  	=$sySettings['popup-height-type'];
 
 
 
-$btn_bg_color 		=$sySettings['btn-bgcolor'];
-$btn_txt_color 		=$sySettings['btn-txtcolor'];
-$btn_form_width 	=$sySettings['btn-form-width'];
-$btn_open_width 	=$sySettings['btn-open-width'];
-$btn_padding 		=$sySettings['btn-padding'];
-
-
 $inline_style = "
 	.xoo-wl-inmodal{
 		max-width: {$popup_width}px;
@@ -131,6 +124,13 @@ if( $popup_heightType === 'auto' ){
 
 }
 else{
+	
+	$btn_bg_color 		=$sySettings['btn-bgcolor'];
+	$btn_txt_color 		=$sySettings['btn-txtcolor'];
+	$btn_form_width 	=$sySettings['btn-form-width'];
+	$btn_open_width 	=$sySettings['btn-open-width'];
+	$btn_padding 		=$sySettings['btn-padding'];
+
 	$inline_style .= "
 		button.xoo-wl-action-btn{
 			background-color: {$btn_bg_color};

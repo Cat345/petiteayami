@@ -102,6 +102,7 @@ abstract class ActionScheduler {
  $logger = self::logger();
  $runner = self::runner();
  $admin_view = self::admin_view();
+ $recurring_action_scheduler = new ActionScheduler_RecurringActionScheduler();
  // Ensure initialization on plugin activation.
  if ( ! did_action( 'init' ) ) {
  // phpcs:ignore Squiz.PHP.CommentedOutCode
@@ -109,6 +110,7 @@ abstract class ActionScheduler {
  add_action( 'init', array( $store, 'init' ), 1, 0 );
  add_action( 'init', array( $logger, 'init' ), 1, 0 );
  add_action( 'init', array( $runner, 'init' ), 1, 0 );
+ add_action( 'init', array( $recurring_action_scheduler, 'init' ), 1, 0 );
  add_action(
  'init',
  function () {
@@ -122,6 +124,7 @@ abstract class ActionScheduler {
  $store->init();
  $logger->init();
  $runner->init();
+ $recurring_action_scheduler->init();
  self::$data_store_initialized = true;
  do_action( 'action_scheduler_init' );
  }

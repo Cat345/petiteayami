@@ -22,7 +22,7 @@ if ( isset( $data['advance_setting']['rbox_border_type'] ) && $data['advance_set
 	<?php
 	if ( isset( $data['data'] ) ) {
 		$content = apply_filters( 'wfacp_the_content', $data['data'] );
-		echo sprintf( '<div class="content_wrap">%s</div>', $content );
+		echo sprintf( '<div class="content_wrap">%s</div>', $content ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- raw HTML widget content by design, like core's Custom HTML widget.
 	}
 
 	?>

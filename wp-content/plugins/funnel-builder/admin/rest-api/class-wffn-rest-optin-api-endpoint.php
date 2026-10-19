@@ -409,7 +409,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 					if ( ! empty( $options['test_email'] ) ) {
 						unset( $options['test_email'] );
 					}
-					$service_form = isset( $options['optin_service_form'] ) ? $options['optin_service_form'] : array();  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$service_form = isset( $options['optin_service_form'] ) ? $options['optin_service_form'] : array();  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- service-form config array from the REST payload; consumed per-field. Revisit in the ignore-audit phase.
 					$optin_data   = array();
 					if ( ! empty( $service_form['fields'] ) ) {
 						$optin_data['optin_form_enable'] = isset( $service_form['optin_form_enable'] ) ? $service_form['optin_form_enable'] : 'false';
@@ -528,7 +528,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 		public function test_email( $option ) {
 			$db_options  = WFOPP_Core()->optin_pages->get_option();
 			$optin_email = $option['notify_email'];
-			$content     = apply_filters( 'the_content', $option['notify_body'] );
+			$content     = apply_filters( 'the_content', $option['notify_body'] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 			$modified_content = WFFN_Common::modify_content_emogrifier( $content );
 			if ( ! empty( $modified_content ) ) {

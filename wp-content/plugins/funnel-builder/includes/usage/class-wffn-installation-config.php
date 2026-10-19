@@ -112,7 +112,7 @@ if ( ! class_exists( 'WFFN_Installation_Config' ) ) {
 
 			try {
 				// Suppress errors and check if query succeeds
-				$date = $wpdb->get_var( $wpdb->prepare( "SELECT MIN(date_added) FROM {$wpdb->prefix}bwf_funnels WHERE date_added != %s AND date_added IS NOT NULL", '0000-00-00 00:00:00' ) );
+				$date = $wpdb->get_var( $wpdb->prepare( "SELECT MIN(date_added) FROM {$wpdb->prefix}bwf_funnels WHERE date_added != %s AND date_added IS NOT NULL", '0000-00-00 00:00:00' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 				return $date ? $date : '';
 			} catch ( Exception $e ) {
 				return '';

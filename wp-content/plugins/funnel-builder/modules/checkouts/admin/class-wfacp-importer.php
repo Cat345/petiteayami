@@ -215,7 +215,7 @@ if ( ! class_exists( 'WFACP_Importer' ) ) {
 		private function get_saved_image( $url ) {
 
 			global $wpdb;
-			$post_id = $wpdb->get_var(
+			$post_id = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 				$wpdb->prepare(
 					'SELECT `post_id` FROM `' . $wpdb->postmeta . '`
 					WHERE `meta_key` = \'_bwf_source_image_hash\'

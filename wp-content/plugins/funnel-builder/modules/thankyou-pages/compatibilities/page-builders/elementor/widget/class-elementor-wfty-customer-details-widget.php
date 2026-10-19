@@ -14,7 +14,7 @@ use Elementor\Core\Schemes\Typography;
 if ( ! class_exists( 'Elementor_WFTY_Customer_Details_Widget' ) ) {
 	#[AllowDynamicProperties]
 
-	class Elementor_WFTY_Customer_Details_Widget extends \Elementor\Widget_Base {
+	class Elementor_WFTY_Customer_Details_Widget extends \Elementor\Widget_Base { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- vendor-convention widget class carrying the WF module prefix; referenced by the Pro plugin.
 
 		/**
 		 * Get widget name.
@@ -354,7 +354,7 @@ if ( ! class_exists( 'Elementor_WFTY_Customer_Details_Widget' ) ) {
 			$enable_extra_content = isset( $settings['enable_extra_content'] ) && $settings['enable_extra_content'] === 'yes' ? 'yes' : 'no';
 			$this->add_render_attribute( 'wrapper', 'class', 'elementor-customer-details-wrapper' );
 			?>
-			<div <?php echo $this->get_render_attribute_string( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->get_render_attribute_string( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- builder render-attribute API string; the builder escapes attribute values. ?>>
 				<?php
 				echo do_shortcode( '[wfty_customer_details layout_settings ="' . $layout_setting . '" customer_details_heading="' . $heading_text . '" enable_extra_content="' . $enable_extra_content . '"]' );
 				?>

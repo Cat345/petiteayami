@@ -121,15 +121,15 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 						'persontype',
 						array(
 							'type'        => 'select',
-							'label'       => __( 'Person type', 'woocommerce-extra-checkout-fields-for-brazil' ),
-							'placeholder' => __( '', 'woocommerce-extra-checkout-fields-for-brazil' ),
+							'label'       => __( 'Person type', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+							'placeholder' => '',
 							'class'       => array( 'form-row-wide', 'person-type-field' ),
 							'cssready'    => array( 'wfacp-col-full' ),
 							'input_class' => array( 'wc-ecfb-select' ),
 							'required'    => false,
 							'options'     => array(
-								'1' => __( 'Individuals', 'woocommerce-extra-checkout-fields-for-brazil' ),
-								'2' => __( 'Legal Person', 'woocommerce-extra-checkout-fields-for-brazil' ),
+								'1' => __( 'Individuals', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+								'2' => __( 'Legal Person', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 							),
 							'priority'    => 22,
 						),
@@ -144,8 +144,8 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 						new WFACP_Add_Address_Field(
 							'cpf',
 							array(
-								'label'       => __( 'CPF', 'woocommerce-extra-checkout-fields-for-brazil' ),
-								'placeholder' => __( '', 'woocommerce-extra-checkout-fields-for-brazil' ),
+								'label'       => __( 'CPF', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+								'placeholder' => '',
 								'class'       => array( 'form-row-first', 'person-type-field' ),
 								'cssready'    => array( 'wfacp-col-left-half' ),
 								'required'    => false,
@@ -159,8 +159,8 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 						new WFACP_Add_Address_Field(
 							'rg',
 							array(
-								'label'       => __( 'RG', 'woocommerce-extra-checkout-fields-for-brazil' ),
-								'placeholder' => __( '', 'woocommerce-extra-checkout-fields-for-brazil' ),
+								'label'       => __( 'RG', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+								'placeholder' => '',
 								'class'       => array( 'form-row-last', 'person-type-field' ),
 								'cssready'    => array( 'wfacp-col-left-half' ),
 								'required'    => false,
@@ -174,8 +174,8 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 						new WFACP_Add_Address_Field(
 							'cpf',
 							array(
-								'label'       => __( 'CPF', 'woocommerce-extra-checkout-fields-for-brazil' ),
-								'placeholder' => __( '', 'woocommerce-extra-checkout-fields-for-brazil' ),
+								'label'       => __( 'CPF', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+								'placeholder' => '',
 								'class'       => array( 'form-row-first', 'person-type-field' ),
 								'cssready'    => array( 'wfacp-col-left-half' ),
 								'required'    => false,
@@ -196,8 +196,8 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 						new WFACP_Add_Address_Field(
 							'cnpj',
 							array(
-								'label'       => __( 'CNPJ', 'woocommerce-extra-checkout-fields-for-brazil' ),
-								'placeholder' => __( '', 'woocommerce-extra-checkout-fields-for-brazil' ),
+								'label'       => __( 'CNPJ', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+								'placeholder' => '',
 								'class'       => array( 'form-row-first', 'person-type-field' ),
 								'cssready'    => array( 'wfacp-col-left-half' ),
 								'required'    => false,
@@ -211,8 +211,8 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 						new WFACP_Add_Address_Field(
 							'ie',
 							array(
-								'label'       => __( 'State Registration', 'woocommerce-extra-checkout-fields-for-brazil' ),
-								'placeholder' => __( '', 'woocommerce-extra-checkout-fields-for-brazil' ),
+								'label'       => __( 'State Registration', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+								'placeholder' => '',
 								'class'       => array( 'form-row-last', 'person-type-field' ),
 								'cssready'    => array( 'wfacp-col-left-half' ),
 								'required'    => false,
@@ -227,8 +227,8 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 						new WFACP_Add_Address_Field(
 							'cnpj',
 							array(
-								'label'       => __( 'CNPJ', 'woocommerce-extra-checkout-fields-for-brazil' ),
-								'placeholder' => __( '', 'woocommerce-extra-checkout-fields-for-brazil' ),
+								'label'       => __( 'CNPJ', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+								'placeholder' => '',
 								'class'       => array( 'form-row-wide', 'person-type-field' ),
 								'cssready'    => array( 'wfacp-col-full' ),
 								'required'    => false,
@@ -246,8 +246,8 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 				new WFACP_Add_Address_Field(
 					'birthdate',
 					array(
-						'label'       => __( 'Birthdate', 'woocommerce-extra-checkout-fields-for-brazil' ),
-						'placeholder' => __( '', 'woocommerce-extra-checkout-fields-for-brazil' ),
+						'label'       => __( 'Birthdate', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						'placeholder' => '',
 						'class'       => array( 'form-row-first' ),
 						'cssready'    => array( 'wfacp-col-left-half' ),
 						'clear'       => false,
@@ -264,17 +264,17 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 					'gender',
 					array(
 						'type'        => 'select',
-						'label'       => __( 'Gender', 'woocommerce-extra-checkout-fields-for-brazil' ),
-						'placeholder' => __( '', 'woocommerce-extra-checkout-fields-for-brazil' ),
+						'label'       => __( 'Gender', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						'placeholder' => '',
 						'class'       => array( 'form-row-last' ),
 						'cssready'    => array( 'wfacp-col-left-half' ),
 						'input_class' => array( 'wc-ecfb-select' ),
 						'clear'       => true,
 						'required'    => true,
 						'options'     => array(
-							'' => __( 'Select', 'woocommerce-extra-checkout-fields-for-brazil' ),
-							__( 'Female', 'woocommerce-extra-checkout-fields-for-brazil' ) => __( 'Female', 'woocommerce-extra-checkout-fields-for-brazil' ),
-							__( 'Male', 'woocommerce-extra-checkout-fields-for-brazil' ) => __( 'Male', 'woocommerce-extra-checkout-fields-for-brazil' ),
+							'' => __( 'Select', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+							__( 'Female', 'woocommerce-extra-checkout-fields-for-brazil' ) => __( 'Female', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+							__( 'Male', 'woocommerce-extra-checkout-fields-for-brazil' ) => __( 'Male', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 						),
 						'priority'    => 32,
 					),
@@ -286,8 +286,8 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 			new WFACP_Add_Address_Field(
 				'number',
 				array(
-					'label'       => __( 'Number', 'woocommerce-extra-checkout-fields-for-brazil' ),
-					'placeholder' => __( '', 'woocommerce-extra-checkout-fields-for-brazil' ),
+					'label'       => __( 'Number', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+					'placeholder' => '',
 					'class'       => array( 'form-row-first', 'address-field' ),
 					'cssready'    => array( 'wfacp-col-left-half' ),
 					'clear'       => true,
@@ -301,8 +301,8 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 			new WFACP_Add_Address_Field(
 				'neighborhood',
 				array(
-					'label'       => __( 'Neighborhood', 'woocommerce-extra-checkout-fields-for-brazil' ),
-					'placeholder' => __( '', 'woocommerce-extra-checkout-fields-for-brazil' ),
+					'label'       => __( 'Neighborhood', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+					'placeholder' => '',
 					'class'       => array( 'form-row-first', 'address-field' ),
 					'cssready'    => array( 'wfacp-col-left-half' ),
 					'clear'       => true,
@@ -316,8 +316,8 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 				new WFACP_Add_Address_Field(
 					'cellphone',
 					array(
-						'label'       => __( 'Cell Phone', 'woocommerce-extra-checkout-fields-for-brazil' ),
-						'placeholder' => __( '', 'woocommerce-extra-checkout-fields-for-brazil' ),
+						'label'       => __( 'Cell Phone', 'woocommerce-extra-checkout-fields-for-brazil' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						'placeholder' => '',
 						'class'       => array( 'form-row-last' ),
 						'cssready'    => array( 'wfacp-col-full' ),
 						'clear'       => true,
@@ -385,8 +385,8 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 			}
 
 			$is_new     = $this->is_new_plugin();
-			$number_lbl = $is_new ? __( 'Número', 'woo-better-shipping-calculator-for-brazil' ) : __( 'Number', 'woocommerce-extra-checkout-fields-for-brazil' );
-			$hood_lbl   = $is_new ? __( 'Bairro', 'woo-better-shipping-calculator-for-brazil' ) : __( 'Neighborhood', 'woocommerce-extra-checkout-fields-for-brazil' );
+			$number_lbl = $is_new ? __( 'Número', 'woo-better-shipping-calculator-for-brazil' ) : __( 'Number', 'woocommerce-extra-checkout-fields-for-brazil' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+			$hood_lbl   = $is_new ? __( 'Bairro', 'woo-better-shipping-calculator-for-brazil' ) : __( 'Neighborhood', 'woocommerce-extra-checkout-fields-for-brazil' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 			new WFACP_Add_Address_Field(
 				'number',
 				array(

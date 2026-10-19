@@ -93,7 +93,7 @@ if ( ! class_exists( 'WFACP_WC_Disability_Vat_Exemption' ) ) {
 			}
 
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#wfacp_exemption_field{margin-bottom: 25px;padding: 0 7px;}";
 			$cssHtml .= $bodyClass . "#wfacp_exemption_field input[type='checkbox'],$bodyClass #wfacp_exemption_field input[type='radio']{position: relative;left: auto;right: auto;top: auto;bottom: auto;margin: 0 10px 0 0;}";
 			$cssHtml .= $bodyClass . "#wfacp_exemption_field #wdve_radio_exemption label{padding-left: 0;margin-bottom: 15px;display: inline-block;font-size: 14px;color: #333333;line-height: 14px;}";
@@ -102,9 +102,8 @@ if ( ! class_exists( 'WFACP_WC_Disability_Vat_Exemption' ) ) {
 			$cssHtml .= $bodyClass . "#wfacp_exemption_field #wdve_radio_exemption {margin-bottom: 15px;}";
 			$cssHtml .= $bodyClass . "#wfacp_exemption_field label {float: none;clear: both;display: block;width: auto;}";
 			$cssHtml .= $bodyClass . "#wfacp_exemption_field input[type='text'],$bodyClass #wfacp_exemption_field input[type='date'],$bodyClass #wfacp-e-form #wfacp_exemption_field input[type='number'] {width: 100%;text-align: left;float: none;}";
-			$cssHtml .= "</style>";
 
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 
 
 		}

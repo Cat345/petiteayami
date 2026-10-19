@@ -54,8 +54,8 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_fakturownia' ) ) {
 				'wfacp_nip',
 				array(
 					'type'        => 'wfacp_html',
-					'label'       => __( 'NIP', 'woocommerce-fakturownia' ),
-					'placeholder' => __( 'NIP', 'woocommerce-fakturownia' ),
+					'label'       => __( 'NIP', 'woocommerce-fakturownia' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+					'placeholder' => __( 'NIP', 'woocommerce-fakturownia' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 					'cssready'    => array( 'wfacp-col-left-third' ),
 					'class'       => array( 'form-row-third first', 'wfacp-col-full' ),
 					'required'    => false,
@@ -105,7 +105,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_fakturownia' ) ) {
 		}
 
 		public function woocommerce_checkout_update_order_meta( $order_id, $data ) {
-			if ( ! isset( $_POST['_wfacp_post_id'] ) ) {
+			if ( ! isset( $_POST['_wfacp_post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce core has already verified its checkout nonce before this hook/filter runs.
 				return;
 			}
 			$order = wc_get_order( $order_id );
@@ -113,8 +113,8 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_fakturownia' ) ) {
 			foreach ( $this->add_fields as $item ) {
 				if ( isset( $_POST[ $item ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce checkout handles nonce verification
 
-					$order->{$item} = sanitize_text_field( wp_unslash( $_POST[ $item ] ) );
-					$order->update_meta_data( '_' . $item, sanitize_text_field( wp_unslash( $_POST[ $item ] ) ) );
+					$order->{$item} = sanitize_text_field( wp_unslash( $_POST[ $item ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce core has already verified its checkout nonce before this hook/filter runs.
+					$order->update_meta_data( '_' . $item, sanitize_text_field( wp_unslash( $_POST[ $item ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce core has already verified its checkout nonce before this hook/filter runs.
 				}
 			}
 			$order->save();

@@ -86,7 +86,7 @@ if ( ! class_exists( 'WFFN_Optin_Actions' ) ) {
 				throw new Exception( 'The optin action type must be set' );
 			}
 			if ( isset( $this->optin_actions[ $optin_action::get_slug() ] ) ) {
-				throw new Exception( 'Optin action type already registered: ' . $optin_action::get_slug() );
+				throw new Exception( 'Optin action type already registered: ' . esc_html( $optin_action::get_slug() ) );
 			}
 			if ( false === $optin_action->should_register() ) {
 				return;

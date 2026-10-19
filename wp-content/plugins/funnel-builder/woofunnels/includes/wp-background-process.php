@@ -168,7 +168,7 @@ if ( ! class_exists( 'WP_Background_Process' ) ) {
 
 			$key = $this->identifier . '_batch_%';
 
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+ // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- vendored wp-background-process library; table/column are wpdb properties chosen in the branch above.
 			$count = $wpdb->get_var( $wpdb->prepare( "
 			SELECT COUNT(*)
 			FROM {$table}
@@ -263,7 +263,7 @@ if ( ! class_exists( 'WP_Background_Process' ) ) {
 
 			$key = $this->identifier . '_batch_%';
 
-			//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+ // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- vendored wp-background-process library; table/column are wpdb properties chosen in the branch above.
 			$query = $wpdb->get_row( $wpdb->prepare( "
 			SELECT *
 			FROM {$table}
@@ -459,7 +459,7 @@ if ( ! class_exists( 'WP_Background_Process' ) ) {
 			// Adds every 5 minutes to the existing schedules.
 			$schedules[ $this->identifier . '_cron_interval' ] = array(
 				'interval' => MINUTE_IN_SECONDS * $interval,
-				'display'  => sprintf( __( 'Every %d Minutes', 'funnel-builder' ), $interval ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment
+				'display'  => sprintf( __( 'Every %d Minutes', 'funnel-builder' ), $interval ), // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
 			);
 
 			return $schedules;

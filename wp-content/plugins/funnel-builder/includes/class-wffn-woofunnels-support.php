@@ -48,7 +48,7 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 
 		public function woofunnels_page() {
 
-			if ( null === filter_input( INPUT_GET, 'tab' ) ) {
+			if ( null === filter_input( INPUT_GET, 'tab', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) ) {
 				if ( class_exists( 'WFFN_Pro_Core' ) ) {
 					WooFunnels_dashboard::$selected = 'licenses';
 				} else {
@@ -60,7 +60,7 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 				$header_ins->set_level_1_navigation_active( 'licenses' );
 				$header_ins->set_level_2_side_navigation( WFFN_Header::level_2_navigation_licenses() );
 				$header_ins->set_level_2_side_navigation_active( WooFunnels_dashboard::$selected );
-				echo $header_ins->render();//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo $header_ins->render();//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- internal admin-header markup.
 			}
 			?>
 			<div class="woofunnels_licenses_wrapper">

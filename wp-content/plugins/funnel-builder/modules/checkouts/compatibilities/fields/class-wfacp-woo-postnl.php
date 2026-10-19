@@ -14,41 +14,39 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_PostNl' ) ) {
 
 		public $instance = null;
 
-		private $billing_new_fields = [
+		private $billing_new_fields = array(
 			'billing_street_name',
 			'billing_house_number',
 			'billing_house_number_suffix',
 
-		];
-		private $shipping_new_fields = [
+		);
+		private $shipping_new_fields = array(
 			'shipping_street_name',
 			'shipping_house_number',
 			'shipping_house_number_suffix',
-		];
+		);
 
 		public function __construct() {
 			if ( WFACP_Common::is_funnel_builder_3() ) {
-				add_action( 'wffn_rest_checkout_form_actions', [ $this, 'setup_fields_billing' ] );
-				add_action( 'wffn_rest_checkout_form_actions', [ $this, 'setup_fields_shipping' ] );
+				add_action( 'wffn_rest_checkout_form_actions', array( $this, 'setup_fields_billing' ) );
+				add_action( 'wffn_rest_checkout_form_actions', array( $this, 'setup_fields_shipping' ) );
 			} else {
-				add_action( 'init', [ $this, 'setup_fields_billing' ], 20 );
-				add_action( 'init', [ $this, 'setup_fields_shipping' ], 20 );
+				add_action( 'init', array( $this, 'setup_fields_billing' ), 20 );
+				add_action( 'init', array( $this, 'setup_fields_shipping' ), 20 );
 			}
 
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'actions' ] );
-			add_action( 'wfacp_css_js_removal_paths', [ $this, 'remove_style' ] );
-			add_filter( 'wfacp_template_localize_data', [ $this, 'remove_optional_shipping_field_validation_error' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'actions' ) );
+			add_action( 'wfacp_css_js_removal_paths', array( $this, 'remove_style' ) );
+			add_filter( 'wfacp_template_localize_data', array( $this, 'remove_optional_shipping_field_validation_error' ) );
 
 			// Ajax Actions
-			add_action( 'wfacp_before_process_checkout_template_loader', [ $this, 'validation_fields' ] );
+			add_action( 'wfacp_before_process_checkout_template_loader', array( $this, 'validation_fields' ) );
 
 			/* prevent third party fields and wrapper*/
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
 
-			add_filter( 'wfacp_third_party_billing_fields', [ $this, 'disabled_third_party_billing_fields' ] );
-			add_filter( 'wfacp_third_party_shipping_fields', [ $this, 'disabled_third_party_shipping_fields' ] );
-
-
+			add_filter( 'wfacp_third_party_billing_fields', array( $this, 'disabled_third_party_billing_fields' ) );
+			add_filter( 'wfacp_third_party_shipping_fields', array( $this, 'disabled_third_party_shipping_fields' ) );
 		}
 
 		public function remove_style( $path ) {
@@ -63,40 +61,47 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_PostNl' ) ) {
 				return;
 			}
 
-			new WFACP_Add_Address_Field( 'street_name', array(
-				'label'    => __( 'Street name', 'woocommerce-postnl' ),
-				'cssready' => [ 'wfacp-col-left-third' ],
-				'class'    => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
-				'required' => false, // Only required for NL
-				'priority' => 60,
-			) );
+			new WFACP_Add_Address_Field(
+				'street_name',
+				array(
+					'label' => __( 'Street name', 'woocommerce-postnl' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				'cssready'  => array( 'wfacp-col-left-third' ),
+				'class'     => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
+				'required'  => false, // Only required for NL
+				'priority'  => 60,
+				)
+			);
 
-			new WFACP_Add_Address_Field( 'house_number', array(
-				'label'    => __( 'No.', 'woocommerce-postnl' ),
-				'cssready' => [ 'wfacp-col-left-half' ],
-				'class'    => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third', 'wfacp-col-left-half' ) ),
-				'required' => false, // Only required for NL
-				'type'     => 'number',
-				'priority' => 61,
-			) );
+			new WFACP_Add_Address_Field(
+				'house_number',
+				array(
+					'label' => __( 'No.', 'woocommerce-postnl' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				'cssready'  => array( 'wfacp-col-left-half' ),
+				'class'     => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third', 'wfacp-col-left-half' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
+				'required'  => false, // Only required for NL
+				'type'      => 'number',
+				'priority'  => 61,
+				)
+			);
 
-			new WFACP_Add_Address_Field( 'house_number_suffix', array(
-				'label'     => __( 'Suffix', 'woocommerce-postnl' ),
-				'cssready'  => [ 'wfacp-col-left-half' ],
-				'class'     => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third last', 'wfacp-col-left-half' ) ),
+			new WFACP_Add_Address_Field(
+				'house_number_suffix',
+				array(
+					'label' => __( 'Suffix', 'woocommerce-postnl' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				'cssready'  => array( 'wfacp-col-left-half' ),
+				'class'     => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third last', 'wfacp-col-left-half' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 				'required'  => false,
 				'maxlength' => 4,
 				'priority'  => 62,
-			) );
-
+				)
+			);
 		}
 
 		public function is_enabled() {
 
-
 			if ( class_exists( 'Woocommerce_PostNL_Postcode_Fields' ) || class_exists( 'WCPOST' ) ) {
 
-				$options = get_option( 'woocommerce_postnl_checkout_settings', [] );
+				$options = get_option( 'woocommerce_postnl_checkout_settings', array() );
 
 				if ( isset( $options['use_split_address_fields'] ) && wc_string_to_bool( $options['use_split_address_fields'] ) ) {
 					return true;
@@ -111,32 +116,43 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_PostNl' ) ) {
 				return;
 			}
 
-			new WFACP_Add_Address_Field( 'street_name', array(
-				'label'    => __( 'Street name', 'woocommerce-postnl' ),
-				'cssready' => [ 'wfacp-col-full' ],
-				'class'    => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ),
-				'required' => false, // Only required for NL
-				'priority' => 60,
-			), 'shipping' );
+			new WFACP_Add_Address_Field(
+				'street_name',
+				array(
+					'label' => __( 'Street name', 'woocommerce-postnl' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				'cssready'  => array( 'wfacp-col-full' ),
+				'class'     => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first', 'wfacp-col-full' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
+				'required'  => false, // Only required for NL
+				'priority'  => 60,
+				),
+				'shipping'
+			);
 
-			new WFACP_Add_Address_Field( 'house_number', array(
-				'label'    => __( 'No.', 'woocommerce-postnl' ),
-				'cssready' => [ 'wfacp-col-left-half' ],
-				'class'    => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third', 'wfacp-col-left-half' ) ),
-				'required' => false, // Only required for NL
-				'type'     => 'number',
-				'priority' => 61,
-			), 'shipping' );
+			new WFACP_Add_Address_Field(
+				'house_number',
+				array(
+					'label' => __( 'No.', 'woocommerce-postnl' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				'cssready'  => array( 'wfacp-col-left-half' ),
+				'class'     => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third', 'wfacp-col-left-half' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
+				'required'  => false, // Only required for NL
+				'type'      => 'number',
+				'priority'  => 61,
+				),
+				'shipping'
+			);
 
-			new WFACP_Add_Address_Field( 'house_number_suffix', array(
-				'label'     => __( 'Suffix', 'woocommerce-postnl' ),
-				'cssready'  => [ 'wfacp-col-left-half' ],
-				'class'     => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third last', 'wfacp-col-left-half' ) ),
+			new WFACP_Add_Address_Field(
+				'house_number_suffix',
+				array(
+					'label' => __( 'Suffix', 'woocommerce-postnl' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+				'cssready'  => array( 'wfacp-col-left-half' ),
+				'class'     => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third last', 'wfacp-col-left-half' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 				'required'  => false,
 				'maxlength' => 4,
 				'priority'  => 62,
-			), 'shipping' );
-
+				),
+				'shipping'
+			);
 		}
 
 
@@ -144,25 +160,28 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_PostNl' ) ) {
 			$data['wc_customizer_validation_status']['shipping_house_number_suffix_field'] = 'wfacp_required_optional';
 			$data['wc_customizer_validation_status']['billing_house_number_suffix_field']  = 'wfacp_required_optional';
 
-
 			return $data;
 		}
 
 		public function actions() {
-			add_filter( 'woocommerce_country_locale_field_selectors', function ( $locale_fields ) {
-				if ( ! $this->is_enabled() ) {
-					return $locale_fields;
-				}
-				$locale_fields['address_1'] = '#billing_address_1_field, #shipping_address_1_field';
-				$locale_fields['address_2'] = '#billing_address_2_field, #shipping_address_2_field';
+			add_filter(
+				'woocommerce_country_locale_field_selectors',
+				function ( $locale_fields ) {
+					if ( ! $this->is_enabled() ) {
+						return $locale_fields;
+					}
+					$locale_fields['address_1'] = '#billing_address_1_field, #shipping_address_1_field';
+					$locale_fields['address_2'] = '#billing_address_2_field, #shipping_address_2_field';
 
-				return $locale_fields;
-			}, 50 );
+					return $locale_fields;
+				},
+				50
+			);
 		}
 
 
 		public function validation_fields() {
-			add_filter( 'wfacp_checkout_fields', [ $this, 'make_validation' ] );
+			add_filter( 'wfacp_checkout_fields', array( $this, 'make_validation' ) );
 		}
 
 		public function make_validation( $template_fields ) {
@@ -173,7 +192,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_PostNl' ) ) {
 			$obj = null;
 			if ( class_exists( 'WCPOST' ) ) {
 				$obj = WFACP_Common::remove_actions( 'woocommerce_billing_fields', 'WCPN_NL_Postcode_Fields', 'modifyBillingFields' );
-			} else if ( class_exists( 'Woocommerce_PostNL_Postcode_Fields' ) ) {
+			} elseif ( class_exists( 'Woocommerce_PostNL_Postcode_Fields' ) ) {
 				$obj = WFACP_Common::remove_actions( 'woocommerce_billing_fields', 'Woocommerce_PostNL_Postcode_Fields', 'nl_billing_fields' );
 			}
 			$billing_country = WC()->checkout()->get_value( 'billing_country' );
@@ -196,7 +215,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_PostNl' ) ) {
 			}
 
 			$shipping_country = WC()->checkout()->get_value( 'shipping_country' );
-
 
 			if ( isset( $template_fields['shipping'] ) ) {
 				$required = false;
@@ -229,27 +247,24 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_PostNl' ) ) {
 
 			WFACP_Common::remove_actions( $hook, 'WCPN_Checkout', 'output_delivery_options' );
 
-			add_action( "wp_enqueue_scripts", [ $this->instance, "enqueue_frontend_scripts" ], 200 );
-
-
+			add_action( 'wp_enqueue_scripts', array( $this->instance, 'enqueue_frontend_scripts' ), 200 );
 		}
 
 		public function add_field( $fields ) {
 
-			$fields['wfacp_postnl_parcel'] = [
+			$fields['wfacp_postnl_parcel'] = array(
 				'type'       => 'wfacp_html',
-				'class'      => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_postnl_parcel' ],
+				'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'wfacp_postnl_parcel' ),
 				'id'         => 'wfacp_postnl_parcel',
 				'field_type' => 'wfacp_postnl_parcel',
 				'label'      => __( 'Postnl Parcel', 'funnel-builder' ),
 
-			];
+			);
 
 			return $fields;
 		}
 
 		public function display_field( $field, $key ) {
-
 
 			if ( empty( $key ) || 'wfacp_postnl_parcel' !== $key || ! $this->instance instanceof WCPN_Checkout ) {
 				return '';
@@ -257,7 +272,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_PostNl' ) ) {
 			echo '<div id=wfacp_post_nl>';
 			$this->instance->output_delivery_options();
 			echo '</div>';
-
 		}
 
 		public function add_internal() {
@@ -266,45 +280,45 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_PostNl' ) ) {
 			}
 			?>
 
-            <style>
-                #wfacp_post_nl {
-                    clear: both;
-                    padding: 0 7px;
-                }
+			<style>
+				#wfacp_post_nl {
+					clear: both;
+					padding: 0 7px;
+				}
 
-                #wfacp_post_nl form.myparcel-delivery-options * {
-                    text-align: left;
-                }
+				#wfacp_post_nl form.myparcel-delivery-options * {
+					text-align: left;
+				}
 
-                #wfacp_post_nl form.myparcel-delivery-options table {
-                    text-align: left;
-                    margin: 0;
-                }
+				#wfacp_post_nl form.myparcel-delivery-options table {
+					text-align: left;
+					margin: 0;
+				}
 
-                #wfacp_post_nl form.myparcel-delivery-options input[type=radio] {
-                    position: relative !important;
-                    left: auto !important;
-                }
+				#wfacp_post_nl form.myparcel-delivery-options input[type=radio] {
+					position: relative !important;
+					left: auto !important;
+				}
 
-                #wfacp_post_nl .myparcel-delivery-options table.myparcel-delivery-options__table td label {
-                    display: block;
-                }
+				#wfacp_post_nl .myparcel-delivery-options table.myparcel-delivery-options__table td label {
+					display: block;
+				}
 
 
-                #wfacp_post_nl form.myparcel-delivery-options button {
-                    padding: 10px 30px;
+				#wfacp_post_nl form.myparcel-delivery-options button {
+					padding: 10px 30px;
 
-                    font-size: 14px;
-                    line-height: 1.5;
-                }
+					font-size: 14px;
+					line-height: 1.5;
+				}
 
-                #wfacp_post_nl p,
-                #wfacp_post_nl p > label,
-                #wfacp_post_nl p input[type=text] {
-                    width: 100% !important;
-                    display: block;
-                }
-            </style>
+				#wfacp_post_nl p,
+				#wfacp_post_nl p > label,
+				#wfacp_post_nl p input[type=text] {
+					width: 100% !important;
+					display: block;
+				}
+			</style>
 			<?php
 		}
 
@@ -331,8 +345,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woo_PostNl' ) ) {
 
 			return $fields;
 		}
-
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_With_Woo_postnl(), 'woo_postnl' );

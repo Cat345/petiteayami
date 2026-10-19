@@ -5,11 +5,11 @@ if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 }
 wp_dequeue_script( 'wc-single-product' );
 /**
- * @var $instance WFACP_Template_Common
+ * @var $wfacp_instance WFACP_Template_Common
  */
-$checkout       = WC()->checkout();
-$instance       = wfacp_template();
-$totalStepCount = $instance->get_step_count();
+$checkout       = WC()->checkout(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
+$wfacp_instance       = wfacp_template();
+$totalStepCount = $wfacp_instance->get_step_count();
 
 $stepClassName  = 'wfacp_single_step_form';
 $stepMultiClass = 'wfacp_single_step_form';
@@ -40,13 +40,13 @@ remove_filter( 'woocommerce_get_checkout_url', array( WFACP_Core()->public, 'woo
 <div class="wfacp_main_form woocommerce <?php echo esc_attr( implode( ' ', $form_class ) ); ?>">
 	<?php
 	do_action( 'wfacp_outside_header' );
-	$checkout               = WC()->checkout();
-	$selected_template_slug = $instance->get_template_slug();
+	$checkout               = WC()->checkout(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
+	$selected_template_slug = $wfacp_instance->get_template_slug();
 	require __DIR__ . '/form_internal_css.php';
 
 	ob_start();
-	do_action( 'before_woocommerce_pay' );
-	do_action( 'after_woocommerce_pay' );
+	do_action( 'before_woocommerce_pay' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
+	do_action( 'after_woocommerce_pay' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 	$html = ob_get_clean();
 
 	$wfacp_cp_inject_hidden = static function ( $open_tag ) {
@@ -131,9 +131,9 @@ remove_filter( 'woocommerce_get_checkout_url', array( WFACP_Core()->public, 'woo
 			$payment_part = trim( $inner );
 		}
 
-		$border_cls                  = $instance->get_heading_title_class();
-		$payment_methods_heading     = $instance->payment_heading();
-		$payment_methods_sub_heading = $instance->payment_sub_heading();
+		$border_cls                  = $wfacp_instance->get_heading_title_class();
+		$payment_methods_heading     = $wfacp_instance->payment_heading();
+		$payment_methods_sub_heading = $wfacp_instance->payment_sub_heading();
 
 		global $wp;
 		$order_for_summary = null;
@@ -141,22 +141,22 @@ remove_filter( 'woocommerce_get_checkout_url', array( WFACP_Core()->public, 'woo
 			$order_for_summary = wc_get_order( absint( $wp->query_vars['order-pay'] ) );
 		}
 
-		echo $prefix; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $prefix; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled order-pay markup containing form controls (B0 register).
 		?>
-		<?php echo $open_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<?php echo $open_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled order-pay markup containing form controls (B0 register). ?>
 					<div class="checkout woocommerce-checkout">
 						<div class="wfacp-left-panel wfacp_page">
 							<div class="wfacp-section wfacp-hg-by-box" data-field-count="1">
-								<div class="wfacp_internal_form_wrap wfacp-comm-title <?php echo esc_attr( $instance->get_heading_title_class() ); ?>">
-									<h2 class="wfacp_section_heading wfacp_section_title <?php echo esc_attr( $instance->get_heading_class() ); ?>"><?php echo wp_kses_post( $instance->get_order_pay_summary_heading() ); ?></h2>
+								<div class="wfacp_internal_form_wrap wfacp-comm-title <?php echo esc_attr( $wfacp_instance->get_heading_title_class() ); ?>">
+									<h2 class="wfacp_section_heading wfacp_section_title <?php echo esc_attr( $wfacp_instance->get_heading_class() ); ?>"><?php echo wp_kses_post( $wfacp_instance->get_order_pay_summary_heading() ); ?></h2>
 								</div>
 								<div class="wfacp-comm-form-detail clearfix">
 									<div class="wfacp-row">
 										<?php
 										if ( $order_for_summary instanceof WC_Order ) {
-											$instance->get_order_pay_summary( $order_for_summary );
+											$wfacp_instance->get_order_pay_summary( $order_for_summary );
 										} elseif ( '' !== $table_part ) {
-											echo $table_part; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+											echo $table_part; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled order-pay markup containing form controls (B0 register).
 										}
 										?>
 									</div>
@@ -166,13 +166,15 @@ remove_filter( 'woocommerce_get_checkout_url', array( WFACP_Core()->public, 'woo
 						<div class="wfacp-section wfacp_payment form_section_your_order_0_<?php echo esc_attr( $selected_template_slug ); ?> wfacp-section-titlex wfacp-hg-by-box">
 							<div style="clear: both;"></div>
 							<div class="wfacp-comm-title <?php echo esc_attr( $border_cls ); ?>">
-								<h2 class="wfacp_section_heading wfacp_section_title <?php echo esc_attr( $instance->get_heading_class() ); ?> "><?php echo wp_kses_post( $payment_methods_heading ); ?></h2>
-								<h4 class="<?php echo esc_attr( $instance->get_sub_heading_class() ); ?>"><?php echo wp_kses_post( $payment_methods_sub_heading ); ?></h4>
+								<h2 class="wfacp_section_heading wfacp_section_title <?php echo esc_attr( $wfacp_instance->get_heading_class() ); ?> "><?php echo wp_kses_post( $payment_methods_heading ); ?></h2>
+								<?php if ( ! empty( $payment_methods_sub_heading ) ) { ?>
+								<h4 class="<?php echo esc_attr( $wfacp_instance->get_sub_heading_class() ); ?>"><?php echo wp_kses_post( $payment_methods_sub_heading ); ?></h4>
+								<?php } ?>
 							</div>
 							<div class="woocommerce-checkout-review-order wfacp-oder-detail clearfix">
 								<?php
 								if ( '' !== $payment_part ) {
-									echo $payment_part; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+									echo $payment_part; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled order-pay markup containing form controls (B0 register).
 								}
 								?>
 							</div>
@@ -180,7 +182,7 @@ remove_filter( 'woocommerce_get_checkout_url', array( WFACP_Core()->public, 'woo
 					</div>
 				</form>
 		<?php
-		echo $suffix; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $suffix; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled order-pay markup containing form controls (B0 register).
 	} else {
 		$inject = '<input type="hidden" name="_wfacp_post_id" value="' . esc_attr( (string) WFACP_Common::get_id() ) . '" />';
 		$start  = stripos( $html, '<form' );
@@ -188,7 +190,7 @@ remove_filter( 'woocommerce_get_checkout_url', array( WFACP_Core()->public, 'woo
 		if ( false !== $gt ) {
 			$html = substr_replace( $html, $inject, $gt + 1, 0 );
 		}
-		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled order-pay markup containing form controls (B0 register).
 	}
 	?>
 </div>

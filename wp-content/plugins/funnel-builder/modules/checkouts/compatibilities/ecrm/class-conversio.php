@@ -7,29 +7,29 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Conversio' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_Conversio {
 		public function __construct() {
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_fields' ] );
-			add_action( 'wfacp_internal_css', [ $this, 'actions' ] );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_fields' ) );
+			add_action( 'wfacp_internal_css', array( $this, 'actions' ) );
 			/* prevent third party fields and wrapper*/
 
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
 		}
 
 		public function actions() {
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 10, 2 );
-			add_filter( 'woocommerce_form_field', [ $this, 'display_field_conditional' ], 10, 2 );
+			add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 10, 2 );
+			add_filter( 'woocommerce_form_field', array( $this, 'display_field_conditional' ), 10, 2 );
 		}
 
 		public function add_fields( $field ) {
 			if ( $this->is_enable() ) {
-				$field['billing_email_conversio_optin'] = [
+				$field['billing_email_conversio_optin'] = array(
 					'type'          => 'checkbox',
 					'default'       => true,
-					'label'         => __( 'Conversio', 'receiptful-for-woocommerce' ),
-					'validate'      => [],
+					'label'         => __( 'Conversio', 'receiptful-for-woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+					'validate'      => array(),
 					'id'            => 'billing_email_conversio_optin',
 					'required'      => false,
-					'wrapper_class' => [],
-				];
+					'wrapper_class' => array(),
+				);
 
 			}
 
@@ -49,7 +49,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Conversio' ) ) {
 
 		public function add_default_wfacp_styling( $args, $key ) {
 			if ( $key == 'billing_email_conversio_optin' && $this->is_enable() ) {
-				$optin_text = get_option( 'receiptful_marketing_optin_text', __( 'Subscribe to marketing emails?', 'receiptful-for-woocommerce' ) );
+				$optin_text = get_option( 'receiptful_marketing_optin_text', __( 'Subscribe to marketing emails?', 'receiptful-for-woocommerce' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 				if ( '' !== $optin_text ) {
 					$args['label'] = $optin_text;
 				}
@@ -78,9 +78,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Conversio' ) ) {
 			}
 
 			return $field;
-
 		}
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_With_Conversio(), 'conversio' );

@@ -39,10 +39,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Payoneer_Checkout_Gateway' ) ) {
 				$bodyClass = "body #wfacp-e-form ";
 			}
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#order_review {width:100%;}";
-			$cssHtml .= "</style>";
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 
 

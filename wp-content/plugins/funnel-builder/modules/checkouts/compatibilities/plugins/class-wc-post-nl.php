@@ -83,7 +83,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wc_PostNL' ) ) {
 				$bodyClass = 'body #wfacp-e-form ';
 			}
 			$css = "
-		<style>
 		 /* My Parcel Option */
             $bodyClass .wfacp_main_form.woocommerce #wfacp_output_delivery_options  input[type='radio'], 
             $bodyClass  .wfacp_main_form.woocommerce #wfacp_output_delivery_options  input[type='checkbox']
@@ -262,10 +261,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wc_PostNL' ) ) {
                 padding: 0 !important;
             }
            
-            </style>
 		";
 
-			echo $css;
+			echo '<style>' . wp_strip_all_tags( $css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 
 		public function add_js() {
@@ -316,8 +314,8 @@ if ( ! class_exists( 'WFACP_PostNLWooCommerce' ) ) {
 			new WFACP_Add_Address_Field(
 				'house_number',
 				array(
-					'label'       => __( 'House number', 'postnl-for-woocommerce' ),
-					'placeholder' => esc_attr__( 'House number', 'postnl-for-woocommerce' ),
+					'label'       => __( 'House number', 'postnl-for-woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+					'placeholder' => esc_attr__( 'House number', 'postnl-for-woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 					'class'       => array( 'form-row-first', 'address-field', 'wfacp_house_number', 'wfacp-draggable' ),
 					'cssready'    => array( 'wfacp-col-full' ),
 					'clear'       => false,
@@ -328,8 +326,8 @@ if ( ! class_exists( 'WFACP_PostNLWooCommerce' ) ) {
 			new WFACP_Add_Address_Field(
 				'house_number',
 				array(
-					'label'       => __( 'House number', 'postnl-for-woocommerce' ),
-					'placeholder' => esc_attr__( 'House number', 'postnl-for-woocommerce' ),
+					'label'       => __( 'House number', 'postnl-for-woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+					'placeholder' => esc_attr__( 'House number', 'postnl-for-woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 					'class'       => array( 'form-row-first', 'address-field', 'wfacp_house_number', 'wfacp-draggable' ),
 					'cssready'    => array( 'wfacp-col-full' ),
 					'clear'       => false,

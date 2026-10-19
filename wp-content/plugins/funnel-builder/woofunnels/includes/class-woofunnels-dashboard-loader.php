@@ -121,7 +121,7 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 		 */
 		public static function need_license_message( $plugin_data, $r ) {
 			if ( empty( $r->package ) ) {
-				echo wp_kses_post( '<div class="woofunnels-updater-plugin-upgrade-notice">' . __( 'To enable this update please activate your FunnelKit license by visiting the Dashboard Page.', 'funnel-builder' ) . '</div>' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				echo wp_kses_post( '<div class="woofunnels-updater-plugin-upgrade-notice">' . __( 'To enable this update please activate your FunnelKit license by visiting the Dashboard Page.', 'funnel-builder' ) . '</div>' );
 			}
 		}
 
@@ -279,7 +279,7 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 			global $current_screen;
 			if ( $current_screen instanceof WP_Screen && strpos( $current_screen->base, 'woofunnels' ) !== false ) {
 				/** Allow for woofunnels pages */
-			} elseif ( false === apply_filters( 'bwf_scroll_fix_allow', false ) ) {
+			} elseif ( false === apply_filters( 'bwf_scroll_fix_allow', false ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				return;
 			}
 			ob_start();
@@ -296,7 +296,7 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
                 }
 			</style>
 			<?php
-			echo ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- buffered internal admin view; fields escaped at their sources.
 		}
 
 
@@ -328,7 +328,7 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 				return $templates;
 			}
 
-			return apply_filters( 'bwf_fb_templates', get_option( '_bwf_fb_templates' ) );
+			return apply_filters( 'bwf_fb_templates', get_option( '_bwf_fb_templates' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 		}
 
 		public static function get_remote_templates() {

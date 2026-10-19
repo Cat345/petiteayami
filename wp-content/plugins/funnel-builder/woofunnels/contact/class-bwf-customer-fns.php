@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 if ( ! class_exists( 'BWF_Customer_Fns' ) ) {
 
-	class BWF_Customer_Fns {
+	class BWF_Customer_Fns { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 
 		public static function bwf_create_update_customer( $bwf_contact, $order, $order_id, $products, $total ) {
 			if ( ! $order instanceof WC_Order ) {

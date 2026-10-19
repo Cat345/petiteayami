@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 if ( ! class_exists( 'Mailjet_For_WP' ) ) {
 	#[AllowDynamicProperties]
-	class Mailjet_For_WP {
+	class Mailjet_For_WP { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- internal compat class named after the integrated plugin; referenced by the Pro module.
 
 		public function __construct() {
 			/* Register Add field */

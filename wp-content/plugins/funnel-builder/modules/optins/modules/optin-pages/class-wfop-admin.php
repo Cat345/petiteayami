@@ -209,7 +209,7 @@ if ( ! class_exists( 'WFOP_Admin' ) ) {
 
 			$fields['optin_page_base'] = array(
 				'label'     => __( 'Optin Page', 'funnel-builder' ),
-				'hint'      => __( '', 'funnel-builder' ),
+				'hint'      => '',
 				'type'      => 'input',
 				'inputType' => 'text',
 			);

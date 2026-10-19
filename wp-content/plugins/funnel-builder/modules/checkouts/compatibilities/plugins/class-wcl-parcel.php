@@ -160,23 +160,23 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 				if ( isset( $template_fields['billing'] ) ) {
 					$form = 'billing';
 					$template_fields['billing'][ $form . '_street_name' ]         = array(
-						'label'       => __( 'Street name', 'woocommerce-myparcel' ),
-						'placeholder' => __( 'Street name', 'woocommerce-myparcel' ),
-						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first wfacp_street_name' ) ),
+						'label'       => __( 'Street name', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						'placeholder' => __( 'Street name', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first wfacp_street_name' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 						'required'    => $required,
 					);
 					$template_fields['billing'][ $form . '_house_number' ]        = array(
-						'label'             => __( 'No.', 'woocommerce-myparcel' ),
-						'placeholder'       => __( 'No.', 'woocommerce-myparcel' ),
+						'label'             => __( 'No.', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						'placeholder'       => __( 'No.', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 						'custom_attributes' => array( 'pattern' => '[0-9]*' ),
 						'type'              => 'number',
-						'class'             => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third wfacp_house_number' ) ),
+						'class'             => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third wfacp_house_number' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 						'required'          => $required,
 					);
 					$template_fields['billing'][ $form . '_house_number_suffix' ] = array(
-						'label'       => __( 'Suffix', 'woocommerce-myparcel' ),
-						'placeholder' => __( 'Suffix', 'woocommerce-myparcel' ),
-						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'wfacp_house_number_suffix' ) ),
+						'label'       => __( 'Suffix', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						'placeholder' => __( 'Suffix', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'wfacp_house_number_suffix' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 						'type'        => 'text',
 						'id'          => $form . '_house_number_suffix',
 						'required'    => false,
@@ -190,26 +190,26 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 				if ( isset( $template_fields['shipping'] ) ) {
 					$form = 'shipping';
 					$template_fields['shipping'][ $form . '_street_name' ]  = array(
-						'label'       => __( 'Street name', 'woocommerce-myparcel' ),
-						'placeholder' => __( 'Street name', 'woocommerce-myparcel' ),
-						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first wfacp_street_name' ) ),
+						'label'       => __( 'Street name', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						'placeholder' => __( 'Street name', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first wfacp_street_name' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 						'required'    => $required,
 					);
 					$template_fields['shipping'][ $form . '_house_number' ] = array(
-						'label'             => __( 'No.', 'woocommerce-myparcel' ),
-						'placeholder'       => __( 'No.', 'woocommerce-myparcel' ),
+						'label'             => __( 'No.', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						'placeholder'       => __( 'No.', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 						'custom_attributes' => array( 'pattern' => '[0-9]*' ),
 						'type'              => 'number',
-						'class'             => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third wfacp_house_number' ) ),
+						'class'             => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third wfacp_house_number' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 						'required'          => $required,
 					);
 
 					$template_fields['shipping'][ $form . '_house_number_suffix' ] = array(
-						'label'       => __( 'Suffix', 'woocommerce-myparcel' ),
-						'placeholder' => __( 'Suffix', 'woocommerce-myparcel' ),
+						'label'       => __( 'Suffix', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+						'placeholder' => __( 'Suffix', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 						'type'        => 'text',
 						'id'          => $form . '_house_number_suffix',
-						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'wfacp_house_number_suffix' ) ),
+						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'wfacp_house_number_suffix' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 						'required'    => false,
 
 					);
@@ -282,29 +282,29 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 
 						// Add street name
 						$new_fields[] = array(
-							'label'       => __( 'Street name', 'woocommerce-myparcel' ),
-							'placeholder' => __( 'Street name', 'woocommerce-myparcel' ),
+							'label'       => __( 'Street name', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+							'placeholder' => __( 'Street name', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 							'cssready'    => array( "wfacp_wc_parcel $class1" ),
 							'id'          => $form . '_street_name',
-							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first wfacp_street_name' ) ),
+							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first wfacp_street_name' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 							'required'    => $required, // Only required for NL
 							'priority'    => 60,
 						);
 						$new_fields[] = array(
-							'label'       => __( 'No.', 'woocommerce-myparcel' ),
-							'placeholder' => __( 'No.', 'woocommerce-myparcel' ),
+							'label'       => __( 'No.', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+							'placeholder' => __( 'No.', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 							'cssready'    => array( "wfacp_wc_parcel $class2" ),
 							'id'          => $form . '_house_number',
-							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third wfacp_house_number' ) ),
+							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third wfacp_house_number' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 							'required'    => $required, // Only required for NL
 							'priority'    => 61,
 						);
 						$new_fields[] = array(
-							'label'       => __( 'Suffix', 'woocommerce-myparcel' ),
-							'placeholder' => __( 'Suffix', 'woocommerce-myparcel' ),
+							'label'       => __( 'Suffix', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+							'placeholder' => __( 'Suffix', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 							'cssready'    => array( "wfacp_wc_parcel $class3" ),
 							'id'          => $form . '_house_number_suffix',
-							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third last wfacp_house_number_suffix' ) ),
+							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third last wfacp_house_number_suffix' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 
 							'maxlength'   => 4,
 							'priority'    => 62,
@@ -409,29 +409,29 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 						$form = 'shipping';
 						// Add street name
 						$new_fields[]                  = array(
-							'label'       => __( 'Street name', 'woocommerce-myparcel' ),
-							'placeholder' => __( 'Street name', 'woocommerce-myparcel' ),
+							'label'       => __( 'Street name', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+							'placeholder' => __( 'Street name', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 							'cssready'    => array( "wfacp_wc_parcel $class1" ),
 							'id'          => $form . '_street_name',
-							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first wfacp_street_name' ) ),
+							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first wfacp_street_name' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 							'required'    => $required, // Only required for NL
 							'priority'    => 60,
 						);
 						$new_fields[]                  = array(
-							'label'       => __( 'No.', 'woocommerce-myparcel' ),
-							'placeholder' => __( 'No.', 'woocommerce-myparcel' ),
+							'label'       => __( 'No.', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+							'placeholder' => __( 'No.', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 							'cssready'    => array( "wfacp_wc_parcel $class2" ),
 							'id'          => $form . '_house_number',
-							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third wfacp_house_number' ) ),
+							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third wfacp_house_number' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 							'required'    => $required, // Only required for NL
 							'priority'    => 61,
 						);
 						$new_fields[]                  = array(
-							'label'       => __( 'Suffix', 'woocommerce-myparcel' ),
-							'placeholder' => __( 'Suffix', 'woocommerce-myparcel' ),
+							'label'       => __( 'Suffix', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
+							'placeholder' => __( 'Suffix', 'woocommerce-myparcel' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 							'cssready'    => array( "wfacp_wc_parcel $class3" ),
 							'id'          => $form . '_house_number_suffix',
-							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third last wfacp_house_number_suffix' ) ),
+							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third last wfacp_house_number_suffix' ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 							'maxlength'   => 4,
 							'priority'    => 62,
 						);
@@ -500,7 +500,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 			}
 
 			$css = "
-		<style>
 		  $bodyClass .wfacp_main_form.woocommerce table.mypa-delivery-option-table {
                 table-layout: unset;
             }
@@ -714,10 +713,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
                     width: 100%;
                 }
             }
-            </style>
 		";
 
-			echo $css;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<style>' . wp_strip_all_tags( $css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 
 		public function update_address_data( $keys ) {

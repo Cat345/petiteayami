@@ -9,31 +9,29 @@ if ( ! class_exists( 'WFACP_Compatibility_With_GR_WC' ) ) {
 		public function __construct() {
 
 			/* checkout page */
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_fields' ] );
-			add_action( 'wfacp_internal_css', [ $this, 'gr_field_register' ] );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_fields' ) );
+			add_action( 'wfacp_internal_css', array( $this, 'gr_field_register' ) );
 			/* prevent third party fields and wrapper*/
 
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
-
 		}
 
 		public function gr_field_register() {
 
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 10, 2 );
-
+			add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 10, 2 );
 		}
 
 		public function add_fields( $field ) {
-			$field['gr_checkout_checkbox'] = [
+			$field['gr_checkout_checkbox'] = array(
 				'type'          => 'checkbox',
 				'default'       => true,
 				'label'         => 'GetResponse',
-				'validate'      => [],
+				'validate'      => array(),
 				'id'            => 'gr_checkout_checkbox',
 				'required'      => false,
-				'wrapper_class' => [],
-				'class'         => [ 'gr-wc-checkbox' ],
-			];
+				'wrapper_class' => array(),
+				'class'         => array( 'gr-wc-checkbox' ),
+			);
 
 			return $field;
 		}
@@ -41,7 +39,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_GR_WC' ) ) {
 		public function add_default_wfacp_styling( $args, $key ) {
 
 			$default        = false;
-			$checkout_label = __( 'Sign up to our newsletter!', 'Gr_Integration' );
+			$checkout_label = __( 'Sign up to our newsletter!', 'funnel-builder' );
 
 			if ( $key == 'gr_checkout_checkbox' ) {
 				if ( function_exists( 'gr_get_option' ) ) {
@@ -59,15 +57,13 @@ if ( ! class_exists( 'WFACP_Compatibility_With_GR_WC' ) ) {
 
 				$args['label']       = $checkout_label;
 				$args['default']     = $default;
-				$args['input_class'] = [ 'GR_checkoutbox' ];
+				$args['input_class'] = array( 'GR_checkoutbox' );
 
 			}
 
 			return $args;
 		}
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_With_GR_WC(), 'gr-wc' );
 }
-

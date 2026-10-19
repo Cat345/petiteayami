@@ -80,6 +80,22 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 		}
 
 		/**
+		 * Outputs a template directly; each template escapes its own values.
+		 *
+		 * @param string $template The name of the template file to include.
+		 * @param array  $args Optional. An array of arguments to pass to the template file. Default is an empty array.
+		 *
+		 * @return void
+		 */
+		public static function render_template( $template, $args = array() ) {
+			if ( ! empty( $args ) && is_array( $args ) ) {
+				extract( $args ); // @codingStandardsIgnoreLine
+			}
+
+			include WFFN_PLUGIN_DIR . '/' . $template;
+		}
+
+		/**
 		 * Create a timestamp from an array of time values.
 		 *
 		 * @param array $time_array An array of time values.
@@ -369,11 +385,11 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 		 */
 		public static function get_date_string( $dates = array(), $frequency = 'weekly' ) {
 			if ( 'daily' === $frequency && isset( $dates['from_date'] ) ) {
-				return sprintf( __( '%1$s', 'funnel-builder' ), self::format_date( $dates['from_date'] ) );//phpcs:ignore WordPress.WP.I18n.NoEmptyStrings
+				return self::format_date( $dates['from_date'] );
 			}
 
 			if ( isset( $dates['from_date'] ) && isset( $dates['to_date'] ) ) {
-				return sprintf( __( '%1$s - %2$s', 'funnel-builder' ), self::format_date( $dates['from_date'] ), self::format_date( $dates['to_date'] ) );
+				return sprintf( /* translators: 1: start date, 2: end date. */ __( '%1$s - %2$s', 'funnel-builder' ), self::format_date( $dates['from_date'] ), self::format_date( $dates['to_date'] ) );
 			}
 
 			return '';

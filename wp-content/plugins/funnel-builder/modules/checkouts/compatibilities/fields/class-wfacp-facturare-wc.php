@@ -176,7 +176,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Facturare_WC' ) ) {
 					$args['label_class'] = array_merge( [ 'wfacp-form-control-label' ], $args['label_class'] );
 				} catch ( Exception $e ) {
 					// Handle or log error if needed
-					error_log( 'Error in add_default_wfacp_styling: ' . $e->getMessage() );
+					error_log( 'Error in add_default_wfacp_styling: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Exception-path logging only; keeps the third-party compat failure diagnosable without breaking checkout.
 				}
 
 			}

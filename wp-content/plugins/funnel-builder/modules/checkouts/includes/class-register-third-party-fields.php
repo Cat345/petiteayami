@@ -479,7 +479,7 @@ if ( ! class_exists( 'WFACP_Class_Register_Third_Party_Fields' ) ) {
 						$meta_key   = '_' . $item;
 						$meta_value = get_post_meta( $order_id, $meta_key, true );
 						if ( empty( $meta_value ) ) {
-							$order->update_meta_data( '_' . $item, bwf_clean( wp_unslash( $_POST[ $item ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification handled by WooCommerce checkout process
+							$order->update_meta_data( '_' . $item, bwf_clean( wp_unslash( $_POST[ $item ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verification handled by WooCommerce checkout process Also: input sanitized via a recursive sanitize_text_field() wrapper on this line.
 						}
 					}
 				}
@@ -492,7 +492,7 @@ if ( ! class_exists( 'WFACP_Class_Register_Third_Party_Fields' ) ) {
 			$missingKeys = array();
 
 			$relevantKeys = array_filter(
-				array_keys( $_POST ),
+				array_map( 'sanitize_text_field', array_keys( $_POST ) ), // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Reads field NAMES only (no values) during WC checkout processing; WooCommerce core has already verified its checkout nonce before this hook/filter runs.
 				function ( $key ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification handled by WooCommerce checkout process
 					return strpos( $key, 'billing_' ) === 0 || strpos( $key, 'shipping_' ) === 0;
 				}

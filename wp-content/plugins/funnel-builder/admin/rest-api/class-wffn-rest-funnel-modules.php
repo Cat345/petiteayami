@@ -287,7 +287,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 
 			if ( ! empty( $term ) ) {
 
-				$term = empty( $term ) ? bwf_clean( stripslashes( filter_input( INPUT_POST, 'term', FILTER_UNSAFE_RAW ) ) ) : $term; //phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
+				$term = empty( $term ) ? bwf_clean( stripslashes( filter_input( INPUT_POST, 'term', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) ) ) : $term;
 				if ( empty( $term ) ) {
 					wp_die();
 				}
@@ -365,7 +365,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 
 			if ( 'bump' === $type ) {
 				$allowed_types = apply_filters(
-					'wfob_offer_product_types',
+					'wfob_offer_product_types', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established FunnelKit family hook prefix, below PCP's frequency-detection threshold in this plugin; renaming breaks cross-plugin integrations.
 					array(
 						'simple',
 						'variable',
@@ -383,7 +383,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 
 			if ( 'offer' === $type || 'upsell' === $type ) {
 				$allowed_types = apply_filters(
-					'wfocu_offer_product_types',
+					'wfocu_offer_product_types', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established FunnelKit family hook prefix, below PCP's frequency-detection threshold in this plugin; renaming breaks cross-plugin integrations.
 					array(
 						'simple',
 						'variable',
@@ -526,17 +526,17 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 
 				// Remove Template Meta key.
 				global $wpdb;
-				$wpdb->delete(
+				$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					$wpdb->postmeta,
 					array(
-						'meta_key' => '_et_pb_use_builder',
+						'meta_key' => '_et_pb_use_builder', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Targeted DELETE on postmeta keyed by post_id (indexed), not a meta_key SELECT.
 						'post_id'  => $step_id,
 					)
 				);
-				$wpdb->delete(
+				$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					$wpdb->postmeta,
 					array(
-						'meta_key' => 'tcb_editor_enabled',
+						'meta_key' => 'tcb_editor_enabled', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Targeted DELETE on postmeta keyed by post_id (indexed), not a meta_key SELECT.
 						'post_id'  => $step_id,
 					)
 				);
@@ -569,7 +569,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 					$meta->template_group = '';
 					WFOCU_Common::update_offer( $offer, $meta );
 
-					do_action( 'wfocu_template_removed', $offer );
+					do_action( 'wfocu_template_removed', $offer ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established FunnelKit family hook prefix, below PCP's frequency-detection threshold in this plugin; renaming breaks cross-plugin integrations.
 				}
 				if ( '' !== $funnel_id ) {
 					WFOCU_Common::update_funnel_time( $funnel_id );
@@ -762,7 +762,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 					'title'    => __( 'Request Card Update on Upsell Failure', 'funnel-builder' ),
 					'heading'  => __( 'Request Card Update on Upsell Failure', 'funnel-builder' ),
 					'hint'     => sprintf(
-						__( 'In upsell recovery feature we show credit card fields to customers in case the charge attempt fails. %s', 'funnel-builder' ),
+						/* translators: %s: link to activate the FunnelKit Stripe gateway. */                        __( 'In upsell recovery feature we show credit card fields to customers in case the charge attempt fails. %s', 'funnel-builder' ),
 						'<a href="' . admin_url( 'admin.php?page=bwf&path=/settings/stripe' ) . '" data-link="react">' . __( 'Click here to activate Funnelkit Stripe', 'funnel-builder' ) . '</a>'
 					),
 
@@ -2018,16 +2018,16 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 					do_action( 'wfop_template_removed', $page_id );
 					break;
 				case 'wc_thankyou':
-					do_action( 'wftp_template_removed', $page_id );
+					do_action( 'wftp_template_removed', $page_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 					break;
 				case 'landing':
-					do_action( 'wflp_template_removed', $page_id );
+					do_action( 'wflp_template_removed', $page_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established FunnelKit family hook prefix, below PCP's frequency-detection threshold in this plugin; renaming breaks cross-plugin integrations.
 					break;
 				case 'optin_ty':
-					do_action( 'wfoty_template_removed', $page_id );
+					do_action( 'wfoty_template_removed', $page_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established FunnelKit family hook prefix, below PCP's frequency-detection threshold in this plugin; renaming breaks cross-plugin integrations.
 					break;
 				case 'upsell':
-					do_action( 'wfocu_template_removed', $page_id );
+					do_action( 'wfocu_template_removed', $page_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established FunnelKit family hook prefix, below PCP's frequency-detection threshold in this plugin; renaming breaks cross-plugin integrations.
 					break;
 				default:
 					break;
@@ -3289,7 +3289,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 							$additional_tabs[] = array(
 								'mainHeading' => __( 'Upsell Page Settings', 'funnel-builder' ),
 								'heading'     => __( 'Personalization Shortcodes', 'funnel-builder' ),
-								'title'       => sprintf( __( 'Using page builders to build custom upsell pages? <a href=%1$s target="_blank">Read this guide to learn more</a> about using Button widgets of your page builder <a href=%2$s target="_blank">Personalization shortcodes</a>', 'funnel-builder' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designed-one-click-upsell-pages/' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designs/#order-personalization-shortcodes' ) ),
+								'title'       => sprintf( /* translators: 1: URL of the guide, 2: URL of the personalization shortcodes documentation. */ __( 'Using page builders to build custom upsell pages? <a href=%1$s target="_blank">Read this guide to learn more</a> about using Button widgets of your page builder <a href=%2$s target="_blank">Personalization shortcodes</a>', 'funnel-builder' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designed-one-click-upsell-pages/' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designs/#order-personalization-shortcodes' ) ),
 								'fields'      => $shortcode,
 							);
 						} elseif ( isset( $design['selected_type'] ) && in_array( $design['selected_type'], array( 'beaver', 'custom', 'custom_page' ), true ) ) {
@@ -3330,7 +3330,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 												$additional_tabs[] = array(
 													'mainHeading' => __( 'Upsell Page Settings', 'funnel-builder' ),
 													'heading'     => __( 'Shortcodes', 'funnel-builder' ),
-													'title'       => sprintf( __( 'Using page builders to build custom upsell pages? <a href=%1$s target="_blank">Read this guide to learn more</a> about using Button widgets of your page builder <a href=%2$s target="_blank">Personalization shortcodes</a>', 'funnel-builder' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designed-one-click-upsell-pages/' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designs/#order-personalization-shortcodes' ) ),
+													'title'       => sprintf( /* translators: 1: URL of the guide, 2: URL of the personalization shortcodes documentation. */ __( 'Using page builders to build custom upsell pages? <a href=%1$s target="_blank">Read this guide to learn more</a> about using Button widgets of your page builder <a href=%2$s target="_blank">Personalization shortcodes</a>', 'funnel-builder' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designed-one-click-upsell-pages/' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designs/#order-personalization-shortcodes' ) ),
 													'fields'      => $shortcode,
 												);
 											} else {
@@ -3351,9 +3351,9 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 						}
 						break;
 					case 'wc_checkout':
-						$is_pro_active = WFFN_Common::wffn_is_funnel_pro_active();
-						$url           = admin_url( 'post.php?post=' . $step_id . '&action=edit' );
-						$link          = "<a href='$url'>WordPress Editor</a>";
+						$add_mini_cart_shortcode = method_exists( 'WFACP_Common', 'sanitize_mini_cart_widget_id_for_selector' );
+						$url                     = admin_url( 'post.php?post=' . $step_id . '&action=edit' );
+						$link                    = "<a href='$url'>WordPress Editor</a>";
 
 						$custom_shortcode = array(
 							'type'    => 'shortcode',
@@ -3363,12 +3363,12 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 									'label' => __( 'Form Shortcode', 'funnel-builder' ),
 									'value' => '[wfacp_forms]',
 									'id'    => 'wfacp_forms',
-									'hint'  => sprintf( __( 'Use this shortcode to embed the checkout form on this page. Switch to %s.', 'funnel-builder' ), $link ),
+									'hint'  => sprintf( /* translators: %s: link to switch the page editor. */ __( 'Use this shortcode to embed the checkout form on this page. Switch to %s.', 'funnel-builder' ), $link ),
 								),
 							),
 						);
 
-						if ( $is_pro_active ) {
+						if ( $add_mini_cart_shortcode ) {
 							$custom_shortcode['fields'][] = array(
 								'label' => __( 'Mini Cart Shortcode', 'funnel-builder' ),
 								'value' => '[wfacp_mini_cart]',

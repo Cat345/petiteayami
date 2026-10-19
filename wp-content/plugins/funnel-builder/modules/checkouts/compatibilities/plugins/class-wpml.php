@@ -50,7 +50,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WPML' ) ) {
 		}
 
 		public function remove_action() {
-			if ( ! class_exists( 'WPML_Elementor_Adjust_Global_Widget_ID' ) || ! WFACP_Common::is_theme_builder() || ! isset( $_GET['post'] ) ) {
+			if ( ! class_exists( 'WPML_Elementor_Adjust_Global_Widget_ID' ) || ! WFACP_Common::is_theme_builder() || ! isset( $_GET['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin request routing; WP core builds this URL without a nonce.
 				return;
 			}
 			$elementor_data = get_post_meta( absint( wp_unslash( $_GET['post'] ) ), '_elementor_data', true ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification

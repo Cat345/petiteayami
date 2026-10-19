@@ -83,7 +83,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 		}
 
 		public function bwf_parse_blocks( $content ) {
-			$parser_class = apply_filters( 'block_parser_class', 'WP_Block_Parser' );
+			$parser_class = apply_filters( 'block_parser_class', 'WP_Block_Parser' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 			if ( class_exists( $parser_class ) ) {
 				$parser = new $parser_class();
 
@@ -554,7 +554,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 						$step    = ( isset( $steps_arr[ $key ] ) ) ? $steps_arr[ $key ] : '';
 						$active  = apply_filters( 'wfacp_layout_9_active_progress_bar', $active, $step );
 						$p_class = 'wfacp_step_' . $key . ' wfacp_bred ' . $bread_visited . ' ' . $active . ' ' . $step;
-						echo "<li class='" . esc_attr( $p_class ) . "' step='" . esc_attr( $step ) . "' ><a href='javascript:void(0)' class='wfacp_step_text_have' data-text='" . esc_attr( sanitize_title( $value ) ) . "'>" . wp_kses_post( $value ) . '</a> </li>';//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo "<li class='" . esc_attr( $p_class ) . "' step='" . esc_attr( $step ) . "' ><a href='javascript:void(0)' class='wfacp_step_text_have' data-text='" . esc_attr( sanitize_title( $value ) ) . "'>" . wp_kses_post( $value ) . '</a> </li>';
 					}
 					do_action( 'wfacp_after_breadcrumb' );
 					echo '</ul></div></div></div>';
@@ -564,7 +564,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			$result                                = ob_get_clean();
 			$this->stepsData[ $progress_bar_type ] = $result;
 			if ( 'progress_bar' !== $progress_bar_type ) {
-				echo $result;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo $result;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered checkout template; fields escaped at their sources; revisit in the ignore-audit phase.
 			}
 		}
 
@@ -675,7 +675,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			$cart_page_id = wc_get_page_id( 'cart' );
 			$cartURL      = $cart_page_id ? get_permalink( $cart_page_id ) : '';
 			$cartURL      = apply_filters( 'wfacp_return_to_cart_link', $cartURL );
-			echo "<li class='df_cart_link wfacp_bred_visited'><a href='" . esc_url( $cartURL ) . "'>" . wp_kses_post( $cartName ) . '</a></li>';//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo "<li class='df_cart_link wfacp_bred_visited'><a href='" . esc_url( $cartURL ) . "'>" . wp_kses_post( $cartName ) . '</a></li>';
 		}
 
 		public function before_return_to_cart_link( $current_action ) {
@@ -706,7 +706,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 		public function display_progress_bar() {
 			if ( isset( $this->stepsData['progress_bar'] ) ) {
 				if ( isset( $this->form_data['select_type'] ) && 'progress_bar' === $this->form_data['select_type'] ) {
-					echo $this->stepsData['progress_bar'];//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo $this->stepsData['progress_bar'];//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- builder-generated progress-bar markup; parts escaped at build.
 				}
 			}
 		}

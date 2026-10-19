@@ -75,7 +75,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 				\Elementor\Group_Control_Background::get_type(),
 				array(
 					'name'     => $field_key . '_background',
-					'label'    => __( 'Background', 'elementor' ),
+					'label'    => __( 'Background', 'funnel-builder' ),
 					'types'    => array( 'classic', 'gradient' ),
 					'selector' => $selector,
 				)
@@ -83,7 +83,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 			$this->add_responsive_control(
 				$field_key . '_width',
 				array(
-					'label'      => __( 'Width', 'elementor' ),
+					'label'      => __( 'Width', 'funnel-builder' ),
 					'type'       => Controls_Manager::SLIDER,
 					'size_units' => array( 'px', '%' ),
 					'range'      => array(
@@ -114,7 +114,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 
 		protected function add_width( $field_key, $selector, $label = '', $default = array(), $condition = array(), $size_unit = array(), $tablet_default = array(), $mobile_default = array(), $override_other_selector = array() ) {
 			if ( empty( $label ) ) {
-				$label = __( 'Width', 'elementor' );
+				$label = __( 'Width', 'funnel-builder' );
 			}
 
 			if ( empty( $size_unit ) ) {
@@ -161,7 +161,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 
 		protected function add_top_position( $field_key, $selector, $label = '', $default = array(), $condition = array(), $size_unit = array(), $tablet_default = array(), $mobile_default = array(), $override_other_selector = array() ) {
 			if ( empty( $label ) ) {
-				$label = __( 'Position', 'elementor' );
+				$label = __( 'Position', 'funnel-builder' );
 			}
 
 			if ( empty( $size_unit ) ) {
@@ -220,7 +220,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 			}
 
 			$args = array(
-				'label'      => __( 'Padding', 'elementor' ),
+				'label'      => __( 'Padding', 'funnel-builder' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => array( 'px', 'em', '%' ),
 				'default'    => $default,
@@ -255,7 +255,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 			}
 
 			$args = array(
-				'label'      => __( 'Margin', 'elementor' ),
+				'label'      => __( 'Margin', 'funnel-builder' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => array( 'px', 'em', '%' ),
 				'default'    => $default,
@@ -304,7 +304,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 			$this->add_responsive_control(
 				$field_key . '_border_radius',
 				array(
-					'label'      => __( 'Border Radius', 'elementor' ),
+					'label'      => __( 'Border Radius', 'funnel-builder' ),
 					'type'       => Controls_Manager::DIMENSIONS,
 					'size_units' => array( 'px', 'em', '%' ),
 					'default'    => $default,
@@ -320,7 +320,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 
 		protected function add_border_radius( $field_key, $selector, $condition = array(), $default = array(), $fields_options = array(), $custom_label = '' ) {
 
-			$label = __( 'Border Radius', 'elementor' );
+			$label = __( 'Border Radius', 'funnel-builder' );
 
 			if ( ! empty( $custom_label ) ) {
 				$label = $custom_label;
@@ -437,7 +437,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 		public function add_color( $field_key, $selectors = array(), $default = '', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_attr__( 'Color', 'elementor' );
+				$label = esc_attr__( 'Color', 'funnel-builder' );
 			}
 
 			$color_selectors = array();
@@ -467,7 +467,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 		public function add_background_color( $field_key, $selectors = array(), $default = '#000000', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_attr__( 'Background', 'elementor' );
+				$label = esc_attr__( 'Background', 'funnel-builder' );
 			}
 
 			$color_selectors = array();
@@ -505,7 +505,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 
 		public function add_controls_tab( $key, $label ) {
 			if ( empty( $label ) ) {
-				$label = esc_attr__( 'Normal', 'elementor' );
+				$label = esc_attr__( 'Normal', 'funnel-builder' );
 			}
 
 			$this->start_controls_tab(
@@ -527,7 +527,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 		public function add_border_color( $field_key, $selectors = array(), $default = '#000000', $label = '', $box_shadow = false, $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_attr__( 'Color', 'elementor' );
+				$label = esc_attr__( 'Color', 'funnel-builder' );
 			}
 
 			$keys_for_imp = array(
@@ -599,7 +599,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 		public function add_background( $field_key, $selector, $default = '#000000', $label = '', $types = array(), $conditions = array(), $bg_type = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = __( 'Background', 'elementor' );
+				$label = __( 'Background', 'funnel-builder' );
 			}
 			if ( empty( $bg_type ) ) {
 				$types = array( 'classic', 'gradient' );
@@ -801,7 +801,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 				}
 			}
 			if ( empty( $label ) ) {
-				$label = __( 'Alignment', 'elementor' );
+				$label = __( 'Alignment', 'funnel-builder' );
 			}
 			if ( empty( $options ) ) {
 				$options = array(
@@ -877,7 +877,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 		public function add_border_shadow( $field_key, $selector = '', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = __( 'Box Shadow', 'elementor' );
+				$label = __( 'Box Shadow', 'funnel-builder' );
 			}
 
 			$this->add_group_control(
@@ -892,7 +892,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 
 		protected function add_font_size( $field_key, $selector, $label = '', $default = array(), $condition = array(), $size_unit = array(), $tablet_default = array(), $mobile_default = array(), $range = array() ) {
 			if ( empty( $label ) ) {
-				$label = __( 'Width', 'elementor' );
+				$label = __( 'Width', 'funnel-builder' );
 			}
 
 			if ( empty( $size_unit ) ) {

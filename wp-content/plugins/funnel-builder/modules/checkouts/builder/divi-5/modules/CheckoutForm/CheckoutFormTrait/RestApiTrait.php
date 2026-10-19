@@ -171,20 +171,20 @@ trait RestApiTrait {
 
 		// Prioritize explicit checkout context from Divi.
 		if ( isset( $_REQUEST['et_wfacp_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$candidates[] = wp_unslash( $_REQUEST['et_wfacp_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$candidates[] = absint( wp_unslash( $_REQUEST['et_wfacp_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- editor context lookup; id cast to int.
 		}
 		// Then request payload values.
 		$candidates[] = $post_id;
 		if ( isset( $_REQUEST['post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$candidates[] = wp_unslash( $_REQUEST['post_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$candidates[] = absint( wp_unslash( $_REQUEST['post_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- editor context lookup; id cast to int.
 		}
 		if ( isset( $_REQUEST['et_post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$candidates[] = wp_unslash( $_REQUEST['et_post_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$candidates[] = absint( wp_unslash( $_REQUEST['et_post_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- editor context lookup; id cast to int.
 		}
 
 		// Try extracting IDs from referrer URL.
 		if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-			$referer = esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
+			$referer = sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
 			if ( preg_match( '/[?&]et_wfacp_id=(\d+)/', $referer, $matches ) ) {
 				$candidates[] = $matches[1];
 			}
@@ -342,11 +342,11 @@ trait RestApiTrait {
 		if ( $post_id > 0 ) {
 			$wfacp_post_id = absint( $post_id );
 		} elseif ( isset( $_REQUEST['post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$wfacp_post_id = absint( wp_unslash( $_REQUEST['post_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$wfacp_post_id = absint( wp_unslash( $_REQUEST['post_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- id cast to int on this line.
 		} elseif ( isset( $_REQUEST['et_post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$wfacp_post_id = absint( wp_unslash( $_REQUEST['et_post_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$wfacp_post_id = absint( wp_unslash( $_REQUEST['et_post_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- id cast to int on this line.
 		} elseif ( isset( $_REQUEST['et_wfacp_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$wfacp_post_id = absint( wp_unslash( $_REQUEST['et_wfacp_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$wfacp_post_id = absint( wp_unslash( $_REQUEST['et_wfacp_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- id cast to int on this line.
 		}
 
 		// Fallback to any published checkout page

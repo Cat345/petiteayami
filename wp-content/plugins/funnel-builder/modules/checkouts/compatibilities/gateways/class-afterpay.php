@@ -8,10 +8,10 @@ if ( ! class_exists( 'WFACP_Afterpay_process_fields' ) ) {
 		}
 
 		public function wfacp_process_fields( $data ) {
-			if ( isset( $_REQUEST['payment_method'] ) && 'afterpay' !== $_REQUEST['payment_method'] ) {
+			if ( isset( $_REQUEST['payment_method'] ) && 'afterpay' !== $_REQUEST['payment_method'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 				return $data;
 			}
-			if ( ! isset( $_REQUEST['_wfacp_post_id'] ) ) {
+			if ( ! isset( $_REQUEST['_wfacp_post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 				return $data;
 			}
 			$arr = array(
@@ -23,11 +23,11 @@ if ( ! class_exists( 'WFACP_Afterpay_process_fields' ) ) {
 
 			foreach ( $arr as $a_key => $second_key ) {
 				if ( isset( $_REQUEST[ $a_key ] ) && '' !== sanitize_text_field( wp_unslash( $_REQUEST[ $a_key ] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway callback, nonce verification handled by payment gateway
-					$data[ $a_key ] = sanitize_text_field( wp_unslash( $_REQUEST[ $a_key ] ) );
+					$data[ $a_key ] = sanitize_text_field( wp_unslash( $_REQUEST[ $a_key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 					continue;
 				}
 				if ( isset( $_REQUEST[ $second_key ] ) && '' !== sanitize_text_field( wp_unslash( $_REQUEST[ $second_key ] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway callback, nonce verification handled by payment gateway
-					$data[ $a_key ] = sanitize_text_field( wp_unslash( $_REQUEST[ $second_key ] ) );
+					$data[ $a_key ] = sanitize_text_field( wp_unslash( $_REQUEST[ $second_key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 					continue;
 				}
 			}

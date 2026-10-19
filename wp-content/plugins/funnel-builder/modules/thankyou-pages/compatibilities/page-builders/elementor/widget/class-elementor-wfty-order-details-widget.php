@@ -13,7 +13,7 @@ use Elementor\Core\Schemes\Typography;
 if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 	#[AllowDynamicProperties]
 
-	class Elementor_WFTY_Order_Details_Widget extends \Elementor\Widget_Base {
+	class Elementor_WFTY_Order_Details_Widget extends \Elementor\Widget_Base { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- vendor-convention widget class carrying the WF module prefix; referenced by the Pro plugin.
 
 		/**
 		 * Get widget name.
@@ -86,7 +86,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->start_controls_section(
 				'section_detail_title',
 				array(
-					'label' => __( 'Order Details', 'elementor-pro' ),
+					'label' => __( 'Order Details', 'funnel-builder' ),
 					'tab'   => Controls_Manager::TAB_CONTENT,
 				)
 			);
@@ -94,7 +94,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'order_details_heading',
 				array(
-					'label'   => __( 'Heading', 'elementor-pro' ),
+					'label'   => __( 'Heading', 'funnel-builder' ),
 					'type'    => Controls_Manager::TEXT,
 					'classes' => 'wfty-elementor-heading-text',
 					'default' => isset( $defaults['order_details_heading'] ) ? $defaults['order_details_heading'] : __( 'Order Details', 'funnel-builder' ),
@@ -106,7 +106,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->start_controls_section(
 				'section_subscription_title',
 				array(
-					'label' => __( 'Subscription', 'elementor-pro' ),
+					'label' => __( 'Subscription', 'funnel-builder' ),
 					'tab'   => Controls_Manager::TAB_CONTENT,
 				)
 			);
@@ -124,7 +124,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'order_subscription_heading',
 				array(
-					'label'   => __( 'Heading', 'elementor-pro' ),
+					'label'   => __( 'Heading', 'funnel-builder' ),
 					'type'    => Controls_Manager::TEXT,
 					'classes' => 'wfty-elementor-heading-text',
 					'default' => isset( $defaults['order_subscription_heading'] ) ? $defaults['order_subscription_heading'] : __( 'Subscription', 'funnel-builder' ),
@@ -134,7 +134,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'order_subscription_preview',
 				array(
-					'label'        => __( 'Show Subscription Preview', 'elementor-pro' ),
+					'label'        => __( 'Show Subscription Preview', 'funnel-builder' ),
 					'type'         => Controls_Manager::SWITCHER,
 					'return_value' => 'yes',
 					'default'      => 'no',
@@ -146,7 +146,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->start_controls_section(
 				'section_download_title',
 				array(
-					'label' => __( 'Download', 'elementor-pro' ),
+					'label' => __( 'Download', 'funnel-builder' ),
 					'tab'   => Controls_Manager::TAB_CONTENT,
 				)
 			);
@@ -164,7 +164,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'order_download_heading',
 				array(
-					'label'   => __( 'Heading', 'elementor-pro' ),
+					'label'   => __( 'Heading', 'funnel-builder' ),
 					'type'    => Controls_Manager::TEXT,
 					'classes' => 'wfty-elementor-heading-text',
 					'default' => isset( $defaults['order_download_heading'] ) ? $defaults['order_download_heading'] : __( 'Downloads', 'funnel-builder' ),
@@ -174,7 +174,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'order_downloads_btn_text',
 				array(
-					'label'   => __( 'Download Button Text', 'elementor-pro' ),
+					'label'   => __( 'Download Button Text', 'funnel-builder' ),
 					'type'    => Controls_Manager::TEXT,
 					'classes' => 'wfty-elementor-heading-text',
 					'default' => $defaults['order_downloads_btn_text'],
@@ -184,7 +184,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'order_download_preview',
 				array(
-					'label'        => __( 'Show Download Preview', 'elementor-pro' ),
+					'label'        => __( 'Show Download Preview', 'funnel-builder' ),
 					'type'         => Controls_Manager::SWITCHER,
 					'return_value' => 'yes',
 					'default'      => 'no',
@@ -194,7 +194,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'order_downloads_show_file_downloads',
 				array(
-					'label'        => __( 'Show File Downloads Column', 'elementor-pro' ),
+					'label'        => __( 'Show File Downloads Column', 'funnel-builder' ),
 					'type'         => Controls_Manager::SWITCHER,
 					'return_value' => 'yes',
 					'default'      => 'no',
@@ -204,7 +204,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'order_downloads_show_file_expiry',
 				array(
-					'label'        => __( 'Show File Expiry Column', 'elementor-pro' ),
+					'label'        => __( 'Show File Expiry Column', 'funnel-builder' ),
 					'type'         => Controls_Manager::SWITCHER,
 					'return_value' => 'yes',
 					'default'      => 'no',
@@ -216,7 +216,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->start_controls_section(
 				'section_heading_style',
 				array(
-					'label' => __( 'Heading', 'elementor-pro' ),
+					'label' => __( 'Heading', 'funnel-builder' ),
 					'tab'   => Controls_Manager::TAB_STYLE,
 				)
 			);
@@ -224,7 +224,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->_add_color(
 				'heading_color',
 				array(
-					'label'     => __( 'Color', 'elementor-pro' ),
+					'label'     => __( 'Color', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#000',
 
@@ -259,20 +259,20 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_responsive_control(
 				'heading_align',
 				array(
-					'label'     => __( 'Heading Alignment', 'elementor-pro' ),
+					'label'     => __( 'Heading Alignment', 'funnel-builder' ),
 					'type'      => Controls_Manager::CHOOSE,
 					'default'   => 'left',
 					'options'   => array(
 						'left'   => array(
-							'title' => __( 'Left', 'elementor-pro' ),
+							'title' => __( 'Left', 'funnel-builder' ),
 							'icon'  => 'eicon-text-align-left',
 						),
 						'center' => array(
-							'title' => __( 'Center', 'elementor-pro' ),
+							'title' => __( 'Center', 'funnel-builder' ),
 							'icon'  => 'eicon-text-align-center',
 						),
 						'right'  => array(
-							'title' => __( 'Right', 'elementor-pro' ),
+							'title' => __( 'Right', 'funnel-builder' ),
 							'icon'  => 'eicon-text-align-right',
 						),
 					),
@@ -287,7 +287,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->start_controls_section(
 				'section_cart_style',
 				array(
-					'label' => __( 'Details', 'elementor-pro' ),
+					'label' => __( 'Details', 'funnel-builder' ),
 					'tab'   => Controls_Manager::TAB_STYLE,
 				)
 			);
@@ -295,7 +295,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'product_label',
 				array(
-					'label' => __( 'Product', 'elementor-pro' ),
+					'label' => __( 'Product', 'funnel-builder' ),
 					'type'  => Controls_Manager::HEADING,
 				)
 			);
@@ -303,7 +303,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->_add_color(
 				'product_text_color',
 				array(
-					'label'     => __( 'Color', 'elementor-pro' ),
+					'label'     => __( 'Color', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#565656',
 
@@ -350,7 +350,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'subtotal_label',
 				array(
-					'label'     => __( 'Subtotal', 'elementor-pro' ),
+					'label'     => __( 'Subtotal', 'funnel-builder' ),
 					'type'      => Controls_Manager::HEADING,
 					'separator' => 'before',
 				)
@@ -359,7 +359,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->_add_color(
 				'subtotal_text_color',
 				array(
-					'label'     => __( 'Color', 'elementor-pro' ),
+					'label'     => __( 'Color', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#565656',
 
@@ -394,7 +394,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'total_label',
 				array(
-					'label'     => __( 'Total', 'elementor-pro' ),
+					'label'     => __( 'Total', 'funnel-builder' ),
 					'type'      => Controls_Manager::HEADING,
 					'separator' => 'before',
 				)
@@ -403,7 +403,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->_add_color(
 				'total_text_color',
 				array(
-					'label'     => __( 'Color', 'elementor-pro' ),
+					'label'     => __( 'Color', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#565656',
 
@@ -438,7 +438,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'variation_label',
 				array(
-					'label'     => __( 'Variation', 'elementor-pro' ),
+					'label'     => __( 'Variation', 'funnel-builder' ),
 					'type'      => Controls_Manager::HEADING,
 					'separator' => 'before',
 				)
@@ -447,7 +447,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->_add_color(
 				'variation_text_color',
 				array(
-					'label'     => __( 'Color', 'elementor-pro' ),
+					'label'     => __( 'Color', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#000000',
 					'selectors' => array(
@@ -481,7 +481,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'divider_label',
 				array(
-					'label'     => __( 'Divider', 'elementor-pro' ),
+					'label'     => __( 'Divider', 'funnel-builder' ),
 					'type'      => Controls_Manager::HEADING,
 					'separator' => 'before',
 				)
@@ -490,7 +490,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->_add_color(
 				'divider_color',
 				array(
-					'label'     => __( 'Color', 'elementor-pro' ),
+					'label'     => __( 'Color', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#dddddd',
 					'selectors' => array(
@@ -506,7 +506,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->start_controls_section(
 				'section_subscription_style',
 				array(
-					'label' => __( 'Subscription', 'elementor-pro' ),
+					'label' => __( 'Subscription', 'funnel-builder' ),
 					'tab'   => Controls_Manager::TAB_STYLE,
 				)
 			);
@@ -514,7 +514,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'subscription_label',
 				array(
-					'label'     => __( 'Subscription', 'elementor-pro' ),
+					'label'     => __( 'Subscription', 'funnel-builder' ),
 					'type'      => Controls_Manager::HEADING,
 					'separator' => 'before',
 				)
@@ -523,7 +523,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->_add_color(
 				'subscription_text_color',
 				array(
-					'label'     => __( 'Color', 'elementor-pro' ),
+					'label'     => __( 'Color', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#565656',
 					'selectors' => array(
@@ -557,7 +557,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'subscription_button_label',
 				array(
-					'label' => __( 'Button', 'elementor-pro' ),
+					'label' => __( 'Button', 'funnel-builder' ),
 					'type'  => Controls_Manager::HEADING,
 				)
 			);
@@ -567,14 +567,14 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->start_controls_tab(
 				'tab_button_normal',
 				array(
-					'label' => __( 'Normal', 'elementor' ),
+					'label' => __( 'Normal', 'funnel-builder' ),
 				)
 			);
 
 			$this->add_control(
 				'button_text_color',
 				array(
-					'label'     => __( 'Label', 'custom-elementor-widget' ),
+					'label'     => __( 'Label', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#fff',
 					'selectors' => array(
@@ -586,7 +586,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->_add_color(
 				'background_color',
 				array(
-					'label'     => __( 'Background', 'custom-elementor-widget' ),
+					'label'     => __( 'Background', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#70dc1d',
 					'selectors' => array(
@@ -600,14 +600,14 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->start_controls_tab(
 				'tab_button_hover',
 				array(
-					'label' => __( 'Hover', 'custom-elementor-widget' ),
+					'label' => __( 'Hover', 'funnel-builder' ),
 				)
 			);
 
 			$this->add_control(
 				'hover_color',
 				array(
-					'label'     => __( 'Label', 'custom-elementor-widget' ),
+					'label'     => __( 'Label', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#fff',
 					'selectors' => array(
@@ -619,7 +619,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'button_background_hover_color',
 				array(
-					'label'     => __( 'Background', 'custom-elementor-widget' ),
+					'label'     => __( 'Background', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#89e047',
 					'selectors' => array(
@@ -636,7 +636,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->start_controls_section(
 				'section_download_style',
 				array(
-					'label' => __( 'Download', 'elementor-pro' ),
+					'label' => __( 'Download', 'funnel-builder' ),
 					'tab'   => Controls_Manager::TAB_STYLE,
 				)
 			);
@@ -644,7 +644,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->_add_color(
 				'text_color',
 				array(
-					'label'     => __( 'Color', 'elementor-pro' ),
+					'label'     => __( 'Color', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#565656',
 					'selectors' => array(
@@ -679,7 +679,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'download_button_label',
 				array(
-					'label' => __( 'Button', 'elementor-pro' ),
+					'label' => __( 'Button', 'funnel-builder' ),
 					'type'  => Controls_Manager::HEADING,
 				)
 			);
@@ -689,14 +689,14 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->start_controls_tab(
 				'tab_download_button_normal',
 				array(
-					'label' => __( 'Normal', 'elementor' ),
+					'label' => __( 'Normal', 'funnel-builder' ),
 				)
 			);
 
 			$this->add_control(
 				'download_button_text_color',
 				array(
-					'label'     => __( 'Label', 'custom-elementor-widget' ),
+					'label'     => __( 'Label', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#fff',
 					'selectors' => array(
@@ -708,7 +708,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->_add_color(
 				'download_background_color',
 				array(
-					'label'     => __( 'Background', 'custom-elementor-widget' ),
+					'label'     => __( 'Background', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#70dc1d',
 					'selectors' => array(
@@ -722,14 +722,14 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->start_controls_tab(
 				'tab_download_button_hover',
 				array(
-					'label' => __( 'Hover', 'custom-elementor-widget' ),
+					'label' => __( 'Hover', 'funnel-builder' ),
 				)
 			);
 
 			$this->add_control(
 				'download_hover_color',
 				array(
-					'label'     => __( 'Label', 'custom-elementor-widget' ),
+					'label'     => __( 'Label', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#fff',
 					'selectors' => array(
@@ -741,7 +741,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 			$this->add_control(
 				'button_background_download_hover_color',
 				array(
-					'label'     => __( 'Background', 'custom-elementor-widget' ),
+					'label'     => __( 'Background', 'funnel-builder' ),
 					'type'      => Controls_Manager::COLOR,
 					'default'   => '#89e047',
 					'selectors' => array(
@@ -817,7 +817,7 @@ if ( ! class_exists( 'Elementor_WFTY_Order_Details_Widget' ) ) {
 
 			$this->add_render_attribute( 'wrapper', 'class', $classes );
 			?>
-			<div <?php echo $this->get_render_attribute_string( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->get_render_attribute_string( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- builder render-attribute API string; the builder escapes attribute values. ?>>
 				<?php
 				$shortcode_attributes = array(
 					'order_details_img'                   => $order_details_img,

@@ -58,7 +58,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 					wp_enqueue_script( 'accounting' );
 				}
 				$price_args = apply_filters(
-					'wc_price_args',
+					'wc_price_args', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 					array(
 						'ex_tax_label'       => false,
 						'currency'           => '',
@@ -1205,7 +1205,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 			}
 			?>
 			<div class="bwf-widget-notice is-<?php echo esc_attr( $severity ); ?>">
-				<?php echo $icons[ $severity ]; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<?php echo $icons[ $severity ]; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- internal SVG icon map literal. ?>
 				<span><?php echo wp_kses_post( $text ); ?></span>
 			</div>
 			<?php
@@ -1254,7 +1254,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 							<?php echo wp_kses_post( $content['title'] ); ?>
 						</h2>
 						<p class="bwf-bfcm-subtitle">
-							<?php echo wp_kses_post( sprintf( __( 'Grow your revenue with FunnelKit! Unlock tools like optimized checkouts, upsells, order bumps, and more. Offer ends %s, midnight ET', 'funnel-builder' ), esc_html( $content['date'] ) ) ); ?>
+							<?php echo wp_kses_post( sprintf( /* translators: %s: offer end date. */ __( 'Grow your revenue with FunnelKit! Unlock tools like optimized checkouts, upsells, order bumps, and more. Offer ends %s, midnight ET', 'funnel-builder' ), esc_html( $content['date'] ) ) ); ?>
 						</p>
 					</div>
 					<div class="bwf-bfcm-button-wrap">

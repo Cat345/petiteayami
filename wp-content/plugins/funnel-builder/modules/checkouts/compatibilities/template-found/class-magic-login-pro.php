@@ -57,16 +57,16 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Magic_Login_Pro' ) ) {
 				return;
 			}
 
-			$hide_form         = apply_filters( 'magic_login_hide_on_woocommerce_login_form', true );
-			$shortcode_content = apply_filters( 'magic_login_shortcode_content_on_woocommerce_login_form', '[magic_login_form submit_class="woocommerce-button"]' );
+			$hide_form         = apply_filters( 'magic_login_hide_on_woocommerce_login_form', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
+			$shortcode_content = apply_filters( 'magic_login_shortcode_content_on_woocommerce_login_form', '[magic_login_form submit_class="woocommerce-button"]' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 			?>
 
 			<div id="magic-login-woo-wrapper" class="magic-login-woocommerce_login_form_end" <?php echo ( $hide_form ) ? ' style="display:none;"' : ''; ?>>
 				<span class="magic-login-woo-or-separator"></span>
 				<?php
-				do_action( 'magic_login_before_woocommerce_login_form' );
+				do_action( 'magic_login_before_woocommerce_login_form' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 				echo do_shortcode( $shortcode_content );
-				do_action( 'magic_login_after_woocommerce_login_form' );
+				do_action( 'magic_login_after_woocommerce_login_form' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 				?>
 			</div>
 			<?php

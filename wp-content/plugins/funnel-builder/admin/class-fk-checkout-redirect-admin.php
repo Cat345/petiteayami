@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'FK_Checkout_Redirect_Admin' ) ) {
 
 	#[\AllowDynamicProperties]
-	class FK_Checkout_Redirect_Admin {
+	class FK_Checkout_Redirect_Admin { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- absorbed FK Checkout Redirect add-on; class_exists guards coexist with the standalone plugin.
 
 		private static $ins = null;
 

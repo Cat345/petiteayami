@@ -101,7 +101,7 @@ if ( ! class_exists( 'WFACP_Woocommerce_Paypal_Payments' ) ) {
 			$css .= '.wfacp-left-panel style,.wfacp-left-panel script{display:none !important;}';
 
 			// No esc_html(): entities like &#039; are not decoded inside <style> and break content:'' rules.
-			echo '<style>' . $css . '</style>';//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<style>' . wp_strip_all_tags( $css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 	}
 

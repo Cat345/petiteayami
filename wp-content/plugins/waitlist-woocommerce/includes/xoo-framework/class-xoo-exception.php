@@ -13,7 +13,7 @@ class Xoo_Exception extends \Exception{
 
 	protected string $errorCode;
 
-	public function __construct($error, $errorCode = '', $code = 0, Exception $previous = null){
+	public function __construct($error, $errorCode = '', $code = 0, $previous = null){
 
 		$this->errorCode = $errorCode;
 

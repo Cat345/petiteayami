@@ -1,6 +1,6 @@
 <?php
 
-namespace FunnelKit\Bricks\Elements\OptinPages;
+namespace FunnelKit\Bricks\Elements\OptinPages; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound -- FunnelKit brand namespace, unique to this plugin family; Pro extends these elements.
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -869,7 +869,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\OptinPages\Optin_Popup' ) ) {
 			$settings['popup_bar_animation'] = isset( $settings['popup_bar_animation'] ) && $settings['popup_bar_animation'] ? 'yes' : 'no';
 			$settings['button_border_size']  = 0;
 			?>
-			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- builder render-attribute API string; the builder escapes attribute values. ?>>
 				<?php
 				$custom_form = WFOPP_Core()->form_controllers->get_integration_object( 'form' );
 				if ( $custom_form instanceof WFFN_Optin_Form_Controller_Custom_Form ) {

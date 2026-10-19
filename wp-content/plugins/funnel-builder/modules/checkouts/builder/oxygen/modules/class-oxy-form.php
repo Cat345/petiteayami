@@ -24,7 +24,7 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 				return $styles;
 			}
 
-			global $oxygen_vsb_components;
+			global $oxygen_vsb_components; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- $oxygen_vsb_components is Oxygen Builder's own global (VSB = Visual Site Builder); required by Oxygen's own runtime. The name is theirs and cannot be prefixed.
 
 			$params             = $states['original'];
 			$params['selector'] = $selector;
@@ -180,7 +180,7 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 			$labels             = array(
 
 				array(
-					'heading'     => __( 'Shipping', 'woocommerce' ),
+					'heading'     => __( 'Shipping', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 					'sub-heading' => __( 'Where to ship it?', 'funnel-builder' ),
 				),
 				array(
@@ -188,7 +188,7 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 					'sub-heading' => __( 'Select your product', 'funnel-builder' ),
 				),
 				array(
-					'heading'     => __( 'Payment', 'woocommerce' ),
+					'heading'     => __( 'Payment', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 					'sub-heading' => __( 'Confirm your order', 'funnel-builder' ),
 				),
 			);
@@ -208,15 +208,18 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 			if ( $num_of_steps > 1 ) {
 
 				$cartTitle          = __( 'Title', 'funnel-builder' );
-				$settingDescription = __( 'Note: Cart settings will work for Global Checkout when user navigates from Product > Cart > Checkout', 'funnel-builder' );
-				$cartText           = __( 'Cart', 'woocommerce' );
+				$settingDescription = __( 'Note: The cart step is added only on the Store Checkout, when the shopper reaches checkout from the cart page (Product > Cart > Checkout). It is not shown on funnel checkouts, on direct checkout links or in the builder preview.', 'funnel-builder' );
+				$cartText           = __( 'Cart', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 				$options            = array(
 					'yes' => __( 'Yes', 'funnel-builder' ),
 					'no'  => __( 'No', 'funnel-builder' ),
 				);
 				$this->add_heading( $tab_id, 'Cart', 'none', $bredcrumb_controls );
 				$this->add_select( $tab_id, 'step_cart_link_enable', __( 'Add to Breadcrumb', 'funnel-builder' ), $options, 'yes', $bredcrumb_controls );
-				$this->add_text( $tab_id, 'step_cart_bredcrumb_link', $cartTitle, $cartText, $bredcrumb_controls, $settingDescription );
+				$cart_note = $tab_id->addCustomControl( '<div class="oxygen-option-default" style="color: #fff; line-height: 1.4; font-size: 12px;">' . esc_html( $settingDescription ) . '</div>', 'description' );
+				$cart_note->setParam( 'step_cart_link_note', '' );
+				$cart_note->setCondition( $this->get_condition_string( 'step_cart_link_note', $bredcrumb_controls ) );
+				$this->add_text( $tab_id, 'step_cart_bredcrumb_link', $cartTitle, $cartText, $bredcrumb_controls );
 			}
 			$this->get_progress_settings( $tab_id );
 		}
@@ -356,7 +359,7 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 			$do_not_show_fields = WFACP_Common::get_html_excluded_field();
 			foreach ( $temp_fields as $loop_key => $field ) {
 				if ( in_array( $loop_key, array( 'wfacp_start_divider_billing', 'wfacp_start_divider_shipping' ), true ) ) {
-					$address_key_group = ( $loop_key === 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' );
+					$address_key_group = ( $loop_key === 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 					$this->add_heading( $tab_instance, $address_key_group, 'none' );
 				}
 				if ( ! isset( $field['id'] ) || ! isset( $field['label'] ) ) {
@@ -560,7 +563,7 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 					$backCount = $i - 1;
 					// phpcs:ignore WordPress.WP.I18n.InterpolatedVariableText -- Step number is dynamic
 					$backLinkArr[ 'payment_button_back_' . $i . '_text' ] = array(
-						'label' => sprintf( __( 'Return to Step %d', 'funnel-builder' ), $backCount ),
+						'label' => sprintf( /* translators: %d: step number. */ __( 'Return to Step %d', 'funnel-builder' ), $backCount ),
 					);
 				}
 			}
@@ -1270,7 +1273,7 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 				'aero-e900' => __( 'Lock 2', 'funnel-builder' ),
 			);
 
-			$bwf_icon_list = apply_filters( 'bwf_icon_list', $icon_list );
+			$bwf_icon_list = apply_filters( 'bwf_icon_list', $icon_list ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 
 			$this->add_switcher( $tab_id, 'enable_icon_with_place_order_' . $counter_step, __( 'Enable Icon', 'funnel-builder' ), '' );
 
@@ -1286,7 +1289,7 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 
 		private function button_icon_style( $tab_id ) {
 
-			$this->add_heading( $tab_id, __( 'Button Icon', 'elementor' ) );
+			$this->add_heading( $tab_id, __( 'Button Icon', 'funnel-builder' ) );
 
 			$btn_icon_selector = array(
 				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-order-place-btn-wrap button:before',
@@ -1294,7 +1297,7 @@ if ( ! class_exists( 'WFACP_OXY_Form' ) ) {
 			);
 
 			$this->add_color( $tab_id, $this->slug . '_btn_icon_color', implode( ',', $btn_icon_selector ), 'Icon Color', '#ffffff' );
-			$this->add_heading( $tab_id, __( 'Sub Text', 'elementor' ) );
+			$this->add_heading( $tab_id, __( 'Sub Text', 'funnel-builder' ) );
 			$button_sub_text_selector = array(
 				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-order-place-btn-wrap button:after',
 				'#wfacp-e-form .wfacp-next-btn-wrap button:after',

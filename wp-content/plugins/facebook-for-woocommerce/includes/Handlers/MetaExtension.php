@@ -10,9 +10,9 @@
 
 namespace WooCommerce\Facebook\Handlers;
 
-defined( 'ABSPATH' ) || exit;
+use WooCommerce\Facebook\API\CommerceIntegration\Client as CommerceIntegrationClient;
 
-use WP_Error;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Handles Meta Commerce Extension functionality and configuration.
@@ -32,10 +32,11 @@ class MetaExtension {
 	const COMMERCE_HUB_URL = 'https://www.commercepartnerhub.com/';
 
 	/** @var string Option names for Facebook settings */
-	const OPTION_ACCESS_TOKEN                    = 'wc_facebook_access_token';
-	const OPTION_MERCHANT_ACCESS_TOKEN           = 'wc_facebook_merchant_access_token';
-	const OPTION_PAGE_ACCESS_TOKEN               = 'wc_facebook_page_access_token';
-	const OPTION_SYSTEM_USER_ID                  = 'wc_facebook_system_user_id';
+	const OPTION_ACCESS_TOKEN = 'wc_facebook_access_token';
+
+	/** @deprecated Legacy FBE 2 leftover, unused here. Use self::OPTION_ACCESS_TOKEN instead. */
+	const OPTION_MERCHANT_ACCESS_TOKEN = 'wc_facebook_merchant_access_token';
+
 	const OPTION_BUSINESS_MANAGER_ID             = 'wc_facebook_business_manager_id';
 	const OPTION_AD_ACCOUNT_ID                   = 'wc_facebook_ad_account_id';
 	const OPTION_INSTAGRAM_BUSINESS_ID           = 'wc_facebook_instagram_business_id';
@@ -46,8 +47,15 @@ class MetaExtension {
 	const OPTION_PIXEL_ID                        = 'wc_facebook_pixel_id';
 	const OPTION_PROFILES                        = 'wc_facebook_profiles';
 	const OPTION_INSTALLED_FEATURES              = 'wc_facebook_installed_features';
-	const OPTION_HAS_CONNECTED_FBE_2             = 'wc_facebook_has_connected_fbe_2';
-	const OPTION_HAS_AUTHORIZED_PAGES            = 'wc_facebook_has_authorized_pages_read_engagement';
+
+	/** @deprecated Legacy FBE 2 leftover, no longer written. Nothing reads the stored ID. */
+	const OPTION_SYSTEM_USER_ID = 'wc_facebook_system_user_id';
+
+	/** @deprecated Legacy FBE 2 leftover, no longer written. Use Connection::is_connected() instead. */
+	const OPTION_HAS_CONNECTED_FBE_2 = 'wc_facebook_has_connected_fbe_2';
+
+	/** @deprecated Legacy FBE 2 leftover, no longer written. Nothing reads it. */
+	const OPTION_HAS_AUTHORIZED_PAGES = 'wc_facebook_has_authorized_pages_read_engagement';
 
 	/** @var string Nonce action */
 	const NONCE_ACTION = 'wc_facebook_ajax_token_update';
@@ -97,34 +105,111 @@ class MetaExtension {
 	/**
 	 * Generates the Commerce Hub iframe management page URL.
 	 *
+	 * Uses the Commerce Extension token endpoint first, then falls back to the
+	 * legacy business configuration endpoint when the new flow is unavailable.
+	 *
 	 * @param string $external_business_id External business ID.
+	 * @param string $commerce_partner_integration_id Optional Commerce Partner Integration ID.
 	 *
 	 * @return string
-	 * @throws \Exception If the URL generation fails or if external_business_id is invalid.
 	 * @since 3.5.0
 	 */
-	public static function generate_iframe_management_url( $external_business_id ) {
+	public static function generate_iframe_management_url( $external_business_id, $commerce_partner_integration_id = '' ) {
 		$access_token = get_option( self::OPTION_ACCESS_TOKEN, '' );
 
-		if ( empty( $access_token ) || empty( $external_business_id ) ) {
+		if (
+			! is_string( $access_token ) || empty( $access_token ) ||
+			! is_string( $external_business_id ) || empty( $external_business_id )
+		) {
 			return '';
 		}
 
-		try {
-			$response = facebook_for_woocommerce()->get_api()->get_business_configuration(
-				$external_business_id,
-				$access_token,
-				[ 'commerce_extension' ]
-			);
-			$uri      = $response->get_commerce_extension_uri();
-			if ( empty( $uri ) ) {
-				throw new \Exception( 'Commerce extension URI not found' );
+		if ( empty( $commerce_partner_integration_id ) ) {
+			$commerce_partner_integration_id = get_option( self::OPTION_COMMERCE_PARTNER_INTEGRATION_ID, '' );
+		}
+
+		if ( is_string( $commerce_partner_integration_id ) && ! empty( $commerce_partner_integration_id ) ) {
+			try {
+				$iframe_url = self::generate_iframe_management_url_with_commerce_extension_token(
+					$external_business_id,
+					$commerce_partner_integration_id,
+					$access_token
+				);
+				delete_transient( 'wc_facebook_connection_invalid' );
+				return $iframe_url;
+			} catch ( \Throwable $e ) {
+				facebook_for_woocommerce()->log( 'Facebook Commerce Extension token endpoint error: ' . $e->getMessage() );
 			}
-			return $response->get_commerce_extension_uri();
-		} catch ( \Exception $e ) {
-			facebook_for_woocommerce()->log( 'Facebook Commerce Extension URL Error: ' . $e->getMessage() );
+		}
+
+		try {
+			$iframe_url = self::generate_legacy_iframe_management_url( $external_business_id, $access_token );
+			delete_transient( 'wc_facebook_connection_invalid' );
+			return $iframe_url;
+		} catch ( \Throwable $e ) {
+			facebook_for_woocommerce()->log( 'Facebook Commerce Extension legacy URL error: ' . $e->getMessage() );
 		}
 
 		return '';
+	}
+
+	/**
+	 * Generates the management URL using the Commerce Extension token endpoint.
+	 *
+	 * @param string $external_business_id External business ID.
+	 * @param string $commerce_partner_integration_id Commerce Partner Integration ID.
+	 * @param string $access_token Long-lived business integration system user token.
+	 *
+	 * @return string
+	 * @throws \Exception If the endpoint request fails or does not return a delegated access token.
+	 */
+	private static function generate_iframe_management_url_with_commerce_extension_token( $external_business_id, $commerce_partner_integration_id, $access_token ) {
+		$client         = new CommerceIntegrationClient();
+		$token_response = $client->request_commerce_extension_token( $access_token, $commerce_partner_integration_id );
+
+		return self::build_iframe_management_url( $token_response->get_access_token(), $external_business_id );
+	}
+
+	/**
+	 * Generates the management URL using the legacy Graph API endpoint.
+	 *
+	 * @param string $external_business_id External business ID.
+	 * @param string $access_token Long-lived business integration system user token.
+	 *
+	 * @return string
+	 * @throws \Exception If the legacy endpoint does not return a management URL.
+	 */
+	private static function generate_legacy_iframe_management_url( $external_business_id, $access_token ) {
+		$api        = facebook_for_woocommerce()->get_api( $access_token );
+		$response   = $api->get_business_configuration(
+			$external_business_id,
+			'',
+			array( 'commerce_extension' )
+		);
+		$iframe_url = $response->get_commerce_extension_uri();
+		if ( empty( $iframe_url ) ) {
+			throw new \Exception( 'Commerce extension URI not found' );
+		}
+
+		return $iframe_url;
+	}
+
+	/**
+	 * Builds the Commerce Hub management URL from a delegated access token.
+	 *
+	 * @param string $delegate_access_token Short-lived delegated access token.
+	 * @param string $external_business_id External business ID.
+	 *
+	 * @return string
+	 */
+	private static function build_iframe_management_url( $delegate_access_token, $external_business_id ) {
+		return add_query_arg(
+			array(
+				'access_token'         => $delegate_access_token,
+				'external_business_id' => $external_business_id,
+				'locale'               => get_user_locale(),
+			),
+			self::COMMERCE_HUB_URL . 'commerce_extension/overview/'
+		);
 	}
 }

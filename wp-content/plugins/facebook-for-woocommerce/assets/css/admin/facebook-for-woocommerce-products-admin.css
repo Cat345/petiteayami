@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
+ *
+ * This source code is licensed under the license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 #woocommerce-product-data .fb-product-image-source-field .wc-radios {
 	width: auto;
 }
@@ -199,7 +206,7 @@
 
 /* Hide product video source fields by default - JavaScript will show the selected one */
 .product-video-source-field {
-	display: none !important;
+	display: none;
 }
 
 /* For variations, only show when .show class is added by JavaScript */

@@ -157,13 +157,12 @@ if ( ! class_exists( 'WFACP_WC_Ship_To_Multiple_Address' ) ) {
 			}
 
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#wfacp_wc_ship_multiple{clear: both;}";
 			$cssHtml .= $bodyClass . "#wfacp_wc_ship_multiple p{padding:0 $px;}";
 
-			$cssHtml .= "</style>";
 
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 
 
 		}

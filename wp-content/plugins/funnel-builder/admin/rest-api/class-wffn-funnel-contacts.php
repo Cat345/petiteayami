@@ -703,7 +703,7 @@ if ( ! class_exists( 'WFFN_Funnel_Contacts', false ) ) {
 				$query .= $wpdb->prepare( ' LIMIT %d, %d', $offset, $limit );
 			}
 			// $query is assembled from $wpdb->prepare() fragments (funnel IN-list, $filter_query, LIMIT) plus a whitelisted ORDER BY column; phpcs cannot statically verify the assembled string.
-			$contact_data = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$contact_data = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {

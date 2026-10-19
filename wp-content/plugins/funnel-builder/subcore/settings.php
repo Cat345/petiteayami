@@ -4,7 +4,7 @@
 defined( 'ABSPATH' ) || exit;
 
 return apply_filters(
-	'bwf_settings_config',
+	'bwf_settings_config', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 	array(
 
 		'general'               => array(
@@ -12,7 +12,7 @@ return apply_filters(
 		'heading'   => __( 'License', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 		'slug'      => 'general',
 		'fields'    => apply_filters(
-			'bwf_settings_config_general',
+			'bwf_settings_config_general', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 			array(
 			array(
 				'key'           => 'default_selected_builder',
@@ -329,12 +329,24 @@ return apply_filters(
 					'styleClasses' => array( 'wfacp_setting_track_and_events_start', 'bwf_wrap_custom_html_tracking_general' ),
 				),
 				array(
-					'key'          => 'is_fb_enable_content',
+					'key'          => 'exclude_renewal_purchase_event',
 					'type'         => 'checklist',
 					'label'        => '',
-					'hint'         => __( 'Note: Your Product catalog must be synced with Facebook. <a target="_blank" href="https://developers.facebook.com/docs/facebook-pixel/get-started/dynamic-ads">Learn More</a>', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'hint'         => __( 'When enabled, Purchase events will not fire for manual renewals and payments through the Order Pay page.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'styleClasses' => array( 'wfacp_checkbox_wrap', 'wfacp_setting_track_and_events_end', 'bwf_remove_lft_pad', 'bwf_clear_rgt_width', 'rem_hint_pad' ),
 					'values'       => array(
+						array(
+							'name'  => __( 'Exclude Renewals & Pay-for-Order Purchases', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+							'value' => 'yes',
+						),
+					),
+				),
+				array(
+					'key'    => 'is_fb_enable_content',
+					'type'   => 'checklist',
+					'label'  => '',
+					'hint'   => __( 'Note: Your Product catalog must be synced with Facebook. <a target="_blank" href="https://developers.facebook.com/docs/facebook-pixel/get-started/dynamic-ads">Learn More</a>', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'values' => array(
 						array(
 							'name'  => __( 'Enable Content Settings for Dynamic Ads', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 							'value' => 'yes',
@@ -619,11 +631,23 @@ return apply_filters(
 					'styleClasses' => array( 'wfacp_setting_track_and_events_start', 'bwf_wrap_custom_html_tracking_general' ),
 				),
 				array(
-					'key'          => 'google_ua_variable_as_simple',
-					'type'         => 'checkbox',
-					'label'        => __( 'Enable this to send parent product ID for variable products', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-					'hint'         => __( 'Turn this option ON when your Product Catalog doesn\'t include the variants for variable products.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'key'          => 'exclude_renewal_purchase_event',
+					'type'         => 'checklist',
+					'label'        => '',
+					'hint'         => __( 'When enabled, Purchase events will not fire for manual renewals and payments through the Order Pay page.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'styleClasses' => array( 'wfacp_checkbox_wrap', 'wfacp_setting_track_and_events_end', 'bwf_remove_lft_pad', 'bwf_clear_rgt_width', 'rem_hint_pad' ),
+					'values'       => array(
+						array(
+							'name'  => __( 'Exclude Renewals & Pay-for-Order Purchases', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+							'value' => 'yes',
+						),
+					),
+				),
+				array(
+					'key'   => 'google_ua_variable_as_simple',
+					'type'  => 'checkbox',
+					'label' => __( 'Enable this to send parent product ID for variable products', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'hint'  => __( 'Turn this option ON when your Product Catalog doesn\'t include the variants for variable products.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				),
 				array(
 					'key'           => 'google_ua_content_id_type',
@@ -889,11 +913,23 @@ return apply_filters(
 					'styleClasses' => array( 'wfacp_setting_track_and_events_start', 'bwf_wrap_custom_html_tracking_general' ),
 				),
 				array(
-					'key'          => 'google_ads_variable_as_simple',
-					'type'         => 'checkbox',
-					'label'        => __( 'Enable this to send parent product ID for variable products', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-					'hint'         => __( 'Turn this option ON when your Product Catalog doesn\'t include the variants for variable products.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'key'          => 'exclude_renewal_purchase_event',
+					'type'         => 'checklist',
+					'label'        => '',
+					'hint'         => __( 'When enabled, Purchase events will not fire for manual renewals and payments through the Order Pay page.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'styleClasses' => array( 'wfacp_checkbox_wrap', 'wfacp_setting_track_and_events_end', 'bwf_remove_lft_pad', 'bwf_clear_rgt_width', 'rem_hint_pad' ),
+					'values'       => array(
+						array(
+							'name'  => __( 'Exclude Renewals & Pay-for-Order Purchases', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+							'value' => 'yes',
+						),
+					),
+				),
+				array(
+					'key'   => 'google_ads_variable_as_simple',
+					'type'  => 'checkbox',
+					'label' => __( 'Enable this to send parent product ID for variable products', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'hint'  => __( 'Turn this option ON when your Product Catalog doesn\'t include the variants for variable products.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				),
 				array(
 					'key'           => 'google_ads_content_id_type',
@@ -1127,11 +1163,23 @@ return apply_filters(
 					'styleClasses' => array( 'wfacp_setting_track_and_events_start', 'bwf_wrap_custom_html_tracking_general' ),
 				),
 				array(
-					'key'          => 'pint_variable_as_simple',
-					'type'         => 'checkbox',
-					'label'        => __( 'Enable this to send parent product ID for variable products', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-					'hint'         => __( 'Turn this option ON when your Product Catalog doesn\'t include the variants for variable products.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'key'          => 'exclude_renewal_purchase_event',
+					'type'         => 'checklist',
+					'label'        => '',
+					'hint'         => __( 'When enabled, Purchase events will not fire for manual renewals and payments through the Order Pay page.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'styleClasses' => array( 'wfacp_checkbox_wrap', 'wfacp_setting_track_and_events_end', 'bwf_remove_lft_pad', 'bwf_clear_rgt_width', 'rem_hint_pad' ),
+					'values'       => array(
+						array(
+							'name'  => __( 'Exclude Renewals & Pay-for-Order Purchases', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+							'value' => 'yes',
+						),
+					),
+				),
+				array(
+					'key'   => 'pint_variable_as_simple',
+					'type'  => 'checkbox',
+					'label' => __( 'Enable this to send parent product ID for variable products', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'hint'  => __( 'Turn this option ON when your Product Catalog doesn\'t include the variants for variable products.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				),
 				array(
 					'key'           => 'pint_content_id_type',
@@ -1332,11 +1380,23 @@ return apply_filters(
 						'styleClasses' => array( 'wfacp_setting_track_and_events_start', 'bwf_wrap_custom_html_tracking_general' ),
 					),
 					array(
-						'key'          => 'tiktok_variable_as_simple',
-						'type'         => 'checkbox',
-						'label'        => __( 'Enable this to send parent product ID for variable products', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-						'hint'         => __( 'Turn this option ON when your Product Catalog doesn\'t include the variants for variable products.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						'key'          => 'exclude_renewal_purchase_event',
+						'type'         => 'checklist',
+						'label'        => '',
+						'hint'         => __( 'When enabled, Purchase events will not fire for manual renewals and payments through the Order Pay page.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 						'styleClasses' => array( 'wfacp_checkbox_wrap', 'wfacp_setting_track_and_events_end', 'bwf_remove_lft_pad', 'bwf_clear_rgt_width', 'rem_hint_pad' ),
+						'values'       => array(
+							array(
+								'name'  => __( 'Exclude Renewals & Pay-for-Order Purchases', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+								'value' => 'yes',
+							),
+						),
+					),
+					array(
+						'key'   => 'tiktok_variable_as_simple',
+						'type'  => 'checkbox',
+						'label' => __( 'Enable this to send parent product ID for variable products', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						'hint'  => __( 'Turn this option ON when your Product Catalog doesn\'t include the variants for variable products.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					),
 				),
 				'priority' => 30,
@@ -1459,11 +1519,23 @@ return apply_filters(
 						'styleClasses' => array( 'wfacp_setting_track_and_events_start', 'bwf_wrap_custom_html_tracking_general' ),
 					),
 					array(
-						'key'          => 'snapchat_variable_as_simple',
-						'type'         => 'checkbox',
-						'label'        => __( 'Enable this to send parent product ID for variable products', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-						'hint'         => __( 'Turn this option ON when your Product Catalog doesn\'t include the variants for variable products.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						'key'          => 'exclude_renewal_purchase_event',
+						'type'         => 'checklist',
+						'label'        => '',
+						'hint'         => __( 'When enabled, Purchase events will not fire for manual renewals and payments through the Order Pay page.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 						'styleClasses' => array( 'wfacp_checkbox_wrap', 'wfacp_setting_track_and_events_end', 'bwf_remove_lft_pad', 'bwf_clear_rgt_width', 'rem_hint_pad' ),
+						'values'       => array(
+							array(
+								'name'  => __( 'Exclude Renewals & Pay-for-Order Purchases', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+								'value' => 'yes',
+							),
+						),
+					),
+					array(
+						'key'   => 'snapchat_variable_as_simple',
+						'type'  => 'checkbox',
+						'label' => __( 'Enable this to send parent product ID for variable products', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						'hint'  => __( 'Turn this option ON when your Product Catalog doesn\'t include the variants for variable products.', 'funnel-builder' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					),
 				),
 				'priority' => 30,

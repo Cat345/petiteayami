@@ -126,12 +126,11 @@ if ( ! class_exists( 'WFACP_Uncanny_Groups_For_LearnDash' ) ) {
 			}
 
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#wfacp_ulgm_group_name{clear: both;}";
 			$cssHtml .= $bodyClass . "#wfacp_ulgm_group_name h3{margin: 0 0 10px;padding:0 $px;font-size: 16px;font-weight: 900;}";
 
-			$cssHtml .= "</style>";
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 
 

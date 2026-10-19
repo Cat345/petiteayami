@@ -1,14 +1,14 @@
 <?php
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
-$bg_color       = '#EBF7FF';
-$text_color     = '#000000';
-$btn_bg_color   = '#09B29C';
-$btn_text_color = '#fff';
+$wffn_bg_color       = '#EBF7FF';
+$wffn_text_color     = '#000000';
+$wffn_btn_bg_color   = '#09B29C';
+$wffn_btn_text_color = '#fff';
 if ( 'dark' === $theme ) {
-	$bg_color       = '#131144';
-	$text_color     = '#fff';
-	$btn_bg_color   = '#FFC65C';
-	$btn_text_color = '#000';
+	$wffn_bg_color       = '#131144';
+	$wffn_text_color     = '#fff';
+	$wffn_btn_bg_color   = '#FFC65C';
+	$wffn_btn_text_color = '#000';
 }
 ?>
 <table cellpadding="0" cellspacing="0" border="0" bgcolor="" align="center" role="presentation"
@@ -17,17 +17,17 @@ if ( 'dark' === $theme ) {
        width="640">
     <tbody>
     <tr style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px;">
-        <td style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px; background-color: <?php echo esc_attr($bg_color); ?>;" 
-            bgcolor="<?php echo esc_attr($bg_color); ?>"><!--// @codingStandardsIgnoreLine-->
+        <td style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px; background-color: <?php echo esc_attr($wffn_bg_color); ?>;" 
+            bgcolor="<?php echo esc_attr($wffn_bg_color); ?>"><!--// @codingStandardsIgnoreLine-->
             <!--[if mso | IE]>
             <table cellpadding="0" cellspacing="0" border="0" align="center" style="width:100%" role="presentation" width="640">
                 <tr>
                     <td style="line-height:0;font-size:0;-mso-line-height-rule:exactly"><![endif]-->
             <div class="bwfbe-block-section-outer-container"
-                 style="margin: 0 auto; width: 640px; background-color: <?php echo esc_attr($bg_color); ?>;">
+                 style="margin: 0 auto; width: 640px; background-color: <?php echo esc_attr($wffn_bg_color); ?>;">
                 <table cellpadding="0" cellspacing="0" border="0" align="center"
-                       style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px; line-height: normal; background-color: <?php echo esc_attr($bg_color); ?>; width: 100%; border-collapse: separate;"
-                       role="presentation" width="100%" class="bwfbe-block-section-inner-container" bgcolor="<?php echo esc_attr($bg_color); ?>">
+                       style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px; line-height: normal; background-color: <?php echo esc_attr($wffn_bg_color); ?>; width: 100%; border-collapse: separate;"
+                       role="presentation" width="100%" class="bwfbe-block-section-inner-container" bgcolor="<?php echo esc_attr($wffn_bg_color); ?>">
                     <tbody>
                     <tr
                         style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px;">
@@ -54,7 +54,7 @@ if ( 'dark' === $theme ) {
                                                 <p class="bwf-block-text-inner-container"
                                                    style="margin: 0; mso-line-height-alt: 150%; word-break: break-word; font-size: 14px; font-family: arial,helvetica,sans-serif; line-height: 1.5;">
                                                                 <span
-                                                                    style="mso-line-height-alt: 150%; background-color: rgba(0, 0, 0, 0); color: <?php echo esc_html( $text_color ); ?>;"
+                                                                    style="mso-line-height-alt: 150%; background-color: rgba(0, 0, 0, 0); color: <?php echo esc_html( $wffn_text_color ); ?>;"
                                                                     class="has-inline-color">
                                                                     <strong>
                                                                         <span
@@ -78,7 +78,7 @@ if ( 'dark' === $theme ) {
                                                 <p class="bwf-block-text-inner-container"
                                                    style="margin: 0; mso-line-height-alt: 150%; word-break: break-word; font-size: 14px; font-family: arial,helvetica,sans-serif; line-height: 1.5;">
                                                                 <span
-                                                                    style="mso-line-height-alt: 150%; background-color: rgba(0, 0, 0, 0); color: <?php echo esc_html( $text_color ); ?>;"
+                                                                    style="mso-line-height-alt: 150%; background-color: rgba(0, 0, 0, 0); color: <?php echo esc_html( $wffn_text_color ); ?>;"
                                                                     class="has-inline-color"><span
                                                                         style="mso-line-height-alt: 150%; font-size: 36px;"
                                                                         class="has-font-size">
@@ -99,7 +99,7 @@ if ( 'dark' === $theme ) {
                                                 <p class="bwf-block-text-inner-container"
                                                    style="margin: 0; mso-line-height-alt: 150%; word-break: break-word; font-size: 14px; font-family: arial,helvetica,sans-serif; line-height: 1.5;">
                                                     <span
-                                                        style="mso-line-height-alt: 150%; background-color: rgba(0, 0, 0, 0); color: <?php echo esc_html($text_color); ?>;"
+                                                        style="mso-line-height-alt: 150%; background-color: rgba(0, 0, 0, 0); color: <?php echo esc_html($wffn_text_color); ?>;"
                                                         class="has-inline-color">
                                                         <span
                                                             style="mso-line-height-alt: 150%; font-size: 16px;"
@@ -123,12 +123,12 @@ if ( 'dark' === $theme ) {
                                                 <tr
                                                     style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px;">
                                                     <td class="bwfbe-btn-text-wrap"
-                                                        style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px; font-size: 16px; cursor: auto; border-style: none; background-color: <?php echo esc_html($btn_bg_color); ?>; font-size: 16px; border-radius: 8px; mso-padding-alt: 10px 20px; mso-padding-alt: 10px 24px 10px 24px; text-align: center; line-height: 1.5;"
-                                                        bgcolor="<?php echo esc_attr($btn_bg_color); ?>" align="center">
+                                                        style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0px; font-size: 16px; cursor: auto; border-style: none; background-color: <?php echo esc_html($wffn_btn_bg_color); ?>; font-size: 16px; border-radius: 8px; mso-padding-alt: 10px 20px; mso-padding-alt: 10px 24px 10px 24px; text-align: center; line-height: 1.5;"
+                                                        bgcolor="<?php echo esc_attr($wffn_btn_bg_color); ?>" align="center">
                                                         <a
                                                             href="<?php echo esc_url( $button_url ); ?>" target="_blank"
                                                             class="bwfbe-block-btn-content"
-                                                            style="line-height: 1.5; text-decoration: none; padding: 10px 20px; padding: 10px 24px 10px 24px; mso-padding-alt: 0; background-color: <?php echo esc_html($btn_bg_color); ?>; font-size: 16px; font-family: arial,helvetica,sans-serif; display: inline-block; text-decoration: none; text-transform: none; color: <?php echo esc_html($btn_text_color) ?>; border-radius: 8px;">
+                                                            style="line-height: 1.5; text-decoration: none; padding: 10px 20px; padding: 10px 24px 10px 24px; mso-padding-alt: 0; background-color: <?php echo esc_html($wffn_btn_bg_color); ?>; font-size: 16px; font-family: arial,helvetica,sans-serif; display: inline-block; text-decoration: none; text-transform: none; color: <?php echo esc_html($wffn_btn_text_color) ?>; border-radius: 8px;">
                                                             <strong><?php echo esc_html( $button_text ); ?></strong>
                                                         </a>
                                                     </td>

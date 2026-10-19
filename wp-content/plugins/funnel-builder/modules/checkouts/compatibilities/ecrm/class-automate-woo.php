@@ -10,34 +10,33 @@ if ( ! class_exists( 'WFACP_Compatibility_With_AutoMateWoo' ) ) {
 		 * @var AutomateWoo\Birthdays\Frontend
 		 */
 
-		private $actives = [];
+		private $actives = array();
 
 
 		public function __construct() {
 
-			add_action( 'init', [ $this, 'init_class' ], 4 );
+			add_action( 'init', array( $this, 'init_class' ), 4 );
 
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ] );
-			//;
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ) );
+			// ;
 			add_filter( 'wfacp_html_fields_aw_birthdays_addon', '__return_false' );
 
 			add_filter( 'wfacp_html_fields_automatewoo_optin_wrap', '__return_false' );
 
-			add_action( 'process_wfacp_html', [ $this, 'call_birthday_addon_hook' ], 10, 3 );
+			add_action( 'process_wfacp_html', array( $this, 'call_birthday_addon_hook' ), 10, 3 );
 
 			/* calling the css for plugin */
-			add_action( 'wfacp_internal_css', [ $this, 'amw_css_func' ], 99 );
+			add_action( 'wfacp_internal_css', array( $this, 'amw_css_func' ), 99 );
 
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 10, 2 );
+			add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 10, 2 );
 
 			/* automate optin */
-			add_action( 'wfacp_before_process_checkout_template_loader', [ $this, 'intialise_automate_woo_obj' ] );
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'intialise_automate_woo_obj' ] );
+			add_action( 'wfacp_before_process_checkout_template_loader', array( $this, 'intialise_automate_woo_obj' ) );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'intialise_automate_woo_obj' ) );
 
 			/* prevent third party fields and wrapper*/
 
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
-
 		}
 
 		public function intialise_automate_woo_obj() {
@@ -60,30 +59,29 @@ if ( ! class_exists( 'WFACP_Compatibility_With_AutoMateWoo' ) ) {
 					$this->actives['AW_Birthdays_Addon'] = $instanse;
 				}
 			}
-
 		}
 
 
 		public function add_field( $field ) {
 
 			if ( $this->is_enable( 'AW_Birthdays_Addon' ) ) {
-				$field['aw_birthdays_addon'] = [
+				$field['aw_birthdays_addon'] = array(
 					'type'       => 'wfacp_html',
-					'class'      => [ 'aw_birthdays_addon_wrap' ],
+					'class'      => array( 'aw_birthdays_addon_wrap' ),
 					'id'         => 'aw_birthdays_addon',
 					'field_type' => 'advanced',
-					'label'      => __( 'AutomateWoo Birthday', 'woocommerce' ),
-				];
+					'label'      => __( 'AutomateWoo Birthday', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+				);
 			}
 
 			if ( class_exists( 'AutomateWoo\Hooks' ) ) {
-				$field['automatewoo_optin_wrap'] = [
+				$field['automatewoo_optin_wrap'] = array(
 					'type'       => 'wfacp_html',
-					'class'      => [ 'aw_addon_wrap' ],
+					'class'      => array( 'aw_addon_wrap' ),
 					'id'         => 'automatewoo_optin_wrap',
 					'field_type' => 'advanced',
-					'label'      => __( 'AutomateWoo Optin', 'woocommerce' ),
-				];
+					'label'      => __( 'AutomateWoo Optin', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+				);
 			}
 
 			return $field;
@@ -104,33 +102,32 @@ if ( ! class_exists( 'WFACP_Compatibility_With_AutoMateWoo' ) ) {
 
 			if ( ! empty( $key ) && 'automatewoo_optin_wrap' === $key && class_exists( 'AutomateWoo\Hooks' ) ) {
 
-				$optionText = __( 'I want to receive updates about products and promotions.', 'automatewoo' );
+				$optionText = __( 'I want to receive updates about products and promotions.', 'automatewoo' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse the integrated plugin's translation.
 				$optionText = AutomateWoo\Options::optin_checkbox_text();
 
 				$defaults = array(
-					'type'  => 'checkbox',
-					'class' => [ 'wfacp-col-full', 'wfacp-form-control-wrapper', 'aw_addon_wrap' ],
-					'id'    => 'automatewoo_optin',
+					'type'       => 'checkbox',
+					'class'      => array( 'wfacp-col-full', 'wfacp-form-control-wrapper', 'aw_addon_wrap' ),
+					'id'         => 'automatewoo_optin',
 
 					'field_type' => 'advanced',
 					'label'      => $optionText,
-					'default'    => checked( isset( $_POST['automatewoo_optin'] ), true ),
+					'default'    => checked( isset( $_POST['automatewoo_optin'] ), true ), // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Restores the opt-in checkbox state from the WC checkout POST during re-render; WooCommerce core has already verified its checkout nonce before this hook/filter runs.
 				);
 				woocommerce_form_field( 'automatewoo_optin', $defaults );
 			}
-
 		}
 
 		public function add_default_wfacp_styling( $args, $key ) {
 
-			$argsclass = [];
+			$argsclass = array();
 			if ( isset( $args['class'] ) ) {
 				$argsclass = $args['class'];
 			}
 
 			if ( $key == 'aw_birthdays_addon' && $this->is_enable( 'AW_Birthdays_Addon' ) ) {
 
-				$all_cls       = array_merge( [ 'wfacp_drop_list' ], $argsclass );
+				$all_cls       = array_merge( array( 'wfacp_drop_list' ), $argsclass );
 				$args['class'] = $all_cls;
 			}
 
@@ -165,115 +162,114 @@ if ( ! class_exists( 'WFACP_Compatibility_With_AutoMateWoo' ) ) {
 			$instance = wfacp_template();
 			$px       = $instance->get_template_type_px();
 
-			$array_class = [
+			$array_class = array(
 				'layout_1' => 15,
 				'layout_2' => 15,
 				'layout_4' => 15,
 				'layout_9' => 7,
-			];
+			);
 			?>
-            <style>
-                /* Automate field styling */
+			<style>
+				/* Automate field styling */
 
-                <?php
-	if ( isset( $array_class[ $selected_template_slug ] ) ) {
+				<?php
+				if ( isset( $array_class[ $selected_template_slug ] ) ) {
 
+					?>
 
-	?>
+				body .wfacp_main_form .wfacp-row .automatewoo-birthday-section {
+					padding-left: <?php echo (int) $array_class[ $selected_template_slug ]; ?>px;
+					padding-right: <?php echo (int) $array_class[ $selected_template_slug ]; ?>px;
+				}
 
-                body .wfacp_main_form .wfacp-row .automatewoo-birthday-section {
-                    padding-left: <?php echo $array_class[ $selected_template_slug ]; ?>px;
-                    padding-right: <?php echo $array_class[ $selected_template_slug ]; ?>px;
-                }
-
-                <?php
+					<?php
 				}
 				?>
 
-                <?php
+				<?php
 				if ( isset( $px ) ) {
 					printf( 'body .wfacp_main_form .wfacp-row .automatewoo-birthday-section{ padding: 0 %spx;}', esc_attr( $px ) );
 				}
 				?>
 
 
-                /* Automate Plugin Birthday field */
-                #wfacp_checkout_form .automatewoo-birthday-section .automatewoo-birthday-field__select {
-                    height: auto;
-                    font-size: 14px;
-                    line-height: 1.5;
-                    border-radius: 4px;
-                    position: relative;
-                    color: #404040;
-                    min-height: 48px;
-                }
+				/* Automate Plugin Birthday field */
+				#wfacp_checkout_form .automatewoo-birthday-section .automatewoo-birthday-field__select {
+					height: auto;
+					font-size: 14px;
+					line-height: 1.5;
+					border-radius: 4px;
+					position: relative;
+					color: #404040;
+					min-height: 48px;
+				}
 
-                body #wfacp_checkout_form .wfacp-row .automatewoo-birthday-section > label {
-                    color: #777777;
-                }
+				body #wfacp_checkout_form .wfacp-row .automatewoo-birthday-section > label {
+					color: #777777;
+				}
 
-                body #wfacp_checkout_form .wfacp-row .automatewoo-birthday-section {
-                    padding: 0 7px;;
-                }
+				body #wfacp_checkout_form .wfacp-row .automatewoo-birthday-section {
+					padding: 0 7px;;
+				}
 
-                body #wfacp_checkout_form .wfacp-row .automatewoo-birthday-section select {
-                    width: 31.33%;
-                    float: left;
-                    margin-right: 2%;
-                    display: block;
-                }
+				body #wfacp_checkout_form .wfacp-row .automatewoo-birthday-section select {
+					width: 31.33%;
+					float: left;
+					margin-right: 2%;
+					display: block;
+				}
 
-                body #wfacp_checkout_form .wfacp-row .automatewoo-birthday-section select:nth-child(3n) {
-                    margin-right: 0;
-                }
+				body #wfacp_checkout_form .wfacp-row .automatewoo-birthday-section select:nth-child(3n) {
+					margin-right: 0;
+				}
 
-                body #wfacp_checkout_form .automatewoo-birthday-section .automatewoo-birthday-field__select {
-                    height: auto;
-                    padding: 12px 10px;
-                }
+				body #wfacp_checkout_form .automatewoo-birthday-section .automatewoo-birthday-field__select {
+					height: auto;
+					padding: 12px 10px;
+				}
 
-                body .wfacp_main_form .wfacp-row .automatewoo-birthday-section {
-                    margin: 0 0 15px;
-                    clear: both;
-                }
+				body .wfacp_main_form .wfacp-row .automatewoo-birthday-section {
+					margin: 0 0 15px;
+					clear: both;
+				}
 
-                body .wfacp_main_form .automatewoo-birthday-section .automatewoo-birthday-field {
-                    margin: 0 0 4px;
-                    max-width: 100%;
-                }
+				body .wfacp_main_form .automatewoo-birthday-section .automatewoo-birthday-field {
+					margin: 0 0 4px;
+					max-width: 100%;
+				}
 
-                body .wfacp_main_form .automatewoo-birthday-section .automatewoo-birthday-section__description,
-                body .wfacp_main_form .automatewoo-birthday-section .automatewoo-birthday-section__already-set-text {
-                    font-size: 12px;
-                    line-height: 1.5;
-                }
+				body .wfacp_main_form .automatewoo-birthday-section .automatewoo-birthday-section__description,
+				body .wfacp_main_form .automatewoo-birthday-section .automatewoo-birthday-section__already-set-text {
+					font-size: 12px;
+					line-height: 1.5;
+				}
 
-                body .wfacp_main_form .automatewoo-birthday-section .automatewoo-birthday-field__select {
-                    height: auto;
-                <?php echo $padd_left_right; ?>
+				body .wfacp_main_form .automatewoo-birthday-section .automatewoo-birthday-field__select {
+					height: auto;
+				<?php echo esc_attr( $padd_left_right ); ?>
 
-                }
+				}
 
-                body .wfacp_main_form .wfacp-row .automatewoo-birthday-section > label {
-                    font-weight: normal;
-                }
+				body .wfacp_main_form .wfacp-row .automatewoo-birthday-section > label {
+					font-weight: normal;
+				}
 
 
-                @media (max-width: 767px) {
-                    body .wfacp_main_form .automatewoo-birthday-section .automatewoo-birthday-field__select {
-                        padding: 12px 8px;
-                    }
+				@media (max-width: 767px) {
+					body .wfacp_main_form .automatewoo-birthday-section .automatewoo-birthday-field__select {
+						padding: 12px 8px;
+					}
 
-                    body #wfacp-e-form .wfacp_main_form .wfacp-row .automatewoo-birthday-section select {
-                        width: 100%;
-                        margin-bottom: 10px;
-                    }
+					body #wfacp-e-form .wfacp_main_form .wfacp-row .automatewoo-birthday-section select {
+						width: 100%;
+						margin-bottom: 10px;
+					}
 
-                    body #wfacp-e-form .wfacp_main_form .wfacp-row .automatewoo-birthday-section select:last-child {
-                        margin-bottom: 0;
-                    }
-                }
-            </style>
+					body #wfacp-e-form .wfacp_main_form .wfacp-row .automatewoo-birthday-section select:last-child {
+						margin-bottom: 0;
+					}
+				}
+			</style>
 			<?php
 		}
 	}

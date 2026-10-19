@@ -14,7 +14,7 @@ if ( ! class_exists( 'WFACP_Compatibility_GumLet' ) ) {
 		}
 
 		public function remove_action() {
-			if ( isset( $_REQUEST['wc-ajax'] ) && class_exists( 'WFACP_Common' ) && class_exists( 'Gumlet' ) ) {
+			if ( isset( $_REQUEST['wc-ajax'] ) && class_exists( 'WFACP_Common' ) && class_exists( 'Gumlet' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only wc-ajax endpoint detection.
 				WFACP_Common::remove_actions( 'init', 'Gumlet', 'init_ob' );
 			}
 		}

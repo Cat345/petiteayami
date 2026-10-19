@@ -141,7 +141,7 @@ class ModuleRegistry {
 
 		foreach ( array( 'post', 'postId', 'post_id', 'et_post_id' ) as $param ) {
 			if ( ! empty( $_REQUEST[ $param ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
-				$pid = absint( wp_unslash( $_REQUEST[ $param ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+				$pid = absint( wp_unslash( $_REQUEST[ $param ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- id cast to int on this line.
 				if ( $pid ) {
 					$type = get_post_type( $pid );
 					if ( $type ) {
@@ -152,7 +152,7 @@ class ModuleRegistry {
 		}
 
 		if ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
-			$referer = esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
+			$referer = sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
 			if ( preg_match( '/[?&](?:post|post_id|et_post_id|p)=(\d+)/', $referer, $m ) ) {
 				$type = get_post_type( absint( $m[1] ) );
 				if ( $type ) {

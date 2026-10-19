@@ -64,7 +64,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Points_and_Reward' ) ) {
 				return;
 			}
 			echo '<div class=wfacp_wc_rewards_checkout>';
-			echo $this->message;
+			echo wp_kses_post( $this->message );
 			echo "</div>";
 		}
 

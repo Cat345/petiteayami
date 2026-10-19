@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 if ( ! class_exists( 'BWF_Contact_Fns' ) ) {
 
-	class BWF_Contact_Fns {
+	class BWF_Contact_Fns { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 
 		public static function bwf_get_contact( $wp_id, $email ) {
 			return new WooFunnels_Contact( $wp_id, $email );
@@ -73,13 +73,13 @@ if ( ! class_exists( 'BWF_Contact_Fns' ) ) {
 			bwf_create_update_customer( $bwf_contact, $order, $order_id, $products, $total );
 
 			if ( true === $force ) {
-				do_action( 'bwf_normalize_contact_meta_before_save', $bwf_contact, $order_id, $order );
+				do_action( 'bwf_normalize_contact_meta_before_save', $bwf_contact, $order_id, $order ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 			}
 
 			$bwf_contact->save();
 
 			if ( true === $force ) {
-				do_action( 'bwf_normalize_contact_meta_after_save', $bwf_contact, $order_id, $order );
+				do_action( 'bwf_normalize_contact_meta_after_save', $bwf_contact, $order_id, $order ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 			}
 
 			$cid = $bwf_contact->get_id();
@@ -139,7 +139,7 @@ if ( ! class_exists( 'BWF_Contact_Fns' ) ) {
 			$f_name = empty( $f_name ) ? $wp_f_name : $f_name;
 			$l_name = empty( $l_name ) ? $wp_l_name : $l_name;
 
-			$update_name = apply_filters( 'bwf_update_contact_name', true, $bwf_contact );
+			$update_name = apply_filters( 'bwf_update_contact_name', true, $bwf_contact ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 			if ( ! empty( $f_name ) ) {
 				$should_skip_update = ( false === $force || false === $update_name ) && ! empty( $bwf_contact->get_f_name() );
 				if ( ! $should_skip_update ) {

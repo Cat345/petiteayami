@@ -661,7 +661,7 @@ if ( ! class_exists( 'WooFunnels_Contact' ) ) {
 
 			/** Run subscribe action */
 			if ( true === $this->is_subscribed ) {
-				do_action( 'bwfcrm_after_contact_subscribed', $this );
+				do_action( 'bwfcrm_after_contact_subscribed', $this ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				$this->is_subscribed = false;
 			}
 

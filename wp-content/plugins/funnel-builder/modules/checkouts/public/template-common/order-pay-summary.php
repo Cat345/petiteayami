@@ -9,8 +9,8 @@ if ( ! $order instanceof WC_Order ) {
 	return '';
 }
 
-$instance     = wfacp_template();
-$data         = $instance->get_checkout_fields();
+$wfacp_instance     = wfacp_template();
+$data         = $wfacp_instance->get_checkout_fields();
 $field        = isset( $data['advanced']['order_summary'] ) ? $data['advanced']['order_summary'] : array();
 $colspan_attr = '';
 unset( $data );
@@ -32,7 +32,7 @@ $totals = $order->get_order_item_totals();
 
 	<div class="wfacp_order_summary wfacp_wrapper_start wfacp_order_sec <?php echo esc_attr( $classes ); ?>" id="order_summary_field">
 		<div class="wfacp_order_summary_container">
-			<table class="shop_table woocommerce-checkout-review-order-table <?php echo esc_attr( $instance->get_template_slug() ); ?>">
+			<table class="shop_table woocommerce-checkout-review-order-table <?php echo esc_attr( $wfacp_instance->get_template_slug() ); ?>">
 				<thead>
 				<tr>
 					<th class="product-name-area">
@@ -51,16 +51,16 @@ $totals = $order->get_order_item_totals();
 						?>
 
 						<div class="product-name <?php echo esc_attr( $hideImageCls ); ?>">
-							<?php echo apply_filters( 'wfacp_order_summary_column_item_heading', __( 'Product', 'woocommerce' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch ?>
+							<?php echo apply_filters( 'wfacp_order_summary_column_item_heading', __( 'Product', 'woocommerce' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch -- public heading filter, consumers may return markup; revisit in the ignore-audit phase. ?>
 						</div>
 					</th>
-					<th class="product-total"><?php echo apply_filters( 'wfacp_order_summary_column_total_heading', __( 'Total', 'woocommerce' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch ?></th>
+					<th class="product-total"><?php echo apply_filters( 'wfacp_order_summary_column_total_heading', __( 'Total', 'woocommerce' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch -- public heading filter, consumers may return markup; revisit in the ignore-audit phase. ?></th>
 				</tr>
 				</thead>
 				<tbody>
 				<?php
 				if ( count( $order->get_items() ) > 0 ) {
-					foreach ( $order->get_items() as $cart_item_key => $cart_item ) {
+					foreach ( $order->get_items() as $cart_item_key => $cart_item ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce core template convention; this template is derived from WC core and keeps the upstream variable name for diffability.
 						if ( ! apply_filters( 'woocommerce_order_item_visible', true, $cart_item ) ) {
 							continue;
 						}
@@ -80,14 +80,15 @@ $totals = $order->get_order_item_totals();
 								if ( $_product instanceof WC_Product && apply_filters( 'wfacp_cart_show_product_thumbnail', false ) ) {
 									$hideImageCls = 'wfacp_summary_img_true';
 									$thumbnail    = WFACP_Common::get_product_image( $_product, array( 100, 100 ), $cart_item, $cart_item_key );
-									$thumbnail    = apply_filters( 'wfacp_cart_image', $thumbnail, $_product );
+									// Note: on this pay-for-order screen $cart_item is a WC_Order_Item (from $order->get_items()), not the cart-item array wfacp_cart_image receives elsewhere.
+									$thumbnail = apply_filters( 'wfacp_cart_image', $thumbnail, $_product, $cart_item, $cart_item_key );
 									?>
 									<div class="product-image">
 										<div class="wfacp-pro-thumb">
 											<div class="wfacp-qty-ball">
 												<div class="wfacp-qty-count"><span class="wfacp-pro-count"><?php echo esc_html( $cart_item->get_quantity() ); ?></span></div>
 											</div>
-											<?php echo $thumbnail;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+											<?php echo $thumbnail;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- product image HTML from the cart-item-thumbnail filter; core echoes it raw. ?>
 										</div>
 									</div>
 								<?php } ?>
@@ -95,7 +96,7 @@ $totals = $order->get_order_item_totals();
 								<div class="product-name  <?php echo esc_attr( $hideImageCls ); ?> ">
 									<span class="wfacp_order_summary_item_name"><?php echo wp_kses_post( apply_filters( 'woocommerce_order_item_name', esc_html( $cart_item->get_name() ), $cart_item, false ) ); ?></span>
 									<?php
-									echo apply_filters( 'woocommerce_order_item_quantity_html', ' <strong class="product-quantity">' . sprintf( '&times; %s', $cart_item->get_quantity() ) . '</strong>', $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+									echo apply_filters( 'woocommerce_order_item_quantity_html', ' <strong class="product-quantity">' . sprintf( '&times; %s', $cart_item->get_quantity() ) . '</strong>', $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- B0 register: quantity filter may return an <input>; WooCommerce core echoes it raw.
 									wc_display_item_meta( $cart_item );
 									do_action( 'woocommerce_order_item_meta_end', $cart_item_key, $cart_item, $order, false );
 									?>
@@ -117,7 +118,7 @@ $totals = $order->get_order_item_totals();
 					foreach ( $totals as $total ) {
 						?>
 						<tr class="order-total">
-							<th <?php echo $colspan_attr;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><span><?php echo esc_html( $total['label'] ); ?></span></th>
+							<th <?php echo $colspan_attr;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete attribute from the wfacp_order_summary_cols_span filter; revisit in the ignore-audit phase. ?>><span><?php echo esc_html( $total['label'] ); ?></span></th>
 							<td><?php echo wp_kses_post( $total['value'] ); ?></td>
 						</tr>
 					<?php } ?>

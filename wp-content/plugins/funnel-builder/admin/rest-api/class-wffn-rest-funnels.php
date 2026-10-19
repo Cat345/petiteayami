@@ -1468,7 +1468,7 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 		/** Checks for automation active status */
 		public function check_for_automation_exists() {
 			global $wpdb;
-			$result       = $wpdb->get_results( "SELECT `event` FROM {$wpdb->prefix}bwfan_automations WHERE `event` IN ( 'wc_new_order', 'ab_cart_abandoned' ) GROUP BY `event`", ARRAY_A );
+			$result       = $wpdb->get_results( "SELECT `event` FROM {$wpdb->prefix}bwfan_automations WHERE `event` IN ( 'wc_new_order', 'ab_cart_abandoned' ) GROUP BY `event`", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			$active_event = array();
 			foreach ( $result as $event ) {
 				$active_event[] = $event['event'];
@@ -1619,7 +1619,7 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 			 */
 
 			global $wpdb;
-			$get_funnels = $wpdb->get_results(
+			$get_funnels = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 				$wpdb->prepare(
 					"SELECT conv.funnel_id as fid, '' as title, SUM( conv.value ) as total, SUM( conv.offer_total ) as offer_total, SUM( conv.bump_total ) as bump_total, SUM( CASE WHEN conv.type = 2 THEN 1 ELSE 0 END ) as order_count, 0 as views, COUNT(conv.ID) as `conversion`, 0 as conversion_rate
 					 FROM {$wpdb->prefix}bwf_conversion_tracking AS conv

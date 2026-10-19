@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'BWF_Compatibility_With_WC_Price_Based_On_Country' ) ) {
 	#[AllowDynamicProperties]
-	class BWF_Compatibility_With_WC_Price_Based_On_Country {
+	class BWF_Compatibility_With_WC_Price_Based_On_Country { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 
 		public function is_enable() {
 			return class_exists( 'WC_Product_Price_Based_Country' );

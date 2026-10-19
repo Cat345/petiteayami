@@ -3,8 +3,8 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 return array(
 	'AL' => array(
 		'state' => array(
-			'label'       => __( 'County', 'woocommerce' ),
-			'placeholder' => __( 'County', 'woocommerce' ),
+			'label'       => __( 'County', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'County', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'AO' => array(
@@ -13,22 +13,22 @@ return array(
 			'hidden'   => true,
 		),
 		'state'    => array(
-			'label'       => __( 'Province', 'woocommerce' ),
-			'placeholder' => __( 'Province', 'woocommerce' ),
+			'label'       => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'AU' => array(
 		'city'     => array(
-			'label'       => __( 'Suburb', 'woocommerce' ),
-			'placeholder' => __( 'Suburb', 'woocommerce' ),
+			'label'       => __( 'Suburb', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Suburb', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'postcode' => array(
-			'label'       => __( 'Postcode', 'woocommerce' ),
-			'placeholder' => __( 'Postcode', 'woocommerce' ),
+			'label'       => __( 'Postcode', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Postcode', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'state'    => array(
-			'label'       => __( 'State', 'woocommerce' ),
-			'placeholder' => __( 'State', 'woocommerce' ),
+			'label'       => __( 'State', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'State', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'BA' => array(
@@ -36,10 +36,10 @@ return array(
 			'priority' => 65,
 		),
 		'state'    => array(
-			'label'       => __( 'Canton', 'woocommerce' ),
+			'label'       => __( 'Canton', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			'required'    => false,
 			'hidden'      => true,
-			'placeholder' => __( 'Canton', 'woocommerce' ),
+			'placeholder' => __( 'Canton', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'BD' => array(
@@ -47,8 +47,8 @@ return array(
 			'required' => false,
 		),
 		'state'    => array(
-			'label'       => __( 'District', 'woocommerce' ),
-			'placeholder' => __( 'District', 'woocommerce' ),
+			'label'       => __( 'District', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'District', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'BO' => array(
@@ -57,18 +57,18 @@ return array(
 			'hidden'   => true,
 		),
 		'state'    => array(
-			'label'       => __( 'Department', 'woocommerce' ),
-			'placeholder' => __( 'Department', 'woocommerce' ),
+			'label'       => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'CA' => array(
 		'postcode' => array(
-			'label'       => __( 'Postal code', 'woocommerce' ),
-			'placeholder' => __( 'Postal code', 'woocommerce' ),
+			'label'       => __( 'Postal code', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Postal code', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'state'    => array(
-			'label'       => __( 'Province', 'woocommerce' ),
-			'placeholder' => __( 'Province', 'woocommerce' ),
+			'label'       => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'CH' => array(
@@ -76,9 +76,9 @@ return array(
 			'priority' => 65,
 		),
 		'state'    => array(
-			'label'       => __( 'Canton', 'woocommerce' ),
+			'label'       => __( 'Canton', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			'required'    => false,
-			'placeholder' => __( 'Canton', 'woocommerce' ),
+			'placeholder' => __( 'Canton', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'CL' => array(
@@ -89,14 +89,14 @@ return array(
 			'required' => false,
 		),
 		'state'    => array(
-			'label'       => __( 'Region', 'woocommerce' ),
-			'placeholder' => __( 'Region', 'woocommerce' ),
+			'label'       => __( 'Region', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Region', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'CN' => array(
 		'state' => array(
-			'label'       => __( 'Province', 'woocommerce' ),
-			'placeholder' => __( 'Province', 'woocommerce' ),
+			'label'       => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'CO' => array(
@@ -104,26 +104,26 @@ return array(
 			'required' => false,
 		),
 		'state'    => array(
-			'label'       => __( 'Department', 'woocommerce' ),
-			'placeholder' => __( 'Department', 'woocommerce' ),
+			'label'       => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'CR' => array(
 		'state' => array(
-			'label'       => __( 'Province', 'woocommerce' ),
-			'placeholder' => __( 'Province', 'woocommerce' ),
+			'label'       => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'DO' => array(
 		'state' => array(
-			'label'       => __( 'Province', 'woocommerce' ),
-			'placeholder' => __( 'Province', 'woocommerce' ),
+			'label'       => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'EC' => array(
 		'state' => array(
-			'label'       => __( 'Province', 'woocommerce' ),
-			'placeholder' => __( 'Province', 'woocommerce' ),
+			'label'       => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'GH' => array(
@@ -131,8 +131,8 @@ return array(
 			'required' => false,
 		),
 		'state'    => array(
-			'label'       => __( 'Region', 'woocommerce' ),
-			'placeholder' => __( 'Region', 'woocommerce' ),
+			'label'       => __( 'Region', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Region', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'GT' => array(
@@ -140,8 +140,8 @@ return array(
 			'required' => false,
 		),
 		'state'    => array(
-			'label'       => __( 'Department', 'woocommerce' ),
-			'placeholder' => __( 'Department', 'woocommerce' ),
+			'label'       => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'HK' => array(
@@ -149,18 +149,18 @@ return array(
 			'required' => false,
 		),
 		'city'     => array(
-			'label'       => __( 'Town / District', 'woocommerce' ),
-			'placeholder' => __( 'Town / District', 'woocommerce' ),
+			'label'       => __( 'Town / District', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Town / District', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'state'    => array(
-			'label'       => __( 'Region', 'woocommerce' ),
-			'placeholder' => __( 'Region', 'woocommerce' ),
+			'label'       => __( 'Region', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Region', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'HN' => array(
 		'state' => array(
-			'label'       => __( 'Department', 'woocommerce' ),
-			'placeholder' => __( 'Department', 'woocommerce' ),
+			'label'       => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'HU' => array(
@@ -202,29 +202,29 @@ return array(
 	),
 	'ID' => array(
 		'state' => array(
-			'label'       => __( 'Province', 'woocommerce' ),
-			'placeholder' => __( 'Province', 'woocommerce' ),
+			'label'       => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'IE' => array(
 		'postcode' => array(
 			'required'    => false,
-			'label'       => __( 'Eircode', 'woocommerce' ),
-			'placeholder' => __( 'Eircode', 'woocommerce' ),
+			'label'       => __( 'Eircode', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Eircode', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'state'    => array(
-			'label'       => __( 'County', 'woocommerce' ),
-			'placeholder' => __( 'County', 'woocommerce' ),
+			'label'       => __( 'County', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'County', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'IN' => array(
 		'postcode' => array(
-			'label'       => __( 'PIN Code', 'woocommerce' ),
-			'placeholder' => __( 'PIN Code', 'woocommerce' ),
+			'label'       => __( 'PIN Code', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'PIN Code', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'state'    => array(
-			'label'       => __( 'State', 'woocommerce' ),
-			'placeholder' => __( 'State', 'woocommerce' ),
+			'label'       => __( 'State', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'State', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'IT' => array(
@@ -233,24 +233,24 @@ return array(
 		),
 		'state'    => array(
 			'required'    => true,
-			'label'       => __( 'Province', 'woocommerce' ),
-			'placeholder' => __( 'Province', 'woocommerce' ),
+			'label'       => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'JM' => array(
 		'city'     => array(
-			'label'       => __( 'Town / City / Post Office', 'woocommerce' ),
-			'placeholder' => __( 'Town / City / Post Office', 'woocommerce' ),
+			'label'       => __( 'Town / City / Post Office', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Town / City / Post Office', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'postcode' => array(
 			'required'    => false,
-			'label'       => __( 'Postal Code', 'woocommerce' ),
-			'placeholder' => __( 'Postal Code', 'woocommerce' ),
+			'label'       => __( 'Postal Code', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Postal Code', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'state'    => array(
 			'required'    => true,
-			'label'       => __( 'Parish', 'woocommerce' ),
-			'placeholder' => __( 'Parish', 'woocommerce' ),
+			'label'       => __( 'Parish', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Parish', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'JP' => array(
@@ -275,8 +275,8 @@ return array(
 		),
 		'state'      => array(
 			'priority'    => 66,
-			'placeholder' => __( 'Prefecture', 'woocommerce' ),
-			'label'       => __( 'Prefecture', 'woocommerce' ),
+			'placeholder' => __( 'Prefecture', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'label'       => __( 'Prefecture', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'city'       => array(
 			'priority' => 67,
@@ -291,9 +291,9 @@ return array(
 	),
 	'LV' => array(
 		'state' => array(
-			'label'       => __( 'Municipality', 'woocommerce' ),
+			'label'       => __( 'Municipality', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			'required'    => false,
-			'placeholder' => __( 'Municipality', 'woocommerce' ),
+			'placeholder' => __( 'Municipality', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'MZ' => array(
@@ -302,43 +302,43 @@ return array(
 			'hidden'   => true,
 		),
 		'state'    => array(
-			'label'       => __( 'Province', 'woocommerce' ),
-			'placeholder' => __( 'Province', 'woocommerce' ),
+			'label'       => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'NI' => array(
 		'state' => array(
-			'label'       => __( 'Department', 'woocommerce' ),
-			'placeholder' => __( 'Department', 'woocommerce' ),
+			'label'       => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'NG' => array(
 		'postcode' => array(
-			'label'       => __( 'Postcode', 'woocommerce' ),
+			'label'       => __( 'Postcode', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			'required'    => false,
 			'hidden'      => true,
-			'placeholder' => __( 'Postcode', 'woocommerce' ),
+			'placeholder' => __( 'Postcode', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'state'    => array(
-			'label'       => __( 'State', 'woocommerce' ),
-			'placeholder' => __( 'State', 'woocommerce' ),
+			'label'       => __( 'State', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'State', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'NZ' => array(
 		'postcode' => array(
-			'label'       => __( 'Postcode', 'woocommerce' ),
-			'placeholder' => __( 'Postcode', 'woocommerce' ),
+			'label'       => __( 'Postcode', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Postcode', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'state'    => array(
 			'required'    => false,
-			'label'       => __( 'Region', 'woocommerce' ),
-			'placeholder' => __( 'Region', 'woocommerce' ),
+			'label'       => __( 'Region', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Region', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'NP' => array(
 		'state'    => array(
-			'label'       => __( 'State / Zone', 'woocommerce' ),
-			'placeholder' => __( 'State / Zone', 'woocommerce' ),
+			'label'       => __( 'State / Zone', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'State / Zone', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'postcode' => array(
 			'required' => false,
@@ -346,14 +346,14 @@ return array(
 	),
 	'PA' => array(
 		'state' => array(
-			'label'       => __( 'Province', 'woocommerce' ),
-			'placeholder' => __( 'Province', 'woocommerce' ),
+			'label'       => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'PR' => array(
 		'city'  => array(
-			'label'       => __( 'Municipality', 'woocommerce' ),
-			'placeholder' => __( 'Municipality', 'woocommerce' ),
+			'label'       => __( 'Municipality', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Municipality', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'state' => array(
 			'required' => false,
@@ -362,15 +362,15 @@ return array(
 	),
 	'PY' => array(
 		'state' => array(
-			'label'       => __( 'Department', 'woocommerce' ),
-			'placeholder' => __( 'Department', 'woocommerce' ),
+			'label'       => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'RO' => array(
 		'state' => array(
-			'label'       => __( 'County', 'woocommerce' ),
+			'label'       => __( 'County', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			'required'    => true,
-			'placeholder' => __( 'County', 'woocommerce' ),
+			'placeholder' => __( 'County', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'RS' => array(
@@ -381,15 +381,15 @@ return array(
 			'required' => true,
 		),
 		'state'    => array(
-			'label'       => __( 'District', 'woocommerce' ),
+			'label'       => __( 'District', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			'required'    => false,
-			'placeholder' => __( 'District', 'woocommerce' ),
+			'placeholder' => __( 'District', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'SV' => array(
 		'state' => array(
-			'label'       => __( 'Department', 'woocommerce' ),
-			'placeholder' => __( 'Department', 'woocommerce' ),
+			'label'       => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'ES' => array(
@@ -397,8 +397,8 @@ return array(
 			'priority' => 65,
 		),
 		'state'    => array(
-			'label'       => __( 'Province', 'woocommerce' ),
-			'placeholder' => __( 'Province', 'woocommerce' ),
+			'label'       => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'LI' => array(
@@ -406,15 +406,15 @@ return array(
 			'priority' => 65,
 		),
 		'state'    => array(
-			'label'       => __( 'Municipality', 'woocommerce' ),
+			'label'       => __( 'Municipality', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			'required'    => false,
-			'placeholder' => __( 'Municipality', 'woocommerce' ),
+			'placeholder' => __( 'Municipality', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'MD' => array(
 		'state' => array(
-			'label'       => __( 'Municipality / District', 'woocommerce' ),
-			'placeholder' => __( 'Municipality / District', 'woocommerce' ),
+			'label'       => __( 'Municipality / District', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Municipality / District', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'TR' => array(
@@ -422,8 +422,8 @@ return array(
 			'priority' => 65,
 		),
 		'state'    => array(
-			'label'       => __( 'Province', 'woocommerce' ),
-			'placeholder' => __( 'Province', 'woocommerce' ),
+			'label'       => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'UG' => array(
@@ -432,41 +432,41 @@ return array(
 			'hidden'   => true,
 		),
 		'city'     => array(
-			'label'       => __( 'Town / Village', 'woocommerce' ),
+			'label'       => __( 'Town / Village', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			'required'    => true,
-			'placeholder' => __( 'Town / Village', 'woocommerce' ),
+			'placeholder' => __( 'Town / Village', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'state'    => array(
-			'label'       => __( 'District', 'woocommerce' ),
+			'label'       => __( 'District', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			'required'    => true,
-			'placeholder' => __( 'District', 'woocommerce' ),
+			'placeholder' => __( 'District', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'US' => array(
 		'postcode' => array(
-			'label'       => __( 'ZIP Code', 'woocommerce' ),
-			'placeholder' => __( 'ZIP Code', 'woocommerce' ),
+			'label'       => __( 'ZIP Code', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'ZIP Code', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'state'    => array(
-			'label'       => __( 'State', 'woocommerce' ),
-			'placeholder' => __( 'State', 'woocommerce' ),
+			'label'       => __( 'State', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'State', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'UY' => array(
 		'state' => array(
-			'label'       => __( 'Department', 'woocommerce' ),
-			'placeholder' => __( 'Department', 'woocommerce' ),
+			'label'       => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Department', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'GB' => array(
 		'postcode' => array(
-			'label'       => __( 'Postcode', 'woocommerce' ),
-			'placeholder' => __( 'Postcode', 'woocommerce' ),
+			'label'       => __( 'Postcode', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Postcode', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 		'state'    => array(
-			'label'       => __( 'County', 'woocommerce' ),
+			'label'       => __( 'County', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			'required'    => false,
-			'placeholder' => __( 'County', 'woocommerce' ),
+			'placeholder' => __( 'County', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'ST' => array(
@@ -475,14 +475,14 @@ return array(
 			'hidden'   => true,
 		),
 		'state'    => array(
-			'label'       => __( 'District', 'woocommerce' ),
-			'placeholder' => __( 'District', 'woocommerce' ),
+			'label'       => __( 'District', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'District', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 	'ZA' => array(
 		'state' => array(
-			'label'       => __( 'Province', 'woocommerce' ),
-			'placeholder' => __( 'Province', 'woocommerce' ),
+			'label'       => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			'placeholder' => __( 'Province', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		),
 	),
 );

@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
-wp_enqueue_script( 'wfty-modal-script', WFFN_Core()->get_plugin_url() . '/modules/thankyou-pages/assets/js/wfty-modal.js', array( 'jquery' ), WFFN_VERSION );
+wp_enqueue_script( 'wfty-modal-script', WFFN_Core()->get_plugin_url() . '/modules/thankyou-pages/assets/js/wfty-modal.js', array( 'jquery' ), WFFN_VERSION, true );
 wp_enqueue_style( 'wfty-modal-style', WFFN_Core()->get_plugin_url() . '/modules/thankyou-pages/assets/css/wfty-modal.css', null, WFFN_VERSION );
 wp_enqueue_style( 'wfty-modal-common-style', WFFN_Core()->get_plugin_url() . '/modules/thankyou-pages/assets/css/wfty-mb-common.css', null, WFFN_VERSION );
 

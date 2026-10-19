@@ -1,7 +1,7 @@
 # Conversions API parameter builder for Python
 
 [![PyPI](https://img.shields.io/pypi/v/capi-param-builder-python)](https://pypi.org/project/capi-param-builder-python/)
-[![License](https://img.shields.io/badge/license-Facebook%20Platform-blue.svg?style=flat-square)](https://github.com/facebook/capi-param-builder/blob/main/python/LICENSE)
+[![License](https://img.shields.io/badge/license-Facebook%20Platform-blue.svg?style=flat-square)](https://github.com/facebook/capi-param-builder/blob/main/python/capi_param_builder/LICENSE)
 
 ## Introduction
 
@@ -84,7 +84,19 @@ down from your input URL. This may miss some accuracy.
 paramBuilder = ParamBuilder() # Not recommended.
 ```
 
-4. Call `process_request` function to process fbc and fbp
+4. [Recommended] Call `process_request_from_context` to process fbc, fbp,
+   event_source_url and referrer_url. Pass your framework's request object (or
+   WSGI/ASGI environ) directly — the SDK extracts host / cookies / query /
+   referer (and the request URL for `event_source_url`) for you, and returns the
+   recommended cookies to set. See the [Framework support](#framework-support)
+   section for exactly what to pass for your framework.
+
+```
+updated_cookies = paramBuilder.process_request_from_context(request)
+```
+
+**Deprecated:** `process_request` is still supported but deprecated. It does not
+construct `event_source_url`. Prefer `process_request_from_context` above.
 
 ```
 updated_cookies = paramBuilder.process_request(
@@ -99,11 +111,12 @@ updated_cookies = paramBuilder.process_request(
    the save cookie API may vary. Feel free to choose the best fit for your use
    case. Below uses the example from demo application.
 
-Option 1: Get the recommended saved cookie from step 4 `process_request` above.
+Option 1: Get the recommended saved cookie from step 4
+`process_request_from_context` above.
 
 ```
-// Get the recommended saved cookie from step 4 API
-updated_cookies = paramBuilder.process_request(...)
+# Get the recommended saved cookie from step 4 API
+updated_cookies = paramBuilder.process_request_from_context(request)
 
 for cookie in updated_cookies:
   self.send_header( "Set-Cookie",
@@ -114,15 +127,15 @@ Option 2: Get the recommended saved cookie from
 `paramBuilder.get_cookies_to_set()`
 
 ```
-# process_request should be always called
-paramBuilder.process_request(...)
+# process_request_from_context should be always called
+paramBuilder.process_request_from_context(request)
 
 for cookie in paramBuilder.get_cookies_to_set():
   self.send_header( "Set-Cookie",
       f"{cookie.name}={cookie.value};Max-Age={cookie.max_age};path=/;domain={cookie.domain}",)
 ```
 
-6. Get fbc and fbp
+6. Get fbc, fbp, event_source_url, and referrer_url
 
 ```
 fbc = paramBuilder.get_fbc()
@@ -132,15 +145,27 @@ fbc = paramBuilder.get_fbc()
 fbp = paramBuilder.get_fbp()
 ```
 
-7. Send fbc and fbp back with Conversion API.
+```
+event_source_url = paramBuilder.get_event_source_url()
+```
+
+```
+referrer_url = paramBuilder.get_referrer_url()
+```
+
+7. Send the parameters back to the Conversions API. `event_source_url` and
+   `referrer_url` are sent at the event level; `fbc` and `fbp` are sent inside
+   `user_data`.
 
 ```
 data=[
-  'event_name: '...',
-  'event_tme': <your_time>,
+  'event_name': '...',
+  'event_time': <your_time>,
+  'event_source_url': event_source_url, # The value provided in step 6
+  'referrer_url': referrer_url, # The value provided in step 6
   'user_data': {
-    'fbc': fbc, // The value provided in step 5
-    'fbp': fbp, // The value provided in step 5
+    'fbc': fbc, # The value provided in step 6
+    'fbp': fbp, # The value provided in step 6
     ...
   }
   ...
@@ -175,6 +200,53 @@ of the box:
 For any other framework, you can build a `PlainDataObject` directly and pass it
 in, or fall back to the original `process_request(host, queries, cookies, referer)`
 call.
+
+## URL support
+
+The SDK can extract `event_source_url` and `referrer_url` from the incoming
+HTTP request. These values help improve Conversions API event matching and
+attribution quality.
+
+**Using `process_request_from_context` (recommended):**
+
+```python
+paramBuilder.process_request_from_context(request)
+
+event_source_url = paramBuilder.get_event_source_url()
+referrer_url = paramBuilder.get_referrer_url()
+```
+
+**Using `process_request` (deprecated):**
+
+`process_request` does not construct `event_source_url` — only `referrer_url`
+is available via the referer parameter. Use `process_request_from_context` if
+you need `event_source_url`.
+
+<details>
+<summary>How it works</summary>
+
+- `event_source_url` is constructed from the scheme, host, and request URI
+  of the incoming HTTP request.
+- `referrer_url` is captured from the `Referer` header before any fbclid
+  extraction, with an SDK version appendix added.
+- Both return `None` when the required information is not available.
+
+</details>
+
+**Send them with your Conversions API payload:**
+
+```python
+data = {
+    "event_name": "...",
+    "event_time": int(time.time()),
+    "event_source_url": paramBuilder.get_event_source_url(),
+    "referrer_url": paramBuilder.get_referrer_url(),
+    "user_data": {
+        "fbc": paramBuilder.get_fbc(),
+        "fbp": paramBuilder.get_fbp(),
+    },
+}
+```
 
 ## License
 

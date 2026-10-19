@@ -53,7 +53,7 @@ if ( ! class_exists( 'WFACP_Yth_WC_Delivery_Date_Premium' ) ) {
 
 			?>
             <div id="wfacp_yth_wc_delivery_date_wrap">
-				<?php echo $this->instance->print_delivery_from(); ?>
+				<?php echo $this->instance->print_delivery_from(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- third-party checkout field markup; wp_kses_post() strips <input>/<select> (B0 register). ?>
             </div>
 			<?php
 
@@ -82,11 +82,10 @@ if ( ! class_exists( 'WFACP_Yth_WC_Delivery_Date_Premium' ) ) {
 			}
 			$px = $instance->get_template_type_px() . "px";
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#wfacp_yth_wc_delivery_date_wrap input {padding: 12px 10px;color: #404040;}";
 			$cssHtml .= $bodyClass . "#wfacp_yth_wc_delivery_date_wrap {padding-left:$px;padding-right:$px;}";
-			$cssHtml .= "</style>";
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 	}
 

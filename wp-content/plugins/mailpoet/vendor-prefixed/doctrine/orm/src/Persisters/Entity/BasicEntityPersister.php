@@ -968,6 +968,10 @@ class BasicEntityPersister implements EntityPersister
  if (!is_array($value)) {
  $value = [$value];
  }
+ if ($value === []) {
+ $selectedColumns[] = '1=0';
+ continue;
+ }
  $nullKeys = array_keys($value, null, \true);
  $nonNullValues = array_diff_key($value, array_flip($nullKeys));
  $placeholders = implode(', ', array_fill(0, count($nonNullValues), $placeholder));

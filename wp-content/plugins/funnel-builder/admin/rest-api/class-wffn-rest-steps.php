@@ -474,7 +474,7 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 				do_action( 'wffn_design_saved', $id, $builder, 'landing' );
 
 				WFFN_Core()->landing_pages->update_page_design( $id, $update_design );
-				do_action( 'wflp_page_design_updated', $id, $update_design );
+				do_action( 'wflp_page_design_updated', $id, $update_design ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established FunnelKit family hook prefix, below PCP's frequency-detection threshold in this plugin; renaming breaks cross-plugin integrations.
 
 				$resp['status'] = true;
 				$resp['msg']    = __( 'Importing of template finished', 'funnel-builder' );
@@ -548,7 +548,7 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 				do_action( 'wffn_design_saved', $id, $builder, 'optin_ty' );
 
 				WFOPP_Core()->optin_ty_pages->update_page_design( $id, $update_design );
-				do_action( 'wfoty_page_design_updated', $id, $update_design );
+				do_action( 'wfoty_page_design_updated', $id, $update_design ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established FunnelKit family hook prefix, below PCP's frequency-detection threshold in this plugin; renaming breaks cross-plugin integrations.
 
 				$resp['status'] = true;
 				$resp['msg']    = __( 'Importing of template finished', 'funnel-builder' );

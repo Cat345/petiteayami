@@ -16,7 +16,7 @@ if ( ! function_exists( 'bwfblocks_attr' ) ) {
      * @return string String of HTML attributes and values.
      */
     
-    function bwfblocks_attr( $context, $attributes = array(), $settings = array() ) {
+    function bwfblocks_attr( $context, $attributes = array(), $settings = array() ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
         $output = '';
     
         // Cycle through attributes, build tag attribute string.
@@ -33,7 +33,7 @@ if ( ! function_exists( 'bwfblocks_attr' ) ) {
             }
         }
     
-        $output = apply_filters( "bwfblocks_attr_{$context}_output", $output, $attributes, $settings, $context );
+        $output = apply_filters( "bwfblocks_attr_{$context}_output", $output, $attributes, $settings, $context ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
     
         return trim( $output );
     }

@@ -310,9 +310,12 @@
         }
 
         get_event_id() {
+            /* Second-resolution timestamps collide across concurrent visitors and Meta dedupes by
+             * event name + event_id, silently dropping real events. The ID is generated once per
+             * event and reused for both the pixel and the CAPI copy, so uniqueness is safe. */
             let d = new Date();
             let time = d.getTime();
-            return parseInt(time / 1000);
+            return parseInt(time / 1000) + '_' + Math.random().toString(36).substring(2, 8);
         }
 
         custom_event(event, data) {

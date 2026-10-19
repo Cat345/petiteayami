@@ -32,7 +32,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Klarna_checkout' ) ) {
 		}
 
 		public function remove_kco_event() {
-			if ( isset( $_REQUEST['wfacp_id'] ) && $_REQUEST['wfacp_id'] > 0 ) {
+			if ( isset( $_REQUEST['wfacp_id'] ) && $_REQUEST['wfacp_id'] > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway redirect/callback parameters; the request originates from the gateway and cannot carry a plugin nonce. Read-only routing.
 				WFACP_Common::remove_actions( 'woocommerce_checkout_cart_item_quantity', 'KCO', 'add_quantity_field' );
 				WFACP_Common::remove_actions( 'woocommerce_checkout_cart_item_quantity', 'CSI_Frontend', 'checkout_cart_item_name' );
 			}

@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'BWF_Data_Tags' ) ) {
 	#[AllowDynamicProperties]
-	class BWF_Data_Tags {
+	class BWF_Data_Tags { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- BWF_ is the established WooFunnels framework prefix (3 chars, below PCP's 4-char detection floor); shared across the plugin family.
 		public $shortcodes = array(
 			'get_cookie',
 			'get_url_parameter',
@@ -71,12 +71,12 @@ if ( ! class_exists( 'BWF_Data_Tags' ) ) {
 				return '';
 			}
 
-			$data = isset( $_COOKIE[ $attr['key'] ] ) ? bwf_clean( wp_unslash( $_COOKIE[ $attr['key'] ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading cookie data for display, nonce verification not required
+			$data = isset( $_COOKIE[ $attr['key'] ] ) ? bwf_clean( wp_unslash( $_COOKIE[ $attr['key'] ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Reading cookie data for display, nonce verification not required Also: input sanitized via a recursive sanitize_text_field() wrapper on this line.
 
 			/*** read cookie when drop cookie on page */
 			if ( empty( $data ) ) {
 				$key  = str_replace( 'bwf_', '', $attr['key'] );
-				$data = isset( $_GET[ $key ] ) ? bwf_clean( wp_unslash( $_GET[ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for display, nonce verification not required
+				$data = isset( $_GET[ $key ] ) ? bwf_clean( wp_unslash( $_GET[ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Reading URL parameter for display, nonce verification not required Also: input sanitized via a recursive sanitize_text_field() wrapper on this line.
 			}
 
 			return esc_html( $data );
@@ -95,7 +95,7 @@ if ( ! class_exists( 'BWF_Data_Tags' ) ) {
 				return '';
 			}
 
-			return esc_html( isset( $_GET[ $attr['key'] ] ) ? bwf_clean( wp_unslash( $_GET[ $attr['key'] ] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for display, nonce verification not required
+			return esc_html( isset( $_GET[ $attr['key'] ] ) ? bwf_clean( wp_unslash( $_GET[ $attr['key'] ] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Reading URL parameter for display, nonce verification not required Also: input sanitized via a recursive sanitize_text_field() wrapper on this line.
 		}
 	}
 

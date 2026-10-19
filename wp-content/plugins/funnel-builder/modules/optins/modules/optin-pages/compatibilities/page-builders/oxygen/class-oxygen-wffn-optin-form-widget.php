@@ -11,7 +11,7 @@ if ( ! class_exists( 'Oxygen_WFFN_Optin_Form_Widget' ) ) {
 
 	#[AllowDynamicProperties]
 
-  class Oxygen_WFFN_Optin_Form_Widget extends WFFN_Optin_HTML_Block_Oxy {
+  class Oxygen_WFFN_Optin_Form_Widget extends WFFN_Optin_HTML_Block_Oxy { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- vendor-convention widget class carrying the WF module prefix; referenced by the Pro plugin.
 		public $slug = 'wffn_optin_oxy_form';
 		public $form_sub_headings = [];
 		protected $id = 'wffn_optin_oxy_checkout_form';

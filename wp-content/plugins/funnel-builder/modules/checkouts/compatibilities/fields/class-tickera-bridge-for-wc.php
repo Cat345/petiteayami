@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
  */
 if ( ! class_exists( 'Tickera_Bridge_For_WC' ) ) {
 	#[AllowDynamicProperties]
-	class Tickera_Bridge_For_WC {
+	class Tickera_Bridge_For_WC { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- internal compat class named after the integrated plugin; referenced by the Pro module.
 		public $instance = null;
 		private $tc_general_settings = [];
 
@@ -104,13 +104,12 @@ if ( ! class_exists( 'Tickera_Bridge_For_WC' ) ) {
 				$bodyClass = "body #wfacp-e-form ";
 			}
 
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= $bodyClass . "#tickera_wrap p:empty,#tickera_wrap div:empty,#tickera_wrap span:empty {display: none;}";
 			$cssHtml .= $bodyClass . "#tickera_wrap .tickera_additional_info h1,#tickera_wrap .tickera_additional_info h2,#tickera_wrap .tickera_additional_info h3,#tickera_wrap .tickera_additional_info h4,#tickera_wrap .tickera_additional_info h5,#tickera_wrap .tickera_additional_info h6,#tickera_wrap .tickera_additional_info p {margin: 0 0 15px;}";
 			$cssHtml .= $bodyClass . "#tickera_wrap input[type=text],#tickera_wrap input[type=email]{padding: 10px 15px;}";
-			$cssHtml .= "</style>";
 
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 
 		}
 

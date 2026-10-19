@@ -1,5 +1,5 @@
 <?php
-namespace FunnelKit\Bricks\Elements;
+namespace FunnelKit\Bricks\Elements; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound -- FunnelKit brand namespace, unique to this plugin family; Pro extends these elements.
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly

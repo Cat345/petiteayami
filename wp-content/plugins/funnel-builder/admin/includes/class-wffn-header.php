@@ -227,7 +227,7 @@ if ( ! class_exists( 'WFFN_Header' ) ) {
 						esc_html_e( 'Funnels', 'funnel-builder' );
 					}
 					if ( isset( $_GET['bwf_exp_ref'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-						$experiment     = new BWFABT_Experiment( wffn_clean( wp_unslash( $_GET['bwf_exp_ref'] ) ) ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						$experiment     = new BWFABT_Experiment( wffn_clean( wp_unslash( $_GET['bwf_exp_ref'] ) ) ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 						$get_control_id = $experiment->get_control();
 
 						$is_control = ( intval( $get_control_id ) === intval( $this->edit_id() ) ) ? 'clr-green' : 'clr-sky-blue';
@@ -240,7 +240,7 @@ if ( ! class_exists( 'WFFN_Header' ) ) {
 					}
 					if ( ! empty( $this->data['page_heading_meta'] ) ) {
 
-						echo $this->data['page_heading_meta']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo $this->data['page_heading_meta']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- internal admin-header markup assembled by WFFN_Header and Pro modules.
 					}
 					?>
 				</div>
@@ -249,14 +249,14 @@ if ( ! class_exists( 'WFFN_Header' ) ) {
 						<?php
 
 						if ( ! empty( $this->data['back_link'] ) ) {
-							echo '<span class="bwfan_header_l2_back"><a href="' . esc_url( $this->data['back_link'] ) . '">' . $this->data['back_link_label'] . '</a></span>';//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							echo '<span class="bwfan_header_l2_back"><a href="' . esc_url( $this->data['back_link'] ) . '">' . esc_html( $this->data['back_link_label'] ) . '</a></span>';
 						}
 						echo '<span class="bwfan_header_l2_wrap">';
 						if ( ! empty( $this->data['level_2_title'] ) ) {
-							echo '<span id="bwfan_automation_name">' . $this->data['level_2_title'] . '</span>';//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							echo '<span id="bwfan_automation_name">' . esc_html( $this->data['level_2_title'] ) . '</span>';
 						}
 						if ( ! empty( $this->data['level_2_post_title'] ) ) {
-							echo $this->data['level_2_post_title'];//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							echo esc_html( $this->data['level_2_post_title'] );
 						}
 						echo '</span>';
 						if ( ( 'menu' === $this->data['level_2_right_wrap_type'] || 'both' === $this->data['level_2_right_wrap_type'] ) && 'right' !== $this->data['level_2_navigation_pos'] ) {
@@ -281,7 +281,7 @@ if ( ! class_exists( 'WFFN_Header' ) ) {
 							echo '</div>';
 						}
 						if ( ( 'html' === $this->data['level_2_right_wrap_type'] || 'both' === $this->data['level_2_right_wrap_type'] ) && ! empty( $this->data['level_2_right_html'] ) ) {
-							echo $this->data['level_2_right_html'];//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							echo $this->data['level_2_right_html'];//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- internal admin-header markup assembled by WFFN_Header and Pro modules.
 						}
 						?>
 					</div>
@@ -297,12 +297,12 @@ if ( ! class_exists( 'WFFN_Header' ) ) {
 			/**
 			 * Register nodes for experiments
 			 */
-			if ( 0 < filter_input( INPUT_GET, 'edit', FILTER_UNSAFE_RAW ) ) {// phpcs:ignore
-				$step_id = filter_input( INPUT_GET, 'edit', FILTER_UNSAFE_RAW );// phpcs:ignore
-			} elseif ( 0 < filter_input( INPUT_GET, 'wfacp_id', FILTER_UNSAFE_RAW ) ) {// phpcs:ignore
-				$step_id = filter_input( INPUT_GET, 'wfacp_id', FILTER_UNSAFE_RAW );// phpcs:ignore
-			} elseif ( 0 < filter_input( INPUT_GET, 'wfob_id', FILTER_UNSAFE_RAW ) ) {// phpcs:ignore
-				$step_id = filter_input( INPUT_GET, 'wfob_id', FILTER_UNSAFE_RAW );// phpcs:ignore
+			if ( 0 < filter_input( INPUT_GET, 'edit', FILTER_SANITIZE_NUMBER_INT ) ) {
+				$step_id = filter_input( INPUT_GET, 'edit', FILTER_SANITIZE_NUMBER_INT );
+			} elseif ( 0 < filter_input( INPUT_GET, 'wfacp_id', FILTER_SANITIZE_NUMBER_INT ) ) {
+				$step_id = filter_input( INPUT_GET, 'wfacp_id', FILTER_SANITIZE_NUMBER_INT );
+			} elseif ( 0 < filter_input( INPUT_GET, 'wfob_id', FILTER_SANITIZE_NUMBER_INT ) ) {
+				$step_id = filter_input( INPUT_GET, 'wfob_id', FILTER_SANITIZE_NUMBER_INT );
 			}
 
 			return $step_id;
@@ -311,7 +311,7 @@ if ( ! class_exists( 'WFFN_Header' ) ) {
 		public function output_navigation( $navigation, $active_slug = '' ) {
 
 			if ( 'string' === gettype( $navigation ) ) {
-				echo $navigation;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo $navigation;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- internal admin-header markup assembled by WFFN_Header and Pro modules.
 
 				return;
 			}
@@ -326,9 +326,9 @@ if ( ! class_exists( 'WFFN_Header' ) ) {
 
 				$icon = '';
 
-				$target = ( isset( $item['target'] ) && ! empty( $item['target'] ) ) ? ' target="' . $item['target'] . '"' : '';
+				$target = ( isset( $item['target'] ) && ! empty( $item['target'] ) ) ? $item['target'] : '';
 
-				echo '<span><a href="' . esc_url( $item['link'] ) . '" class="' . esc_attr( $active ) . '"' . $target . '>' . $icon . $menu_title . '</a></span>';//phpcs:ignore
+				echo '<span><a href="' . esc_url( $item['link'] ) . '" class="' . esc_attr( $active ) . '"' . ( $target ? ' target="' . esc_attr( $target ) . '"' : '' ) . '>' . esc_html( $icon ) . esc_html( $menu_title ) . '</a></span>';
 			}
 			$active = null;
 		}
@@ -375,7 +375,7 @@ if ( ! class_exists( 'WFFN_Header' ) ) {
 													<div class="components-flex__item css-1s295sp-Item eboqfv51">
 														<?php
 														$icon = ( isset( $item['icon'] ) && ! empty( $item['icon'] ) ) ? file_get_contents( plugin_dir_path( WFFN_PLUGIN_FILE ) . 'admin/assets/img/menu/' . $item['icon'] . '.svg' ) : '';
-														echo $icon;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+														echo $icon;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- internal admin-header markup assembled by WFFN_Header and Pro modules.
 														?>
 													</div>
 													<div class="components-flex__block css-yr442k-Item-Block eboqfv52">

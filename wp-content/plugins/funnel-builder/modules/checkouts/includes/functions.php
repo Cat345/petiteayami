@@ -29,11 +29,11 @@ function wfacp_template() {
 
 function wfacp_elementor_edit_mode() {
 	$status = false;
-	if ( isset( $_REQUEST['elementor-preview'] ) || ( isset( $_REQUEST['action'] ) && ( 'elementor' == $_REQUEST['action'] || 'elementor_ajax' == $_REQUEST['action'] ) ) ) {
+	if ( isset( $_REQUEST['elementor-preview'] ) || ( isset( $_REQUEST['action'] ) && ( 'elementor' == $_REQUEST['action'] || 'elementor_ajax' == $_REQUEST['action'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
 		$status = true;
 
 	}
-	if ( ( isset( $_REQUEST['preview_id'] ) && isset( $_REQUEST['preview_nonce'] ) ) || isset( $_REQUEST['elementor-preview'] ) ) {
+	if ( ( isset( $_REQUEST['preview_id'] ) && isset( $_REQUEST['preview_nonce'] ) ) || isset( $_REQUEST['elementor-preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Page-builder editor/preview parameters on a request the builder generates; read-only template routing.
 		$status = true;
 	}
 
@@ -45,17 +45,17 @@ function wfacp_check_nonce() {
 		'status' => 'false',
 		'msg'    => 'Invalid Call',
 	);
-	if ( isset( $_POST['post_data'] ) ) {
+	if ( isset( $_POST['post_data'] ) ) { // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- public checkout AJAX; the wfacp_secure_key nonce is verified below before anything is acted on.
 		$post_data   = array();
-		$t_post_data = filter_input( INPUT_POST, 'post_data', FILTER_UNSAFE_RAW );
+		$t_post_data = filter_input( INPUT_POST, 'post_data', FILTER_SANITIZE_URL );
 		parse_str( $t_post_data, $post_data );
 		if ( ! empty( $post_data ) ) {
 			WFACP_Common::$post_data = $post_data;
 		}
 	}
-	$wfacp_nonce = filter_input( INPUT_POST, 'wfacp_nonce', FILTER_UNSAFE_RAW );
+	$wfacp_nonce = filter_input( INPUT_POST, 'wfacp_nonce', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) );
 
-	if ( is_null( $wfacp_nonce ) || ! wp_verify_nonce( $wfacp_nonce, 'wfacp_secure_key' ) ) {
+	if ( is_null( $wfacp_nonce ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $wfacp_nonce ) ), 'wfacp_secure_key' ) ) {
 		wp_send_json( $rsp );
 	}
 }
@@ -82,7 +82,7 @@ if ( ! function_exists( 'wfacp_get_order_meta' ) ) {
 
 		if ( true === wfacp_is_hpos_enabled() ) {
 			global $wpdb;
-			$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT `meta_value` FROM `{$wpdb->prefix}wc_orders_meta` WHERE `meta_key`=%s AND `order_id`=%d", $key, $order->get_id() ) );
+			$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT `meta_value` FROM `{$wpdb->prefix}wc_orders_meta` WHERE `meta_key`=%s AND `order_id`=%d", $key, $order->get_id() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 		}
 
 		if ( ! empty( $meta_value ) ) {
@@ -133,12 +133,25 @@ if ( ! function_exists( 'wfacp_form_field' ) ) {
 		$key  = apply_filters( 'wfacp_form_field_key', $key, $args, $value );
 		$args = apply_filters( 'woocommerce_form_field_args', $args, $key, $value );
 
+		// Phone fields saved without a type render as type="text", so the intl flag padding (scoped to
+		// input[type="tel"]) is lost and the number paints under the flag; 'phone' is not a valid autocomplete token.
+		// Correct only those broken values: a type or autocomplete set on purpose (e.g. 'hidden', 'tel-national')
+		// by a filter or plugin is left alone.
+		if ( in_array( $key, array( 'billing_phone', 'shipping_phone' ), true ) ) {
+			if ( empty( $args['type'] ) || 'text' === $args['type'] ) {
+				$args['type'] = 'tel';
+			}
+			if ( empty( $args['autocomplete'] ) || 'phone' === $args['autocomplete'] ) {
+				$args['autocomplete'] = 'tel';
+			}
+		}
+
 		$args['class'] = (array) ( $args['class'] ?? array() );
 		if ( $args['required'] ) {
 			$args['class'][] = 'validate-required';
-			$required        = '&nbsp;<abbr class="required" title="' . esc_attr__( 'required', 'woocommerce' ) . '">*</abbr>';
+			$required        = '&nbsp;<abbr class="required" title="' . esc_attr__( 'required', 'woocommerce' ) . '">*</abbr>'; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		} else {
-			$required = '&nbsp;<span class="optional">(' . esc_html__( 'optional', 'woocommerce' ) . ')</span>';
+			$required = '&nbsp;<span class="optional">(' . esc_html__( 'optional', 'woocommerce' ) . ')</span>'; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 		}
 
 		if ( is_string( $args['label_class'] ) ) {
@@ -199,7 +212,7 @@ if ( ! function_exists( 'wfacp_form_field' ) ) {
 				} else {
 					$data_label = ! empty( $args['label'] ) ? 'data-label="' . esc_attr( $args['label'] ) . '"' : '';
 
-					$field = '<select name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" class="country_to_state country_select ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" ' . implode( ' ', $custom_attributes ) . ' data-placeholder="' . esc_attr( $args['placeholder'] ? $args['placeholder'] : esc_attr__( 'Select a country / region&hellip;', 'woocommerce' ) ) . '" ' . $data_label . '><option value="">' . esc_html__( 'Select a country / region&hellip;', 'woocommerce' ) . '</option>';
+					$field = '<select name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" class="country_to_state country_select ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" ' . implode( ' ', $custom_attributes ) . ' data-placeholder="' . esc_attr( $args['placeholder'] ? $args['placeholder'] : esc_attr__( 'Select a country / region&hellip;', 'woocommerce' ) ) . '" ' . $data_label . '><option value="">' . esc_html__( 'Select a country / region&hellip;', 'woocommerce' ) . '</option>'; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 
 					foreach ( $countries as $ckey => $cvalue ) {
 						$field .= '<option value="' . esc_attr( $ckey ) . '" ' . selected( $value, $ckey, false ) . '>' . esc_html( $cvalue ) . '</option>';
@@ -207,7 +220,7 @@ if ( ! function_exists( 'wfacp_form_field' ) ) {
 
 					$field .= '</select>';
 
-					$field .= '<noscript><button type="submit" name="woocommerce_checkout_update_totals" value="' . esc_attr__( 'Update country / region', 'woocommerce' ) . '">' . esc_html__( 'Update country / region', 'woocommerce' ) . '</button></noscript>';
+					$field .= '<noscript><button type="submit" name="woocommerce_checkout_update_totals" value="' . esc_attr__( 'Update country / region', 'woocommerce' ) . '">' . esc_html__( 'Update country / region', 'woocommerce' ) . '</button></noscript>'; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 
 				}
 
@@ -225,8 +238,9 @@ if ( ! function_exists( 'wfacp_form_field' ) ) {
 				} elseif ( ! is_null( $for_country ) && is_array( $states ) ) {
 					$data_label = ! empty( $args['label'] ) ? 'data-label="' . esc_attr( $args['label'] ) . '"' : '';
 
+					// phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 					$field .= '<select name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" class="state_select ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" ' . implode( ' ', $custom_attributes ) . ' data-placeholder="' . esc_attr( $args['placeholder'] ? $args['placeholder'] : esc_html__( 'Select an option&hellip;', 'woocommerce' ) ) . '"  data-input-classes="' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" ' . $data_label . '>
-						<option value="">' . esc_html__( 'Select an option&hellip;', 'woocommerce' ) . '</option>';
+						<option value="">' . esc_html__( 'Select an option&hellip;', 'woocommerce' ) . '</option>'; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 
 					foreach ( $states as $ckey => $cvalue ) {
 						$field .= '<option value="' . esc_attr( $ckey ) . '" ' . selected( $value, $ckey, false ) . '>' . esc_html( $cvalue ) . '</option>';
@@ -278,7 +292,7 @@ if ( ! function_exists( 'wfacp_form_field' ) ) {
 						if ( '' === $option_key ) {
 							// If we have a blank option, select2 needs a placeholder.
 							if ( empty( $args['placeholder'] ) ) {
-								$args['placeholder'] = $option_text ? $option_text : __( 'Choose an option', 'woocommerce' );
+								$args['placeholder'] = $option_text ? $option_text : __( 'Choose an option', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 							}
 							$custom_attributes[] = 'data-allow_clear="true"';
 						}
@@ -343,7 +357,7 @@ if ( ! function_exists( 'wfacp_form_field' ) ) {
 		if ( $args['return'] ) {
 			return $field;
 		} else {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- woocommerce_form_field() output; contains form controls (B0 register).
 			echo $field;
 		}
 	}

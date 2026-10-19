@@ -301,7 +301,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			$f_tracking = array(
 				'title'    => __( 'First Party Tracking', 'funnel-builder' ),
 				'slug'     => 'funnelkit_first_party_tracking',
-				'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ),
+				'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				'priority' => 6,
 				'pro_tab'  => true,
 			);
@@ -312,7 +312,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				array(
 					'title'    => __( 'Pixel Tracking', 'funnel-builder' ),
 					'slug'     => 'funnelkit_pixel_tracking',
-					'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ),
+					'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 					'priority' => 7,
 				)
 			);
@@ -321,7 +321,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				array(
 					'title'    => __( 'Advanced', 'funnel-builder' ),
 					'slug'     => 'funnelkit_advanced',
-					'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ),
+					'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 					'priority' => 70,
 				)
 			);
@@ -330,7 +330,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				array(
 					'title'    => __( 'Notifications', 'funnel-builder' ),
 					'slug'     => 'funnelkit_notifications',
-					'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ),
+					'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 					'priority' => 70,
 				)
 			);
@@ -827,7 +827,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				wp_enqueue_style( 'wffn-flex-admin', $this->get_admin_url() . '/assets/css/admin.css', array(), WFFN_VERSION_DEV );
 
 				if ( WFFN_Core()->admin->is_wffn_flex_page() ) {
-					$this->load_react_app( 'main-20260904101952' ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
+					$this->load_react_app( 'main-20261014055818' ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
 					if ( isset( $_GET['page'] ) && $_GET['page'] === 'bwf' && method_exists( 'BWF_Admin_General_Settings', 'get_localized_bwf_data' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						wp_localize_script( 'wffn-contact-admin', 'bwfAdminGen', BWF_Admin_General_Settings::get_instance()->get_localized_bwf_data() );
 
@@ -1119,12 +1119,13 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				$data['conditional_fields_version'] = '3.15.0';
 				$data['site_domain']                = $this->get_site_domain_for_admin();
 
-				$data['review_count']    = WFFN_REVIEW_RATING_COUNT;
-				$data['feature_enabled'] = array(
+				$data['review_count']      = WFFN_REVIEW_RATING_COUNT;
+				$data['feature_enabled']   = array(
 					'funnel_categories'  => defined( 'WFFN_PRO_VERSION' ) && version_compare( WFFN_PRO_VERSION, '3.11.0', '>=' ),
 					'conditional_fields' => defined( 'WFFN_PRO_VERSION' ) && version_compare( WFFN_PRO_VERSION, $data['conditional_fields_version'], '>=' ),
 				);
-				$data['fkcart_settings'] = $this->get_fkcart_settings();
+				$data['disabled_features'] = WFFN_Features::disabled();
+				$data['fkcart_settings']   = $this->get_fkcart_settings();
 
 				?>
 				<script>window.wffn = <?php echo wp_json_encode( apply_filters( 'wffn_localize_admin', $data ) ); ?>;</script>
@@ -1191,7 +1192,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 		private function is_funnel_builder_network_active() {
 			$active_plugins = get_site_option( 'active_sitewide_plugins', array() );
-			$active_plugins = apply_filters( 'active_plugins', $active_plugins );
+			$active_plugins = apply_filters( 'active_plugins', $active_plugins ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 
 			return is_array( $active_plugins ) && ( in_array( WFFN_PLUGIN_BASENAME, $active_plugins, true ) || array_key_exists( WFFN_PLUGIN_BASENAME, $active_plugins ) );
 		}
@@ -1305,8 +1306,8 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				/**
 				 * its its a page where experiment page is a referrer
 				 */
-				$get_ref = filter_input( INPUT_GET, 'funnel_id', FILTER_UNSAFE_RAW ); //phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
-				$get_ref = apply_filters( 'maybe_setup_funnel_for_breadcrumb', $get_ref );
+				$get_ref = filter_input( INPUT_GET, 'funnel_id', FILTER_SANITIZE_NUMBER_INT );
+				$get_ref = apply_filters( 'maybe_setup_funnel_for_breadcrumb', $get_ref ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 				if ( ! empty( $get_ref ) ) {
 					$funnel = $this->get_funnel( $get_ref );
 					if ( absint( $funnel->get_id() ) === WFFN_Common::get_store_checkout_id() ) {
@@ -1320,7 +1321,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			/**
 			 * Register nodes
 			 */
-			if ( ! empty( $funnel ) && null === filter_input( INPUT_GET, 'bwf_exp_ref', FILTER_UNSAFE_RAW ) ) { //phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
+			if ( ! empty( $funnel ) && null === filter_input( INPUT_GET, 'bwf_exp_ref', FILTER_CALLBACK, array( 'options' => 'sanitize_text_field' ) ) ) {
 
 				BWF_Admin_Breadcrumbs::register_node(
 					array(
@@ -1350,13 +1351,13 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			if ( isset( $args['s'] ) ) {
 				$search_str = wffn_clean( $args['s'] );
 			} else {
-				$search_str = isset( $_REQUEST['s'] ) ? wffn_clean( wp_unslash( $_REQUEST['s'] ) ) : '';  // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$search_str = isset( $_REQUEST['s'] ) ? wffn_clean( wp_unslash( $_REQUEST['s'] ) ) : '';  // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 			}
 			$need_draft_count = $args['need_draft_count'] ?? false;
 			if ( isset( $args['status'] ) ) {
 				$status = wffn_clean( $args['status'] );
 			} else {
-				$status = isset( $_REQUEST['status'] ) ? wffn_clean( wp_unslash( $_REQUEST['status'] ) ) : '';  // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$status = isset( $_REQUEST['status'] ) ? wffn_clean( wp_unslash( $_REQUEST['status'] ) ) : '';  // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 			}
 			$args['meta'] = isset( $args['meta'] ) ? $args['meta'] : array();
 			$limit        = isset( $args['limit'] ) ? absint( $args['limit'] ) : $this->posts_per_page();
@@ -1563,7 +1564,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			$step_ids = array_map( 'absint', array_keys( $this->step_against_fid ) );
 
 			global $wpdb;
-			$results     = $wpdb->get_results(
+			$results     = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 				$wpdb->prepare(
 					"SELECT ID FROM {$wpdb->prefix}posts WHERE 1=1 AND post_status != %s and id IN ( " . implode( ', ', array_fill( 0, count( $step_ids ), '%d' ) ) . ' )',
 					array_merge( array( 'publish' ), $step_ids )
@@ -1650,9 +1651,9 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			$wffn_pages     = array( 'woofunnels_page_bwf', 'woofunnels_page_wffn-settings' );
 
 			// Check to make sure we're on a WooFunnels admin page.
-			if ( isset( $current_screen->id ) && apply_filters( 'bwf_funnels_funnels_display_admin_footer_text', in_array( $current_screen->id, $wffn_pages, true ), $current_screen->id ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $current_screen->id ) && apply_filters( 'bwf_funnels_funnels_display_admin_footer_text', in_array( $current_screen->id, $wffn_pages, true ), $current_screen->id ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 				// Change the footer text.
-				$footer_text = sprintf( __( 'Over %1$s 5 star reviews show that FunnelKit users trust our top-rated support for their online business. Do you need help? <a href="%2$s" target="_blank"><b>Contact FunnelKit Support</b></a>', 'funnel-builder' ), WFFN_REVIEW_RATING_COUNT . '+', 'https://funnelkit.com/support/?utm_source=WordPress&utm_medium=Support+Footer&utm_campaign=FB+Lite+Plugin' );
+				$footer_text = sprintf( /* translators: 1: number of five-star reviews, 2: FunnelKit support URL. */ __( 'Over %1$s 5 star reviews show that FunnelKit users trust our top-rated support for their online business. Do you need help? <a href="%2$s" target="_blank"><b>Contact FunnelKit Support</b></a>', 'funnel-builder' ), WFFN_REVIEW_RATING_COUNT . '+', 'https://funnelkit.com/support/?utm_source=WordPress&utm_medium=Support+Footer&utm_campaign=FB+Lite+Plugin' );
 
 			}
 
@@ -1749,7 +1750,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 				delete_option( '_wffn_onboarding_completed' );
 				delete_user_meta( get_current_user_id(), '_bwf_notifications_close' );
-				wp_redirect( $this->wizard_url() );
+				wp_safe_redirect( $this->wizard_url() );
 				exit;
 
 			}
@@ -1915,7 +1916,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		 */
 		public function menu_highlight() {
 			global $submenu_file;
-			$get_ref = filter_input( INPUT_GET, 'funnel_id' );
+			$get_ref = filter_input( INPUT_GET, 'funnel_id', FILTER_SANITIZE_NUMBER_INT );
 			if ( ! empty( $get_ref ) && absint( $get_ref ) === WFFN_Common::get_store_checkout_id() ) {
 				$submenu_file = 'admin.php?page=bwf&path=/store-checkout'; //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 			} elseif ( $get_ref ) {
@@ -2553,7 +2554,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				return rest_ensure_response( array( 'success' => true ) );
 
 			}
-			$redirect     = isset( $_REQUEST['redirect'] ) ? esc_url_raw( wp_unslash( $_REQUEST['redirect'] ) ) : null;
+			$redirect     = isset( $_REQUEST['redirect'] ) ? sanitize_url( wp_unslash( $_REQUEST['redirect'] ) ) : null;
 			$redirect_url = $redirect && strpos( $redirect, '.php' ) ? admin_url( $redirect ) : null;
 
 			wp_safe_redirect( $redirect_url ?? admin_url( 'admin.php?page=bwf&path=/funnels' ) );
@@ -2586,7 +2587,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					set_transient( 'wffn_sticky_banner_dismissed_' . get_current_user_id(), $notice_key, 5 * MINUTE_IN_SECONDS );
 				}
 			}
-			$redirect = isset( $_REQUEST['redirect'] ) ? esc_url_raw( wp_unslash( $_REQUEST['redirect'] ) ) : null;
+			$redirect = isset( $_REQUEST['redirect'] ) ? sanitize_url( wp_unslash( $_REQUEST['redirect'] ) ) : null;
 
 			$redirect_url = $redirect && strpos( $redirect, '.php' ) ? admin_url( $redirect ) : null;
 
@@ -2725,7 +2726,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					'path' => "/funnel-checkout/" . $checkout_id . "/design"
 				], admin_url( 'admin.php' ) );
 				// @codingStandardsIgnoreEnd
-				wp_redirect( $edit_link );
+				wp_safe_redirect( $edit_link );
 				exit;
 			}
 		}
@@ -2736,7 +2737,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				return;
 			}
 
-			wp_redirect( WFFN_Core()->admin->wizard_url() );
+			wp_safe_redirect( WFFN_Core()->admin->wizard_url() );
 			exit;
 		}
 
@@ -2799,6 +2800,8 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 		/**
 		 * Check if update is available for the plugin lite Or PRO versions
+		 *
+		 * @param bool $only_pro Only look at the PRO plugin's update entry.
 		 *
 		 * @return false|mixed version number if update available, false if not available
 		 */
@@ -2896,9 +2899,9 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				if ( ! class_exists( 'BWF_WC_Compatibility' ) ) {
 					return;
 				}
-				$conv_table              = $wpdb->prefix . 'bwf_conversion_tracking';
-				$order_table             = $wpdb->prefix . 'wc_orders';
-				$aero_table              = $wpdb->prefix . 'wfacp_stats';
+				$conv_table              = esc_sql( $wpdb->prefix . 'bwf_conversion_tracking' );
+				$order_table             = esc_sql( $wpdb->prefix . 'wc_orders' );
+				$aero_table              = esc_sql( $wpdb->prefix . 'wfacp_stats' );
 				$limit                   = 100;
 				$is_clear_schedule       = true;
 				WFFN_Common::$start_time = time();
@@ -2912,7 +2915,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 					// Query Setup
 					if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-						$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
+						$order_meta_table = esc_sql( $wpdb->prefix . 'wc_orders_meta' );
 						$conv_query       = "SELECT conv.source as ID FROM {$conv_table} AS conv
                         INNER JOIN {$order_meta_table} AS om ON (conv.source = om.order_id AND om.meta_key = '_subscription_renewal')
                         WHERE conv.type = %s
@@ -2925,9 +2928,9 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
                         ORDER BY conv.timestamp DESC LIMIT 0, %d";
 					}
 
-					$get_ids = $wpdb->get_col( $wpdb->prepare( $conv_query, 2, $limit ) );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					$get_ids = $wpdb->get_col( $wpdb->prepare( $conv_query, 2, $limit ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- inline $wpdb->prepare(); interpolated names are internal identifiers. direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
-					// Stop loop if no more data
+					// Stop loop if no more dat
 					if ( empty( $get_ids ) || ! is_array( $get_ids ) ) {
 						/*
 						 * Attempt duplicate query
@@ -2941,7 +2944,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
                                         SELECT source FROM {$conv_table} WHERE type = 2 AND source != 0
                                         GROUP BY source HAVING COUNT(*) > 1 ) AND id NOT IN (
                                         SELECT MAX(id) FROM {$conv_table} GROUP BY source ) LIMIT 100 ) AS subquery )";
-							$wpdb->query( $delete_query );  //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+							$wpdb->query( $delete_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 							WFFN_Core()->logger->log( 'Clear duplicate rows.', 'wffn_ay', true );
 							continue;
 
@@ -2952,8 +2955,8 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					}
 
 					$is_clear_schedule = false;
-					$delete_query      = "DELETE FROM {$conv_table} WHERE type = %d AND source IN (" . implode( ',', array_map( 'intval', $get_ids ) ) . ')';
-					$wpdb->query( $wpdb->prepare( $delete_query, 2 ) );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					$delete_query      = "DELETE FROM {$conv_table} WHERE type = %d AND source IN (" . implode( ',', wp_parse_id_list( $get_ids ) ) . ')';
+					$wpdb->query( $wpdb->prepare( $delete_query, 2 ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- prepare() binds the type; IN-list is intval()d ids from the get_col above. IN-list built via wp_parse_id_list(); type bound via prepare(); chain invisible to taint tracking. direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 					if ( ! empty( $wpdb->last_error ) ) {
 						$is_clear_schedule = true;
@@ -2967,7 +2970,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
                                                 AND conv.type = %d
                                                 AND conv.timestamp > '2025-01-01 00:00:00'";
 
-					$wpdb->query( $wpdb->prepare( $update_query, 2 ) );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					$wpdb->query( $wpdb->prepare( $update_query, 2 ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 
 					if ( ! empty( $wpdb->last_error ) ) {
 						$is_clear_schedule = true;
@@ -2982,7 +2985,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				/**
 				 * Remove all subscription order from aero
 				 */
-				$aero_table = $wpdb->prefix . 'wfacp_stats';
+				$aero_table = esc_sql( $wpdb->prefix . 'wfacp_stats' );
 
 				if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 					$aero_query = "SELECT ch.order_id as ID FROM {$aero_table} AS ch
@@ -2997,7 +3000,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
                         ORDER BY ch.date DESC LIMIT 0, %d";
 				}
 
-				$get_aero_ids = $wpdb->get_col( $wpdb->prepare( $aero_query, 'shop_subscription', $limit ) );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$get_aero_ids = $wpdb->get_col( $wpdb->prepare( $aero_query, 'shop_subscription', $limit ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 				if ( is_array( $get_aero_ids ) && count( $get_aero_ids ) > 0 ) {
 					$is_clear_schedule = false;
 					$wpdb->query( "DELETE FROM {$aero_table} WHERE order_id IN (" . implode( ',', $get_aero_ids ) . " )" );//phpcs:ignore
@@ -3046,7 +3049,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				 * Remove all subscription order from bump
 				 */
 				if ( class_exists( 'WFOB_Core' ) ) {
-					$bump_table = $wpdb->prefix . 'wfob_stats';
+					$bump_table = esc_sql( $wpdb->prefix . 'wfob_stats' );
 					if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 						$bump_query = "SELECT ch.oid as ID FROM {$bump_table} AS ch
                         INNER JOIN {$order_table} AS ot ON (ch.oid = ot.id )
@@ -3060,7 +3063,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
                         ORDER BY ch.date DESC LIMIT 0, %d";
 					}
 
-					$get_bump_ids = $wpdb->get_col( $wpdb->prepare( $bump_query, 'shop_subscription', $limit ) );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					$get_bump_ids = $wpdb->get_col( $wpdb->prepare( $bump_query, 'shop_subscription', $limit ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 					if ( is_array( $get_bump_ids ) && count( $get_bump_ids ) > 0 ) {
 						$is_clear_schedule = false;
 						$wpdb->query( "DELETE FROM {$bump_table} WHERE oid IN (" . implode( ',', $get_bump_ids ) . " )" );//phpcs:ignore
@@ -3479,7 +3482,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					$notifs[] = array(
 						'key'             => 'fb_required_update_3_16',
 						'content'         => '<div class="bwf-notifications-message current">
-						<h3 class="bwf-notifications-title">' . sprintf( __( 'Alert! Your %s version is not in sync with the current lite version.', 'funnel-builder' ), $this->get_companion_name() ) . '</h3>
+						<h3 class="bwf-notifications-title">' . sprintf( /* translators: %s: companion (premium) plugin name. */ __( 'Alert! Your %s version is not in sync with the current lite version.', 'funnel-builder' ), $this->get_companion_name() ) . '</h3>
 						<p class="bwf-notifications-content">' . __( 'Due to some technical changes in how admin application is loaded, the free version has fallen out of sync with the premium version. Consider updating the premium version.', 'funnel-builder' ) . '</p>
 					</div>',
 						'not_dismissible' => true,
@@ -3505,7 +3508,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					$notifs[] = array(
 						'key'             => 'fb_required_update_3_16',
 						'content'         => '<div class="bwf-notifications-message current">
-						<h3 class="bwf-notifications-title">' . sprintf( __( 'Alert! Your %s version is not in sync with the current lite version.', 'funnel-builder' ), $this->get_companion_name() ) . '</h3>
+						<h3 class="bwf-notifications-title">' . sprintf( /* translators: %s: companion (premium) plugin name. */ __( 'Alert! Your %s version is not in sync with the current lite version.', 'funnel-builder' ), $this->get_companion_name() ) . '</h3>
 						<p class="bwf-notifications-content">' . __( 'Due to some technical changes in how admin application is loaded, the free version has fallen out of sync with the premium version. We recommend logging into the Funnelkit accounts and downloading the latest version.', 'funnel-builder' ) . '</p>
 					</div>',
 						'not_dismissible' => true,

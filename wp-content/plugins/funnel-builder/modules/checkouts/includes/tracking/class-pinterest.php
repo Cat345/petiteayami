@@ -229,7 +229,7 @@ if ( ! class_exists( 'WFACP_Analytics_Pint' ) ) {
 			$output = array_merge( $output, $event_data );
 
 			if ( ! empty( $_COOKIE['wffn_referrer'] ) ) {
-				$output['referrer'] = bwf_clean( wp_unslash( $_COOKIE['wffn_referrer'] ) );
+				$output['referrer'] = bwf_clean( wp_unslash( $_COOKIE['wffn_referrer'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- input sanitized via a recursive sanitize_text_field() wrapper on this line.
 			}
 			return array( $output );
 		}

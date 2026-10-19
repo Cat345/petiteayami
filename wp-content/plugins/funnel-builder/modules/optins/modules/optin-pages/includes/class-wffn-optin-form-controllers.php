@@ -76,7 +76,7 @@ if ( ! class_exists( 'WFFN_Optin_Form_Controllers' ) ) {
 				throw new Exception( 'The optin action type must be set' );
 			}
 			if ( isset( $this->form_controllers[ $form_controller->slug ] ) ) {
-				throw new Exception( 'Optin action type already registered: ' . $form_controller->slug );
+				throw new Exception( 'Optin action type already registered: ' . esc_html( $form_controller->slug ) );
 			}
 			if ( false === $form_controller->should_register() ) {
 				return;

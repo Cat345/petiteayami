@@ -9,11 +9,11 @@ if ( ! class_exists( 'WFACP_OXY_HTML_BLOCK' ) ) {
 			parent::__construct();
 
 			WFACP_OXY::set_locals( $this->get_local_slug(), $this->get_id() );
-			add_filter( 'pre_do_shortcode_tag', [ $this, 'pick_data' ], 10, 3 );
+			add_filter( 'pre_do_shortcode_tag', array( $this, 'pick_data' ), 10, 3 );
 		}
 
 		public function options() {
-			return [ 'rebuild_on_dom_change' => true ];
+			return array( 'rebuild_on_dom_change' => true );
 		}
 
 		final public function render( $setting, $defaults, $content ) {
@@ -30,16 +30,13 @@ if ( ! class_exists( 'WFACP_OXY_HTML_BLOCK' ) ) {
 				}
 				$this->parse_render_settings();
 
-
 				$this->settings = $setting;
 				$this->html( $setting, $defaults, $content );
-
 
 				if ( isset( $_REQUEST['action'] ) && false !== strpos( $_REQUEST['action'], 'oxy_render' ) ) {//phpcs:ignore
 					exit;
 				}
 			}
-
 		}
 
 		protected function preview_shortcode() {
@@ -51,7 +48,7 @@ if ( ! class_exists( 'WFACP_OXY_HTML_BLOCK' ) ) {
 				return $settings;
 			}
 
-			$output_settings = [];
+			$output_settings = array();
 			foreach ( $this->ajax_session_settings as $key ) {
 				if ( isset( $settings[ $key ] ) ) {
 					$output_settings[ $key ] = $settings[ $key ];
@@ -68,12 +65,11 @@ if ( ! class_exists( 'WFACP_OXY_HTML_BLOCK' ) ) {
 		}
 
 		protected function html( $setting, $defaults, $content ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
-
 		}
 
 
 		protected function available_html_block() {
-			$block = [ 'product_switching', 'order_total' ];
+			$block = array( 'product_switching', 'order_total' );
 
 			return apply_filters( 'wfacp_html_block_elements', $block );
 		}
@@ -85,15 +81,13 @@ if ( ! class_exists( 'WFACP_OXY_HTML_BLOCK' ) ) {
 
 		protected function order_summary( $field_key ) {
 
-
-			$tab_id = $this->add_tab( __( 'Order Summary', 'woocommerce' ) );
+			$tab_id = $this->add_tab( __( 'Order Summary', 'woocommerce' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			$this->add_heading( $tab_id, 'Product' );
 
 			$this->add_switcher( $tab_id, 'order_summary_enable_product_image', __( 'Enable Image', 'funnel-builder' ), 'on' );
 			$this->ajax_session_settings[] = 'order_summary_enable_product_image';
 
-
-			$cart_item_color = [
+			$cart_item_color = array(
 				'#wfacp-e-form  table.shop_table tbody .wfacp_order_summary_item_name',
 				'#wfacp-e-form  table.shop_table tbody .product-name .product-quantity',
 				'#wfacp-e-form  table.shop_table tbody td.product-total',
@@ -112,19 +106,17 @@ if ( ! class_exists( 'WFACP_OXY_HTML_BLOCK' ) ) {
 				'#wfacp-e-form  table.shop_table tbody dt',
 				'#wfacp-e-form  table.shop_table tbody p',
 				'#wfacp-e-form  table.shop_table tbody tr td span:not(.wfacp-pro-count)',
-			];
+			);
 
 			$this->add_heading( $tab_id, __( 'Product Typography', 'funnel-builder' ) );
 			$this->custom_typography( $tab_id, $field_key . '_cart_item_typo', implode( ',', $cart_item_color ), __( 'Product Typography', 'funnel-builder' ) );
 			$this->add_color( $tab_id, $field_key . '_cart_item_color', implode( ',', $cart_item_color ), 'Text Color', '' );
 
+			$border_image_color = array( '#wfacp-e-form table.shop_table tr.cart_item .product-image img' );
 
-			$border_image_color = [ '#wfacp-e-form table.shop_table tr.cart_item .product-image img' ];
+			$this->add_border_color( $tab_id, 'mini_product_image_border_color', implode( ',', $border_image_color ), '', __( 'Image Border Color', 'funnel-builder' ), false, array( 'order_summary_enable_product_image' => 'on' ) );
 
-			$this->add_border_color( $tab_id, 'mini_product_image_border_color', implode( ',', $border_image_color ), '', __( 'Image Border Color', 'funnel-builder' ), false, [ 'order_summary_enable_product_image' => 'on' ] );
-
-
-			$cart_subtotal_color_option = [
+			$cart_subtotal_color_option = array(
 				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount)',
 				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td',
 				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) th',
@@ -133,49 +125,46 @@ if ( ! class_exists( 'WFACP_OXY_HTML_BLOCK' ) ) {
 				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td small',
 				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td bdi',
 				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td a',
-			];
-
+			);
 
 			$this->add_heading( $tab_id, __( 'Subtotal Typography', 'funnel-builder' ) );
 			$this->custom_typography( $tab_id, 'order_summary_product_meta_typo', implode( ',', $cart_subtotal_color_option ), __( 'Subtotal Typography', 'funnel-builder' ) );
 			$this->add_color( $tab_id, 'order_summary_product_meta_color', implode( ',', $cart_subtotal_color_option ), 'Text Color', '' );
 
 			/* ------------------------------------ Coupon Start------------------------------------ */
-			$this->add_heading( $tab_id, __( 'Coupon code', 'woocommerce' ) );
-			$coupon_selector = [
+			$this->add_heading( $tab_id, __( 'Coupon code', 'woocommerce' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			$coupon_selector = array(
 				'#wfacp-e-form  table.shop_table tfoot tr.cart-discount th',
 				'#wfacp-e-form  table.shop_table tfoot tr.cart-discount th span',
 				'#wfacp-e-form  table.shop_table tfoot tr.cart-discount td',
 				'#wfacp-e-form  table.shop_table tfoot tr.cart-discount td span',
 				'#wfacp-e-form  table.shop_table tfoot tr.cart-discount td a',
-			];
+			);
 
 			$default = 14;
 
-			$this->add_font_size( $tab_id, $field_key . '_coupon_typo', implode( ',', $coupon_selector ), 'Font Size (in px)', $default, [] );
-			$coupon_selector_label_color = [
+			$this->add_font_size( $tab_id, $field_key . '_coupon_typo', implode( ',', $coupon_selector ), 'Font Size (in px)', $default, array() );
+			$coupon_selector_label_color = array(
 				'#wfacp-e-form table.shop_table tfoot tr.cart-discount th',
 				'#wfacp-e-form table.shop_table tfoot tr.cart-discount th span:not(.wfacp_coupon_code)',
-			];
+			);
 
 			$this->add_color( $tab_id, $field_key . '_display_label_color', implode( ',', $coupon_selector_label_color ), 'Text Color', '' );
 
-			$coupon_selector_val_color = [
+			$coupon_selector_val_color = array(
 				'#wfacp-e-form table.shop_table tfoot tr.cart-discount td',
 				'#wfacp-e-form table.shop_table tfoot tr.cart-discount td span',
 				'#wfacp-e-form table.shop_table tfoot tr.cart-discount td a',
 				'#wfacp-e-form table.shop_table tfoot tr.cart-discount td span',
 				'#wfacp-e-form table.shop_table tfoot tr.cart-discount td span bdi',
 				'#wfacp-e-form table.shop_table tfoot tr.cart-discount th .wfacp_coupon_code',
-			];
+			);
 
 			$this->add_color( $tab_id, $field_key . '_display_val_color', implode( ',', $coupon_selector_val_color ), 'Code Color', '#24ae4e' );
 
-
 			/* ------------------------------------ Order Total------------------------------------ */
 
-
-			$cart_total_color_option = [
+			$cart_total_color_option = array(
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total th',
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total td',
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total td span.woocommerce-Price-amount.amount',
@@ -192,16 +181,16 @@ if ( ! class_exists( 'WFACP_OXY_HTML_BLOCK' ) ) {
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total th span',
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total th small',
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total th a',
-			];
+			);
 
-			$cart_total_label_typo_option = [
+			$cart_total_label_typo_option = array(
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total th',
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total th',
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total th span',
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total th small',
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total th a',
-			];
-			$cart_total_value_typo_option = [
+			);
+			$cart_total_value_typo_option = array(
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total td',
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total td',
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total td span.woocommerce-Price-amount.amount',
@@ -212,7 +201,7 @@ if ( ! class_exists( 'WFACP_OXY_HTML_BLOCK' ) ) {
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total td small',
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total td a',
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total td p',
-			];
+			);
 			$this->add_heading( $tab_id, __( 'Label Typography', 'funnel-builder' ) );
 			$this->custom_typography( $tab_id, $field_key . '_cart_total_label_typo', implode( ',', $cart_total_label_typo_option ), __( 'Label Typography', 'funnel-builder' ) );
 			$this->add_heading( $tab_id, __( 'Price Typography', 'funnel-builder' ) );
@@ -222,34 +211,32 @@ if ( ! class_exists( 'WFACP_OXY_HTML_BLOCK' ) ) {
 
 			/* ---------------------------------------- Divider Color---------------------------------------- */
 
-			$this->add_heading( $tab_id, __( 'Divider', 'woocommerce' ) );
-			$divider_line_color = [
+			$this->add_heading( $tab_id, __( 'Divider', 'woocommerce' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
+			$divider_line_color = array(
 				'#wfacp-e-form .wfacp_main_form.woocommerce table.shop_table tbody .wfacp_order_summary_item_name',
 				'#wfacp-e-form table.shop_table.woocommerce-checkout-review-order-table tr.cart_item',
 				'#wfacp-e-form table.shop_table.woocommerce-checkout-review-order-table tr.cart-subtotal',
 				'#wfacp-e-form table.shop_table.woocommerce-checkout-review-order-table tr.order-total',
-			];
+			);
 			$this->add_border_color( $tab_id, $field_key . '_divider_line_color', implode( ',', $divider_line_color ), '' );
-
 		}
 
 		protected function order_coupon( $field_key ) {
 
-			$tab_id = $this->add_tab( __( 'Coupon', 'woocommerce' ) );
+			$tab_id = $this->add_tab( __( 'Coupon', 'woocommerce' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			$this->add_heading( $tab_id, __( 'Field', 'funnel-builder' ), '' );
-			$coupon_typography_opt = [
+			$coupon_typography_opt = array(
 				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-coupon-section .wfacp-coupon-page .woocommerce-info > span',
 				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp_woocommerce_form_coupon .wfacp-coupon-section .woocommerce-info .wfacp_showcoupon',
-			];
-
+			);
 
 			$this->add_typography( $tab_id, $field_key . '_coupon_typography', implode( ',', $coupon_typography_opt ), 'Link Typography' );
 			$form_fields_label_typo = ' #wfacp-e-form .wfacp_main_form .wfacp_coupon_field_box p.wfacp-form-control-wrapper:not(.wfacp-anim-wrap) label.wfacp-form-control-label';
 			$this->add_typography( $tab_id, $field_key . '_label_typo', $form_fields_label_typo, __( 'Label Typography', 'funnel-builder' ) );
 			$fields_options = ' #wfacp-e-form .wfacp_main_form .wfacp_coupon_field_box p.wfacp-form-control-wrapper .wfacp-form-control';
-			$this->add_typography( $tab_id, $field_key . '_input_typo', $fields_options, __( 'Input Typography' , 'funnel-builder') );
+			$this->add_typography( $tab_id, $field_key . '_input_typo', $fields_options, __( 'Input Typography', 'funnel-builder' ) );
 			$this->add_border_color( $tab_id, $field_key . '_focus_color', '#wfacp-e-form .wfacp_main_form.woocommerce .wfacp_coupon_field_box p.wfacp-form-control-wrapper .wfacp-form-control:focus', '#61bdf7', __( 'Focus Color', 'funnel-builder' ), true );
-			$this->add_border( $tab_id, $field_key . '_coupon_border', $fields_options, __( 'Input Border' , 'funnel-builder') );
+			$this->add_border( $tab_id, $field_key . '_coupon_border', $fields_options, __( 'Input Border', 'funnel-builder' ) );
 			$this->add_heading( $tab_id, __( 'Button Normal', 'funnel-builder' ) );
 			/* Button color setting */
 
@@ -264,7 +251,7 @@ if ( ! class_exists( 'WFACP_OXY_HTML_BLOCK' ) ) {
 			$this->add_color( $tab_id, $field_key . '_btn_bg_hover_text_color', $btnkey_hover, __( 'Label', 'funnel-builder' ) );
 
 			$this->add_heading( $tab_id, __( 'Button Text', 'funnel-builder' ) );
-			$this->add_text( $tab_id, 'form_coupon_button_text', __( 'Coupon Button Text', 'funnel-builder' ), __( 'Apply', 'woocommerce' ) );
+			$this->add_text( $tab_id, 'form_coupon_button_text', __( 'Coupon Button Text', 'funnel-builder' ), __( 'Apply', 'woocommerce' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 
 			$this->add_heading( $tab_id, __( 'Button Typography', 'funnel-builder' ) );
 			$this->custom_typography( $tab_id, $field_key . '_btn_typo', $btnkey, '' );
@@ -285,12 +272,12 @@ if ( ! class_exists( 'WFACP_OXY_HTML_BLOCK' ) ) {
 		}
 
 		protected function divider_field() {
-			return [
+			return array(
 				'wfacp_start_divider_billing',
 				'wfacp_start_divider_shipping',
 				'wfacp_end_divider_billing',
-				'wfacp_end_divider_shipping'
-			];
+				'wfacp_end_divider_shipping',
+			);
 		}
 
 		public function pick_data( $status, $tag, $attr ) {
@@ -312,17 +299,16 @@ if ( ! class_exists( 'WFACP_OXY_HTML_BLOCK' ) ) {
 
 			oxygen_vsb_ajax_request_header_check();
 
-			$component_json      = file_get_contents( 'php://input' );//phpcs:ignore
-			$component           = json_decode( $component_json, true );
-			$options             = $component['options']['original'];
-			$options['selector'] = $component['options']['selector'];
+			$component_json = WP_REST_Server::get_raw_data();
+			$component      = json_decode( $component_json, true );
 
-			if ( is_array( $component['options']['media'] ) && count( $component['options']['media'] ) > 0 ) {
-				$this->media_settings = $component['options']['media'];
+			if ( ! is_array( $component ) || empty( $component['options'] ) || ! is_array( $component['options'] ) ) {
+				return;
 			}
 
+			if ( ! empty( $component['options']['media'] ) && is_array( $component['options']['media'] ) ) {
+				$this->media_settings = $component['options']['media'];
+			}
 		}
-
-
 	}
 }

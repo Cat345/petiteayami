@@ -67,17 +67,8 @@ if ( ! class_exists( 'WFACP_Compatibility_FFI_API' ) ) {
 			$wMes        = wp_json_encode( get_option( 'ffl_api_warning_message' ) !== '' ? get_option( 'ffl_api_warning_message' ) : $default_msg );
 			$hok         = wp_json_encode( get_option( 'ffl_init_map_location', '' ) );
 
-			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode() emits a complete, JS-escaped literal.
-			echo '
-<script type="text/javascript">
-
-  var aKey = ' . $aKey . '
-    var gKey = ' . $gKey . '
-    var wMes = ' . $wMes . '
-    var hok = ' . $hok . '
-
-</script>';
-			// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+			// Each value is a complete JS literal from wp_json_encode().
+			wp_print_inline_script_tag( 'var aKey = ' . $aKey . ";\nvar gKey = " . $gKey . ";\nvar wMes = " . $wMes . ";\nvar hok = " . $hok . ';' );
 
 			?>
 

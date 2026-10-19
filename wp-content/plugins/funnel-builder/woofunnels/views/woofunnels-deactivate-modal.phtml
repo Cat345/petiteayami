@@ -3,11 +3,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$slug     = $VARS['slug'];
+$slug     = $wffn_deactivate_vars['slug'];
 $licenses =  array();
 
 $confirmation_message      = '';
-$reasons                   = $VARS['reasons']['default'];
+$reasons                   = $wffn_deactivate_vars['reasons']['default'];
 $reasons_list_items_html   = '';
 $plugin_customized_reasons = array();
 
@@ -183,7 +183,7 @@ foreach ( $reasons as $reason ) {
     var WooFunnelsallLicenses = '<?php echo wp_json_encode( $licenses, JSON_UNESCAPED_SLASHES ); ?>';
     (function ($) {
 		<?php
-		foreach($VARS['reasons'] as $plugin_key => $plugin_reasons) {
+		foreach($wffn_deactivate_vars['reasons'] as $plugin_key => $plugin_reasons) {
 		$threshold = apply_filters( 'woofunnels_uninstall_reason_threshold_' . $plugin_key, 2 );
 		?>
         WooFunnelsDefaultReason['<?php echo $plugin_key; ?>'] = '';

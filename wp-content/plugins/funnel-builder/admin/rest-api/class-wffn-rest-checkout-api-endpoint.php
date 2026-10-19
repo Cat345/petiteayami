@@ -383,6 +383,8 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 
 			$prompt_display_message       = __( 'Hey there! It seems you have a {{site_title}} account. Please Login', 'funnel-builder' );
 			$display_house_number_message = __( 'House/Building number is required in {{address_field}}', 'funnel-builder' );
+			/* translators: %s: the suggested email address */
+			$email_suggestion_prompt = __( 'Did you mean %s?', 'funnel-builder' );
 
 			$smart_button_positions = $this->get_smart_button_positions();
 
@@ -398,6 +400,7 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 			$preview_section                                   = array();
 			$enhanced_phone_field                              = array();
 			$enhanced_address_field                            = array();
+			$email_suggestion                                  = array();
 			$smart_login                                       = array();
 			$auto_fill_url                                     = array();
 			$apply_coupon_fields['coupons']                    = ! empty( $value['coupons'] ) ? bwf_clean( $value['coupons'] ) : '';
@@ -427,6 +430,9 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 			$enhanced_phone_field['enable_phone_validation']            = ! empty( $value['enable_phone_validation'] ) ? wffn_clean( $value['enable_phone_validation'] ) : 'false';
 			$enhanced_phone_field['save_phone_number_type']             = ! empty( $value['save_phone_number_type'] ) ? wffn_clean( $value['save_phone_number_type'] ) : 'false';
 			$enhanced_phone_field['phone_helping_text']                 = ! empty( $value['phone_helping_text'] ) ? wffn_clean( $value['phone_helping_text'] ) : '';
+
+			$email_suggestion['enable_email_suggestion'] = ! empty( $value['enable_email_suggestion'] ) ? wffn_clean( $value['enable_email_suggestion'] ) : 'false';
+			$email_suggestion['email_suggestion_prompt'] = ! empty( $value['email_suggestion_prompt'] ) ? wffn_clean( $value['email_suggestion_prompt'] ) : $email_suggestion_prompt;
 
 			$enhanced_address_field['enable_address_field_number_validation']  = ! empty( $value['enable_address_field_number_validation'] ) ? wffn_clean( $value['enable_address_field_number_validation'] ) : 'false';
 			$enhanced_address_field['address_field_number_validation_message'] = ! empty( $value['address_field_number_validation_message'] ) ? wffn_clean( $value['address_field_number_validation_message'] ) : $display_house_number_message;
@@ -812,6 +818,45 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 					'priority' => 20,
 					'values'   => $enhanced_phone_field,
 				),
+				'email_suggestion'                         => array(
+					'title'    => __( 'Email Typo Suggestion', 'funnel-builder' ),
+					'heading'  => __( 'Email Typo Suggestion', 'funnel-builder' ),
+					'hint'     => __( 'Catch email typos like name@gmial.con with a "Did you mean name@gmail.com?" suggestion below the email field. Runs in the browser, no external requests.', 'funnel-builder' ),
+					'slug'     => 'email_suggestion',
+					'fields'   => array(
+						0 => array(
+							'type'     => 'radios',
+							'key'      => 'enable_email_suggestion',
+							'label'    => __( 'Enable', 'funnel-builder' ),
+							'hint'     => '',
+							'values'   => array(
+								0 => array(
+									'value' => 'true',
+									'name'  => __( 'Yes', 'funnel-builder' ),
+								),
+								1 => array(
+									'value' => 'false',
+									'name'  => __( 'No', 'funnel-builder' ),
+								),
+							),
+							'required' => false,
+						),
+						1 => array(
+							'type'        => 'text',
+							'key'         => 'email_suggestion_prompt',
+							'label'       => __( 'Suggestion Text', 'funnel-builder' ),
+							/* translators: %s: placeholder the suggested email replaces, shown literally */
+							'hint'        => __( '%s is replaced with the suggested email.', 'funnel-builder' ),
+							'toggler'     => array(
+								'key'   => 'enable_email_suggestion',
+								'value' => 'true',
+							),
+							'required'    => false,
+						),
+					),
+					'priority' => 20,
+					'values'   => $email_suggestion,
+				),
 				'enhanced_address_field_number_validation' => array(
 					'title'    => __( 'Address Field Validation', 'funnel-builder' ),
 					'heading'  => __( 'Enhanced Address Field', 'funnel-builder' ),
@@ -869,7 +914,7 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 							'label'    => __( 'Enable', 'funnel-builder' ),
 							'hint'     => '',
 							'notice'   => empty( $google_map_key ) ? array(
-								'text'    => sprintf( __( 'This features requires Google Maps API key to be added in Settings. To add keys <a href=%s target="_blank">Go to Settings</a>', 'funnel-builder' ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings/woofunnels_general_settings' ) ) ),
+								'text'    => sprintf( /* translators: %s: URL of the Google settings page. */ __( 'This features requires Google Maps API key to be added in Settings. To add keys <a href=%s target="_blank">Go to Settings</a>', 'funnel-builder' ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings/woofunnels_general_settings' ) ) ),
 								'type'    => 'error',
 								'toggler' => array(
 									'key'   => 'enable_google_autocomplete',
@@ -1895,7 +1940,7 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 			$fields = array();
 
 			if ( absint( $step_id ) > 0 && class_exists( 'WFACP_Common' ) ) {
-				do_action( 'funnelkit_rest_checkout_fields' );
+				do_action( 'funnelkit_rest_checkout_fields' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 				$afield            = array();
 				$fields['basic']   = apply_filters( 'wfacp_admin_basic_fields', WFACP_Common::get_address_fields() );
 				$fields['product'] = WFACP_Common::get_product_field();

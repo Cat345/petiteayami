@@ -11,6 +11,34 @@ if ( ! function_exists( 'wffn_clean' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wffn_clean_tracking_data' ) ) {
+	/**
+	 * Cleans a decoded tracking payload string by string, sanitising every `event_url` as a URL.
+	 *
+	 * sanitize_text_field() deletes every %XX octet, so a non-ASCII permalink or an encoded query value
+	 * would reach Meta as a URL that does not exist. Numbers and booleans keep their JSON type.
+	 *
+	 * @param mixed      $var Decoded payload.
+	 * @param string|int $key Key $var sits under in its parent array.
+	 *
+	 * @return mixed
+	 */
+	function wffn_clean_tracking_data( $var, $key = '' ) {
+		if ( is_array( $var ) ) {
+			foreach ( $var as $k => $v ) {
+				$var[ $k ] = wffn_clean_tracking_data( $v, $k );
+			}
+
+			return $var;
+		}
+		if ( 'event_url' === $key ) {
+			return is_string( $var ) ? sanitize_url( $var ) : '';
+		}
+
+		return is_string( $var ) ? sanitize_text_field( $var ) : $var;
+	}
+}
+
 if ( ! function_exists( 'wffn_show_notice' ) ) {
 	function wffn_show_notice( $args, $context ) {
 		global $wffn_notices;
@@ -123,7 +151,7 @@ if ( ! function_exists( 'wffn_maybe_import_funnel_in_background' ) ) {
 							}
 							if ( $get_object->slug === 'optin_ty' ) {
 								do_action(
-									'wfoty_page_design_updated',
+									'wfoty_page_design_updated', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established FunnelKit family hook prefix, below PCP's frequency-detection threshold in this plugin; renaming breaks cross-plugin integrations.
 									$funnel_step['id'],
 									array(
 										'selected'      => $has_scheduled['template'],
@@ -133,7 +161,7 @@ if ( ! function_exists( 'wffn_maybe_import_funnel_in_background' ) ) {
 							}
 							if ( $get_object->slug === 'landing' ) {
 								do_action(
-									'wflp_page_design_updated',
+									'wflp_page_design_updated', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established FunnelKit family hook prefix, below PCP's frequency-detection threshold in this plugin; renaming breaks cross-plugin integrations.
 									$funnel_step['id'],
 									array(
 										'selected'      => $has_scheduled['template'],
@@ -444,7 +472,7 @@ if ( ! function_exists( 'wffn_is_plugin_active' ) ) {
 			$active_plugins = array_merge( $active_plugins, get_site_option( 'active_sitewide_plugins', array() ) );
 		}
 
-		if ( in_array( $plugin_basename, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( $plugin_basename, apply_filters( 'active_plugins', $active_plugins ) ) ) {
+		if ( in_array( $plugin_basename, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( $plugin_basename, apply_filters( 'active_plugins', $active_plugins ) ) ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- invokes the third-party/WP-core hook by its own documented name for compatibility; the name is not ours to prefix.
 			return true;
 		}
 
@@ -471,7 +499,7 @@ if ( ! function_exists( 'wffn_get_ip_address' ) ) {
 
 if ( ! function_exists( 'wffn_get_user_agent' ) ) {
 	function wffn_get_user_agent() {
-		return isset( $_SERVER['HTTP_USER_AGENT'] ) ? wffn_clean( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';  //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables
+		return isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : ''; //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables -- read to identify the visitor's browser; sanitized with sanitize_text_field().
 	}
 }
 
@@ -500,14 +528,14 @@ if ( ! function_exists( 'wffn_run_conversion_migrator' ) ) {
 			/**
 			 * delete all duplicate entries from checkout table
 			 */
-			$duplicate_col = $wpdb->get_col(
+			$duplicate_col = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 				"SELECT s1.ID FROM {$wpdb->prefix}wfacp_stats AS s1 LEFT JOIN ( SELECT MIN(ID) AS min_id FROM {$wpdb->prefix}wfacp_stats GROUP BY order_id ) AS s2 ON s1.ID = s2.min_id
 WHERE s2.min_id IS NULL"
 			);
 
 			if ( is_array( $duplicate_col ) && count( $duplicate_col ) > 0 ) {
 				$duplicate_ids = implode( ',', $duplicate_col );
-				$wpdb->query( $wpdb->prepare( "DELETE from {$wpdb->prefix}wfacp_stats WHERE ID IN (%1s)", $duplicate_ids ) ); //phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
+				$wpdb->query( $wpdb->prepare( "DELETE from {$wpdb->prefix}wfacp_stats WHERE ID IN (%1s)", $duplicate_ids ) ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 				if ( ! empty( $wpdb->last_error ) ) {
 					WFFN_Core()->logger->log( 'migration process delete duplicate entry from wfacp table query error ' . $wpdb->last_error . ' last query ' . $wpdb->last_query, 'fk_conv_migration', true );
 				}
@@ -516,20 +544,20 @@ WHERE s2.min_id IS NULL"
 			/**
 			 * delete all duplicate entries from bump table
 			 */
-			$ob_duplicate_col = $wpdb->get_col(
+			$ob_duplicate_col = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 				"SELECT s1.ID FROM {$wpdb->prefix}wfob_stats AS s1 LEFT JOIN ( SELECT MIN(ID) AS min_id FROM {$wpdb->prefix}wfob_stats GROUP BY oid ) AS s2 ON s1.ID = s2.min_id
 WHERE s2.min_id IS NULL"
 			);
 
 			if ( is_array( $ob_duplicate_col ) && count( $ob_duplicate_col ) > 0 ) {
 				$ob_duplicate_ids = implode( ',', $ob_duplicate_col );
-				$wpdb->query( $wpdb->prepare( "DELETE from {$wpdb->prefix}wfob_stats WHERE ID IN (%1s)", $ob_duplicate_ids ) ); //phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
+				$wpdb->query( $wpdb->prepare( "DELETE from {$wpdb->prefix}wfob_stats WHERE ID IN (%1s)", $ob_duplicate_ids ) ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 				if ( ! empty( $wpdb->last_error ) ) {
 					WFFN_Core()->logger->log( 'migration process delete duplicate entry from bump table query error ' . $wpdb->last_error . ' last query ' . $wpdb->last_query, 'fk_conv_migration', true );
 				}
 			}
 
-			$number_of_order = $wpdb->get_var( "select count(ID) as order_count from {$wpdb->prefix}wfacp_stats WHERE ( fid != 0 OR fid != '' );" );
+			$number_of_order = $wpdb->get_var( "select count(ID) as order_count from {$wpdb->prefix}wfacp_stats WHERE ( fid != 0 OR fid != '' );" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			WFFN_Core()->logger->log( 'migration process total number of order ' . $number_of_order, 'fk_conv_migration', true );
 
 			if ( $number_of_order === 0 ) {
@@ -543,7 +571,7 @@ WHERE s2.min_id IS NULL"
 			/**
 			 * We are marking all the wc checkout funnel IDs to 0 so that after the process is done we could delete all those orphan rows that should no longer exists.
 			 */
-			$wpdb->query( $wpdb->prepare( 'UPDATE ' . $wpdb->prefix . 'bwf_conversion_tracking SET funnel_id = %d WHERE type = %d', 0, 2 ) );
+			$wpdb->query( $wpdb->prepare( 'UPDATE ' . $wpdb->prefix . 'bwf_conversion_tracking SET funnel_id = %d WHERE type = %d', 0, 2 ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 		}
 
@@ -567,7 +595,7 @@ WHERE s2.min_id IS NULL"
 		 * Let's proceed with the process and find out next batch of orders
 		 */
 		WFFN_Core()->logger->log( 'finding orders from wfacp_stats - offset: ' . $offset, 'fk_conv_migration', true );
-		$number_of_order = $wpdb->get_results( $wpdb->prepare( "select * from {$wpdb->prefix}wfacp_stats WHERE ( fid != 0 OR fid != '' ) limit %d,%d ", $offset, $per_page ), ARRAY_A );
+		$number_of_order = $wpdb->get_results( $wpdb->prepare( "select * from {$wpdb->prefix}wfacp_stats WHERE ( fid != 0 OR fid != '' ) limit %d,%d ", $offset, $per_page ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 		/**
 		 * If we don't have any orders then we must terminate the process
@@ -589,14 +617,14 @@ WHERE s2.min_id IS NULL"
 		 */
 
 		$order_ids    = array_map( 'absint', wp_list_pluck( $number_of_order, 'order_id' ) );
-		$bumps_data   = $wpdb->get_results(
+		$bumps_data   = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 			$wpdb->prepare(
 				"select * from {$wpdb->prefix}wfob_stats where oid IN ( " . implode( ', ', array_fill( 0, count( $order_ids ), '%d' ) ) . ' )',
 				$order_ids
 			),
 			ARRAY_A
 		);
-		$upsells_data = $wpdb->get_results(
+		$upsells_data = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			$wpdb->prepare(
 				"SELECT sess.order_id,
     event_t.object_id AS offer_id,
@@ -686,10 +714,10 @@ WHERE sess.order_id IN ( " . implode( ', ', array_fill( 0, count( $order_ids ), 
 
 			$maybe_upsell_orders = '';
 			if ( ! empty( $item['accepted_offer'] ) ) {
-				$maybe_upsell_orders = $wpdb->get_results( $wpdb->prepare( "SELECT metatable.meta_value as 'order_id', event.value as 'total_sales',event.timestamp as 'offertime', event.object_id as 'offer_id' FROM `" . $wpdb->prefix . 'wfocu_event` as event  LEFT JOIN ' . $wpdb->prefix . "wfocu_event_meta as metatable ON ( event.id = metatable.event_id AND metatable.meta_key = '_new_order') INNER JOIN " . $wpdb->prefix . 'wfocu_session as session ON (event.sess_id = session.id) WHERE session.order_id = %d AND event.action_type_id = 4', $item['order_id'] ), ARRAY_A );
+				$maybe_upsell_orders = $wpdb->get_results( $wpdb->prepare( "SELECT metatable.meta_value as 'order_id', event.value as 'total_sales',event.timestamp as 'offertime', event.object_id as 'offer_id' FROM `" . $wpdb->prefix . 'wfocu_event` as event  LEFT JOIN ' . $wpdb->prefix . "wfocu_event_meta as metatable ON ( event.id = metatable.event_id AND metatable.meta_key = '_new_order') INNER JOIN " . $wpdb->prefix . 'wfocu_session as session ON (event.sess_id = session.id) WHERE session.order_id = %d AND event.action_type_id = 4', $item['order_id'] ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 			}
 
-			$conversion = $wpdb->get_row( $wpdb->prepare( "select * from {$wpdb->prefix}bwf_conversion_tracking where type=2 AND source=%d;", $item['order_id'] ), ARRAY_A );
+			$conversion = $wpdb->get_row( $wpdb->prepare( "select * from {$wpdb->prefix}bwf_conversion_tracking where type=2 AND source=%d;", $item['order_id'] ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			if ( ! empty( $conversion ) ) {
 				/**
@@ -845,7 +873,7 @@ WHERE sess.order_id IN ( " . implode( ', ', array_fill( 0, count( $order_ids ), 
 		if ( ! empty( $need_to_delete_orders ) ) {
 			$ids = implode( ',', $need_to_delete_orders );
 
-			$wpdb->query( $wpdb->prepare( "delete from {$wpdb->prefix}bwf_conversion_tracking where type=2 and source IN (%1s)", $ids ) ); //phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
+			$wpdb->query( $wpdb->prepare( "delete from {$wpdb->prefix}bwf_conversion_tracking where type=2 and source IN (%1s)", $ids ) ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			if ( ! empty( $wpdb->last_error ) ) {
 				WFFN_Core()->logger->log( 'migration process delete orders query error ' . $wpdb->last_error . ' last query ' . $wpdb->last_query, 'fk_conv_migration', true );
@@ -877,7 +905,7 @@ if ( ! function_exists( 'wffn_run_optin_conversion_migrator' ) ) {
 		 */
 		$conversion_threshold = absint( get_option( '_bwf_optin_conversion_threshold', 0 ) );
 		if ( 0 === $conversion_threshold ) {
-			$number_of_entries = $wpdb->get_var( "SELECT COUNT(`id`) FROM {$wpdb->prefix}bwf_optin_entries" );
+			$number_of_entries = $wpdb->get_var( "SELECT COUNT(`id`) FROM {$wpdb->prefix}bwf_optin_entries" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 			WFFN_Core()->logger->log( 'migration process total number of optins ' . $number_of_entries, 'fk_conv_migration', true );
 
 			if ( $number_of_entries === 0 ) {
@@ -896,7 +924,7 @@ if ( ! function_exists( 'wffn_run_optin_conversion_migrator' ) ) {
 
 		WFFN_Core()->logger->log( 'finding entry from bwf_optin_entries - offset: ' . $offset, 'fk_conv_migration', true );
 
-		$number_of_entries = $wpdb->get_results( $wpdb->prepare( "select * from {$wpdb->prefix}bwf_optin_entries limit %d,%d ", $offset, $per_page ), ARRAY_A );
+		$number_of_entries = $wpdb->get_results( $wpdb->prepare( "select * from {$wpdb->prefix}bwf_optin_entries limit %d,%d ", $offset, $per_page ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 		if ( empty( $number_of_entries ) ) {
 			WFFN_Core()->logger->log( 'no entries found', 'fk_conv_migration', true );
@@ -947,7 +975,7 @@ if ( ! function_exists( 'wffn_run_optin_conversion_migrator' ) ) {
 			$step_id   = $entry['step_id'];
 			$funnel_id = $entry['funnel_id'];
 
-			$_conversion = $wpdb->get_row( $wpdb->prepare( "SELECT id,utm_source, utm_medium, utm_campaign, utm_term, utm_content, referrer FROM {$wpdb->prefix}bwf_conversion_tracking WHERE type=1 AND source = %d", $optin_id ), ARRAY_A );
+			$_conversion = $wpdb->get_row( $wpdb->prepare( "SELECT id,utm_source, utm_medium, utm_campaign, utm_term, utm_content, referrer FROM {$wpdb->prefix}bwf_conversion_tracking WHERE type=1 AND source = %d", $optin_id ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			if ( ! empty( $_conversion ) ) {
 				// Trim Reference
@@ -960,7 +988,7 @@ if ( ! function_exists( 'wffn_run_optin_conversion_migrator' ) ) {
 
 			} else {
 
-				$_conversion = $wpdb->get_row( $wpdb->prepare( "SELECT id,utm_source, utm_medium, utm_campaign, utm_term, utm_content,referrer,timestamp FROM {$wpdb->prefix}bwf_conversion_tracking WHERE step_id = %d AND contact_id = %d AND timestamp BETWEEN DATE_SUB(%s, INTERVAL 5 SECOND) AND DATE_ADD(%s, INTERVAL 5 SECOND)", $step_id, $cid, $entry['date'], $entry['date'] ), ARRAY_A );
+				$_conversion = $wpdb->get_row( $wpdb->prepare( "SELECT id,utm_source, utm_medium, utm_campaign, utm_term, utm_content,referrer,timestamp FROM {$wpdb->prefix}bwf_conversion_tracking WHERE step_id = %d AND contact_id = %d AND timestamp BETWEEN DATE_SUB(%s, INTERVAL 5 SECOND) AND DATE_ADD(%s, INTERVAL 5 SECOND)", $step_id, $cid, $entry['date'], $entry['date'] ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 				$new_data_entry = wp_parse_args(
 					array(

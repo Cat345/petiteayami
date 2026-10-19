@@ -157,7 +157,7 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 
 			if ( WFOPP_Core()->optin_pages->get_post_type_slug() === $post->post_type && 'post.php' === $pagenow && isset( $_GET['post'] ) && intval( $_GET['post'] ) > 0 ) { //phpcs:ignore
 
-				defined( 'BWF_I18N' ) || define( 'BWF_I18N', 'funnel-builder' );
+				defined( 'BWF_I18N' ) || define( 'BWF_I18N', 'funnel-builder' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 				$app_name = 'optin-form-block';
 
 				$frontend_dir = defined( 'BWFOP_FORM_REACT_ENVIRONMENT' ) ? BWFOP_FORM_REACT_ENVIRONMENT : $this->url . 'dist';
@@ -324,7 +324,7 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 			$id   = $this->post->ID;
 			$data = get_post_meta( $id, '_wfop_selected_design', true );
 
-			$design = apply_filters( 'get_offer', $data, $id );
+			$design = apply_filters( 'get_offer', $data, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 
 			if ( empty( $design ) || empty( $design['selected_type'] ) ) {
 				return;
@@ -358,7 +358,7 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 			$id   = $this->post->ID;
 			$data = get_post_meta( $id, '_wfop_selected_design', true );
 
-			$design = apply_filters( 'get_offer', $data, $id );
+			$design = apply_filters( 'get_offer', $data, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- established public hook name shipped for years; integrations and site snippets hook it, so renaming is a breaking change.
 
 			if ( empty( $design ) || empty( $design['selected_type'] ) ) {
 				return;
@@ -366,7 +366,7 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 
 			if ( 'wp_editor' === $design['selected_type'] || 'gutenberg' === $design['selected_type'] ) {
 
-				defined( 'BWF_I18N' ) || define( 'BWF_I18N', 'funnel-builder' );
+				defined( 'BWF_I18N' ) || define( 'BWF_I18N', 'funnel-builder' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- 'bwf'/'BWF' is FunnelKit's established shared-framework prefix; renaming breaks the cross-plugin API (used by Pro).
 				$app_name = 'optin-form-public';
 
 				$frontend_dir = defined( 'BWFOP_FORM_REACT_ENVIRONMENT' ) ? BWFOP_FORM_REACT_ENVIRONMENT : $this->url . 'dist';
@@ -401,7 +401,7 @@ if ( ! class_exists( 'WFOP_Gutenberg' ) ) {
 			$default_font = get_post_meta( $post->ID, 'bwfblock_default_font', true );
 
 			if ( ! empty( $default_font ) ) {
-				echo "<style id='bwfblock-default-font'>#editor .editor-styles-wrapper { font-family:" . esc_html( $default_font ) . '; }</style>'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo "<style id='bwfblock-default-font'>#editor .editor-styles-wrapper { font-family:" . esc_html( $default_font ) . '; }</style>';
 			}
 		}
 

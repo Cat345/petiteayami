@@ -2,9 +2,9 @@
 Contributors: amans2k, xlplugins, teamwoofunnels
 Tags: stripe, apple pay, google pay, WooCommerce Stripe
 Requires at least: 5.4.0
-Tested up to: 7.0.0
+Tested up to: 7.1
 Requires PHP: 7.0
-Stable tag: 1.14.0.5
+Stable tag: 1.16.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -17,13 +17,14 @@ It delivers a simple, quick, secure payment gateway to your WooCommerce website.
 
 With this Stripe Payment Gateway for WooCommerce plugin, you can accept **credit and debit card** payments through Stripe, such as Visa, MasterCard, Diners Club, JCB, American Express, etc.
 
-Plus, it integrates with **one-click express payments**, such as Google Pay and Apple Pay.
+Plus, it integrates with **one-click express payments**, such as Apple Pay, Google Pay, Link, and Amazon Pay, each with its own dedicated settings for placement and style.
 
-It also supports **local payment or bank redirect-gateway** options such as SEPA, P24, iDEAL, BanContact, ACH Direct Debit, EPS, Pix, Multibanco, MobilePay, and more.
+It also supports **local payment or bank redirect-gateway** options such as SEPA, P24, iDEAL, BanContact, ACH Direct Debit, EPS, Pix, Multibanco, MobilePay, MB WAY, TWINT, BLIK, and more.
 
 In addition, this plugin extends its support to **Buy Now Pay Later** payment gateways such as Affirm, Klarna, and Afterpay, as well as **digital wallet** options like CashApp Pay and Alipay.
 
-This free WooCommerce Stripe plugin easily integrates with **FunnelKit’s Funnel Builder and One Click Upsells**, making the payment process simpler and more enjoyable.
+This free WooCommerce Stripe plugin easily integrates with **FunnelKit's Funnel Builder and One Click Upsells**, making the payment process simpler and more enjoyable.
+
 
 This leads to increased conversions and happy customers.
 
@@ -43,9 +44,9 @@ Here are some outstanding features of Stripe Payment Gateway for WooCommerce:
 
 Once you connect your Stripe account with Stripe Payment Gateway for WooCommerce, you don’t need to go back and forth to enter your API keys manually. All your details, including the live and test keys, will be fetched here.
 
-=== 2. Hassle-free Apple Pay and Google Pay Set-Up
+=== 2. Independent Settings for Apple Pay, Google Pay, Link, and Amazon Pay
 
-By [enabling one-click express payments](https://funnelkit.com/woocommerce-one-click-checkout/) in your store, you provide your customers with a smooth checkout and payment experience. Our one-click express payment options include Apple Pay, Google Pay, and more.
+Each [express payment option](https://funnelkit.com/woocommerce-express-checkout/) now comes with its own dedicated settings for placement and styling. Set up Apple Pay, Google Pay, Link, and Amazon Pay separately, so your checkout looks and behaves exactly the way you want.
 
 === 3. Automatic Webhook Creation
 
@@ -63,7 +64,6 @@ Offer your consumers the flexibility to make purchases instantly and pay for the
 
 https://www.youtube.com/watch?v=ciEzag828L0
 
-
 === 6. SCA-Ensured, 3D Secure Payments
 
 Ensure a secure two-way authentication with Strong Customer Authentication (SCA) in your WooCommerce store. It automatically detects and prevents spam transactions through its 3D secure payment gateway for both web and mobile.
@@ -76,7 +76,11 @@ With Stripe Payment Gateway for WooCommerce, you can collect one-time and recurr
 
 With Stripe Payment Gateway for WooCommerce, you can collect one-time and recurring subscription payments for subscription-based products on your WooCommerce website.
 
-=== 9. Deep Compatibility with FunnelKit
+=== 9. Test Mode for Administrators
+
+Enable test mode for admin accounts only, without affecting live transactions for your customers. This lets you verify your setup and troubleshoot safely while your store keeps processing real payments as usual.
+
+=== 10. Deep Compatibility with FunnelKit
 
 While FunnelKit works with popular gateways, it provides deeper integration with the full FunnelKit suite.
 
@@ -103,25 +107,34 @@ Customers can securely store their payment information on their devices and make
 
 Google Pay offers customers a convenient and secure way to store their payment information with just a few taps on their smartphones or other devices.
 
-=== 4. Affirm
+=== 4. Link
+
+Link is Stripe's one-click checkout wallet that securely saves a customer's payment details for faster checkout across any Link-enabled store. It comes with its own dedicated settings for placement and style.
+
+=== 5. Amazon Pay
+
+Amazon Pay lets customers check out using the payment and shipping details already saved in their Amazon account. It's available both as an express checkout button and as a standard payment method, with its own dedicated settings for placement and style.
+
+
+=== 6. Affirm
 
 [Affirm](https://funnelkit.com/woocommerce-affirm-payments/) is the U.S. and Canada's leading buy-now-pay-later payment provider, with over 17 million users and $20.2 billion+ GMV annually. It offers payment options such as 4-interest-free payments and monthly installment plans for 3, 6, and 12 months.
 
 This Stripe gateway plugin makes it easy to integrate this payment method into your WooCommerce store.
 
-=== 5. Klarna
+=== 7. Klarna
 
 [Klarna](https://funnelkit.com/woocommerce-klarna-payments/) is a Swedish fintech company that offers users the flexibility to buy now and pay later to more than 150 million active consumers across 500,000+ merchants in 45+ countries.
 
 It allows payment options of 30 days, three installments, or 6 to 36-month payment plans.
 
-=== 6. Afterpay or Clearpay
+=== 8. Afterpay or Clearpay
 
 [Afterpay or Clearpay](https://funnelkit.com/woocommerce-afterpay/) (also known as Clearpay in the United Kingdom) is an Australian fintech company that offers consumers in the USA, Australia, New Zealand, the United Kingdom, and Canada the flexibility to buy now and pay later.
 
 Integrate Afterpay into WooCommerce with this free Stripe payment plugin.
 
-=== 7. SEPA
+=== 9. SEPA
 
 The Single Euro Payments Area (SEPA) initiative simplifies cashless payments among European Union (EU) member and non-member countries.
 
@@ -129,59 +142,72 @@ The Single Euro Payments Area (SEPA) initiative simplifies cashless payments amo
 
 This local payment method is convenient and cost-effective for accepting recurring and one-time payments.
 
-=== 8. iDEAL
+=== 10. iDEAL
 
 [iDEAL](https://funnelkit.com/woocommerce-ideal/) is a popular payment method in the Netherlands that allows customers to make payments and buy their favorite products directly from their bank accounts.
 
 FunnelKit’s Stripe Payment Gateway for WooCommerce integrates with iDEAL, providing a secure and convenient way for Dutch customers to pay for goods and services online.
 
-=== 9. Bancontact
+=== 11. Bancontact
 
 Bancontact is a widely used payment option in Belgium, allowing customers to make online payments directly from their bank accounts.
 
 It is supported by most Belgian banks and is a popular choice for eCommerce transactions in the country.
 
-=== 10. Przelewy24 (P24)
+=== 12. Przelewy24 (P24)
 
 Przelewy24, commonly known as P24, is a popular bank redirect payment method in Poland. It is widely used for eCommerce transactions and provides Polish customers convenience when purchasing online.
 
-=== 11. ACH Direct Debit
+=== 13. ACH Direct Debit
 
 ACH (Automated Clearing House) Direct Debit is a popular payment method in the United States that allows customers to make payments directly from their bank accounts.
 
 This payment method is particularly useful for recurring payments, subscriptions, and high-value transactions, offering lower processing fees compared to credit card payments.
 
-=== 12. EPS
+=== 14. EPS
 
 EPS (Electronic Payment Standard) is a popular online payment method in Austria that allows customers to make secure payments directly from their bank accounts.
 
 It provides a convenient and trusted payment option for Austrian customers, ensuring secure transactions through direct bank integration.
 
-=== 13. Pix
+=== 15. MB WAY
+
+MB WAY is a mobile payment method widely used in Portugal, letting customers pay directly through their banking app.
+
+=== 16. TWINT
+
+TWINT is a mobile payment method used in Switzerland, letting customers confirm payment through the TWINT app or a QR code, in Swiss francs.
+
+=== 17. BLIK
+
+BLIK is a mobile payment method used in Poland, letting customers confirm payments with a one-time code generated in their banking app.
+
+
+=== 18. Pix
 
 Pix is Brazil's instant payment system that allows customers to make instant payments 24/7 using their mobile phones, internet banking, or ATMs.
 
 This payment method provides Brazilian customers with a fast, secure, and convenient way to pay for online purchases without the need for credit cards.
 
-=== 14. Multibanco
+=== 19. Multibanco
 
 Multibanco is a popular payment method in Portugal that allows customers to pay for online purchases using their bank accounts through ATMs, internet banking, or mobile banking.
 
 It provides Portuguese customers with a familiar and secure payment option that integrates seamlessly with their existing banking infrastructure.
 
-=== 15. CashApp Pay
+=== 20. CashApp Pay
 
 CashApp Pay is a digital payment method that allows customers to make payments using their Cash App account, providing a quick and convenient checkout experience.
 
 This payment option is particularly popular among younger demographics and offers a seamless mobile-first payment experience.
 
-=== 16. MobilePay
+=== 21. MobilePay
 
 MobilePay is a popular mobile payment solution in Denmark, Finland, and Norway that allows customers to make payments using their smartphones.
 
 It provides Nordic customers with a fast, secure, and convenient way to pay for online purchases using their mobile devices.
 
-=== 17. Alipay
+=== 22. Alipay
 
 Alipay is one of China's leading digital payment platforms that allows customers to make secure payments using their Alipay accounts.
 
@@ -199,15 +225,15 @@ Stripe Payment Gateway for WooCommerce is part of FunnelKit's ever-growing plugi
 
 === Here are some of our plugins:
 
-**[FunnelKit's Funnel Builder](https://wordpress.org/plugins/funnel-builder/)** - The most flexible funnel builder for WordPress. Build profitable funnels using conversion-friendly templates, analyze performance and improve with built-in A/B testing.
+**[FunnelKit's Funnel Builder](https://wordpress.org/plugins/funnel-builder/)** * The most flexible funnel builder for WordPress. Build profitable funnels using conversion-friendly templates, analyze performance and improve with built-in A/B testing.
 
-**[FunnelKit Checkout](https://funnelkit.com/woocommerce-checkout-pages-aero/)** - Increase your conversions with FunnelKit’s optimized WooCommerce checkout pages. Choose from ready-to-use checkout page templates, embed forms, create one-page checkouts, and more. Offer order bumps to boost your business revenue.
+**[FunnelKit Checkout](https://funnelkit.com/woocommerce-checkout-pages-aero/)** * Increase your conversions with FunnelKit’s optimized WooCommerce checkout pages. Choose from ready-to-use checkout page templates, embed forms, create one-page checkouts, and more. Offer order bumps to boost your business revenue.
 
-**[FunnelKit One-Click Upsells](https://funnelkit.com/woocommerce-one-click-upsells-upstroke/)** - Boost your average order value (AOV) by pitching hyper-relevant post-purchase upsell offers after the checkout.
+**[FunnelKit One-Click Upsells](https://funnelkit.com/woocommerce-one-click-upsells-upstroke/)** * Boost your average order value (AOV) by pitching hyper-relevant post-purchase upsell offers after the checkout.
 
-**[FunnelKit Automations](https://wordpress.org/plugins/wp-marketing-automations/)** - Engage with your customers with automated WooCommerce email marketing and SMS campaigns. Automate your abandoned cart recovery sequence, post-purchase follow-up emails, winback campaigns, and more.
+**[FunnelKit Automations](https://wordpress.org/plugins/wp-marketing-automations/)** * Engage with your customers with automated WooCommerce email marketing and SMS campaigns. Automate your abandoned cart recovery sequence, post-purchase follow-up emails, winback campaigns, and more.
 
-**[FunnelKit Cart](https://wordpress.org/plugins/cart-for-woocommerce/)** - Adds a beautiful sliding cart to your WooCommerce store. Let the buyers add items, edit quantity and add upsells (Pro) on the side cart. Skip traditional cart page and reach checkout faster.
+**[FunnelKit Cart](https://wordpress.org/plugins/cart-for-woocommerce/)** * Adds a beautiful sliding cart to your WooCommerce store. Let the buyers add items, edit quantity and add upsells (Pro) on the side cart. Skip traditional cart page and reach checkout faster.
 
 == Frequently Asked Questions ==
 
@@ -244,7 +270,7 @@ If the express payment buttons are not showing up on your checkout page, please 
 Follow this [Troubleshooting document ](https://funnelkit.com/docs/stripe-gateway-for-woocommerce/troubleshooting/express-payment-buttons-not-showing/) to set up your payment providers.
 
 = What payment methods are supported by this WooCommerce Stripe gateway plugin? =
-Stripe Payment Gateway for WooCommerce is continuously evolving to add new features and new gateways to its system. Currently, it supports credit and debit cards, including Visa, MasterCard, American Express, Discover, etc., express payments (Apple Pay and Google Pay), local payments such as SEPA, P24, iDEAL, Bancontact, ACH Direct Debit, EPS, Pix, Multibanco, and MobilePay. Furthermore, it's compatible with Buy Now Pay Later methods like Affirm, Klarna and Afterpay, as well as digital wallets like CashApp Pay and Alipay.
+Stripe Payment Gateway for WooCommerce is continuously evolving to add new features and new gateways to its system. Currently, it supports credit and debit cards, including Visa, MasterCard, American Express, Discover, etc., express payments (Apple Pay, Google Pay, Link, and Amazon Pay), local payments such as SEPA, P24, iDEAL, Bancontact, ACH Direct Debit, EPS, MB WAY, TWINT, BLIK, Pix, Multibanco, and MobilePay. Furthermore, it's compatible with Buy Now Pay Later methods like Affirm, Klarna and Afterpay, as well as digital wallets like CashApp Pay and Alipay.
 
 = Is there any documentation to help me get started? =
 Yes, visit our complete documentation on [Stripe Payment Gateway for WooCommerce](https://funnelkit.com/docs/stripe-gateway-for-woocommerce/) here.
@@ -258,6 +284,87 @@ Yes, visit our complete documentation on [Stripe Payment Gateway for WooCommerce
 
 
 == Change log ==
+
+= 1.16.0 =
+* Improved: Express wallets (Apple Pay, Google Pay, Amazon Pay) no longer appear as a regular payment method on checkout, order pay and change payment pages unless "Show as Regular Payment Gateway" is selected. (#1479)
+* Improved: Hardened code on order pay pages. (#1497)
+* Improved: Subscriptions: Stripe payment meta is now preserved during subscription REST API updates with WooCommerce Subscriptions 9.1+. (#1477)
+* Improved: Sublium free-trial and zero-due subscription checkouts now mount correctly for a few currencies. (#1491)
+* Improved: ACH, SEPA and Cash App no longer save a payment method token when Stripe refuses to attach it to the customer. (#1495)
+* Improved: Line items sent to Stripe now reconcile exactly with the payment amount on VAT-inclusive orders, fixing declined payments caused by a 1 cent mismatch. (#1475)
+* Improved: Added filter `fkwcs_add_payment_method_redirect_url` to customise the redirect after adding a payment method from My Account. (#1485)
+* Improved: Express checkout buttons now refresh reliably after cart total changes, and optimized the cart calculations on page load. (#1493)
+* Fixed: One-click upsell Payment Element now shows the correct amount during wallet payments. (#1456)
+* Fixed: PHP error when express checkout scripts load on background requests without a WooCommerce cart. (#1481)
+
+
+
+
+
+
+= 1.15.0.1 =
+* Improved: Express Checkout: Express buttons styling improved with the FK checkout. (#1464)
+* Improved: Payment element mounting on order page when the minimum amount 0.50 USD converts to lower stripe account currency. (#1466)
+* Fixed: Edge case of Payment fields were not getting mounted in case of inadvertently multiple jQuery on checkout page. (#1462)
+
+= 1.15.0 =
+* Added: Express Checkout: Apple Pay, Google Pay and Stripe Link now render through Stripe's modern Express Checkout Element — each wallet appears as soon as it is ready and is shown only where it is genuinely available to the shopper. (#780)
+* Added: Express Checkout: Wallet Gateways settings are reformed for better visibility and granular controls. (#1036)
+* Added: Payment Methods: Amazon Pay is now available, both as an express checkout button and as a regular payment method. (#1216)
+* Added: Payment Methods: MB Way is now available for the Portuguese market. (#1009)
+* Added: Payment Methods: TWINT is now available for the Swiss market, using CHF with mobile app or QR code confirmation. (#1128)
+* Added: Payment Methods: EPS and BLIK are now available. (#1014)
+* Added: Subscriptions: Bancontact and iDEAL now support WooCommerce Subscriptions. (#1226, #1285)
+* Added: Checkout: New setting to  include line-item detail in payment requests, improving reconciliation and acceptance rates for Klarna and other methods. (#1113)
+* Added: Admin: Pay for Order button for unpaid orders for the single order admin UI. (#1300)
+* Added: Upsells: Upsell Refunds support added SEPA. (#1407)
+* Added: Upsells: iDEAL is now supported for one-click upsells. (#1422)
+* Improved: Checkout: Failed payments and renewals now record the specific Stripe decline code and its reason in the order note, so the cause is clear without opening the Stripe Dashboard. (#1363)
+* Improved: Checkout: Clearer handling when a Stripe customer cannot be created — the order note explains the underlying connectivity cause while the shopper sees a simple retry message. (#1374)
+* Improved: Checkout: More resilient recovery when Stripe.js fails to load, with added diagnostics and complete checkout data included in the payment request. (#1058)
+* Improved: Subscriptions: Improved subscription renewals process to attempt payment on dynamic payment methods from stripe. (#1073)
+* Improved: Checkout: Payment confirmation is now protected against duplicate intents when a JavaScript error interrupts the flow. (#1077)
+* Improved: Checkout: Faster checkout on stores running subscriptions, through optimized queries. (#1230)
+* Improved: Payment Methods: Alipay configuration and payment flow updated. (#1126)
+* Improved: Checkout: Improved compatibility with Autoship Cloud. (#1203)
+* Improved: Checkout: Authorize mode can now capture automatically when the order status changes. (#1187)
+* Improved: Express Checkout: Each wallet in the FunnelKit slide cart and on product pages now appears as soon as it is ready, instead of waiting on the slowest wallet probe. (#1387)
+* Improved: Checkout: Card and wallet elements now stay mounted when the order review refreshes, so they are no longer rebuilt on every address or shipping change. (#1403)
+* Improved: Admin: The block cart and checkout incompatibility notice is now suppressed when another plugin renders in place of the block checkout, starting with CheckoutWC. (#1411)
+* Improved: Checkout: All FunnelKit scripts now share a single Stripe instance per page, and element amounts are sent in the correct currency units. (#1419)
+* Improved: Admin: New notice warns when payments are completing but Stripe webhooks have stopped arriving. (#1425, #1449)
+* Fixed: Checkout: SCA-regulated cards in the EU and UK now complete save-card, pre-order and one-click upsell payments reliably. (#1252, #1391)
+* Fixed: Checkout: Card payments returning a `processing` status now complete correctly. (#1094)
+* Fixed: Payment methods: BNPL gateways messaging element showing in FK-cart for all gateways. (#1441)
+* Fixed: Checkout: Orders awaiting 3D Secure now complete even when the browser redirect does not return. (#1218)
+* Fixed: Checkout: Payment method validation against an existing intent now prevents mismatches. (#1115)
+* Fixed: Checkout: Improved stability across PHP 8, invalid order-pay requests and unconfigured gateways. (#1099, #1124, #1169, #1237, #1245)
+* Fixed: Checkout: Card last four digits now keep their leading zeros in order notes. (#1256)
+* Fixed: Checkout: Financial confirmation messaging now reflects the real order amount. (#1224)
+* Fixed: Checkout: Billing state codes for New Zealand are now normalized for Stripe. (#1098)
+* Fixed: Payment Methods: iDEAL payments now confirm reliably and show the merchant-configured description. (#1103, #1290)
+* Fixed: Payment Methods: Multibanco and EPS now display their subtitles. (#1062)
+* Fixed: Payment Methods: ACH saved payment methods now work when the customer ID is missing. (#1184)
+* Fixed: Payment Methods: Pay Later messaging now loads on pages where the cart icon is hidden but the cart menu is shown. (#1119)
+* Fixed: Subscriptions: Apple Pay and Google Pay no longer charge twice on an early renewal. (#1268)
+* Fixed: Subscriptions: Renewals now handle a missing order gracefully. (#1082)
+* Fixed: Upsells: One-click upsells now work with Stripe Link and across all supported currencies. (#1193, #1260)
+* Fixed: Upsells: Clearer message when the payment intent secret is unavailable after a failed 3D Secure attempt. (#1056)
+* Fixed: My Account: Legacy Stripe customer IDs from migrated plugins are now resolved. (#1287)
+* Fixed: Admin: Capture button now works regardless of the configured payment mode. (#1090)
+* Fixed: Admin: Refund handling no longer overrides orders paid through another gateway. (#1092)
+* Fixed: Webhooks: More reliable webhook processing, including HPOS refund orders, Stripe API timeouts and order metadata saves. (#1117, #1189, #1199)
+* Fixed: Express Checkout: The Apple Pay row no longer disappears and reappears each time the checkout order review refreshes. (#1371)
+* Fixed: Express Checkout: An unavailable Apple Pay no longer hides the Google Pay button, which could leave the checkout with no place order control. (#1393)
+* Fixed: Express Checkout: Express checkout buttons now render even when the Credit Card gateway is disabled. (#1378)
+* Fixed: Upsells: Corrected the upsell charge action so one-click upsells trigger the right payment handler. (#1413)
+* Fixed: Checkout: The allowed card brands setting is now enforced when the payment is processed, instead of only client side checks. (#1417)
+* Fixed: Subscriptions: Resolved a mandate mismatch that could cause India subscription renewals to fail after the customer changed their payment method. (#1406)
+* Fixed: Express Checkout: The wallet payment sheet no longer hangs when a shipping-address or shipping-option update returns an unexpected or failed response. (#1436)
+* Fixed: Express Checkout: The Express Checkout wrapper no longer renders more than once per page, which could show duplicate empty checkout boxes. (#1438)
+* Fixed: Express Checkout: Improved reliability for Amazon Pay and FunnelKit Cart express payments by correctly propagating button context and refreshing the checkout nonce from cart fragments. (#1447)
+* Fixed: Checkout: Smart-button line item generation no longer fails when a cart item is missing subtotal or product data. (#1447)
+* Fixed: Checkout: Re-paying a still-pending order through a saved payment method no longer creates a duplicate Stripe charge when the original payment had already succeeded. (#1432)
 
 = 1.14.0.5 =
 * Fixed: Edge cases causing double upsells charges in case of javascript are deferred loaded on upsells.(#1032)
@@ -613,3 +720,4 @@ Yes, visit our complete documentation on [Stripe Payment Gateway for WooCommerce
 
 = 1.0.0 =
 * Public Release
+

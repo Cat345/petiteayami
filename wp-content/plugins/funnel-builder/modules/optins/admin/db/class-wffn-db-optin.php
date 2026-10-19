@@ -55,7 +55,7 @@ if ( ! class_exists( 'WFFN_DB_Optin' ) ) {
 				'date'      => current_time( 'mysql' ),
 			);
 			$table      = $wpdb->prefix . 'bwf_optin_entries';
-			$inserted   = $wpdb->insert( $table, $optin_data );
+			$inserted   = $wpdb->insert( $table, $optin_data ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 
 			$lastId = 0;
 			if ( $inserted ) {
@@ -74,9 +74,9 @@ if ( ! class_exists( 'WFFN_DB_Optin' ) ) {
 		 */
 		public function get_contact_by_opid( $opid ) {
 			global $wpdb;
-			$table = $wpdb->prefix . $this->optin_tbl;
+			$table = esc_sql( $wpdb->prefix . $this->optin_tbl );
 
-			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `$table` WHERE `opid` = %s", $opid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `$table` WHERE `opid` = %s", $opid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 		}
 
 		/**
@@ -84,9 +84,9 @@ if ( ! class_exists( 'WFFN_DB_Optin' ) ) {
 		 */
 		public function get_contact( $id ) {
 			global $wpdb;
-			$table = $wpdb->prefix . $this->optin_tbl;
+			$table = esc_sql( $wpdb->prefix . $this->optin_tbl );
 
-			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `$table` WHERE `id` = %d", $id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `$table` WHERE `id` = %d", $id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct operation on the plugin's own custom table; WordPress provides no CRUD or object-cache API for it.
 		}
 	}
 

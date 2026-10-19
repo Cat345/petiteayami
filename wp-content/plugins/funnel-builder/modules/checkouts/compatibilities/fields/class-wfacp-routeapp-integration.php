@@ -59,10 +59,9 @@ if ( ! class_exists( 'WFACP_Route_App' ) ) {
 			if ( ! $this->is_active() ) {
 				return;
 			}
-			$cssHtml = "<style>";
+			$cssHtml = '';
 			$cssHtml .= "#wfacp_checkout_form #RouteWidget .pw-route-protection .pw-container {max-width: 100%;}";
-			$cssHtml .= "</style>";
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 
 		public function is_active() {

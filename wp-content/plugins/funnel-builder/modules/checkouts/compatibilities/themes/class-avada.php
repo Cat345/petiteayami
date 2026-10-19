@@ -107,7 +107,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_Avada' ) ) {
 				$bodyClass = 'body #wfacp-e-form ';
 			}
 
-			$cssHtml  = '<style>';
+			$cssHtml  = '';
 			$cssHtml .= 'html:not(.avada-html-layout-boxed):not(.avada-html-layout-framed){ background-color: transparent !important;}';
 			$cssHtml .= 'html{ background-color: transparent !important;}';
 			$cssHtml .= 'body{ background-color: transparent;}';
@@ -140,9 +140,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_Avada' ) ) {
 			$cssHtml .= '.wfacp_mini_cart_start_h .checkout_coupon{padding: 0;border:none;}';
 			$cssHtml .= 'body .shop_table tbody tr{    height: auto;}';
 			$cssHtml .= 'body .shop_table  tr{     border: none;}';
-			$cssHtml .= '</style>';
 
-			echo $cssHtml; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 
 		public function do_not_execute_shortcode( $status ) {

@@ -93,7 +93,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Porto' ) ) {
 			}
 			$px = $instance->get_template_type_px() . 'px';
 
-			$cssHtml  = '<style>';
+			$cssHtml  = '';
 			$cssHtml .= $bodyClass . "#wfacp_affiliate_referrals_wc {padding-left:$px;padding-right:$px;}";
 			$cssHtml .= $bodyClass . '#shipping_calculator_field .border {border: none !important;}';
 			$cssHtml .= $bodyClass . '#shipping_calculator_field .wfacp_border {border: none !important;}';
@@ -104,8 +104,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Porto' ) ) {
 			$cssHtml .= $bodyClass . '#wfacp_checkout_form .wfacp-form-control-wrapper[class*=flag-] {height: auto; background: none;}';
 			$cssHtml .= $bodyClass . '#wfacp_checkout_form .porto-radio .porto-control-label:after {display: none;}';
 			$cssHtml .= $bodyClass . '#wfacp_checkout_form .porto-radio {padding-left: 0;}';
-			$cssHtml .= '</style>';
-			echo $cssHtml;
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 	}
 

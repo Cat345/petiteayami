@@ -162,8 +162,8 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Divi' ) ) {
 		 */
 		private function is_matching_post_type(): bool {
 			// 0. REST API requests for wfop routes.
-			if ( ! empty( $_SERVER['REQUEST_URI'] ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				$uri = wp_unslash( $_SERVER['REQUEST_URI'] ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			if ( ! empty( $_SERVER['REQUEST_URI'] ) ) {
+				$uri = sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 				if ( false !== strpos( $uri, '/wp-json/wfop/' ) ) {
 					return true;
 				}
@@ -182,7 +182,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Divi' ) ) {
 
 			// 3. Divi VB frontend URLs (/slug/?et_fb=1).
 			if ( $post_id < 1 && ! empty( $_SERVER['REQUEST_URI'] ) ) {
-				$post_id = url_to_postid( home_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$post_id = url_to_postid( home_url( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) );
 			}
 
 			if ( $post_id > 0 ) {
@@ -529,7 +529,6 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Divi' ) ) {
 
 			if ( isset( $designs['divi'] ) && is_array( $designs['divi'] ) ) {
 				foreach ( $designs['divi'] as $d_key => $templates ) {
-
 
 					WFOPP_Core()->optin_pages->register_template( $d_key, $templates, 'divi' );
 

@@ -212,7 +212,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 
 						$global_embed_form_url = apply_filters( 'wfacp_global_embed_form_redirect_url', get_the_permalink( $this->override_checkout_page_id ), $this->override_checkout_page_id, $may_be_post );
 
-						wp_redirect( $global_embed_form_url );
+						wp_redirect( $global_embed_form_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- the URL passes through the public wfacp_global_embed_form_redirect_url filter, which may legally return an off-site URL; wp_safe_redirect would silently break such setups.
 						exit;
 					}
 
@@ -724,7 +724,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 
 			foreach ( $get_all_opted_page_builders as $builder ) {
 				$page_builder    = $this->get_dependent_plugins_for_page_builder( $builder );
-				$plugin_string   = sprintf( __( 'This template needs <strong>%s plugin</strong> activated.', 'funnel-builder' ), esc_html( $page_builder['title'] ) );
+				$plugin_string   = sprintf( /* translators: %s: page builder plugin name. */ __( 'This template needs <strong>%s plugin</strong> activated.', 'funnel-builder' ), esc_html( $page_builder['title'] ) );
 				$button_text     = __( 'Activate', 'funnel-builder' );
 				$cancel_btn      = __( 'Cancel', 'funnel-builder' );
 				$no_install      = 'no';
@@ -732,8 +732,8 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 				$show_cancel_btn = 'yes';
 				$plugin_status   = isset( $page_builder['plugin-status'] ) ? $page_builder['plugin-status'] : '';
 				$theme_status    = isset( $page_builder['theme-status'] ) ? $page_builder['theme-status'] : '';
-				$string          = sprintf( __( ' Click the button to install and activate %s.', 'funnel-builder' ), esc_html( $page_builder['title'] ) );
-				$install         = sprintf( __( ' Install and activate %s.', 'funnel-builder' ), esc_html( $page_builder['title'] ) );
+				$string          = sprintf( /* translators: %s: page builder plugin name. */ __( ' Click the button to install and activate %s.', 'funnel-builder' ), esc_html( $page_builder['title'] ) );
+				$install         = sprintf( /* translators: %s: page builder plugin name. */ __( ' Install and activate %s.', 'funnel-builder' ), esc_html( $page_builder['title'] ) );
 				$builder_link    = '';
 				/**
 				 * If its a divi builder we need to handle few cases down there for best user experience
@@ -798,7 +798,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 		private function get_last_revision_page_template( $id ) {
 
 			global $wpdb;
-			$data     = $wpdb->get_results( $wpdb->prepare( "select ID from {$wpdb->posts} where post_parent=%d ORDER BY ID DESC LIMIT 1", $id ), ARRAY_A );
+			$data     = $wpdb->get_results( $wpdb->prepare( "select ID from {$wpdb->posts} where post_parent=%d ORDER BY ID DESC LIMIT 1", $id ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- direct core-table operation used for bulk/maintenance work where the per-row core APIs are prohibitive; request-scoped read, no persistent cache layer applies.
 			$template = '';
 			if ( ! empty( $data ) ) {
 				$revision_id = $data[0]['ID'];

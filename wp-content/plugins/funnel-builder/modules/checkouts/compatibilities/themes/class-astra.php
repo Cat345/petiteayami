@@ -155,7 +155,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Astra' ) ) {
 				$bodyClass = 'body #wfacp-e-form ';
 			}
 
-			$cssHtml  = '<style>';
+			$cssHtml  = '';
 			$cssHtml .= 'body{overflow-x: visible;}';
 			$cssHtml .= '.ast-separate-container .ast-article-post {padding: 0 !important;}';
 			$cssHtml .= $bodyClass . '.wfacp_main_form .woocommerce-checkout #payment ul.payment_methods li .form-row.form-row-last{clear: none;}';
@@ -267,8 +267,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Astra' ) ) {
 			$cssHtml .= $scope . ' .wfacp_shipping_table,' . $scope . ' .wfacp_shipping_table th,' . $scope . ' .wfacp_shipping_table td,' . $scope . ' .wfacp_border,' . $scope . ' label.label_shiping,' . $scope . ' #shipping_method,' . $scope . ' #shipping_method label,' . $scope . ' .shipping_method,' . $scope . ' .shipping_method label{color:#2c2f36 !important;}';
 			$cssHtml .= $scope . ' .wfacp_shipping_table{background-color:transparent !important;}';
 
-			$cssHtml .= '</style>';
-			echo $cssHtml; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<style>' . wp_strip_all_tags( $cssHtml ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS block: tags are literal, rules pass through wp_strip_all_tags(); entity-encoding escapers corrupt selectors.
 		}
 
 		public function remove_script() {

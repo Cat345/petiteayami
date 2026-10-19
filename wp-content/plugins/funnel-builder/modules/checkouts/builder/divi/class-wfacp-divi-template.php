@@ -145,14 +145,14 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 						$deviceClass = 'wfacp_not_active';
 					}
 
-					echo "<div class='" . $deviceClass . "'>";//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo "<div class='" . esc_attr( $deviceClass ) . "'>";
 
 					$template->get_mobile_mini_cart( $this->form_data );
 					echo '</div>';
 
 				}
 
-				echo "<div class='" . implode( ' ', array( 'wfacp-form', $label_position ) ) . "'>";//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo "<div class='" . esc_attr( implode( ' ', array( 'wfacp-form', $label_position ) ) ) . "'>";
 
 			}
 		}
@@ -555,7 +555,7 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			}
 
 			ob_start();
-			echo "<div class='$stepWrapClass'>";//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo "<div class='" . esc_attr( $stepWrapClass ) . "'>";
 
 			for ( $i = 0; $i < $number_of_steps; $i++ ) {
 

@@ -4,11 +4,11 @@ if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 	return '';
 }
 
-$instance = wfacp_template();
-if ( is_null( $instance ) ) {
+$wfacp_instance = wfacp_template();
+if ( is_null( $wfacp_instance ) ) {
 	return;
 }
-$data = $instance->get_checkout_fields();
+$data = $wfacp_instance->get_checkout_fields();
 
 if ( ! isset( $data['advanced']['shipping_calculator'] ) ) {
 	return;
@@ -58,7 +58,7 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 			unset( $data );
 			$item_names_containing_subscriptions = array();
 			$item_names                          = array();
-			$label                               = isset( $field['label'] ) ? WFACP_Common::translation_string_to_check( $field['label'] ) : __( 'Shipping', 'woocommerce' );
+			$label                               = isset( $field['label'] ) ? WFACP_Common::translation_string_to_check( $field['label'] ) : __( 'Shipping', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation.
 			$cart_contents                       = WC()->cart->get_cart_contents();
 			$cart_content_count                  = count( $cart_contents );
 			/**
@@ -117,7 +117,7 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 						do_action( 'wfacp_woocommerce_review_order_before_shipping' );
 						do_action( 'woocommerce_review_order_before_shipping' );
 						?>
-						<?php echo $shipping_html; ?>
+						<?php echo $shipping_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled shipping rows contain <input type="radio">; parts escaped at build (B0). ?>
 						<?php
 						do_action( 'woocommerce_review_order_after_shipping' );
 						do_action( 'wfacp_woocommerce_review_order_after_shipping' );
@@ -135,8 +135,8 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 					'cart_contains_subscriptions_needing_shipping',
 				)
 			) && true === WC_Subscriptions_Cart::cart_contains_subscriptions_needing_shipping() && true === apply_filters( 'wfacp_show_recurring_methods', true, $cart_content_count, $shipping_html ) ) {
-				global $have_multiple_subscription;
-				$have_multiple_subscription = false;
+				global $wfacp_have_multiple_subscription;
+				$wfacp_have_multiple_subscription = false;
 				/**
 				 * This hook insures that during the html generation subscription plugin called the specific template
 				 * that means there are more than one shipping rates available for recurring cart.
@@ -146,11 +146,11 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 				add_action(
 					'woocommerce_before_template_part',
 					function ( $template_name, $template_path, $located, $args ) {
-						global $have_multiple_subscription;
+						global $wfacp_have_multiple_subscription;
 						if ( $template_name !== 'cart/cart-recurring-shipping.php' ) {
 							return;
 						}
-						$have_multiple_subscription = true;
+						$wfacp_have_multiple_subscription = true;
 					},
 					10,
 					4
@@ -166,7 +166,7 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 
 
 				$multiple_class = '';
-				if ( $have_multiple_subscription ) {
+				if ( $wfacp_have_multiple_subscription ) {
 					$multiple_class = 'wfacp_multi_rec';
 				}
 
@@ -183,7 +183,7 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 
 						do_action( 'wfacp_woocommerce_review_order_before_shipping' );
 						do_action( 'woocommerce_review_order_before_shipping' );
-						echo $shipping_recurring_html;
+						echo $shipping_recurring_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled shipping rows contain <input type="radio">; parts escaped at build (B0).
 						?>
 						<?php do_action( 'woocommerce_review_order_after_shipping' ); ?>
 						<?php do_action( 'wfacp_woocommerce_review_order_after_shipping' ); ?>
@@ -193,7 +193,7 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 			}
 		} else {
 
-			if ( apply_filters( 'wfacp_no_available_shipping_method_found', true, $instance, $field ) ) {
+			if ( apply_filters( 'wfacp_no_available_shipping_method_found', true, $wfacp_instance, $field ) ) {
 				?>
 				<style>
 					.wfacp_shipping_options {
@@ -206,19 +206,19 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 					$step               = $number_parents_fields['step'];
 					?>
 					<style>
-						<?php printf( '.wfacp_page.%s .wfacp-section.step_%s{ display: none;}', $step, $parent_step_number ); ?>
+						<?php printf( '.wfacp_page.%s .wfacp-section.step_%s{ display: none;}', esc_attr( $step ), (int) $parent_step_number ); ?>
 					</style>
 					<?php
 				}
 			}
-			do_action( 'wfacp_no_shipping_method_founds', $instance, $field );
+			do_action( 'wfacp_no_shipping_method_founds', $wfacp_instance, $field );
 		}
 	} elseif ( true != $is_cart_is_virtual ) {
 		?>
 
 			<ul id="shipping_method" class="wfacp_no_add_here">
 				<li class="wfacp_no_shipping wfacp_clearfix">
-					<label><?php esc_html_e( 'Shipping method', 'woocommerce' ); ?></label>
+					<label><?php esc_html_e( 'Shipping method', 'woocommerce' ); /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- deliberate: reuse WooCommerce core translation. */ ?></label>
 				</li>
 			</ul>
 			<?php
@@ -229,7 +229,7 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 		$step               = $number_parents_fields['step'];
 		?>
 		<style>
-			<?php printf( '.wfacp_page.%s .wfacp-section.step_%s{ display: none;}', $step, $parent_step_number ); ?>
+			<?php printf( '.wfacp_page.%s .wfacp-section.step_%s{ display: none;}', esc_attr( $step ), (int) $parent_step_number ); ?>
 		</style>
 		<?php
 	}

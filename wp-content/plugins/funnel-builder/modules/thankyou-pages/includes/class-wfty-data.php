@@ -283,12 +283,21 @@ if ( ! class_exists( 'WFTY_Data' ) ) {
 			if ( absint( $order_id ) === 0 ) {
 				return '';
 			}
-			$metadata = BWF_WC_Compatibility::get_order_meta( wc_get_order( $order_id ), '_order_total' );
-			if ( is_string( $metadata ) ) {
-				return $metadata;
+
+			/**
+			 * Read the total from the order object, not from '_order_total' post meta.
+			 * Under HPOS the total lives in a column of the orders table, so the meta
+			 * read returns null and the shortcode printed nothing. get_total() is the
+			 * storage-agnostic accessor and returns the same raw numeric string the
+			 * meta read used to give on legacy post-based orders, so non-HPOS output
+			 * is unchanged. Entitlement is already enforced above via maybe_get_order_id().
+			 */
+			$order = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) {
+				return '';
 			}
 
-			return '';
+			return (string) $order->get_total();
 		}
 
 		/**
@@ -307,10 +316,6 @@ if ( ! class_exists( 'WFTY_Data' ) ) {
 				return '';
 			}
 			$order_id = $this->maybe_get_order_id( 0 );
-
-			if ( $order_id === 0 ) {
-				$order_id = $this->maybe_get_order_id( $order_id );
-			}
 			$order_id = apply_filters( 'wfty_custom_field_order_id', $order_id );
 			if ( absint( $order_id ) === 0 ) {
 				return '';
@@ -325,12 +330,26 @@ if ( ! class_exists( 'WFTY_Data' ) ) {
 
 		public function maybe_get_order_id( $order_id ) {
 			global $wp;
-			if ( isset( $_REQUEST['order_id'] ) && $_REQUEST['order_id'] > 0 ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$order_id = absint( wffn_clean( $_REQUEST['order_id'] ) );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			/**
+			 * Both of these come straight from the URL and feed every [wfty_*] shortcode and
+			 * wfty_customer_* helper, all of which print customer data. Accept an id only when
+			 * the request proves it is entitled to that order -- see
+			 * WFFN_Common::current_request_can_view_order(). A nonce cannot serve here: these
+			 * render for logged-out customers on the thank-you page.
+			 *
+			 * The page-level key guard in WFFN_Thank_You_WC_Pages::validate_order() only
+			 * inspects $_GET, while this reads $_REQUEST, so an id arriving in a POST body
+			 * would otherwise reach wc_get_order() unchecked (#9636).
+			 */
+			$requested = 0;
+			if ( isset( $_REQUEST['order_id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- entitlement is verified below.
+				$requested = absint( wffn_clean( wp_unslash( $_REQUEST['order_id'] ) ) );//phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- entitlement is verified below. Also: input sanitized via a recursive sanitize_text_field() wrapper on this line.
 			}
-
-			if ( isset( $_REQUEST['order'] ) && $_REQUEST['order'] > 0 ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$order_id = absint( wffn_clean( $_REQUEST['order'] ) );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_REQUEST['order'] ) ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended -- entitlement is verified below.
+				$requested = absint( wffn_clean( wp_unslash( $_REQUEST['order'] ) ) );//phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- entitlement is verified below. Also: input sanitized via a recursive sanitize_text_field() wrapper on this line.
+			}
+			if ( $requested > 0 && WFFN_Common::current_request_can_view_order( $requested ) ) {
+				$order_id = $requested;
 			}
 			if ( isset( $wp->query_vars['order-received'] ) ) {
 				$order_id = apply_filters( 'woocommerce_thankyou_order_id', $order_id );

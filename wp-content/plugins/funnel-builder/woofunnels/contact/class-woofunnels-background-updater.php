@@ -372,7 +372,7 @@ if ( ! class_exists( 'WooFunnels_Background_Updater' ) ) {
 			update_option( '_bwf_offset', 0 );
 
 			BWF_Logger::get_instance()->log( 'Background scanning completed for indexing order and creating updating contacts and customers.', 'woofunnels_indexing' );
-			do_action( 'bwf_order_index_completed' );
+			do_action( 'bwf_order_index_completed' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- bwf_/fk_ is the established WooFunnels framework prefix, below PCP's 4-char/frequency detection floor; public API consumed across the FunnelKit plugin family.
 			parent::complete();
 		}
 
